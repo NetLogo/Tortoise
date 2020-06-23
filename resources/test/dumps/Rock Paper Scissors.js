@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -54,11 +51,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -71,11 +64,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -84,7 +73,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", false, true, 0, 10, 0, 10, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   ask patches [     ; Start populations at roughly even levels.     set pcolor one-of [ red green blue black ]   ]   reset-ticks end  to go   ; This model uses an event-based approach. It calculates how many events of each type   ; should occur each tick and then executes those events in a random order. Event type   ; could be signified by any constant. Here, we use a the numbers 0, 1, and 2 to signify   ; event type, but then store those numbers in variables with clear names for readability.   let swap-event 0   let reproduce-event 1   let select-event 2    ; Note that we have to compute the number of global events rather than the number of   ; actions that each individual patch performs since the execution of those events has   ; to be random between the patches. That is, a single patch can\'t perform all of their   ; actions in one go: suppose they end up executing 5 swaps in one tick. The swaps would   ; be shuffling things around locally rather than allowing for an organism to travel   ; multiple steps.   ; Hence, this code creates a list with an entry for each event type that should occur   ; this tick, then shuffles that list so that the events are in a random order. We then   ; iterate through the list, and random neighboring patches run the corresponding event.   let repetitions count patches / 3 ; At default settings, there will be an average of 1 event per patch.   let events shuffle (sentence     n-values random-poisson (repetitions * swap-rate)      [ swap-event ]     n-values random-poisson (repetitions * reproduce-rate) [ reproduce-event ]     n-values random-poisson (repetitions * select-rate)    [ select-event ]   )    foreach events [ event ->     ask one-of patches [       let target one-of neighbors4       if event = swap-event      [ swap target ]       if event = reproduce-event [ reproduce target ]       if event = select-event    [ select target ]     ]   ]   tick end  ; Patch procedures  ; Swap PCOLOR with TARGET. to swap [ target ]   let old-color pcolor   set pcolor [ pcolor ] of target   ask target [ set pcolor old-color ] end  ; Compete with TARGET. The loser becomes blank. to select [ target ]   ifelse beat? target [     ask target [ set pcolor black ]   ] [     if [ beat? myself ] of target [       set pcolor black     ]   ] end  ; If TARGET is blank, reproduce on that patch. If I\'m blank, TARGET reproduces on my patch. to reproduce [ target ]   ifelse [ pcolor ] of target = black [     ask target [       set pcolor [ pcolor ] of myself     ]   ] [     if pcolor = black [       set pcolor [ pcolor ] of target     ]   ] end  ; Determine whether or not I beat TARGET to-report beat? [ target ]   report (pcolor = red   and [ pcolor ] of target = green) or          (pcolor = green and [ pcolor ] of target = blue) or          (pcolor = blue  and [ pcolor ] of target = red) end  ; Utility procedures  to-report rate-from-exponent [ exponent ]   report 10 ^ exponent end  to-report swap-rate   report rate-from-exponent swap-rate-exponent end  to-report reproduce-rate   report rate-from-exponent reproduce-rate-exponent end  to-report select-rate   report rate-from-exponent select-rate-exponent end  ; Convert the given rate to a percentage of how much that action happens to-report percentage [ rate ]   report 100 * rate / (swap-rate + reproduce-rate + select-rate) end   ; Copyright 2017 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":310,"top":10,"right":771,"bottom":472,"dimensions":{"minPxcor":-75,"maxPxcor":75,"minPycor":-75,"maxPycor":75,"patchSize":3,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":5,"top":10,"right":100,"bottom":43,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go ","left":115,"top":10,"right":210,"bottom":43,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-1","compiledMax":"1","compiledStep":"0.1","variable":"swap-rate-exponent","left":5,"top":55,"right":210,"bottom":88,"display":"swap-rate-exponent","min":"-1","max":"1","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-1","compiledMax":"1","compiledStep":"0.1","variable":"reproduce-rate-exponent","left":5,"top":100,"right":210,"bottom":133,"display":"reproduce-rate-exponent","min":"-1","max":"1","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-1","compiledMax":"1","compiledStep":"0.1","variable":"select-rate-exponent","left":5,"top":145,"right":210,"bottom":178,"display":"select-rate-exponent","min":"-1","max":"1","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 15); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = red ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'pen-1')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 55); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"pen-1","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = green ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'pen-2')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 105); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"pen-2","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = blue ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Populations","left":5,"top":190,"right":305,"bottom":470,"xmin":0,"xmax":10,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = red ]","type":"pen"},{"display":"pen-1","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = green ]","type":"pen"},{"display":"pen-2","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = blue ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"PERCENTAGE\"](procedures[\"SWAP-RATE\"]())","source":"percentage swap-rate","left":215,"top":50,"right":305,"bottom":95,"display":"swap-%","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"PERCENTAGE\"](procedures[\"REPRODUCE-RATE\"]())","source":"percentage reproduce-rate","left":215,"top":95,"right":305,"bottom":140,"display":"reproduce-%","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"PERCENTAGE\"](procedures[\"SELECT-RATE\"]())","source":"percentage select-rate","left":215,"top":140,"right":305,"bottom":185,"display":"select-%","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["swap-rate-exponent", "reproduce-rate-exponent", "select-rate-exponent"], ["swap-rate-exponent", "reproduce-rate-exponent", "select-rate-exponent"], [], -75, 75, -75, 75, 3, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   ask patches [     ; Start populations at roughly even levels.     set pcolor one-of [ red green blue black ]   ]   reset-ticks end  to go   ; This model uses an event-based approach. It calculates how many events of each type   ; should occur each tick and then executes those events in a random order. Event type   ; could be signified by any constant. Here, we use a the numbers 0, 1, and 2 to signify   ; event type, but then store those numbers in variables with clear names for readability.   let swap-event 0   let reproduce-event 1   let select-event 2    ; Note that we have to compute the number of global events rather than the number of   ; actions that each individual patch performs since the execution of those events has   ; to be random between the patches. That is, a single patch can\'t perform all of their   ; actions in one go: suppose they end up executing 5 swaps in one tick. The swaps would   ; be shuffling things around locally rather than allowing for an organism to travel   ; multiple steps.   ; Hence, this code creates a list with an entry for each event type that should occur   ; this tick, then shuffles that list so that the events are in a random order. We then   ; iterate through the list, and random neighboring patches run the corresponding event.   let repetitions count patches / 3 ; At default settings, there will be an average of 1 event per patch.   let events shuffle (sentence     n-values random-poisson (repetitions * swap-rate)      [ swap-event ]     n-values random-poisson (repetitions * reproduce-rate) [ reproduce-event ]     n-values random-poisson (repetitions * select-rate)    [ select-event ]   )    foreach events [ event ->     ask one-of patches [       let target one-of neighbors4       if event = swap-event      [ swap target ]       if event = reproduce-event [ reproduce target ]       if event = select-event    [ select target ]     ]   ]   tick end  ; Patch procedures  ; Swap PCOLOR with TARGET. to swap [ target ]   let old-color pcolor   set pcolor [ pcolor ] of target   ask target [ set pcolor old-color ] end  ; Compete with TARGET. The loser becomes blank. to select [ target ]   ifelse beat? target [     ask target [ set pcolor black ]   ] [     if [ beat? myself ] of target [       set pcolor black     ]   ] end  ; If TARGET is blank, reproduce on that patch. If I\'m blank, TARGET reproduces on my patch. to reproduce [ target ]   ifelse [ pcolor ] of target = black [     ask target [       set pcolor [ pcolor ] of myself     ]   ] [     if pcolor = black [       set pcolor [ pcolor ] of target     ]   ] end  ; Determine whether or not I beat TARGET to-report beat? [ target ]   report (pcolor = red   and [ pcolor ] of target = green) or          (pcolor = green and [ pcolor ] of target = blue) or          (pcolor = blue  and [ pcolor ] of target = red) end  ; Utility procedures  to-report rate-from-exponent [ exponent ]   report 10 ^ exponent end  to-report swap-rate   report rate-from-exponent swap-rate-exponent end  to-report reproduce-rate   report rate-from-exponent reproduce-rate-exponent end  to-report select-rate   report rate-from-exponent select-rate-exponent end  ; Convert the given rate to a percentage of how much that action happens to-report percentage [ rate ]   report 100 * rate / (swap-rate + reproduce-rate + select-rate) end   ; Copyright 2017 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":310,"top":10,"right":771,"bottom":472,"dimensions":{"minPxcor":-75,"maxPxcor":75,"minPycor":-75,"maxPycor":75,"patchSize":3,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":5,"top":10,"right":100,"bottom":43,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go ","left":115,"top":10,"right":210,"bottom":43,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-1","compiledMax":"1","compiledStep":"0.1","variable":"swap-rate-exponent","left":5,"top":55,"right":210,"bottom":88,"display":"swap-rate-exponent","min":"-1","max":"1","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-1","compiledMax":"1","compiledStep":"0.1","variable":"reproduce-rate-exponent","left":5,"top":100,"right":210,"bottom":133,"display":"reproduce-rate-exponent","min":"-1","max":"1","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-1","compiledMax":"1","compiledStep":"0.1","variable":"select-rate-exponent","left":5,"top":145,"right":210,"bottom":178,"display":"select-rate-exponent","min":"-1","max":"1","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 15); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = red ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'pen-1')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 55); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"pen-1","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = green ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'pen-2')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 105); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"pen-2","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = blue ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Populations","left":5,"top":190,"right":305,"bottom":470,"xmin":0,"xmax":10,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = red ]","type":"pen"},{"display":"pen-1","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = green ]","type":"pen"},{"display":"pen-2","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = blue ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"PERCENTAGE\"](procedures[\"SWAP-RATE\"]())","source":"percentage swap-rate","left":215,"top":50,"right":305,"bottom":95,"display":"swap-%","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"PERCENTAGE\"](procedures[\"REPRODUCE-RATE\"]())","source":"percentage reproduce-rate","left":215,"top":95,"right":305,"bottom":140,"display":"reproduce-%","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"PERCENTAGE\"](procedures[\"SELECT-RATE\"]())","source":"percentage select-rate","left":215,"top":140,"right":305,"bottom":185,"display":"select-%","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["swap-rate-exponent", "reproduce-rate-exponent", "select-rate-exponent"], ["swap-rate-exponent", "reproduce-rate-exponent", "select-rate-exponent"], [], -75, 75, -75, 75, 3, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -110,14 +99,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", ListPrims.oneOf([15, 55, 105, 0])); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", ListPrims.oneOf([15, 55, 105, 0])); }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -132,10 +117,8 @@ var procedures = (function() {
       let repetitions = Prims.div(world.patches().size(), 3); letVars['repetitions'] = repetitions;
       let events = ListPrims.shuffle(ListPrims.sentence(Tasks.nValues(Prims.randomPoisson((repetitions * procedures["SWAP-RATE"]())), Tasks.reporterTask(function() { return swapEvent; }, "[ swap-event ]")), Tasks.nValues(Prims.randomPoisson((repetitions * procedures["REPRODUCE-RATE"]())), Tasks.reporterTask(function() { return reproduceEvent; }, "[ reproduce-event ]")), Tasks.nValues(Prims.randomPoisson((repetitions * procedures["SELECT-RATE"]())), Tasks.reporterTask(function() { return selectEvent; }, "[ select-event ]")))); letVars['events'] = events;
       var _foreach_1684_1691 = Tasks.forEach(Tasks.commandTask(function(_event_) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
-        ListPrims.oneOf(world.patches()).ask(function() {
+        Errors.procedureArgumentsCheck(1, arguments.length);
+        Errors.askNobodyCheck(ListPrims.oneOf(world.patches())).ask(function() {
           let target = ListPrims.oneOf(SelfManager.self().getNeighbors4()); letVars['target'] = target;
           if (Prims.equality(_event_, swapEvent)) {
             procedures["SWAP"](target);
@@ -150,11 +133,7 @@ var procedures = (function() {
       }, "[ event -> ask one-of patches [ let one-of neighbors4 if event = swap-event [ swap target ] if event = reproduce-event [ reproduce target ] if event = select-event [ select target ] ] ]"), events); if(reporterContext && _foreach_1684_1691 !== undefined) { return _foreach_1684_1691; }
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -165,13 +144,9 @@ var procedures = (function() {
       var letVars = { };
       let oldColor = SelfManager.self().getPatchVariable("pcolor"); letVars['oldColor'] = oldColor;
       SelfManager.self().setPatchVariable("pcolor", target.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }));
-      target.ask(function() { SelfManager.self().setPatchVariable("pcolor", oldColor); }, true);
+      Errors.askNobodyCheck(target).ask(function() { SelfManager.self().setPatchVariable("pcolor", oldColor); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["swap"] = temp;
@@ -181,7 +156,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (procedures["BEAT?"](target)) {
-        target.ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
+        Errors.askNobodyCheck(target).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
       }
       else {
         if (target.projectionBy(function() { return procedures["BEAT?"](SelfManager.myself()); })) {
@@ -189,11 +164,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["select"] = temp;
@@ -203,7 +174,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(target.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 0)) {
-        target.ask(function() {
+        Errors.askNobodyCheck(target).ask(function() {
           SelfManager.self().setPatchVariable("pcolor", SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }));
         }, true);
       }
@@ -213,11 +184,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["reproduce"] = temp;
@@ -226,16 +193,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return (((Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15) && Prims.equality(target.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 55)) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55) && Prims.equality(target.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 105))) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105) && Prims.equality(target.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 15)))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return (((Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15) && Prims.equality(target.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 55)) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55) && Prims.equality(target.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 105))) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105) && Prims.equality(target.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 15)));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["beat_p"] = temp;
@@ -244,16 +206,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return NLMath.pow(10, exponent)
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return NLMath.pow(10, exponent);
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["rateFromExponent"] = temp;
@@ -262,16 +219,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return procedures["RATE-FROM-EXPONENT"](world.observer.getGlobal("swap-rate-exponent"))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return procedures["RATE-FROM-EXPONENT"](world.observer.getGlobal("swap-rate-exponent"));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["swapRate"] = temp;
@@ -280,16 +232,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return procedures["RATE-FROM-EXPONENT"](world.observer.getGlobal("reproduce-rate-exponent"))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return procedures["RATE-FROM-EXPONENT"](world.observer.getGlobal("reproduce-rate-exponent"));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["reproduceRate"] = temp;
@@ -298,16 +245,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return procedures["RATE-FROM-EXPONENT"](world.observer.getGlobal("select-rate-exponent"))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return procedures["RATE-FROM-EXPONENT"](world.observer.getGlobal("select-rate-exponent"));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["selectRate"] = temp;
@@ -316,16 +258,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return Prims.div((100 * rate), ((procedures["SWAP-RATE"]() + procedures["REPRODUCE-RATE"]()) + procedures["SELECT-RATE"]()))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return Prims.div((100 * rate), ((procedures["SWAP-RATE"]() + procedures["REPRODUCE-RATE"]()) + procedures["SELECT-RATE"]()));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["percentage"] = temp;

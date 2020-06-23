@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 5); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -54,11 +51,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -71,11 +64,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 25); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -88,11 +77,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 35); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -105,11 +90,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -122,11 +103,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -139,11 +116,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 65); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -156,11 +129,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 75); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -173,11 +142,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 85); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -190,11 +155,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 95); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -207,11 +168,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.setYRange(0, world.turtles().size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -219,7 +176,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Number", false, true, 0, 50, 0, 50, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   create-turtles number [     set color 5 + (random colors) * 10     if color = turquoise     ;; turquoise (75) is too similar to another color       [ set color magenta ]  ;; so use magenta (125) instead     setxy random-xcor random-ycor   ]   reset-ticks end  to go   if variance [color] of turtles = 0     [ stop ]   ask turtles [     rt random 50     lt random 50     fd 1   ]   birth   death   tick end  ;; turtles hatch between 0 and 4 babies to birth   ask turtles     [ hatch random 5 [ fd 1 ] ] end  ;; if the overall population is greater than the original number, ;; randomly kill turtles to keep population roughly constant to death   let total-turtles count turtles   ask turtles [     if random total-turtles > number       [ die ]   ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":320,"top":10,"right":733,"bottom":424,"dimensions":{"minPxcor":-22,"maxPxcor":22,"minPycor":-22,"maxPycor":22,"patchSize":9,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":114,"top":33,"right":188,"bottom":66,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":28,"top":33,"right":103,"bottom":66,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"2","compiledMax":"10","compiledStep":"1","variable":"colors","left":33,"top":77,"right":181,"bottom":110,"display":"colors","min":"2","max":"10","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1000","compiledStep":"1","variable":"number","left":28,"top":114,"right":189,"bottom":147,"display":"number","min":"1","max":"1000","default":500,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setYRange(0, world.turtles().size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color5')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 5); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"color5","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 5]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color15')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 15); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"color15","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 15]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color25')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 25); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"color25","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 25]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color35')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 35); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"color35","interval":1,"mode":0,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 35]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color45')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 45); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"color45","interval":1,"mode":0,"color":-1184463,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 45]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color55')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 55); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"color55","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 55]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color65')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 65); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"color65","interval":1,"mode":0,"color":-13840069,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 65]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color125')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 75); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"color125","interval":1,"mode":0,"color":-5825686,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 75]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color85')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 85); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"color85","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 85]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color95')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 95); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"color95","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 95]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Turtle Populations","left":4,"top":162,"right":317,"bottom":416,"xAxis":"Time","yAxis":"Number","xmin":0,"xmax":50,"ymin":0,"ymax":50,"autoPlotOn":true,"legendOn":false,"setupCode":"set-plot-y-range 0 count turtles","updateCode":"","pens":[{"display":"color5","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 5]","type":"pen"},{"display":"color15","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 15]","type":"pen"},{"display":"color25","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 25]","type":"pen"},{"display":"color35","interval":1,"mode":0,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 35]","type":"pen"},{"display":"color45","interval":1,"mode":0,"color":-1184463,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 45]","type":"pen"},{"display":"color55","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 55]","type":"pen"},{"display":"color65","interval":1,"mode":0,"color":-13840069,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 65]","type":"pen"},{"display":"color125","interval":1,"mode":0,"color":-5825686,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 75]","type":"pen"},{"display":"color85","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 85]","type":"pen"},{"display":"color95","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 95]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtles().size()","source":"count turtles","left":220,"top":75,"right":306,"bottom":120,"display":"Total Turtles","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["colors", "number"], ["colors", "number"], [], -22, 22, -22, 22, 9, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   create-turtles number [     set color 5 + (random colors) * 10     if color = turquoise     ;; turquoise (75) is too similar to another color       [ set color magenta ]  ;; so use magenta (125) instead     setxy random-xcor random-ycor   ]   reset-ticks end  to go   if variance [color] of turtles = 0     [ stop ]   ask turtles [     rt random 50     lt random 50     fd 1   ]   birth   death   tick end  ;; turtles hatch between 0 and 4 babies to birth   ask turtles     [ hatch random 5 [ fd 1 ] ] end  ;; if the overall population is greater than the original number, ;; randomly kill turtles to keep population roughly constant to death   let total-turtles count turtles   ask turtles [     if random total-turtles > number       [ die ]   ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":320,"top":10,"right":733,"bottom":424,"dimensions":{"minPxcor":-22,"maxPxcor":22,"minPycor":-22,"maxPycor":22,"patchSize":9,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":114,"top":33,"right":188,"bottom":66,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":28,"top":33,"right":103,"bottom":66,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"2","compiledMax":"10","compiledStep":"1","variable":"colors","left":33,"top":77,"right":181,"bottom":110,"display":"colors","min":"2","max":"10","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1000","compiledStep":"1","variable":"number","left":28,"top":114,"right":189,"bottom":147,"display":"number","min":"1","max":"1000","default":500,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setYRange(0, world.turtles().size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color5')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 5); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"color5","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 5]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color15')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 15); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"color15","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 15]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color25')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 25); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"color25","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 25]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color35')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 35); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"color35","interval":1,"mode":0,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 35]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color45')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 45); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"color45","interval":1,"mode":0,"color":-1184463,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 45]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color55')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 55); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"color55","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 55]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color65')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 65); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"color65","interval":1,"mode":0,"color":-13840069,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 65]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color125')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 75); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"color125","interval":1,"mode":0,"color":-5825686,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 75]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color85')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 85); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"color85","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 85]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Turtle Populations', 'color95')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 95); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"color95","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 95]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Turtle Populations","left":4,"top":162,"right":317,"bottom":416,"xAxis":"Time","yAxis":"Number","xmin":0,"xmax":50,"ymin":0,"ymax":50,"autoPlotOn":true,"legendOn":false,"setupCode":"set-plot-y-range 0 count turtles","updateCode":"","pens":[{"display":"color5","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 5]","type":"pen"},{"display":"color15","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 15]","type":"pen"},{"display":"color25","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 25]","type":"pen"},{"display":"color35","interval":1,"mode":0,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 35]","type":"pen"},{"display":"color45","interval":1,"mode":0,"color":-1184463,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 45]","type":"pen"},{"display":"color55","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 55]","type":"pen"},{"display":"color65","interval":1,"mode":0,"color":-13840069,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 65]","type":"pen"},{"display":"color125","interval":1,"mode":0,"color":-5825686,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 75]","type":"pen"},{"display":"color85","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 85]","type":"pen"},{"display":"color95","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = 95]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtles().size()","source":"count turtles","left":220,"top":75,"right":306,"bottom":120,"display":"Total Turtles","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["colors", "number"], ["colors", "number"], [], -22, 22, -22, 22, 9, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -254,11 +211,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -270,7 +223,7 @@ var procedures = (function() {
       if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("color"); })), 0)) {
         throw new Exception.StopInterrupt;
       }
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         SelfManager.self().right(Prims.random(50));
         SelfManager.self().right(-(Prims.random(50)));
         SelfManager.self()._optimalFdOne();
@@ -279,11 +232,7 @@ var procedures = (function() {
       procedures["DEATH"]();
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -292,15 +241,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         SelfManager.self().hatch(Prims.random(5), "").ask(function() { SelfManager.self()._optimalFdOne(); }, true);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["birth"] = temp;
@@ -310,17 +255,13 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let totalTurtles = world.turtles().size(); letVars['totalTurtles'] = totalTurtles;
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal("number"))) {
           SelfManager.self().die();
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["death"] = temp;

@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RED-LINKS", singular: "red-link", varNames: [], isDirected: true }, { name: "BLUE-LINKS", singular: "blue-link", varNames: ["weight"], isDirected: false }])([], [])(';; every link breed must be declared as either directed or undirected directed-link-breed [red-links red-link] undirected-link-breed [blue-links blue-link]  blue-links-own [ weight ]  ;; link breeds can own variables just like turtle breeds  to setup   clear-all   create-ordered-turtles 10 [     fd 5     set color gray   ]   ask n-of 5 turtles [     ;; create-<breed>-with is used to make undirected links     create-blue-link-with one-of other turtles [       set color blue       set weight random 10       set label weight     ]   ]   ;; different breeds can have different default shapes   set-default-shape red-links \"curved link\"   ask n-of 5 turtles [     ;; create-<breed>-to/from are used to make directed links     create-red-link-to one-of other turtles [       set color red     ]   ]   reset-ticks end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":125,"top":10,"right":523,"bottom":409,"dimensions":{"minPxcor":-6,"maxPxcor":6,"minPycor":-6,"maxPycor":6,"patchSize":30,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":12,"top":39,"right":114,"bottom":75,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())([], [], [], -6, 6, -6, 6, 30, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RED-LINKS", singular: "red-link", varNames: [], isDirected: true }, { name: "BLUE-LINKS", singular: "blue-link", varNames: ["weight"], isDirected: false }])([], [])(';; every link breed must be declared as either directed or undirected directed-link-breed [red-links red-link] undirected-link-breed [blue-links blue-link]  blue-links-own [ weight ]  ;; link breeds can own variables just like turtle breeds  to setup   clear-all   create-ordered-turtles 10 [     fd 5     set color gray   ]   ask n-of 5 turtles [     ;; create-<breed>-with is used to make undirected links     create-blue-link-with one-of other turtles [       set color blue       set weight random 10       set label weight     ]   ]   ;; different breeds can have different default shapes   set-default-shape red-links \"curved link\"   ask n-of 5 turtles [     ;; create-<breed>-to/from are used to make directed links     create-red-link-to one-of other turtles [       set color red     ]   ]   reset-ticks end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":125,"top":10,"right":523,"bottom":409,"dimensions":{"minPxcor":-6,"maxPxcor":6,"minPycor":-6,"maxPycor":6,"patchSize":30,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":12,"top":39,"right":114,"bottom":75,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())([], [], [], -6, 6, -6, 6, 30, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -57,7 +58,7 @@ var procedures = (function() {
         SelfManager.self().fd(5);
         SelfManager.self().setVariable("color", 5);
       }, true);
-      ListPrims.nOf(5, world.turtles()).ask(function() {
+      Errors.askNobodyCheck(ListPrims.nOf(5, world.turtles())).ask(function() {
         LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS").ask(function() {
           SelfManager.self().setVariable("color", 105);
           SelfManager.self().setVariable("weight", Prims.random(10));
@@ -65,16 +66,12 @@ var procedures = (function() {
         }, true);
       }, true);
       BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getSpecialName(), "curved link")
-      ListPrims.nOf(5, world.turtles()).ask(function() {
+      Errors.askNobodyCheck(ListPrims.nOf(5, world.turtles())).ask(function() {
         LinkPrims.createLinkTo(ListPrims.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;

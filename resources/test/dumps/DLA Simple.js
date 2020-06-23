@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   ;; start with one green \"seed\" patch at the center of the world   ask patch 0 0 [     set pcolor green   ]   create-turtles num-particles [     set color red     set size 1.5 ;; easier to see     setxy random-xcor random-ycor   ]   reset-ticks end  to go   ask turtles [     ;; turn a random amount right and left     right random wiggle-angle     left random wiggle-angle     forward 1     ;; if you are touching a green patch     if any? neighbors with [ pcolor = green ] [       set pcolor green ;; turn your own patch green       die ;; and then die     ]   ]   tick end   ; Copyright 2006 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":211,"top":10,"right":822,"bottom":622,"dimensions":{"minPxcor":-100,"maxPxcor":100,"minPycor":-100,"maxPycor":100,"patchSize":3,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":39,"top":43,"right":102,"bottom":76,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":110,"top":43,"right":173,"bottom":76,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"wiggle-angle","left":8,"top":89,"right":197,"bottom":122,"display":"wiggle-angle","min":"0","max":"100","default":60,"step":"1","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5000","compiledStep":"1","variable":"num-particles","left":8,"top":130,"right":197,"bottom":163,"display":"num-particles","min":"0","max":"5000","default":2500,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["wiggle-angle", "num-particles"], ["wiggle-angle", "num-particles"], [], -100, 100, -100, 100, 3, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   ;; start with one green \"seed\" patch at the center of the world   ask patch 0 0 [     set pcolor green   ]   create-turtles num-particles [     set color red     set size 1.5 ;; easier to see     setxy random-xcor random-ycor   ]   reset-ticks end  to go   ask turtles [     ;; turn a random amount right and left     right random wiggle-angle     left random wiggle-angle     forward 1     ;; if you are touching a green patch     if any? neighbors with [ pcolor = green ] [       set pcolor green ;; turn your own patch green       die ;; and then die     ]   ]   tick end   ; Copyright 2006 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":211,"top":10,"right":822,"bottom":622,"dimensions":{"minPxcor":-100,"maxPxcor":100,"minPycor":-100,"maxPycor":100,"patchSize":3,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":39,"top":43,"right":102,"bottom":76,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":110,"top":43,"right":173,"bottom":76,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"wiggle-angle","left":8,"top":89,"right":197,"bottom":122,"display":"wiggle-angle","min":"0","max":"100","default":60,"step":"1","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5000","compiledStep":"1","variable":"num-particles","left":8,"top":130,"right":197,"bottom":163,"display":"num-particles","min":"0","max":"5000","default":2500,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["wiggle-angle", "num-particles"], ["wiggle-angle", "num-particles"], [], -100, 100, -100, 100, 3, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -53,7 +54,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.getPatchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+      Errors.askNobodyCheck(world.getPatchAt(0, 0)).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("num-particles"), "").ask(function() {
         SelfManager.self().setVariable("color", 15);
         SelfManager.self().setVariable("size", 1.5);
@@ -61,11 +62,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -74,7 +71,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         SelfManager.self().right(Prims.random(world.observer.getGlobal("wiggle-angle")));
         SelfManager.self().right(-(Prims.random(world.observer.getGlobal("wiggle-angle"))));
         SelfManager.self()._optimalFdOne();
@@ -85,11 +82,7 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;

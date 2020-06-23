@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("light-moths"));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -54,11 +51,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("medium-moths"));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -71,11 +64,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("dark-moths"));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -88,11 +77,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(Prims.div((Prims.div(procedures["UPPER-BOUND"](), 3) * world.observer.getGlobal("darkness")), 8));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -105,11 +90,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.setYRange(0, procedures["UPPER-BOUND"]());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -117,7 +98,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Moth Color Count", true, true, 0, 100, 0, 200, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "MOTHS", singular: "moth", varNames: ["age"] }])([], [])('breed [moths moth] ;; might extend the model with other breeds: birds, bugs, etc.  moths-own [   age               ;; moth\'s age: 0, 1 = young (can\'t reproduce), 2, 3 = mature (can reproduce), > 3 = old (can\'t reproduce) ]  globals [   light-moths       ;; number of moths in the lightest third of possible colors   medium-moths      ;; number of moths in the medium third of possible colors   dark-moths        ;; number of moths in the darkest third of possible colors   darkness          ;; darkness (pollution) level in the world   darkening?        ;; is the world getting darker (more polluted)? ]  ;; reports color value that reflects current pollution level. ;; 1 = black. 9 = white. color = white - darkness. darkness range: 0 - 8. color range: 1 - 9. to-report env-color   report 9 - darkness end  ;; reports numerical color change value that reflects user\'s speed % choice. to-report delta-env   report (speed / 100) end  ;; generates random color integers in black-white range (1-9) to-report random-color   report ((random 9) + 1) end  ;; reports maximum moth population for a given environment to-report upper-bound   report (4 * num-moths) end  to setup   clear-all   setup-world   setup-moths   update-monitors   reset-ticks end  to setup-world   set darkness 0   set darkening? true ;; world starts out clean - can only get polluted   ask patches [ set pcolor env-color ] end  to setup-moths   create-moths num-moths   [     set size 1.5     set color random-color     moths-pick-shape     set age (random 3) ;; start out with random ages     setxy random-xcor random-ycor   ] end  to go   ask moths [     moths-mate     moths-grim-reaper     moths-get-eaten     moths-age   ]   if cycle-pollution? [     cycle-pollution   ]   tick   update-monitors end  ;; asexual reproduction - moths just hatch other moths to moths-mate ;; moth procedure   if (age = 2 or age = 3) [     hatch 2 [       if (random-float 100 < mutation) [     ifelse ((random 2 = 0)) [ ;; flip a coin -- darker or lighter?       set color (round (color + ((random-float mutation) / 12.5)))       if (color >= 9) [         set color 9       ]     ][       set color (round (color - ((random-float mutation) / 12.5 )))       if (color <= 1) or (color >= 130) [  ;; to prevent color from wrapping         set color 1       ]     ]       ]       moths-pick-shape       set age 0       rt random-float 360       fd 1 ;; move away from your parent so you can be seen     ]   ] end  ;; we have a range of \'well-camouflaged-ness\', dependent on the rate of selection to moths-get-eaten ;; moth procedure   if (random-float 1000 < ((selection * (abs (env-color - color))) + 200)) [     die   ] end  ;; disease, children, entomologists, etc... ;; the moth\'s world is a cruel place. to moths-grim-reaper ;; moth procedure   if ((random 13) = 0) [     die   ]    ;; population overshoot / resource scarcity   if ((count moths) > upper-bound) [     if ((random 2) = 0) [       die     ]   ] end  to moths-age ;; moth procedure   set age (age + 1) end   to moths-pick-shape ;; moth procedure   ifelse (color < 5 ) [     set shape \"moth dark\"   ][     set shape \"moth light\"   ] end  to update-monitors   ;; colors range from 1 - 9. dark moths = 1-3. medium moths = 4-6. light moths = 7-9.   set light-moths (count moths with [color >= 7])   set dark-moths (count moths with [color <= 3])   set medium-moths (count moths - (light-moths + dark-moths)) end   ;; single pollution step. called by cycle-pollution. can also be invoked by \"pollute\" button. to pollute-world   ifelse (darkness <= (8 - delta-env)) [ ;; can the environment get more polluted?     set darkness (darkness + delta-env)     ask patches [ set pcolor env-color ]   ][     set darkening? false   ] end  ;; single de-pollution step. called by cycle-pollution. can also be invoked by \"clean up\" button. to clean-up-world   ifelse (darkness >= (0 + delta-env)) [ ;; can the environment get cleaner?     set darkness (darkness - delta-env)     ask patches [ set pcolor env-color ]   ][     set darkening? true   ] end   ;; world dims, then lightens, all in lockstep ;; a monochrome world is best for this, because otherwise it\'d be very ;; difficult to tell what is a moth and what is a patch to cycle-pollution   ifelse (darkening? = true) [     pollute-world   ][     clean-up-world   ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":296,"top":10,"right":634,"bottom":429,"dimensions":{"minPxcor":-16,"maxPxcor":16,"minPycor":-20,"maxPycor":20,"patchSize":10,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":15,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"200","compiledStep":"1","variable":"num-moths","left":4,"top":152,"right":262,"bottom":185,"display":"num-moths","min":"0","max":"200","default":100,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setYRange(0, procedures[\"UPPER-BOUND\"]());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Moth Colors Over Time', 'Light')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"light-moths\"));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"Light","interval":1,"mode":0,"color":-1184463,"inLegend":true,"setupCode":"","updateCode":"plot light-moths","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Moth Colors Over Time', 'Medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"medium-moths\"));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"Medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot medium-moths","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Moth Colors Over Time', 'Dark')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"dark-moths\"));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"Dark","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot dark-moths","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(Prims.div((Prims.div(procedures[\"UPPER-BOUND\"](), 3) * world.observer.getGlobal(\"darkness\")), 8));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"Pollution","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot ((upper-bound / 3) * darkness / 8)","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Moth Colors Over Time","left":642,"top":36,"right":942,"bottom":335,"xAxis":"Time","yAxis":"Moth Color Count","xmin":0,"xmax":100,"ymin":0,"ymax":200,"autoPlotOn":true,"legendOn":true,"setupCode":"set-plot-y-range 0 upper-bound","updateCode":"","pens":[{"display":"Light","interval":1,"mode":0,"color":-1184463,"inLegend":true,"setupCode":"","updateCode":"plot light-moths","type":"pen"},{"display":"Medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot medium-moths","type":"pen"},{"display":"Dark","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot dark-moths","type":"pen"},{"display":"Pollution","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot ((upper-bound / 3) * darkness / 8)","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":4,"top":41,"right":59,"bottom":74,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"light-moths\")","source":"light-moths","left":4,"top":316,"right":86,"bottom":361,"display":"Light Moths","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"dark-moths\")","source":"dark-moths","left":200,"top":316,"right":288,"bottom":361,"display":"Dark Moths","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"medium-moths\")","source":"medium-moths","left":92,"top":316,"right":195,"bottom":361,"display":"Medium Moths","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":65,"top":41,"right":121,"bottom":74,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"mutation","left":4,"top":261,"right":264,"bottom":294,"display":"mutation","min":"0","max":"100","default":15,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"selection","left":4,"top":206,"right":263,"bottom":239,"display":"selection","min":"0","max":"100","default":50,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"((world.observer.getGlobal(\"light-moths\") + world.observer.getGlobal(\"medium-moths\")) + world.observer.getGlobal(\"dark-moths\"))","source":"light-moths + medium-moths + dark-moths","left":4,"top":378,"right":85,"bottom":423,"display":"Total Moths","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_46 = procedures[\"POLLUTE-WORLD\"]();   if (_maybestop_33_46 instanceof Exception.StopInterrupt) { return _maybestop_33_46; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"pollute-world","left":4,"top":91,"right":59,"bottom":124,"display":"pollute","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_47 = procedures[\"CLEAN-UP-WORLD\"]();   if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"clean-up-world","left":65,"top":91,"right":132,"bottom":124,"display":"clean up","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"Prims.div((100 * world.observer.getGlobal(\"darkness\")), 8)","source":"100 * darkness / 8","left":92,"top":378,"right":194,"bottom":423,"display":"Pollution (%)","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"speed","left":144,"top":91,"right":277,"bottom":124,"display":"speed","min":"1","max":"100","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"cycle-pollution?","left":127,"top":41,"right":278,"bottom":74,"display":"cycle-pollution?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["num-moths", "mutation", "selection", "speed", "cycle-pollution?", "light-moths", "medium-moths", "dark-moths", "darkness", "darkening?"], ["num-moths", "mutation", "selection", "speed", "cycle-pollution?"], [], -16, 16, -20, 20, 10, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "MOTHS", singular: "moth", varNames: ["age"] }])([], [])('breed [moths moth] ;; might extend the model with other breeds: birds, bugs, etc.  moths-own [   age               ;; moth\'s age: 0, 1 = young (can\'t reproduce), 2, 3 = mature (can reproduce), > 3 = old (can\'t reproduce) ]  globals [   light-moths       ;; number of moths in the lightest third of possible colors   medium-moths      ;; number of moths in the medium third of possible colors   dark-moths        ;; number of moths in the darkest third of possible colors   darkness          ;; darkness (pollution) level in the world   darkening?        ;; is the world getting darker (more polluted)? ]  ;; reports color value that reflects current pollution level. ;; 1 = black. 9 = white. color = white - darkness. darkness range: 0 - 8. color range: 1 - 9. to-report env-color   report 9 - darkness end  ;; reports numerical color change value that reflects user\'s speed % choice. to-report delta-env   report (speed / 100) end  ;; generates random color integers in black-white range (1-9) to-report random-color   report ((random 9) + 1) end  ;; reports maximum moth population for a given environment to-report upper-bound   report (4 * num-moths) end  to setup   clear-all   setup-world   setup-moths   update-monitors   reset-ticks end  to setup-world   set darkness 0   set darkening? true ;; world starts out clean - can only get polluted   ask patches [ set pcolor env-color ] end  to setup-moths   create-moths num-moths   [     set size 1.5     set color random-color     moths-pick-shape     set age (random 3) ;; start out with random ages     setxy random-xcor random-ycor   ] end  to go   ask moths [     moths-mate     moths-grim-reaper     moths-get-eaten     moths-age   ]   if cycle-pollution? [     cycle-pollution   ]   tick   update-monitors end  ;; asexual reproduction - moths just hatch other moths to moths-mate ;; moth procedure   if (age = 2 or age = 3) [     hatch 2 [       if (random-float 100 < mutation) [     ifelse ((random 2 = 0)) [ ;; flip a coin -- darker or lighter?       set color (round (color + ((random-float mutation) / 12.5)))       if (color >= 9) [         set color 9       ]     ][       set color (round (color - ((random-float mutation) / 12.5 )))       if (color <= 1) or (color >= 130) [  ;; to prevent color from wrapping         set color 1       ]     ]       ]       moths-pick-shape       set age 0       rt random-float 360       fd 1 ;; move away from your parent so you can be seen     ]   ] end  ;; we have a range of \'well-camouflaged-ness\', dependent on the rate of selection to moths-get-eaten ;; moth procedure   if (random-float 1000 < ((selection * (abs (env-color - color))) + 200)) [     die   ] end  ;; disease, children, entomologists, etc... ;; the moth\'s world is a cruel place. to moths-grim-reaper ;; moth procedure   if ((random 13) = 0) [     die   ]    ;; population overshoot / resource scarcity   if ((count moths) > upper-bound) [     if ((random 2) = 0) [       die     ]   ] end  to moths-age ;; moth procedure   set age (age + 1) end   to moths-pick-shape ;; moth procedure   ifelse (color < 5 ) [     set shape \"moth dark\"   ][     set shape \"moth light\"   ] end  to update-monitors   ;; colors range from 1 - 9. dark moths = 1-3. medium moths = 4-6. light moths = 7-9.   set light-moths (count moths with [color >= 7])   set dark-moths (count moths with [color <= 3])   set medium-moths (count moths - (light-moths + dark-moths)) end   ;; single pollution step. called by cycle-pollution. can also be invoked by \"pollute\" button. to pollute-world   ifelse (darkness <= (8 - delta-env)) [ ;; can the environment get more polluted?     set darkness (darkness + delta-env)     ask patches [ set pcolor env-color ]   ][     set darkening? false   ] end  ;; single de-pollution step. called by cycle-pollution. can also be invoked by \"clean up\" button. to clean-up-world   ifelse (darkness >= (0 + delta-env)) [ ;; can the environment get cleaner?     set darkness (darkness - delta-env)     ask patches [ set pcolor env-color ]   ][     set darkening? true   ] end   ;; world dims, then lightens, all in lockstep ;; a monochrome world is best for this, because otherwise it\'d be very ;; difficult to tell what is a moth and what is a patch to cycle-pollution   ifelse (darkening? = true) [     pollute-world   ][     clean-up-world   ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":296,"top":10,"right":634,"bottom":429,"dimensions":{"minPxcor":-16,"maxPxcor":16,"minPycor":-20,"maxPycor":20,"patchSize":10,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":15,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"200","compiledStep":"1","variable":"num-moths","left":4,"top":152,"right":262,"bottom":185,"display":"num-moths","min":"0","max":"200","default":100,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setYRange(0, procedures[\"UPPER-BOUND\"]());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Moth Colors Over Time', 'Light')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"light-moths\"));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"Light","interval":1,"mode":0,"color":-1184463,"inLegend":true,"setupCode":"","updateCode":"plot light-moths","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Moth Colors Over Time', 'Medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"medium-moths\"));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"Medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot medium-moths","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Moth Colors Over Time', 'Dark')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"dark-moths\"));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"Dark","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot dark-moths","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(Prims.div((Prims.div(procedures[\"UPPER-BOUND\"](), 3) * world.observer.getGlobal(\"darkness\")), 8));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"Pollution","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot ((upper-bound / 3) * darkness / 8)","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Moth Colors Over Time","left":642,"top":36,"right":942,"bottom":335,"xAxis":"Time","yAxis":"Moth Color Count","xmin":0,"xmax":100,"ymin":0,"ymax":200,"autoPlotOn":true,"legendOn":true,"setupCode":"set-plot-y-range 0 upper-bound","updateCode":"","pens":[{"display":"Light","interval":1,"mode":0,"color":-1184463,"inLegend":true,"setupCode":"","updateCode":"plot light-moths","type":"pen"},{"display":"Medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot medium-moths","type":"pen"},{"display":"Dark","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot dark-moths","type":"pen"},{"display":"Pollution","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot ((upper-bound / 3) * darkness / 8)","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":4,"top":41,"right":59,"bottom":74,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"light-moths\")","source":"light-moths","left":4,"top":316,"right":86,"bottom":361,"display":"Light Moths","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"dark-moths\")","source":"dark-moths","left":200,"top":316,"right":288,"bottom":361,"display":"Dark Moths","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"medium-moths\")","source":"medium-moths","left":92,"top":316,"right":195,"bottom":361,"display":"Medium Moths","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":65,"top":41,"right":121,"bottom":74,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"mutation","left":4,"top":261,"right":264,"bottom":294,"display":"mutation","min":"0","max":"100","default":15,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"selection","left":4,"top":206,"right":263,"bottom":239,"display":"selection","min":"0","max":"100","default":50,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"((world.observer.getGlobal(\"light-moths\") + world.observer.getGlobal(\"medium-moths\")) + world.observer.getGlobal(\"dark-moths\"))","source":"light-moths + medium-moths + dark-moths","left":4,"top":378,"right":85,"bottom":423,"display":"Total Moths","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_46 = procedures[\"POLLUTE-WORLD\"]();   if (_maybestop_33_46 instanceof Exception.StopInterrupt) { return _maybestop_33_46; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"pollute-world","left":4,"top":91,"right":59,"bottom":124,"display":"pollute","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_47 = procedures[\"CLEAN-UP-WORLD\"]();   if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"clean-up-world","left":65,"top":91,"right":132,"bottom":124,"display":"clean up","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"Prims.div((100 * world.observer.getGlobal(\"darkness\")), 8)","source":"100 * darkness / 8","left":92,"top":378,"right":194,"bottom":423,"display":"Pollution (%)","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"speed","left":144,"top":91,"right":277,"bottom":124,"display":"speed","min":"1","max":"100","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"cycle-pollution?","left":127,"top":41,"right":278,"bottom":74,"display":"cycle-pollution?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["num-moths", "mutation", "selection", "speed", "cycle-pollution?", "light-moths", "medium-moths", "dark-moths", "darkness", "darkening?"], ["num-moths", "mutation", "selection", "speed", "cycle-pollution?"], [], -16, 16, -20, 20, 10, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -142,16 +123,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return (9 - world.observer.getGlobal("darkness"))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return (9 - world.observer.getGlobal("darkness"));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["envColor"] = temp;
@@ -160,16 +136,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return Prims.div(world.observer.getGlobal("speed"), 100)
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return Prims.div(world.observer.getGlobal("speed"), 100);
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["deltaEnv"] = temp;
@@ -178,16 +149,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return (Prims.random(9) + 1)
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return (Prims.random(9) + 1);
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["randomColor"] = temp;
@@ -196,16 +162,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return (4 * world.observer.getGlobal("num-moths"))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return (4 * world.observer.getGlobal("num-moths"));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["upperBound"] = temp;
@@ -220,11 +181,7 @@ var procedures = (function() {
       procedures["UPDATE-MONITORS"]();
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -235,13 +192,9 @@ var procedures = (function() {
       var letVars = { };
       world.observer.setGlobal("darkness", 0);
       world.observer.setGlobal("darkening?", true);
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupWorld"] = temp;
@@ -258,11 +211,7 @@ var procedures = (function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupMoths"] = temp;
@@ -271,7 +220,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("MOTHS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("MOTHS")).ask(function() {
         procedures["MOTHS-MATE"]();
         procedures["MOTHS-GRIM-REAPER"]();
         procedures["MOTHS-GET-EATEN"]();
@@ -283,11 +232,7 @@ var procedures = (function() {
       world.ticker.tick();
       procedures["UPDATE-MONITORS"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -319,11 +264,7 @@ var procedures = (function() {
         }, true);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["mothsMate"] = temp;
@@ -336,11 +277,7 @@ var procedures = (function() {
         SelfManager.self().die();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["mothsGetEaten"] = temp;
@@ -358,11 +295,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["mothsGrimReaper"] = temp;
@@ -373,11 +306,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["mothsAge"] = temp;
@@ -393,11 +322,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("shape", "moth light");
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["mothsPickShape"] = temp;
@@ -410,11 +335,7 @@ var procedures = (function() {
       world.observer.setGlobal("dark-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("color"), 3); }).size());
       world.observer.setGlobal("medium-moths", (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal("light-moths") + world.observer.getGlobal("dark-moths"))));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["updateMonitors"] = temp;
@@ -425,17 +346,13 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.lte(world.observer.getGlobal("darkness"), (8 - procedures["DELTA-ENV"]()))) {
         world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") + procedures["DELTA-ENV"]()));
-        world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
+        Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
       }
       else {
         world.observer.setGlobal("darkening?", false);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["polluteWorld"] = temp;
@@ -446,17 +363,13 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.gte(world.observer.getGlobal("darkness"), (0 + procedures["DELTA-ENV"]()))) {
         world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") - procedures["DELTA-ENV"]()));
-        world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
+        Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
       }
       else {
         world.observer.setGlobal("darkening?", true);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["cleanUpWorld"] = temp;
@@ -472,11 +385,7 @@ var procedures = (function() {
         procedures["CLEAN-UP-WORLD"]();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["cyclePollution"] = temp;

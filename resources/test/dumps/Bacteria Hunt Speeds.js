@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -44,18 +45,12 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.clearPlot();
           var _foreach_153_160 = Tasks.forEach(Tasks.commandTask(function(thisVariation) {
-            if (arguments.length < 1) {
-              throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-            }
+            Errors.procedureArgumentsCheck(1, arguments.length);
             plotManager.setCurrentPen((workspace.dump('') + workspace.dump(thisVariation) + workspace.dump(" ")));
             plotManager.plotPoint(thisVariation, world.turtleManager.turtlesOfBreed("BACTERIA").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("variation"), thisVariation); }).size());
           }, "[ this-variation -> set-current-plot-pen word this-variation \" \" plotxy this-variation count bacteria with [ variation = this-variation ] ]"), [1, 2, 3, 4, 5, 6]); if(reporterContext && _foreach_153_160 !== undefined) { return _foreach_153_160; }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -74,11 +69,7 @@ modelConfig.plots = [(function() {
             plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.turtleManager.turtlesOfBreed("BACTERIA").projectionBy(function() { return SelfManager.self().getVariable("variation"); })));
           }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -87,7 +78,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "# of flagella", false, true, 0, 1000, 1, 6, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "REMOVAL-SPOTS", singular: "removal-spot", varNames: ["countdown"] }, { name: "BACTERIA", singular: "bacterium", varNames: ["variation"] }, { name: "FLAGELLA", singular: "flagellum", varNames: [] }, { name: "PREDATORS", singular: "predator", varNames: [] }, { name: "CONNECTORS", singular: "connector", varNames: [], isDirected: true }])([], [])('breed [removal-spots removal-spot] breed [bacteria  bacterium] breed [flagella  flagellum] breed [predators predator]  directed-link-breed [connectors connector]  bacteria-own [variation] removal-spots-own [countdown]  globals [   bacteria-caught           ;;  count of total bacteria caught   wiggle?                   ;;  boolean for whether the bacteria wiggle back and forth randomly as they move   camouflage?               ;;  boolean that keeps track of whether the predator (mouse cursor) is visible to the bacteria   tick-counter              ;;  counter to keep track of how long the predator (mouse cursor) has remained stationary   predator-location         ;;  patch where the predator (the player) has placed the mouse cursor   speed-scalar              ;;  scales the speed of all bacteria movement   predator-color-visible    ;;  color of predator when bacteria can detect it   predator-color-invisible  ;;  color of predator when bacteria can not detect it   bacteria-default-color    ;;  color of bacteria when color is not used in visualize-variation setting   flagella-size             ;;  size of the flagella ]  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;  Setup Procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to setup   clear-all    set predator-color-visible   [255 0 0 100]   set predator-color-invisible [200 200 200 100]   set bacteria-default-color   [100 100 100 200]    set-default-shape bacteria \"bacteria\"   set-default-shape flagella \"flagella\"   set-default-shape removal-spots \"x\"    set bacteria-caught 0   set speed-scalar 0.04   set flagella-size 1.2   set wiggle? true   set camouflage? true   ask patches [ set pcolor white ]    setup-bacteria   setup-predator   reset-ticks end  to setup-bacteria   foreach [1 2 3 4 5 6] [ this-variation ->     create-bacteria initial-bacteria-per-variation [       set label-color black       set size 1       set variation this-variation       make-flagella       setxy random-xcor random-ycor     ]   ]   visualize-bacteria end  to setup-predator   create-predators 1 [     set shape \"circle\"     set color predator-color-visible     set size 1     set heading 315     bk 1     hide-turtle   ] end  to make-flagella ;; bacteria procedure   let flagella-shape word \"flagella-\" variation   hatch 1 [     set breed flagella     set color bacteria-default-color     set label \"\"     set shape flagella-shape     bk 0.4     set size flagella-size     create-connector-from myself [       set hidden? true       tie     ]   ] end  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;  Runtime Procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to go   check-caught   move-predator   move-bacteria   ask flagella [ move-flagella ]   visualize-bacteria   visualize-removal-spots   tick end  to death   ;; mark where a bacterium was caught and then remove the bacterium and its attached flagella   set bacteria-caught bacteria-caught + 1   make-a-removal-spot   ask out-link-neighbors [die]   die end  to make-a-removal-spot   hatch 1 [     set breed removal-spots     set size 1.5     set countdown 30   ] end  to move-bacteria   ask bacteria [     if wiggle? [ right (random-float 25 - random-float 25) ]     fd variation * speed-scalar     let predators-in-front-of-me predators in-cone 2 120     if not camouflage? and any? predators-in-front-of-me [       face one-of predators-in-front-of-me       right 180     ]   ] end  to move-predator   ifelse patch mouse-xcor mouse-ycor = predator-location     [ set tick-counter tick-counter + 1 ]     [ set predator-location patch mouse-xcor mouse-ycor set tick-counter 0 ]   ask predators [     ifelse tick-counter < 100       [ set camouflage? false set color predator-color-visible ]       [ set camouflage? true set color predator-color-invisible ]     setxy mouse-xcor mouse-ycor     ;; only show the predator if the mouse pointer is actually inside the view     set predator-location patch xcor ycor     set hidden? not mouse-inside?   ] end  to move-flagella   let flagella-swing 15 ;; magnitude of angle that the flagella swing back and forth   let flagella-speed 60 ;; speed of flagella swinging back and forth   let new-swing flagella-swing * sin (flagella-speed * ticks)   let my-bacteria one-of in-link-neighbors   set heading [ heading ] of my-bacteria + new-swing end  to check-caught   if not mouse-down? or not mouse-inside? [ stop ]   let prey [bacteria in-radius (size / 2)] of one-of predators   if not any? prey [ stop ] ;; no prey here? oh well   ask one-of prey [ death ] ;; eat only one of the bacteria at the mouse location   ;; replace the bacterium that was eating with a offspring selected from a random parent remaining in the remaining population   ask one-of bacteria [ hatch 1 [ rt random 360 make-flagella ] ] end  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;visualization procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to visualize-bacteria   ask bacteria [     ifelse visualize-variation = \"# flagella as label\"       [ set label word variation \"     \" ]       [ set label \"\" ]     ifelse member? visualize-variation [\"flagella and color\" \"as color only\"]       [ set color item (variation - 1) [violet blue green brown orange red] ]       [ set color bacteria-default-color ]   ]   ask flagella [     set hidden? member? visualize-variation [\"as color only\" \"# flagella as label\" \"none\"]   ] end  to visualize-removal-spots   ask removal-spots [     set countdown countdown - 1     set color lput (countdown * 4) [0 100 0]  ;; sets the transparency of this spot to progressivley more transparent as countdown decreases     if countdown <= 0 [die]   ] end   ; Copyright 2015 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":280,"top":10,"right":752,"bottom":483,"dimensions":{"minPxcor":-14,"maxPxcor":14,"minPycor":-14,"maxPycor":14,"patchSize":16,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":10,"top":10,"right":135,"bottom":43,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":145,"top":10,"right":270,"bottom":43,"display":"go/pause","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('# of bacteria for each variation', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.clearPlot();         var _foreach_153_160 = Tasks.forEach(Tasks.commandTask(function(thisVariation) {           if (arguments.length < 1) {             throw new Error(\"anonymous procedure expected 1 input, but only got \" + arguments.length);           }           plotManager.setCurrentPen((workspace.dump('') + workspace.dump(thisVariation) + workspace.dump(\" \")));           plotManager.plotPoint(thisVariation, world.turtleManager.turtlesOfBreed(\"BACTERIA\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"variation\"), thisVariation); }).size());         }, \"[ this-variation -> set-current-plot-pen word this-variation \\\" \\\" plotxy this-variation count bacteria with [ variation = this-variation ] ]\"), [1, 2, 3, 4, 5, 6]); if(reporterContext && _foreach_153_160 !== undefined) { return _foreach_153_160; }       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"1 ","interval":1,"mode":1,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"2 ","interval":1,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"3 ","interval":1,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"4 ","interval":1,"mode":1,"color":-3355648,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"5 ","interval":1,"mode":1,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"6 ","interval":1,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"# of bacteria for each variation","left":10,"top":350,"right":270,"bottom":505,"xAxis":"# of flagella","yAxis":"# of bacteria","xmin":0,"xmax":8,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":";; the HISTOGRAM primitive can't make a multi-colored histogram, ;; so instead we plot each bar individually clear-plot foreach [1 2 3 4 5 6] [ this-variation ->   set-current-plot-pen word this-variation  \" \"   plotxy this-variation count bacteria with [variation = this-variation] ]","pens":[{"display":"1 ","interval":1,"mode":1,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"2 ","interval":1,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"3 ","interval":1,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"4 ","interval":1,"mode":1,"color":-3355648,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"5 ","interval":1,"mode":1,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"6 ","interval":1,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Avg. # of flagella per bacteria', 'pen 1')(function() {       try {         var reporterContext = false;         var letVars = { };         if (!world.turtleManager.turtlesOfBreed(\"BACTERIA\").isEmpty()) {           plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.turtleManager.turtlesOfBreed(\"BACTERIA\").projectionBy(function() { return SelfManager.self().getVariable(\"variation\"); })));         }       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"pen 1","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if any? bacteria [plotxy ticks mean [variation] of bacteria ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Avg. # of flagella per bacteria","left":10,"top":190,"right":270,"bottom":345,"xAxis":"time","yAxis":"# of flagella","xmin":0,"xmax":1000,"ymin":1,"ymax":6,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"pen 1","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if any? bacteria [plotxy ticks mean [variation] of bacteria ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"1","variable":"initial-bacteria-per-variation","left":10,"top":50,"right":270,"bottom":83,"display":"initial-bacteria-per-variation","min":"1","max":"10","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"visualize-variation","left":10,"top":85,"right":270,"bottom":130,"display":"visualize-variation","choices":["flagella and color","flagella only","as color only","# flagella as label","none"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"BACTERIA\").size()","source":"count bacteria","left":10,"top":140,"right":135,"bottom":185,"display":"# alive","precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"bacteria-caught\")","source":"bacteria-caught","left":145,"top":140,"right":270,"bottom":185,"display":"# caught","precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["initial-bacteria-per-variation", "visualize-variation", "bacteria-caught", "wiggle?", "camouflage?", "tick-counter", "predator-location", "speed-scalar", "predator-color-visible", "predator-color-invisible", "bacteria-default-color", "flagella-size"], ["initial-bacteria-per-variation", "visualize-variation"], [], -14, 14, -14, 14, 16, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "REMOVAL-SPOTS", singular: "removal-spot", varNames: ["countdown"] }, { name: "BACTERIA", singular: "bacterium", varNames: ["variation"] }, { name: "FLAGELLA", singular: "flagellum", varNames: [] }, { name: "PREDATORS", singular: "predator", varNames: [] }, { name: "CONNECTORS", singular: "connector", varNames: [], isDirected: true }])([], [])('breed [removal-spots removal-spot] breed [bacteria  bacterium] breed [flagella  flagellum] breed [predators predator]  directed-link-breed [connectors connector]  bacteria-own [variation] removal-spots-own [countdown]  globals [   bacteria-caught           ;;  count of total bacteria caught   wiggle?                   ;;  boolean for whether the bacteria wiggle back and forth randomly as they move   camouflage?               ;;  boolean that keeps track of whether the predator (mouse cursor) is visible to the bacteria   tick-counter              ;;  counter to keep track of how long the predator (mouse cursor) has remained stationary   predator-location         ;;  patch where the predator (the player) has placed the mouse cursor   speed-scalar              ;;  scales the speed of all bacteria movement   predator-color-visible    ;;  color of predator when bacteria can detect it   predator-color-invisible  ;;  color of predator when bacteria can not detect it   bacteria-default-color    ;;  color of bacteria when color is not used in visualize-variation setting   flagella-size             ;;  size of the flagella ]  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;  Setup Procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to setup   clear-all    set predator-color-visible   [255 0 0 100]   set predator-color-invisible [200 200 200 100]   set bacteria-default-color   [100 100 100 200]    set-default-shape bacteria \"bacteria\"   set-default-shape flagella \"flagella\"   set-default-shape removal-spots \"x\"    set bacteria-caught 0   set speed-scalar 0.04   set flagella-size 1.2   set wiggle? true   set camouflage? true   ask patches [ set pcolor white ]    setup-bacteria   setup-predator   reset-ticks end  to setup-bacteria   foreach [1 2 3 4 5 6] [ this-variation ->     create-bacteria initial-bacteria-per-variation [       set label-color black       set size 1       set variation this-variation       make-flagella       setxy random-xcor random-ycor     ]   ]   visualize-bacteria end  to setup-predator   create-predators 1 [     set shape \"circle\"     set color predator-color-visible     set size 1     set heading 315     bk 1     hide-turtle   ] end  to make-flagella ;; bacteria procedure   let flagella-shape word \"flagella-\" variation   hatch 1 [     set breed flagella     set color bacteria-default-color     set label \"\"     set shape flagella-shape     bk 0.4     set size flagella-size     create-connector-from myself [       set hidden? true       tie     ]   ] end  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;  Runtime Procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to go   check-caught   move-predator   move-bacteria   ask flagella [ move-flagella ]   visualize-bacteria   visualize-removal-spots   tick end  to death   ;; mark where a bacterium was caught and then remove the bacterium and its attached flagella   set bacteria-caught bacteria-caught + 1   make-a-removal-spot   ask out-link-neighbors [die]   die end  to make-a-removal-spot   hatch 1 [     set breed removal-spots     set size 1.5     set countdown 30   ] end  to move-bacteria   ask bacteria [     if wiggle? [ right (random-float 25 - random-float 25) ]     fd variation * speed-scalar     let predators-in-front-of-me predators in-cone 2 120     if not camouflage? and any? predators-in-front-of-me [       face one-of predators-in-front-of-me       right 180     ]   ] end  to move-predator   ifelse patch mouse-xcor mouse-ycor = predator-location     [ set tick-counter tick-counter + 1 ]     [ set predator-location patch mouse-xcor mouse-ycor set tick-counter 0 ]   ask predators [     ifelse tick-counter < 100       [ set camouflage? false set color predator-color-visible ]       [ set camouflage? true set color predator-color-invisible ]     setxy mouse-xcor mouse-ycor     ;; only show the predator if the mouse pointer is actually inside the view     set predator-location patch xcor ycor     set hidden? not mouse-inside?   ] end  to move-flagella   let flagella-swing 15 ;; magnitude of angle that the flagella swing back and forth   let flagella-speed 60 ;; speed of flagella swinging back and forth   let new-swing flagella-swing * sin (flagella-speed * ticks)   let my-bacteria one-of in-link-neighbors   set heading [ heading ] of my-bacteria + new-swing end  to check-caught   if not mouse-down? or not mouse-inside? [ stop ]   let prey [bacteria in-radius (size / 2)] of one-of predators   if not any? prey [ stop ] ;; no prey here? oh well   ask one-of prey [ death ] ;; eat only one of the bacteria at the mouse location   ;; replace the bacterium that was eating with a offspring selected from a random parent remaining in the remaining population   ask one-of bacteria [ hatch 1 [ rt random 360 make-flagella ] ] end  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;visualization procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to visualize-bacteria   ask bacteria [     ifelse visualize-variation = \"# flagella as label\"       [ set label word variation \"     \" ]       [ set label \"\" ]     ifelse member? visualize-variation [\"flagella and color\" \"as color only\"]       [ set color item (variation - 1) [violet blue green brown orange red] ]       [ set color bacteria-default-color ]   ]   ask flagella [     set hidden? member? visualize-variation [\"as color only\" \"# flagella as label\" \"none\"]   ] end  to visualize-removal-spots   ask removal-spots [     set countdown countdown - 1     set color lput (countdown * 4) [0 100 0]  ;; sets the transparency of this spot to progressivley more transparent as countdown decreases     if countdown <= 0 [die]   ] end   ; Copyright 2015 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":280,"top":10,"right":752,"bottom":483,"dimensions":{"minPxcor":-14,"maxPxcor":14,"minPycor":-14,"maxPycor":14,"patchSize":16,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":10,"top":10,"right":135,"bottom":43,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":145,"top":10,"right":270,"bottom":43,"display":"go/pause","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('# of bacteria for each variation', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.clearPlot();         var _foreach_153_160 = Tasks.forEach(Tasks.commandTask(function(thisVariation) {           Errors.procedureArgumentsCheck(1, arguments.length);           plotManager.setCurrentPen((workspace.dump('') + workspace.dump(thisVariation) + workspace.dump(\" \")));           plotManager.plotPoint(thisVariation, world.turtleManager.turtlesOfBreed(\"BACTERIA\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"variation\"), thisVariation); }).size());         }, \"[ this-variation -> set-current-plot-pen word this-variation \\\" \\\" plotxy this-variation count bacteria with [ variation = this-variation ] ]\"), [1, 2, 3, 4, 5, 6]); if(reporterContext && _foreach_153_160 !== undefined) { return _foreach_153_160; }       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"1 ","interval":1,"mode":1,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"2 ","interval":1,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"3 ","interval":1,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"4 ","interval":1,"mode":1,"color":-3355648,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"5 ","interval":1,"mode":1,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"6 ","interval":1,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"# of bacteria for each variation","left":10,"top":350,"right":270,"bottom":505,"xAxis":"# of flagella","yAxis":"# of bacteria","xmin":0,"xmax":8,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":";; the HISTOGRAM primitive can't make a multi-colored histogram, ;; so instead we plot each bar individually clear-plot foreach [1 2 3 4 5 6] [ this-variation ->   set-current-plot-pen word this-variation  \" \"   plotxy this-variation count bacteria with [variation = this-variation] ]","pens":[{"display":"1 ","interval":1,"mode":1,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"2 ","interval":1,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"3 ","interval":1,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"4 ","interval":1,"mode":1,"color":-3355648,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"5 ","interval":1,"mode":1,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"6 ","interval":1,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Avg. # of flagella per bacteria', 'pen 1')(function() {       try {         var reporterContext = false;         var letVars = { };         if (!world.turtleManager.turtlesOfBreed(\"BACTERIA\").isEmpty()) {           plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.turtleManager.turtlesOfBreed(\"BACTERIA\").projectionBy(function() { return SelfManager.self().getVariable(\"variation\"); })));         }       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"pen 1","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if any? bacteria [plotxy ticks mean [variation] of bacteria ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Avg. # of flagella per bacteria","left":10,"top":190,"right":270,"bottom":345,"xAxis":"time","yAxis":"# of flagella","xmin":0,"xmax":1000,"ymin":1,"ymax":6,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"pen 1","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if any? bacteria [plotxy ticks mean [variation] of bacteria ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"1","variable":"initial-bacteria-per-variation","left":10,"top":50,"right":270,"bottom":83,"display":"initial-bacteria-per-variation","min":"1","max":"10","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"visualize-variation","left":10,"top":85,"right":270,"bottom":130,"display":"visualize-variation","choices":["flagella and color","flagella only","as color only","# flagella as label","none"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"BACTERIA\").size()","source":"count bacteria","left":10,"top":140,"right":135,"bottom":185,"display":"# alive","precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"bacteria-caught\")","source":"bacteria-caught","left":145,"top":140,"right":270,"bottom":185,"display":"# caught","precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["initial-bacteria-per-variation", "visualize-variation", "bacteria-caught", "wiggle?", "camouflage?", "tick-counter", "predator-location", "speed-scalar", "predator-color-visible", "predator-color-invisible", "bacteria-default-color", "flagella-size"], ["initial-bacteria-per-variation", "visualize-variation"], [], -14, 14, -14, 14, 16, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -124,16 +115,12 @@ var procedures = (function() {
       world.observer.setGlobal("flagella-size", 1.2);
       world.observer.setGlobal("wiggle?", true);
       world.observer.setGlobal("camouflage?", true);
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       procedures["SETUP-BACTERIA"]();
       procedures["SETUP-PREDATOR"]();
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -143,9 +130,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       var _foreach_1880_1887 = Tasks.forEach(Tasks.commandTask(function(thisVariation) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         world.turtleManager.createTurtles(world.observer.getGlobal("initial-bacteria-per-variation"), "BACTERIA").ask(function() {
           SelfManager.self().setVariable("label-color", 0);
           SelfManager.self().setVariable("size", 1);
@@ -156,11 +141,7 @@ var procedures = (function() {
       }, "[ this-variation -> create-bacteria initial-bacteria-per-variation [ set label-color black set size 1 set variation this-variation make-flagella setxy random-xcor random-ycor ] ]"), [1, 2, 3, 4, 5, 6]); if(reporterContext && _foreach_1880_1887 !== undefined) { return _foreach_1880_1887; }
       procedures["VISUALIZE-BACTERIA"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupBacteria"] = temp;
@@ -178,11 +159,7 @@ var procedures = (function() {
         SelfManager.self().hideTurtle(true);;
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupPredator"] = temp;
@@ -205,11 +182,7 @@ var procedures = (function() {
         }, true);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["makeFlagella"] = temp;
@@ -221,16 +194,12 @@ var procedures = (function() {
       procedures["CHECK-CAUGHT"]();
       procedures["MOVE-PREDATOR"]();
       procedures["MOVE-BACTERIA"]();
-      world.turtleManager.turtlesOfBreed("FLAGELLA").ask(function() { procedures["MOVE-FLAGELLA"](); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FLAGELLA")).ask(function() { procedures["MOVE-FLAGELLA"](); }, true);
       procedures["VISUALIZE-BACTERIA"]();
       procedures["VISUALIZE-REMOVAL-SPOTS"]();
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -241,14 +210,10 @@ var procedures = (function() {
       var letVars = { };
       world.observer.setGlobal("bacteria-caught", (world.observer.getGlobal("bacteria-caught") + 1));
       procedures["MAKE-A-REMOVAL-SPOT"]();
-      LinkPrims.outLinkNeighbors("LINKS").ask(function() { SelfManager.self().die(); }, true);
+      Errors.askNobodyCheck(LinkPrims.outLinkNeighbors("LINKS")).ask(function() { SelfManager.self().die(); }, true);
       SelfManager.self().die();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["death"] = temp;
@@ -263,11 +228,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("countdown", 30);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["makeARemovalSpot"] = temp;
@@ -276,7 +237,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("BACTERIA").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BACTERIA")).ask(function() {
         if (world.observer.getGlobal("wiggle?")) {
           SelfManager.self().right((Prims.randomFloat(25) - Prims.randomFloat(25)));
         }
@@ -288,11 +249,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["moveBacteria"] = temp;
@@ -308,7 +265,7 @@ var procedures = (function() {
         world.observer.setGlobal("predator-location", world.getPatchAt(MousePrims.getX(), MousePrims.getY()));
         world.observer.setGlobal("tick-counter", 0);
       }
-      world.turtleManager.turtlesOfBreed("PREDATORS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PREDATORS")).ask(function() {
         if (Prims.lt(world.observer.getGlobal("tick-counter"), 100)) {
           world.observer.setGlobal("camouflage?", false);
           SelfManager.self().setVariable("color", world.observer.getGlobal("predator-color-visible"));
@@ -322,11 +279,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("hidden?", !MousePrims.isInside());
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["movePredator"] = temp;
@@ -341,11 +294,7 @@ var procedures = (function() {
       let myBacteria = ListPrims.oneOf(LinkPrims.inLinkNeighbors("LINKS")); letVars['myBacteria'] = myBacteria;
       SelfManager.self().setVariable("heading", (myBacteria.projectionBy(function() { return SelfManager.self().getVariable("heading"); }) + newSwing));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["moveFlagella"] = temp;
@@ -363,19 +312,15 @@ var procedures = (function() {
       if (!!prey.isEmpty()) {
         throw new Exception.StopInterrupt;
       }
-      ListPrims.oneOf(prey).ask(function() { procedures["DEATH"](); }, true);
-      ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BACTERIA")).ask(function() {
+      Errors.askNobodyCheck(ListPrims.oneOf(prey)).ask(function() { procedures["DEATH"](); }, true);
+      Errors.askNobodyCheck(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BACTERIA"))).ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().right(Prims.random(360));
           procedures["MAKE-FLAGELLA"]();
         }, true);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["checkCaught"] = temp;
@@ -384,7 +329,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("BACTERIA").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BACTERIA")).ask(function() {
         if (Prims.equality(world.observer.getGlobal("visualize-variation"), "# flagella as label")) {
           SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(SelfManager.self().getVariable("variation")) + workspace.dump("     ")));
         }
@@ -398,15 +343,11 @@ var procedures = (function() {
           SelfManager.self().setVariable("color", world.observer.getGlobal("bacteria-default-color"));
         }
       }, true);
-      world.turtleManager.turtlesOfBreed("FLAGELLA").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FLAGELLA")).ask(function() {
         SelfManager.self().setVariable("hidden?", ListPrims.member(world.observer.getGlobal("visualize-variation"), ["as color only", "# flagella as label", "none"]));
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["visualizeBacteria"] = temp;
@@ -415,7 +356,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS")).ask(function() {
         SelfManager.self().setVariable("countdown", (SelfManager.self().getVariable("countdown") - 1));
         SelfManager.self().setVariable("color", ListPrims.lput((SelfManager.self().getVariable("countdown") * 4), [0, 100, 0]));
         if (Prims.lte(SelfManager.self().getVariable("countdown"), 0)) {
@@ -423,11 +364,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["visualizeRemovalSpots"] = temp;

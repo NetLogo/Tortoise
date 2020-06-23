@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["next-task", "steps"], [])('turtles-own [   next-task  ;; task the turtle will run during this tick   steps      ;; ...unless this number is greater than zero, in which              ;; case this tick, the turtle just moves forward 1 ]  to setup   clear-all   set-default-shape turtles \"bug\"   ;; randomly distribute wood chips   ask patches [     if random-float 100 < density       [ set pcolor yellow ]   ]   ;; randomly distribute termites   create-turtles number [     set color white     setxy random-xcor random-ycor     set next-task [ -> search-for-chip ]     set size 5  ;; easier to see   ]   reset-ticks end  to go   ask turtles     [ ifelse steps > 0         [ set steps steps - 1 ]         [ run next-task           wiggle ]       fd 1 ]   tick end  to wiggle  ;; turtle procedure   rt random 50   lt random 50 end  to search-for-chip   ;; turtle procedure -- \"picks up chip\" by turning orange   if pcolor = yellow     [ set pcolor black       set color orange       set steps 20       set next-task [ -> find-new-pile ]     ] end  to find-new-pile  ;; turtle procedure -- look for yellow patches   if pcolor = yellow     [ set next-task [ -> put-down-chip ] ] end  to put-down-chip  ;; turtle procedure -- finds empty spot & drops chip   if pcolor = black    [ set pcolor yellow      set color white      set steps 20      set next-task [ -> get-away ] ] end  to get-away  ;; turtle procedure -- get out of yellow pile   if pcolor = black     [ set next-task [ -> search-for-chip ] ] end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":228,"top":10,"right":638,"bottom":421,"dimensions":{"minPxcor":-100,"maxPxcor":100,"minPycor":-100,"maxPycor":100,"patchSize":2,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":27,"top":116,"right":110,"bottom":149,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1000","compiledStep":"1","variable":"number","left":8,"top":39,"right":219,"bottom":72,"display":"number","min":"1","max":"1000","default":400,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"density","left":8,"top":73,"right":219,"bottom":106,"display":"density","min":"0","max":"100","default":20,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":114,"top":116,"right":197,"bottom":149,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number", "density"], ["number", "density"], [], -100, 100, -100, 100, 2, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["next-task", "steps"], [])('turtles-own [   next-task  ;; task the turtle will run during this tick   steps      ;; ...unless this number is greater than zero, in which              ;; case this tick, the turtle just moves forward 1 ]  to setup   clear-all   set-default-shape turtles \"bug\"   ;; randomly distribute wood chips   ask patches [     if random-float 100 < density       [ set pcolor yellow ]   ]   ;; randomly distribute termites   create-turtles number [     set color white     setxy random-xcor random-ycor     set next-task [ -> search-for-chip ]     set size 5  ;; easier to see   ]   reset-ticks end  to go   ask turtles     [ ifelse steps > 0         [ set steps steps - 1 ]         [ run next-task           wiggle ]       fd 1 ]   tick end  to wiggle  ;; turtle procedure   rt random 50   lt random 50 end  to search-for-chip   ;; turtle procedure -- \"picks up chip\" by turning orange   if pcolor = yellow     [ set pcolor black       set color orange       set steps 20       set next-task [ -> find-new-pile ]     ] end  to find-new-pile  ;; turtle procedure -- look for yellow patches   if pcolor = yellow     [ set next-task [ -> put-down-chip ] ] end  to put-down-chip  ;; turtle procedure -- finds empty spot & drops chip   if pcolor = black    [ set pcolor yellow      set color white      set steps 20      set next-task [ -> get-away ] ] end  to get-away  ;; turtle procedure -- get out of yellow pile   if pcolor = black     [ set next-task [ -> search-for-chip ] ] end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":228,"top":10,"right":638,"bottom":421,"dimensions":{"minPxcor":-100,"maxPxcor":100,"minPycor":-100,"maxPycor":100,"patchSize":2,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":27,"top":116,"right":110,"bottom":149,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1000","compiledStep":"1","variable":"number","left":8,"top":39,"right":219,"bottom":72,"display":"number","min":"1","max":"1000","default":400,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"density","left":8,"top":73,"right":219,"bottom":106,"display":"density","min":"0","max":"100","default":20,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":114,"top":116,"right":197,"bottom":149,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number", "density"], ["number", "density"], [], -100, 100, -100, 100, 2, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -54,7 +55,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density"))) {
           SelfManager.self().setPatchVariable("pcolor", 45);
         }
@@ -67,11 +68,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -80,7 +77,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         try {
           var reporterContext = false;
           var letVars = { };
@@ -103,20 +100,12 @@ var procedures = (function() {
           }
           SelfManager.self()._optimalFdOne();
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         }
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -128,11 +117,7 @@ var procedures = (function() {
       SelfManager.self().right(Prims.random(50));
       SelfManager.self().right(-(Prims.random(50)));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["wiggle"] = temp;
@@ -148,11 +133,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("next-task", Tasks.commandTask(function() { procedures["FIND-NEW-PILE"](); }, "[ -> find-new-pile ]"));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["searchForChip"] = temp;
@@ -165,11 +146,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("next-task", Tasks.commandTask(function() { procedures["PUT-DOWN-CHIP"](); }, "[ -> put-down-chip ]"));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["findNewPile"] = temp;
@@ -185,11 +162,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("next-task", Tasks.commandTask(function() { procedures["GET-AWAY"](); }, "[ -> get-away ]"));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["putDownChip"] = temp;
@@ -202,11 +175,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("next-task", Tasks.commandTask(function() { procedures["SEARCH-FOR-CHIP"](); }, "[ -> search-for-chip ]"));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["getAway"] = temp;

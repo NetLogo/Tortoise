@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -39,11 +40,7 @@ modelConfig.plots = [(function() {
             return (!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("resistant?"));
           }).size(), world.turtles().size()) * 100));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -56,11 +53,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size(), world.turtles().size()) * 100));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -73,11 +66,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("resistant?"); }).size(), world.turtles().size()) * 100));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -86,7 +75,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "% of nodes", true, true, 0, 52, 0, 100, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["infected?", "resistant?", "virus-check-timer"], [])('turtles-own [   infected?           ;; if true, the turtle is infectious   resistant?          ;; if true, the turtle can\'t be infected   virus-check-timer   ;; number of ticks since this turtle\'s last virus-check ]  to setup   clear-all   setup-nodes   setup-spatially-clustered-network   ask n-of initial-outbreak-size turtles     [ become-infected ]   ask links [ set color white ]   reset-ticks end  to setup-nodes   set-default-shape turtles \"circle\"   create-turtles number-of-nodes   [     ; for visual reasons, we don\'t put any nodes *too* close to the edges     setxy (random-xcor * 0.95) (random-ycor * 0.95)     become-susceptible     set virus-check-timer random virus-check-frequency   ] end  to setup-spatially-clustered-network   let num-links (average-node-degree * number-of-nodes) / 2   while [count links < num-links ]   [     ask one-of turtles     [       let choice (min-one-of (other turtles with [not link-neighbor? myself])                    [distance myself])       if choice != nobody [ create-link-with choice ]     ]   ]   ; make the network look a little prettier   repeat 10   [     layout-spring turtles links 0.3 (world-width / (sqrt number-of-nodes)) 1   ] end  to go   if all? turtles [not infected?]     [ stop ]   ask turtles   [      set virus-check-timer virus-check-timer + 1      if virus-check-timer >= virus-check-frequency        [ set virus-check-timer 0 ]   ]   spread-virus   do-virus-checks   tick end  to become-infected  ;; turtle procedure   set infected? true   set resistant? false   set color red end  to become-susceptible  ;; turtle procedure   set infected? false   set resistant? false   set color blue end  to become-resistant  ;; turtle procedure   set infected? false   set resistant? true   set color gray   ask my-links [ set color gray - 2 ] end  to spread-virus   ask turtles with [infected?]     [ ask link-neighbors with [not resistant?]         [ if random-float 100 < virus-spread-chance             [ become-infected ] ] ] end  to do-virus-checks   ask turtles with [infected? and virus-check-timer = 0]   [     if random 100 < recovery-chance     [       ifelse random 100 < gain-resistance-chance         [ become-resistant ]         [ become-susceptible ]     ]   ] end   ; Copyright 2008 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":265,"top":10,"right":724,"bottom":470,"dimensions":{"minPxcor":-20,"maxPxcor":20,"minPycor":-20,"maxPycor":20,"patchSize":11,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"gain-resistance-chance","left":25,"top":280,"right":230,"bottom":313,"display":"gain-resistance-chance","min":"0","max":"100","default":5,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.1","variable":"recovery-chance","left":25,"top":245,"right":230,"bottom":278,"display":"recovery-chance","min":"0","max":"10","default":5,"step":"0.1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.1","variable":"virus-spread-chance","left":25,"top":175,"right":230,"bottom":208,"display":"virus-spread-chance","min":"0","max":"10","default":2.5,"step":"0.1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":25,"top":125,"right":120,"bottom":165,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":135,"top":125,"right":230,"bottom":165,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Network Status', 'susceptible')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() {           return (!SelfManager.self().getVariable(\"infected?\") && !SelfManager.self().getVariable(\"resistant?\"));         }).size(), world.turtles().size()) * 100));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"susceptible","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [not infected? and not resistant?]) / (count turtles) * 100","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Network Status', 'infected')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable(\"infected?\"); }).size(), world.turtles().size()) * 100));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"infected","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [infected?]) / (count turtles) * 100","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Network Status', 'resistant')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable(\"resistant?\"); }).size(), world.turtles().size()) * 100));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"resistant","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [resistant?]) / (count turtles) * 100","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Network Status","left":5,"top":325,"right":260,"bottom":489,"xAxis":"time","yAxis":"% of nodes","xmin":0,"xmax":52,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"susceptible","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [not infected? and not resistant?]) / (count turtles) * 100","type":"pen"},{"display":"infected","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [infected?]) / (count turtles) * 100","type":"pen"},{"display":"resistant","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [resistant?]) / (count turtles) * 100","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"10","compiledMax":"300","compiledStep":"5","variable":"number-of-nodes","left":25,"top":15,"right":230,"bottom":48,"display":"number-of-nodes","min":"10","max":"300","default":150,"step":"5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"virus-check-frequency","left":25,"top":210,"right":230,"bottom":243,"display":"virus-check-frequency","min":"1","max":"20","default":1,"step":"1","units":"ticks","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"world.observer.getGlobal(\"number-of-nodes\")","compiledStep":"1","variable":"initial-outbreak-size","left":25,"top":85,"right":230,"bottom":118,"display":"initial-outbreak-size","min":"1","max":"number-of-nodes","default":3,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"(world.observer.getGlobal(\"number-of-nodes\") - 1)","compiledStep":"1","variable":"average-node-degree","left":25,"top":50,"right":230,"bottom":83,"display":"average-node-degree","min":"1","max":"number-of-nodes - 1","default":6,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["gain-resistance-chance", "recovery-chance", "virus-spread-chance", "number-of-nodes", "virus-check-frequency", "initial-outbreak-size", "average-node-degree"], ["gain-resistance-chance", "recovery-chance", "virus-spread-chance", "number-of-nodes", "virus-check-frequency", "initial-outbreak-size", "average-node-degree"], [], -20, 20, -20, 20, 11, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["infected?", "resistant?", "virus-check-timer"], [])('turtles-own [   infected?           ;; if true, the turtle is infectious   resistant?          ;; if true, the turtle can\'t be infected   virus-check-timer   ;; number of ticks since this turtle\'s last virus-check ]  to setup   clear-all   setup-nodes   setup-spatially-clustered-network   ask n-of initial-outbreak-size turtles     [ become-infected ]   ask links [ set color white ]   reset-ticks end  to setup-nodes   set-default-shape turtles \"circle\"   create-turtles number-of-nodes   [     ; for visual reasons, we don\'t put any nodes *too* close to the edges     setxy (random-xcor * 0.95) (random-ycor * 0.95)     become-susceptible     set virus-check-timer random virus-check-frequency   ] end  to setup-spatially-clustered-network   let num-links (average-node-degree * number-of-nodes) / 2   while [count links < num-links ]   [     ask one-of turtles     [       let choice (min-one-of (other turtles with [not link-neighbor? myself])                    [distance myself])       if choice != nobody [ create-link-with choice ]     ]   ]   ; make the network look a little prettier   repeat 10   [     layout-spring turtles links 0.3 (world-width / (sqrt number-of-nodes)) 1   ] end  to go   if all? turtles [not infected?]     [ stop ]   ask turtles   [      set virus-check-timer virus-check-timer + 1      if virus-check-timer >= virus-check-frequency        [ set virus-check-timer 0 ]   ]   spread-virus   do-virus-checks   tick end  to become-infected  ;; turtle procedure   set infected? true   set resistant? false   set color red end  to become-susceptible  ;; turtle procedure   set infected? false   set resistant? false   set color blue end  to become-resistant  ;; turtle procedure   set infected? false   set resistant? true   set color gray   ask my-links [ set color gray - 2 ] end  to spread-virus   ask turtles with [infected?]     [ ask link-neighbors with [not resistant?]         [ if random-float 100 < virus-spread-chance             [ become-infected ] ] ] end  to do-virus-checks   ask turtles with [infected? and virus-check-timer = 0]   [     if random 100 < recovery-chance     [       ifelse random 100 < gain-resistance-chance         [ become-resistant ]         [ become-susceptible ]     ]   ] end   ; Copyright 2008 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":265,"top":10,"right":724,"bottom":470,"dimensions":{"minPxcor":-20,"maxPxcor":20,"minPycor":-20,"maxPycor":20,"patchSize":11,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"gain-resistance-chance","left":25,"top":280,"right":230,"bottom":313,"display":"gain-resistance-chance","min":"0","max":"100","default":5,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.1","variable":"recovery-chance","left":25,"top":245,"right":230,"bottom":278,"display":"recovery-chance","min":"0","max":"10","default":5,"step":"0.1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.1","variable":"virus-spread-chance","left":25,"top":175,"right":230,"bottom":208,"display":"virus-spread-chance","min":"0","max":"10","default":2.5,"step":"0.1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":25,"top":125,"right":120,"bottom":165,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":135,"top":125,"right":230,"bottom":165,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Network Status', 'susceptible')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() {           return (!SelfManager.self().getVariable(\"infected?\") && !SelfManager.self().getVariable(\"resistant?\"));         }).size(), world.turtles().size()) * 100));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"susceptible","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [not infected? and not resistant?]) / (count turtles) * 100","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Network Status', 'infected')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable(\"infected?\"); }).size(), world.turtles().size()) * 100));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"infected","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [infected?]) / (count turtles) * 100","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Network Status', 'resistant')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable(\"resistant?\"); }).size(), world.turtles().size()) * 100));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"resistant","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [resistant?]) / (count turtles) * 100","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Network Status","left":5,"top":325,"right":260,"bottom":489,"xAxis":"time","yAxis":"% of nodes","xmin":0,"xmax":52,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"susceptible","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [not infected? and not resistant?]) / (count turtles) * 100","type":"pen"},{"display":"infected","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [infected?]) / (count turtles) * 100","type":"pen"},{"display":"resistant","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot (count turtles with [resistant?]) / (count turtles) * 100","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"10","compiledMax":"300","compiledStep":"5","variable":"number-of-nodes","left":25,"top":15,"right":230,"bottom":48,"display":"number-of-nodes","min":"10","max":"300","default":150,"step":"5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"virus-check-frequency","left":25,"top":210,"right":230,"bottom":243,"display":"virus-check-frequency","min":"1","max":"20","default":1,"step":"1","units":"ticks","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"world.observer.getGlobal(\"number-of-nodes\")","compiledStep":"1","variable":"initial-outbreak-size","left":25,"top":85,"right":230,"bottom":118,"display":"initial-outbreak-size","min":"1","max":"number-of-nodes","default":3,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"(world.observer.getGlobal(\"number-of-nodes\") - 1)","compiledStep":"1","variable":"average-node-degree","left":25,"top":50,"right":230,"bottom":83,"display":"average-node-degree","min":"1","max":"number-of-nodes - 1","default":6,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["gain-resistance-chance", "recovery-chance", "virus-spread-chance", "number-of-nodes", "virus-check-frequency", "initial-outbreak-size", "average-node-degree"], ["gain-resistance-chance", "recovery-chance", "virus-spread-chance", "number-of-nodes", "virus-check-frequency", "initial-outbreak-size", "average-node-degree"], [], -20, 20, -20, 20, 11, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -114,15 +103,11 @@ var procedures = (function() {
       world.clearAll();
       procedures["SETUP-NODES"]();
       procedures["SETUP-SPATIALLY-CLUSTERED-NETWORK"]();
-      ListPrims.nOf(world.observer.getGlobal("initial-outbreak-size"), world.turtles()).ask(function() { procedures["BECOME-INFECTED"](); }, true);
-      world.links().ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
+      Errors.askNobodyCheck(ListPrims.nOf(world.observer.getGlobal("initial-outbreak-size"), world.turtles())).ask(function() { procedures["BECOME-INFECTED"](); }, true);
+      Errors.askNobodyCheck(world.links()).ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -138,11 +123,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("virus-check-timer", Prims.random(world.observer.getGlobal("virus-check-frequency")));
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupNodes"] = temp;
@@ -153,7 +134,7 @@ var procedures = (function() {
       var letVars = { };
       let numLinks = Prims.div((world.observer.getGlobal("average-node-degree") * world.observer.getGlobal("number-of-nodes")), 2); letVars['numLinks'] = numLinks;
       while (Prims.lt(world.links().size(), numLinks)) {
-        ListPrims.oneOf(world.turtles()).ask(function() {
+        Errors.askNobodyCheck(ListPrims.oneOf(world.turtles())).ask(function() {
           let choice = world.turtles()._optimalOtherWith(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); }).minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['choice'] = choice;
           if (!Prims.equality(choice, Nobody)) {
             LinkPrims.createLinkWith(choice, "LINKS").ask(function() {}, false);
@@ -164,11 +145,7 @@ var procedures = (function() {
         LayoutManager.layoutSpring(world.turtles(), world.links(), 0.3, Prims.div(world.topology.width, NLMath.sqrt(world.observer.getGlobal("number-of-nodes"))), 1);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupSpatiallyClusteredNetwork"] = temp;
@@ -180,7 +157,7 @@ var procedures = (function() {
       if (world.turtles().agentAll(function() { return !SelfManager.self().getVariable("infected?"); })) {
         throw new Exception.StopInterrupt;
       }
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         SelfManager.self().setVariable("virus-check-timer", (SelfManager.self().getVariable("virus-check-timer") + 1));
         if (Prims.gte(SelfManager.self().getVariable("virus-check-timer"), world.observer.getGlobal("virus-check-frequency"))) {
           SelfManager.self().setVariable("virus-check-timer", 0);
@@ -190,11 +167,7 @@ var procedures = (function() {
       procedures["DO-VIRUS-CHECKS"]();
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -207,11 +180,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("resistant?", false);
       SelfManager.self().setVariable("color", 15);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["becomeInfected"] = temp;
@@ -224,11 +193,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("resistant?", false);
       SelfManager.self().setVariable("color", 105);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["becomeSusceptible"] = temp;
@@ -240,13 +205,9 @@ var procedures = (function() {
       SelfManager.self().setVariable("infected?", false);
       SelfManager.self().setVariable("resistant?", true);
       SelfManager.self().setVariable("color", 5);
-      LinkPrims.myLinks("LINKS").ask(function() { SelfManager.self().setVariable("color", (5 - 2)); }, true);
+      Errors.askNobodyCheck(LinkPrims.myLinks("LINKS")).ask(function() { SelfManager.self().setVariable("color", (5 - 2)); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["becomeResistant"] = temp;
@@ -255,19 +216,15 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).ask(function() {
-        LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("resistant?"); }).ask(function() {
+      Errors.askNobodyCheck(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); })).ask(function() {
+        Errors.askNobodyCheck(LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("resistant?"); })).ask(function() {
           if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("virus-spread-chance"))) {
             procedures["BECOME-INFECTED"]();
           }
         }, true);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["spreadVirus"] = temp;
@@ -276,9 +233,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().agentFilter(function() {
+      Errors.askNobodyCheck(world.turtles().agentFilter(function() {
         return (SelfManager.self().getVariable("infected?") && Prims.equality(SelfManager.self().getVariable("virus-check-timer"), 0));
-      }).ask(function() {
+      })).ask(function() {
         if (Prims.lt(Prims.random(100), world.observer.getGlobal("recovery-chance"))) {
           if (Prims.lt(Prims.random(100), world.observer.getGlobal("gain-resistance-chance"))) {
             procedures["BECOME-RESISTANT"]();
@@ -289,11 +246,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["doVirusChecks"] = temp;

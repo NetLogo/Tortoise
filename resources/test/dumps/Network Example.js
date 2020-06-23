@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   set-default-shape turtles \"circle\"   create-turtles number-of-nodes [     set color blue     set size 2   ]   layout-circle turtles (world-width / 2 - 2)   reset-ticks end  ;; This procedure demos the creation and deletion of edges. ;; Here we create and delete edges at random, except that ;; we try to keep the total number of links constant. to go   if not any? turtles [ stop ]   ask one-of turtles     [ create-link-with one-of other turtles ]  ;; if link already exists, nothing happens   while [count links > number-of-links]     [ ask one-of links [ die ] ]   tick end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":196,"top":10,"right":614,"bottom":429,"dimensions":{"minPxcor":-20,"maxPxcor":20,"minPycor":-20,"maxPycor":20,"patchSize":10,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":59,"top":124,"right":142,"bottom":157,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"number-of-nodes","left":10,"top":40,"right":189,"bottom":73,"display":"number-of-nodes","min":"0","max":"100","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":62,"top":82,"right":139,"bottom":115,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"number-of-links","left":12,"top":165,"right":191,"bottom":198,"display":"number-of-links","min":"0","max":"100","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-of-nodes", "number-of-links"], ["number-of-nodes", "number-of-links"], [], -20, 20, -20, 20, 10, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   set-default-shape turtles \"circle\"   create-turtles number-of-nodes [     set color blue     set size 2   ]   layout-circle turtles (world-width / 2 - 2)   reset-ticks end  ;; This procedure demos the creation and deletion of edges. ;; Here we create and delete edges at random, except that ;; we try to keep the total number of links constant. to go   if not any? turtles [ stop ]   ask one-of turtles     [ create-link-with one-of other turtles ]  ;; if link already exists, nothing happens   while [count links > number-of-links]     [ ask one-of links [ die ] ]   tick end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":196,"top":10,"right":614,"bottom":429,"dimensions":{"minPxcor":-20,"maxPxcor":20,"minPycor":-20,"maxPycor":20,"patchSize":10,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":59,"top":124,"right":142,"bottom":157,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"number-of-nodes","left":10,"top":40,"right":189,"bottom":73,"display":"number-of-nodes","min":"0","max":"100","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":62,"top":82,"right":139,"bottom":115,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"number-of-links","left":12,"top":165,"right":191,"bottom":198,"display":"number-of-links","min":"0","max":"100","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-of-nodes", "number-of-links"], ["number-of-nodes", "number-of-links"], [], -20, 20, -20, 20, 10, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -61,11 +62,7 @@ var procedures = (function() {
       LayoutManager.layoutCircle(world.turtles(), (Prims.div(world.topology.width, 2) - 2));
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -77,19 +74,15 @@ var procedures = (function() {
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
-      ListPrims.oneOf(world.turtles()).ask(function() {
+      Errors.askNobodyCheck(ListPrims.oneOf(world.turtles())).ask(function() {
         LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), "LINKS").ask(function() {}, false);
       }, true);
       while (Prims.gt(world.links().size(), world.observer.getGlobal("number-of-links"))) {
-        ListPrims.oneOf(world.links()).ask(function() { SelfManager.self().die(); }, true);
+        Errors.askNobodyCheck(ListPrims.oneOf(world.links())).ask(function() { SelfManager.self().die(); }, true);
       }
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;

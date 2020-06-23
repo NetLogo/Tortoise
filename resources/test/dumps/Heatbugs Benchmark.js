@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["ideal-temp", "output-heat", "unhappiness"], [])('globals [result]  turtles-own [   ideal-temp   output-heat   unhappiness ]  patches-own [   temp ]  to benchmark   random-seed 362   setup   reset-timer ;; put it here because it\'s easier to imitate this in Repast   repeat 1000 [ go ]   set result timer end  to setup   clear-all reset-ticks   ;; creating the bugs the following way ensures that we won\'t   ;; wind up with more than one bug on a patch   ask n-of bug-count patches [     sprout 1 [       set color lime       set size 1.75    ;; try to match look in Repast       set ideal-temp  min-ideal-temp  + random abs (max-ideal-temp  - min-ideal-temp )       set output-heat min-output-heat + random abs (max-output-heat - min-output-heat)       set unhappiness abs (ideal-temp - temp)     ]   ]   ;; plot the initial state of the system   ;plot mean values-from turtles [unhappiness] end  to go   if not any? turtles [ stop ]   ;; diffuse heat through world   diffuse temp diffusion-rate   ask turtles [ step ]   recolor-patches   tick   ;plot mean values-from turtles [unhappiness] end  to recolor-patches   ask patches   [     ;; the world retains a percentage of its heat each cycle     set temp temp * (1 - evaporation-rate)     ;; hotter patches will be red turning to white, cooler patches will be black     set pcolor scale-color red temp 0 500   ] end  to step  ;; turtle procedure   ;; my unhappiness is the magnitude or absolute value of the difference   ;; between by ideal temperature and the temperature of this patch   set unhappiness abs (ideal-temp - temp)   ;; if unhappy and not at the hottest neighbor8   ;; then move to an open neighbor (trying random ones up to 10 times)   ifelse unhappiness = 0     [ set temp temp + output-heat ]     [ let target find-target       if (patch-here != target) or (random-move-chance > random 100)         [ bug-move target ]       set temp temp + output-heat     ] end  ;; find the hottest or coolest location next to me to-report find-target  ;; turtle procedure   ifelse temp < ideal-temp     [ report max-one-of neighbors [temp] ]     [ report min-one-of neighbors [temp] ] end  to bug-move [target]  ;; turtle procedure   let tries 0   ;; move to the hottest (or coolest location if I\'m too hot) location next to me   ;; if it is not occupied by another bug   if not any? turtles-on target [     move-to target     stop   ]   ;; If I can\'t get to the best spot, then I try the others randomly   ;; I only try 9 times, since there are only nine spots around me.   ;; Even then, I might try a spot more than once.   while [tries <= 9]     [ set tries tries + 1       set target one-of neighbors       if not any? turtles-on target [         move-to target         stop       ]     ] end')([{"left":341,"top":10,"right":856,"bottom":546,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":5,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"10","compiledMax":"500","compiledStep":"10","variable":"bug-count","left":14,"top":41,"right":276,"bottom":74,"display":"bug-count","min":"10","max":"500","default":100,"step":"10","units":"bugs","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":27,"top":188,"right":96,"bottom":221,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":98,"top":188,"right":166,"bottom":221,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.01","variable":"evaporation-rate","left":19,"top":268,"right":212,"bottom":301,"display":"evaporation-rate","min":"0","max":"1","default":0.01,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.1","variable":"diffusion-rate","left":19,"top":302,"right":212,"bottom":335,"display":"diffusion-rate","min":"0","max":"1","default":1,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"random-move-chance","left":19,"top":337,"right":212,"bottom":370,"display":"random-move-chance","min":"0","max":"100","default":0,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"200","compiledStep":"1","variable":"min-ideal-temp","left":14,"top":80,"right":186,"bottom":113,"display":"min-ideal-temp","min":"0","max":"200","default":170,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"500","compiledStep":"1","variable":"max-ideal-temp","left":14,"top":113,"right":186,"bottom":146,"display":"max-ideal-temp","min":"0","max":"500","default":310,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"max-output-heat","left":188,"top":111,"right":336,"bottom":144,"display":"max-output-heat","min":"0","max":"100","default":100,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"min-output-heat","left":190,"top":77,"right":339,"bottom":110,"display":"min-output-heat","min":"0","max":"100","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"display":"Initial settings for bugs","left":10,"top":21,"right":160,"bottom":39,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Other parameters (OK to change during run)","left":12,"top":236,"right":165,"bottom":264,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Actions","left":12,"top":167,"right":162,"bottom":185,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"benchmark","left":18,"top":390,"right":160,"bottom":518,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":50,"top":469,"right":130,"bottom":514,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["bug-count", "evaporation-rate", "diffusion-rate", "random-move-chance", "min-ideal-temp", "max-ideal-temp", "max-output-heat", "min-output-heat", "result"], ["bug-count", "evaporation-rate", "diffusion-rate", "random-move-chance", "min-ideal-temp", "max-ideal-temp", "max-output-heat", "min-output-heat"], ["temp"], -50, 50, -50, 50, 5, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["ideal-temp", "output-heat", "unhappiness"], [])('globals [result]  turtles-own [   ideal-temp   output-heat   unhappiness ]  patches-own [   temp ]  to benchmark   random-seed 362   setup   reset-timer ;; put it here because it\'s easier to imitate this in Repast   repeat 1000 [ go ]   set result timer end  to setup   clear-all reset-ticks   ;; creating the bugs the following way ensures that we won\'t   ;; wind up with more than one bug on a patch   ask n-of bug-count patches [     sprout 1 [       set color lime       set size 1.75    ;; try to match look in Repast       set ideal-temp  min-ideal-temp  + random abs (max-ideal-temp  - min-ideal-temp )       set output-heat min-output-heat + random abs (max-output-heat - min-output-heat)       set unhappiness abs (ideal-temp - temp)     ]   ]   ;; plot the initial state of the system   ;plot mean values-from turtles [unhappiness] end  to go   if not any? turtles [ stop ]   ;; diffuse heat through world   diffuse temp diffusion-rate   ask turtles [ step ]   recolor-patches   tick   ;plot mean values-from turtles [unhappiness] end  to recolor-patches   ask patches   [     ;; the world retains a percentage of its heat each cycle     set temp temp * (1 - evaporation-rate)     ;; hotter patches will be red turning to white, cooler patches will be black     set pcolor scale-color red temp 0 500   ] end  to step  ;; turtle procedure   ;; my unhappiness is the magnitude or absolute value of the difference   ;; between by ideal temperature and the temperature of this patch   set unhappiness abs (ideal-temp - temp)   ;; if unhappy and not at the hottest neighbor8   ;; then move to an open neighbor (trying random ones up to 10 times)   ifelse unhappiness = 0     [ set temp temp + output-heat ]     [ let target find-target       if (patch-here != target) or (random-move-chance > random 100)         [ bug-move target ]       set temp temp + output-heat     ] end  ;; find the hottest or coolest location next to me to-report find-target  ;; turtle procedure   ifelse temp < ideal-temp     [ report max-one-of neighbors [temp] ]     [ report min-one-of neighbors [temp] ] end  to bug-move [target]  ;; turtle procedure   let tries 0   ;; move to the hottest (or coolest location if I\'m too hot) location next to me   ;; if it is not occupied by another bug   if not any? turtles-on target [     move-to target     stop   ]   ;; If I can\'t get to the best spot, then I try the others randomly   ;; I only try 9 times, since there are only nine spots around me.   ;; Even then, I might try a spot more than once.   while [tries <= 9]     [ set tries tries + 1       set target one-of neighbors       if not any? turtles-on target [         move-to target         stop       ]     ] end')([{"left":341,"top":10,"right":856,"bottom":546,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":5,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"10","compiledMax":"500","compiledStep":"10","variable":"bug-count","left":14,"top":41,"right":276,"bottom":74,"display":"bug-count","min":"10","max":"500","default":100,"step":"10","units":"bugs","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":27,"top":188,"right":96,"bottom":221,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":98,"top":188,"right":166,"bottom":221,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.01","variable":"evaporation-rate","left":19,"top":268,"right":212,"bottom":301,"display":"evaporation-rate","min":"0","max":"1","default":0.01,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.1","variable":"diffusion-rate","left":19,"top":302,"right":212,"bottom":335,"display":"diffusion-rate","min":"0","max":"1","default":1,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"random-move-chance","left":19,"top":337,"right":212,"bottom":370,"display":"random-move-chance","min":"0","max":"100","default":0,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"200","compiledStep":"1","variable":"min-ideal-temp","left":14,"top":80,"right":186,"bottom":113,"display":"min-ideal-temp","min":"0","max":"200","default":170,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"500","compiledStep":"1","variable":"max-ideal-temp","left":14,"top":113,"right":186,"bottom":146,"display":"max-ideal-temp","min":"0","max":"500","default":310,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"max-output-heat","left":188,"top":111,"right":336,"bottom":144,"display":"max-output-heat","min":"0","max":"100","default":100,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"min-output-heat","left":190,"top":77,"right":339,"bottom":110,"display":"min-output-heat","min":"0","max":"100","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"display":"Initial settings for bugs","left":10,"top":21,"right":160,"bottom":39,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Other parameters (OK to change during run)","left":12,"top":236,"right":165,"bottom":264,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Actions","left":12,"top":167,"right":162,"bottom":185,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"benchmark","left":18,"top":390,"right":160,"bottom":518,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":50,"top":469,"right":130,"bottom":514,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["bug-count", "evaporation-rate", "diffusion-rate", "random-move-chance", "min-ideal-temp", "max-ideal-temp", "max-output-heat", "min-output-heat", "result"], ["bug-count", "evaporation-rate", "diffusion-rate", "random-move-chance", "min-ideal-temp", "max-ideal-temp", "max-output-heat", "min-output-heat"], ["temp"], -50, 50, -50, 50, 5, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -60,11 +61,7 @@ var procedures = (function() {
       }
       world.observer.setGlobal("result", workspace.timer.elapsed());
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["benchmark"] = temp;
@@ -75,7 +72,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.ticker.reset();
-      ListPrims.nOf(world.observer.getGlobal("bug-count"), world.patches()).ask(function() {
+      Errors.askNobodyCheck(ListPrims.nOf(world.observer.getGlobal("bug-count"), world.patches())).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("color", 65);
           SelfManager.self().setVariable("size", 1.75);
@@ -85,11 +82,7 @@ var procedures = (function() {
         }, true);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -102,15 +95,11 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"), false)
-      world.turtles().ask(function() { procedures["STEP"](); }, true);
+      Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["STEP"](); }, true);
       procedures["RECOLOR-PATCHES"]();
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -119,16 +108,12 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") * (1 - world.observer.getGlobal("evaporation-rate"))));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("temp"), 0, 500));
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["recolorPatches"] = temp;
@@ -149,11 +134,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["step"] = temp;
@@ -163,22 +144,16 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       if (Prims.lt(SelfManager.self().getPatchVariable("temp"), SelfManager.self().getVariable("ideal-temp"))) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self().getNeighbors().maxOneOf(function() { return SelfManager.self().getPatchVariable("temp"); })
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return SelfManager.self().getNeighbors().maxOneOf(function() { return SelfManager.self().getPatchVariable("temp"); });
       }
       else {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self().getNeighbors().minOneOf(function() { return SelfManager.self().getPatchVariable("temp"); })
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return SelfManager.self().getNeighbors().minOneOf(function() { return SelfManager.self().getPatchVariable("temp"); });
       }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["findTarget"] = temp;
@@ -201,11 +176,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["bugMove"] = temp;

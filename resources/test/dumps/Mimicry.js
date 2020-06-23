@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("MONARCHS").projectionBy(function() { return SelfManager.self().getVariable("color"); })));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -54,11 +51,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("VICEROYS").projectionBy(function() { return SelfManager.self().getVariable("color"); })));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -67,7 +60,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Average Color", true, true, 0, 100, 0, 105, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "MONARCHS", singular: "monarch", varNames: [] }, { name: "VICEROYS", singular: "viceroy", varNames: [] }, { name: "BIRDS", singular: "bird", varNames: ["memory"] }])([], [])(';; two breeds of butterflies breed [ monarchs monarch ] breed [ viceroys viceroy ]  breed [ birds bird ] birds-own [ memory ]  globals [   carrying-capacity-monarchs  ;; maximum population of monarchs in the world   carrying-capacity-viceroys  ;; maximum population of viceroys in the world   carrying-capacity-birds     ;; maximum population of birds in the world   color-range-begin           ;; \"lowest\" color for a butterfly   color-range-end             ;; \"highest\" color for a butterfly   reproduction-chance         ;; The chance and individual has of                               ;; reproducing (0 - 100) *after*                               ;; the chance dependent on                               ;; carrying capacity is evaluated. ]  ;; ;; Setup Procedures ;;  to setup   clear-all   setup-variables   setup-turtles   reset-ticks end  ;; initialize constants to setup-variables   set carrying-capacity-monarchs 225   set carrying-capacity-viceroys 225   set carrying-capacity-birds 75   set reproduction-chance 4   set color-range-begin 15   set color-range-end 109 end  ;; create 75 birds and 450 butterflies of which half are ;; monarchs and half are viceroys.  Initially, the ;; monarchs are at the bottom of the color range and ;; the viceroys are at the top of the color range. ;; The patches are white for easy viewing.  to setup-turtles   ask patches [ set pcolor white ]   set-default-shape monarchs \"butterfly monarch\"   set-default-shape viceroys \"butterfly viceroy\"   create-birds carrying-capacity-birds   [     set color black     set memory []     set shape one-of [\"bird 1\" \"bird 2\"]   ]   create-monarchs carrying-capacity-monarchs [ set color red ]   create-viceroys carrying-capacity-viceroys [ set color blue ]   ;; scatter all three breeds around the world   ask turtles [ setxy random-xcor random-ycor ] end  ;; ;; Runtime Procedures ;;  to go   ask birds [ birds-move ]   ;; turtles that are not birds are butterflies   ask turtles with [breed != birds] [ butterflies-move ]   ask turtles with [breed != birds] [ butterflies-get-eaten ]   ask birds [ birds-forget ]   ask turtles with [breed != birds] [ butterflies-reproduce ]   tick end  to birds-move ;; birds procedure   ;; The birds are animated by alternating shapes   ifelse shape = \"bird 1\"   [ set shape \"bird 2\"]   [ set shape \"bird 1\" ]   set heading 180 + random 180   fd 1 end  to butterflies-move ;; butterflies procedure   rt random 100   lt random 100   fd 1 end  ;; If there is a bird on this patch check the bird\'s memory ;; to see if this butterfly seems edible based on the color. ;; If the butterfly\'s color is not in the bird\'s memory ;; the butterfly dies.  If it\'s a monarch the bird remembers ;; that its color was yucky to butterflies-get-eaten  ;; butterfly procedure   let bird-here one-of birds-here   if bird-here != nobody   [     if not [color-in-memory? [color] of myself] of bird-here     [       if breed = monarchs         [ ask bird-here [ remember-color [color] of myself ] ]       die     ]   ] end  ;; helper procedure that determines whether the given ;; color is in a bird\'s memory to-report color-in-memory? [c] ;; bird procedure   foreach memory [ i -> if item 0 i = c [ report true ] ]   report false end  ;; put a color that was yucky in memory to remember-color [c]  ;; bird procedure   ;; birds can only remember 3 colors at a time   ;; so if there are more than 3 in memory we   ;; need to remove 1 we know that the first item   ;; in the list will always be the oldest since   ;; we add items to the back of the list and only   ;; 1 item can be added per tick   if length memory >= memory-size   [ set memory but-first memory ]   ;; put the new memory on the end of the list   set memory lput (list c 0) memory end  ;; birds can only remember for so long, then ;; they forget. They remember colors for MEMORY-LENGTH to birds-forget ;; bird procedure   ;; first increment all of the times in memory   set memory map [ i -> list (item 0 i) (1 + item 1 i) ] memory   ;; then remove any entries whose times have hit memory-duration   set memory filter [ i -> item 1 i <= memory-duration ] memory end  ;; Each butterfly has an equal chance of reproducing ;; depending on how close to carrying capacity the ;; population is. to butterflies-reproduce ;; butterfly procedure   ifelse breed = monarchs   [ if random count monarchs < carrying-capacity-monarchs - count monarchs      [ hatch-butterfly ] ]   [ if random count viceroys < carrying-capacity-viceroys - count viceroys      [ hatch-butterfly ] ] end  to hatch-butterfly ;; butterfly procedure   if random-float 100 < reproduction-chance   [     hatch 1     [       fd 1       ;; the chance that the butterfly will       ;; have a random color is determined by       ;; the MUTATION slider. select a base-color       ;; between 15 and 105       if random-float 100 < mutation-rate       ;; make a list that contains only the base-color 15-105       [ set color one-of sublist base-colors 1 10 ]     ]  ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":334,"top":10,"right":752,"bottom":429,"dimensions":{"minPxcor":-20,"maxPxcor":20,"minPycor":-20,"maxPycor":20,"patchSize":10,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":76,"top":10,"right":164,"bottom":43,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":166,"top":10,"right":254,"bottom":43,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"40","compiledStep":"1","variable":"memory-duration","left":71,"top":44,"right":259,"bottom":77,"display":"memory-duration","min":"0","max":"40","default":30,"step":"1","units":"ticks","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"mutation-rate","left":71,"top":78,"right":259,"bottom":111,"display":"mutation-rate","min":"0","max":"100","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"MONARCHS\").size()","source":"count monarchs","left":56,"top":146,"right":163,"bottom":191,"precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.max(world.turtleManager.turtlesOfBreed(\"MONARCHS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"max [color] of monarchs","left":175,"top":413,"right":246,"bottom":458,"display":"maximum","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.mean(world.turtleManager.turtlesOfBreed(\"MONARCHS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"mean [color] of monarchs","left":103,"top":413,"right":174,"bottom":458,"display":"average","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"VICEROYS\").size()","source":"count viceroys","left":164,"top":146,"right":271,"bottom":191,"precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.max(world.turtleManager.turtlesOfBreed(\"VICEROYS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"max [color] of viceroys","left":175,"top":459,"right":246,"bottom":504,"display":"maximum","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.mean(world.turtleManager.turtlesOfBreed(\"VICEROYS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"mean [color] of viceroys","left":103,"top":459,"right":174,"bottom":504,"display":"average","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Average Colors Over Time', 'Monarchs')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed(\"MONARCHS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); })));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"Monarchs","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot mean [color] of monarchs","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Average Colors Over Time', 'Viceroys')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed(\"VICEROYS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); })));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"Viceroys","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot mean [color] of viceroys","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Average Colors Over Time","left":33,"top":192,"right":310,"bottom":412,"xAxis":"Time","yAxis":"Average Color","xmin":0,"xmax":100,"ymin":0,"ymax":105,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"Monarchs","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot mean [color] of monarchs","type":"pen"},{"display":"Viceroys","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot mean [color] of viceroys","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"display":"monarch colors:","left":12,"top":425,"right":162,"bottom":443,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"viceroy colors:","left":17,"top":470,"right":167,"bottom":488,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.min(world.turtleManager.turtlesOfBreed(\"MONARCHS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"min [color] of monarchs","left":247,"top":413,"right":318,"bottom":458,"display":"minimum","precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.min(world.turtleManager.turtlesOfBreed(\"VICEROYS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"min [color] of viceroys","left":247,"top":459,"right":318,"bottom":504,"display":"minimum","precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"memory-size","left":71,"top":112,"right":259,"bottom":145,"display":"memory-size","min":"0","max":"10","default":3,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["memory-duration", "mutation-rate", "memory-size", "carrying-capacity-monarchs", "carrying-capacity-viceroys", "carrying-capacity-birds", "color-range-begin", "color-range-end", "reproduction-chance"], ["memory-duration", "mutation-rate", "memory-size"], [], -20, 20, -20, 20, 10, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "MONARCHS", singular: "monarch", varNames: [] }, { name: "VICEROYS", singular: "viceroy", varNames: [] }, { name: "BIRDS", singular: "bird", varNames: ["memory"] }])([], [])(';; two breeds of butterflies breed [ monarchs monarch ] breed [ viceroys viceroy ]  breed [ birds bird ] birds-own [ memory ]  globals [   carrying-capacity-monarchs  ;; maximum population of monarchs in the world   carrying-capacity-viceroys  ;; maximum population of viceroys in the world   carrying-capacity-birds     ;; maximum population of birds in the world   color-range-begin           ;; \"lowest\" color for a butterfly   color-range-end             ;; \"highest\" color for a butterfly   reproduction-chance         ;; The chance and individual has of                               ;; reproducing (0 - 100) *after*                               ;; the chance dependent on                               ;; carrying capacity is evaluated. ]  ;; ;; Setup Procedures ;;  to setup   clear-all   setup-variables   setup-turtles   reset-ticks end  ;; initialize constants to setup-variables   set carrying-capacity-monarchs 225   set carrying-capacity-viceroys 225   set carrying-capacity-birds 75   set reproduction-chance 4   set color-range-begin 15   set color-range-end 109 end  ;; create 75 birds and 450 butterflies of which half are ;; monarchs and half are viceroys.  Initially, the ;; monarchs are at the bottom of the color range and ;; the viceroys are at the top of the color range. ;; The patches are white for easy viewing.  to setup-turtles   ask patches [ set pcolor white ]   set-default-shape monarchs \"butterfly monarch\"   set-default-shape viceroys \"butterfly viceroy\"   create-birds carrying-capacity-birds   [     set color black     set memory []     set shape one-of [\"bird 1\" \"bird 2\"]   ]   create-monarchs carrying-capacity-monarchs [ set color red ]   create-viceroys carrying-capacity-viceroys [ set color blue ]   ;; scatter all three breeds around the world   ask turtles [ setxy random-xcor random-ycor ] end  ;; ;; Runtime Procedures ;;  to go   ask birds [ birds-move ]   ;; turtles that are not birds are butterflies   ask turtles with [breed != birds] [ butterflies-move ]   ask turtles with [breed != birds] [ butterflies-get-eaten ]   ask birds [ birds-forget ]   ask turtles with [breed != birds] [ butterflies-reproduce ]   tick end  to birds-move ;; birds procedure   ;; The birds are animated by alternating shapes   ifelse shape = \"bird 1\"   [ set shape \"bird 2\"]   [ set shape \"bird 1\" ]   set heading 180 + random 180   fd 1 end  to butterflies-move ;; butterflies procedure   rt random 100   lt random 100   fd 1 end  ;; If there is a bird on this patch check the bird\'s memory ;; to see if this butterfly seems edible based on the color. ;; If the butterfly\'s color is not in the bird\'s memory ;; the butterfly dies.  If it\'s a monarch the bird remembers ;; that its color was yucky to butterflies-get-eaten  ;; butterfly procedure   let bird-here one-of birds-here   if bird-here != nobody   [     if not [color-in-memory? [color] of myself] of bird-here     [       if breed = monarchs         [ ask bird-here [ remember-color [color] of myself ] ]       die     ]   ] end  ;; helper procedure that determines whether the given ;; color is in a bird\'s memory to-report color-in-memory? [c] ;; bird procedure   foreach memory [ i -> if item 0 i = c [ report true ] ]   report false end  ;; put a color that was yucky in memory to remember-color [c]  ;; bird procedure   ;; birds can only remember 3 colors at a time   ;; so if there are more than 3 in memory we   ;; need to remove 1 we know that the first item   ;; in the list will always be the oldest since   ;; we add items to the back of the list and only   ;; 1 item can be added per tick   if length memory >= memory-size   [ set memory but-first memory ]   ;; put the new memory on the end of the list   set memory lput (list c 0) memory end  ;; birds can only remember for so long, then ;; they forget. They remember colors for MEMORY-LENGTH to birds-forget ;; bird procedure   ;; first increment all of the times in memory   set memory map [ i -> list (item 0 i) (1 + item 1 i) ] memory   ;; then remove any entries whose times have hit memory-duration   set memory filter [ i -> item 1 i <= memory-duration ] memory end  ;; Each butterfly has an equal chance of reproducing ;; depending on how close to carrying capacity the ;; population is. to butterflies-reproduce ;; butterfly procedure   ifelse breed = monarchs   [ if random count monarchs < carrying-capacity-monarchs - count monarchs      [ hatch-butterfly ] ]   [ if random count viceroys < carrying-capacity-viceroys - count viceroys      [ hatch-butterfly ] ] end  to hatch-butterfly ;; butterfly procedure   if random-float 100 < reproduction-chance   [     hatch 1     [       fd 1       ;; the chance that the butterfly will       ;; have a random color is determined by       ;; the MUTATION slider. select a base-color       ;; between 15 and 105       if random-float 100 < mutation-rate       ;; make a list that contains only the base-color 15-105       [ set color one-of sublist base-colors 1 10 ]     ]  ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":334,"top":10,"right":752,"bottom":429,"dimensions":{"minPxcor":-20,"maxPxcor":20,"minPycor":-20,"maxPycor":20,"patchSize":10,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":76,"top":10,"right":164,"bottom":43,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":166,"top":10,"right":254,"bottom":43,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"40","compiledStep":"1","variable":"memory-duration","left":71,"top":44,"right":259,"bottom":77,"display":"memory-duration","min":"0","max":"40","default":30,"step":"1","units":"ticks","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"mutation-rate","left":71,"top":78,"right":259,"bottom":111,"display":"mutation-rate","min":"0","max":"100","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"MONARCHS\").size()","source":"count monarchs","left":56,"top":146,"right":163,"bottom":191,"precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.max(world.turtleManager.turtlesOfBreed(\"MONARCHS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"max [color] of monarchs","left":175,"top":413,"right":246,"bottom":458,"display":"maximum","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.mean(world.turtleManager.turtlesOfBreed(\"MONARCHS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"mean [color] of monarchs","left":103,"top":413,"right":174,"bottom":458,"display":"average","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"VICEROYS\").size()","source":"count viceroys","left":164,"top":146,"right":271,"bottom":191,"precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.max(world.turtleManager.turtlesOfBreed(\"VICEROYS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"max [color] of viceroys","left":175,"top":459,"right":246,"bottom":504,"display":"maximum","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.mean(world.turtleManager.turtlesOfBreed(\"VICEROYS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"mean [color] of viceroys","left":103,"top":459,"right":174,"bottom":504,"display":"average","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Average Colors Over Time', 'Monarchs')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed(\"MONARCHS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); })));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"Monarchs","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot mean [color] of monarchs","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Average Colors Over Time', 'Viceroys')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed(\"VICEROYS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); })));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"Viceroys","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot mean [color] of viceroys","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Average Colors Over Time","left":33,"top":192,"right":310,"bottom":412,"xAxis":"Time","yAxis":"Average Color","xmin":0,"xmax":100,"ymin":0,"ymax":105,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"Monarchs","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot mean [color] of monarchs","type":"pen"},{"display":"Viceroys","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot mean [color] of viceroys","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"display":"monarch colors:","left":12,"top":425,"right":162,"bottom":443,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"viceroy colors:","left":17,"top":470,"right":167,"bottom":488,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.min(world.turtleManager.turtlesOfBreed(\"MONARCHS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"min [color] of monarchs","left":247,"top":413,"right":318,"bottom":458,"display":"minimum","precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"ListPrims.min(world.turtleManager.turtlesOfBreed(\"VICEROYS\").projectionBy(function() { return SelfManager.self().getVariable(\"color\"); }))","source":"min [color] of viceroys","left":247,"top":459,"right":318,"bottom":504,"display":"minimum","precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"memory-size","left":71,"top":112,"right":259,"bottom":145,"display":"memory-size","min":"0","max":"10","default":3,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["memory-duration", "mutation-rate", "memory-size", "carrying-capacity-monarchs", "carrying-capacity-viceroys", "carrying-capacity-birds", "color-range-begin", "color-range-end", "reproduction-chance"], ["memory-duration", "mutation-rate", "memory-size"], [], -20, 20, -20, 20, 10, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -97,11 +90,7 @@ var procedures = (function() {
       procedures["SETUP-TURTLES"]();
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -117,11 +106,7 @@ var procedures = (function() {
       world.observer.setGlobal("color-range-begin", 15);
       world.observer.setGlobal("color-range-end", 109);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupVariables"] = temp;
@@ -130,7 +115,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("MONARCHS").getSpecialName(), "butterfly monarch")
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("VICEROYS").getSpecialName(), "butterfly viceroy")
       world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-birds"), "BIRDS").ask(function() {
@@ -140,15 +125,11 @@ var procedures = (function() {
       }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-monarchs"), "MONARCHS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-viceroys"), "VICEROYS").ask(function() { SelfManager.self().setVariable("color", 105); }, true);
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupTurtles"] = temp;
@@ -157,24 +138,20 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("BIRDS").ask(function() { procedures["BIRDS-MOVE"](); }, true);
-      world.turtles().agentFilter(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BIRDS")).ask(function() { procedures["BIRDS-MOVE"](); }, true);
+      Errors.askNobodyCheck(world.turtles().agentFilter(function() {
         return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
-      }).ask(function() { procedures["BUTTERFLIES-MOVE"](); }, true);
-      world.turtles().agentFilter(function() {
+      })).ask(function() { procedures["BUTTERFLIES-MOVE"](); }, true);
+      Errors.askNobodyCheck(world.turtles().agentFilter(function() {
         return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
-      }).ask(function() { procedures["BUTTERFLIES-GET-EATEN"](); }, true);
-      world.turtleManager.turtlesOfBreed("BIRDS").ask(function() { procedures["BIRDS-FORGET"](); }, true);
-      world.turtles().agentFilter(function() {
+      })).ask(function() { procedures["BUTTERFLIES-GET-EATEN"](); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BIRDS")).ask(function() { procedures["BIRDS-FORGET"](); }, true);
+      Errors.askNobodyCheck(world.turtles().agentFilter(function() {
         return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
-      }).ask(function() { procedures["BUTTERFLIES-REPRODUCE"](); }, true);
+      })).ask(function() { procedures["BUTTERFLIES-REPRODUCE"](); }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -192,11 +169,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("heading", (180 + Prims.random(180)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["birdsMove"] = temp;
@@ -209,11 +182,7 @@ var procedures = (function() {
       SelfManager.self().right(-(Prims.random(100)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["butterfliesMove"] = temp;
@@ -228,7 +197,7 @@ var procedures = (function() {
           return procedures["COLOR-IN-MEMORY?"](SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
         })) {
           if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
-            birdHere.ask(function() {
+            Errors.askNobodyCheck(birdHere).ask(function() {
               procedures["REMEMBER-COLOR"](SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
             }, true);
           }
@@ -236,11 +205,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["butterfliesGetEaten"] = temp;
@@ -250,25 +215,17 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       var _foreach_3161_3168 = Tasks.forEach(Tasks.commandTask(function(i) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         if (Prims.equality(ListPrims.item(0, i), c)) {
-          if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-            return true
-          }
+          Errors.reportInContextCheck(reporterContext);
+          return true;
         }
       }, "[ i -> if item 0 i = c [ report true ] ]"), SelfManager.self().getVariable("memory")); if(reporterContext && _foreach_3161_3168 !== undefined) { return _foreach_3161_3168; }
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return false
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return false;
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["colorInMemory_p"] = temp;
@@ -282,11 +239,7 @@ var procedures = (function() {
       }
       SelfManager.self().setVariable("memory", ListPrims.lput(ListPrims.list(c, 0), SelfManager.self().getVariable("memory")));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["rememberColor"] = temp;
@@ -296,23 +249,15 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       SelfManager.self().setVariable("memory", Tasks.map(Tasks.reporterTask(function(i) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         return ListPrims.list(ListPrims.item(0, i), (1 + ListPrims.item(1, i)));
       }, "[ i -> list item 0 i 1 + item 1 i ]"), SelfManager.self().getVariable("memory")));
       SelfManager.self().setVariable("memory", SelfManager.self().getVariable("memory").filter(Tasks.reporterTask(function(i) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         return Prims.lte(ListPrims.item(1, i), world.observer.getGlobal("memory-duration"));
       }, "[ i -> item 1 i <= memory-duration ]")));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["birdsForget"] = temp;
@@ -332,11 +277,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["butterfliesReproduce"] = temp;
@@ -354,11 +295,7 @@ var procedures = (function() {
         }, true);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["hatchButterfly"] = temp;

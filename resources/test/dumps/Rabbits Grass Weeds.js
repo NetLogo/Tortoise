@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size(), 4));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -54,11 +51,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("RABBITS").size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -71,11 +64,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 115); }).size(), 4));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -88,11 +77,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.setYRange(0, world.observer.getGlobal("number"));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -100,7 +85,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Pop", true, true, 0, 100, 0, 111, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RABBITS", singular: "rabbit", varNames: ["energy"] }])([], [])('breed [rabbits rabbit] rabbits-own [ energy ]  to setup   clear-all   grow-grass-and-weeds   set-default-shape rabbits \"rabbit\"   create-rabbits number [     set color white     setxy random-xcor random-ycor     set energy random 10  ;start with a random amt. of energy   ]   reset-ticks end  to go   if not any? rabbits [ stop ]   grow-grass-and-weeds   ask rabbits   [ move     eat-grass     eat-weeds     reproduce     death ]   tick end  to grow-grass-and-weeds   ask patches [     if pcolor = black [       if random-float 1000 < weeds-grow-rate         [ set pcolor violet ]       if random-float 1000 < grass-grow-rate         [ set pcolor green ]   ] ] end  to move  ;; rabbit procedure   rt random 50   lt random 50   fd 1   ;; moving takes some energy   set energy energy - 0.5 end  to eat-grass  ;; rabbit procedure   ;; gain \"grass-energy\" by eating grass   if pcolor = green   [ set pcolor black     set energy energy + grass-energy ] end  to eat-weeds  ;; rabbit procedure   ;; gain \"weed-energy\" by eating weeds   if pcolor = violet   [ set pcolor black     set energy energy + weed-energy ] end  to reproduce     ;; rabbit procedure   ;; give birth to a new rabbit, but it takes lots of energy   if energy > birth-threshold     [ set energy energy / 2       hatch 1 [ fd 1 ] ] end  to death     ;; rabbit procedure   ;; die if you run out of energy   if energy < 0 [ die ] end   ; Copyright 2001 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":296,"top":13,"right":796,"bottom":514,"dimensions":{"minPxcor":-20,"maxPxcor":20,"minPycor":-20,"maxPycor":20,"patchSize":12,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":86,"top":83,"right":141,"bottom":116,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":151,"top":83,"right":206,"bottom":116,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"1","variable":"grass-grow-rate","left":4,"top":160,"right":142,"bottom":193,"display":"grass-grow-rate","min":"0","max":"20","default":15,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"1","variable":"weeds-grow-rate","left":4,"top":193,"right":151,"bottom":226,"display":"weeds-grow-rate","min":"0","max":"20","default":0,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.5","variable":"grass-energy","left":144,"top":160,"right":275,"bottom":193,"display":"grass-energy","min":"0","max":"10","default":5,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.5","variable":"weed-energy","left":153,"top":193,"right":275,"bottom":226,"display":"weed-energy","min":"0","max":"10","default":0,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"500","compiledStep":"1","variable":"number","left":35,"top":42,"right":261,"bottom":75,"display":"number","min":"0","max":"500","default":150,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"1","variable":"birth-threshold","left":65,"top":127,"right":225,"bottom":160,"display":"birth-threshold","min":"0","max":"20","default":15,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setYRange(0, world.observer.getGlobal(\"number\"));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'grass')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 55); }).size(), 4));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"grass","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = green] / 4","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'rabbits')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtleManager.turtlesOfBreed(\"RABBITS\").size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"rabbits","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count rabbits","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'weeds')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 115); }).size(), 4));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"weeds","interval":1,"mode":0,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = violet] / 4","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Populations","left":4,"top":228,"right":275,"bottom":424,"xAxis":"Time","yAxis":"Pop","xmin":0,"xmax":100,"ymin":0,"ymax":111,"autoPlotOn":true,"legendOn":true,"setupCode":"set-plot-y-range 0 number","updateCode":"","pens":[{"display":"grass","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = green] / 4","type":"pen"},{"display":"rabbits","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count rabbits","type":"pen"},{"display":"weeds","interval":1,"mode":0,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = violet] / 4","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"RABBITS\").size()","source":"count rabbits","left":186,"top":424,"right":275,"bottom":469,"display":"count rabbits","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], ["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], [], -20, 20, -20, 20, 12, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RABBITS", singular: "rabbit", varNames: ["energy"] }])([], [])('breed [rabbits rabbit] rabbits-own [ energy ]  to setup   clear-all   grow-grass-and-weeds   set-default-shape rabbits \"rabbit\"   create-rabbits number [     set color white     setxy random-xcor random-ycor     set energy random 10  ;start with a random amt. of energy   ]   reset-ticks end  to go   if not any? rabbits [ stop ]   grow-grass-and-weeds   ask rabbits   [ move     eat-grass     eat-weeds     reproduce     death ]   tick end  to grow-grass-and-weeds   ask patches [     if pcolor = black [       if random-float 1000 < weeds-grow-rate         [ set pcolor violet ]       if random-float 1000 < grass-grow-rate         [ set pcolor green ]   ] ] end  to move  ;; rabbit procedure   rt random 50   lt random 50   fd 1   ;; moving takes some energy   set energy energy - 0.5 end  to eat-grass  ;; rabbit procedure   ;; gain \"grass-energy\" by eating grass   if pcolor = green   [ set pcolor black     set energy energy + grass-energy ] end  to eat-weeds  ;; rabbit procedure   ;; gain \"weed-energy\" by eating weeds   if pcolor = violet   [ set pcolor black     set energy energy + weed-energy ] end  to reproduce     ;; rabbit procedure   ;; give birth to a new rabbit, but it takes lots of energy   if energy > birth-threshold     [ set energy energy / 2       hatch 1 [ fd 1 ] ] end  to death     ;; rabbit procedure   ;; die if you run out of energy   if energy < 0 [ die ] end   ; Copyright 2001 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":296,"top":13,"right":796,"bottom":514,"dimensions":{"minPxcor":-20,"maxPxcor":20,"minPycor":-20,"maxPycor":20,"patchSize":12,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":86,"top":83,"right":141,"bottom":116,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":151,"top":83,"right":206,"bottom":116,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"1","variable":"grass-grow-rate","left":4,"top":160,"right":142,"bottom":193,"display":"grass-grow-rate","min":"0","max":"20","default":15,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"1","variable":"weeds-grow-rate","left":4,"top":193,"right":151,"bottom":226,"display":"weeds-grow-rate","min":"0","max":"20","default":0,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.5","variable":"grass-energy","left":144,"top":160,"right":275,"bottom":193,"display":"grass-energy","min":"0","max":"10","default":5,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.5","variable":"weed-energy","left":153,"top":193,"right":275,"bottom":226,"display":"weed-energy","min":"0","max":"10","default":0,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"500","compiledStep":"1","variable":"number","left":35,"top":42,"right":261,"bottom":75,"display":"number","min":"0","max":"500","default":150,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"1","variable":"birth-threshold","left":65,"top":127,"right":225,"bottom":160,"display":"birth-threshold","min":"0","max":"20","default":15,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setYRange(0, world.observer.getGlobal(\"number\"));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'grass')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 55); }).size(), 4));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"grass","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = green] / 4","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'rabbits')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtleManager.turtlesOfBreed(\"RABBITS\").size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"rabbits","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count rabbits","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Populations', 'weeds')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 115); }).size(), 4));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"weeds","interval":1,"mode":0,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = violet] / 4","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Populations","left":4,"top":228,"right":275,"bottom":424,"xAxis":"Time","yAxis":"Pop","xmin":0,"xmax":100,"ymin":0,"ymax":111,"autoPlotOn":true,"legendOn":true,"setupCode":"set-plot-y-range 0 number","updateCode":"","pens":[{"display":"grass","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = green] / 4","type":"pen"},{"display":"rabbits","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count rabbits","type":"pen"},{"display":"weeds","interval":1,"mode":0,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = violet] / 4","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"RABBITS\").size()","source":"count rabbits","left":186,"top":424,"right":275,"bottom":469,"display":"count rabbits","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], ["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], [], -20, 20, -20, 20, 12, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -135,11 +120,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -152,7 +133,7 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       procedures["GROW-GRASS-AND-WEEDS"]();
-      world.turtleManager.turtlesOfBreed("RABBITS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("RABBITS")).ask(function() {
         procedures["MOVE"]();
         procedures["EAT-GRASS"]();
         procedures["EAT-WEEDS"]();
@@ -161,11 +142,7 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -174,7 +151,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
           if (Prims.lt(Prims.randomFloat(1000), world.observer.getGlobal("weeds-grow-rate"))) {
             SelfManager.self().setPatchVariable("pcolor", 115);
@@ -185,11 +162,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["growGrassAndWeeds"] = temp;
@@ -203,11 +176,7 @@ var procedures = (function() {
       SelfManager.self()._optimalFdOne();
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 0.5));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["move"] = temp;
@@ -221,11 +190,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["eatGrass"] = temp;
@@ -239,11 +204,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("weed-energy")));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["eatWeeds"] = temp;
@@ -257,11 +218,7 @@ var procedures = (function() {
         SelfManager.self().hatch(1, "").ask(function() { SelfManager.self()._optimalFdOne(); }, true);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["reproduce"] = temp;
@@ -274,11 +231,7 @@ var procedures = (function() {
         SelfManager.self().die();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["death"] = temp;

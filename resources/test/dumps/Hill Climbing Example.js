@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["peak?"], [])('turtles-own [   peak? ;; indicates whether a turtle has reached a \"peak\",         ;; that is, it can no longer go \"uphill\" from where it stands ]  to setup   clear-all   ;; make a landscape with hills and valleys   ask n-of 100 patches [ set pcolor 120 ]   ;; slightly smooth out the landscape   repeat 20 [ diffuse pcolor 1 ]   ;; put some turtles on patch centers in the landscape   ask n-of 800 patches [     sprout 1 [       set peak? false       set color red       pen-down     ]   ]   reset-ticks end  to go   ;; stop when all turtles are on peak   if all? turtles [peak?]     [ stop ]   ask turtles [     ;; remember where we started     let old-patch patch-here     ;; to use UPHILL, the turtles specify a patch variable     uphill pcolor     ;; are we still where we started? if so, we didn\'t     ;; move, so we must be on a peak     if old-patch = patch-here [ set peak? true ]   ]   tick end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":138,"top":11,"right":632,"bottom":506,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":6,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":24,"top":51,"right":115,"bottom":84,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":24,"top":90,"right":115,"bottom":123,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())([], [], [], -40, 40, -40, 40, 6, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["peak?"], [])('turtles-own [   peak? ;; indicates whether a turtle has reached a \"peak\",         ;; that is, it can no longer go \"uphill\" from where it stands ]  to setup   clear-all   ;; make a landscape with hills and valleys   ask n-of 100 patches [ set pcolor 120 ]   ;; slightly smooth out the landscape   repeat 20 [ diffuse pcolor 1 ]   ;; put some turtles on patch centers in the landscape   ask n-of 800 patches [     sprout 1 [       set peak? false       set color red       pen-down     ]   ]   reset-ticks end  to go   ;; stop when all turtles are on peak   if all? turtles [peak?]     [ stop ]   ask turtles [     ;; remember where we started     let old-patch patch-here     ;; to use UPHILL, the turtles specify a patch variable     uphill pcolor     ;; are we still where we started? if so, we didn\'t     ;; move, so we must be on a peak     if old-patch = patch-here [ set peak? true ]   ]   tick end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":138,"top":11,"right":632,"bottom":506,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":6,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":24,"top":51,"right":115,"bottom":84,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":24,"top":90,"right":115,"bottom":123,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())([], [], [], -40, 40, -40, 40, 6, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -53,11 +54,11 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      ListPrims.nOf(100, world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true);
+      Errors.askNobodyCheck(ListPrims.nOf(100, world.patches())).ask(function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true);
       for (let _index_296_302 = 0, _repeatcount_296_302 = StrictMath.floor(20); _index_296_302 < _repeatcount_296_302; _index_296_302++){
         world.topology.diffuse("pcolor", 1, false)
       }
-      ListPrims.nOf(800, world.patches()).ask(function() {
+      Errors.askNobodyCheck(ListPrims.nOf(800, world.patches())).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("peak?", false);
           SelfManager.self().setVariable("color", 15);
@@ -66,11 +67,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -82,7 +79,7 @@ var procedures = (function() {
       if (world.turtles().agentAll(function() { return SelfManager.self().getVariable("peak?"); })) {
         throw new Exception.StopInterrupt;
       }
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         let oldPatch = SelfManager.self().getPatchHere(); letVars['oldPatch'] = oldPatch;
         Prims.uphill("pcolor")
         if (Prims.equality(oldPatch, SelfManager.self().getPatchHere())) {
@@ -91,11 +88,7 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;

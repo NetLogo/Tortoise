@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [result]  patches-own [state new-state]  to benchmark   random-seed 5454   reset-timer   setup   repeat 20 [ go ]   set result timer end  to setup   ca reset-ticks   ask patches     [ set state random (n + 1)   ;; pick a state from 0 to n       set pcolor scale-color red state 0 n ] end  to go   ;; first all the patches compute their new state   ask patches [ find-new-state ]   ;; only once all the patches have computed their new state   ;; do they actually change state   ask patches   [ set state new-state     set pcolor scale-color red state 0 n ]   tick end  to find-new-state  ;; patch procedure   ifelse state = n  ;; ill?     [ set new-state 0 ] ;; get well     [ let a count neighbors with [state > 0 and state < n]  ;; count infected       let b count neighbors with [state = n] ;; count ill       ifelse state = 0  ;; healthy?         [ set new-state int (a / k1) + int (b / k2) ]         [ let s state + sum [state] of neighbors           set new-state int (s / (a + b + 1)) + g ]       if new-state > n   ;; don\'t exceed the maximum state         [ set new-state n ] ] end')([{"left":183,"top":10,"right":494,"bottom":342,"dimensions":{"minPxcor":-150,"maxPxcor":150,"minPycor":-150,"maxPycor":150,"patchSize":1,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"200","compiledStep":"1","variable":"n","left":6,"top":51,"right":178,"bottom":84,"display":"n","min":"1","max":"200","default":200,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":25,"top":16,"right":88,"bottom":49,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":95,"top":16,"right":158,"bottom":49,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"8","compiledStep":"1","variable":"k1","left":6,"top":86,"right":178,"bottom":119,"display":"k1","min":"1","max":"8","default":3,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"8","compiledStep":"1","variable":"k2","left":6,"top":120,"right":178,"bottom":153,"display":"k2","min":"1","max":"8","default":3,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"g","left":6,"top":154,"right":178,"bottom":187,"display":"g","min":"0","max":"100","default":28,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"benchmark","left":29,"top":195,"right":163,"bottom":338,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":52,"top":288,"right":142,"bottom":333,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["n", "k1", "k2", "g", "result"], ["n", "k1", "k2", "g"], ["state", "new-state"], -150, 150, -150, 150, 1, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [result]  patches-own [state new-state]  to benchmark   random-seed 5454   reset-timer   setup   repeat 20 [ go ]   set result timer end  to setup   ca reset-ticks   ask patches     [ set state random (n + 1)   ;; pick a state from 0 to n       set pcolor scale-color red state 0 n ] end  to go   ;; first all the patches compute their new state   ask patches [ find-new-state ]   ;; only once all the patches have computed their new state   ;; do they actually change state   ask patches   [ set state new-state     set pcolor scale-color red state 0 n ]   tick end  to find-new-state  ;; patch procedure   ifelse state = n  ;; ill?     [ set new-state 0 ] ;; get well     [ let a count neighbors with [state > 0 and state < n]  ;; count infected       let b count neighbors with [state = n] ;; count ill       ifelse state = 0  ;; healthy?         [ set new-state int (a / k1) + int (b / k2) ]         [ let s state + sum [state] of neighbors           set new-state int (s / (a + b + 1)) + g ]       if new-state > n   ;; don\'t exceed the maximum state         [ set new-state n ] ] end')([{"left":183,"top":10,"right":494,"bottom":342,"dimensions":{"minPxcor":-150,"maxPxcor":150,"minPycor":-150,"maxPycor":150,"patchSize":1,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"200","compiledStep":"1","variable":"n","left":6,"top":51,"right":178,"bottom":84,"display":"n","min":"1","max":"200","default":200,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":25,"top":16,"right":88,"bottom":49,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":95,"top":16,"right":158,"bottom":49,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"8","compiledStep":"1","variable":"k1","left":6,"top":86,"right":178,"bottom":119,"display":"k1","min":"1","max":"8","default":3,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"8","compiledStep":"1","variable":"k2","left":6,"top":120,"right":178,"bottom":153,"display":"k2","min":"1","max":"8","default":3,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"g","left":6,"top":154,"right":178,"bottom":187,"display":"g","min":"0","max":"100","default":28,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"benchmark","left":29,"top":195,"right":163,"bottom":338,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":52,"top":288,"right":142,"bottom":333,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["n", "k1", "k2", "g", "result"], ["n", "k1", "k2", "g"], ["state", "new-state"], -150, 150, -150, 150, 1, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -60,11 +61,7 @@ var procedures = (function() {
       }
       world.observer.setGlobal("result", workspace.timer.elapsed());
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["benchmark"] = temp;
@@ -75,16 +72,12 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.ticker.reset();
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("state", Prims.random((world.observer.getGlobal("n") + 1)));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -93,18 +86,14 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() { procedures["FIND-NEW-STATE"](); }, true);
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() { procedures["FIND-NEW-STATE"](); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("state", SelfManager.self().getPatchVariable("new-state"));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -133,11 +122,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["findNewState"] = temp;

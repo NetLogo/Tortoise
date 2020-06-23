@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "CELLS", singular: "cell", varNames: ["hex-neighbors", "live-neighbor-count", "eligible?"] }])([], [])('globals [   ;; This list contains the numbers of the switches that are on,   ;; for example, if all six switches are on, the list will be   ;; [1 2 3 4 5 6].  The list is only built during SETUP and   ;; READ-SWITCHES.   switches   ;; This is a list of cells which are eligible to become alive.   eligibles ]  ;; About the use of lists in this model: ;; ;; The model could be coded more simply without the \"switches\" and ;; \"eligibles\" lists.  But using those lists enables the model to run ;; much faster. ;; ;; The \"switches\" list is used so a cell can quickly check its live ;; neighbors count against the six switches without having to actually ;; inspect the switches one by one.  If the user flips a switch, ;; the list will be out of date, which is why we ask the user to ;; press the SETUP or READ-SWITCHES buttons after changing switches. ;; ;; The \"eligibles\" list is used so that when we are trying to decide ;; what cell will become alive next, we don\'t have to check every ;; cell.  The list contains only those cells we know are eligible. ;; Every time a cell becomes alive, we remove it from the list. ;; We must also check that cell\'s neighbors to see if they need ;; to be added or removed from the list.  breed [cells cell]  cells-own [   hex-neighbors   live-neighbor-count   eligible? ]  to setup   clear-all   setup-grid   read-switches   ;; start with one live cell in the middle   ask cells-on patch 0 0 [ become-alive ]   reset-ticks end  to go   if empty? eligibles [ stop ]   ask one-of eligibles [ become-alive ]   tick end  to become-alive  ;; cell procedure   show-turtle   set eligible? false   set eligibles remove self eligibles   ask hex-neighbors [     set live-neighbor-count live-neighbor-count + 1     if live-neighbor-count = 6 [ set color red ]     update-eligibility   ] end  to update-eligibility  ;; cell procedure   ifelse eligible?   ;; case 1: currently eligible   [     if not member? live-neighbor-count switches [       set eligible? false       set eligibles remove self eligibles     ]   ]   ;; case 2: not currently eligible   [     ;; the check for hidden? ensures the cell isn\'t already alive     if hidden? and member? live-neighbor-count switches [       set eligible? true       ;; The order of the list doesn\'t matter, but in NetLogo       ;; (as in Logo and Lisp generally), FPUT is much much       ;; faster than LPUT.       set eligibles fput self eligibles     ]   ] end  ;;; only allow the new alive cells to have number of neighbors as allowed by the switches to read-switches   set switches []   if one-neighbor?    [ set switches lput 1 switches ]   if two-neighbors?   [ set switches lput 2 switches ]   if three-neighbors? [ set switches lput 3 switches ]   if four-neighbors?  [ set switches lput 4 switches ]   if five-neighbors?  [ set switches lput 5 switches ]   if six-neighbors?   [ set switches lput 6 switches ]   ask cells [     set eligible? hidden? and member? live-neighbor-count switches   ]   set eligibles [self] of cells with [eligible?] end  ;;; this was mostly taken from Hex Cells Example to setup-grid   set-default-shape turtles \"hex\"   ask patches [     sprout-cells 1 [       hide-turtle       set color orange       set eligible? false       if pxcor mod 2 = 0 [         set ycor ycor - 0.5       ]     ]   ]   ask cells [     ifelse pxcor mod 2 = 0 [       set hex-neighbors cells-on patches at-points [[0  1] [ 1  0] [ 1 -1]                                                     [0 -1] [-1 -1] [-1  0]]     ][       set hex-neighbors cells-on patches at-points [[0  1] [ 1  1] [ 1  0]                                                     [0 -1] [-1  0] [-1  1]]     ]   ] end   ; Copyright 2007 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":289,"top":10,"right":701,"bottom":423,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":4,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":8,"top":37,"right":172,"bottom":70,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":179,"top":71,"right":279,"bottom":104,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":179,"top":37,"right":279,"bottom":70,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"one-neighbor?","left":9,"top":72,"right":172,"bottom":105,"display":"one-neighbor?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"two-neighbors?","left":9,"top":106,"right":172,"bottom":139,"display":"two-neighbors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"three-neighbors?","left":9,"top":140,"right":172,"bottom":173,"display":"three-neighbors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"four-neighbors?","left":9,"top":174,"right":172,"bottom":207,"display":"four-neighbors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"five-neighbors?","left":9,"top":208,"right":172,"bottom":241,"display":"five-neighbors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"six-neighbors?","left":10,"top":242,"right":172,"bottom":275,"display":"six-neighbors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_46 = procedures[\"READ-SWITCHES\"]();   if (_maybestop_33_46 instanceof Exception.StopInterrupt) { return _maybestop_33_46; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"read-switches","left":10,"top":278,"right":172,"bottom":311,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"The switches are only considered during SETUP and READ-SWITCHES.","left":181,"top":129,"right":280,"bottom":196,"fontSize":10,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["one-neighbor?", "two-neighbors?", "three-neighbors?", "four-neighbors?", "five-neighbors?", "six-neighbors?", "switches", "eligibles"], ["one-neighbor?", "two-neighbors?", "three-neighbors?", "four-neighbors?", "five-neighbors?", "six-neighbors?"], [], -50, 50, -50, 50, 4, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "CELLS", singular: "cell", varNames: ["hex-neighbors", "live-neighbor-count", "eligible?"] }])([], [])('globals [   ;; This list contains the numbers of the switches that are on,   ;; for example, if all six switches are on, the list will be   ;; [1 2 3 4 5 6].  The list is only built during SETUP and   ;; READ-SWITCHES.   switches   ;; This is a list of cells which are eligible to become alive.   eligibles ]  ;; About the use of lists in this model: ;; ;; The model could be coded more simply without the \"switches\" and ;; \"eligibles\" lists.  But using those lists enables the model to run ;; much faster. ;; ;; The \"switches\" list is used so a cell can quickly check its live ;; neighbors count against the six switches without having to actually ;; inspect the switches one by one.  If the user flips a switch, ;; the list will be out of date, which is why we ask the user to ;; press the SETUP or READ-SWITCHES buttons after changing switches. ;; ;; The \"eligibles\" list is used so that when we are trying to decide ;; what cell will become alive next, we don\'t have to check every ;; cell.  The list contains only those cells we know are eligible. ;; Every time a cell becomes alive, we remove it from the list. ;; We must also check that cell\'s neighbors to see if they need ;; to be added or removed from the list.  breed [cells cell]  cells-own [   hex-neighbors   live-neighbor-count   eligible? ]  to setup   clear-all   setup-grid   read-switches   ;; start with one live cell in the middle   ask cells-on patch 0 0 [ become-alive ]   reset-ticks end  to go   if empty? eligibles [ stop ]   ask one-of eligibles [ become-alive ]   tick end  to become-alive  ;; cell procedure   show-turtle   set eligible? false   set eligibles remove self eligibles   ask hex-neighbors [     set live-neighbor-count live-neighbor-count + 1     if live-neighbor-count = 6 [ set color red ]     update-eligibility   ] end  to update-eligibility  ;; cell procedure   ifelse eligible?   ;; case 1: currently eligible   [     if not member? live-neighbor-count switches [       set eligible? false       set eligibles remove self eligibles     ]   ]   ;; case 2: not currently eligible   [     ;; the check for hidden? ensures the cell isn\'t already alive     if hidden? and member? live-neighbor-count switches [       set eligible? true       ;; The order of the list doesn\'t matter, but in NetLogo       ;; (as in Logo and Lisp generally), FPUT is much much       ;; faster than LPUT.       set eligibles fput self eligibles     ]   ] end  ;;; only allow the new alive cells to have number of neighbors as allowed by the switches to read-switches   set switches []   if one-neighbor?    [ set switches lput 1 switches ]   if two-neighbors?   [ set switches lput 2 switches ]   if three-neighbors? [ set switches lput 3 switches ]   if four-neighbors?  [ set switches lput 4 switches ]   if five-neighbors?  [ set switches lput 5 switches ]   if six-neighbors?   [ set switches lput 6 switches ]   ask cells [     set eligible? hidden? and member? live-neighbor-count switches   ]   set eligibles [self] of cells with [eligible?] end  ;;; this was mostly taken from Hex Cells Example to setup-grid   set-default-shape turtles \"hex\"   ask patches [     sprout-cells 1 [       hide-turtle       set color orange       set eligible? false       if pxcor mod 2 = 0 [         set ycor ycor - 0.5       ]     ]   ]   ask cells [     ifelse pxcor mod 2 = 0 [       set hex-neighbors cells-on patches at-points [[0  1] [ 1  0] [ 1 -1]                                                     [0 -1] [-1 -1] [-1  0]]     ][       set hex-neighbors cells-on patches at-points [[0  1] [ 1  1] [ 1  0]                                                     [0 -1] [-1  0] [-1  1]]     ]   ] end   ; Copyright 2007 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":289,"top":10,"right":701,"bottom":423,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":4,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":8,"top":37,"right":172,"bottom":70,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":179,"top":71,"right":279,"bottom":104,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":179,"top":37,"right":279,"bottom":70,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"one-neighbor?","left":9,"top":72,"right":172,"bottom":105,"display":"one-neighbor?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"two-neighbors?","left":9,"top":106,"right":172,"bottom":139,"display":"two-neighbors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"three-neighbors?","left":9,"top":140,"right":172,"bottom":173,"display":"three-neighbors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"four-neighbors?","left":9,"top":174,"right":172,"bottom":207,"display":"four-neighbors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"five-neighbors?","left":9,"top":208,"right":172,"bottom":241,"display":"five-neighbors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"six-neighbors?","left":10,"top":242,"right":172,"bottom":275,"display":"six-neighbors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_46 = procedures[\"READ-SWITCHES\"]();   if (_maybestop_33_46 instanceof Exception.StopInterrupt) { return _maybestop_33_46; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"read-switches","left":10,"top":278,"right":172,"bottom":311,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"The switches are only considered during SETUP and READ-SWITCHES.","left":181,"top":129,"right":280,"bottom":196,"fontSize":10,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["one-neighbor?", "two-neighbors?", "three-neighbors?", "four-neighbors?", "five-neighbors?", "six-neighbors?", "switches", "eligibles"], ["one-neighbor?", "two-neighbors?", "three-neighbors?", "four-neighbors?", "five-neighbors?", "six-neighbors?"], [], -50, 50, -50, 50, 4, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -55,14 +56,10 @@ var procedures = (function() {
       world.clearAll();
       procedures["SETUP-GRID"]();
       procedures["READ-SWITCHES"]();
-      Prims.breedOn("CELLS", world.getPatchAt(0, 0)).ask(function() { procedures["BECOME-ALIVE"](); }, true);
+      Errors.askNobodyCheck(Prims.breedOn("CELLS", world.getPatchAt(0, 0))).ask(function() { procedures["BECOME-ALIVE"](); }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -74,14 +71,10 @@ var procedures = (function() {
       if (ListPrims.empty(world.observer.getGlobal("eligibles"))) {
         throw new Exception.StopInterrupt;
       }
-      ListPrims.oneOf(world.observer.getGlobal("eligibles")).ask(function() { procedures["BECOME-ALIVE"](); }, true);
+      Errors.askNobodyCheck(ListPrims.oneOf(world.observer.getGlobal("eligibles"))).ask(function() { procedures["BECOME-ALIVE"](); }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -93,7 +86,7 @@ var procedures = (function() {
       SelfManager.self().hideTurtle(false);;
       SelfManager.self().setVariable("eligible?", false);
       world.observer.setGlobal("eligibles", ListPrims.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
-      SelfManager.self().getVariable("hex-neighbors").ask(function() {
+      Errors.askNobodyCheck(SelfManager.self().getVariable("hex-neighbors")).ask(function() {
         SelfManager.self().setVariable("live-neighbor-count", (SelfManager.self().getVariable("live-neighbor-count") + 1));
         if (Prims.equality(SelfManager.self().getVariable("live-neighbor-count"), 6)) {
           SelfManager.self().setVariable("color", 15);
@@ -101,11 +94,7 @@ var procedures = (function() {
         procedures["UPDATE-ELIGIBILITY"]();
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["becomeAlive"] = temp;
@@ -127,11 +116,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["updateEligibility"] = temp;
@@ -159,16 +144,12 @@ var procedures = (function() {
       if (world.observer.getGlobal("six-neighbors?")) {
         world.observer.setGlobal("switches", ListPrims.lput(6, world.observer.getGlobal("switches")));
       }
-      world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CELLS")).ask(function() {
         SelfManager.self().setVariable("eligible?", (SelfManager.self().getVariable("hidden?") && ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))));
       }, true);
       world.observer.setGlobal("eligibles", world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() { return SelfManager.self().getVariable("eligible?"); }).projectionBy(function() { return SelfManager.self(); }));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["readSwitches"] = temp;
@@ -178,7 +159,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "hex")
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().sprout(1, "CELLS").ask(function() {
           SelfManager.self().hideTurtle(true);;
           SelfManager.self().setVariable("color", 25);
@@ -188,7 +169,7 @@ var procedures = (function() {
           }
         }, true);
       }, true);
-      world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CELLS")).ask(function() {
         if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
           SelfManager.self().setVariable("hex-neighbors", Prims.breedOn("CELLS", world.patches().atPoints([[0, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]])));
         }
@@ -197,11 +178,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupGrid"] = temp;

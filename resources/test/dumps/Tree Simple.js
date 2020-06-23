@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["new?"], [])('turtles-own [ new? ]  ; setup the initial turtle and its properties to setup   clear-all   create-turtles 1   [     set shape \"line\"     set color init-color     setxy init-x init-y     set heading 0     pen-down   ]   reset-ticks end  ; have all non-new turtles draw an iteration of the tree to go   ask turtles   [     set new? false     pen-down   ] ; here are the commands to draw the tree   ask turtles with [ not new? ]   [     fd 4     rt 15     fd 8     hatch 1 [ set new? true ]     set color (color + color-inc)     rt 180     jump 8     rt 180     lt 15     fd 4     lt 15     hatch 1 [ set new? true ]     set color (color + color-inc)     fd 8     die   ]   tick end   ; Copyright 2001 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":265,"top":10,"right":675,"bottom":421,"dimensions":{"minPxcor":-100,"maxPxcor":100,"minPycor":-100,"maxPycor":100,"patchSize":2,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":94,"top":42,"right":175,"bottom":75,"display":"go once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":22,"top":42,"right":77,"bottom":75,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"color-inc","left":8,"top":79,"right":252,"bottom":112,"display":"color-inc","min":"0","max":"100","default":7,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"140","compiledStep":"1","variable":"init-color","left":8,"top":118,"right":252,"bottom":151,"display":"init-color","min":"0","max":"140","default":45,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-125","compiledMax":"125","compiledStep":"1","variable":"init-x","left":8,"top":154,"right":252,"bottom":187,"display":"init-x","min":"-125","max":"125","default":0,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-100","compiledMax":"100","compiledStep":"1","variable":"init-y","left":8,"top":191,"right":252,"bottom":224,"display":"init-y","min":"-100","max":"100","default":-50,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":176,"top":42,"right":231,"bottom":75,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtles().size()","source":"count turtles","left":85,"top":239,"right":173,"bottom":284,"display":"Num Turtles","precision":10,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["color-inc", "init-color", "init-x", "init-y"], ["color-inc", "init-color", "init-x", "init-y"], [], -100, 100, -100, 100, 2, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["new?"], [])('turtles-own [ new? ]  ; setup the initial turtle and its properties to setup   clear-all   create-turtles 1   [     set shape \"line\"     set color init-color     setxy init-x init-y     set heading 0     pen-down   ]   reset-ticks end  ; have all non-new turtles draw an iteration of the tree to go   ask turtles   [     set new? false     pen-down   ] ; here are the commands to draw the tree   ask turtles with [ not new? ]   [     fd 4     rt 15     fd 8     hatch 1 [ set new? true ]     set color (color + color-inc)     rt 180     jump 8     rt 180     lt 15     fd 4     lt 15     hatch 1 [ set new? true ]     set color (color + color-inc)     fd 8     die   ]   tick end   ; Copyright 2001 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":265,"top":10,"right":675,"bottom":421,"dimensions":{"minPxcor":-100,"maxPxcor":100,"minPycor":-100,"maxPycor":100,"patchSize":2,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":94,"top":42,"right":175,"bottom":75,"display":"go once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":22,"top":42,"right":77,"bottom":75,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"color-inc","left":8,"top":79,"right":252,"bottom":112,"display":"color-inc","min":"0","max":"100","default":7,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"140","compiledStep":"1","variable":"init-color","left":8,"top":118,"right":252,"bottom":151,"display":"init-color","min":"0","max":"140","default":45,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-125","compiledMax":"125","compiledStep":"1","variable":"init-x","left":8,"top":154,"right":252,"bottom":187,"display":"init-x","min":"-125","max":"125","default":0,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-100","compiledMax":"100","compiledStep":"1","variable":"init-y","left":8,"top":191,"right":252,"bottom":224,"display":"init-y","min":"-100","max":"100","default":-50,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":176,"top":42,"right":231,"bottom":75,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtles().size()","source":"count turtles","left":85,"top":239,"right":173,"bottom":284,"display":"Num Turtles","precision":10,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["color-inc", "init-color", "init-x", "init-y"], ["color-inc", "init-color", "init-x", "init-y"], [], -100, 100, -100, 100, 2, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -62,11 +63,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -75,11 +72,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         SelfManager.self().setVariable("new?", false);
         SelfManager.self().penManager.lowerPen();
       }, true);
-      world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("new?"); }).ask(function() {
+      Errors.askNobodyCheck(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("new?"); })).ask(function() {
         SelfManager.self().fd(4);
         SelfManager.self().right(15);
         SelfManager.self().fd(8);
@@ -98,11 +95,7 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;

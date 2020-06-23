@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtleManager.getTurtle(0).projectionBy(function() { return SelfManager.self().distanceXY(0, 0); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -54,11 +51,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.setYRange(0, world.topology.maxPxcor);
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -66,7 +59,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "dist", false, true, 0, 1440, 0, 30, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   setup-circle radius number   reset-ticks end  to setup-circle [r n]   clear-all   set-default-shape turtles \"circle\"   ;; turtles should be evenly spaced around the circle   create-ordered-turtles n [     set size 2  ;; easier to see     fd r     rt 90   ] end  to all-circle   circle radius   display end  to circle [r]   ask turtles [ move-along-circle r ]   if plot? [ update-plots ] end  to move-along-circle [r]   fd (pi * r / 180) * (speed / 50)   rt speed / 50 end  to zero-circle   ask turtle 0     [ pen-down       move-along-circle radius ]   display end  to draw-circle   clear-drawing   create-turtles 1     [ set color gray - 3       set size 2 * draw-radius       set shape \"circle\"       stamp       die ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":266,"top":10,"right":823,"bottom":568,"dimensions":{"minPxcor":-30,"maxPxcor":30,"minPycor":-30,"maxPycor":30,"patchSize":9,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":false,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"ALL-CIRCLE\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"all-circle","left":3,"top":79,"right":95,"bottom":112,"display":"all-circle","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"30","compiledStep":"1","variable":"radius","left":97,"top":117,"right":260,"bottom":150,"display":"radius","min":"0","max":"30","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"speed","left":97,"top":79,"right":260,"bottom":112,"display":"speed","min":"0","max":"100","default":25,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"300","compiledStep":"1","variable":"number","left":97,"top":42,"right":260,"bottom":75,"display":"number","min":"1","max":"300","default":40,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":2,"top":42,"right":95,"bottom":75,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_44 = procedures[\"DRAW-CIRCLE\"]();   if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"draw-circle","left":4,"top":154,"right":95,"bottom":187,"display":"draw-circle","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"30","compiledStep":"1","variable":"draw-radius","left":97,"top":154,"right":261,"bottom":187,"display":"draw-radius","min":"0","max":"30","default":15,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"plot?","left":83,"top":542,"right":183,"bottom":575,"display":"plot?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_44 = procedures[\"ZERO-CIRCLE\"]();   if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"zero-circle","left":4,"top":117,"right":95,"bottom":150,"display":"zero-circle","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Distance from the origin', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setYRange(0, world.topology.maxPxcor);       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Distance from the origin', 'distance')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtleManager.getTurtle(0).projectionBy(function() { return SelfManager.self().distanceXY(0, 0); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"distance","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot [distancexy 0 0] of turtle 0","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Distance from the origin","left":8,"top":348,"right":259,"bottom":540,"xAxis":"time","yAxis":"dist","xmin":0,"xmax":1440,"ymin":0,"ymax":30,"autoPlotOn":true,"legendOn":false,"setupCode":"set-plot-y-range 0 max-pxcor","updateCode":"","pens":[{"display":"distance","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot [distancexy 0 0] of turtle 0","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   world.turtles().ask(function() { SelfManager.self().penManager.lowerPen(); }, true); } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"pen-down","left":147,"top":218,"right":242,"bottom":251,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   world.turtles().ask(function() { SelfManager.self().penManager.raisePen(); }, true); } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"pen-up","left":147,"top":253,"right":242,"bottom":286,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   world.turtles().ask(function() { SelfManager.self().setVariable(\"shape\", \"circle\"); }, true); } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"set shape \"circle\"","left":7,"top":253,"right":143,"bottom":286,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   world.turtles().ask(function() { SelfManager.self().setVariable(\"shape\", \"turtle\"); }, true); } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"set shape \"turtle\"","left":7,"top":218,"right":143,"bottom":251,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   world.clearDrawing(); } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"clear-drawing","left":134,"top":291,"right":252,"bottom":324,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["radius", "speed", "number", "draw-radius", "plot?"], ["radius", "speed", "number", "draw-radius", "plot?"], [], -30, 30, -30, 30, 9, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   setup-circle radius number   reset-ticks end  to setup-circle [r n]   clear-all   set-default-shape turtles \"circle\"   ;; turtles should be evenly spaced around the circle   create-ordered-turtles n [     set size 2  ;; easier to see     fd r     rt 90   ] end  to all-circle   circle radius   display end  to circle [r]   ask turtles [ move-along-circle r ]   if plot? [ update-plots ] end  to move-along-circle [r]   fd (pi * r / 180) * (speed / 50)   rt speed / 50 end  to zero-circle   ask turtle 0     [ pen-down       move-along-circle radius ]   display end  to draw-circle   clear-drawing   create-turtles 1     [ set color gray - 3       set size 2 * draw-radius       set shape \"circle\"       stamp       die ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":266,"top":10,"right":823,"bottom":568,"dimensions":{"minPxcor":-30,"maxPxcor":30,"minPycor":-30,"maxPycor":30,"patchSize":9,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":false,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"ALL-CIRCLE\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"all-circle","left":3,"top":79,"right":95,"bottom":112,"display":"all-circle","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"30","compiledStep":"1","variable":"radius","left":97,"top":117,"right":260,"bottom":150,"display":"radius","min":"0","max":"30","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"speed","left":97,"top":79,"right":260,"bottom":112,"display":"speed","min":"0","max":"100","default":25,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"300","compiledStep":"1","variable":"number","left":97,"top":42,"right":260,"bottom":75,"display":"number","min":"1","max":"300","default":40,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":2,"top":42,"right":95,"bottom":75,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_44 = procedures[\"DRAW-CIRCLE\"]();   if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"draw-circle","left":4,"top":154,"right":95,"bottom":187,"display":"draw-circle","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"30","compiledStep":"1","variable":"draw-radius","left":97,"top":154,"right":261,"bottom":187,"display":"draw-radius","min":"0","max":"30","default":15,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"plot?","left":83,"top":542,"right":183,"bottom":575,"display":"plot?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_44 = procedures[\"ZERO-CIRCLE\"]();   if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"zero-circle","left":4,"top":117,"right":95,"bottom":150,"display":"zero-circle","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Distance from the origin', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setYRange(0, world.topology.maxPxcor);       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Distance from the origin', 'distance')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtleManager.getTurtle(0).projectionBy(function() { return SelfManager.self().distanceXY(0, 0); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"distance","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot [distancexy 0 0] of turtle 0","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Distance from the origin","left":8,"top":348,"right":259,"bottom":540,"xAxis":"time","yAxis":"dist","xmin":0,"xmax":1440,"ymin":0,"ymax":30,"autoPlotOn":true,"legendOn":false,"setupCode":"set-plot-y-range 0 max-pxcor","updateCode":"","pens":[{"display":"distance","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot [distancexy 0 0] of turtle 0","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   Errors.askNobodyCheck(world.turtles()).ask(function() { SelfManager.self().penManager.lowerPen(); }, true); } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"pen-down","left":147,"top":218,"right":242,"bottom":251,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   Errors.askNobodyCheck(world.turtles()).ask(function() { SelfManager.self().penManager.raisePen(); }, true); } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"pen-up","left":147,"top":253,"right":242,"bottom":286,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   Errors.askNobodyCheck(world.turtles()).ask(function() { SelfManager.self().setVariable(\"shape\", \"circle\"); }, true); } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"set shape \"circle\"","left":7,"top":253,"right":143,"bottom":286,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   Errors.askNobodyCheck(world.turtles()).ask(function() { SelfManager.self().setVariable(\"shape\", \"turtle\"); }, true); } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"set shape \"turtle\"","left":7,"top":218,"right":143,"bottom":251,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   world.clearDrawing(); } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"clear-drawing","left":134,"top":291,"right":252,"bottom":324,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["radius", "speed", "number", "draw-radius", "plot?"], ["radius", "speed", "number", "draw-radius", "plot?"], [], -30, 30, -30, 30, 9, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -94,11 +87,7 @@ var procedures = (function() {
       procedures["SETUP-CIRCLE"](world.observer.getGlobal("radius"),world.observer.getGlobal("number"));
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -115,11 +104,7 @@ var procedures = (function() {
         SelfManager.self().right(90);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupCircle"] = temp;
@@ -131,11 +116,7 @@ var procedures = (function() {
       procedures["CIRCLE"](world.observer.getGlobal("radius"));
       notImplemented('display', undefined)();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["allCircle"] = temp;
@@ -144,16 +125,12 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() { procedures["MOVE-ALONG-CIRCLE"](r); }, true);
+      Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["MOVE-ALONG-CIRCLE"](r); }, true);
       if (world.observer.getGlobal("plot?")) {
         plotManager.updatePlots();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["circle"] = temp;
@@ -165,11 +142,7 @@ var procedures = (function() {
       SelfManager.self().fd((Prims.div((3.141592653589793 * r), 180) * Prims.div(world.observer.getGlobal("speed"), 50)));
       SelfManager.self().right(Prims.div(world.observer.getGlobal("speed"), 50));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["moveAlongCircle"] = temp;
@@ -178,17 +151,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.getTurtle(0).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtle(0)).ask(function() {
         SelfManager.self().penManager.lowerPen();
         procedures["MOVE-ALONG-CIRCLE"](world.observer.getGlobal("radius"));
       }, true);
       notImplemented('display', undefined)();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["zeroCircle"] = temp;
@@ -206,11 +175,7 @@ var procedures = (function() {
         SelfManager.self().die();
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["drawCircle"] = temp;

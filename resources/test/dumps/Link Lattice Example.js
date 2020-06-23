@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup-square   clear-all   ;; Create a turtle on each patch. A link always connects two   ;; turtles, so we must make turtles first before we can make   ;; links.   ask patches [ sprout 1 ]   ;; Now create the links. Note that some turtles will try to create   ;; links that already exist because they were made by earlier   ;; turtles. That\'s OK; the CREATE-LINKS-WITH command will skip   ;; links that already exist.   ask turtles [ create-links-with turtles-on neighbors4 ]   reset-ticks end  to setup-hex   clear-all   ;; Create a turtle on each patch. A link always connects two   ;; turtles, so we must make turtles first before we can make   ;; links.   ask patches [ sprout 1 ]   ;; Now create the links.   ask turtles [     create-links-with turtles-at 0 1     create-links-with turtles-at 1 0     if pxcor mod 2 = 0 [       create-links-with turtles-at  1 -1       create-links-with turtles-at -1 -1       ;; Move every other column of turtles down by half a patch,       ;; resulting in a hexagonal pattern.       set ycor ycor - 0.5     ]   ]   reset-ticks end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":163,"top":10,"right":691,"bottom":539,"dimensions":{"minPxcor":0,"maxPxcor":25,"minPycor":0,"maxPycor":25,"patchSize":20,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_45 = procedures[\"SETUP-SQUARE\"]();   if (_maybestop_33_45 instanceof Exception.StopInterrupt) { return _maybestop_33_45; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup-square","left":28,"top":64,"right":144,"bottom":97,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"SETUP-HEX\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup-hex","left":28,"top":101,"right":145,"bottom":134,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())([], [], [], 0, 25, 0, 25, 20, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup-square   clear-all   ;; Create a turtle on each patch. A link always connects two   ;; turtles, so we must make turtles first before we can make   ;; links.   ask patches [ sprout 1 ]   ;; Now create the links. Note that some turtles will try to create   ;; links that already exist because they were made by earlier   ;; turtles. That\'s OK; the CREATE-LINKS-WITH command will skip   ;; links that already exist.   ask turtles [ create-links-with turtles-on neighbors4 ]   reset-ticks end  to setup-hex   clear-all   ;; Create a turtle on each patch. A link always connects two   ;; turtles, so we must make turtles first before we can make   ;; links.   ask patches [ sprout 1 ]   ;; Now create the links.   ask turtles [     create-links-with turtles-at 0 1     create-links-with turtles-at 1 0     if pxcor mod 2 = 0 [       create-links-with turtles-at  1 -1       create-links-with turtles-at -1 -1       ;; Move every other column of turtles down by half a patch,       ;; resulting in a hexagonal pattern.       set ycor ycor - 0.5     ]   ]   reset-ticks end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":163,"top":10,"right":691,"bottom":539,"dimensions":{"minPxcor":0,"maxPxcor":25,"minPycor":0,"maxPycor":25,"patchSize":20,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_45 = procedures[\"SETUP-SQUARE\"]();   if (_maybestop_33_45 instanceof Exception.StopInterrupt) { return _maybestop_33_45; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup-square","left":28,"top":64,"right":144,"bottom":97,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"SETUP-HEX\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup-hex","left":28,"top":101,"right":145,"bottom":134,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())([], [], [], 0, 25, 0, 25, 20, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -53,17 +54,13 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES"); }, true);
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().sprout(1, "TURTLES"); }, true);
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         LinkPrims.createLinksWith(Prims.turtlesOn(SelfManager.self().getNeighbors4()), "LINKS").ask(function() {}, false);
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupSquare"] = temp;
@@ -73,8 +70,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES"); }, true);
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().sprout(1, "TURTLES"); }, true);
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS").ask(function() {}, false);
         LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS").ask(function() {}, false);
         if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
@@ -85,11 +82,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupHex"] = temp;

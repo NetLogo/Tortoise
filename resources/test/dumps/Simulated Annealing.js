@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("global-energy"));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -50,7 +47,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "energy", false, true, 0, 10, 0, 10, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [ temperature global-energy ] patches-own [ brightness ]  to setup   clear-all   ask n-of ((count patches) / 2) patches   [     set brightness 1   ]   ask patches [ update-visual ]   set global-energy (sum [find-energy] of patches )   set temperature 1   reset-ticks end   to go   repeat 1000   [     ask one-of patches [       try-swap     ]   ]   ; we lower the temperature after 1000 attempted swaps   set temperature temperature * (1 - cooling-rate / 100)   set global-energy (sum [find-energy] of patches )   tick end  to update-visual   set pcolor brightness * 9.9  ; 0 = black, 9.9 = white end  ;; The swap (change in state) will always be accepted if the new energy level is lower. ;; There is a switch in the interface (accept-equal-changes) which determines whether ;;   to always accept swaps that lead to equal energy levels. ;; Lastly, even if the swap increases energy, it may be accepted (with probability ;;   proportional to the current \"temperature\" of the system.) to-report accept-change? [ old-energy new-energy ]   report (new-energy < old-energy)          or (accept-equal-changes? and new-energy = old-energy)          or ((random-float 1) < temperature) end  to try-swap   let p2 one-of (patches in-radius swap-radius)   if (brightness = [brightness] of p2) ; if same color, no point in swapping.     [ stop ]   ;; For efficiency, we only compute the change in energy in the region of patches   ;;    affected by the swap.   let affected-patches (patch-set self p2 neighbors4 ([neighbors4] of p2))   let old-energy sum [find-energy] of affected-patches   swap-values self p2   let new-energy sum [find-energy] of affected-patches   ifelse (accept-change? old-energy new-energy)   [     update-visual     ask p2 [ update-visual ]   ]   [     swap-values self p2   ] end  to swap-values [ p1 p2 ]   let temp [ brightness ] of p1   ask p1 [ set brightness [brightness] of p2 ]   ask p2 [ set brightness temp ] end  ;; this is the \"energy\" function for a single patch, which simulated annealing is ;; trying to minimize globally to-report find-energy  ; patch-procedure   let unhappiness 0   ask patch-at 0 1 [ set unhappiness unhappiness + (brightness - [brightness] of myself) ^ 2 ]   ask patch-at 0 -1 [ set unhappiness unhappiness + (brightness - [brightness] of myself) ^ 2 ]   ask patch-at 1 0 [ set unhappiness unhappiness + 1 - (brightness - [brightness] of myself) ^ 2 ]   ask patch-at -1 0 [ set unhappiness unhappiness + 1 - (brightness - [brightness] of myself) ^ 2 ]   ; maximum of 4, minimum of 0   report unhappiness end   ; Copyright 2009 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":205,"top":10,"right":633,"bottom":439,"dimensions":{"minPxcor":0,"maxPxcor":29,"minPycor":0,"maxPycor":29,"patchSize":14,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":10,"top":37,"right":100,"bottom":70,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":105,"top":37,"right":195,"bottom":70,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"50","compiledStep":"0.1","variable":"cooling-rate","left":10,"top":127,"right":190,"bottom":160,"display":"cooling-rate","min":"0","max":"50","default":1,"step":"0.1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"5","compiledStep":"1","variable":"swap-radius","left":10,"top":162,"right":190,"bottom":195,"display":"swap-radius","min":"1","max":"5","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"accept-equal-changes?","left":10,"top":197,"right":190,"bottom":230,"display":"accept-equal-changes?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"temperature\")","source":"temperature","left":50,"top":77,"right":150,"bottom":122,"precision":10,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"global-energy\")","source":"global-energy","left":50,"top":237,"right":155,"bottom":282,"precision":4,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('global energy', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"global-energy\"));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot global-energy","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"global energy","left":10,"top":287,"right":190,"bottom":437,"xAxis":"time","yAxis":"energy","xmin":0,"xmax":10,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot global-energy","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["cooling-rate", "swap-radius", "accept-equal-changes?", "temperature", "global-energy"], ["cooling-rate", "swap-radius", "accept-equal-changes?"], ["brightness"], 0, 29, 0, 29, 14, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [ temperature global-energy ] patches-own [ brightness ]  to setup   clear-all   ask n-of ((count patches) / 2) patches   [     set brightness 1   ]   ask patches [ update-visual ]   set global-energy (sum [find-energy] of patches )   set temperature 1   reset-ticks end   to go   repeat 1000   [     ask one-of patches [       try-swap     ]   ]   ; we lower the temperature after 1000 attempted swaps   set temperature temperature * (1 - cooling-rate / 100)   set global-energy (sum [find-energy] of patches )   tick end  to update-visual   set pcolor brightness * 9.9  ; 0 = black, 9.9 = white end  ;; The swap (change in state) will always be accepted if the new energy level is lower. ;; There is a switch in the interface (accept-equal-changes) which determines whether ;;   to always accept swaps that lead to equal energy levels. ;; Lastly, even if the swap increases energy, it may be accepted (with probability ;;   proportional to the current \"temperature\" of the system.) to-report accept-change? [ old-energy new-energy ]   report (new-energy < old-energy)          or (accept-equal-changes? and new-energy = old-energy)          or ((random-float 1) < temperature) end  to try-swap   let p2 one-of (patches in-radius swap-radius)   if (brightness = [brightness] of p2) ; if same color, no point in swapping.     [ stop ]   ;; For efficiency, we only compute the change in energy in the region of patches   ;;    affected by the swap.   let affected-patches (patch-set self p2 neighbors4 ([neighbors4] of p2))   let old-energy sum [find-energy] of affected-patches   swap-values self p2   let new-energy sum [find-energy] of affected-patches   ifelse (accept-change? old-energy new-energy)   [     update-visual     ask p2 [ update-visual ]   ]   [     swap-values self p2   ] end  to swap-values [ p1 p2 ]   let temp [ brightness ] of p1   ask p1 [ set brightness [brightness] of p2 ]   ask p2 [ set brightness temp ] end  ;; this is the \"energy\" function for a single patch, which simulated annealing is ;; trying to minimize globally to-report find-energy  ; patch-procedure   let unhappiness 0   ask patch-at 0 1 [ set unhappiness unhappiness + (brightness - [brightness] of myself) ^ 2 ]   ask patch-at 0 -1 [ set unhappiness unhappiness + (brightness - [brightness] of myself) ^ 2 ]   ask patch-at 1 0 [ set unhappiness unhappiness + 1 - (brightness - [brightness] of myself) ^ 2 ]   ask patch-at -1 0 [ set unhappiness unhappiness + 1 - (brightness - [brightness] of myself) ^ 2 ]   ; maximum of 4, minimum of 0   report unhappiness end   ; Copyright 2009 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":205,"top":10,"right":633,"bottom":439,"dimensions":{"minPxcor":0,"maxPxcor":29,"minPycor":0,"maxPycor":29,"patchSize":14,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":10,"top":37,"right":100,"bottom":70,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":105,"top":37,"right":195,"bottom":70,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"50","compiledStep":"0.1","variable":"cooling-rate","left":10,"top":127,"right":190,"bottom":160,"display":"cooling-rate","min":"0","max":"50","default":1,"step":"0.1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"5","compiledStep":"1","variable":"swap-radius","left":10,"top":162,"right":190,"bottom":195,"display":"swap-radius","min":"1","max":"5","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"accept-equal-changes?","left":10,"top":197,"right":190,"bottom":230,"display":"accept-equal-changes?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"temperature\")","source":"temperature","left":50,"top":77,"right":150,"bottom":122,"precision":10,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"global-energy\")","source":"global-energy","left":50,"top":237,"right":155,"bottom":282,"precision":4,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('global energy', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"global-energy\"));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot global-energy","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"global energy","left":10,"top":287,"right":190,"bottom":437,"xAxis":"time","yAxis":"energy","xmin":0,"xmax":10,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot global-energy","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["cooling-rate", "swap-radius", "accept-equal-changes?", "temperature", "global-energy"], ["cooling-rate", "swap-radius", "accept-equal-changes?"], ["brightness"], 0, 29, 0, 29, 14, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -76,17 +73,13 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      ListPrims.nOf(Prims.div(world.patches().size(), 2), world.patches()).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
-      world.patches().ask(function() { procedures["UPDATE-VISUAL"](); }, true);
+      Errors.askNobodyCheck(ListPrims.nOf(Prims.div(world.patches().size(), 2), world.patches())).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { procedures["UPDATE-VISUAL"](); }, true);
       world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
       world.observer.setGlobal("temperature", 1);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -96,17 +89,13 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++){
-        ListPrims.oneOf(world.patches()).ask(function() { procedures["TRY-SWAP"](); }, true);
+        Errors.askNobodyCheck(ListPrims.oneOf(world.patches())).ask(function() { procedures["TRY-SWAP"](); }, true);
       }
       world.observer.setGlobal("temperature", (world.observer.getGlobal("temperature") * (1 - Prims.div(world.observer.getGlobal("cooling-rate"), 100))));
       world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -117,11 +106,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setPatchVariable("pcolor", (SelfManager.self().getPatchVariable("brightness") * 9.9));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["updateVisual"] = temp;
@@ -130,16 +115,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return ((Prims.lt(newEnergy, oldEnergy) || (world.observer.getGlobal("accept-equal-changes?") && Prims.equality(newEnergy, oldEnergy))) || Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("temperature")))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return ((Prims.lt(newEnergy, oldEnergy) || (world.observer.getGlobal("accept-equal-changes?") && Prims.equality(newEnergy, oldEnergy))) || Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("temperature")));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["acceptChange_p"] = temp;
@@ -158,17 +138,13 @@ var procedures = (function() {
       let newEnergy = ListPrims.sum(affectedPatches.projectionBy(function() { return procedures["FIND-ENERGY"](); })); letVars['newEnergy'] = newEnergy;
       if (procedures["ACCEPT-CHANGE?"](oldEnergy,newEnergy)) {
         procedures["UPDATE-VISUAL"]();
-        p2.ask(function() { procedures["UPDATE-VISUAL"](); }, true);
+        Errors.askNobodyCheck(p2).ask(function() { procedures["UPDATE-VISUAL"](); }, true);
       }
       else {
         procedures["SWAP-VALUES"](SelfManager.self(),p2);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["trySwap"] = temp;
@@ -178,16 +154,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let temp = p1.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); }); letVars['temp'] = temp;
-      p1.ask(function() {
+      Errors.askNobodyCheck(p1).ask(function() {
         SelfManager.self().setPatchVariable("brightness", p2.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); }));
       }, true);
-      p2.ask(function() { SelfManager.self().setPatchVariable("brightness", temp); }, true);
+      Errors.askNobodyCheck(p2).ask(function() { SelfManager.self().setPatchVariable("brightness", temp); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["swapValues"] = temp;
@@ -197,28 +169,23 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       let unhappiness = 0; letVars['unhappiness'] = unhappiness;
-      SelfManager.self()._optimalPatchNorth().ask(function() {
+      Errors.askNobodyCheck(SelfManager.self()._optimalPatchNorth()).ask(function() {
         unhappiness = (unhappiness + NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
-      SelfManager.self()._optimalPatchSouth().ask(function() {
+      Errors.askNobodyCheck(SelfManager.self()._optimalPatchSouth()).ask(function() {
         unhappiness = (unhappiness + NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
-      SelfManager.self()._optimalPatchEast().ask(function() {
+      Errors.askNobodyCheck(SelfManager.self()._optimalPatchEast()).ask(function() {
         unhappiness = ((unhappiness + 1) - NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
-      SelfManager.self()._optimalPatchWest().ask(function() {
+      Errors.askNobodyCheck(SelfManager.self()._optimalPatchWest()).ask(function() {
         unhappiness = ((unhappiness + 1) - NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return unhappiness
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return unhappiness;
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["findEnergy"] = temp;

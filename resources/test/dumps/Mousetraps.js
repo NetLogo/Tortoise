@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("traps-triggered"));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -60,11 +57,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -73,7 +66,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", false, true, 0, 10, 0, 100, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [traps-triggered]  ;; how many traps have been sprung?  to setup   clear-all   set traps-triggered 0   ;; an untriggered mousetrap is light blue   ask patches     [ set pcolor blue + 3 ]   set-default-shape turtles \"circle\"   ;; make the first ball   create-turtles 1     [ set color white       set size 1.5 ]  ;; easier to see   reset-ticks end  to go   if not any? turtles     [ stop ]   ask turtles     [ ;; if we hit the wall or land on a triggered mousetrap,       ;; then stop       ifelse pcolor = red         [ die ]         ;; triggered traps are red         [ set pcolor red           set traps-triggered traps-triggered + 1           ;; send another ball flying off           hatch 1             [ move ]           ;; also bounce ourselves       move ] ]   tick end  to move  ;; turtle procedure   rt random-float 360   fd random-float max-distance end   ; Copyright 2002 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":281,"top":10,"right":772,"bottom":502,"dimensions":{"minPxcor":-80,"maxPxcor":80,"minPycor":-80,"maxPycor":80,"patchSize":3,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":23,"top":38,"right":95,"bottom":71,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":185,"top":38,"right":257,"bottom":71,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Traps triggered', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"traps-triggered\"));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot traps-triggered","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Traps triggered","left":10,"top":118,"right":272,"bottom":289,"xmin":0,"xmax":10,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot traps-triggered","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Balls in the air', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot count turtles","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Balls in the air","left":10,"top":291,"right":272,"bottom":467,"xmin":0,"xmax":10,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot count turtles","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":100,"top":38,"right":181,"bottom":71,"display":"go once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.5","variable":"max-distance","left":23,"top":76,"right":257,"bottom":109,"display":"max-distance","min":"0","max":"10","default":4.5,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["max-distance", "traps-triggered"], ["max-distance"], [], -80, 80, -80, 80, 3, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [traps-triggered]  ;; how many traps have been sprung?  to setup   clear-all   set traps-triggered 0   ;; an untriggered mousetrap is light blue   ask patches     [ set pcolor blue + 3 ]   set-default-shape turtles \"circle\"   ;; make the first ball   create-turtles 1     [ set color white       set size 1.5 ]  ;; easier to see   reset-ticks end  to go   if not any? turtles     [ stop ]   ask turtles     [ ;; if we hit the wall or land on a triggered mousetrap,       ;; then stop       ifelse pcolor = red         [ die ]         ;; triggered traps are red         [ set pcolor red           set traps-triggered traps-triggered + 1           ;; send another ball flying off           hatch 1             [ move ]           ;; also bounce ourselves       move ] ]   tick end  to move  ;; turtle procedure   rt random-float 360   fd random-float max-distance end   ; Copyright 2002 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":281,"top":10,"right":772,"bottom":502,"dimensions":{"minPxcor":-80,"maxPxcor":80,"minPycor":-80,"maxPycor":80,"patchSize":3,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":23,"top":38,"right":95,"bottom":71,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":185,"top":38,"right":257,"bottom":71,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Traps triggered', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"traps-triggered\"));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot traps-triggered","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Traps triggered","left":10,"top":118,"right":272,"bottom":289,"xmin":0,"xmax":10,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot traps-triggered","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Balls in the air', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot count turtles","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Balls in the air","left":10,"top":291,"right":272,"bottom":467,"xmin":0,"xmax":10,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot count turtles","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":100,"top":38,"right":181,"bottom":71,"display":"go once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.5","variable":"max-distance","left":23,"top":76,"right":257,"bottom":109,"display":"max-distance","min":"0","max":"10","default":4.5,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["max-distance", "traps-triggered"], ["max-distance"], [], -80, 80, -80, 80, 3, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -100,7 +93,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.observer.setGlobal("traps-triggered", 0);
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 + 3)); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 + 3)); }, true);
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("color", 9.9);
@@ -108,11 +101,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -124,7 +113,7 @@ var procedures = (function() {
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
           SelfManager.self().die();
         }
@@ -137,11 +126,7 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -153,11 +138,7 @@ var procedures = (function() {
       SelfManager.self().right(Prims.randomFloat(360));
       SelfManager.self().fd(Prims.randomFloat(world.observer.getGlobal("max-distance")));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["move"] = temp;

@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "COLUMN-COUNTERS", singular: "column-counter", varNames: ["my-column", "my-column-patches"] }, { name: "FRAMES", singular: "frame", varNames: [] }, { name: "MESSENGERS", singular: "messenger", varNames: [] }])([], [])('globals [   time-to-stop?   ;; boolean that discontinues run when columns reach to top   the-messenger       ;; holds identity of the single turtle of breed \'messengers\'                   ;; (see EXTENDING THE MODEL)   max-y-histogram ;; how high the columns can rise (or how far up the yellow goes) ]  breed [ column-counters column-counter ] ;; they keep track of their respective histogram columns breed [ frames frame ]    ;; square frames that indicate events in histogram columns breed [ messengers messenger  ]  ;; carry the random value to its column                   ;; (currently just one single messenger implemented)   column-counters-own [   ;; if you choose a sample-space 7 then you get 7 column-counters   ;; and their respective my-columns will be 1 thru 7   my-column   ;; each column-counter holds all patches that are in its column as an agentset   my-column-patches ]  to setup   clear-all   ;; computes the height the user has requested so as to get the value that makes sense   ;; in this model because the histogram grows from the negative-y values and not from 0   set max-y-histogram (min-pycor + height)   create-histogram-width   setup-column-counters   set time-to-stop? false   reset-ticks end  to create-histogram-width   ask patches   [     ;; deals with both even and odd sample-spaces     ;; this is one way of centering the histogram.     ;; that means that the \'50\' of the red-green slider     ;; will always be aligned with the middle of the histogram     ifelse (pxcor >= (- sample-space) / 2) and (pxcor < sample-space / 2)             and (pycor < max-y-histogram) ;; this shapes the top of the yellow zone     [ set pcolor yellow ]     [ set pcolor brown ]   ] end      ;; column-counters are turtles who form \"place-holders\" so that     ;; the messenger will \"know\" where to take its value.     ;; they are like the values on the x-axis of your sample space. to setup-column-counters   ask patches with [(pycor = min-pycor) ;; bottom of the view                        and pcolor = yellow]      ;; and in the histogram band width   [     sprout-column-counters 1     [       hide-turtle  ;; it is nice to see them but probably visually redundant       set heading 0       ;; this assigns a column name to column-counters that       ;; corresponds with the parameter setting of sample-space       set my-column floor (pxcor + sample-space / 2 + 1)       set my-column-patches patches with [ pxcor = [pxcor] of myself ]     ]   ]  end  to go ;; forever button   if time-to-stop? [ stop ]   select-random-value   send-messenger-to-its-column   ifelse colors?     [ paint ]     [ ask patches with [pcolor != brown] [ set pcolor yellow ]]   tick end      ;; \'messenger\' is a turtle who carries the random value     ;; on its back as a label to select-random-value   ask patch 0 (max-y-histogram + 4)   [     sprout-messengers 1     [       set shape \"default\"       set color black       set heading 180       set size 12       set label 1 + random sample-space       ;; currently there is just one messenger, so we assign it to a \'messenger\'       ;; variable. this will save time when the model run. if the user chooses       ;; to add more messengers then this shortcut may have to be done away with       set the-messenger self     ]   ] end      ;; messenger is the dart-shaped large turtle that carries the random value     ;; on its back. it takes this value directly to the appropriate column to send-messenger-to-its-column                 ;; \'it\' holds the column-counter who is master of the                 ;; column towards which the messenger orients and advances                 ;; to dispatch its event   let it one-of column-counters with [ my-column = [label] of the-messenger ]    ask the-messenger   [     face it     ;; keep advancing until you\'re all but covering your destination     while [ distance it > 3 ]     [       fd 1 ;; to the patch above you to prepare for next event       display     ]     die   ]   ask it   [ create-frame     fd 1     ;; if the histogram has become too high, we just stop.     ;; this could be extended so as to have the whole population     ;; of events collapse down one patch, as in Galton Box     if ycor = max-y-histogram [ set time-to-stop? true ]   ]  end  ;; make the square frames that look like accumulating cubes to create-frame ;; turtle procedure   ask patch-here   [     sprout-frames 1     [       set shape \"frame\"       set color black     ]   ] end      ;; patches are red if they are as far to the right within the sample-space     ;; as indexed by the red-green slider; otherwise, the are green     ;; Note that currently there is no rounding -- just a cut-off contour. to paint   ask column-counters   [     ifelse my-column <= (red-green * sample-space / 100)     [ ask my-column-patches with [ pycor < [pycor] of myself ] [ set pcolor red ] ]     [ ask my-column-patches with [ pycor < [pycor] of myself ] [ set pcolor green ] ]   ] end  ;; reports the percentage of red patches out of all patches that have frames ;; so we know what percent of events are to the left of the cut off line to-report %-red   report precision (100 * count patches with [pcolor = red] / count frames) 2 end  to-report %-full   report precision ( 100 * (count frames ) / ( height * sample-space ) ) 2  end  ;; biggest-gap is the greatest difference in height between all columns to-report biggest-gap   let max-column max [count my-column-patches with [pycor < [pycor] of myself] ] of column-counters    let min-column min [count my-column-patches with [pycor < [pycor] of myself] ] of column-counters    report max-column - min-column end   ; Copyright 2004 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":178,"top":10,"right":893,"bottom":446,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-30,"maxPycor":30,"patchSize":7,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"red-green","left":173,"top":469,"right":890,"bottom":502,"display":"red-green","min":"0","max":"100","default":50,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":12,"top":109,"right":75,"bottom":142,"display":"Setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":78,"top":109,"right":141,"bottom":142,"display":"Go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"colors?","left":33,"top":266,"right":123,"bottom":299,"display":"colors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"%-RED\"]()","source":"%-red","left":32,"top":212,"right":124,"bottom":257,"display":"%-red","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"sample-space","left":1,"top":36,"right":173,"bottom":69,"display":"sample-space","min":"1","max":"100","default":100,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"BIGGEST-GAP\"]()","source":"biggest-gap","left":32,"top":150,"right":124,"bottom":195,"display":"biggest gap","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"50","compiledStep":"1","variable":"height","left":1,"top":70,"right":173,"bottom":103,"display":"height","min":"1","max":"50","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"%-FULL\"]()","source":"%-full","left":47,"top":320,"right":104,"bottom":365,"precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["red-green", "colors?", "sample-space", "height", "time-to-stop?", "the-messenger", "max-y-histogram"], ["red-green", "colors?", "sample-space", "height"], [], -50, 50, -30, 30, 7, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "COLUMN-COUNTERS", singular: "column-counter", varNames: ["my-column", "my-column-patches"] }, { name: "FRAMES", singular: "frame", varNames: [] }, { name: "MESSENGERS", singular: "messenger", varNames: [] }])([], [])('globals [   time-to-stop?   ;; boolean that discontinues run when columns reach to top   the-messenger       ;; holds identity of the single turtle of breed \'messengers\'                   ;; (see EXTENDING THE MODEL)   max-y-histogram ;; how high the columns can rise (or how far up the yellow goes) ]  breed [ column-counters column-counter ] ;; they keep track of their respective histogram columns breed [ frames frame ]    ;; square frames that indicate events in histogram columns breed [ messengers messenger  ]  ;; carry the random value to its column                   ;; (currently just one single messenger implemented)   column-counters-own [   ;; if you choose a sample-space 7 then you get 7 column-counters   ;; and their respective my-columns will be 1 thru 7   my-column   ;; each column-counter holds all patches that are in its column as an agentset   my-column-patches ]  to setup   clear-all   ;; computes the height the user has requested so as to get the value that makes sense   ;; in this model because the histogram grows from the negative-y values and not from 0   set max-y-histogram (min-pycor + height)   create-histogram-width   setup-column-counters   set time-to-stop? false   reset-ticks end  to create-histogram-width   ask patches   [     ;; deals with both even and odd sample-spaces     ;; this is one way of centering the histogram.     ;; that means that the \'50\' of the red-green slider     ;; will always be aligned with the middle of the histogram     ifelse (pxcor >= (- sample-space) / 2) and (pxcor < sample-space / 2)             and (pycor < max-y-histogram) ;; this shapes the top of the yellow zone     [ set pcolor yellow ]     [ set pcolor brown ]   ] end      ;; column-counters are turtles who form \"place-holders\" so that     ;; the messenger will \"know\" where to take its value.     ;; they are like the values on the x-axis of your sample space. to setup-column-counters   ask patches with [(pycor = min-pycor) ;; bottom of the view                        and pcolor = yellow]      ;; and in the histogram band width   [     sprout-column-counters 1     [       hide-turtle  ;; it is nice to see them but probably visually redundant       set heading 0       ;; this assigns a column name to column-counters that       ;; corresponds with the parameter setting of sample-space       set my-column floor (pxcor + sample-space / 2 + 1)       set my-column-patches patches with [ pxcor = [pxcor] of myself ]     ]   ]  end  to go ;; forever button   if time-to-stop? [ stop ]   select-random-value   send-messenger-to-its-column   ifelse colors?     [ paint ]     [ ask patches with [pcolor != brown] [ set pcolor yellow ]]   tick end      ;; \'messenger\' is a turtle who carries the random value     ;; on its back as a label to select-random-value   ask patch 0 (max-y-histogram + 4)   [     sprout-messengers 1     [       set shape \"default\"       set color black       set heading 180       set size 12       set label 1 + random sample-space       ;; currently there is just one messenger, so we assign it to a \'messenger\'       ;; variable. this will save time when the model run. if the user chooses       ;; to add more messengers then this shortcut may have to be done away with       set the-messenger self     ]   ] end      ;; messenger is the dart-shaped large turtle that carries the random value     ;; on its back. it takes this value directly to the appropriate column to send-messenger-to-its-column                 ;; \'it\' holds the column-counter who is master of the                 ;; column towards which the messenger orients and advances                 ;; to dispatch its event   let it one-of column-counters with [ my-column = [label] of the-messenger ]    ask the-messenger   [     face it     ;; keep advancing until you\'re all but covering your destination     while [ distance it > 3 ]     [       fd 1 ;; to the patch above you to prepare for next event       display     ]     die   ]   ask it   [ create-frame     fd 1     ;; if the histogram has become too high, we just stop.     ;; this could be extended so as to have the whole population     ;; of events collapse down one patch, as in Galton Box     if ycor = max-y-histogram [ set time-to-stop? true ]   ]  end  ;; make the square frames that look like accumulating cubes to create-frame ;; turtle procedure   ask patch-here   [     sprout-frames 1     [       set shape \"frame\"       set color black     ]   ] end      ;; patches are red if they are as far to the right within the sample-space     ;; as indexed by the red-green slider; otherwise, the are green     ;; Note that currently there is no rounding -- just a cut-off contour. to paint   ask column-counters   [     ifelse my-column <= (red-green * sample-space / 100)     [ ask my-column-patches with [ pycor < [pycor] of myself ] [ set pcolor red ] ]     [ ask my-column-patches with [ pycor < [pycor] of myself ] [ set pcolor green ] ]   ] end  ;; reports the percentage of red patches out of all patches that have frames ;; so we know what percent of events are to the left of the cut off line to-report %-red   report precision (100 * count patches with [pcolor = red] / count frames) 2 end  to-report %-full   report precision ( 100 * (count frames ) / ( height * sample-space ) ) 2  end  ;; biggest-gap is the greatest difference in height between all columns to-report biggest-gap   let max-column max [count my-column-patches with [pycor < [pycor] of myself] ] of column-counters    let min-column min [count my-column-patches with [pycor < [pycor] of myself] ] of column-counters    report max-column - min-column end   ; Copyright 2004 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":178,"top":10,"right":893,"bottom":446,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-30,"maxPycor":30,"patchSize":7,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"red-green","left":173,"top":469,"right":890,"bottom":502,"display":"red-green","min":"0","max":"100","default":50,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":12,"top":109,"right":75,"bottom":142,"display":"Setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":78,"top":109,"right":141,"bottom":142,"display":"Go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"colors?","left":33,"top":266,"right":123,"bottom":299,"display":"colors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"%-RED\"]()","source":"%-red","left":32,"top":212,"right":124,"bottom":257,"display":"%-red","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"sample-space","left":1,"top":36,"right":173,"bottom":69,"display":"sample-space","min":"1","max":"100","default":100,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"BIGGEST-GAP\"]()","source":"biggest-gap","left":32,"top":150,"right":124,"bottom":195,"display":"biggest gap","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"50","compiledStep":"1","variable":"height","left":1,"top":70,"right":173,"bottom":103,"display":"height","min":"1","max":"50","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"%-FULL\"]()","source":"%-full","left":47,"top":320,"right":104,"bottom":365,"precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["red-green", "colors?", "sample-space", "height", "time-to-stop?", "the-messenger", "max-y-histogram"], ["red-green", "colors?", "sample-space", "height"], [], -50, 50, -30, 30, 7, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -59,11 +60,7 @@ var procedures = (function() {
       world.observer.setGlobal("time-to-stop?", false);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -72,7 +69,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         if (((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), Prims.div( -(world.observer.getGlobal("sample-space")), 2)) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.observer.getGlobal("sample-space"), 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("max-y-histogram")))) {
           SelfManager.self().setPatchVariable("pcolor", 45);
         }
@@ -81,11 +78,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["createHistogramWidth"] = temp;
@@ -94,9 +87,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().agentFilter(function() {
+      Errors.askNobodyCheck(world.patches().agentFilter(function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45));
-      }).ask(function() {
+      })).ask(function() {
         SelfManager.self().sprout(1, "COLUMN-COUNTERS").ask(function() {
           SelfManager.self().hideTurtle(true);;
           SelfManager.self().setVariable("heading", 0);
@@ -107,11 +100,7 @@ var procedures = (function() {
         }, true);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupColumnCounters"] = temp;
@@ -129,15 +118,11 @@ var procedures = (function() {
         procedures["PAINT"]();
       }
       else {
-        world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
+        Errors.askNobodyCheck(world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
       }
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -146,7 +131,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.getPatchAt(0, (world.observer.getGlobal("max-y-histogram") + 4)).ask(function() {
+      Errors.askNobodyCheck(world.getPatchAt(0, (world.observer.getGlobal("max-y-histogram") + 4))).ask(function() {
         SelfManager.self().sprout(1, "MESSENGERS").ask(function() {
           SelfManager.self().setVariable("shape", "default");
           SelfManager.self().setVariable("color", 0);
@@ -157,11 +142,7 @@ var procedures = (function() {
         }, true);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["selectRandomValue"] = temp;
@@ -173,7 +154,7 @@ var procedures = (function() {
       let it = world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS")._optimalOneOfWith(function() {
         return Prims.equality(SelfManager.self().getVariable("my-column"), world.observer.getGlobal("the-messenger").projectionBy(function() { return SelfManager.self().getVariable("label"); }));
       }); letVars['it'] = it;
-      world.observer.getGlobal("the-messenger").ask(function() {
+      Errors.askNobodyCheck(world.observer.getGlobal("the-messenger")).ask(function() {
         SelfManager.self().face(it);
         while (Prims.gt(SelfManager.self().distance(it), 3)) {
           SelfManager.self()._optimalFdOne();
@@ -181,7 +162,7 @@ var procedures = (function() {
         }
         SelfManager.self().die();
       }, true);
-      it.ask(function() {
+      Errors.askNobodyCheck(it).ask(function() {
         procedures["CREATE-FRAME"]();
         SelfManager.self()._optimalFdOne();
         if (Prims.equality(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("max-y-histogram"))) {
@@ -189,11 +170,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["sendMessengerToItsColumn"] = temp;
@@ -202,18 +179,14 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().getPatchHere().ask(function() {
+      Errors.askNobodyCheck(SelfManager.self().getPatchHere()).ask(function() {
         SelfManager.self().sprout(1, "FRAMES").ask(function() {
           SelfManager.self().setVariable("shape", "frame");
           SelfManager.self().setVariable("color", 0);
         }, true);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["createFrame"] = temp;
@@ -222,24 +195,20 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS")).ask(function() {
         if (Prims.lte(SelfManager.self().getVariable("my-column"), Prims.div((world.observer.getGlobal("red-green") * world.observer.getGlobal("sample-space")), 100))) {
-          SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
+          Errors.askNobodyCheck(SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
             return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
-          }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
+          })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
         }
         else {
-          SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
+          Errors.askNobodyCheck(SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
             return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
-          }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+          })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["paint"] = temp;
@@ -248,16 +217,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return NLMath.precision(Prims.div((100 * world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size()), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2)
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return NLMath.precision(Prims.div((100 * world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size()), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2);
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["_percent_Red"] = temp;
@@ -266,16 +230,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return NLMath.precision(Prims.div((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2)
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return NLMath.precision(Prims.div((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2);
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["_percent_Full"] = temp;
@@ -294,16 +253,11 @@ var procedures = (function() {
           return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
         }).size();
       })); letVars['minColumn'] = minColumn;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return (maxColumn - minColumn)
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return (maxColumn - minColumn);
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["biggestGap"] = temp;

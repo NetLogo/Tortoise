@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [   new-color       ;; currently, always either white or black   inner-neighbors ;; other cells in a circle around the cell   outer-neighbors ;; other cells in a ring around the cell (but usually not touching the cell) ]  to setup   clear-all   ;; computes inner and outer neighbors in an ellipse around each cell   ask patches   [     set inner-neighbors ellipse-in inner-radius-x inner-radius-y     ;; outer-neighbors needs more computation because we want only the cells in the circular ring     set outer-neighbors ellipse-ring outer-radius-x outer-radius-y inner-radius-x inner-radius-y   ]    ifelse any? patches with [ count outer-neighbors = 0 ]     [ user-message word \"It doesn\'t make sense that \'outer\' is equal to or smaller than \'inner.\' \"                         \" Please reset the sliders and press Setup again.\"       stop]     [restart]   reset-ticks end  ;; this procedure sets approximately initial-density percent of the ;; cells white and the rest black; if initial-density is set at 50% ;; then about half the cells will be white and the rest black to restart   ask patches     [ ifelse random-float 100 < initial-density         [ set pcolor white ]         [ set pcolor black ] ]   reset-ticks end  to go   ask patches [ pick-new-color ]   ask patches [ set pcolor new-color ]   tick end  to pick-new-color  ;; patch procedure   let activator count inner-neighbors with [pcolor = white]   let inhibitor count outer-neighbors with [pcolor = white]   ;; we don\'t need to multiply \'activator\' by a coefficient because   ;; the ratio variable keeps the proportion intact   let difference activator - ratio * inhibitor   ifelse difference > 0     [ set new-color white ]     [ if difference < 0         [ set new-color black ] ]   ;; note that we did not deal with the case that difference = 0.   ;; this is because we would then want cells not to change color. end  ;;; procedures for defining elliptical neighborhoods  to-report ellipse-in [x-radius y-radius]  ;; patch procedure   report patches in-radius (max list x-radius y-radius)            with [1 >= ((xdistance myself ^ 2) / (x-radius ^ 2)) +                         ((ydistance myself ^ 2) / (y-radius ^ 2))] end  to-report ellipse-ring [outx-radius outy-radius inx-radius iny-radius]  ;; patch procedure   report patches in-radius (max list outx-radius outy-radius)            with [1 >= ((xdistance myself ^ 2) / (outx-radius ^ 2)) +                         ((ydistance myself ^ 2) / (outy-radius ^ 2))              and 1 <  ((xdistance myself ^ 2) / (inx-radius ^ 2)) +                         ((ydistance myself ^ 2) / (iny-radius ^ 2))                 ] end  ;; The following two reporter give us the x and y distance magnitude. ;; you can think of a point at the tip of a triangle determining how much ;; \"to the left\" it is from another point and how far \"over\" it is from ;; that same point. These two numbers are important for computing total distances ;; in elliptical \"neighborhoods.\"  ;; Note that it is important to use the DISTANCEXY primitive and not ;; just take the absolute value of the difference in coordinates, ;; because DISTANCEXY handles wrapping around world edges correctly, ;; if wrapping is enabled (which it is by default in this model)  to-report xdistance [other-patch]  ;; patch procedure   report distancexy [pxcor] of other-patch                     pycor end  to-report ydistance [other-patch]  ;; patch procedure   report distancexy pxcor                     [pycor] of other-patch end   ; Copyright 2003 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":309,"top":10,"right":622,"bottom":324,"dimensions":{"minPxcor":-30,"maxPxcor":30,"minPycor":-30,"maxPycor":30,"patchSize":5,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":205,"top":60,"right":294,"bottom":93,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":218,"top":254,"right":289,"bottom":287,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"initial-density","left":7,"top":221,"right":179,"bottom":254,"display":"initial-density","min":"0","max":"100","default":50,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"2","compiledStep":"0.01","variable":"ratio","left":7,"top":257,"right":180,"bottom":290,"display":"ratio","min":"0","max":"2","default":0.35,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":217,"top":216,"right":289,"bottom":249,"display":"step","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_40 = procedures[\"RESTART\"]();   if (_maybestop_33_40 instanceof Exception.StopInterrupt) { return _maybestop_33_40; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"restart","left":216,"top":179,"right":289,"bottom":212,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"inner-radius-x","left":8,"top":37,"right":180,"bottom":70,"display":"inner-radius-x","min":"0","max":"10","default":3,"step":"1","units":"cells","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"inner-radius-y","left":8,"top":72,"right":180,"bottom":105,"display":"inner-radius-y","min":"0","max":"10","default":3,"step":"1","units":"cells","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"outer-radius-x","left":7,"top":106,"right":180,"bottom":139,"display":"outer-radius-x","min":"0","max":"10","default":6,"step":"1","units":"cells","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"outer-radius-y","left":7,"top":141,"right":179,"bottom":174,"display":"outer-radius-y","min":"0","max":"10","default":6,"step":"1","units":"cells","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["initial-density", "ratio", "inner-radius-x", "inner-radius-y", "outer-radius-x", "outer-radius-y"], ["initial-density", "ratio", "inner-radius-x", "inner-radius-y", "outer-radius-x", "outer-radius-y"], ["new-color", "inner-neighbors", "outer-neighbors"], -30, 30, -30, 30, 5, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [   new-color       ;; currently, always either white or black   inner-neighbors ;; other cells in a circle around the cell   outer-neighbors ;; other cells in a ring around the cell (but usually not touching the cell) ]  to setup   clear-all   ;; computes inner and outer neighbors in an ellipse around each cell   ask patches   [     set inner-neighbors ellipse-in inner-radius-x inner-radius-y     ;; outer-neighbors needs more computation because we want only the cells in the circular ring     set outer-neighbors ellipse-ring outer-radius-x outer-radius-y inner-radius-x inner-radius-y   ]    ifelse any? patches with [ count outer-neighbors = 0 ]     [ user-message word \"It doesn\'t make sense that \'outer\' is equal to or smaller than \'inner.\' \"                         \" Please reset the sliders and press Setup again.\"       stop]     [restart]   reset-ticks end  ;; this procedure sets approximately initial-density percent of the ;; cells white and the rest black; if initial-density is set at 50% ;; then about half the cells will be white and the rest black to restart   ask patches     [ ifelse random-float 100 < initial-density         [ set pcolor white ]         [ set pcolor black ] ]   reset-ticks end  to go   ask patches [ pick-new-color ]   ask patches [ set pcolor new-color ]   tick end  to pick-new-color  ;; patch procedure   let activator count inner-neighbors with [pcolor = white]   let inhibitor count outer-neighbors with [pcolor = white]   ;; we don\'t need to multiply \'activator\' by a coefficient because   ;; the ratio variable keeps the proportion intact   let difference activator - ratio * inhibitor   ifelse difference > 0     [ set new-color white ]     [ if difference < 0         [ set new-color black ] ]   ;; note that we did not deal with the case that difference = 0.   ;; this is because we would then want cells not to change color. end  ;;; procedures for defining elliptical neighborhoods  to-report ellipse-in [x-radius y-radius]  ;; patch procedure   report patches in-radius (max list x-radius y-radius)            with [1 >= ((xdistance myself ^ 2) / (x-radius ^ 2)) +                         ((ydistance myself ^ 2) / (y-radius ^ 2))] end  to-report ellipse-ring [outx-radius outy-radius inx-radius iny-radius]  ;; patch procedure   report patches in-radius (max list outx-radius outy-radius)            with [1 >= ((xdistance myself ^ 2) / (outx-radius ^ 2)) +                         ((ydistance myself ^ 2) / (outy-radius ^ 2))              and 1 <  ((xdistance myself ^ 2) / (inx-radius ^ 2)) +                         ((ydistance myself ^ 2) / (iny-radius ^ 2))                 ] end  ;; The following two reporter give us the x and y distance magnitude. ;; you can think of a point at the tip of a triangle determining how much ;; \"to the left\" it is from another point and how far \"over\" it is from ;; that same point. These two numbers are important for computing total distances ;; in elliptical \"neighborhoods.\"  ;; Note that it is important to use the DISTANCEXY primitive and not ;; just take the absolute value of the difference in coordinates, ;; because DISTANCEXY handles wrapping around world edges correctly, ;; if wrapping is enabled (which it is by default in this model)  to-report xdistance [other-patch]  ;; patch procedure   report distancexy [pxcor] of other-patch                     pycor end  to-report ydistance [other-patch]  ;; patch procedure   report distancexy pxcor                     [pycor] of other-patch end   ; Copyright 2003 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":309,"top":10,"right":622,"bottom":324,"dimensions":{"minPxcor":-30,"maxPxcor":30,"minPycor":-30,"maxPycor":30,"patchSize":5,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":205,"top":60,"right":294,"bottom":93,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":218,"top":254,"right":289,"bottom":287,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"initial-density","left":7,"top":221,"right":179,"bottom":254,"display":"initial-density","min":"0","max":"100","default":50,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"2","compiledStep":"0.01","variable":"ratio","left":7,"top":257,"right":180,"bottom":290,"display":"ratio","min":"0","max":"2","default":0.35,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":217,"top":216,"right":289,"bottom":249,"display":"step","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_40 = procedures[\"RESTART\"]();   if (_maybestop_33_40 instanceof Exception.StopInterrupt) { return _maybestop_33_40; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"restart","left":216,"top":179,"right":289,"bottom":212,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"inner-radius-x","left":8,"top":37,"right":180,"bottom":70,"display":"inner-radius-x","min":"0","max":"10","default":3,"step":"1","units":"cells","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"inner-radius-y","left":8,"top":72,"right":180,"bottom":105,"display":"inner-radius-y","min":"0","max":"10","default":3,"step":"1","units":"cells","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"outer-radius-x","left":7,"top":106,"right":180,"bottom":139,"display":"outer-radius-x","min":"0","max":"10","default":6,"step":"1","units":"cells","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"outer-radius-y","left":7,"top":141,"right":179,"bottom":174,"display":"outer-radius-y","min":"0","max":"10","default":6,"step":"1","units":"cells","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["initial-density", "ratio", "inner-radius-x", "inner-radius-y", "outer-radius-x", "outer-radius-y"], ["initial-density", "ratio", "inner-radius-x", "inner-radius-y", "outer-radius-x", "outer-radius-y"], ["new-color", "inner-neighbors", "outer-neighbors"], -30, 30, -30, 30, 5, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -53,7 +54,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("inner-neighbors", procedures["ELLIPSE-IN"](world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
         SelfManager.self().setPatchVariable("outer-neighbors", procedures["ELLIPSE-RING"](world.observer.getGlobal("outer-radius-x"),world.observer.getGlobal("outer-radius-y"),world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
       }, true);
@@ -68,11 +69,7 @@ var procedures = (function() {
       }
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -81,7 +78,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
           SelfManager.self().setPatchVariable("pcolor", 9.9);
         }
@@ -91,11 +88,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["restart"] = temp;
@@ -104,15 +97,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() { procedures["PICK-NEW-COLOR"](); }, true);
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getPatchVariable("new-color")); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { procedures["PICK-NEW-COLOR"](); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getPatchVariable("new-color")); }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -133,11 +122,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["pickNewColor"] = temp;
@@ -146,18 +131,13 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
+      Errors.reportInContextCheck(reporterContext);
+      return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
         return Prims.gte(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(xRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(yRadius, 2))));
-      })
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      });
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["ellipseIn"] = temp;
@@ -166,18 +146,13 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
+      Errors.reportInContextCheck(reporterContext);
+      return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
         return (Prims.gte(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(outxRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(outyRadius, 2)))) && Prims.lt(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(inxRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(inyRadius, 2)))));
-      })
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      });
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["ellipseRing"] = temp;
@@ -186,16 +161,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return SelfManager.self().distanceXY(otherPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }), SelfManager.self().getPatchVariable("pycor"))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return SelfManager.self().distanceXY(otherPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }), SelfManager.self().getPatchVariable("pycor"));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["xdistance"] = temp;
@@ -204,16 +174,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return SelfManager.self().distanceXY(SelfManager.self().getPatchVariable("pxcor"), otherPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return SelfManager.self().distanceXY(SelfManager.self().getPatchVariable("pxcor"), otherPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["ydistance"] = temp;

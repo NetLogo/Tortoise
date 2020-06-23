@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [chemical]  to setup   clear-all   create-turtles population   [ set color red     set size 2  ;; easier to see     setxy random-xcor random-ycor ]   ask patches [ set chemical 0 ]   reset-ticks end  to go   ask turtles   [ if chemical > sniff-threshold                  ;; ignore pheromone unless there\'s enough here       [ turn-toward-chemical ]     rt random-float wiggle-angle - random-float wiggle-angle + wiggle-bias     fd 1     set chemical chemical + 2 ]                    ;; drop chemical onto patch   diffuse chemical 1                               ;; diffuse chemical to neighboring patches   ask patches   [ set chemical chemical * 0.9                    ;; evaporate chemical     set pcolor scale-color green chemical 0.1 3 ]  ;; update display of chemical concentration   tick end  to turn-toward-chemical  ;; turtle procedure   ;; examine the patch ahead of you and two nearby patches;   ;; turn in the direction of greatest chemical   let ahead [chemical] of patch-ahead 1   let myright [chemical] of patch-right-and-ahead sniff-angle 1   let myleft [chemical] of patch-left-and-ahead sniff-angle 1   ifelse (myright >= ahead) and (myright >= myleft)   [ rt sniff-angle ]   [ if myleft >= ahead     [ lt sniff-angle ] ]     ;; default: don\'t turn end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":210,"top":10,"right":623,"bottom":424,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":5,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1500","compiledStep":"1","variable":"population","left":7,"top":35,"right":199,"bottom":68,"display":"population","min":"1","max":"1500","default":400,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5","compiledStep":"0.1","variable":"sniff-threshold","left":6,"top":214,"right":197,"bottom":247,"display":"sniff-threshold","min":"0","max":"5","default":1,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"180","compiledStep":"1","variable":"sniff-angle","left":6,"top":251,"right":197,"bottom":284,"display":"sniff-angle","min":"0","max":"180","default":45,"step":"1","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"45","compiledStep":"1","variable":"wiggle-angle","left":6,"top":138,"right":197,"bottom":171,"display":"wiggle-angle","min":"0","max":"45","default":40,"step":"1","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-40","compiledMax":"40","compiledStep":"1","variable":"wiggle-bias","left":6,"top":176,"right":197,"bottom":209,"display":"wiggle-bias","min":"-40","max":"40","default":0,"step":"1","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":35,"top":88,"right":98,"bottom":121,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":104,"top":88,"right":168,"bottom":121,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["population", "sniff-threshold", "sniff-angle", "wiggle-angle", "wiggle-bias"], ["population", "sniff-threshold", "sniff-angle", "wiggle-angle", "wiggle-bias"], ["chemical"], -40, 40, -40, 40, 5, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [chemical]  to setup   clear-all   create-turtles population   [ set color red     set size 2  ;; easier to see     setxy random-xcor random-ycor ]   ask patches [ set chemical 0 ]   reset-ticks end  to go   ask turtles   [ if chemical > sniff-threshold                  ;; ignore pheromone unless there\'s enough here       [ turn-toward-chemical ]     rt random-float wiggle-angle - random-float wiggle-angle + wiggle-bias     fd 1     set chemical chemical + 2 ]                    ;; drop chemical onto patch   diffuse chemical 1                               ;; diffuse chemical to neighboring patches   ask patches   [ set chemical chemical * 0.9                    ;; evaporate chemical     set pcolor scale-color green chemical 0.1 3 ]  ;; update display of chemical concentration   tick end  to turn-toward-chemical  ;; turtle procedure   ;; examine the patch ahead of you and two nearby patches;   ;; turn in the direction of greatest chemical   let ahead [chemical] of patch-ahead 1   let myright [chemical] of patch-right-and-ahead sniff-angle 1   let myleft [chemical] of patch-left-and-ahead sniff-angle 1   ifelse (myright >= ahead) and (myright >= myleft)   [ rt sniff-angle ]   [ if myleft >= ahead     [ lt sniff-angle ] ]     ;; default: don\'t turn end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":210,"top":10,"right":623,"bottom":424,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":5,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1500","compiledStep":"1","variable":"population","left":7,"top":35,"right":199,"bottom":68,"display":"population","min":"1","max":"1500","default":400,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5","compiledStep":"0.1","variable":"sniff-threshold","left":6,"top":214,"right":197,"bottom":247,"display":"sniff-threshold","min":"0","max":"5","default":1,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"180","compiledStep":"1","variable":"sniff-angle","left":6,"top":251,"right":197,"bottom":284,"display":"sniff-angle","min":"0","max":"180","default":45,"step":"1","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"45","compiledStep":"1","variable":"wiggle-angle","left":6,"top":138,"right":197,"bottom":171,"display":"wiggle-angle","min":"0","max":"45","default":40,"step":"1","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-40","compiledMax":"40","compiledStep":"1","variable":"wiggle-bias","left":6,"top":176,"right":197,"bottom":209,"display":"wiggle-bias","min":"-40","max":"40","default":0,"step":"1","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":35,"top":88,"right":98,"bottom":121,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":104,"top":88,"right":168,"bottom":121,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["population", "sniff-threshold", "sniff-angle", "wiggle-angle", "wiggle-bias"], ["population", "sniff-threshold", "sniff-angle", "wiggle-angle", "wiggle-bias"], ["chemical"], -40, 40, -40, 40, 5, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -58,14 +59,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("size", 2);
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       }, true);
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("chemical", 0); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("chemical", 0); }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -74,7 +71,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
           procedures["TURN-TOWARD-CHEMICAL"]();
         }
@@ -83,17 +80,13 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + 2));
       }, true);
       world.topology.diffuse("chemical", 1, false)
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") * 0.9));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 3));
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -114,11 +107,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["turnTowardChemical"] = temp;

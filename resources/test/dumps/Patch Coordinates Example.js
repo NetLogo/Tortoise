@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "CENTERS", singular: "center", varNames: [] }, { name: "SEARCHERS", singular: "searcher", varNames: [] }])([], [])('breed [centers center] breed [searchers searcher]  to setup   clear-all   ask patches [ set pcolor gray ]   ask patch start-x start-y [ set pcolor green ]   create-searchers 1   [     set heading 0     set color red     set size 0.2     set shape \"circle\"     setxy start-x start-y   ]   create-centers 1   [     set color blue     set size 0.1     set shape \"circle\"     setxy start-x start-y   ]   reset-ticks end  to go   ;; this is to reset the patches to gray so it changes   ;; when you move the start-x or start-y slider   ask patches [ set pcolor gray ]    ;; this resets the center turtle to the point indicated by the sliders   ask centers [ setxy start-x start-y ]    ask searchers   [     setxy start-x start-y    ;; return to center     set pcolor green     rt 5                     ;; it goes clockwise in 5 degree increments     fd distance-of-travel    ;; go back out to edge of circle     set pcolor black   ]   tick end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":217,"top":10,"right":537,"bottom":331,"dimensions":{"minPxcor":-1,"maxPxcor":1,"minPycor":-1,"maxPycor":1,"patchSize":104,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.25","variable":"distance-of-travel","left":17,"top":146,"right":189,"bottom":179,"display":"distance-of-travel","min":"0","max":"1","default":1,"step":"0.25","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":126,"top":35,"right":189,"bottom":68,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":16,"top":36,"right":82,"bottom":69,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-0.5","compiledMax":"0.5","compiledStep":"0.1","variable":"start-y","left":17,"top":113,"right":189,"bottom":146,"display":"start-y","min":"-0.5","max":"0.5","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-0.5","compiledMax":"0.5","compiledStep":"0.1","variable":"start-x","left":17,"top":80,"right":189,"bottom":113,"display":"start-x","min":"-0.5","max":"0.5","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["distance-of-travel", "start-y", "start-x"], ["distance-of-travel", "start-y", "start-x"], [], -1, 1, -1, 1, 104, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "CENTERS", singular: "center", varNames: [] }, { name: "SEARCHERS", singular: "searcher", varNames: [] }])([], [])('breed [centers center] breed [searchers searcher]  to setup   clear-all   ask patches [ set pcolor gray ]   ask patch start-x start-y [ set pcolor green ]   create-searchers 1   [     set heading 0     set color red     set size 0.2     set shape \"circle\"     setxy start-x start-y   ]   create-centers 1   [     set color blue     set size 0.1     set shape \"circle\"     setxy start-x start-y   ]   reset-ticks end  to go   ;; this is to reset the patches to gray so it changes   ;; when you move the start-x or start-y slider   ask patches [ set pcolor gray ]    ;; this resets the center turtle to the point indicated by the sliders   ask centers [ setxy start-x start-y ]    ask searchers   [     setxy start-x start-y    ;; return to center     set pcolor green     rt 5                     ;; it goes clockwise in 5 degree increments     fd distance-of-travel    ;; go back out to edge of circle     set pcolor black   ]   tick end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":217,"top":10,"right":537,"bottom":331,"dimensions":{"minPxcor":-1,"maxPxcor":1,"minPycor":-1,"maxPycor":1,"patchSize":104,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.25","variable":"distance-of-travel","left":17,"top":146,"right":189,"bottom":179,"display":"distance-of-travel","min":"0","max":"1","default":1,"step":"0.25","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":126,"top":35,"right":189,"bottom":68,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":16,"top":36,"right":82,"bottom":69,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-0.5","compiledMax":"0.5","compiledStep":"0.1","variable":"start-y","left":17,"top":113,"right":189,"bottom":146,"display":"start-y","min":"-0.5","max":"0.5","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-0.5","compiledMax":"0.5","compiledStep":"0.1","variable":"start-x","left":17,"top":80,"right":189,"bottom":113,"display":"start-x","min":"-0.5","max":"0.5","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["distance-of-travel", "start-y", "start-x"], ["distance-of-travel", "start-y", "start-x"], [], -1, 1, -1, 1, 104, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -53,8 +54,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
-      world.getPatchAt(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
+      Errors.askNobodyCheck(world.getPatchAt(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"))).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
       world.turtleManager.createTurtles(1, "SEARCHERS").ask(function() {
         SelfManager.self().setVariable("heading", 0);
         SelfManager.self().setVariable("color", 15);
@@ -70,11 +71,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -83,9 +80,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
-      world.turtleManager.turtlesOfBreed("CENTERS").ask(function() { SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")); }, true);
-      world.turtleManager.turtlesOfBreed("SEARCHERS").ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CENTERS")).ask(function() { SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SEARCHERS")).ask(function() {
         SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
         SelfManager.self().setPatchVariable("pcolor", 55);
         SelfManager.self().right(5);
@@ -94,11 +91,7 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;

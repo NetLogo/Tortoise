@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["yvel", "ypos"], [])('turtles-own [   yvel           ;; velocity along the y axis   ypos           ;; y position (separate from ycor since we might exceed the boundaries of                  ;;   the world, which ycor can never do) ]  to setup   clear-all   set-default-shape turtles \"circle\"   create-turtles world-width [     set xcor who     set color red     set size 1.5                    ;; easier to see     if pxcor = max-pxcor       [ set color blue ]            ;; rightmost turtle is blue     if pxcor = min-pxcor       [ set color green ]           ;; leftmost turtle is green   ]   reset-ticks end  to go   ask turtles with [color = green]  ;; the green turtle is the driving force   [     ifelse ticks > 100  ;; ramp the force up gradually to avoid spikes in the wave        [ set ypos amplitude * sin (frequency * ticks) ]        [ set ypos (ticks / 100) * amplitude * sin (frequency * ticks) ]     ifelse patch-at 0 (ypos - ycor) != nobody ;; hide turtles outside the visible world     [       set ycor ypos       show-turtle     ]     [ hide-turtle ]   ]   ask turtles with [color = red]  ;;the red turtles respond to their neighbors\' positions   [ ;; make your new y velocity equal to your old one + the average pos of your two neighbors     set yvel yvel + ((([ypos] of (turtle (who - 1))) - ypos) +                      (([ypos] of (turtle (who + 1))) - ypos))     set yvel ((1000 - friction) / 1000) * yvel  ;; apply friction   ]   ;; we need two separate ask blocks here so all the turtles calculate their   ;; new velocities before any turtles move   ask turtles with [color = red]   [ ;; calculate new y position     set ypos ypos + yvel                    ;; calculate new y position     ifelse patch-at 0 (ypos - ycor) != nobody ;; hide turtles outside the visible world       [ set ycor ypos         show-turtle ]       [ hide-turtle ]   ]   tick end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":266,"top":10,"right":757,"bottom":502,"dimensions":{"minPxcor":0,"maxPxcor":160,"minPycor":-80,"maxPycor":80,"patchSize":3,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":140,"top":47,"right":214,"bottom":80,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"friction","left":9,"top":103,"right":249,"bottom":136,"display":"friction","min":"0","max":"99","default":24,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"frequency","left":9,"top":138,"right":249,"bottom":171,"display":"frequency","min":"0","max":"99","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":58,"top":47,"right":125,"bottom":80,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"amplitude","left":9,"top":173,"right":249,"bottom":206,"display":"amplitude","min":"0","max":"99","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["friction", "frequency", "amplitude"], ["friction", "frequency", "amplitude"], [], 0, 160, -80, 80, 3, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["yvel", "ypos"], [])('turtles-own [   yvel           ;; velocity along the y axis   ypos           ;; y position (separate from ycor since we might exceed the boundaries of                  ;;   the world, which ycor can never do) ]  to setup   clear-all   set-default-shape turtles \"circle\"   create-turtles world-width [     set xcor who     set color red     set size 1.5                    ;; easier to see     if pxcor = max-pxcor       [ set color blue ]            ;; rightmost turtle is blue     if pxcor = min-pxcor       [ set color green ]           ;; leftmost turtle is green   ]   reset-ticks end  to go   ask turtles with [color = green]  ;; the green turtle is the driving force   [     ifelse ticks > 100  ;; ramp the force up gradually to avoid spikes in the wave        [ set ypos amplitude * sin (frequency * ticks) ]        [ set ypos (ticks / 100) * amplitude * sin (frequency * ticks) ]     ifelse patch-at 0 (ypos - ycor) != nobody ;; hide turtles outside the visible world     [       set ycor ypos       show-turtle     ]     [ hide-turtle ]   ]   ask turtles with [color = red]  ;;the red turtles respond to their neighbors\' positions   [ ;; make your new y velocity equal to your old one + the average pos of your two neighbors     set yvel yvel + ((([ypos] of (turtle (who - 1))) - ypos) +                      (([ypos] of (turtle (who + 1))) - ypos))     set yvel ((1000 - friction) / 1000) * yvel  ;; apply friction   ]   ;; we need two separate ask blocks here so all the turtles calculate their   ;; new velocities before any turtles move   ask turtles with [color = red]   [ ;; calculate new y position     set ypos ypos + yvel                    ;; calculate new y position     ifelse patch-at 0 (ypos - ycor) != nobody ;; hide turtles outside the visible world       [ set ycor ypos         show-turtle ]       [ hide-turtle ]   ]   tick end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":266,"top":10,"right":757,"bottom":502,"dimensions":{"minPxcor":0,"maxPxcor":160,"minPycor":-80,"maxPycor":80,"patchSize":3,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":140,"top":47,"right":214,"bottom":80,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"friction","left":9,"top":103,"right":249,"bottom":136,"display":"friction","min":"0","max":"99","default":24,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"frequency","left":9,"top":138,"right":249,"bottom":171,"display":"frequency","min":"0","max":"99","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":58,"top":47,"right":125,"bottom":80,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"amplitude","left":9,"top":173,"right":249,"bottom":206,"display":"amplitude","min":"0","max":"99","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["friction", "frequency", "amplitude"], ["friction", "frequency", "amplitude"], [], 0, 160, -80, 80, 3, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -67,11 +68,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -80,7 +77,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).ask(function() {
+      Errors.askNobodyCheck(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); })).ask(function() {
         if (Prims.gt(world.ticker.tickCount(), 100)) {
           SelfManager.self().setVariable("ypos", (world.observer.getGlobal("amplitude") * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
         }
@@ -95,11 +92,11 @@ var procedures = (function() {
           SelfManager.self().hideTurtle(true);;
         }
       }, true);
-      world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).ask(function() {
+      Errors.askNobodyCheck(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); })).ask(function() {
         SelfManager.self().setVariable("yvel", (SelfManager.self().getVariable("yvel") + ((world.turtleManager.getTurtle((SelfManager.self().getVariable("who") - 1)).projectionBy(function() { return SelfManager.self().getVariable("ypos"); }) - SelfManager.self().getVariable("ypos")) + (world.turtleManager.getTurtle((SelfManager.self().getVariable("who") + 1)).projectionBy(function() { return SelfManager.self().getVariable("ypos"); }) - SelfManager.self().getVariable("ypos")))));
         SelfManager.self().setVariable("yvel", (Prims.div((1000 - world.observer.getGlobal("friction")), 1000) * SelfManager.self().getVariable("yvel")));
       }, true);
-      world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).ask(function() {
+      Errors.askNobodyCheck(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); })).ask(function() {
         SelfManager.self().setVariable("ypos", (SelfManager.self().getVariable("ypos") + SelfManager.self().getVariable("yvel")));
         if (!Prims.equality(SelfManager.self().patchAt(0, (SelfManager.self().getVariable("ypos") - SelfManager.self().getVariable("ycor"))), Nobody)) {
           SelfManager.self().setVariable("ycor", SelfManager.self().getVariable("ypos"));
@@ -111,11 +108,7 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;

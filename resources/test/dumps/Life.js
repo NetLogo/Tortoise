@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [   living?         ;; indicates if the cell is living   live-neighbors  ;; counts how many neighboring cells are alive ]  to setup-blank   clear-all   ask patches [ cell-death ]   reset-ticks end  to setup-random   clear-all   ask patches     [ ifelse random-float 100 < initial-density       [ cell-birth ]       [ cell-death ] ]   reset-ticks end  to cell-birth   set living? true   set pcolor fgcolor end  to cell-death   set living? false   set pcolor bgcolor end  to go   ask patches     [ set live-neighbors count neighbors with [living?] ]   ;; Starting a new \"ask patches\" here ensures that all the patches   ;; finish executing the first ask before any of them start executing   ;; the second ask.  This keeps all the patches in synch with each other,   ;; so the births and deaths at each generation all happen in lockstep.   ask patches     [ ifelse live-neighbors = 3       [ cell-birth ]       [ if live-neighbors != 2         [ cell-death ] ] ]   tick end  to draw-cells   let erasing? [living?] of patch mouse-xcor mouse-ycor   while [mouse-down?]     [ ask patch mouse-xcor mouse-ycor       [ ifelse erasing?         [ cell-death ]         [ cell-birth ] ]       display ] end   ; Copyright 1998 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":285,"top":10,"right":697,"bottom":423,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":4,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":15,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"0.1","variable":"initial-density","left":120,"top":67,"right":276,"bottom":100,"display":"initial-density","min":"0","max":"100","default":35,"step":"0.1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_45 = procedures[\"SETUP-RANDOM\"]();   if (_maybestop_33_45 instanceof Exception.StopInterrupt) { return _maybestop_33_45; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup-random","left":11,"top":68,"right":113,"bottom":101,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":11,"top":204,"right":114,"bottom":242,"display":"go-once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":122,"top":204,"right":225,"bottom":242,"display":"go-forever","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   world.patches().ask(function() {     if (SelfManager.self().getPatchVariable(\"living?\")) {       SelfManager.self().setPatchVariable(\"pcolor\", world.observer.getGlobal(\"fgcolor\"));     }     else {       SelfManager.self().setPatchVariable(\"pcolor\", world.observer.getGlobal(\"bgcolor\"));     }   }, true); } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"ifelse living?   [ set pcolor fgcolor ]   [ set pcolor bgcolor ]","left":178,"top":276,"right":274,"bottom":309,"display":"recolor","forever":false,"buttonKind":"Patch","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"Prims.div(world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable(\"living?\"); }).size(), world.patches().size())","source":"count patches with   [living?] / count patches","left":12,"top":248,"right":115,"bottom":293,"display":"current density","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_44 = procedures[\"SETUP-BLANK\"]();   if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup-blank","left":11,"top":32,"right":113,"bottom":65,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"When this button is down, you can add or remove cells by holding down the mouse button and \"drawing\".","left":124,"top":125,"right":283,"bottom":193,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"DRAW-CELLS\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"draw-cells","left":9,"top":134,"right":112,"bottom":169,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"fgcolor","left":119,"top":309,"right":274,"bottom":369,"boxedValue":{"value":123,"type":"Color"},"type":"inputBox","compilation":{"success":true,"messages":[]}}, {"variable":"bgcolor","left":119,"top":371,"right":274,"bottom":431,"boxedValue":{"value":79,"type":"Color"},"type":"inputBox","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["initial-density", "fgcolor", "bgcolor"], ["initial-density", "fgcolor", "bgcolor"], ["living?", "live-neighbors"], -50, 50, -50, 50, 4, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [   living?         ;; indicates if the cell is living   live-neighbors  ;; counts how many neighboring cells are alive ]  to setup-blank   clear-all   ask patches [ cell-death ]   reset-ticks end  to setup-random   clear-all   ask patches     [ ifelse random-float 100 < initial-density       [ cell-birth ]       [ cell-death ] ]   reset-ticks end  to cell-birth   set living? true   set pcolor fgcolor end  to cell-death   set living? false   set pcolor bgcolor end  to go   ask patches     [ set live-neighbors count neighbors with [living?] ]   ;; Starting a new \"ask patches\" here ensures that all the patches   ;; finish executing the first ask before any of them start executing   ;; the second ask.  This keeps all the patches in synch with each other,   ;; so the births and deaths at each generation all happen in lockstep.   ask patches     [ ifelse live-neighbors = 3       [ cell-birth ]       [ if live-neighbors != 2         [ cell-death ] ] ]   tick end  to draw-cells   let erasing? [living?] of patch mouse-xcor mouse-ycor   while [mouse-down?]     [ ask patch mouse-xcor mouse-ycor       [ ifelse erasing?         [ cell-death ]         [ cell-birth ] ]       display ] end   ; Copyright 1998 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":285,"top":10,"right":697,"bottom":423,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":4,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":15,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"0.1","variable":"initial-density","left":120,"top":67,"right":276,"bottom":100,"display":"initial-density","min":"0","max":"100","default":35,"step":"0.1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_45 = procedures[\"SETUP-RANDOM\"]();   if (_maybestop_33_45 instanceof Exception.StopInterrupt) { return _maybestop_33_45; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup-random","left":11,"top":68,"right":113,"bottom":101,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":11,"top":204,"right":114,"bottom":242,"display":"go-once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":122,"top":204,"right":225,"bottom":242,"display":"go-forever","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   Errors.askNobodyCheck(world.patches()).ask(function() {     if (SelfManager.self().getPatchVariable(\"living?\")) {       SelfManager.self().setPatchVariable(\"pcolor\", world.observer.getGlobal(\"fgcolor\"));     }     else {       SelfManager.self().setPatchVariable(\"pcolor\", world.observer.getGlobal(\"bgcolor\"));     }   }, true); } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"ifelse living?   [ set pcolor fgcolor ]   [ set pcolor bgcolor ]","left":178,"top":276,"right":274,"bottom":309,"display":"recolor","forever":false,"buttonKind":"Patch","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"Prims.div(world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable(\"living?\"); }).size(), world.patches().size())","source":"count patches with   [living?] / count patches","left":12,"top":248,"right":115,"bottom":293,"display":"current density","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_44 = procedures[\"SETUP-BLANK\"]();   if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup-blank","left":11,"top":32,"right":113,"bottom":65,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"When this button is down, you can add or remove cells by holding down the mouse button and \"drawing\".","left":124,"top":125,"right":283,"bottom":193,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"DRAW-CELLS\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"draw-cells","left":9,"top":134,"right":112,"bottom":169,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"fgcolor","left":119,"top":309,"right":274,"bottom":369,"boxedValue":{"value":123,"type":"Color"},"type":"inputBox","compilation":{"success":true,"messages":[]}}, {"variable":"bgcolor","left":119,"top":371,"right":274,"bottom":431,"boxedValue":{"value":79,"type":"Color"},"type":"inputBox","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["initial-density", "fgcolor", "bgcolor"], ["initial-density", "fgcolor", "bgcolor"], ["living?", "live-neighbors"], -50, 50, -50, 50, 4, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -53,14 +54,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.patches().ask(function() { procedures["CELL-DEATH"](); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { procedures["CELL-DEATH"](); }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupBlank"] = temp;
@@ -70,7 +67,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
           procedures["CELL-BIRTH"]();
         }
@@ -80,11 +77,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupRandom"] = temp;
@@ -96,11 +89,7 @@ var procedures = (function() {
       SelfManager.self().setPatchVariable("living?", true);
       SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("fgcolor"));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["cellBirth"] = temp;
@@ -112,11 +101,7 @@ var procedures = (function() {
       SelfManager.self().setPatchVariable("living?", false);
       SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("bgcolor"));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["cellDeath"] = temp;
@@ -125,10 +110,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("live-neighbors", SelfManager.self().getNeighbors().agentFilter(function() { return SelfManager.self().getPatchVariable("living?"); }).size());
       }, true);
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         if (Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 3)) {
           procedures["CELL-BIRTH"]();
         }
@@ -140,11 +125,7 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -155,7 +136,7 @@ var procedures = (function() {
       var letVars = { };
       let erasing_p = world.getPatchAt(MousePrims.getX(), MousePrims.getY()).projectionBy(function() { return SelfManager.self().getPatchVariable("living?"); }); letVars['erasing_p'] = erasing_p;
       while (MousePrims.isDown()) {
-        world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
+        Errors.askNobodyCheck(world.getPatchAt(MousePrims.getX(), MousePrims.getY())).ask(function() {
           if (erasing_p) {
             procedures["CELL-DEATH"]();
           }
@@ -166,11 +147,7 @@ var procedures = (function() {
         notImplemented('display', undefined)();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["drawCells"] = temp;

@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -39,11 +40,7 @@ modelConfig.plots = [(function() {
             return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -58,11 +55,7 @@ modelConfig.plots = [(function() {
             return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -83,11 +76,7 @@ modelConfig.plots = [(function() {
             return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -102,11 +91,7 @@ modelConfig.plots = [(function() {
             return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -131,11 +116,7 @@ modelConfig.plots = [(function() {
             }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })));
           }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -154,11 +135,7 @@ modelConfig.plots = [(function() {
             }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })));
           }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -199,11 +176,7 @@ modelConfig.plots = [(function() {
             plotManager.plotPoint(world.observer.getGlobal("year"), (Prims.div(m, n) * 100));
           }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -212,7 +185,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "generations", "%", false, true, 0, 10, 0, 100, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["tolerance", "fitness", "flower-time", "seedling?", "will-die?"], [])('turtles-own [ tolerance fitness flower-time seedling? will-die? ] patches-own [ metal barrier? ]  globals [    day                             ;; monitor value    year                            ;; current year    old-year                        ;; previous year    end-of-days-counter             ;;    transition-time?                ;;    old-visualize-time-steps-state  ;; allows for switching between visualization modes during model run    chance-death-per-year           ;; the probability that the plant will die this year    chance-seed-dispersal           ;; the probability that a newborn plant grows in a patch adjacent to its parents\', instead of in the same patch.    average-number-offspring        ;; avg. number of seeds dispersed by the plant when it does disperse them    percent-same-flowering-time ]  to setup   clear-all   ;; initialize globals   set day 0   set old-year 0   set year 0   set end-of-days-counter 0   set percent-same-flowering-time 0   set chance-death-per-year 10 ;; set to 10% by default   set chance-seed-dispersal 50 ;; set to 50% by default   set average-number-offspring 3   set transition-time? false   set old-visualize-time-steps-state visualize-time-steps    ;color the frontier   ask patches [     set barrier? false     setup-two-regions     set pcolor calc-patch-color metal   ]    ;spawn the initial population -- carrying-capacity-per-patch allows more than plant at this patch   ask patches with [pxcor = min-pxcor] [     sprout plants-per-patch [       if initial-tolerance = \"all no tolerance\" [set tolerance 0]       if initial-tolerance = \"all full tolerance\" [set tolerance 100]       if initial-tolerance = \"random tolerances\" [set tolerance random-float 100]       set flower-time (365 / 2)       set heading random 360       fd random-float .5       set fitness 1       set shape \"plant\"       set seedling? false       set will-die? false       set color calc-plant-color tolerance     ]   ]   reset-ticks end   to setup-two-regions   ;; set the metal value based on the width designated by the frontier-sharpness slider value   set metal precision (100 / (1 + exp (frontier-sharpness * ((max-pxcor + min-pxcor) / 2 - pxcor)))) 0 end  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;; RUNTIME PROCEDURES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to go    check-labels    ;; if visualization switched during model run, redraw plants    if old-visualize-time-steps-state != visualize-time-steps [      ask turtles [        redraw-plants-as-full-sized-plants      ]    ]    if visualize-time-steps = \"years\" [     set day 0 ;; always at day 0 in years mode     set year year + 1     ask turtles [ redraw-plants-as-full-sized-plants  ]     do-start-of-new-year-events   ]    if visualize-time-steps = \"days\" [     visualize-bloom     do-end-of-days-events   ]   tick end  to do-start-of-new-year-events   if year > old-year [     do-reproduction     mark-turtles-to-kill     kill-marked-turtles     set old-year year   ] end  to do-end-of-days-events   ifelse day = 365 [  ;; at end of year     if transition-time? = false  [       do-reproduction       mark-turtles-to-kill       set transition-time? true     ]     ;; 10 ticks of transition time will elapse between years when visualize-time-steps is in \"day\" mode     ;; this transition time is for animation events to show death and growth of new plants before the next     ;; year begins. It is done before day 0 of the new year so that these visualizations do not interfere     ;; with flower time speciation mechanisms in the model      if transition-time? [       set end-of-days-counter end-of-days-counter + 1       ;; grow the new plants to be visible for the next season       ask turtles with [seedling?] [visualize-seedling-growth]       ;; shrink and fade the plants that are going to die       ask turtles with [will-die?] [set size (1 - (end-of-days-counter / 10))]        if end-of-days-counter > 9 [  ;; start a new year         set year year + 1         set end-of-days-counter 0         set transition-time? false         set day 0         ask turtles [turn-seedlings-into-full-plants]         kill-marked-turtles       ]     ]   ]    ;; the else event   [set day day + 1] end  ;; make babies to do-reproduction   ask turtles [     ;; construct list of potential mates based on pollen-radius slider     let potential-mates []     let nearby-turtles turtles     if (pollen-radius < (max-pxcor - min-pxcor)) [set nearby-turtles turtles in-radius pollen-radius]     let num-candidates 10     ifelse count nearby-turtles < 10 [ set potential-mates (sort nearby-turtles) ]                                      [ set potential-mates (sort (n-of 10 nearby-turtles))                                        set potential-mates (fput self potential-mates)]      ;; pick mate randomly weighted by compatibility     let compatibilities map [ potential-mate -> compatibility self potential-mate] potential-mates     let mate (pick-weighted (potential-mates) (compatibilities))      ;; spawn children     hatch (random-poisson average-number-offspring) [       set seedling? true       set will-die? false       ifelse visualize-time-steps = \"days\" [ set size 0] [set size 1]        ;combine parents\' genes and give average value of to the child       if genetics-model = \"avg. genotype\" [         set tolerance (tolerance + [tolerance] of mate) / 2         set flower-time (flower-time + [flower-time] of mate) / 2       ]        ;mutate tolerance gene       if (random-float 100) < chance-tolerance-mutation [         set tolerance (tolerance + (random-normal 0 tolerance-mutation-stdev))       ;; set tolerance (tolerance + random tolerance-mutation - random tolerance-mutation)       ]        ;mutate flowering time gene       if (random-float 100) < chance-flower-time-mutation [         set flower-time (flower-time + (random-normal 0 flower-time-mutation-stdev))       ]        ;; keeps values from going above a min and max       if tolerance < 0 [ set tolerance  0 ]       if tolerance > 100 [ set tolerance 100 ]       if flower-time < 0 [ set flower-time 0 ]       if flower-time > 365 [ set flower-time 365 ]        ;change color to reflect metal tolerance       set color calc-plant-color tolerance       migrate-this-plant     ]     if plant-type = \"annual\" [set will-die? true] ;end of the generation   ] end  ;kill ill-adapted turtles and fix solve overpopulation to mark-turtles-to-kill   ask turtles [     let t tolerance / 100     let m metal / 100     ;; Fitness is a linear function dependent on tolerance whose slope and y-intercept     ;; vary linearly with respect to an increases in metal amount.     ;; This linear function would have the following slopes in various metal levels:     ;; (i.e. negative slope in clean ground -> high tolerance is bad     ;;       positive slope in dirty ground -> high tolerance is good     ;;       zero     slope in between      -> no benefit or disadvantage to any level of tolerance )      ;; This is a model of a \"tradeoff\", where specializing in one variation of trait is advantageous     ;; in one environmental extreme, but specializing in another variation of the trait is advantageous in a different     ;; environmental extreme. Intermediate \"hybridization\" or averaging between both variations is disadvantageous     ;; in both environments or at the very least it is not advantageous in either extreme environment.     ;; Such tradeoff models can lead to speciation when other traits permit a population to reproductively     ;; fragment and isolate itself into non-interbreeding sub populations.      ;; This makes for a hyperbolic paraboloid or saddle shaped function that is dependent on metal amount and     ;; tolerance.  A general form of this fitness function would be the following:     ;; set fitness ((1 +  (A * t * m + B * t * m - C * t * m) - ( A * t + B * m) ) )     ;; where fitness is 1 at clean ground and no tolerance     ;; A is the penalty (0 to 1) for having tolerance in clean ground, therefore fitness is (1 - A)     ;; B is the penalty (0 to 1) for having the highest level of metal in the ground and no tolerance, therefore fitness is (1 - B)     ;; C is the penalty (0 to 1) for having the highest tolerance in the highest level of metal, therefore fitness is (1 - C)     ;; As long as C is less than both B and A, then you will have a fitness function that can be used in this section     ;; The fitness function has been hard coded here to use A = .4 and B = .4 and C = 0         set fitness (1 - m) * (1 - .4 * t) + m * (1 - .4 * (1 - t))      ;; survival probability based on fitness     if (random-float 1) > (fitness) [set will-die? true]     ;; survival probability based on fixed number of additional deaths-a-year     if random-float 100 < chance-death-per-year [set will-die? true]   ]    ;; In overpopulated patches, kill the least fit plant until we are down to the carrying capacity   ask patches [     let overpopulation ((count turtles-here) - plants-per-patch)     if overpopulation > 0 [       ask (min-n-of overpopulation turtles-here [fitness]) [         set will-die? true       ]     ]   ] end  to migrate-this-plant ;; turtle procedure   ;; Some plants grow in patch adjacent to the parent plant. This represents migration from seed dispersal   if (random-float 100) < chance-seed-dispersal [     move-to one-of neighbors     rt random 360  fd random-float 0.45  ;;spread out plants that are on the same patch   ] end  to kill-marked-turtles     ask turtles with [will-die?] [die] end  to turn-seedlings-into-full-plants          if seedling? [set seedling? false]          redraw-plants-as-full-sized-plants end  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;; visualization procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to check-labels   ask patches [   ifelse show-labels-as = \"metal in soil\"     [set plabel metal]     [set plabel \"\"]   ]   ask turtles [     if show-labels-as = \"metal tolerance\" [set label precision tolerance 0]     if show-labels-as = \"flower time\"  [set label precision flower-time 0 ]     if show-labels-as = \"none\" [set label \"\"]   ] end  to redraw-plants-as-full-sized-plants ;; turtle procedure   set shape \"plant\"   set size 1 end  to visualize-seedling-growth ;; turtle procedure   if seedling? [set size (end-of-days-counter / 10) ] end  to visualize-bloom   ask turtles [     ;; If day of the year is greater than this plants flower time and less than the flower time plus the length of flower time, then it is in the     ;; the flowering time window and a flower should be located here     ifelse day >= (flower-time  ) and day <= (flower-time + (flower-duration)  )        [ set shape \"flower\"]        [ set shape \"plant\" ]   ] end  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;; reporters  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  ;; make a random choice from <options> weighted by <weights> ;; where highly weighted choices are more likely to be selected than others to-report pick-weighted [ options weights ]   let wsum 0   foreach weights [ weight ->     set wsum (wsum + weight)   ]   let wret wsum * (random-float 1)   let ret 0   set wsum 0   foreach weights [ weight ->     set wsum (wsum + weight)     if wsum > wret [ report (item ret options) ]     set ret (ret + 1)   ] end  ;; compatibility is a decreasing function of the difference in flowering times ;; since plants that have more of an overlap between flower-times are more likely ;; they will pollinate one another to-report compatibility [ t1 t2 ]   let diff abs ([flower-time] of t1 - [flower-time] of t2)   ifelse diff < flower-duration [ report (flower-duration - diff) ] [ report 0 ] end  ;; calculate the patch color based on the presence of metal in the soil to-report calc-patch-color [ m ]   report rgb 0 (255 * (1 - (m / 100)) / 2) (255 * (m / 100) / 2) end  to-report calc-plant-color [ t ]   let black-pcolor rgb 0 0 0   ifelse barrier?     [report black-pcolor]     [report rgb 0 (255 * (1 - (t / 100)) ) (255 * (t / 100) )] end   ; Copyright 2012 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":512,"top":10,"right":1196,"bottom":279,"dimensions":{"minPxcor":0,"maxPxcor":25,"minPycor":0,"maxPycor":9,"patchSize":26,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":8,"top":10,"right":71,"bottom":43,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":74,"top":10,"right":163,"bottom":43,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"chance-tolerance-mutation","left":385,"top":308,"right":587,"bottom":341,"display":"chance-tolerance-mutation","min":"0","max":"100","default":10,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"50","compiledStep":"1","variable":"tolerance-mutation-stdev","left":385,"top":342,"right":587,"bottom":375,"display":"tolerance-mutation-stdev","min":"0","max":"50","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('tolerances', 'left')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {           return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }).projectionBy(function() { return SelfManager.self().getVariable(\"tolerance\"); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"left","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"histogram [tolerance] of turtles with [xcor < (min-pxcor + max-pxcor) / 2]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('tolerances', 'right')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {           return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }).projectionBy(function() { return SelfManager.self().getVariable(\"tolerance\"); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"right","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"histogram [tolerance] of turtles with [xcor > (min-pxcor + max-pxcor) / 2]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"tolerances","left":345,"top":60,"right":510,"bottom":180,"xAxis":"metal tolerance","yAxis":"#","xmin":0,"xmax":110,"ymin":0,"ymax":50,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"left","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"histogram [tolerance] of turtles with [xcor < (min-pxcor + max-pxcor) / 2]","type":"pen"},{"display":"right","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"histogram [tolerance] of turtles with [xcor > (min-pxcor + max-pxcor) / 2]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"5","compiledStep":"1","variable":"plants-per-patch","left":9,"top":273,"right":161,"bottom":306,"display":"plants-per-patch","min":"1","max":"5","default":2,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0.1","compiledMax":"2","compiledStep":"0.1","variable":"frontier-sharpness","left":9,"top":241,"right":162,"bottom":274,"display":"frontier-sharpness","min":".1","max":"2","default":1,"step":".1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('flower-times', 'left')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {           return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }).projectionBy(function() { return SelfManager.self().getVariable(\"flower-time\"); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"left","interval":15,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"histogram [flower-time ] of turtles with [xcor < (min-pxcor + max-pxcor) / 2]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('flower-times', 'right')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {           return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }).projectionBy(function() { return SelfManager.self().getVariable(\"flower-time\"); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"right","interval":15,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"histogram [flower-time ] of turtles with [xcor > (min-pxcor + max-pxcor) / 2]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"flower-times","left":167,"top":60,"right":345,"bottom":180,"xAxis":"flowering time","yAxis":"#","xmin":0,"xmax":380,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"left","interval":15,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"histogram [flower-time ] of turtles with [xcor < (min-pxcor + max-pxcor) / 2]","type":"pen"},{"display":"right","interval":15,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"histogram [flower-time ] of turtles with [xcor > (min-pxcor + max-pxcor) / 2]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"chance-flower-time-mutation","left":167,"top":307,"right":381,"bottom":340,"display":"chance-flower-time-mutation","min":"0","max":"100","default":10,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"flower-time-mutation-stdev","left":168,"top":342,"right":380,"bottom":375,"display":"flower-time-mutation-stdev","min":"0","max":"100","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"50","compiledStep":"1","variable":"pollen-radius","left":8,"top":307,"right":162,"bottom":340,"display":"pollen-radius","min":"0","max":"50","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('avg. tolerance', 'left')(function() {       try {         var reporterContext = false;         var letVars = { };         if (world.turtles()._optimalAnyWith(function() {           return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         })) {           plotManager.plotPoint(world.observer.getGlobal(\"year\"), ListPrims.mean(world.turtles().agentFilter(function() {             return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));           }).projectionBy(function() { return SelfManager.self().getVariable(\"tolerance\"); })));         }       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"left","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor < (min-pxcor + max-pxcor) / 2] [   plotxy year (mean [tolerance] of turtles with [xcor < (min-pxcor + max-pxcor) / 2])   ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('avg. tolerance', 'right')(function() {       try {         var reporterContext = false;         var letVars = { };         if (world.turtles()._optimalAnyWith(function() {           return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         })) {           plotManager.plotPoint(world.observer.getGlobal(\"year\"), ListPrims.mean(world.turtles().agentFilter(function() {             return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));           }).projectionBy(function() { return SelfManager.self().getVariable(\"tolerance\"); })));         }       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"right","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor > (min-pxcor + max-pxcor) / 2] [   plotxy year (mean [tolerance] of turtles with [xcor > (min-pxcor + max-pxcor) / 2])   ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"avg. tolerance","left":345,"top":179,"right":510,"bottom":299,"xAxis":"generations","yAxis":"tolerance","xmin":0,"xmax":10,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"left","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor < (min-pxcor + max-pxcor) / 2] [   plotxy year (mean [tolerance] of turtles with [xcor < (min-pxcor + max-pxcor) / 2])   ]","type":"pen"},{"display":"right","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor > (min-pxcor + max-pxcor) / 2] [   plotxy year (mean [tolerance] of turtles with [xcor > (min-pxcor + max-pxcor) / 2])   ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('simultaneous flowering', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         if ((world.turtles()._optimalAnyWith(function() {           return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }) && world.turtles()._optimalAnyWith(function() {           return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }))) {           let n = 0; letVars['n'] = n;           let m = 0; letVars['m'] = m;           let avg = ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable(\"tolerance\"); })); letVars['avg'] = avg;           for (let _index_215_221 = 0, _repeatcount_215_221 = StrictMath.floor(500); _index_215_221 < _repeatcount_215_221; _index_215_221++){             let r = world.turtles()._optimalOneOfWith(function() {               return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));             }); letVars['r'] = r;             let s = world.turtles()._optimalOneOfWith(function() {               return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));             }); letVars['s'] = s;             if (Prims.lt(NLMath.abs((r.projectionBy(function() { return SelfManager.self().getVariable(\"flower-time\"); }) - s.projectionBy(function() { return SelfManager.self().getVariable(\"flower-time\"); }))), world.observer.getGlobal(\"flower-duration\"))) {               m = (m + 1); letVars['m'] = m;             }             n = (n + 1); letVars['n'] = n;           }           world.observer.setGlobal(\"percent-same-flowering-time\", NLMath.precision((Prims.div(m, n) * 100), 1));           plotManager.plotPoint(world.observer.getGlobal(\"year\"), (Prims.div(m, n) * 100));         }       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor > (min-pxcor + max-pxcor) / 2] and any? turtles with [ xcor < (min-pxcor + max-pxcor) / 2]  [   let n 0   let m 0   let avg mean [tolerance] of turtles   repeat 500 [     let r one-of turtles with [xcor > (min-pxcor + max-pxcor) / 2]     let s one-of turtles with [xcor < (min-pxcor + max-pxcor) / 2]     if ( abs ([flower-time] of r - [flower-time] of s) < flower-duration ) [ set m (m + 1) ]     set n (n + 1)   ]   set percent-same-flowering-time precision ((m / n) * 100) 1   plotxy year (m / n) * 100 ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"simultaneous flowering","left":167,"top":180,"right":346,"bottom":300,"xAxis":"generations","yAxis":"%","xmin":0,"xmax":10,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor > (min-pxcor + max-pxcor) / 2] and any? turtles with [ xcor < (min-pxcor + max-pxcor) / 2]  [   let n 0   let m 0   let avg mean [tolerance] of turtles   repeat 500 [     let r one-of turtles with [xcor > (min-pxcor + max-pxcor) / 2]     let s one-of turtles with [xcor < (min-pxcor + max-pxcor) / 2]     if ( abs ([flower-time] of r - [flower-time] of s) < flower-duration ) [ set m (m + 1) ]     set n (n + 1)   ]   set percent-same-flowering-time precision ((m / n) * 100) 1   plotxy year (m / n) * 100 ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"30","compiledStep":"1","variable":"flower-duration","left":8,"top":342,"right":163,"bottom":375,"display":"flower-duration","min":"0","max":"30","default":20,"step":"1","units":"days","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"day\")","source":"day","left":318,"top":10,"right":375,"bottom":55,"precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"year\")","source":"year","left":372,"top":10,"right":474,"bottom":55,"display":"years","precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"show-labels-as","left":12,"top":187,"right":158,"bottom":232,"display":"show-labels-as","choices":["none","metal in soil","metal tolerance","flower time"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"visualize-time-steps","left":164,"top":10,"right":315,"bottom":55,"display":"visualize-time-steps","choices":["days","years"],"currentChoice":1,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"plant-type","left":11,"top":49,"right":157,"bottom":94,"display":"plant-type","choices":["perennial","annual"],"currentChoice":1,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"initial-tolerance","left":11,"top":95,"right":158,"bottom":140,"display":"initial-tolerance","choices":["all no tolerance","all full tolerance","random tolerances"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"genetics-model","left":11,"top":141,"right":158,"bottom":186,"display":"genetics-model","choices":["avg. genotype","sex linked genes"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["chance-tolerance-mutation", "tolerance-mutation-stdev", "plants-per-patch", "frontier-sharpness", "chance-flower-time-mutation", "flower-time-mutation-stdev", "pollen-radius", "flower-duration", "show-labels-as", "visualize-time-steps", "plant-type", "initial-tolerance", "genetics-model", "day", "year", "old-year", "end-of-days-counter", "transition-time?", "old-visualize-time-steps-state", "chance-death-per-year", "chance-seed-dispersal", "average-number-offspring", "percent-same-flowering-time"], ["chance-tolerance-mutation", "tolerance-mutation-stdev", "plants-per-patch", "frontier-sharpness", "chance-flower-time-mutation", "flower-time-mutation-stdev", "pollen-radius", "flower-duration", "show-labels-as", "visualize-time-steps", "plant-type", "initial-tolerance", "genetics-model"], ["metal", "barrier?"], 0, 25, 0, 9, 26, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["tolerance", "fitness", "flower-time", "seedling?", "will-die?"], [])('turtles-own [ tolerance fitness flower-time seedling? will-die? ] patches-own [ metal barrier? ]  globals [    day                             ;; monitor value    year                            ;; current year    old-year                        ;; previous year    end-of-days-counter             ;;    transition-time?                ;;    old-visualize-time-steps-state  ;; allows for switching between visualization modes during model run    chance-death-per-year           ;; the probability that the plant will die this year    chance-seed-dispersal           ;; the probability that a newborn plant grows in a patch adjacent to its parents\', instead of in the same patch.    average-number-offspring        ;; avg. number of seeds dispersed by the plant when it does disperse them    percent-same-flowering-time ]  to setup   clear-all   ;; initialize globals   set day 0   set old-year 0   set year 0   set end-of-days-counter 0   set percent-same-flowering-time 0   set chance-death-per-year 10 ;; set to 10% by default   set chance-seed-dispersal 50 ;; set to 50% by default   set average-number-offspring 3   set transition-time? false   set old-visualize-time-steps-state visualize-time-steps    ;color the frontier   ask patches [     set barrier? false     setup-two-regions     set pcolor calc-patch-color metal   ]    ;spawn the initial population -- carrying-capacity-per-patch allows more than plant at this patch   ask patches with [pxcor = min-pxcor] [     sprout plants-per-patch [       if initial-tolerance = \"all no tolerance\" [set tolerance 0]       if initial-tolerance = \"all full tolerance\" [set tolerance 100]       if initial-tolerance = \"random tolerances\" [set tolerance random-float 100]       set flower-time (365 / 2)       set heading random 360       fd random-float .5       set fitness 1       set shape \"plant\"       set seedling? false       set will-die? false       set color calc-plant-color tolerance     ]   ]   reset-ticks end   to setup-two-regions   ;; set the metal value based on the width designated by the frontier-sharpness slider value   set metal precision (100 / (1 + exp (frontier-sharpness * ((max-pxcor + min-pxcor) / 2 - pxcor)))) 0 end  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;; RUNTIME PROCEDURES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to go    check-labels    ;; if visualization switched during model run, redraw plants    if old-visualize-time-steps-state != visualize-time-steps [      ask turtles [        redraw-plants-as-full-sized-plants      ]    ]    if visualize-time-steps = \"years\" [     set day 0 ;; always at day 0 in years mode     set year year + 1     ask turtles [ redraw-plants-as-full-sized-plants  ]     do-start-of-new-year-events   ]    if visualize-time-steps = \"days\" [     visualize-bloom     do-end-of-days-events   ]   tick end  to do-start-of-new-year-events   if year > old-year [     do-reproduction     mark-turtles-to-kill     kill-marked-turtles     set old-year year   ] end  to do-end-of-days-events   ifelse day = 365 [  ;; at end of year     if transition-time? = false  [       do-reproduction       mark-turtles-to-kill       set transition-time? true     ]     ;; 10 ticks of transition time will elapse between years when visualize-time-steps is in \"day\" mode     ;; this transition time is for animation events to show death and growth of new plants before the next     ;; year begins. It is done before day 0 of the new year so that these visualizations do not interfere     ;; with flower time speciation mechanisms in the model      if transition-time? [       set end-of-days-counter end-of-days-counter + 1       ;; grow the new plants to be visible for the next season       ask turtles with [seedling?] [visualize-seedling-growth]       ;; shrink and fade the plants that are going to die       ask turtles with [will-die?] [set size (1 - (end-of-days-counter / 10))]        if end-of-days-counter > 9 [  ;; start a new year         set year year + 1         set end-of-days-counter 0         set transition-time? false         set day 0         ask turtles [turn-seedlings-into-full-plants]         kill-marked-turtles       ]     ]   ]    ;; the else event   [set day day + 1] end  ;; make babies to do-reproduction   ask turtles [     ;; construct list of potential mates based on pollen-radius slider     let potential-mates []     let nearby-turtles turtles     if (pollen-radius < (max-pxcor - min-pxcor)) [set nearby-turtles turtles in-radius pollen-radius]     let num-candidates 10     ifelse count nearby-turtles < 10 [ set potential-mates (sort nearby-turtles) ]                                      [ set potential-mates (sort (n-of 10 nearby-turtles))                                        set potential-mates (fput self potential-mates)]      ;; pick mate randomly weighted by compatibility     let compatibilities map [ potential-mate -> compatibility self potential-mate] potential-mates     let mate (pick-weighted (potential-mates) (compatibilities))      ;; spawn children     hatch (random-poisson average-number-offspring) [       set seedling? true       set will-die? false       ifelse visualize-time-steps = \"days\" [ set size 0] [set size 1]        ;combine parents\' genes and give average value of to the child       if genetics-model = \"avg. genotype\" [         set tolerance (tolerance + [tolerance] of mate) / 2         set flower-time (flower-time + [flower-time] of mate) / 2       ]        ;mutate tolerance gene       if (random-float 100) < chance-tolerance-mutation [         set tolerance (tolerance + (random-normal 0 tolerance-mutation-stdev))       ;; set tolerance (tolerance + random tolerance-mutation - random tolerance-mutation)       ]        ;mutate flowering time gene       if (random-float 100) < chance-flower-time-mutation [         set flower-time (flower-time + (random-normal 0 flower-time-mutation-stdev))       ]        ;; keeps values from going above a min and max       if tolerance < 0 [ set tolerance  0 ]       if tolerance > 100 [ set tolerance 100 ]       if flower-time < 0 [ set flower-time 0 ]       if flower-time > 365 [ set flower-time 365 ]        ;change color to reflect metal tolerance       set color calc-plant-color tolerance       migrate-this-plant     ]     if plant-type = \"annual\" [set will-die? true] ;end of the generation   ] end  ;kill ill-adapted turtles and fix solve overpopulation to mark-turtles-to-kill   ask turtles [     let t tolerance / 100     let m metal / 100     ;; Fitness is a linear function dependent on tolerance whose slope and y-intercept     ;; vary linearly with respect to an increases in metal amount.     ;; This linear function would have the following slopes in various metal levels:     ;; (i.e. negative slope in clean ground -> high tolerance is bad     ;;       positive slope in dirty ground -> high tolerance is good     ;;       zero     slope in between      -> no benefit or disadvantage to any level of tolerance )      ;; This is a model of a \"tradeoff\", where specializing in one variation of trait is advantageous     ;; in one environmental extreme, but specializing in another variation of the trait is advantageous in a different     ;; environmental extreme. Intermediate \"hybridization\" or averaging between both variations is disadvantageous     ;; in both environments or at the very least it is not advantageous in either extreme environment.     ;; Such tradeoff models can lead to speciation when other traits permit a population to reproductively     ;; fragment and isolate itself into non-interbreeding sub populations.      ;; This makes for a hyperbolic paraboloid or saddle shaped function that is dependent on metal amount and     ;; tolerance.  A general form of this fitness function would be the following:     ;; set fitness ((1 +  (A * t * m + B * t * m - C * t * m) - ( A * t + B * m) ) )     ;; where fitness is 1 at clean ground and no tolerance     ;; A is the penalty (0 to 1) for having tolerance in clean ground, therefore fitness is (1 - A)     ;; B is the penalty (0 to 1) for having the highest level of metal in the ground and no tolerance, therefore fitness is (1 - B)     ;; C is the penalty (0 to 1) for having the highest tolerance in the highest level of metal, therefore fitness is (1 - C)     ;; As long as C is less than both B and A, then you will have a fitness function that can be used in this section     ;; The fitness function has been hard coded here to use A = .4 and B = .4 and C = 0         set fitness (1 - m) * (1 - .4 * t) + m * (1 - .4 * (1 - t))      ;; survival probability based on fitness     if (random-float 1) > (fitness) [set will-die? true]     ;; survival probability based on fixed number of additional deaths-a-year     if random-float 100 < chance-death-per-year [set will-die? true]   ]    ;; In overpopulated patches, kill the least fit plant until we are down to the carrying capacity   ask patches [     let overpopulation ((count turtles-here) - plants-per-patch)     if overpopulation > 0 [       ask (min-n-of overpopulation turtles-here [fitness]) [         set will-die? true       ]     ]   ] end  to migrate-this-plant ;; turtle procedure   ;; Some plants grow in patch adjacent to the parent plant. This represents migration from seed dispersal   if (random-float 100) < chance-seed-dispersal [     move-to one-of neighbors     rt random 360  fd random-float 0.45  ;;spread out plants that are on the same patch   ] end  to kill-marked-turtles     ask turtles with [will-die?] [die] end  to turn-seedlings-into-full-plants          if seedling? [set seedling? false]          redraw-plants-as-full-sized-plants end  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;; visualization procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to check-labels   ask patches [   ifelse show-labels-as = \"metal in soil\"     [set plabel metal]     [set plabel \"\"]   ]   ask turtles [     if show-labels-as = \"metal tolerance\" [set label precision tolerance 0]     if show-labels-as = \"flower time\"  [set label precision flower-time 0 ]     if show-labels-as = \"none\" [set label \"\"]   ] end  to redraw-plants-as-full-sized-plants ;; turtle procedure   set shape \"plant\"   set size 1 end  to visualize-seedling-growth ;; turtle procedure   if seedling? [set size (end-of-days-counter / 10) ] end  to visualize-bloom   ask turtles [     ;; If day of the year is greater than this plants flower time and less than the flower time plus the length of flower time, then it is in the     ;; the flowering time window and a flower should be located here     ifelse day >= (flower-time  ) and day <= (flower-time + (flower-duration)  )        [ set shape \"flower\"]        [ set shape \"plant\" ]   ] end  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;; reporters  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  ;; make a random choice from <options> weighted by <weights> ;; where highly weighted choices are more likely to be selected than others to-report pick-weighted [ options weights ]   let wsum 0   foreach weights [ weight ->     set wsum (wsum + weight)   ]   let wret wsum * (random-float 1)   let ret 0   set wsum 0   foreach weights [ weight ->     set wsum (wsum + weight)     if wsum > wret [ report (item ret options) ]     set ret (ret + 1)   ] end  ;; compatibility is a decreasing function of the difference in flowering times ;; since plants that have more of an overlap between flower-times are more likely ;; they will pollinate one another to-report compatibility [ t1 t2 ]   let diff abs ([flower-time] of t1 - [flower-time] of t2)   ifelse diff < flower-duration [ report (flower-duration - diff) ] [ report 0 ] end  ;; calculate the patch color based on the presence of metal in the soil to-report calc-patch-color [ m ]   report rgb 0 (255 * (1 - (m / 100)) / 2) (255 * (m / 100) / 2) end  to-report calc-plant-color [ t ]   let black-pcolor rgb 0 0 0   ifelse barrier?     [report black-pcolor]     [report rgb 0 (255 * (1 - (t / 100)) ) (255 * (t / 100) )] end   ; Copyright 2012 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":512,"top":10,"right":1196,"bottom":279,"dimensions":{"minPxcor":0,"maxPxcor":25,"minPycor":0,"maxPycor":9,"patchSize":26,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":8,"top":10,"right":71,"bottom":43,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":74,"top":10,"right":163,"bottom":43,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"chance-tolerance-mutation","left":385,"top":308,"right":587,"bottom":341,"display":"chance-tolerance-mutation","min":"0","max":"100","default":10,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"50","compiledStep":"1","variable":"tolerance-mutation-stdev","left":385,"top":342,"right":587,"bottom":375,"display":"tolerance-mutation-stdev","min":"0","max":"50","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('tolerances', 'left')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {           return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }).projectionBy(function() { return SelfManager.self().getVariable(\"tolerance\"); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"left","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"histogram [tolerance] of turtles with [xcor < (min-pxcor + max-pxcor) / 2]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('tolerances', 'right')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {           return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }).projectionBy(function() { return SelfManager.self().getVariable(\"tolerance\"); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"right","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"histogram [tolerance] of turtles with [xcor > (min-pxcor + max-pxcor) / 2]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"tolerances","left":345,"top":60,"right":510,"bottom":180,"xAxis":"metal tolerance","yAxis":"#","xmin":0,"xmax":110,"ymin":0,"ymax":50,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"left","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"histogram [tolerance] of turtles with [xcor < (min-pxcor + max-pxcor) / 2]","type":"pen"},{"display":"right","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"histogram [tolerance] of turtles with [xcor > (min-pxcor + max-pxcor) / 2]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"5","compiledStep":"1","variable":"plants-per-patch","left":9,"top":273,"right":161,"bottom":306,"display":"plants-per-patch","min":"1","max":"5","default":2,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0.1","compiledMax":"2","compiledStep":"0.1","variable":"frontier-sharpness","left":9,"top":241,"right":162,"bottom":274,"display":"frontier-sharpness","min":".1","max":"2","default":1,"step":".1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('flower-times', 'left')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {           return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }).projectionBy(function() { return SelfManager.self().getVariable(\"flower-time\"); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"left","interval":15,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"histogram [flower-time ] of turtles with [xcor < (min-pxcor + max-pxcor) / 2]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('flower-times', 'right')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {           return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }).projectionBy(function() { return SelfManager.self().getVariable(\"flower-time\"); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"right","interval":15,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"histogram [flower-time ] of turtles with [xcor > (min-pxcor + max-pxcor) / 2]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"flower-times","left":167,"top":60,"right":345,"bottom":180,"xAxis":"flowering time","yAxis":"#","xmin":0,"xmax":380,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"left","interval":15,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"histogram [flower-time ] of turtles with [xcor < (min-pxcor + max-pxcor) / 2]","type":"pen"},{"display":"right","interval":15,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"histogram [flower-time ] of turtles with [xcor > (min-pxcor + max-pxcor) / 2]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"chance-flower-time-mutation","left":167,"top":307,"right":381,"bottom":340,"display":"chance-flower-time-mutation","min":"0","max":"100","default":10,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"flower-time-mutation-stdev","left":168,"top":342,"right":380,"bottom":375,"display":"flower-time-mutation-stdev","min":"0","max":"100","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"50","compiledStep":"1","variable":"pollen-radius","left":8,"top":307,"right":162,"bottom":340,"display":"pollen-radius","min":"0","max":"50","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('avg. tolerance', 'left')(function() {       try {         var reporterContext = false;         var letVars = { };         if (world.turtles()._optimalAnyWith(function() {           return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         })) {           plotManager.plotPoint(world.observer.getGlobal(\"year\"), ListPrims.mean(world.turtles().agentFilter(function() {             return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));           }).projectionBy(function() { return SelfManager.self().getVariable(\"tolerance\"); })));         }       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"left","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor < (min-pxcor + max-pxcor) / 2] [   plotxy year (mean [tolerance] of turtles with [xcor < (min-pxcor + max-pxcor) / 2])   ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('avg. tolerance', 'right')(function() {       try {         var reporterContext = false;         var letVars = { };         if (world.turtles()._optimalAnyWith(function() {           return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         })) {           plotManager.plotPoint(world.observer.getGlobal(\"year\"), ListPrims.mean(world.turtles().agentFilter(function() {             return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));           }).projectionBy(function() { return SelfManager.self().getVariable(\"tolerance\"); })));         }       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"right","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor > (min-pxcor + max-pxcor) / 2] [   plotxy year (mean [tolerance] of turtles with [xcor > (min-pxcor + max-pxcor) / 2])   ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"avg. tolerance","left":345,"top":179,"right":510,"bottom":299,"xAxis":"generations","yAxis":"tolerance","xmin":0,"xmax":10,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"left","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor < (min-pxcor + max-pxcor) / 2] [   plotxy year (mean [tolerance] of turtles with [xcor < (min-pxcor + max-pxcor) / 2])   ]","type":"pen"},{"display":"right","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor > (min-pxcor + max-pxcor) / 2] [   plotxy year (mean [tolerance] of turtles with [xcor > (min-pxcor + max-pxcor) / 2])   ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('simultaneous flowering', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         if ((world.turtles()._optimalAnyWith(function() {           return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }) && world.turtles()._optimalAnyWith(function() {           return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));         }))) {           let n = 0; letVars['n'] = n;           let m = 0; letVars['m'] = m;           let avg = ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable(\"tolerance\"); })); letVars['avg'] = avg;           for (let _index_215_221 = 0, _repeatcount_215_221 = StrictMath.floor(500); _index_215_221 < _repeatcount_215_221; _index_215_221++){             let r = world.turtles()._optimalOneOfWith(function() {               return Prims.gt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));             }); letVars['r'] = r;             let s = world.turtles()._optimalOneOfWith(function() {               return Prims.lt(SelfManager.self().getVariable(\"xcor\"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));             }); letVars['s'] = s;             if (Prims.lt(NLMath.abs((r.projectionBy(function() { return SelfManager.self().getVariable(\"flower-time\"); }) - s.projectionBy(function() { return SelfManager.self().getVariable(\"flower-time\"); }))), world.observer.getGlobal(\"flower-duration\"))) {               m = (m + 1); letVars['m'] = m;             }             n = (n + 1); letVars['n'] = n;           }           world.observer.setGlobal(\"percent-same-flowering-time\", NLMath.precision((Prims.div(m, n) * 100), 1));           plotManager.plotPoint(world.observer.getGlobal(\"year\"), (Prims.div(m, n) * 100));         }       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor > (min-pxcor + max-pxcor) / 2] and any? turtles with [ xcor < (min-pxcor + max-pxcor) / 2]  [   let n 0   let m 0   let avg mean [tolerance] of turtles   repeat 500 [     let r one-of turtles with [xcor > (min-pxcor + max-pxcor) / 2]     let s one-of turtles with [xcor < (min-pxcor + max-pxcor) / 2]     if ( abs ([flower-time] of r - [flower-time] of s) < flower-duration ) [ set m (m + 1) ]     set n (n + 1)   ]   set percent-same-flowering-time precision ((m / n) * 100) 1   plotxy year (m / n) * 100 ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"simultaneous flowering","left":167,"top":180,"right":346,"bottom":300,"xAxis":"generations","yAxis":"%","xmin":0,"xmax":10,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if any? turtles with [ xcor > (min-pxcor + max-pxcor) / 2] and any? turtles with [ xcor < (min-pxcor + max-pxcor) / 2]  [   let n 0   let m 0   let avg mean [tolerance] of turtles   repeat 500 [     let r one-of turtles with [xcor > (min-pxcor + max-pxcor) / 2]     let s one-of turtles with [xcor < (min-pxcor + max-pxcor) / 2]     if ( abs ([flower-time] of r - [flower-time] of s) < flower-duration ) [ set m (m + 1) ]     set n (n + 1)   ]   set percent-same-flowering-time precision ((m / n) * 100) 1   plotxy year (m / n) * 100 ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"30","compiledStep":"1","variable":"flower-duration","left":8,"top":342,"right":163,"bottom":375,"display":"flower-duration","min":"0","max":"30","default":20,"step":"1","units":"days","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"day\")","source":"day","left":318,"top":10,"right":375,"bottom":55,"precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"year\")","source":"year","left":372,"top":10,"right":474,"bottom":55,"display":"years","precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"show-labels-as","left":12,"top":187,"right":158,"bottom":232,"display":"show-labels-as","choices":["none","metal in soil","metal tolerance","flower time"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"visualize-time-steps","left":164,"top":10,"right":315,"bottom":55,"display":"visualize-time-steps","choices":["days","years"],"currentChoice":1,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"plant-type","left":11,"top":49,"right":157,"bottom":94,"display":"plant-type","choices":["perennial","annual"],"currentChoice":1,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"initial-tolerance","left":11,"top":95,"right":158,"bottom":140,"display":"initial-tolerance","choices":["all no tolerance","all full tolerance","random tolerances"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"genetics-model","left":11,"top":141,"right":158,"bottom":186,"display":"genetics-model","choices":["avg. genotype","sex linked genes"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["chance-tolerance-mutation", "tolerance-mutation-stdev", "plants-per-patch", "frontier-sharpness", "chance-flower-time-mutation", "flower-time-mutation-stdev", "pollen-radius", "flower-duration", "show-labels-as", "visualize-time-steps", "plant-type", "initial-tolerance", "genetics-model", "day", "year", "old-year", "end-of-days-counter", "transition-time?", "old-visualize-time-steps-state", "chance-death-per-year", "chance-seed-dispersal", "average-number-offspring", "percent-same-flowering-time"], ["chance-tolerance-mutation", "tolerance-mutation-stdev", "plants-per-patch", "frontier-sharpness", "chance-flower-time-mutation", "flower-time-mutation-stdev", "pollen-radius", "flower-duration", "show-labels-as", "visualize-time-steps", "plant-type", "initial-tolerance", "genetics-model"], ["metal", "barrier?"], 0, 25, 0, 9, 26, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -248,12 +221,12 @@ var procedures = (function() {
       world.observer.setGlobal("average-number-offspring", 3);
       world.observer.setGlobal("transition-time?", false);
       world.observer.setGlobal("old-visualize-time-steps-state", world.observer.getGlobal("visualize-time-steps"));
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("barrier?", false);
         procedures["SETUP-TWO-REGIONS"]();
         SelfManager.self().setPatchVariable("pcolor", procedures["CALC-PATCH-COLOR"](SelfManager.self().getPatchVariable("metal")));
       }, true);
-      world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); }).ask(function() {
+      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); })).ask(function() {
         SelfManager.self().sprout(world.observer.getGlobal("plants-per-patch"), "TURTLES").ask(function() {
           if (Prims.equality(world.observer.getGlobal("initial-tolerance"), "all no tolerance")) {
             SelfManager.self().setVariable("tolerance", 0);
@@ -276,11 +249,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -291,11 +260,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setPatchVariable("metal", NLMath.precision(Prims.div(100, (1 + NLMath.exp((world.observer.getGlobal("frontier-sharpness") * (Prims.div((world.topology.maxPxcor + world.topology.minPxcor), 2) - SelfManager.self().getPatchVariable("pxcor")))))), 0));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupTwoRegions"] = temp;
@@ -306,12 +271,12 @@ var procedures = (function() {
       var letVars = { };
       procedures["CHECK-LABELS"]();
       if (!Prims.equality(world.observer.getGlobal("old-visualize-time-steps-state"), world.observer.getGlobal("visualize-time-steps"))) {
-        world.turtles().ask(function() { procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"](); }, true);
+        Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"](); }, true);
       }
       if (Prims.equality(world.observer.getGlobal("visualize-time-steps"), "years")) {
         world.observer.setGlobal("day", 0);
         world.observer.setGlobal("year", (world.observer.getGlobal("year") + 1));
-        world.turtles().ask(function() { procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"](); }, true);
+        Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"](); }, true);
         procedures["DO-START-OF-NEW-YEAR-EVENTS"]();
       }
       if (Prims.equality(world.observer.getGlobal("visualize-time-steps"), "days")) {
@@ -320,11 +285,7 @@ var procedures = (function() {
       }
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -340,11 +301,7 @@ var procedures = (function() {
         world.observer.setGlobal("old-year", world.observer.getGlobal("year"));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["doStartOfNewYearEvents"] = temp;
@@ -361,8 +318,8 @@ var procedures = (function() {
         }
         if (world.observer.getGlobal("transition-time?")) {
           world.observer.setGlobal("end-of-days-counter", (world.observer.getGlobal("end-of-days-counter") + 1));
-          world.turtles().agentFilter(function() { return SelfManager.self().getVariable("seedling?"); }).ask(function() { procedures["VISUALIZE-SEEDLING-GROWTH"](); }, true);
-          world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); }).ask(function() {
+          Errors.askNobodyCheck(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("seedling?"); })).ask(function() { procedures["VISUALIZE-SEEDLING-GROWTH"](); }, true);
+          Errors.askNobodyCheck(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); })).ask(function() {
             SelfManager.self().setVariable("size", (1 - Prims.div(world.observer.getGlobal("end-of-days-counter"), 10)));
           }, true);
           if (Prims.gt(world.observer.getGlobal("end-of-days-counter"), 9)) {
@@ -370,7 +327,7 @@ var procedures = (function() {
             world.observer.setGlobal("end-of-days-counter", 0);
             world.observer.setGlobal("transition-time?", false);
             world.observer.setGlobal("day", 0);
-            world.turtles().ask(function() { procedures["TURN-SEEDLINGS-INTO-FULL-PLANTS"](); }, true);
+            Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["TURN-SEEDLINGS-INTO-FULL-PLANTS"](); }, true);
             procedures["KILL-MARKED-TURTLES"]();
           }
         }
@@ -379,11 +336,7 @@ var procedures = (function() {
         world.observer.setGlobal("day", (world.observer.getGlobal("day") + 1));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["doEndOfDaysEvents"] = temp;
@@ -392,7 +345,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         let potentialMates = []; letVars['potentialMates'] = potentialMates;
         let nearbyTurtles = world.turtles(); letVars['nearbyTurtles'] = nearbyTurtles;
         if (Prims.lt(world.observer.getGlobal("pollen-radius"), (world.topology.maxPxcor - world.topology.minPxcor))) {
@@ -407,9 +360,7 @@ var procedures = (function() {
           potentialMates = ListPrims.fput(SelfManager.self(), potentialMates); letVars['potentialMates'] = potentialMates;
         }
         let compatibilities = Tasks.map(Tasks.reporterTask(function(potentialMate) {
-          if (arguments.length < 1) {
-            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-          }
+          Errors.procedureArgumentsCheck(1, arguments.length);
           return procedures["COMPATIBILITY"](SelfManager.self(),potentialMate);
         }, "[ potential-mate -> compatibility self potential-mate ]"), potentialMates); letVars['compatibilities'] = compatibilities;
         let mate = procedures["PICK-WEIGHTED"](potentialMates,compatibilities); letVars['mate'] = mate;
@@ -452,11 +403,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["doReproduction"] = temp;
@@ -465,7 +412,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         let t = Prims.div(SelfManager.self().getVariable("tolerance"), 100); letVars['t'] = t;
         let m = Prims.div(SelfManager.self().getPatchVariable("metal"), 100); letVars['m'] = m;
         SelfManager.self().setVariable("fitness", (((1 - m) * (1 - (0.4 * t))) + (m * (1 - (0.4 * (1 - t))))));
@@ -476,18 +423,14 @@ var procedures = (function() {
           SelfManager.self().setVariable("will-die?", true);
         }
       }, true);
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         let overpopulation = (SelfManager.self().turtlesHere().size() - world.observer.getGlobal("plants-per-patch")); letVars['overpopulation'] = overpopulation;
         if (Prims.gt(overpopulation, 0)) {
-          SelfManager.self().turtlesHere().minNOf(overpopulation, function() { return SelfManager.self().getVariable("fitness"); }).ask(function() { SelfManager.self().setVariable("will-die?", true); }, true);
+          Errors.askNobodyCheck(SelfManager.self().turtlesHere().minNOf(overpopulation, function() { return SelfManager.self().getVariable("fitness"); })).ask(function() { SelfManager.self().setVariable("will-die?", true); }, true);
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["markTurtlesToKill"] = temp;
@@ -502,11 +445,7 @@ var procedures = (function() {
         SelfManager.self().fd(Prims.randomFloat(0.45));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["migrateThisPlant"] = temp;
@@ -515,13 +454,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); }).ask(function() { SelfManager.self().die(); }, true);
+      Errors.askNobodyCheck(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); })).ask(function() { SelfManager.self().die(); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["killMarkedTurtles"] = temp;
@@ -535,11 +470,7 @@ var procedures = (function() {
       }
       procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["turnSeedlingsIntoFullPlants"] = temp;
@@ -548,7 +479,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal in soil")) {
           SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("metal"));
         }
@@ -556,7 +487,7 @@ var procedures = (function() {
           SelfManager.self().setPatchVariable("plabel", "");
         }
       }, true);
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal tolerance")) {
           SelfManager.self().setVariable("label", NLMath.precision(SelfManager.self().getVariable("tolerance"), 0));
         }
@@ -568,11 +499,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["checkLabels"] = temp;
@@ -584,11 +511,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("shape", "plant");
       SelfManager.self().setVariable("size", 1);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["redrawPlantsAsFullSizedPlants"] = temp;
@@ -601,11 +524,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("size", Prims.div(world.observer.getGlobal("end-of-days-counter"), 10));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["visualizeSeedlingGrowth"] = temp;
@@ -614,7 +533,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         if ((Prims.gte(world.observer.getGlobal("day"), SelfManager.self().getVariable("flower-time")) && Prims.lte(world.observer.getGlobal("day"), (SelfManager.self().getVariable("flower-time") + world.observer.getGlobal("flower-duration"))))) {
           SelfManager.self().setVariable("shape", "flower");
         }
@@ -623,11 +542,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["visualizeBloom"] = temp;
@@ -638,33 +553,24 @@ var procedures = (function() {
       var letVars = { };
       let wsum = 0; letVars['wsum'] = wsum;
       var _foreach_11551_11558 = Tasks.forEach(Tasks.commandTask(function(weight) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         wsum = (wsum + weight); letVars['wsum'] = wsum;
       }, "[ weight -> set wsum wsum + weight ]"), weights); if(reporterContext && _foreach_11551_11558 !== undefined) { return _foreach_11551_11558; }
       let wret = (wsum * Prims.randomFloat(1)); letVars['wret'] = wret;
       let ret = 0; letVars['ret'] = ret;
       wsum = 0; letVars['wsum'] = wsum;
       var _foreach_11674_11681 = Tasks.forEach(Tasks.commandTask(function(weight) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         wsum = (wsum + weight); letVars['wsum'] = wsum;
         if (Prims.gt(wsum, wret)) {
-          if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-            return ListPrims.item(ret, options)
-          }
+          Errors.reportInContextCheck(reporterContext);
+          return ListPrims.item(ret, options);
         }
         ret = (ret + 1); letVars['ret'] = ret;
       }, "[ weight -> set wsum wsum + weight if wsum > wret [ report item ret options ] set ret ret + 1 ]"), weights); if(reporterContext && _foreach_11674_11681 !== undefined) { return _foreach_11674_11681; }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["pickWeighted"] = temp;
@@ -675,22 +581,16 @@ var procedures = (function() {
       var letVars = { };
       let diff = NLMath.abs((t1.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }) - t2.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }))); letVars['diff'] = diff;
       if (Prims.lt(diff, world.observer.getGlobal("flower-duration"))) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return (world.observer.getGlobal("flower-duration") - diff)
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return (world.observer.getGlobal("flower-duration") - diff);
       }
       else {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return 0
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return 0;
       }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["compatibility"] = temp;
@@ -699,16 +599,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return ColorModel.genRGBFromComponents(0, Prims.div((255 * (1 - Prims.div(m, 100))), 2), Prims.div((255 * Prims.div(m, 100)), 2))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return ColorModel.genRGBFromComponents(0, Prims.div((255 * (1 - Prims.div(m, 100))), 2), Prims.div((255 * Prims.div(m, 100)), 2));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["calcPatchColor"] = temp;
@@ -719,22 +614,16 @@ var procedures = (function() {
       var letVars = { };
       let blackPcolor = ColorModel.genRGBFromComponents(0, 0, 0); letVars['blackPcolor'] = blackPcolor;
       if (SelfManager.self().getPatchVariable("barrier?")) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return blackPcolor
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return blackPcolor;
       }
       else {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return ColorModel.genRGBFromComponents(0, (255 * (1 - Prims.div(t, 100))), (255 * Prims.div(t, 100)))
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return ColorModel.genRGBFromComponents(0, (255 * (1 - Prims.div(t, 100))), (255 * Prims.div(t, 100)));
       }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["calcPlantColor"] = temp;

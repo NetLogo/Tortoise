@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("temperature"));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -50,7 +47,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", false, true, 0, 10, 10, 20, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RAYS", singular: "ray", varNames: [] }, { name: "IRS", singular: "ir", varNames: [] }, { name: "HEATS", singular: "heat", varNames: [] }, { name: "CO2S", singular: "co2", varNames: [] }, { name: "CLOUDS", singular: "cloud", varNames: ["cloud-speed", "cloud-id"] }])([], [])('globals [   sky-top      ;; y coordinate of top row of sky   earth-top    ;; y coordinate of top row of earth   temperature  ;; overall temperature ]  breed [rays ray]     ;; packets of sunlight breed [IRs IR]       ;; packets of infrared radiation breed [heats heat]   ;; packets of heat energy breed [CO2s CO2]     ;; packets of carbon dioxide  breed [clouds cloud] clouds-own [cloud-speed cloud-id]  ;; ;; Setup Procedures ;;  to setup   clear-all   set-default-shape rays \"ray\"   set-default-shape IRs \"ray\"   set-default-shape clouds \"cloud\"   set-default-shape heats \"dot\"   set-default-shape CO2s \"CO2-molecule\"   setup-world   set temperature 12   reset-ticks end  to setup-world   set sky-top max-pycor - 5   set earth-top 0   ask patches [  ;; set colors for the different sections of the world     if pycor > sky-top [  ;; space       set pcolor scale-color white pycor 22 15     ]     if pycor <= sky-top and pycor > earth-top [ ;; sky       set pcolor scale-color blue pycor -20 20     ]     if pycor < earth-top       [ set pcolor red + 3 ] ;; earth     if pycor = earth-top ;; earth surface       [ update-albedo ]   ] end  ;; ;; Runtime Procedures ;;  to go   ask clouds [ fd cloud-speed ]  ; move clouds along   run-sunshine   ;; step sunshine   ;; if the albedo slider has moved update the color of the \"earth surface\" patches   ask patches with [pycor = earth-top]     [ update-albedo ]   run-heat  ;; step heat   run-IR    ;; step IR   run-CO2   ;; moves CO2 molecules   tick end  to update-albedo ;; patch procedure   set pcolor scale-color green albedo 0 1 end  to add-cloud            ;; erase clouds and then create new ones, plus one   let sky-height sky-top - earth-top   ;; find a random altitude for the clouds but   ;; make sure to keep it in the sky area   let y earth-top + (random-float (sky-height - 4)) + 2   ;; no clouds should have speed 0   let speed (random-float 0.1) + 0.01   let x random-xcor   let id 0   ;; we don\'t care what the cloud-id is as long as   ;; all the turtles in this cluster have the same   ;; id and it is unique among cloud clusters   if any? clouds   [ set id max [cloud-id] of clouds + 1 ]    create-clouds 3 + random 20   [     set cloud-speed speed     set cloud-id id     ;; all the cloud turtles in each larger cloud should     ;; be nearby but not directly on top of the others so     ;; add a little wiggle room in the x and ycors     setxy x + random 9 - 4           ;; the clouds should generally be clustered around the           ;; center with occasional larger variations           y + 2.5 + random-float 2 - random-float 2     set color white     ;; varying size is also purely for visualization     ;; since we\'re only doing patch-based collisions     set size 2 + random 2     set heading 90   ] end  to remove-cloud       ;; erase clouds and then create new ones, minus one   if any? clouds [     let doomed-id one-of remove-duplicates [cloud-id] of clouds     ask clouds with [cloud-id = doomed-id]       [ die ]   ] end  to run-sunshine   ask rays [     if not can-move? 0.3 [ die ]  ;; kill them off at the edge     fd 0.3                        ;; otherwise keep moving   ]   create-sunshine  ;; start new sun rays from top   reflect-rays-from-clouds  ;; check for reflection off clouds   encounter-earth   ;; check for reflection off earth and absorption end  to create-sunshine   ;; don\'t necessarily create a ray each tick   ;; as brightness gets higher make more   if 10 * sun-brightness > random 50 [     create-rays 1 [       set heading 160       set color yellow       ;; rays only come from a small area       ;; near the top of the world       setxy (random 10) + min-pxcor max-pycor     ]   ] end  to reflect-rays-from-clouds  ask rays with [any? clouds-here] [   ;; if ray shares patch with a cloud    set heading 180 - heading   ;; turn the ray around  ] end  to encounter-earth   ask rays with [ycor <= earth-top] [     ;; depending on the albedo either     ;; the earth absorbs the heat or reflects it     ifelse 100 * albedo > random 100       [ set heading 180 - heading  ] ;; reflect       [ rt random 45 - random 45 ;; absorb into the earth         set color red - 2 + random 4         set breed heats ]   ] end  to run-heat    ;; advances the heat energy turtles   ;; the temperature is related to the number of heat turtles   set temperature 0.99 * temperature + 0.01 * (12 + 0.1 * count heats)   ask heats   [     let dist 0.5 * random-float 1     ifelse can-move? dist       [ fd dist ]       [ set heading 180 - heading ] ;; if we\'re hitting the edge of the world, turn around     if ycor >= earth-top [  ;; if heading back into sky       ifelse temperature > 20 + random 40               ;; heats only seep out of the earth from a small area               ;; this makes the model look nice but it also contributes               ;; to the rate at which heat can be lost               and xcor > 0 and xcor < max-pxcor - 8         [ set breed IRs                    ;; let some escape as IR           set heading 20           set color magenta ]         [ set heading 100 + random 160 ] ;; return them to earth     ]   ] end  to run-IR   ask IRs [     if not can-move? 0.3 [ die ]     fd 0.3     if ycor <= earth-top [   ;; convert to heat if we hit the earth\'s surface again       set breed heats       rt random 45       lt random 45       set color red - 2 + random 4     ]     if any? CO2s-here    ;; check for collision with CO2       [ set heading 180 - heading ]   ] end  to add-CO2  ;; randomly adds 25 CO2 molecules to atmosphere   let sky-height sky-top - earth-top   create-CO2s 25 [     set color green     ;; pick a random position in the sky area     setxy random-xcor           earth-top + random-float sky-height   ] end  to remove-CO2 ;; randomly remove 25 CO2 molecules   repeat 25 [     if any? CO2s [       ask one-of CO2s [ die ]     ]   ] end  to run-CO2   ask CO2s [     rt random 51 - 25 ;; turn a bit     let dist 0.05 + random-float 0.1     ;; keep the CO2 in the sky area     if [not shade-of? blue pcolor] of patch-ahead dist       [ set heading 180 - heading ]     fd dist ;; move forward a bit   ] end   ; Copyright 2007 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":317,"top":12,"right":864,"bottom":362,"dimensions":{"minPxcor":-24,"maxPxcor":24,"minPycor":-8,"maxPycor":22,"patchSize":11,"wrappingAllowedInX":true,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":6,"top":12,"right":101,"bottom":45,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":103,"top":12,"right":198,"bottom":45,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5","compiledStep":"0.2","variable":"sun-brightness","left":18,"top":47,"right":191,"bottom":80,"display":"sun-brightness","min":"0","max":"5","default":1,"step":"0.2","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.05","variable":"albedo","left":18,"top":82,"right":191,"bottom":115,"display":"albedo","min":"0","max":"1","default":0.6,"step":"0.05","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Global Temperature', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"temperature\"));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot temperature","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Global Temperature","left":9,"top":212,"right":278,"bottom":423,"xmin":0,"xmax":10,"ymin":10,"ymax":20,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot temperature","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_40 = procedures[\"ADD-CO2\"]();   if (_maybestop_33_40 instanceof Exception.StopInterrupt) { return _maybestop_33_40; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"add-CO2","left":7,"top":152,"right":102,"bottom":185,"display":"add CO2","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"REMOVE-CO2\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"remove-CO2","left":104,"top":152,"right":199,"bottom":185,"display":"remove CO2","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"temperature\")","source":"temperature","left":210,"top":87,"right":303,"bottom":132,"precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"ADD-CLOUD\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"add-cloud","left":7,"top":118,"right":102,"bottom":151,"display":"add cloud","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_45 = procedures[\"REMOVE-CLOUD\"]();   if (_maybestop_33_45 instanceof Exception.StopInterrupt) { return _maybestop_33_45; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"remove-cloud","left":104,"top":118,"right":199,"bottom":151,"display":"remove cloud","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"CO2S\").size()","source":"count CO2s","left":210,"top":133,"right":303,"bottom":178,"display":"CO2 amount","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   world.observer.watch(ListPrims.oneOf(world.turtleManager.turtlesOfBreed(\"RAYS\")));   world.observer.subject().ask(function() { SelfManager.self().penManager.lowerPen(); }, true); } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"watch one-of rays ask subject [ pen-down ]","left":208,"top":41,"right":309,"bottom":75,"display":"watch a ray","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["sun-brightness", "albedo", "sky-top", "earth-top", "temperature"], ["sun-brightness", "albedo"], [], -24, 24, -8, 22, 11, true, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RAYS", singular: "ray", varNames: [] }, { name: "IRS", singular: "ir", varNames: [] }, { name: "HEATS", singular: "heat", varNames: [] }, { name: "CO2S", singular: "co2", varNames: [] }, { name: "CLOUDS", singular: "cloud", varNames: ["cloud-speed", "cloud-id"] }])([], [])('globals [   sky-top      ;; y coordinate of top row of sky   earth-top    ;; y coordinate of top row of earth   temperature  ;; overall temperature ]  breed [rays ray]     ;; packets of sunlight breed [IRs IR]       ;; packets of infrared radiation breed [heats heat]   ;; packets of heat energy breed [CO2s CO2]     ;; packets of carbon dioxide  breed [clouds cloud] clouds-own [cloud-speed cloud-id]  ;; ;; Setup Procedures ;;  to setup   clear-all   set-default-shape rays \"ray\"   set-default-shape IRs \"ray\"   set-default-shape clouds \"cloud\"   set-default-shape heats \"dot\"   set-default-shape CO2s \"CO2-molecule\"   setup-world   set temperature 12   reset-ticks end  to setup-world   set sky-top max-pycor - 5   set earth-top 0   ask patches [  ;; set colors for the different sections of the world     if pycor > sky-top [  ;; space       set pcolor scale-color white pycor 22 15     ]     if pycor <= sky-top and pycor > earth-top [ ;; sky       set pcolor scale-color blue pycor -20 20     ]     if pycor < earth-top       [ set pcolor red + 3 ] ;; earth     if pycor = earth-top ;; earth surface       [ update-albedo ]   ] end  ;; ;; Runtime Procedures ;;  to go   ask clouds [ fd cloud-speed ]  ; move clouds along   run-sunshine   ;; step sunshine   ;; if the albedo slider has moved update the color of the \"earth surface\" patches   ask patches with [pycor = earth-top]     [ update-albedo ]   run-heat  ;; step heat   run-IR    ;; step IR   run-CO2   ;; moves CO2 molecules   tick end  to update-albedo ;; patch procedure   set pcolor scale-color green albedo 0 1 end  to add-cloud            ;; erase clouds and then create new ones, plus one   let sky-height sky-top - earth-top   ;; find a random altitude for the clouds but   ;; make sure to keep it in the sky area   let y earth-top + (random-float (sky-height - 4)) + 2   ;; no clouds should have speed 0   let speed (random-float 0.1) + 0.01   let x random-xcor   let id 0   ;; we don\'t care what the cloud-id is as long as   ;; all the turtles in this cluster have the same   ;; id and it is unique among cloud clusters   if any? clouds   [ set id max [cloud-id] of clouds + 1 ]    create-clouds 3 + random 20   [     set cloud-speed speed     set cloud-id id     ;; all the cloud turtles in each larger cloud should     ;; be nearby but not directly on top of the others so     ;; add a little wiggle room in the x and ycors     setxy x + random 9 - 4           ;; the clouds should generally be clustered around the           ;; center with occasional larger variations           y + 2.5 + random-float 2 - random-float 2     set color white     ;; varying size is also purely for visualization     ;; since we\'re only doing patch-based collisions     set size 2 + random 2     set heading 90   ] end  to remove-cloud       ;; erase clouds and then create new ones, minus one   if any? clouds [     let doomed-id one-of remove-duplicates [cloud-id] of clouds     ask clouds with [cloud-id = doomed-id]       [ die ]   ] end  to run-sunshine   ask rays [     if not can-move? 0.3 [ die ]  ;; kill them off at the edge     fd 0.3                        ;; otherwise keep moving   ]   create-sunshine  ;; start new sun rays from top   reflect-rays-from-clouds  ;; check for reflection off clouds   encounter-earth   ;; check for reflection off earth and absorption end  to create-sunshine   ;; don\'t necessarily create a ray each tick   ;; as brightness gets higher make more   if 10 * sun-brightness > random 50 [     create-rays 1 [       set heading 160       set color yellow       ;; rays only come from a small area       ;; near the top of the world       setxy (random 10) + min-pxcor max-pycor     ]   ] end  to reflect-rays-from-clouds  ask rays with [any? clouds-here] [   ;; if ray shares patch with a cloud    set heading 180 - heading   ;; turn the ray around  ] end  to encounter-earth   ask rays with [ycor <= earth-top] [     ;; depending on the albedo either     ;; the earth absorbs the heat or reflects it     ifelse 100 * albedo > random 100       [ set heading 180 - heading  ] ;; reflect       [ rt random 45 - random 45 ;; absorb into the earth         set color red - 2 + random 4         set breed heats ]   ] end  to run-heat    ;; advances the heat energy turtles   ;; the temperature is related to the number of heat turtles   set temperature 0.99 * temperature + 0.01 * (12 + 0.1 * count heats)   ask heats   [     let dist 0.5 * random-float 1     ifelse can-move? dist       [ fd dist ]       [ set heading 180 - heading ] ;; if we\'re hitting the edge of the world, turn around     if ycor >= earth-top [  ;; if heading back into sky       ifelse temperature > 20 + random 40               ;; heats only seep out of the earth from a small area               ;; this makes the model look nice but it also contributes               ;; to the rate at which heat can be lost               and xcor > 0 and xcor < max-pxcor - 8         [ set breed IRs                    ;; let some escape as IR           set heading 20           set color magenta ]         [ set heading 100 + random 160 ] ;; return them to earth     ]   ] end  to run-IR   ask IRs [     if not can-move? 0.3 [ die ]     fd 0.3     if ycor <= earth-top [   ;; convert to heat if we hit the earth\'s surface again       set breed heats       rt random 45       lt random 45       set color red - 2 + random 4     ]     if any? CO2s-here    ;; check for collision with CO2       [ set heading 180 - heading ]   ] end  to add-CO2  ;; randomly adds 25 CO2 molecules to atmosphere   let sky-height sky-top - earth-top   create-CO2s 25 [     set color green     ;; pick a random position in the sky area     setxy random-xcor           earth-top + random-float sky-height   ] end  to remove-CO2 ;; randomly remove 25 CO2 molecules   repeat 25 [     if any? CO2s [       ask one-of CO2s [ die ]     ]   ] end  to run-CO2   ask CO2s [     rt random 51 - 25 ;; turn a bit     let dist 0.05 + random-float 0.1     ;; keep the CO2 in the sky area     if [not shade-of? blue pcolor] of patch-ahead dist       [ set heading 180 - heading ]     fd dist ;; move forward a bit   ] end   ; Copyright 2007 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":317,"top":12,"right":864,"bottom":362,"dimensions":{"minPxcor":-24,"maxPxcor":24,"minPycor":-8,"maxPycor":22,"patchSize":11,"wrappingAllowedInX":true,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":6,"top":12,"right":101,"bottom":45,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":103,"top":12,"right":198,"bottom":45,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5","compiledStep":"0.2","variable":"sun-brightness","left":18,"top":47,"right":191,"bottom":80,"display":"sun-brightness","min":"0","max":"5","default":1,"step":"0.2","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.05","variable":"albedo","left":18,"top":82,"right":191,"bottom":115,"display":"albedo","min":"0","max":"1","default":0.6,"step":"0.05","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Global Temperature', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"temperature\"));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot temperature","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Global Temperature","left":9,"top":212,"right":278,"bottom":423,"xmin":0,"xmax":10,"ymin":10,"ymax":20,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot temperature","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_40 = procedures[\"ADD-CO2\"]();   if (_maybestop_33_40 instanceof Exception.StopInterrupt) { return _maybestop_33_40; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"add-CO2","left":7,"top":152,"right":102,"bottom":185,"display":"add CO2","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"REMOVE-CO2\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"remove-CO2","left":104,"top":152,"right":199,"bottom":185,"display":"remove CO2","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"temperature\")","source":"temperature","left":210,"top":87,"right":303,"bottom":132,"precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"ADD-CLOUD\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"add-cloud","left":7,"top":118,"right":102,"bottom":151,"display":"add cloud","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_45 = procedures[\"REMOVE-CLOUD\"]();   if (_maybestop_33_45 instanceof Exception.StopInterrupt) { return _maybestop_33_45; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"remove-cloud","left":104,"top":118,"right":199,"bottom":151,"display":"remove cloud","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"CO2S\").size()","source":"count CO2s","left":210,"top":133,"right":303,"bottom":178,"display":"CO2 amount","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   world.observer.watch(ListPrims.oneOf(world.turtleManager.turtlesOfBreed(\"RAYS\")));   Errors.askNobodyCheck(world.observer.subject()).ask(function() { SelfManager.self().penManager.lowerPen(); }, true); } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"watch one-of rays ask subject [ pen-down ]","left":208,"top":41,"right":309,"bottom":75,"display":"watch a ray","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["sun-brightness", "albedo", "sky-top", "earth-top", "temperature"], ["sun-brightness", "albedo"], [], -24, 24, -8, 22, 11, true, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -85,11 +82,7 @@ var procedures = (function() {
       world.observer.setGlobal("temperature", 12);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -100,7 +93,7 @@ var procedures = (function() {
       var letVars = { };
       world.observer.setGlobal("sky-top", (world.topology.maxPycor - 5));
       world.observer.setGlobal("earth-top", 0);
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("sky-top"))) {
           SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(9.9, SelfManager.self().getPatchVariable("pycor"), 22, 15));
         }
@@ -115,11 +108,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupWorld"] = temp;
@@ -128,19 +117,15 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("CLOUDS").ask(function() { SelfManager.self().fd(SelfManager.self().getVariable("cloud-speed")); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CLOUDS")).ask(function() { SelfManager.self().fd(SelfManager.self().getVariable("cloud-speed")); }, true);
       procedures["RUN-SUNSHINE"]();
-      world._optimalPatchRow(world.observer.getGlobal("earth-top")).ask(function() { procedures["UPDATE-ALBEDO"](); }, true);
+      Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("earth-top"))).ask(function() { procedures["UPDATE-ALBEDO"](); }, true);
       procedures["RUN-HEAT"]();
       procedures["RUN-IR"]();
       procedures["RUN-CO2"]();
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -151,11 +136,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, world.observer.getGlobal("albedo"), 0, 1));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["updateAlbedo"] = temp;
@@ -181,11 +162,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("heading", 90);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["addCloud"] = temp;
@@ -196,14 +173,10 @@ var procedures = (function() {
       var letVars = { };
       if (!world.turtleManager.turtlesOfBreed("CLOUDS").isEmpty()) {
         let doomedId = ListPrims.oneOf(ListPrims.removeDuplicates(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() { return SelfManager.self().getVariable("cloud-id"); }))); letVars['doomedId'] = doomedId;
-        world.turtleManager.turtlesOfBreed("CLOUDS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("cloud-id"), doomedId); }).ask(function() { SelfManager.self().die(); }, true);
+        Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CLOUDS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("cloud-id"), doomedId); })).ask(function() { SelfManager.self().die(); }, true);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["removeCloud"] = temp;
@@ -212,7 +185,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("RAYS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("RAYS")).ask(function() {
         if (!SelfManager.self().canMove(0.3)) {
           SelfManager.self().die();
         }
@@ -222,11 +195,7 @@ var procedures = (function() {
       procedures["REFLECT-RAYS-FROM-CLOUDS"]();
       procedures["ENCOUNTER-EARTH"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["runSunshine"] = temp;
@@ -243,11 +212,7 @@ var procedures = (function() {
         }, true);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["createSunshine"] = temp;
@@ -256,13 +221,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("RAYS").agentFilter(function() { return !SelfManager.self().breedHere("CLOUDS").isEmpty(); }).ask(function() { SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading"))); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("RAYS").agentFilter(function() { return !SelfManager.self().breedHere("CLOUDS").isEmpty(); })).ask(function() { SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading"))); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["reflectRaysFromClouds"] = temp;
@@ -271,7 +232,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("RAYS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top")); }).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("RAYS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top")); })).ask(function() {
         if (Prims.gt((100 * world.observer.getGlobal("albedo")), Prims.random(100))) {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
         }
@@ -282,11 +243,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["encounterEarth"] = temp;
@@ -296,7 +253,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.setGlobal("temperature", ((0.99 * world.observer.getGlobal("temperature")) + (0.01 * (12 + (0.1 * world.turtleManager.turtlesOfBreed("HEATS").size())))));
-      world.turtleManager.turtlesOfBreed("HEATS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("HEATS")).ask(function() {
         let dist = (0.5 * Prims.randomFloat(1)); letVars['dist'] = dist;
         if (SelfManager.self().canMove(dist)) {
           SelfManager.self().fd(dist);
@@ -316,11 +273,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["runHeat"] = temp;
@@ -329,7 +282,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("IRS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("IRS")).ask(function() {
         if (!SelfManager.self().canMove(0.3)) {
           SelfManager.self().die();
         }
@@ -345,11 +298,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["runIr"] = temp;
@@ -364,11 +313,7 @@ var procedures = (function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), (world.observer.getGlobal("earth-top") + Prims.randomFloat(skyHeight)));
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["addCo2"] = temp;
@@ -379,15 +324,11 @@ var procedures = (function() {
       var letVars = { };
       for (let _index_5794_5800 = 0, _repeatcount_5794_5800 = StrictMath.floor(25); _index_5794_5800 < _repeatcount_5794_5800; _index_5794_5800++){
         if (!world.turtleManager.turtlesOfBreed("CO2S").isEmpty()) {
-          ListPrims.oneOf(world.turtleManager.turtlesOfBreed("CO2S")).ask(function() { SelfManager.self().die(); }, true);
+          Errors.askNobodyCheck(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("CO2S"))).ask(function() { SelfManager.self().die(); }, true);
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["removeCo2"] = temp;
@@ -396,7 +337,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("CO2S").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CO2S")).ask(function() {
         SelfManager.self().right((Prims.random(51) - 25));
         let dist = (0.05 + Prims.randomFloat(0.1)); letVars['dist'] = dist;
         if (SelfManager.self().patchAhead(dist).projectionBy(function() { return !ColorModel.areRelatedByShade(105, SelfManager.self().getPatchVariable("pcolor")); })) {
@@ -405,11 +346,7 @@ var procedures = (function() {
         SelfManager.self().fd(dist);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["runCo2"] = temp;

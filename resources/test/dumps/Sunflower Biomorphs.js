@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SPAWNERS", singular: "spawner", varNames: ["num-colors", "step-size", "turn-increment", "size-modifier"] }, { name: "PETALS", singular: "petal", varNames: ["step-size", "size-modifier", "parent"] }])([], [])(';; spawners are hidden turtles at the center of each \"flower\" that ;; are always hatching the petals you actually see breed [spawners spawner] breed [petals petal]  globals [   first-parent     ;; the first parent chosen if sexual reproduction is being used ]  spawners-own [   num-colors       ;; how many colors the petals will have   step-size        ;; how fast petals move out (the flower\'s rate of growth)   turn-increment   ;; how much each petal is rotated before moving out from                    ;; the center; for example, a turn-increment of 0 will                    ;; cause all the petals to move out on the same line   size-modifier    ;; how quickly the petals grow as they move away from                    ;; their starting location ]  petals-own [   step-size        ;; same as for spawners   size-modifier    ;; same as for spawners   parent           ;; spawner that spawned this petal; distance from parent                    ;; is used for calculating the petal\'s size as it grows ]  to setup   clear-all   create-spawners rows * columns   [     set num-colors random 14 + 1     set step-size random-float 0.5     set turn-increment random-float 4     set size-modifier random-float 2     hide-turtle        ;; we don\'t want to see the spawners   ]   arrange-spawners   set first-parent nobody   reset-ticks end  to arrange-spawners   ;; arrange the spawners around the world in a grid   let i 0   while [i < rows * columns]   [     ask turtle i     [       let x-int world-width / columns       let y-int world-height / rows       setxy (-1 * max-pxcor + x-int / 2 + (i mod columns) * x-int)             (max-pycor + min-pycor / rows - int (i / columns) * y-int)     ]     set i i + 1   ] end  to go   ask spawners   [     hatch-petals 1     [       set parent myself       set color 10 * (ticks mod ([num-colors] of parent + 1)) + 15       rt ticks * [turn-increment] of parent * 360       set size 0       show-turtle  ;; the petal inherits the hiddenness of its parent,                    ;; so this makes it visible again     ]   ]   ask petals   [     fd step-size     set size size-modifier * sqrt distance parent     ;; Kill the petals when they would start interfering with petals from other flowers.     if abs (xcor - [xcor] of parent) > max-pxcor / (columns * 1.5) [ die ]     if abs (ycor - [ycor] of parent) > max-pycor / (rows * 1.5) [ die ]   ]   tick   if mouse-down? [ handle-mouse-down ] end  to repopulate-from-two [parent1 parent2]   ask petals [ die ]   ask spawners   [     ;;if controlled-mutation? then the mutation a flower experiences is relative to its spawner\'s who number.     if controlled-mutation? [set mutation who * 1 / (rows * columns)]      ;; select one value from either parent for each of the four variables     set num-colors ([num-colors] of one-of list parent1 parent2) + int random-normal 0 (mutation * 10) mod 15 + 1     set step-size ([step-size] of one-of list parent1 parent2) + random-normal 0 (mutation / 5)     set turn-increment ([turn-increment] of one-of list parent1 parent2) + random-normal 0 (mutation / 20)     set size-modifier ([size-modifier] of one-of list parent1 parent2) + random-normal 0 mutation      ;;We clamp size-modifier so none of the sunflowers get too big.     if size-modifier > 1.5 [set size-modifier 1.5]   ] end  to repopulate-from-one [parent1]   ask petals [ die ]   ask spawners   [     if controlled-mutation? [ set mutation who * 1 / (rows * columns) ]     set num-colors ([num-colors] of parent1 + int random-normal 0 (mutation * 10)) mod 15 + 1     set step-size [step-size] of parent1 + random-normal 0 (mutation / 5)     set turn-increment [turn-increment] of parent1 + random-normal 0 (mutation / 20)     set size-modifier [size-modifier] of parent1 + random-normal 0 mutation      ;;We clamp size-modifier so none of the sunflowers get too big.     if size-modifier > 1.5 [ set size-modifier 1.5 ]   ] end  to handle-mouse-down   ;; get the spawner closest to where the user clicked   let new-parent min-one-of spawners [distancexy mouse-xcor mouse-ycor]   ifelse asexual?   [ repopulate-from-one new-parent ]   [     ifelse first-parent != nobody     [       repopulate-from-two first-parent new-parent       set first-parent nobody       ask patches [ set pcolor black ]     ]     [       set first-parent new-parent       ask patches       [         ;; This is a little tricky; some patches may be equidistant         ;; from more than one spawner, so we can\'t just ask for the         ;; closest spawner, we have to ask for all the closest spawners         ;; and then see if the clicked spawner is among them         if member? new-parent spawners with-min [distance myself]           [ set pcolor gray - 3 ]       ]     ]   ]   ;; wait for the user to release mouse button   while [mouse-down?] [ ] end   ; Copyright 2006 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":198,"top":10,"right":626,"bottom":439,"dimensions":{"minPxcor":-17,"maxPxcor":17,"minPycor":-17,"maxPycor":17,"patchSize":12,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":11,"top":107,"right":94,"bottom":140,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":97,"top":107,"right":177,"bottom":140,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"1","variable":"rows","left":10,"top":33,"right":182,"bottom":66,"display":"rows","min":"1","max":"10","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"1","variable":"columns","left":10,"top":67,"right":182,"bottom":100,"display":"columns","min":"1","max":"10","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.02","variable":"mutation","left":10,"top":145,"right":182,"bottom":178,"display":"mutation","min":"0","max":"1","default":0.14,"step":"0.02","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"asexual?","left":10,"top":193,"right":132,"bottom":226,"display":"asexual?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"controlled-mutation?","left":10,"top":227,"right":190,"bottom":260,"display":"controlled-mutation?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["rows", "columns", "mutation", "asexual?", "controlled-mutation?", "first-parent"], ["rows", "columns", "mutation", "asexual?", "controlled-mutation?"], [], -17, 17, -17, 17, 12, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SPAWNERS", singular: "spawner", varNames: ["num-colors", "step-size", "turn-increment", "size-modifier"] }, { name: "PETALS", singular: "petal", varNames: ["step-size", "size-modifier", "parent"] }])([], [])(';; spawners are hidden turtles at the center of each \"flower\" that ;; are always hatching the petals you actually see breed [spawners spawner] breed [petals petal]  globals [   first-parent     ;; the first parent chosen if sexual reproduction is being used ]  spawners-own [   num-colors       ;; how many colors the petals will have   step-size        ;; how fast petals move out (the flower\'s rate of growth)   turn-increment   ;; how much each petal is rotated before moving out from                    ;; the center; for example, a turn-increment of 0 will                    ;; cause all the petals to move out on the same line   size-modifier    ;; how quickly the petals grow as they move away from                    ;; their starting location ]  petals-own [   step-size        ;; same as for spawners   size-modifier    ;; same as for spawners   parent           ;; spawner that spawned this petal; distance from parent                    ;; is used for calculating the petal\'s size as it grows ]  to setup   clear-all   create-spawners rows * columns   [     set num-colors random 14 + 1     set step-size random-float 0.5     set turn-increment random-float 4     set size-modifier random-float 2     hide-turtle        ;; we don\'t want to see the spawners   ]   arrange-spawners   set first-parent nobody   reset-ticks end  to arrange-spawners   ;; arrange the spawners around the world in a grid   let i 0   while [i < rows * columns]   [     ask turtle i     [       let x-int world-width / columns       let y-int world-height / rows       setxy (-1 * max-pxcor + x-int / 2 + (i mod columns) * x-int)             (max-pycor + min-pycor / rows - int (i / columns) * y-int)     ]     set i i + 1   ] end  to go   ask spawners   [     hatch-petals 1     [       set parent myself       set color 10 * (ticks mod ([num-colors] of parent + 1)) + 15       rt ticks * [turn-increment] of parent * 360       set size 0       show-turtle  ;; the petal inherits the hiddenness of its parent,                    ;; so this makes it visible again     ]   ]   ask petals   [     fd step-size     set size size-modifier * sqrt distance parent     ;; Kill the petals when they would start interfering with petals from other flowers.     if abs (xcor - [xcor] of parent) > max-pxcor / (columns * 1.5) [ die ]     if abs (ycor - [ycor] of parent) > max-pycor / (rows * 1.5) [ die ]   ]   tick   if mouse-down? [ handle-mouse-down ] end  to repopulate-from-two [parent1 parent2]   ask petals [ die ]   ask spawners   [     ;;if controlled-mutation? then the mutation a flower experiences is relative to its spawner\'s who number.     if controlled-mutation? [set mutation who * 1 / (rows * columns)]      ;; select one value from either parent for each of the four variables     set num-colors ([num-colors] of one-of list parent1 parent2) + int random-normal 0 (mutation * 10) mod 15 + 1     set step-size ([step-size] of one-of list parent1 parent2) + random-normal 0 (mutation / 5)     set turn-increment ([turn-increment] of one-of list parent1 parent2) + random-normal 0 (mutation / 20)     set size-modifier ([size-modifier] of one-of list parent1 parent2) + random-normal 0 mutation      ;;We clamp size-modifier so none of the sunflowers get too big.     if size-modifier > 1.5 [set size-modifier 1.5]   ] end  to repopulate-from-one [parent1]   ask petals [ die ]   ask spawners   [     if controlled-mutation? [ set mutation who * 1 / (rows * columns) ]     set num-colors ([num-colors] of parent1 + int random-normal 0 (mutation * 10)) mod 15 + 1     set step-size [step-size] of parent1 + random-normal 0 (mutation / 5)     set turn-increment [turn-increment] of parent1 + random-normal 0 (mutation / 20)     set size-modifier [size-modifier] of parent1 + random-normal 0 mutation      ;;We clamp size-modifier so none of the sunflowers get too big.     if size-modifier > 1.5 [ set size-modifier 1.5 ]   ] end  to handle-mouse-down   ;; get the spawner closest to where the user clicked   let new-parent min-one-of spawners [distancexy mouse-xcor mouse-ycor]   ifelse asexual?   [ repopulate-from-one new-parent ]   [     ifelse first-parent != nobody     [       repopulate-from-two first-parent new-parent       set first-parent nobody       ask patches [ set pcolor black ]     ]     [       set first-parent new-parent       ask patches       [         ;; This is a little tricky; some patches may be equidistant         ;; from more than one spawner, so we can\'t just ask for the         ;; closest spawner, we have to ask for all the closest spawners         ;; and then see if the clicked spawner is among them         if member? new-parent spawners with-min [distance myself]           [ set pcolor gray - 3 ]       ]     ]   ]   ;; wait for the user to release mouse button   while [mouse-down?] [ ] end   ; Copyright 2006 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":198,"top":10,"right":626,"bottom":439,"dimensions":{"minPxcor":-17,"maxPxcor":17,"minPycor":-17,"maxPycor":17,"patchSize":12,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":11,"top":107,"right":94,"bottom":140,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":97,"top":107,"right":177,"bottom":140,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"1","variable":"rows","left":10,"top":33,"right":182,"bottom":66,"display":"rows","min":"1","max":"10","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"1","variable":"columns","left":10,"top":67,"right":182,"bottom":100,"display":"columns","min":"1","max":"10","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.02","variable":"mutation","left":10,"top":145,"right":182,"bottom":178,"display":"mutation","min":"0","max":"1","default":0.14,"step":"0.02","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"asexual?","left":10,"top":193,"right":132,"bottom":226,"display":"asexual?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"controlled-mutation?","left":10,"top":227,"right":190,"bottom":260,"display":"controlled-mutation?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["rows", "columns", "mutation", "asexual?", "controlled-mutation?", "first-parent"], ["rows", "columns", "mutation", "asexual?", "controlled-mutation?"], [], -17, 17, -17, 17, 12, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -64,11 +65,7 @@ var procedures = (function() {
       world.observer.setGlobal("first-parent", Nobody);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -79,7 +76,7 @@ var procedures = (function() {
       var letVars = { };
       let i = 0; letVars['i'] = i;
       while (Prims.lt(i, (world.observer.getGlobal("rows") * world.observer.getGlobal("columns")))) {
-        world.turtleManager.getTurtle(i).ask(function() {
+        Errors.askNobodyCheck(world.turtleManager.getTurtle(i)).ask(function() {
           let xInt = Prims.div(world.topology.width, world.observer.getGlobal("columns")); letVars['xInt'] = xInt;
           let yInt = Prims.div(world.topology.height, world.observer.getGlobal("rows")); letVars['yInt'] = yInt;
           SelfManager.self().setXY((((-1 * world.topology.maxPxcor) + Prims.div(xInt, 2)) + (NLMath.mod(i, world.observer.getGlobal("columns")) * xInt)), ((world.topology.maxPycor + Prims.div(world.topology.minPycor, world.observer.getGlobal("rows"))) - (NLMath.toInt(Prims.div(i, world.observer.getGlobal("columns"))) * yInt)));
@@ -87,11 +84,7 @@ var procedures = (function() {
         i = (i + 1); letVars['i'] = i;
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["arrangeSpawners"] = temp;
@@ -100,7 +93,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("SPAWNERS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SPAWNERS")).ask(function() {
         SelfManager.self().hatch(1, "PETALS").ask(function() {
           SelfManager.self().setVariable("parent", SelfManager.myself());
           SelfManager.self().setVariable("color", ((10 * NLMath.mod(world.ticker.tickCount(), (SelfManager.self().getVariable("parent").projectionBy(function() { return SelfManager.self().getVariable("num-colors"); }) + 1))) + 15));
@@ -109,7 +102,7 @@ var procedures = (function() {
           SelfManager.self().hideTurtle(false);;
         }, true);
       }, true);
-      world.turtleManager.turtlesOfBreed("PETALS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PETALS")).ask(function() {
         SelfManager.self().fd(SelfManager.self().getVariable("step-size"));
         SelfManager.self().setVariable("size", (SelfManager.self().getVariable("size-modifier") * NLMath.sqrt(SelfManager.self().distance(SelfManager.self().getVariable("parent")))));
         if (Prims.gt(NLMath.abs((SelfManager.self().getVariable("xcor") - SelfManager.self().getVariable("parent").projectionBy(function() { return SelfManager.self().getVariable("xcor"); }))), Prims.div(world.topology.maxPxcor, (world.observer.getGlobal("columns") * 1.5)))) {
@@ -124,11 +117,7 @@ var procedures = (function() {
         procedures["HANDLE-MOUSE-DOWN"]();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -137,8 +126,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("PETALS").ask(function() { SelfManager.self().die(); }, true);
-      world.turtleManager.turtlesOfBreed("SPAWNERS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PETALS")).ask(function() { SelfManager.self().die(); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SPAWNERS")).ask(function() {
         if (world.observer.getGlobal("controlled-mutation?")) {
           world.observer.setGlobal("mutation", Prims.div((SelfManager.self().getVariable("who") * 1), (world.observer.getGlobal("rows") * world.observer.getGlobal("columns"))));
         }
@@ -151,11 +140,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["repopulateFromTwo"] = temp;
@@ -164,8 +149,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("PETALS").ask(function() { SelfManager.self().die(); }, true);
-      world.turtleManager.turtlesOfBreed("SPAWNERS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PETALS")).ask(function() { SelfManager.self().die(); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SPAWNERS")).ask(function() {
         if (world.observer.getGlobal("controlled-mutation?")) {
           world.observer.setGlobal("mutation", Prims.div((SelfManager.self().getVariable("who") * 1), (world.observer.getGlobal("rows") * world.observer.getGlobal("columns"))));
         }
@@ -178,11 +163,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["repopulateFromOne"] = temp;
@@ -199,11 +180,11 @@ var procedures = (function() {
         if (!Prims.equality(world.observer.getGlobal("first-parent"), Nobody)) {
           procedures["REPOPULATE-FROM-TWO"](world.observer.getGlobal("first-parent"),newParent);
           world.observer.setGlobal("first-parent", Nobody);
-          world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
+          Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
         }
         else {
           world.observer.setGlobal("first-parent", newParent);
-          world.patches().ask(function() {
+          Errors.askNobodyCheck(world.patches()).ask(function() {
             if (ListPrims.member(newParent, world.turtleManager.turtlesOfBreed("SPAWNERS").minsBy(function() { return SelfManager.self().distance(SelfManager.myself()); }))) {
               SelfManager.self().setPatchVariable("pcolor", (5 - 3));
             }
@@ -214,11 +195,7 @@ var procedures = (function() {
       
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["handleMouseDown"] = temp;

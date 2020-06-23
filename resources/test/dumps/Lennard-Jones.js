@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -39,11 +40,7 @@ modelConfig.plots = [(function() {
             plotManager.plotValue(Prims.div(world.observer.getGlobal("v-total"), world.observer.getGlobal("num-atoms")));
           }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -52,7 +49,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", false, true, 0, 10, -2, 2, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [   max-move-dist   cutoff-dist   v-total   eps   total-move-attempts   total-successful-moves   diameter   pot-offset ; This offsets the LJ potential so that it is 0 at the cutoff distance   current-move-attempts   current-successful-moves ]  to setup   clear-all   reset-ticks   set eps 1   ;Set the diameter of particles based on density   set diameter sqrt(density * world-width * world-height / num-atoms)   set max-move-dist diameter   set cutoff-dist 2.5 * diameter   set pot-offset (- (4 * ((diameter / cutoff-dist) ^ 12 - (diameter / cutoff-dist) ^ 6)))   set v-total calc-v-total  ;calculate the initial energy   create-turtles num-atoms [     set shape \"circle\"     set size diameter     set color blue   ]   setup-atoms end  to go   ;Each tick, attempt N moves. On average, every particle moves each tick   repeat num-atoms [     ask one-of turtles [       attempt-move     ]   ]    ;tune the move distance to adjust the acceptance rate every NUM-ATOMS ticks   if ticks mod num-atoms = 1 [     tune-acceptance-rate   ]    tick end  to attempt-move   set total-move-attempts total-move-attempts + 1  ;the is the total running average   set current-move-attempts current-move-attempts + 1 ;this is just since the last max-move-distance adjustment   let v-old calc-v; calculate current energy   let delta-x (random-float 2 * max-move-dist) - max-move-dist  ; pick random x distance   let delta-y (random-float 2 * max-move-dist) - max-move-dist ; pick random y distance   setxy (xcor + delta-x) (ycor + delta-y) ;move the random x and y distances   let v-new calc-v ;Calculate the new energy    let delta-v v-new - v-old   ifelse (v-new < v-old) or (random-float 1 < exp( - delta-v / temperature) ) [     set total-successful-moves total-successful-moves + 1   ;the is the total running average     set current-successful-moves current-successful-moves + 1   ;this is just since the last max-move-distance adjustment     set v-total v-total + delta-v   ] [     setxy (xcor - delta-x) (ycor - delta-y) ;reset position   ] end  to-report calc-v-total   report sum [ calc-v ] of turtles / 2 ;divide by two because each particle has been counted twice end  to-report calc-v   let v 0    ask other turtles in-radius cutoff-dist [     let rsquare (distance myself) ^ 2     let dsquare diameter * diameter     let attract-term dsquare ^ 3 / rsquare ^ 3     let repel-term attract-term * attract-term     ;NOTE could do this a little faster by attract-term * (attract-term -1)     let vi 4 * eps * (repel-term - attract-term) + pot-offset     set v v + vi   ]   report v end  to-report accept-rate   report current-successful-moves / current-move-attempts end  to tune-acceptance-rate   ifelse accept-rate < 0.5 [     set max-move-dist max-move-dist * .95   ] [     set max-move-dist max-move-dist * 1.05     if max-move-dist > diameter [       set max-move-dist diameter     ]   ]   set current-successful-moves 0   set current-move-attempts 0 end  to-report energy-per-particle   report v-total / num-atoms end  ;*********setup procedures*************  to setup-atoms   if initial-config = \"HCP\" [     let l sqrt(num-atoms) ;the # of atoms in a row     let row-dist (2 ^ (1 / 6)) * diameter ;this is the distance with minimum energy     let ypos (- l * row-dist / 2) ;the y position of the first atom     let xpos (- l * row-dist / 2) ;the x position of the first atom     let r-num 0  ;the row number     ask turtles [  ;set the atoms; positions       if xpos > (l * row-dist / 2)  [  ;condition to start a new row         set r-num r-num + 1         set xpos (- l * row-dist / 2) + (r-num mod 2) * row-dist / 2         set ypos ypos + row-dist       ]       setxy xpos ypos  ;if we are still in the same row       set xpos xpos + row-dist     ]   ]    if initial-config = \"random\" [     ask turtles [       setxy random-xcor random-ycor     ]     remove-overlap ;make sure atoms aren\'t overlapping   ] end  to remove-overlap   let r-min 0.7 * diameter   ask turtles [     while [overlapping r-min] [       setxy random-xcor random-ycor     ]   ] end  to-report overlapping [r-min]   report any? other turtles in-radius r-min end   ; Copyright 2015 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":239,"top":10,"right":742,"bottom":514,"dimensions":{"minPxcor":-16,"maxPxcor":16,"minPycor":-16,"maxPycor":16,"patchSize":15,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":30,"top":217,"right":204,"bottom":250,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":120,"top":353,"right":204,"bottom":386,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1000","compiledStep":"1","variable":"num-atoms","left":30,"top":94,"right":202,"bottom":127,"display":"num-atoms","min":"1","max":"1000","default":250,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0.01","compiledMax":"2","compiledStep":"0.01","variable":"temperature","left":31,"top":316,"right":205,"bottom":349,"display":"temperature","min":".01","max":"2","default":0.45,"step":".01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0.01","compiledMax":"0.6","compiledStep":"0.01","variable":"density","left":30,"top":131,"right":202,"bottom":164,"display":"density","min":"0.01","max":".6","default":0.25,"step":".01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"initial-config","left":30,"top":168,"right":203,"bottom":213,"display":"initial-config","choices":["HCP","random"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('energy per particle', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         if (Prims.gt(world.ticker.tickCount(), 3)) {           plotManager.plotValue(Prims.div(world.observer.getGlobal(\"v-total\"), world.observer.getGlobal(\"num-atoms\")));         }       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if ticks > 3 [   plot v-total / num-atoms ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"energy per particle","left":33,"top":390,"right":215,"bottom":535,"xmin":0,"xmax":10,"ymin":-2,"ymax":2,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if ticks > 3 [   plot v-total / num-atoms ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"display":"1","left":4,"top":10,"right":24,"bottom":46,"fontSize":30,"color":15,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Model starting point. You can choose the number of atoms, the density and the initial configuration (random or hexagonally-close-packed)","left":31,"top":10,"right":238,"bottom":81,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"_____________________________","left":31,"top":251,"right":223,"bottom":279,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":32,"top":353,"right":117,"bottom":386,"display":"go-once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"2","left":3,"top":263,"right":27,"bottom":299,"fontSize":30,"color":15,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Adjust the temperature and run the model. The temperature can be adjusted while the model runs ","left":30,"top":270,"right":231,"bottom":312,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["num-atoms", "temperature", "density", "initial-config", "max-move-dist", "cutoff-dist", "v-total", "eps", "total-move-attempts", "total-successful-moves", "diameter", "pot-offset", "current-move-attempts", "current-successful-moves"], ["num-atoms", "temperature", "density", "initial-config"], [], -16, 16, -16, 16, 15, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [   max-move-dist   cutoff-dist   v-total   eps   total-move-attempts   total-successful-moves   diameter   pot-offset ; This offsets the LJ potential so that it is 0 at the cutoff distance   current-move-attempts   current-successful-moves ]  to setup   clear-all   reset-ticks   set eps 1   ;Set the diameter of particles based on density   set diameter sqrt(density * world-width * world-height / num-atoms)   set max-move-dist diameter   set cutoff-dist 2.5 * diameter   set pot-offset (- (4 * ((diameter / cutoff-dist) ^ 12 - (diameter / cutoff-dist) ^ 6)))   set v-total calc-v-total  ;calculate the initial energy   create-turtles num-atoms [     set shape \"circle\"     set size diameter     set color blue   ]   setup-atoms end  to go   ;Each tick, attempt N moves. On average, every particle moves each tick   repeat num-atoms [     ask one-of turtles [       attempt-move     ]   ]    ;tune the move distance to adjust the acceptance rate every NUM-ATOMS ticks   if ticks mod num-atoms = 1 [     tune-acceptance-rate   ]    tick end  to attempt-move   set total-move-attempts total-move-attempts + 1  ;the is the total running average   set current-move-attempts current-move-attempts + 1 ;this is just since the last max-move-distance adjustment   let v-old calc-v; calculate current energy   let delta-x (random-float 2 * max-move-dist) - max-move-dist  ; pick random x distance   let delta-y (random-float 2 * max-move-dist) - max-move-dist ; pick random y distance   setxy (xcor + delta-x) (ycor + delta-y) ;move the random x and y distances   let v-new calc-v ;Calculate the new energy    let delta-v v-new - v-old   ifelse (v-new < v-old) or (random-float 1 < exp( - delta-v / temperature) ) [     set total-successful-moves total-successful-moves + 1   ;the is the total running average     set current-successful-moves current-successful-moves + 1   ;this is just since the last max-move-distance adjustment     set v-total v-total + delta-v   ] [     setxy (xcor - delta-x) (ycor - delta-y) ;reset position   ] end  to-report calc-v-total   report sum [ calc-v ] of turtles / 2 ;divide by two because each particle has been counted twice end  to-report calc-v   let v 0    ask other turtles in-radius cutoff-dist [     let rsquare (distance myself) ^ 2     let dsquare diameter * diameter     let attract-term dsquare ^ 3 / rsquare ^ 3     let repel-term attract-term * attract-term     ;NOTE could do this a little faster by attract-term * (attract-term -1)     let vi 4 * eps * (repel-term - attract-term) + pot-offset     set v v + vi   ]   report v end  to-report accept-rate   report current-successful-moves / current-move-attempts end  to tune-acceptance-rate   ifelse accept-rate < 0.5 [     set max-move-dist max-move-dist * .95   ] [     set max-move-dist max-move-dist * 1.05     if max-move-dist > diameter [       set max-move-dist diameter     ]   ]   set current-successful-moves 0   set current-move-attempts 0 end  to-report energy-per-particle   report v-total / num-atoms end  ;*********setup procedures*************  to setup-atoms   if initial-config = \"HCP\" [     let l sqrt(num-atoms) ;the # of atoms in a row     let row-dist (2 ^ (1 / 6)) * diameter ;this is the distance with minimum energy     let ypos (- l * row-dist / 2) ;the y position of the first atom     let xpos (- l * row-dist / 2) ;the x position of the first atom     let r-num 0  ;the row number     ask turtles [  ;set the atoms; positions       if xpos > (l * row-dist / 2)  [  ;condition to start a new row         set r-num r-num + 1         set xpos (- l * row-dist / 2) + (r-num mod 2) * row-dist / 2         set ypos ypos + row-dist       ]       setxy xpos ypos  ;if we are still in the same row       set xpos xpos + row-dist     ]   ]    if initial-config = \"random\" [     ask turtles [       setxy random-xcor random-ycor     ]     remove-overlap ;make sure atoms aren\'t overlapping   ] end  to remove-overlap   let r-min 0.7 * diameter   ask turtles [     while [overlapping r-min] [       setxy random-xcor random-ycor     ]   ] end  to-report overlapping [r-min]   report any? other turtles in-radius r-min end   ; Copyright 2015 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":239,"top":10,"right":742,"bottom":514,"dimensions":{"minPxcor":-16,"maxPxcor":16,"minPycor":-16,"maxPycor":16,"patchSize":15,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":30,"top":217,"right":204,"bottom":250,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":120,"top":353,"right":204,"bottom":386,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1000","compiledStep":"1","variable":"num-atoms","left":30,"top":94,"right":202,"bottom":127,"display":"num-atoms","min":"1","max":"1000","default":250,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0.01","compiledMax":"2","compiledStep":"0.01","variable":"temperature","left":31,"top":316,"right":205,"bottom":349,"display":"temperature","min":".01","max":"2","default":0.45,"step":".01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0.01","compiledMax":"0.6","compiledStep":"0.01","variable":"density","left":30,"top":131,"right":202,"bottom":164,"display":"density","min":"0.01","max":".6","default":0.25,"step":".01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"initial-config","left":30,"top":168,"right":203,"bottom":213,"display":"initial-config","choices":["HCP","random"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('energy per particle', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         if (Prims.gt(world.ticker.tickCount(), 3)) {           plotManager.plotValue(Prims.div(world.observer.getGlobal(\"v-total\"), world.observer.getGlobal(\"num-atoms\")));         }       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if ticks > 3 [   plot v-total / num-atoms ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"energy per particle","left":33,"top":390,"right":215,"bottom":535,"xmin":0,"xmax":10,"ymin":-2,"ymax":2,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if ticks > 3 [   plot v-total / num-atoms ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"display":"1","left":4,"top":10,"right":24,"bottom":46,"fontSize":30,"color":15,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Model starting point. You can choose the number of atoms, the density and the initial configuration (random or hexagonally-close-packed)","left":31,"top":10,"right":238,"bottom":81,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"_____________________________","left":31,"top":251,"right":223,"bottom":279,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":32,"top":353,"right":117,"bottom":386,"display":"go-once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"2","left":3,"top":263,"right":27,"bottom":299,"fontSize":30,"color":15,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Adjust the temperature and run the model. The temperature can be adjusted while the model runs ","left":30,"top":270,"right":231,"bottom":312,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["num-atoms", "temperature", "density", "initial-config", "max-move-dist", "cutoff-dist", "v-total", "eps", "total-move-attempts", "total-successful-moves", "diameter", "pot-offset", "current-move-attempts", "current-successful-moves"], ["num-atoms", "temperature", "density", "initial-config"], [], -16, 16, -16, 16, 15, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -92,11 +89,7 @@ var procedures = (function() {
       }, true);
       procedures["SETUP-ATOMS"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -106,18 +99,14 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++){
-        ListPrims.oneOf(world.turtles()).ask(function() { procedures["ATTEMPT-MOVE"](); }, true);
+        Errors.askNobodyCheck(ListPrims.oneOf(world.turtles())).ask(function() { procedures["ATTEMPT-MOVE"](); }, true);
       }
       if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("num-atoms")), 1)) {
         procedures["TUNE-ACCEPTANCE-RATE"]();
       }
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -143,11 +132,7 @@ var procedures = (function() {
         SelfManager.self().setXY((SelfManager.self().getVariable("xcor") - deltaX), (SelfManager.self().getVariable("ycor") - deltaY));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["attemptMove"] = temp;
@@ -156,16 +141,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return Prims.div(ListPrims.sum(world.turtles().projectionBy(function() { return procedures["CALC-V"](); })), 2)
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return Prims.div(ListPrims.sum(world.turtles().projectionBy(function() { return procedures["CALC-V"](); })), 2);
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["calcVTotal"] = temp;
@@ -175,7 +155,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       let v = 0; letVars['v'] = v;
-      SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("cutoff-dist"))).ask(function() {
+      Errors.askNobodyCheck(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("cutoff-dist")))).ask(function() {
         let rsquare = NLMath.pow(SelfManager.self().distance(SelfManager.myself()), 2); letVars['rsquare'] = rsquare;
         let dsquare = (world.observer.getGlobal("diameter") * world.observer.getGlobal("diameter")); letVars['dsquare'] = dsquare;
         let attractTerm = Prims.div(NLMath.pow(dsquare, 3), NLMath.pow(rsquare, 3)); letVars['attractTerm'] = attractTerm;
@@ -183,16 +163,11 @@ var procedures = (function() {
         let vi = (((4 * world.observer.getGlobal("eps")) * (repelTerm - attractTerm)) + world.observer.getGlobal("pot-offset")); letVars['vi'] = vi;
         v = (v + vi); letVars['v'] = v;
       }, true);
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return v
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return v;
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["calcV"] = temp;
@@ -201,16 +176,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return Prims.div(world.observer.getGlobal("current-successful-moves"), world.observer.getGlobal("current-move-attempts"))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return Prims.div(world.observer.getGlobal("current-successful-moves"), world.observer.getGlobal("current-move-attempts"));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["acceptRate"] = temp;
@@ -231,11 +201,7 @@ var procedures = (function() {
       world.observer.setGlobal("current-successful-moves", 0);
       world.observer.setGlobal("current-move-attempts", 0);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["tuneAcceptanceRate"] = temp;
@@ -244,16 +210,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return Prims.div(world.observer.getGlobal("v-total"), world.observer.getGlobal("num-atoms"))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return Prims.div(world.observer.getGlobal("v-total"), world.observer.getGlobal("num-atoms"));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["energyPerParticle"] = temp;
@@ -268,7 +229,7 @@ var procedures = (function() {
         let ypos = Prims.div(( -(l) * rowDist), 2); letVars['ypos'] = ypos;
         let xpos = Prims.div(( -(l) * rowDist), 2); letVars['xpos'] = xpos;
         let rNum = 0; letVars['rNum'] = rNum;
-        world.turtles().ask(function() {
+        Errors.askNobodyCheck(world.turtles()).ask(function() {
           if (Prims.gt(xpos, Prims.div((l * rowDist), 2))) {
             rNum = (rNum + 1); letVars['rNum'] = rNum;
             xpos = (Prims.div(( -(l) * rowDist), 2) + Prims.div((NLMath.mod(rNum, 2) * rowDist), 2)); letVars['xpos'] = xpos;
@@ -279,17 +240,13 @@ var procedures = (function() {
         }, true);
       }
       if (Prims.equality(world.observer.getGlobal("initial-config"), "random")) {
-        world.turtles().ask(function() {
+        Errors.askNobodyCheck(world.turtles()).ask(function() {
           SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
         }, true);
         procedures["REMOVE-OVERLAP"]();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupAtoms"] = temp;
@@ -299,17 +256,13 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let rMin = (0.7 * world.observer.getGlobal("diameter")); letVars['rMin'] = rMin;
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         while (procedures["OVERLAPPING"](rMin)) {
           SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["removeOverlap"] = temp;
@@ -318,16 +271,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtles(), rMin))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtles(), rMin));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["overlapping"] = temp;

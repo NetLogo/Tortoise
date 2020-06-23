@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PAGES", singular: "page", varNames: ["rank", "new-rank", "visits"] }, { name: "SURFERS", singular: "surfer", varNames: ["current-page"] }])([], [])('breed [ pages page ] breed [ surfers surfer ]  pages-own [   rank new-rank ; for the diffusion approach   visits ; for the random-surfer approach ]  surfers-own [ current-page ]  globals [ total-rank max-rank ]  ;; ;; Setup Procedures ;;  to setup   clear-all   set-default-shape pages \"circle\"    ifelse network-choice = \"Example 1\"   [ create-network-example-1 ][     ifelse network-choice = \"Example 2\"     [ create-network-example-2 ][       ifelse network-choice = \"Preferential Attachment\"       [ create-network-preferential 100 2 ]       [ user-message word \"Error: unknown network-choice: \" network-choice ] ] ]    ask patches [ set pcolor white ]   ask pages   [ set rank 1 / count pages ]   update-globals   ask pages   [     setxy random-xcor random-ycor     set label-color black     update-page-appearance   ]    repeat 300 [ do-layout ]    ask links [ set shape \"curved\" ]   reset-ticks end  to create-network-example-1   create-pages 11   ask page 0 [ set color blue create-link-from page 3 ]   ask page 1 [ set color red create-links-from (turtle-set page 2 page 3 page 4 page 5 page 6 page 7 page 8 ) ]   ask page 2 [ set color orange create-link-from page 1 ]   ask page 3 [ set color green create-link-from page 4 ]   ask page 4 [ set color yellow create-links-from (turtle-set page 5 page 6 page 7 page 8 page 9 page 10) ]   ask page 5 [ set color green create-link-from page 4 ]   ask pages with [who > 5] [ set color violet ] end  to create-network-example-2   create-pages 8   ask page 0 [ die ]   ask page 1 [ create-links-from (turtle-set page 2 page 3 page 5 page 6) ]   ask page 2 [ create-links-from (turtle-set page 1 page 3 page 4) ]   ask page 3 [ create-links-from (turtle-set page 1 page 4 page 5) ]   ask page 4 [ create-links-from (turtle-set page 1 page 5) ]   ask page 5 [ create-links-from (turtle-set page 1 page 4 page 6 page 7) ]   ask page 6 [ create-links-from (turtle-set page 5) ]   ask page 7 [ create-links-from (turtle-set page 1) ] end  to create-network-preferential [ n k ]   create-pages n [ set color sky ]   link-preferentially pages k end  ; The parameter k (always an integer) gives the number of edges to add at ; each step (e.g. k=1 builds a tree) to link-preferentially [nodeset k]   ;; get the nodes in sorted order   let node-list sort nodeset    ;; get a sublist of the nodes from 0 to k   let neighbor-choice-list sublist node-list 0 k    ;; ask the kth node...   ask item k node-list   [     ;; to make a link either to or from each preceding     ;; node in the sorted list.     foreach neighbor-choice-list [ neighbor ->       ifelse random 2 = 0         [ create-link-to neighbor ]         [ create-link-from neighbor ]     ]     ;; add k copies of this node to the beginning of the sublist     set neighbor-choice-list sentence (n-values k [self]) neighbor-choice-list   ]    ;; ask each node after the kth node in order...   foreach sublist node-list (k + 1) (length node-list) [ node ->     ask node [       ;; ...to make k links       let temp-neighbor-list neighbor-choice-list       repeat k       [         ;; link to one of the nodes in the neighbor list         ;; we remove that node from the list once it\'s been linked to         ;; however, there may be more than one copy of some nodes         ;; since those nodes have a higher probability of being linked to         let neighbor one-of temp-neighbor-list         set temp-neighbor-list remove neighbor temp-neighbor-list         ;; when we\'ve linked to a node put another copy of it on the         ;; master neighbor choice list as it\'s now more likely to be         ;; linked to again         set neighbor-choice-list fput neighbor neighbor-choice-list         ifelse random 2 = 0           [ create-link-to neighbor ]           [ create-link-from neighbor ]       ]       set neighbor-choice-list sentence (n-values k [self]) neighbor-choice-list     ]   ] end  to do-layout   layout-spring pages links 0.2 20 / (sqrt count pages) 0.5 end  ;; ;; Runtime Procedures ;;  to go   ifelse calculation-method = \"diffusion\"   [     if any? surfers [ ask surfers [ die ] ] ;; remove surfers if the calculation-method is changed      ;; return links and pages to initial state     ask links [ set color gray set thickness 0 ]     ask pages [ set new-rank 0 ]      ask pages     [       ifelse any? out-link-neighbors       [         ;; if a node has any out-links divide current rank         ;; equally among them.         let rank-increment rank / count out-link-neighbors         ask out-link-neighbors [           set new-rank new-rank + rank-increment         ]       ]       [         ;; if a node has no out-links divide current         ;; rank equally among all the nodes         let rank-increment rank / count pages         ask pages [           set new-rank new-rank + rank-increment         ]       ]     ]      ask pages     [       ;; set current rank to the new-rank and take the damping-factor into account       set rank (1 - damping-factor) / count pages + damping-factor * new-rank     ]   ]   [ ;;; \"random-surfer\" calculation-method     ; surfers are created or destroyed on the fly if users move the     ; NUMBER-OF-SURFERS slider while the model is running.     if count surfers < number-of-surfers     [       create-surfers number-of-surfers - count surfers       [         set current-page one-of pages         ifelse watch-surfers?         [ move-surfer ]         [ hide-turtle ]       ]     ]     if count surfers > number-of-surfers     [       ask n-of (count surfers - number-of-surfers) surfers         [ die ]     ]     ;; return links to their initial state     ask links [ set color gray set thickness 0 ]      ask surfers [       let old-page current-page       ;; increment the visits on the page we\'re on       ask current-page [ set visits visits + 1 ]       ;; with a probability depending on the damping-factor either go to a       ;; random page or a random one of the pages that this page is linked to       ifelse random-float 1 <= damping-factor and any? [my-out-links] of current-page       [ set current-page one-of [out-link-neighbors] of current-page ]       [ set current-page one-of pages ]        ;; update the visualization       ifelse watch-surfers?       [         show-turtle         move-surfer         let surfer-color color         ask old-page [           let traveled-link out-link-to [current-page] of myself           if traveled-link != nobody [             ask traveled-link [ set color surfer-color set thickness 0.08 ]           ]         ]       ]       [ hide-turtle ]     ]     ;; update the rank of each page     let total-visits sum [visits] of pages     ask pages [       set rank visits / total-visits     ]   ]    update-globals   ask pages [ update-page-appearance ]   tick end  to move-surfer ;; surfer procedure   face current-page   move-to current-page end  to update-globals   set total-rank sum [rank] of pages   set max-rank max [rank] of pages end  to update-page-appearance ;; page procedure   ; keep size between 0.1 and 5   set size 0.2 + 4 * sqrt (rank / total-rank)   ifelse show-page-ranks?   [ set label word (precision rank 3) \"     \" ]   [ set label \"\" ] end   ; Copyright 2009 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":255,"top":10,"right":683,"bottom":439,"dimensions":{"minPxcor":-10,"maxPxcor":10,"minPycor":-10,"maxPycor":10,"patchSize":20,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":15,"top":95,"right":90,"bottom":128,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":170,"top":95,"right":240,"bottom":128,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.01","variable":"damping-factor","left":25,"top":165,"right":225,"bottom":198,"display":"damping-factor","min":"0","max":"1.00","default":0.85,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"calculation-method","left":25,"top":235,"right":225,"bottom":280,"display":"calculation-method","choices":["diffusion","random-surfer"],"currentChoice":1,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"watch-surfers?","left":35,"top":370,"right":215,"bottom":403,"display":"watch-surfers?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"number-of-surfers","left":25,"top":285,"right":225,"bottom":318,"display":"number-of-surfers","min":"1","max":"100","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"network-choice","left":15,"top":35,"right":240,"bottom":80,"display":"network-choice","choices":["Example 1","Example 2","Preferential Attachment"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"show-page-ranks?","left":35,"top":415,"right":215,"bottom":448,"display":"show-page-ranks?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":95,"top":95,"right":165,"bottom":128,"display":"step","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["damping-factor", "calculation-method", "watch-surfers?", "number-of-surfers", "network-choice", "show-page-ranks?", "total-rank", "max-rank"], ["damping-factor", "calculation-method", "watch-surfers?", "number-of-surfers", "network-choice", "show-page-ranks?"], [], -10, 10, -10, 10, 20, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PAGES", singular: "page", varNames: ["rank", "new-rank", "visits"] }, { name: "SURFERS", singular: "surfer", varNames: ["current-page"] }])([], [])('breed [ pages page ] breed [ surfers surfer ]  pages-own [   rank new-rank ; for the diffusion approach   visits ; for the random-surfer approach ]  surfers-own [ current-page ]  globals [ total-rank max-rank ]  ;; ;; Setup Procedures ;;  to setup   clear-all   set-default-shape pages \"circle\"    ifelse network-choice = \"Example 1\"   [ create-network-example-1 ][     ifelse network-choice = \"Example 2\"     [ create-network-example-2 ][       ifelse network-choice = \"Preferential Attachment\"       [ create-network-preferential 100 2 ]       [ user-message word \"Error: unknown network-choice: \" network-choice ] ] ]    ask patches [ set pcolor white ]   ask pages   [ set rank 1 / count pages ]   update-globals   ask pages   [     setxy random-xcor random-ycor     set label-color black     update-page-appearance   ]    repeat 300 [ do-layout ]    ask links [ set shape \"curved\" ]   reset-ticks end  to create-network-example-1   create-pages 11   ask page 0 [ set color blue create-link-from page 3 ]   ask page 1 [ set color red create-links-from (turtle-set page 2 page 3 page 4 page 5 page 6 page 7 page 8 ) ]   ask page 2 [ set color orange create-link-from page 1 ]   ask page 3 [ set color green create-link-from page 4 ]   ask page 4 [ set color yellow create-links-from (turtle-set page 5 page 6 page 7 page 8 page 9 page 10) ]   ask page 5 [ set color green create-link-from page 4 ]   ask pages with [who > 5] [ set color violet ] end  to create-network-example-2   create-pages 8   ask page 0 [ die ]   ask page 1 [ create-links-from (turtle-set page 2 page 3 page 5 page 6) ]   ask page 2 [ create-links-from (turtle-set page 1 page 3 page 4) ]   ask page 3 [ create-links-from (turtle-set page 1 page 4 page 5) ]   ask page 4 [ create-links-from (turtle-set page 1 page 5) ]   ask page 5 [ create-links-from (turtle-set page 1 page 4 page 6 page 7) ]   ask page 6 [ create-links-from (turtle-set page 5) ]   ask page 7 [ create-links-from (turtle-set page 1) ] end  to create-network-preferential [ n k ]   create-pages n [ set color sky ]   link-preferentially pages k end  ; The parameter k (always an integer) gives the number of edges to add at ; each step (e.g. k=1 builds a tree) to link-preferentially [nodeset k]   ;; get the nodes in sorted order   let node-list sort nodeset    ;; get a sublist of the nodes from 0 to k   let neighbor-choice-list sublist node-list 0 k    ;; ask the kth node...   ask item k node-list   [     ;; to make a link either to or from each preceding     ;; node in the sorted list.     foreach neighbor-choice-list [ neighbor ->       ifelse random 2 = 0         [ create-link-to neighbor ]         [ create-link-from neighbor ]     ]     ;; add k copies of this node to the beginning of the sublist     set neighbor-choice-list sentence (n-values k [self]) neighbor-choice-list   ]    ;; ask each node after the kth node in order...   foreach sublist node-list (k + 1) (length node-list) [ node ->     ask node [       ;; ...to make k links       let temp-neighbor-list neighbor-choice-list       repeat k       [         ;; link to one of the nodes in the neighbor list         ;; we remove that node from the list once it\'s been linked to         ;; however, there may be more than one copy of some nodes         ;; since those nodes have a higher probability of being linked to         let neighbor one-of temp-neighbor-list         set temp-neighbor-list remove neighbor temp-neighbor-list         ;; when we\'ve linked to a node put another copy of it on the         ;; master neighbor choice list as it\'s now more likely to be         ;; linked to again         set neighbor-choice-list fput neighbor neighbor-choice-list         ifelse random 2 = 0           [ create-link-to neighbor ]           [ create-link-from neighbor ]       ]       set neighbor-choice-list sentence (n-values k [self]) neighbor-choice-list     ]   ] end  to do-layout   layout-spring pages links 0.2 20 / (sqrt count pages) 0.5 end  ;; ;; Runtime Procedures ;;  to go   ifelse calculation-method = \"diffusion\"   [     if any? surfers [ ask surfers [ die ] ] ;; remove surfers if the calculation-method is changed      ;; return links and pages to initial state     ask links [ set color gray set thickness 0 ]     ask pages [ set new-rank 0 ]      ask pages     [       ifelse any? out-link-neighbors       [         ;; if a node has any out-links divide current rank         ;; equally among them.         let rank-increment rank / count out-link-neighbors         ask out-link-neighbors [           set new-rank new-rank + rank-increment         ]       ]       [         ;; if a node has no out-links divide current         ;; rank equally among all the nodes         let rank-increment rank / count pages         ask pages [           set new-rank new-rank + rank-increment         ]       ]     ]      ask pages     [       ;; set current rank to the new-rank and take the damping-factor into account       set rank (1 - damping-factor) / count pages + damping-factor * new-rank     ]   ]   [ ;;; \"random-surfer\" calculation-method     ; surfers are created or destroyed on the fly if users move the     ; NUMBER-OF-SURFERS slider while the model is running.     if count surfers < number-of-surfers     [       create-surfers number-of-surfers - count surfers       [         set current-page one-of pages         ifelse watch-surfers?         [ move-surfer ]         [ hide-turtle ]       ]     ]     if count surfers > number-of-surfers     [       ask n-of (count surfers - number-of-surfers) surfers         [ die ]     ]     ;; return links to their initial state     ask links [ set color gray set thickness 0 ]      ask surfers [       let old-page current-page       ;; increment the visits on the page we\'re on       ask current-page [ set visits visits + 1 ]       ;; with a probability depending on the damping-factor either go to a       ;; random page or a random one of the pages that this page is linked to       ifelse random-float 1 <= damping-factor and any? [my-out-links] of current-page       [ set current-page one-of [out-link-neighbors] of current-page ]       [ set current-page one-of pages ]        ;; update the visualization       ifelse watch-surfers?       [         show-turtle         move-surfer         let surfer-color color         ask old-page [           let traveled-link out-link-to [current-page] of myself           if traveled-link != nobody [             ask traveled-link [ set color surfer-color set thickness 0.08 ]           ]         ]       ]       [ hide-turtle ]     ]     ;; update the rank of each page     let total-visits sum [visits] of pages     ask pages [       set rank visits / total-visits     ]   ]    update-globals   ask pages [ update-page-appearance ]   tick end  to move-surfer ;; surfer procedure   face current-page   move-to current-page end  to update-globals   set total-rank sum [rank] of pages   set max-rank max [rank] of pages end  to update-page-appearance ;; page procedure   ; keep size between 0.1 and 5   set size 0.2 + 4 * sqrt (rank / total-rank)   ifelse show-page-ranks?   [ set label word (precision rank 3) \"     \" ]   [ set label \"\" ] end   ; Copyright 2009 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":255,"top":10,"right":683,"bottom":439,"dimensions":{"minPxcor":-10,"maxPxcor":10,"minPycor":-10,"maxPycor":10,"patchSize":20,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":15,"top":95,"right":90,"bottom":128,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":170,"top":95,"right":240,"bottom":128,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.01","variable":"damping-factor","left":25,"top":165,"right":225,"bottom":198,"display":"damping-factor","min":"0","max":"1.00","default":0.85,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"calculation-method","left":25,"top":235,"right":225,"bottom":280,"display":"calculation-method","choices":["diffusion","random-surfer"],"currentChoice":1,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"watch-surfers?","left":35,"top":370,"right":215,"bottom":403,"display":"watch-surfers?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"number-of-surfers","left":25,"top":285,"right":225,"bottom":318,"display":"number-of-surfers","min":"1","max":"100","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"network-choice","left":15,"top":35,"right":240,"bottom":80,"display":"network-choice","choices":["Example 1","Example 2","Preferential Attachment"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"show-page-ranks?","left":35,"top":415,"right":215,"bottom":448,"display":"show-page-ranks?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":95,"top":95,"right":165,"bottom":128,"display":"step","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["damping-factor", "calculation-method", "watch-surfers?", "number-of-surfers", "network-choice", "show-page-ranks?", "total-rank", "max-rank"], ["damping-factor", "calculation-method", "watch-surfers?", "number-of-surfers", "network-choice", "show-page-ranks?"], [], -10, 10, -10, 10, 20, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -70,12 +71,12 @@ var procedures = (function() {
           }
         }
       }
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-      world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
         SelfManager.self().setVariable("rank", Prims.div(1, world.turtleManager.turtlesOfBreed("PAGES").size()));
       }, true);
       procedures["UPDATE-GLOBALS"]();
-      world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("label-color", 0);
         procedures["UPDATE-PAGE-APPEARANCE"]();
@@ -83,14 +84,10 @@ var procedures = (function() {
       for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(300); _index_827_833 < _repeatcount_827_833; _index_827_833++){
         procedures["DO-LAYOUT"]();
       }
-      world.links().ask(function() { SelfManager.self().setVariable("shape", "curved"); }, true);
+      Errors.askNobodyCheck(world.links()).ask(function() { SelfManager.self().setVariable("shape", "curved"); }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -100,37 +97,33 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.turtleManager.createTurtles(11, "PAGES");
-      world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 0)).ask(function() {
         SelfManager.self().setVariable("color", 105);
         LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 3), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 1).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 1)).ask(function() {
         SelfManager.self().setVariable("color", 15);
         LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 2), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7), world.turtleManager.getTurtleOfBreed("PAGES", 8)), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 2).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 2)).ask(function() {
         SelfManager.self().setVariable("color", 25);
         LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 1), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 3).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 3)).ask(function() {
         SelfManager.self().setVariable("color", 55);
         LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 4), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 4).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 4)).ask(function() {
         SelfManager.self().setVariable("color", 45);
         LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7), world.turtleManager.getTurtleOfBreed("PAGES", 8), world.turtleManager.getTurtleOfBreed("PAGES", 9), world.turtleManager.getTurtleOfBreed("PAGES", 10)), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 5).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 5)).ask(function() {
         SelfManager.self().setVariable("color", 55);
         LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 4), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.turtlesOfBreed("PAGES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("who"), 5); }).ask(function() { SelfManager.self().setVariable("color", 115); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("who"), 5); })).ask(function() { SelfManager.self().setVariable("color", 115); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["createNetworkExample1"] = temp;
@@ -140,34 +133,30 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.turtleManager.createTurtles(8, "PAGES");
-      world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() { SelfManager.self().die(); }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 1).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 0)).ask(function() { SelfManager.self().die(); }, true);
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 1)).ask(function() {
         LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 2), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6)), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 2).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 2)).ask(function() {
         LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 4)), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 3).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 3)).ask(function() {
         LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 4).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 4)).ask(function() {
         LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 5).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 5)).ask(function() {
         LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7)), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 6).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 6)).ask(function() {
         LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
       }, true);
-      world.turtleManager.getTurtleOfBreed("PAGES", 7).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PAGES", 7)).ask(function() {
         LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1)), "LINKS").ask(function() {}, false);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["createNetworkExample2"] = temp;
@@ -179,11 +168,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(n, "PAGES").ask(function() { SelfManager.self().setVariable("color", 95); }, true);
       procedures["LINK-PREFERENTIALLY"](world.turtleManager.turtlesOfBreed("PAGES"),k);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["createNetworkPreferential"] = temp;
@@ -194,11 +179,9 @@ var procedures = (function() {
       var letVars = { };
       let nodeList = ListPrims.sort(nodeset); letVars['nodeList'] = nodeList;
       let neighborChoiceList = ListPrims.sublist(nodeList, 0, k); letVars['neighborChoiceList'] = neighborChoiceList;
-      ListPrims.item(k, nodeList).ask(function() {
+      Errors.askNobodyCheck(ListPrims.item(k, nodeList)).ask(function() {
         var _foreach_2544_2551 = Tasks.forEach(Tasks.commandTask(function(neighbor) {
-          if (arguments.length < 1) {
-            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-          }
+          Errors.procedureArgumentsCheck(1, arguments.length);
           if (Prims.equality(Prims.random(2), 0)) {
             LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
           }
@@ -209,10 +192,8 @@ var procedures = (function() {
         neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() { return SelfManager.self(); }, "[ self ]")), neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
       }, true);
       var _foreach_2894_2901 = Tasks.forEach(Tasks.commandTask(function(node) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
-        node.ask(function() {
+        Errors.procedureArgumentsCheck(1, arguments.length);
+        Errors.askNobodyCheck(node).ask(function() {
           let tempNeighborList = neighborChoiceList; letVars['tempNeighborList'] = tempNeighborList;
           for (let _index_3056_3062 = 0, _repeatcount_3056_3062 = StrictMath.floor(k); _index_3056_3062 < _repeatcount_3056_3062; _index_3056_3062++){
             let neighbor = ListPrims.oneOf(tempNeighborList); letVars['neighbor'] = neighbor;
@@ -229,11 +210,7 @@ var procedures = (function() {
         }, true);
       }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]"), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList))); if(reporterContext && _foreach_2894_2901 !== undefined) { return _foreach_2894_2901; }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["linkPreferentially"] = temp;
@@ -244,11 +221,7 @@ var procedures = (function() {
       var letVars = { };
       LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, Prims.div(20, NLMath.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["doLayout"] = temp;
@@ -259,28 +232,28 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.equality(world.observer.getGlobal("calculation-method"), "diffusion")) {
         if (!world.turtleManager.turtlesOfBreed("SURFERS").isEmpty()) {
-          world.turtleManager.turtlesOfBreed("SURFERS").ask(function() { SelfManager.self().die(); }, true);
+          Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SURFERS")).ask(function() { SelfManager.self().die(); }, true);
         }
-        world.links().ask(function() {
+        Errors.askNobodyCheck(world.links()).ask(function() {
           SelfManager.self().setVariable("color", 5);
           SelfManager.self().setVariable("thickness", 0);
         }, true);
-        world.turtleManager.turtlesOfBreed("PAGES").ask(function() { SelfManager.self().setVariable("new-rank", 0); }, true);
-        world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+        Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() { SelfManager.self().setVariable("new-rank", 0); }, true);
+        Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
           if (!LinkPrims.outLinkNeighbors("LINKS").isEmpty()) {
             let rankIncrement = Prims.div(SelfManager.self().getVariable("rank"), LinkPrims.outLinkNeighbors("LINKS").size()); letVars['rankIncrement'] = rankIncrement;
-            LinkPrims.outLinkNeighbors("LINKS").ask(function() {
+            Errors.askNobodyCheck(LinkPrims.outLinkNeighbors("LINKS")).ask(function() {
               SelfManager.self().setVariable("new-rank", (SelfManager.self().getVariable("new-rank") + rankIncrement));
             }, true);
           }
           else {
             let rankIncrement = Prims.div(SelfManager.self().getVariable("rank"), world.turtleManager.turtlesOfBreed("PAGES").size()); letVars['rankIncrement'] = rankIncrement;
-            world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+            Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
               SelfManager.self().setVariable("new-rank", (SelfManager.self().getVariable("new-rank") + rankIncrement));
             }, true);
           }
         }, true);
-        world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+        Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
           SelfManager.self().setVariable("rank", (Prims.div((1 - world.observer.getGlobal("damping-factor")), world.turtleManager.turtlesOfBreed("PAGES").size()) + (world.observer.getGlobal("damping-factor") * SelfManager.self().getVariable("new-rank"))));
         }, true);
       }
@@ -297,15 +270,15 @@ var procedures = (function() {
           }, true);
         }
         if (Prims.gt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal("number-of-surfers"))) {
-          ListPrims.nOf((world.turtleManager.turtlesOfBreed("SURFERS").size() - world.observer.getGlobal("number-of-surfers")), world.turtleManager.turtlesOfBreed("SURFERS")).ask(function() { SelfManager.self().die(); }, true);
+          Errors.askNobodyCheck(ListPrims.nOf((world.turtleManager.turtlesOfBreed("SURFERS").size() - world.observer.getGlobal("number-of-surfers")), world.turtleManager.turtlesOfBreed("SURFERS"))).ask(function() { SelfManager.self().die(); }, true);
         }
-        world.links().ask(function() {
+        Errors.askNobodyCheck(world.links()).ask(function() {
           SelfManager.self().setVariable("color", 5);
           SelfManager.self().setVariable("thickness", 0);
         }, true);
-        world.turtleManager.turtlesOfBreed("SURFERS").ask(function() {
+        Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SURFERS")).ask(function() {
           let oldPage = SelfManager.self().getVariable("current-page"); letVars['oldPage'] = oldPage;
-          SelfManager.self().getVariable("current-page").ask(function() { SelfManager.self().setVariable("visits", (SelfManager.self().getVariable("visits") + 1)); }, true);
+          Errors.askNobodyCheck(SelfManager.self().getVariable("current-page")).ask(function() { SelfManager.self().setVariable("visits", (SelfManager.self().getVariable("visits") + 1)); }, true);
           if ((Prims.lte(Prims.randomFloat(1), world.observer.getGlobal("damping-factor")) && !SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.myOutLinks("LINKS"); }).isEmpty())) {
             SelfManager.self().setVariable("current-page", ListPrims.oneOf(SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.outLinkNeighbors("LINKS"); })));
           }
@@ -316,10 +289,10 @@ var procedures = (function() {
             SelfManager.self().hideTurtle(false);;
             procedures["MOVE-SURFER"]();
             let surferColor = SelfManager.self().getVariable("color"); letVars['surferColor'] = surferColor;
-            oldPage.ask(function() {
+            Errors.askNobodyCheck(oldPage).ask(function() {
               let traveledLink = LinkPrims.outLinkTo("LINKS", SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("current-page"); })); letVars['traveledLink'] = traveledLink;
               if (!Prims.equality(traveledLink, Nobody)) {
-                traveledLink.ask(function() {
+                Errors.askNobodyCheck(traveledLink).ask(function() {
                   SelfManager.self().setVariable("color", surferColor);
                   SelfManager.self().setVariable("thickness", 0.08);
                 }, true);
@@ -331,19 +304,15 @@ var procedures = (function() {
           }
         }, true);
         let totalVisits = ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("visits"); })); letVars['totalVisits'] = totalVisits;
-        world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+        Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
           SelfManager.self().setVariable("rank", Prims.div(SelfManager.self().getVariable("visits"), totalVisits));
         }, true);
       }
       procedures["UPDATE-GLOBALS"]();
-      world.turtleManager.turtlesOfBreed("PAGES").ask(function() { procedures["UPDATE-PAGE-APPEARANCE"](); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() { procedures["UPDATE-PAGE-APPEARANCE"](); }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -355,11 +324,7 @@ var procedures = (function() {
       SelfManager.self().face(SelfManager.self().getVariable("current-page"));
       SelfManager.self().moveTo(SelfManager.self().getVariable("current-page"));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["moveSurfer"] = temp;
@@ -371,11 +336,7 @@ var procedures = (function() {
       world.observer.setGlobal("total-rank", ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
       world.observer.setGlobal("max-rank", ListPrims.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["updateGlobals"] = temp;
@@ -392,11 +353,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("label", "");
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["updatePageAppearance"] = temp;

@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["flockmates", "nearest-neighbor"], [])('turtles-own [   flockmates         ;; agentset of nearby turtles   nearest-neighbor   ;; closest one of our flockmates ]  to setup   clear-all   create-turtles population     [ set color yellow - 2 + random 7  ;; random shades look nice       set size 1.5  ;; easier to see       setxy random-xcor random-ycor       set flockmates no-turtles ]   reset-ticks end  to go   ask turtles [ flock ]   ;; the following line is used to make the turtles   ;; animate more smoothly.   repeat 5 [ ask turtles [ fd 0.2 ] display ]   ;; for greater efficiency, at the expense of smooth   ;; animation, substitute the following line instead:   ;;   ask turtles [ fd 1 ]   tick end  to flock  ;; turtle procedure   find-flockmates   if any? flockmates     [ find-nearest-neighbor       ifelse distance nearest-neighbor < minimum-separation         [ separate ]         [ align           cohere ] ] end  to find-flockmates  ;; turtle procedure   set flockmates other turtles in-radius vision end  to find-nearest-neighbor ;; turtle procedure   set nearest-neighbor min-one-of flockmates [distance myself] end  ;;; SEPARATE  to separate  ;; turtle procedure   turn-away ([heading] of nearest-neighbor) max-separate-turn end  ;;; ALIGN  to align  ;; turtle procedure   turn-towards average-flockmate-heading max-align-turn end  to-report average-flockmate-heading  ;; turtle procedure   ;; We can\'t just average the heading variables here.   ;; For example, the average of 1 and 359 should be 0,   ;; not 180.  So we have to use trigonometry.   let x-component sum [dx] of flockmates   let y-component sum [dy] of flockmates   ifelse x-component = 0 and y-component = 0     [ report heading ]     [ report atan x-component y-component ] end  ;;; COHERE  to cohere  ;; turtle procedure   turn-towards average-heading-towards-flockmates max-cohere-turn end  to-report average-heading-towards-flockmates  ;; turtle procedure   ;; \"towards myself\" gives us the heading from the other turtle   ;; to me, but we want the heading from me to the other turtle,   ;; so we add 180   let x-component mean [sin (towards myself + 180)] of flockmates   let y-component mean [cos (towards myself + 180)] of flockmates   ifelse x-component = 0 and y-component = 0     [ report heading ]     [ report atan x-component y-component ] end  ;;; HELPER PROCEDURES  to turn-towards [new-heading max-turn]  ;; turtle procedure   turn-at-most (subtract-headings new-heading heading) max-turn end  to turn-away [new-heading max-turn]  ;; turtle procedure   turn-at-most (subtract-headings heading new-heading) max-turn end  ;; turn right by \"turn\" degrees (or left if \"turn\" is negative), ;; but never turn more than \"max-turn\" degrees to turn-at-most [turn max-turn]  ;; turtle procedure   ifelse abs turn > max-turn     [ ifelse turn > 0         [ rt max-turn ]         [ lt max-turn ] ]     [ rt turn ] end   ; Copyright 1998 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":250,"top":10,"right":755,"bottom":516,"dimensions":{"minPxcor":-35,"maxPxcor":35,"minPycor":-35,"maxPycor":35,"patchSize":7,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":39,"top":93,"right":116,"bottom":126,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":122,"top":93,"right":203,"bottom":126,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1000","compiledStep":"1","variable":"population","left":9,"top":51,"right":232,"bottom":84,"display":"population","min":"1","max":"1000","default":300,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"0.25","variable":"max-align-turn","left":4,"top":217,"right":237,"bottom":250,"display":"max-align-turn","min":"0","max":"20","default":5,"step":"0.25","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"0.25","variable":"max-cohere-turn","left":4,"top":251,"right":237,"bottom":284,"display":"max-cohere-turn","min":"0","max":"20","default":3,"step":"0.25","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"0.25","variable":"max-separate-turn","left":4,"top":285,"right":237,"bottom":318,"display":"max-separate-turn","min":"0","max":"20","default":1.5,"step":"0.25","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.5","variable":"vision","left":9,"top":135,"right":232,"bottom":168,"display":"vision","min":"0","max":"10","default":5,"step":"0.5","units":"patches","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5","compiledStep":"0.25","variable":"minimum-separation","left":9,"top":169,"right":232,"bottom":202,"display":"minimum-separation","min":"0","max":"5","default":1,"step":"0.25","units":"patches","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["population", "max-align-turn", "max-cohere-turn", "max-separate-turn", "vision", "minimum-separation"], ["population", "max-align-turn", "max-cohere-turn", "max-separate-turn", "vision", "minimum-separation"], [], -35, 35, -35, 35, 7, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["flockmates", "nearest-neighbor"], [])('turtles-own [   flockmates         ;; agentset of nearby turtles   nearest-neighbor   ;; closest one of our flockmates ]  to setup   clear-all   create-turtles population     [ set color yellow - 2 + random 7  ;; random shades look nice       set size 1.5  ;; easier to see       setxy random-xcor random-ycor       set flockmates no-turtles ]   reset-ticks end  to go   ask turtles [ flock ]   ;; the following line is used to make the turtles   ;; animate more smoothly.   repeat 5 [ ask turtles [ fd 0.2 ] display ]   ;; for greater efficiency, at the expense of smooth   ;; animation, substitute the following line instead:   ;;   ask turtles [ fd 1 ]   tick end  to flock  ;; turtle procedure   find-flockmates   if any? flockmates     [ find-nearest-neighbor       ifelse distance nearest-neighbor < minimum-separation         [ separate ]         [ align           cohere ] ] end  to find-flockmates  ;; turtle procedure   set flockmates other turtles in-radius vision end  to find-nearest-neighbor ;; turtle procedure   set nearest-neighbor min-one-of flockmates [distance myself] end  ;;; SEPARATE  to separate  ;; turtle procedure   turn-away ([heading] of nearest-neighbor) max-separate-turn end  ;;; ALIGN  to align  ;; turtle procedure   turn-towards average-flockmate-heading max-align-turn end  to-report average-flockmate-heading  ;; turtle procedure   ;; We can\'t just average the heading variables here.   ;; For example, the average of 1 and 359 should be 0,   ;; not 180.  So we have to use trigonometry.   let x-component sum [dx] of flockmates   let y-component sum [dy] of flockmates   ifelse x-component = 0 and y-component = 0     [ report heading ]     [ report atan x-component y-component ] end  ;;; COHERE  to cohere  ;; turtle procedure   turn-towards average-heading-towards-flockmates max-cohere-turn end  to-report average-heading-towards-flockmates  ;; turtle procedure   ;; \"towards myself\" gives us the heading from the other turtle   ;; to me, but we want the heading from me to the other turtle,   ;; so we add 180   let x-component mean [sin (towards myself + 180)] of flockmates   let y-component mean [cos (towards myself + 180)] of flockmates   ifelse x-component = 0 and y-component = 0     [ report heading ]     [ report atan x-component y-component ] end  ;;; HELPER PROCEDURES  to turn-towards [new-heading max-turn]  ;; turtle procedure   turn-at-most (subtract-headings new-heading heading) max-turn end  to turn-away [new-heading max-turn]  ;; turtle procedure   turn-at-most (subtract-headings heading new-heading) max-turn end  ;; turn right by \"turn\" degrees (or left if \"turn\" is negative), ;; but never turn more than \"max-turn\" degrees to turn-at-most [turn max-turn]  ;; turtle procedure   ifelse abs turn > max-turn     [ ifelse turn > 0         [ rt max-turn ]         [ lt max-turn ] ]     [ rt turn ] end   ; Copyright 1998 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":250,"top":10,"right":755,"bottom":516,"dimensions":{"minPxcor":-35,"maxPxcor":35,"minPycor":-35,"maxPycor":35,"patchSize":7,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":39,"top":93,"right":116,"bottom":126,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":122,"top":93,"right":203,"bottom":126,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1000","compiledStep":"1","variable":"population","left":9,"top":51,"right":232,"bottom":84,"display":"population","min":"1","max":"1000","default":300,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"0.25","variable":"max-align-turn","left":4,"top":217,"right":237,"bottom":250,"display":"max-align-turn","min":"0","max":"20","default":5,"step":"0.25","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"0.25","variable":"max-cohere-turn","left":4,"top":251,"right":237,"bottom":284,"display":"max-cohere-turn","min":"0","max":"20","default":3,"step":"0.25","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"0.25","variable":"max-separate-turn","left":4,"top":285,"right":237,"bottom":318,"display":"max-separate-turn","min":"0","max":"20","default":1.5,"step":"0.25","units":"degrees","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.5","variable":"vision","left":9,"top":135,"right":232,"bottom":168,"display":"vision","min":"0","max":"10","default":5,"step":"0.5","units":"patches","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5","compiledStep":"0.25","variable":"minimum-separation","left":9,"top":169,"right":232,"bottom":202,"display":"minimum-separation","min":"0","max":"5","default":1,"step":"0.25","units":"patches","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["population", "max-align-turn", "max-cohere-turn", "max-separate-turn", "vision", "minimum-separation"], ["population", "max-align-turn", "max-cohere-turn", "max-separate-turn", "vision", "minimum-separation"], [], -35, 35, -35, 35, 7, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -61,11 +62,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -74,18 +71,14 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() { procedures["FLOCK"](); }, true);
+      Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["FLOCK"](); }, true);
       for (let _index_475_481 = 0, _repeatcount_475_481 = StrictMath.floor(5); _index_475_481 < _repeatcount_475_481; _index_475_481++){
-        world.turtles().ask(function() { SelfManager.self()._optimalFdLessThan1(0.2); }, true);
+        Errors.askNobodyCheck(world.turtles()).ask(function() { SelfManager.self()._optimalFdLessThan1(0.2); }, true);
         notImplemented('display', undefined)();
       }
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -106,11 +99,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["flock"] = temp;
@@ -121,11 +110,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("flockmates", SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("vision"))));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["findFlockmates"] = temp;
@@ -136,11 +121,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("nearest-neighbor", SelfManager.self().getVariable("flockmates").minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["findNearestNeighbor"] = temp;
@@ -151,11 +132,7 @@ var procedures = (function() {
       var letVars = { };
       procedures["TURN-AWAY"](SelfManager.self().getVariable("nearest-neighbor").projectionBy(function() { return SelfManager.self().getVariable("heading"); }),world.observer.getGlobal("max-separate-turn"));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["separate"] = temp;
@@ -166,11 +143,7 @@ var procedures = (function() {
       var letVars = { };
       procedures["TURN-TOWARDS"](procedures["AVERAGE-FLOCKMATE-HEADING"](),world.observer.getGlobal("max-align-turn"));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["align"] = temp;
@@ -182,22 +155,16 @@ var procedures = (function() {
       let xComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dx(); })); letVars['xComponent'] = xComponent;
       let yComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dy(); })); letVars['yComponent'] = yComponent;
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self().getVariable("heading")
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return SelfManager.self().getVariable("heading");
       }
       else {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return NLMath.atan(xComponent, yComponent)
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return NLMath.atan(xComponent, yComponent);
       }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["averageFlockmateHeading"] = temp;
@@ -208,11 +175,7 @@ var procedures = (function() {
       var letVars = { };
       procedures["TURN-TOWARDS"](procedures["AVERAGE-HEADING-TOWARDS-FLOCKMATES"](),world.observer.getGlobal("max-cohere-turn"));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["cohere"] = temp;
@@ -224,22 +187,16 @@ var procedures = (function() {
       let xComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['xComponent'] = xComponent;
       let yComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['yComponent'] = yComponent;
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self().getVariable("heading")
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return SelfManager.self().getVariable("heading");
       }
       else {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return NLMath.atan(xComponent, yComponent)
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return NLMath.atan(xComponent, yComponent);
       }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["averageHeadingTowardsFlockmates"] = temp;
@@ -250,11 +207,7 @@ var procedures = (function() {
       var letVars = { };
       procedures["TURN-AT-MOST"](NLMath.subtractHeadings(newHeading, SelfManager.self().getVariable("heading")),maxTurn);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["turnTowards"] = temp;
@@ -265,11 +218,7 @@ var procedures = (function() {
       var letVars = { };
       procedures["TURN-AT-MOST"](NLMath.subtractHeadings(SelfManager.self().getVariable("heading"), newHeading),maxTurn);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["turnAway"] = temp;
@@ -290,11 +239,7 @@ var procedures = (function() {
         SelfManager.self().right(turn);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["turnAtMost"] = temp;

@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [   region-boundaries ; a list of regions definitions, where each region is a list of its min pxcor and max pxcor ]  patches-own [   region ; the number of the region that the patch is in, patches outside all regions have region = 0 ]  to setup   clear-all    ; First, create the desired number of regions.   ; If you want to use many regions in your own   ; model, this is the crucial part.   setup-regions number-of-regions    ; Color all the regions differently. In your own   ; model, things would probably look different   color-regions    ; Finally, distribute the turtles in the different regions   setup-turtles    reset-ticks end  to color-regions   ; The patches with region = 0 act as dividers and are   ; not part of any region. All other patches get colored   ; according to the region they\'re in.   ask patches with [ region != 0 ] [     set pcolor 2 + region * 10     set plabel-color pcolor + 1     set plabel region   ] end  to setup-turtles   ; This procedure simply creates turtles in the different regions.   ; The `foreach` pattern shown can be used whenever you   ; need to do something for each different region.   foreach (range 1 (length region-boundaries + 1)) [ region-number ->     let region-patches patches with [ region = region-number ]     create-turtles number-of-turtles-per-region [       move-to one-of region-patches       set color pcolor + 3     ]   ] end  to go   ask turtles [ move ]   tick end  to move ; turtle procedure    ; Turtles will move differently in different models, but   ; the general pattern shown here should be applied for all   ; movements of turtles that need to stay in a specific region.    ; First, save the region that the turtle is currently in:   let current-region region   ; Then, after saving the region, we can move the turtle:   right random 30   left random 30   forward 0.25   ; Finally, after moving, make sure the turtle   ; stays in the region it was in before:   keep-in-region current-region  end  to setup-regions [ num-regions ]   ; First, draw some dividers at the intervals reported by `region-divisions`:   foreach region-divisions num-regions draw-region-division   ; Store our region definitions globally for faster access:   set region-boundaries calculate-region-boundaries num-regions   ; Set the `region` variable for all patches included in regions:   let region-numbers (range 1 (num-regions + 1))   (foreach region-boundaries region-numbers [ [boundaries region-number] ->     ask patches with [ pxcor >= first boundaries and pxcor <= last boundaries ] [       set region region-number     ]   ]) end  to-report calculate-region-boundaries [ num-regions ]   ; The region definitions are built from the region divisions:   let divisions region-divisions num-regions   ; Each region definition lists the min-pxcor and max-pxcor of the region.   ; To get those, we use `map` on two \"shifted\" copies of the division list,   ; which allow us to scan through all pairs of dividers   ; and built our list of definitions from those pairs:   report (map [ [d1 d2] -> list (d1 + 1) (d2 - 1) ] (but-last divisions) (but-first divisions)) end  to-report region-divisions [ num-regions ]   ; This procedure reports a list of pxcor that should be outside every region.   ; Patches with these pxcor will act as \"dividers\" between regions.   report n-values (num-regions + 1) [ n ->     [ pxcor ] of patch (min-pxcor + (n * ((max-pxcor - min-pxcor) / num-regions))) 0   ] end  to draw-region-division [ x ]   ; This procedure makes the division patches grey   ; and draw a vertical line in the middle. This is   ; arbitrary and could be modified to your liking.   ask patches with [ pxcor = x ] [     set pcolor grey + 1.5   ]   create-turtles 1 [     ; use a temporary turtle to draw a line in the middle of our division     setxy x max-pycor + 0.5     set heading 0     set color grey - 3     pen-down     forward world-height     set xcor xcor + 1 / patch-size     right 180     set color grey + 3     forward world-height     die ; our turtle has done its job and is no longer needed   ] end  to keep-in-region [ which-region ] ; turtle procedure    ; This is the procedure that make sure that turtles don\'t leave the region they\'re   ; supposed to be in. It is your responsibility to call this whenever a turtle moves.   if region != which-region [     ; Get our region boundaries from the global region list:     let region-min-pxcor first item (which-region - 1) region-boundaries     let region-max-pxcor last item (which-region - 1) region-boundaries     ; The total width is (min - max) + 1 because `pxcor`s are in the middle of patches:     let region-width (region-max-pxcor - region-min-pxcor) + 1     ifelse xcor < region-min-pxcor [ ; if we crossed to the left,       set xcor xcor + region-width   ; jump to the right boundary     ] [       if xcor > region-max-pxcor [   ; if we crossed to the right,         set xcor xcor - region-width ; jump to the left boundary       ]     ]   ]  end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":245,"top":10,"right":1098,"bottom":448,"dimensions":{"minPxcor":-32,"maxPxcor":32,"minPycor":-16,"maxPycor":16,"patchSize":13,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"32","compiledStep":"1","variable":"number-of-regions","left":10,"top":10,"right":235,"bottom":43,"display":"number-of-regions","min":"1","max":"32","default":4,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":10,"top":90,"right":83,"bottom":123,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"number-of-turtles-per-region","left":10,"top":46,"right":235,"bottom":79,"display":"number-of-turtles-per-region","min":"1","max":"100","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":105,"top":90,"right":168,"bottom":123,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":170,"top":90,"right":233,"bottom":123,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-of-regions", "number-of-turtles-per-region", "region-boundaries"], ["number-of-regions", "number-of-turtles-per-region"], ["region"], -32, 32, -16, 16, 13, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [   region-boundaries ; a list of regions definitions, where each region is a list of its min pxcor and max pxcor ]  patches-own [   region ; the number of the region that the patch is in, patches outside all regions have region = 0 ]  to setup   clear-all    ; First, create the desired number of regions.   ; If you want to use many regions in your own   ; model, this is the crucial part.   setup-regions number-of-regions    ; Color all the regions differently. In your own   ; model, things would probably look different   color-regions    ; Finally, distribute the turtles in the different regions   setup-turtles    reset-ticks end  to color-regions   ; The patches with region = 0 act as dividers and are   ; not part of any region. All other patches get colored   ; according to the region they\'re in.   ask patches with [ region != 0 ] [     set pcolor 2 + region * 10     set plabel-color pcolor + 1     set plabel region   ] end  to setup-turtles   ; This procedure simply creates turtles in the different regions.   ; The `foreach` pattern shown can be used whenever you   ; need to do something for each different region.   foreach (range 1 (length region-boundaries + 1)) [ region-number ->     let region-patches patches with [ region = region-number ]     create-turtles number-of-turtles-per-region [       move-to one-of region-patches       set color pcolor + 3     ]   ] end  to go   ask turtles [ move ]   tick end  to move ; turtle procedure    ; Turtles will move differently in different models, but   ; the general pattern shown here should be applied for all   ; movements of turtles that need to stay in a specific region.    ; First, save the region that the turtle is currently in:   let current-region region   ; Then, after saving the region, we can move the turtle:   right random 30   left random 30   forward 0.25   ; Finally, after moving, make sure the turtle   ; stays in the region it was in before:   keep-in-region current-region  end  to setup-regions [ num-regions ]   ; First, draw some dividers at the intervals reported by `region-divisions`:   foreach region-divisions num-regions draw-region-division   ; Store our region definitions globally for faster access:   set region-boundaries calculate-region-boundaries num-regions   ; Set the `region` variable for all patches included in regions:   let region-numbers (range 1 (num-regions + 1))   (foreach region-boundaries region-numbers [ [boundaries region-number] ->     ask patches with [ pxcor >= first boundaries and pxcor <= last boundaries ] [       set region region-number     ]   ]) end  to-report calculate-region-boundaries [ num-regions ]   ; The region definitions are built from the region divisions:   let divisions region-divisions num-regions   ; Each region definition lists the min-pxcor and max-pxcor of the region.   ; To get those, we use `map` on two \"shifted\" copies of the division list,   ; which allow us to scan through all pairs of dividers   ; and built our list of definitions from those pairs:   report (map [ [d1 d2] -> list (d1 + 1) (d2 - 1) ] (but-last divisions) (but-first divisions)) end  to-report region-divisions [ num-regions ]   ; This procedure reports a list of pxcor that should be outside every region.   ; Patches with these pxcor will act as \"dividers\" between regions.   report n-values (num-regions + 1) [ n ->     [ pxcor ] of patch (min-pxcor + (n * ((max-pxcor - min-pxcor) / num-regions))) 0   ] end  to draw-region-division [ x ]   ; This procedure makes the division patches grey   ; and draw a vertical line in the middle. This is   ; arbitrary and could be modified to your liking.   ask patches with [ pxcor = x ] [     set pcolor grey + 1.5   ]   create-turtles 1 [     ; use a temporary turtle to draw a line in the middle of our division     setxy x max-pycor + 0.5     set heading 0     set color grey - 3     pen-down     forward world-height     set xcor xcor + 1 / patch-size     right 180     set color grey + 3     forward world-height     die ; our turtle has done its job and is no longer needed   ] end  to keep-in-region [ which-region ] ; turtle procedure    ; This is the procedure that make sure that turtles don\'t leave the region they\'re   ; supposed to be in. It is your responsibility to call this whenever a turtle moves.   if region != which-region [     ; Get our region boundaries from the global region list:     let region-min-pxcor first item (which-region - 1) region-boundaries     let region-max-pxcor last item (which-region - 1) region-boundaries     ; The total width is (min - max) + 1 because `pxcor`s are in the middle of patches:     let region-width (region-max-pxcor - region-min-pxcor) + 1     ifelse xcor < region-min-pxcor [ ; if we crossed to the left,       set xcor xcor + region-width   ; jump to the right boundary     ] [       if xcor > region-max-pxcor [   ; if we crossed to the right,         set xcor xcor - region-width ; jump to the left boundary       ]     ]   ]  end   ; Public Domain: ; To the extent possible under law, Uri Wilensky has waived all ; copyright and related or neighboring rights to this model.')([{"left":245,"top":10,"right":1098,"bottom":448,"dimensions":{"minPxcor":-32,"maxPxcor":32,"minPycor":-16,"maxPycor":16,"patchSize":13,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"32","compiledStep":"1","variable":"number-of-regions","left":10,"top":10,"right":235,"bottom":43,"display":"number-of-regions","min":"1","max":"32","default":4,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":10,"top":90,"right":83,"bottom":123,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"number-of-turtles-per-region","left":10,"top":46,"right":235,"bottom":79,"display":"number-of-turtles-per-region","min":"1","max":"100","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":105,"top":90,"right":168,"bottom":123,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":170,"top":90,"right":233,"bottom":123,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-of-regions", "number-of-turtles-per-region", "region-boundaries"], ["number-of-regions", "number-of-turtles-per-region"], ["region"], -32, 32, -16, 16, 13, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -58,11 +59,7 @@ var procedures = (function() {
       procedures["SETUP-TURTLES"]();
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -71,17 +68,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("region"), 0); }).ask(function() {
+      Errors.askNobodyCheck(world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("region"), 0); })).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", (2 + (SelfManager.self().getPatchVariable("region") * 10)));
         SelfManager.self().setPatchVariable("plabel-color", (SelfManager.self().getPatchVariable("pcolor") + 1));
         SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("region"));
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["colorRegions"] = temp;
@@ -91,9 +84,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       var _foreach_1146_1153 = Tasks.forEach(Tasks.commandTask(function(regionNumber) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         let regionPatches = world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("region"), regionNumber); }); letVars['regionPatches'] = regionPatches;
         world.turtleManager.createTurtles(world.observer.getGlobal("number-of-turtles-per-region"), "").ask(function() {
           SelfManager.self().moveTo(ListPrims.oneOf(regionPatches));
@@ -101,11 +92,7 @@ var procedures = (function() {
         }, true);
       }, "[ region-number -> let patches with [ region = region-number ] create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]"), Prims.rangeBinary(1, (ListPrims.length(world.observer.getGlobal("region-boundaries")) + 1))); if(reporterContext && _foreach_1146_1153 !== undefined) { return _foreach_1146_1153; }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupTurtles"] = temp;
@@ -114,14 +101,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() { procedures["MOVE"](); }, true);
+      Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["MOVE"](); }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -136,11 +119,7 @@ var procedures = (function() {
       SelfManager.self()._optimalFdLessThan1(0.25);
       procedures["KEEP-IN-REGION"](currentRegion);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["move"] = temp;
@@ -150,27 +129,19 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       var _foreach_2099_2106 = Tasks.forEach(Tasks.commandTask(function(_0) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         procedures["DRAW-REGION-DIVISION"](_0);
       }, "draw-region-division"), procedures["REGION-DIVISIONS"](numRegions)); if(reporterContext && _foreach_2099_2106 !== undefined) { return _foreach_2099_2106; }
       world.observer.setGlobal("region-boundaries", procedures["CALCULATE-REGION-BOUNDARIES"](numRegions));
       let regionNumbers = Prims.rangeBinary(1, (numRegions + 1)); letVars['regionNumbers'] = regionNumbers;
       var _foreach_2401_2408 = Tasks.forEach(Tasks.commandTask(function(boundaries, regionNumber) {
-        if (arguments.length < 2) {
-          throw new Error("anonymous procedure expected 2 inputs, but only got " + arguments.length);
-        }
-        world.patches().agentFilter(function() {
+        Errors.procedureArgumentsCheck(2, arguments.length);
+        Errors.askNobodyCheck(world.patches().agentFilter(function() {
           return (Prims.gte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.first(boundaries)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.last(boundaries)));
-        }).ask(function() { SelfManager.self().setPatchVariable("region", regionNumber); }, true);
+        })).ask(function() { SelfManager.self().setPatchVariable("region", regionNumber); }, true);
       }, "[ [boundaries region-number] -> ask patches with [ pxcor >= first boundaries and pxcor <= last boundaries ] [ set region region-number ] ]"), world.observer.getGlobal("region-boundaries"), regionNumbers); if(reporterContext && _foreach_2401_2408 !== undefined) { return _foreach_2401_2408; }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupRegions"] = temp;
@@ -180,21 +151,14 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       let divisions = procedures["REGION-DIVISIONS"](numRegions); letVars['divisions'] = divisions;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return Tasks.map(Tasks.reporterTask(function(d1, d2) {
-        if (arguments.length < 2) {
-          throw new Error("anonymous procedure expected 2 inputs, but only got " + arguments.length);
-        }
+      Errors.reportInContextCheck(reporterContext);
+      return Tasks.map(Tasks.reporterTask(function(d1, d2) {
+        Errors.procedureArgumentsCheck(2, arguments.length);
         return ListPrims.list((d1 + 1), (d2 - 1));
-      }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]"), ListPrims.butLast(divisions), ListPrims.butFirst(divisions))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]"), ListPrims.butLast(divisions), ListPrims.butFirst(divisions));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["calculateRegionBoundaries"] = temp;
@@ -203,21 +167,14 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return Tasks.nValues((numRegions + 1), Tasks.reporterTask(function(n) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+      Errors.reportInContextCheck(reporterContext);
+      return Tasks.nValues((numRegions + 1), Tasks.reporterTask(function(n) {
+        Errors.procedureArgumentsCheck(1, arguments.length);
         return world.getPatchAt((world.topology.minPxcor + (n * Prims.div((world.topology.maxPxcor - world.topology.minPxcor), numRegions))), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
-      }, "[ n -> [ pxcor ] of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]"))
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      }, "[ n -> [ pxcor ] of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]"));
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["regionDivisions"] = temp;
@@ -226,7 +183,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world._optimalPatchCol(x).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 1.5)); }, true);
+      Errors.askNobodyCheck(world._optimalPatchCol(x)).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 1.5)); }, true);
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setXY(x, (world.topology.maxPycor + 0.5));
         SelfManager.self().setVariable("heading", 0);
@@ -240,11 +197,7 @@ var procedures = (function() {
         SelfManager.self().die();
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["drawRegionDivision"] = temp;
@@ -267,11 +220,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["keepInRegion"] = temp;

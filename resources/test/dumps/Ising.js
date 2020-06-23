@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), procedures["MAGNETIZATION"]());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -57,11 +54,7 @@ modelConfig.plots = [(function() {
           plotManager.plotPoint(1000000000000000, 0);
           plotManager.enableAutoplotting();
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -70,7 +63,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "average spin", false, true, 0, 20, -1, 1, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [   sum-of-spins   ;; sum of all the spins -- keeping track of this                  ;; means that we can always instantly calculate                  ;; the magnetization (which is the average spin) ]  patches-own [   spin           ;; holds -1 or 1 ]  to setup   clear-all   ask patches [     ifelse random 100 < probability-of-spin-up       [ set spin  1 ]       [ set spin -1 ]     recolor   ]   set sum-of-spins sum [ spin ] of patches   reset-ticks end  to go   ;; update 1000 patches at a time   repeat 1000 [     ask one-of patches [ update ]   ]   tick-advance 1000  ;; use `tick-advance`, as we are updating 1000 patches at a time   update-plots       ;; unlike `tick`, `tick-advance` doesn\'t update the plots, so we need to do so explicitly end  ;; update the spin of a single patch to update  ;; patch procedure   ;; flipping changes the sign on our energy,   ;; so the difference in energy, if we flip,   ;; is -2 times our current energy   let Ediff 2 * spin * sum [ spin ] of neighbors4   if (Ediff <= 0) or (temperature > 0 and (random-float 1 < exp ((- Ediff) / temperature))) [     set spin (- spin)     set sum-of-spins sum-of-spins + 2 * spin     recolor   ] end  ;; color the patches according to their spin to recolor  ;; patch procedure   ifelse spin = 1     [ set pcolor blue + 2 ]     [ set pcolor blue - 2 ] end  ;; a measure of magnetization, the average of the spins to-report magnetization   report sum-of-spins / count patches end   ; Copyright 2003 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":315,"top":10,"right":728,"bottom":424,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":5,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"attempted flips","frameRate":1000,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":160,"top":45,"right":305,"bottom":78,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.01","variable":"temperature","left":10,"top":80,"right":306,"bottom":113,"display":"temperature","min":"0","max":"10","default":2.27,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"MAGNETIZATION\"]()","source":"magnetization","left":100,"top":115,"right":214,"bottom":160,"display":"magnetization","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Magnetization', 'average spin')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotPoint(world.ticker.tickCount(), procedures[\"MAGNETIZATION\"]());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"average spin","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks magnetization","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Magnetization', 'axis')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.disableAutoplotting();         plotManager.plotPoint(0, 0);         plotManager.plotPoint(1000000000000000, 0);         plotManager.enableAutoplotting();       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {}","display":"axis","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":";; draw a horizontal line to show the x axis auto-plot-off plotxy 0 0 plotxy 1000000000000000 0 auto-plot-on","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Magnetization","left":10,"top":165,"right":306,"bottom":445,"xAxis":"time","yAxis":"average spin","xmin":0,"xmax":20,"ymin":-1,"ymax":1,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"average spin","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks magnetization","type":"pen"},{"display":"axis","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":";; draw a horizontal line to show the x axis auto-plot-off plotxy 0 0 plotxy 1000000000000000 0 auto-plot-on","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"probability-of-spin-up","left":10,"top":10,"right":305,"bottom":43,"display":"probability-of-spin-up","min":"0","max":"100","default":50,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":10,"top":45,"right":155,"bottom":78,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["temperature", "probability-of-spin-up", "sum-of-spins"], ["temperature", "probability-of-spin-up"], ["spin"], -40, 40, -40, 40, 5, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [   sum-of-spins   ;; sum of all the spins -- keeping track of this                  ;; means that we can always instantly calculate                  ;; the magnetization (which is the average spin) ]  patches-own [   spin           ;; holds -1 or 1 ]  to setup   clear-all   ask patches [     ifelse random 100 < probability-of-spin-up       [ set spin  1 ]       [ set spin -1 ]     recolor   ]   set sum-of-spins sum [ spin ] of patches   reset-ticks end  to go   ;; update 1000 patches at a time   repeat 1000 [     ask one-of patches [ update ]   ]   tick-advance 1000  ;; use `tick-advance`, as we are updating 1000 patches at a time   update-plots       ;; unlike `tick`, `tick-advance` doesn\'t update the plots, so we need to do so explicitly end  ;; update the spin of a single patch to update  ;; patch procedure   ;; flipping changes the sign on our energy,   ;; so the difference in energy, if we flip,   ;; is -2 times our current energy   let Ediff 2 * spin * sum [ spin ] of neighbors4   if (Ediff <= 0) or (temperature > 0 and (random-float 1 < exp ((- Ediff) / temperature))) [     set spin (- spin)     set sum-of-spins sum-of-spins + 2 * spin     recolor   ] end  ;; color the patches according to their spin to recolor  ;; patch procedure   ifelse spin = 1     [ set pcolor blue + 2 ]     [ set pcolor blue - 2 ] end  ;; a measure of magnetization, the average of the spins to-report magnetization   report sum-of-spins / count patches end   ; Copyright 2003 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":315,"top":10,"right":728,"bottom":424,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":5,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"attempted flips","frameRate":1000,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":160,"top":45,"right":305,"bottom":78,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.01","variable":"temperature","left":10,"top":80,"right":306,"bottom":113,"display":"temperature","min":"0","max":"10","default":2.27,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"MAGNETIZATION\"]()","source":"magnetization","left":100,"top":115,"right":214,"bottom":160,"display":"magnetization","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Magnetization', 'average spin')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotPoint(world.ticker.tickCount(), procedures[\"MAGNETIZATION\"]());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"average spin","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks magnetization","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Magnetization', 'axis')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.disableAutoplotting();         plotManager.plotPoint(0, 0);         plotManager.plotPoint(1000000000000000, 0);         plotManager.enableAutoplotting();       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {}","display":"axis","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":";; draw a horizontal line to show the x axis auto-plot-off plotxy 0 0 plotxy 1000000000000000 0 auto-plot-on","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Magnetization","left":10,"top":165,"right":306,"bottom":445,"xAxis":"time","yAxis":"average spin","xmin":0,"xmax":20,"ymin":-1,"ymax":1,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"average spin","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks magnetization","type":"pen"},{"display":"axis","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":";; draw a horizontal line to show the x axis auto-plot-off plotxy 0 0 plotxy 1000000000000000 0 auto-plot-on","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"probability-of-spin-up","left":10,"top":10,"right":305,"bottom":43,"display":"probability-of-spin-up","min":"0","max":"100","default":50,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":10,"top":45,"right":155,"bottom":78,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["temperature", "probability-of-spin-up", "sum-of-spins"], ["temperature", "probability-of-spin-up"], ["spin"], -40, 40, -40, 40, 5, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -96,7 +89,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         if (Prims.lt(Prims.random(100), world.observer.getGlobal("probability-of-spin-up"))) {
           SelfManager.self().setPatchVariable("spin", 1);
         }
@@ -108,11 +101,7 @@ var procedures = (function() {
       world.observer.setGlobal("sum-of-spins", ListPrims.sum(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -122,16 +111,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       for (let _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++){
-        ListPrims.oneOf(world.patches()).ask(function() { procedures["UPDATE"](); }, true);
+        Errors.askNobodyCheck(ListPrims.oneOf(world.patches())).ask(function() { procedures["UPDATE"](); }, true);
       }
       world.ticker.tickAdvance(1000);
       plotManager.updatePlots();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -147,11 +132,7 @@ var procedures = (function() {
         procedures["RECOLOR"]();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["update"] = temp;
@@ -167,11 +148,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("pcolor", (105 - 2));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["recolor"] = temp;
@@ -180,16 +157,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return Prims.div(world.observer.getGlobal("sum-of-spins"), world.patches().size())
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return Prims.div(world.observer.getGlobal("sum-of-spins"), world.patches().size());
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["magnetization"] = temp;

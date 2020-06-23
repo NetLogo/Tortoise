@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["start-patch"], [])('turtles-own [start-patch] ;; original position of ball on kick line patches-own [score        ;; score for this position along the kick line              left-angle   ;; angle towards left goal-post              right-angle  ;; angle towards right goal-post              goal-angle   ;; size of arc between left-angle and right-angle              slope]       ;; slope of line from this patch towards a goal-post globals [current-max      ;; the best patch-score so far          col              ;; current color for our level-curves          ang              ;; viewing angle of the current level curve          best-dist        ;; distance from try-line of best kick          analytic         ;; what the best distance should be, analytically          try-line         ;; agentset containing only those patches on the try line          histogram-area   ;; agentset containing only patches inside the histogram          kicks            ;; total number of balls kicked          goals]           ;; total number of goals scored  ;; the origin of this model is set in the bottom left corner so ;; the y distance to the goal corresponds to the y-coordinate of the patch ;; this makes many of the calculations simpler.  to setup   clear-all   setup-field   setup-balls   set current-max 0   set best-dist -1   set kicks 0   ask try-line [ set score 0 ]   find-analytic-solution   if show-level-curves? [ draw-level-curves ]   reset-ticks end  to setup-field   ;; Draw lines for border, kick line, and goal line   ask patches [     if count neighbors != 8      [set pcolor red ]     if (pycor = min-pycor) and        (pxcor >= goal-pos) and        (pxcor < (goal-pos + goal-size))      [set pcolor green]   ]   set try-line patches with [ pxcor = kick-line and pcolor = black ]   ask try-line [ set pcolor yellow ]   set histogram-area patches with [ pxcor < kick-line and pcolor = black ] end  ;; turtle procedure that resets all balls to kick line at end of each round to setup-balls   set-default-shape turtles \"circle\"   ask try-line     [ sprout 1         [ set color orange           set start-patch patch-here           set heading (random-float 90) + 90 ] ]   plot-scores end  to go   while [any? turtles] [     ask turtles [ move ]     display   ]   set kicks kicks + count try-line   set goals sum [score] of try-line   setup-balls   tick end  ;; turtle procedure that moves all balls to move   ;; for speed, only check success/failure once we\'re near the   ;; edge of the playing field   if pxcor >= max-pxcor - 1 or pycor >= min-pycor + 1      [ ;; in this model we approximate continuous motion by making        ;; the turtles jump forward a step at a time.  but this can        ;; throw the results off a little because sometimes a ball        ;; will jump over the corner of a patch.  so to get correct        ;; results, we need to check two patches.  \"next-patch\" is        ;; the patch we would hit if we actually moved continuously.        ;; \"patch-ahead 1\" is the patch we\'re going to land on when        ;; we make our discrete jump.        check-patch next-patch        check-patch patch-ahead 1 ]   fd 1 end  to check-patch [the-patch]  ;; turtle procedure   if ([pcolor] of the-patch = red)     [ die ]       ;; the ball has hit the border wall   if ([pcolor] of the-patch = green) ;; the ball has reached the goal     [ ;; increment the number of times a goal has been scored from this point on the kick line       ask start-patch         [ set score score + 1 ]       die ] end  ;; see Next Patch Example, in the Code Examples section of ;; the Models Library, for a discussion of this code. to-report next-patch  ;; turtle procedure   if heading < towardsxy (pxcor + 0.5) (pycor + 0.5)     [ report patch-at 0 1 ]   if heading < towardsxy (pxcor + 0.5) (pycor - 0.5)     [ report patch-at 1 0 ]   if heading < towardsxy (pxcor - 0.5) (pycor - 0.5)     [ report patch-at 0 -1 ]   if heading < towardsxy (pxcor - 0.5) (pycor + 0.5)     [ report patch-at -1 0 ]   report patch-at 0 1 end  ;; do histogramming in the view to plot-scores   ;; set the maximum goals scored from any patch   set current-max (max [score] of try-line)   if current-max = 0   [     ask histogram-area [ set pcolor black ]     stop  ; otherwise we\'ll get division-by-zero errors below   ]   ask try-line [     ifelse score = current-max       [ set best-dist pycor         ask patch-at 2 0 [ set plabel pycor ] ]       [ if pcolor != magenta         [ ask patch-at 2 0 [ set plabel \"\" ] ] ]   ]   ask histogram-area   [;; make the histogram bar     ifelse  pxcor > (kick-line - (([score] of patch-at (kick-line - pxcor) 0) * (kick-line - min-pxcor) / current-max))     ;; make the yellow histogram bars at the maximal locations     [ifelse ([score] of patch-at (kick-line - pxcor) 0 = current-max)       [set pcolor yellow]       ;; other locations get blue bars       [set pcolor blue] ]     [set pcolor black]   ] end  to find-analytic-solution   ask patches with [pycor > min-pycor]     [ calc-goal-angle ]   ;; calculate the analytic solution for best kicking point   let winning-patch min-one-of try-line [goal-angle]   ask winning-patch   [ set pcolor magenta     ask patch-at 2 0 [ set plabel pycor ] ]   set analytic [ pycor ] of winning-patch end  to draw-level-curves   ask patches with [(pxcor > kick-line) and (pcolor < 10) ]     [ if goal-angle > 270       [ set pcolor (360 - goal-angle mod 10) * 0.8 ] ] end  ;; calculate angle between patch and goal to calc-goal-angle   set left-angle  towardsxy (goal-pos - 0.5)                             (min-pycor + 0.5)   set right-angle towardsxy (goal-pos + goal-size - 0.5)                             (min-pycor + 0.5)   set goal-angle (right-angle - left-angle) mod 360 end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":317,"top":10,"right":691,"bottom":505,"dimensions":{"minPxcor":0,"maxPxcor":60,"minPycor":0,"maxPycor":80,"patchSize":6,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":83,"top":192,"right":148,"bottom":225,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"59","compiledStep":"1","variable":"kick-line","left":18,"top":84,"right":155,"bottom":117,"display":"kick-line","min":"1","max":"59","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"22","compiledStep":"1","variable":"goal-size","left":82,"top":121,"right":219,"bottom":154,"display":"goal-size","min":"1","max":"22","default":11,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"49","compiledStep":"1","variable":"goal-pos","left":159,"top":84,"right":296,"bottom":117,"display":"goal-pos","min":"1","max":"49","default":40,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":160,"top":192,"right":226,"bottom":225,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"best-dist\")","source":"best-dist","left":132,"top":258,"right":301,"bottom":303,"display":"best distance (experimental)","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"analytic\")","source":"analytic","left":132,"top":308,"right":301,"bottom":353,"display":"best distance (analytic)","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"show-level-curves?","left":63,"top":47,"right":239,"bottom":80,"display":"show-level-curves?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"kicks\")","source":"kicks","left":15,"top":258,"right":116,"bottom":303,"precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"goals\")","source":"goals","left":15,"top":308,"right":116,"bottom":353,"precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["kick-line", "goal-size", "goal-pos", "show-level-curves?", "current-max", "col", "ang", "best-dist", "analytic", "try-line", "histogram-area", "kicks", "goals"], ["kick-line", "goal-size", "goal-pos", "show-level-curves?"], ["score", "left-angle", "right-angle", "goal-angle", "slope"], 0, 60, 0, 80, 6, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["start-patch"], [])('turtles-own [start-patch] ;; original position of ball on kick line patches-own [score        ;; score for this position along the kick line              left-angle   ;; angle towards left goal-post              right-angle  ;; angle towards right goal-post              goal-angle   ;; size of arc between left-angle and right-angle              slope]       ;; slope of line from this patch towards a goal-post globals [current-max      ;; the best patch-score so far          col              ;; current color for our level-curves          ang              ;; viewing angle of the current level curve          best-dist        ;; distance from try-line of best kick          analytic         ;; what the best distance should be, analytically          try-line         ;; agentset containing only those patches on the try line          histogram-area   ;; agentset containing only patches inside the histogram          kicks            ;; total number of balls kicked          goals]           ;; total number of goals scored  ;; the origin of this model is set in the bottom left corner so ;; the y distance to the goal corresponds to the y-coordinate of the patch ;; this makes many of the calculations simpler.  to setup   clear-all   setup-field   setup-balls   set current-max 0   set best-dist -1   set kicks 0   ask try-line [ set score 0 ]   find-analytic-solution   if show-level-curves? [ draw-level-curves ]   reset-ticks end  to setup-field   ;; Draw lines for border, kick line, and goal line   ask patches [     if count neighbors != 8      [set pcolor red ]     if (pycor = min-pycor) and        (pxcor >= goal-pos) and        (pxcor < (goal-pos + goal-size))      [set pcolor green]   ]   set try-line patches with [ pxcor = kick-line and pcolor = black ]   ask try-line [ set pcolor yellow ]   set histogram-area patches with [ pxcor < kick-line and pcolor = black ] end  ;; turtle procedure that resets all balls to kick line at end of each round to setup-balls   set-default-shape turtles \"circle\"   ask try-line     [ sprout 1         [ set color orange           set start-patch patch-here           set heading (random-float 90) + 90 ] ]   plot-scores end  to go   while [any? turtles] [     ask turtles [ move ]     display   ]   set kicks kicks + count try-line   set goals sum [score] of try-line   setup-balls   tick end  ;; turtle procedure that moves all balls to move   ;; for speed, only check success/failure once we\'re near the   ;; edge of the playing field   if pxcor >= max-pxcor - 1 or pycor >= min-pycor + 1      [ ;; in this model we approximate continuous motion by making        ;; the turtles jump forward a step at a time.  but this can        ;; throw the results off a little because sometimes a ball        ;; will jump over the corner of a patch.  so to get correct        ;; results, we need to check two patches.  \"next-patch\" is        ;; the patch we would hit if we actually moved continuously.        ;; \"patch-ahead 1\" is the patch we\'re going to land on when        ;; we make our discrete jump.        check-patch next-patch        check-patch patch-ahead 1 ]   fd 1 end  to check-patch [the-patch]  ;; turtle procedure   if ([pcolor] of the-patch = red)     [ die ]       ;; the ball has hit the border wall   if ([pcolor] of the-patch = green) ;; the ball has reached the goal     [ ;; increment the number of times a goal has been scored from this point on the kick line       ask start-patch         [ set score score + 1 ]       die ] end  ;; see Next Patch Example, in the Code Examples section of ;; the Models Library, for a discussion of this code. to-report next-patch  ;; turtle procedure   if heading < towardsxy (pxcor + 0.5) (pycor + 0.5)     [ report patch-at 0 1 ]   if heading < towardsxy (pxcor + 0.5) (pycor - 0.5)     [ report patch-at 1 0 ]   if heading < towardsxy (pxcor - 0.5) (pycor - 0.5)     [ report patch-at 0 -1 ]   if heading < towardsxy (pxcor - 0.5) (pycor + 0.5)     [ report patch-at -1 0 ]   report patch-at 0 1 end  ;; do histogramming in the view to plot-scores   ;; set the maximum goals scored from any patch   set current-max (max [score] of try-line)   if current-max = 0   [     ask histogram-area [ set pcolor black ]     stop  ; otherwise we\'ll get division-by-zero errors below   ]   ask try-line [     ifelse score = current-max       [ set best-dist pycor         ask patch-at 2 0 [ set plabel pycor ] ]       [ if pcolor != magenta         [ ask patch-at 2 0 [ set plabel \"\" ] ] ]   ]   ask histogram-area   [;; make the histogram bar     ifelse  pxcor > (kick-line - (([score] of patch-at (kick-line - pxcor) 0) * (kick-line - min-pxcor) / current-max))     ;; make the yellow histogram bars at the maximal locations     [ifelse ([score] of patch-at (kick-line - pxcor) 0 = current-max)       [set pcolor yellow]       ;; other locations get blue bars       [set pcolor blue] ]     [set pcolor black]   ] end  to find-analytic-solution   ask patches with [pycor > min-pycor]     [ calc-goal-angle ]   ;; calculate the analytic solution for best kicking point   let winning-patch min-one-of try-line [goal-angle]   ask winning-patch   [ set pcolor magenta     ask patch-at 2 0 [ set plabel pycor ] ]   set analytic [ pycor ] of winning-patch end  to draw-level-curves   ask patches with [(pxcor > kick-line) and (pcolor < 10) ]     [ if goal-angle > 270       [ set pcolor (360 - goal-angle mod 10) * 0.8 ] ] end  ;; calculate angle between patch and goal to calc-goal-angle   set left-angle  towardsxy (goal-pos - 0.5)                             (min-pycor + 0.5)   set right-angle towardsxy (goal-pos + goal-size - 0.5)                             (min-pycor + 0.5)   set goal-angle (right-angle - left-angle) mod 360 end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":317,"top":10,"right":691,"bottom":505,"dimensions":{"minPxcor":0,"maxPxcor":60,"minPycor":0,"maxPycor":80,"patchSize":6,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":83,"top":192,"right":148,"bottom":225,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"59","compiledStep":"1","variable":"kick-line","left":18,"top":84,"right":155,"bottom":117,"display":"kick-line","min":"1","max":"59","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"22","compiledStep":"1","variable":"goal-size","left":82,"top":121,"right":219,"bottom":154,"display":"goal-size","min":"1","max":"22","default":11,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"49","compiledStep":"1","variable":"goal-pos","left":159,"top":84,"right":296,"bottom":117,"display":"goal-pos","min":"1","max":"49","default":40,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":160,"top":192,"right":226,"bottom":225,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"best-dist\")","source":"best-dist","left":132,"top":258,"right":301,"bottom":303,"display":"best distance (experimental)","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"analytic\")","source":"analytic","left":132,"top":308,"right":301,"bottom":353,"display":"best distance (analytic)","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"show-level-curves?","left":63,"top":47,"right":239,"bottom":80,"display":"show-level-curves?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"kicks\")","source":"kicks","left":15,"top":258,"right":116,"bottom":303,"precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"goals\")","source":"goals","left":15,"top":308,"right":116,"bottom":353,"precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["kick-line", "goal-size", "goal-pos", "show-level-curves?", "current-max", "col", "ang", "best-dist", "analytic", "try-line", "histogram-area", "kicks", "goals"], ["kick-line", "goal-size", "goal-pos", "show-level-curves?"], ["score", "left-angle", "right-angle", "goal-angle", "slope"], 0, 60, 0, 80, 6, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -58,18 +59,14 @@ var procedures = (function() {
       world.observer.setGlobal("current-max", 0);
       world.observer.setGlobal("best-dist", -1);
       world.observer.setGlobal("kicks", 0);
-      world.observer.getGlobal("try-line").ask(function() { SelfManager.self().setPatchVariable("score", 0); }, true);
+      Errors.askNobodyCheck(world.observer.getGlobal("try-line")).ask(function() { SelfManager.self().setPatchVariable("score", 0); }, true);
       procedures["FIND-ANALYTIC-SOLUTION"]();
       if (world.observer.getGlobal("show-level-curves?")) {
         procedures["DRAW-LEVEL-CURVES"]();
       }
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -78,7 +75,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         if (SelfManager.self().getNeighbors()._optimalCheckCount(8, (a, b) => a !== b)) {
           SelfManager.self().setPatchVariable("pcolor", 15);
         }
@@ -89,16 +86,12 @@ var procedures = (function() {
       world.observer.setGlobal("try-line", world.patches().agentFilter(function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
       }));
-      world.observer.getGlobal("try-line").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
+      Errors.askNobodyCheck(world.observer.getGlobal("try-line")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
       world.observer.setGlobal("histogram-area", world.patches().agentFilter(function() {
         return (Prims.lt(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
       }));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupField"] = temp;
@@ -108,7 +101,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-      world.observer.getGlobal("try-line").ask(function() {
+      Errors.askNobodyCheck(world.observer.getGlobal("try-line")).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("color", 25);
           SelfManager.self().setVariable("start-patch", SelfManager.self().getPatchHere());
@@ -117,11 +110,7 @@ var procedures = (function() {
       }, true);
       procedures["PLOT-SCORES"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupBalls"] = temp;
@@ -131,7 +120,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       while (!world.turtles().isEmpty()) {
-        world.turtles().ask(function() { procedures["MOVE"](); }, true);
+        Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["MOVE"](); }, true);
         notImplemented('display', undefined)();
       }
       world.observer.setGlobal("kicks", (world.observer.getGlobal("kicks") + world.observer.getGlobal("try-line").size()));
@@ -139,11 +128,7 @@ var procedures = (function() {
       procedures["SETUP-BALLS"]();
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -158,11 +143,7 @@ var procedures = (function() {
       }
       SelfManager.self()._optimalFdOne();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["move"] = temp;
@@ -175,15 +156,11 @@ var procedures = (function() {
         SelfManager.self().die();
       }
       if (Prims.equality(thePatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 55)) {
-        SelfManager.self().getVariable("start-patch").ask(function() { SelfManager.self().setPatchVariable("score", (SelfManager.self().getPatchVariable("score") + 1)); }, true);
+        Errors.askNobodyCheck(SelfManager.self().getVariable("start-patch")).ask(function() { SelfManager.self().setPatchVariable("score", (SelfManager.self().getPatchVariable("score") + 1)); }, true);
         SelfManager.self().die();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["checkPatch"] = temp;
@@ -193,35 +170,26 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") + 0.5), (SelfManager.self().getPatchVariable("pycor") + 0.5)))) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self()._optimalPatchNorth()
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return SelfManager.self()._optimalPatchNorth();
       }
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") + 0.5), (SelfManager.self().getPatchVariable("pycor") - 0.5)))) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self()._optimalPatchEast()
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return SelfManager.self()._optimalPatchEast();
       }
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") - 0.5), (SelfManager.self().getPatchVariable("pycor") - 0.5)))) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self()._optimalPatchSouth()
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return SelfManager.self()._optimalPatchSouth();
       }
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") - 0.5), (SelfManager.self().getPatchVariable("pycor") + 0.5)))) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self()._optimalPatchWest()
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return SelfManager.self()._optimalPatchWest();
       }
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return SelfManager.self()._optimalPatchNorth()
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return SelfManager.self()._optimalPatchNorth();
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["nextPatch"] = temp;
@@ -232,21 +200,21 @@ var procedures = (function() {
       var letVars = { };
       world.observer.setGlobal("current-max", ListPrims.max(world.observer.getGlobal("try-line").projectionBy(function() { return SelfManager.self().getPatchVariable("score"); })));
       if (Prims.equality(world.observer.getGlobal("current-max"), 0)) {
-        world.observer.getGlobal("histogram-area").ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
+        Errors.askNobodyCheck(world.observer.getGlobal("histogram-area")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
         throw new Exception.StopInterrupt;
       }
-      world.observer.getGlobal("try-line").ask(function() {
+      Errors.askNobodyCheck(world.observer.getGlobal("try-line")).ask(function() {
         if (Prims.equality(SelfManager.self().getPatchVariable("score"), world.observer.getGlobal("current-max"))) {
           world.observer.setGlobal("best-dist", SelfManager.self().getPatchVariable("pycor"));
-          SelfManager.self().patchAt(2, 0).ask(function() { SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("pycor")); }, true);
+          Errors.askNobodyCheck(SelfManager.self().patchAt(2, 0)).ask(function() { SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("pycor")); }, true);
         }
         else {
           if (!Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 125)) {
-            SelfManager.self().patchAt(2, 0).ask(function() { SelfManager.self().setPatchVariable("plabel", ""); }, true);
+            Errors.askNobodyCheck(SelfManager.self().patchAt(2, 0)).ask(function() { SelfManager.self().setPatchVariable("plabel", ""); }, true);
           }
         }
       }, true);
-      world.observer.getGlobal("histogram-area").ask(function() {
+      Errors.askNobodyCheck(world.observer.getGlobal("histogram-area")).ask(function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("kick-line") - Prims.div((SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }) * (world.observer.getGlobal("kick-line") - world.topology.minPxcor)), world.observer.getGlobal("current-max"))))) {
           if (Prims.equality(SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }), world.observer.getGlobal("current-max"))) {
             SelfManager.self().setPatchVariable("pcolor", 45);
@@ -260,11 +228,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["plotScores"] = temp;
@@ -273,19 +237,15 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor); }).ask(function() { procedures["CALC-GOAL-ANGLE"](); }, true);
+      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor); })).ask(function() { procedures["CALC-GOAL-ANGLE"](); }, true);
       let winningPatch = world.observer.getGlobal("try-line").minOneOf(function() { return SelfManager.self().getPatchVariable("goal-angle"); }); letVars['winningPatch'] = winningPatch;
-      winningPatch.ask(function() {
+      Errors.askNobodyCheck(winningPatch).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", 125);
-        SelfManager.self().patchAt(2, 0).ask(function() { SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("pycor")); }, true);
+        Errors.askNobodyCheck(SelfManager.self().patchAt(2, 0)).ask(function() { SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("pycor")); }, true);
       }, true);
       world.observer.setGlobal("analytic", winningPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["findAnalyticSolution"] = temp;
@@ -294,19 +254,15 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().agentFilter(function() {
+      Errors.askNobodyCheck(world.patches().agentFilter(function() {
         return (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.lt(SelfManager.self().getPatchVariable("pcolor"), 10));
-      }).ask(function() {
+      })).ask(function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("goal-angle"), 270)) {
           SelfManager.self().setPatchVariable("pcolor", ((360 - NLMath.mod(SelfManager.self().getPatchVariable("goal-angle"), 10)) * 0.8));
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["drawLevelCurves"] = temp;
@@ -319,11 +275,7 @@ var procedures = (function() {
       SelfManager.self().setPatchVariable("right-angle", SelfManager.self().towardsXY(((world.observer.getGlobal("goal-pos") + world.observer.getGlobal("goal-size")) - 0.5), (world.topology.minPycor + 0.5)));
       SelfManager.self().setPatchVariable("goal-angle", NLMath.mod((SelfManager.self().getPatchVariable("right-angle") - SelfManager.self().getPatchVariable("left-angle")), 360));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["calcGoalAngle"] = temp;

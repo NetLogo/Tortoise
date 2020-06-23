@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "FIRES", singular: "fire", varNames: [] }, { name: "EMBERS", singular: "ember", varNames: [] }])([], [])('globals [   initial-trees   ;; how many trees (green patches) we started with   burned-trees    ;; how many have burned so far ]  breed [fires fire]    ;; bright red turtles -- the leading edge of the fire breed [embers ember]  ;; turtles gradually fading from red to near black  to setup   clear-all   set-default-shape turtles \"square\"   ;; make some green trees   ask patches with [(random-float 100) < density]     [ set pcolor green ]   ;; make a column of burning trees   ask patches with [pxcor = min-pxcor]     [ ignite ]   ;; set tree counts   set initial-trees count patches with [pcolor = green]   set burned-trees 0   reset-ticks end  to go   if not any? turtles  ;; either fires or embers     [ stop ]   ask fires     [ ask neighbors4 with [pcolor = green]         [ ignite ]       set breed embers ]   fade-embers   tick end  ;; creates the fire turtles to ignite  ;; patch procedure   sprout-fires 1     [ set color red ]   set pcolor black   set burned-trees burned-trees + 1 end  ;; achieve fading color effect for the fire as it burns to fade-embers   ask embers     [ set color color - 0.3  ;; make red darker       if color < red - 3.5     ;; are we almost at black?         [ set pcolor color           die ] ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":200,"top":10,"right":710,"bottom":521,"dimensions":{"minPxcor":-125,"maxPxcor":125,"minPycor":-125,"maxPycor":125,"patchSize":2,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"(Prims.div(world.observer.getGlobal(\"burned-trees\"), world.observer.getGlobal(\"initial-trees\")) * 100)","source":"(burned-trees / initial-trees) * 100","left":43,"top":131,"right":158,"bottom":176,"display":"percent burned","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"density","left":5,"top":38,"right":190,"bottom":71,"display":"density","min":"0","max":"99","default":57,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":106,"top":79,"right":175,"bottom":115,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":26,"top":79,"right":96,"bottom":115,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["density", "initial-trees", "burned-trees"], ["density"], [], -125, 125, -125, 125, 2, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "FIRES", singular: "fire", varNames: [] }, { name: "EMBERS", singular: "ember", varNames: [] }])([], [])('globals [   initial-trees   ;; how many trees (green patches) we started with   burned-trees    ;; how many have burned so far ]  breed [fires fire]    ;; bright red turtles -- the leading edge of the fire breed [embers ember]  ;; turtles gradually fading from red to near black  to setup   clear-all   set-default-shape turtles \"square\"   ;; make some green trees   ask patches with [(random-float 100) < density]     [ set pcolor green ]   ;; make a column of burning trees   ask patches with [pxcor = min-pxcor]     [ ignite ]   ;; set tree counts   set initial-trees count patches with [pcolor = green]   set burned-trees 0   reset-ticks end  to go   if not any? turtles  ;; either fires or embers     [ stop ]   ask fires     [ ask neighbors4 with [pcolor = green]         [ ignite ]       set breed embers ]   fade-embers   tick end  ;; creates the fire turtles to ignite  ;; patch procedure   sprout-fires 1     [ set color red ]   set pcolor black   set burned-trees burned-trees + 1 end  ;; achieve fading color effect for the fire as it burns to fade-embers   ask embers     [ set color color - 0.3  ;; make red darker       if color < red - 3.5     ;; are we almost at black?         [ set pcolor color           die ] ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":200,"top":10,"right":710,"bottom":521,"dimensions":{"minPxcor":-125,"maxPxcor":125,"minPycor":-125,"maxPycor":125,"patchSize":2,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"(Prims.div(world.observer.getGlobal(\"burned-trees\"), world.observer.getGlobal(\"initial-trees\")) * 100)","source":"(burned-trees / initial-trees) * 100","left":43,"top":131,"right":158,"bottom":176,"display":"percent burned","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"density","left":5,"top":38,"right":190,"bottom":71,"display":"density","min":"0","max":"99","default":57,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":106,"top":79,"right":175,"bottom":115,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":26,"top":79,"right":96,"bottom":115,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["density", "initial-trees", "burned-trees"], ["density"], [], -125, 125, -125, 125, 2, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -54,17 +55,13 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "square")
-      world.patches().agentFilter(function() { return Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density")); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
-      world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); }).ask(function() { procedures["IGNITE"](); }, true);
+      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density")); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); })).ask(function() { procedures["IGNITE"](); }, true);
       world.observer.setGlobal("initial-trees", world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size());
       world.observer.setGlobal("burned-trees", 0);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -76,18 +73,14 @@ var procedures = (function() {
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
-      world.turtleManager.turtlesOfBreed("FIRES").ask(function() {
-        SelfManager.self().getNeighbors4().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).ask(function() { procedures["IGNITE"](); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FIRES")).ask(function() {
+        Errors.askNobodyCheck(SelfManager.self().getNeighbors4().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); })).ask(function() { procedures["IGNITE"](); }, true);
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("EMBERS"));
       }, true);
       procedures["FADE-EMBERS"]();
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -100,11 +93,7 @@ var procedures = (function() {
       SelfManager.self().setPatchVariable("pcolor", 0);
       world.observer.setGlobal("burned-trees", (world.observer.getGlobal("burned-trees") + 1));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["ignite"] = temp;
@@ -113,7 +102,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("EMBERS").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("EMBERS")).ask(function() {
         SelfManager.self().setVariable("color", (SelfManager.self().getVariable("color") - 0.3));
         if (Prims.lt(SelfManager.self().getVariable("color"), (15 - 3.5))) {
           SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getVariable("color"));
@@ -121,11 +110,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["fadeEmbers"] = temp;

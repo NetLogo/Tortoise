@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("sample-car").projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -54,11 +51,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -71,11 +64,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -84,7 +73,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "speed", true, true, 0, 300, 0, 1.1, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["speed", "speed-limit", "speed-min"], [])('globals [   sample-car ]  turtles-own [   speed   speed-limit   speed-min ]  to setup   clear-all   ask patches [ setup-road ]   setup-cars   watch sample-car   reset-ticks end  to setup-road ;; patch procedure   if pycor < 2 and pycor > -2 [ set pcolor white ] end  to setup-cars   if number-of-cars > world-width [     user-message (word       \"There are too many cars for the amount of road. \"       \"Please decrease the NUMBER-OF-CARS slider to below \"       (world-width + 1) \" and press the SETUP button again. \"       \"The setup has stopped.\")     stop   ]   set-default-shape turtles \"car\"   create-turtles number-of-cars [     set color blue     set xcor random-xcor     set heading 90     ;; set initial speed to be in range 0.1 to 1     set speed 0.1 + random-float 0.9     set speed-limit 1     set speed-min 0     separate-cars   ]   set sample-car one-of turtles   ask sample-car [ set color red ] end  ; this procedure is needed so when we click \"Setup\" we ; don\'t end up with any two cars on the same patch to separate-cars ;; turtle procedure   if any? other turtles-here [     fd 1     separate-cars   ] end  to go   ;; if there is a car right ahead of you, match its speed then slow down   ask turtles [     let car-ahead one-of turtles-on patch-ahead 1     ifelse car-ahead != nobody       [ slow-down-car car-ahead ]       [ speed-up-car ] ;; otherwise, speed up     ;; don\'t slow down below speed minimum or speed up beyond speed limit     if speed < speed-min [ set speed speed-min ]     if speed > speed-limit [ set speed speed-limit ]     fd speed   ]   tick end  to slow-down-car [ car-ahead ] ;; turtle procedure   ;; slow down so you are driving more slowly than the car ahead of you   set speed [ speed ] of car-ahead - deceleration end  to speed-up-car ;; turtle procedure   set speed speed + acceleration end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":14,"top":251,"right":685,"bottom":377,"dimensions":{"minPxcor":-25,"maxPxcor":25,"minPycor":-4,"maxPycor":4,"patchSize":13,"wrappingAllowedInX":true,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":36,"top":72,"right":108,"bottom":113,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":119,"top":73,"right":190,"bottom":113,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"41","compiledStep":"1","variable":"number-of-cars","left":12,"top":34,"right":216,"bottom":67,"display":"number-of-cars","min":"1","max":"41","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"0.099","compiledStep":"0.001","variable":"deceleration","left":121,"top":180,"right":266,"bottom":213,"display":"deceleration","min":"0","max":".099","default":0.026,"step":".001","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"0.0099","compiledStep":"0.0001","variable":"acceleration","left":121,"top":145,"right":266,"bottom":178,"display":"acceleration","min":"0","max":".0099","default":0.0045,"step":".0001","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Car speeds', 'red car')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"sample-car\").projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"red car","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot [speed] of sample-car","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Car speeds', 'min speed')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); })));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"min speed","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot min [speed] of turtles","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Car speeds', 'max speed')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); })));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"max speed","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot max [speed] of turtles","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Car speeds","left":286,"top":20,"right":704,"bottom":217,"xAxis":"time","yAxis":"speed","xmin":0,"xmax":300,"ymin":0,"ymax":1.1,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"red car","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot [speed] of sample-car","type":"pen"},{"display":"min speed","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot min [speed] of turtles","type":"pen"},{"display":"max speed","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot max [speed] of turtles","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"(Prims.ifElseValueBooleanCheck(!world.turtles().isEmpty()) ? world.observer.getGlobal(\"sample-car\").projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); }) : 0)","source":"ifelse-value any? turtles   [   [speed] of sample-car  ]   [  0 ]","left":17,"top":145,"right":114,"bottom":190,"display":"red car speed","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-of-cars", "deceleration", "acceleration", "sample-car"], ["number-of-cars", "deceleration", "acceleration"], [], -25, 25, -4, 4, 13, true, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["speed", "speed-limit", "speed-min"], [])('globals [   sample-car ]  turtles-own [   speed   speed-limit   speed-min ]  to setup   clear-all   ask patches [ setup-road ]   setup-cars   watch sample-car   reset-ticks end  to setup-road ;; patch procedure   if pycor < 2 and pycor > -2 [ set pcolor white ] end  to setup-cars   if number-of-cars > world-width [     user-message (word       \"There are too many cars for the amount of road. \"       \"Please decrease the NUMBER-OF-CARS slider to below \"       (world-width + 1) \" and press the SETUP button again. \"       \"The setup has stopped.\")     stop   ]   set-default-shape turtles \"car\"   create-turtles number-of-cars [     set color blue     set xcor random-xcor     set heading 90     ;; set initial speed to be in range 0.1 to 1     set speed 0.1 + random-float 0.9     set speed-limit 1     set speed-min 0     separate-cars   ]   set sample-car one-of turtles   ask sample-car [ set color red ] end  ; this procedure is needed so when we click \"Setup\" we ; don\'t end up with any two cars on the same patch to separate-cars ;; turtle procedure   if any? other turtles-here [     fd 1     separate-cars   ] end  to go   ;; if there is a car right ahead of you, match its speed then slow down   ask turtles [     let car-ahead one-of turtles-on patch-ahead 1     ifelse car-ahead != nobody       [ slow-down-car car-ahead ]       [ speed-up-car ] ;; otherwise, speed up     ;; don\'t slow down below speed minimum or speed up beyond speed limit     if speed < speed-min [ set speed speed-min ]     if speed > speed-limit [ set speed speed-limit ]     fd speed   ]   tick end  to slow-down-car [ car-ahead ] ;; turtle procedure   ;; slow down so you are driving more slowly than the car ahead of you   set speed [ speed ] of car-ahead - deceleration end  to speed-up-car ;; turtle procedure   set speed speed + acceleration end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":14,"top":251,"right":685,"bottom":377,"dimensions":{"minPxcor":-25,"maxPxcor":25,"minPycor":-4,"maxPycor":4,"patchSize":13,"wrappingAllowedInX":true,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":36,"top":72,"right":108,"bottom":113,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":119,"top":73,"right":190,"bottom":113,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"41","compiledStep":"1","variable":"number-of-cars","left":12,"top":34,"right":216,"bottom":67,"display":"number-of-cars","min":"1","max":"41","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"0.099","compiledStep":"0.001","variable":"deceleration","left":121,"top":180,"right":266,"bottom":213,"display":"deceleration","min":"0","max":".099","default":0.026,"step":".001","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"0.0099","compiledStep":"0.0001","variable":"acceleration","left":121,"top":145,"right":266,"bottom":178,"display":"acceleration","min":"0","max":".0099","default":0.0045,"step":".0001","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Car speeds', 'red car')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"sample-car\").projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"red car","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot [speed] of sample-car","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Car speeds', 'min speed')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); })));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"min speed","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot min [speed] of turtles","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Car speeds', 'max speed')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); })));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"max speed","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot max [speed] of turtles","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Car speeds","left":286,"top":20,"right":704,"bottom":217,"xAxis":"time","yAxis":"speed","xmin":0,"xmax":300,"ymin":0,"ymax":1.1,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"red car","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot [speed] of sample-car","type":"pen"},{"display":"min speed","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot min [speed] of turtles","type":"pen"},{"display":"max speed","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot max [speed] of turtles","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"(Prims.ifElseValueBooleanCheck(!world.turtles().isEmpty()) ? world.observer.getGlobal(\"sample-car\").projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); }) : 0)","source":"ifelse-value any? turtles   [   [speed] of sample-car  ]   [  0 ]","left":17,"top":145,"right":114,"bottom":190,"display":"red car speed","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-of-cars", "deceleration", "acceleration", "sample-car"], ["number-of-cars", "deceleration", "acceleration"], [], -25, 25, -4, 4, 13, true, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -110,16 +99,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.patches().ask(function() { procedures["SETUP-ROAD"](); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { procedures["SETUP-ROAD"](); }, true);
       procedures["SETUP-CARS"]();
       world.observer.watch(world.observer.getGlobal("sample-car"));
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -132,11 +117,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("pcolor", 9.9);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupRoad"] = temp;
@@ -160,13 +141,9 @@ var procedures = (function() {
         procedures["SEPARATE-CARS"]();
       }, true);
       world.observer.setGlobal("sample-car", ListPrims.oneOf(world.turtles()));
-      world.observer.getGlobal("sample-car").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
+      Errors.askNobodyCheck(world.observer.getGlobal("sample-car")).ask(function() { SelfManager.self().setVariable("color", 15); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupCars"] = temp;
@@ -180,11 +157,7 @@ var procedures = (function() {
         procedures["SEPARATE-CARS"]();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["separateCars"] = temp;
@@ -193,7 +166,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         let carAhead = ListPrims.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1))); letVars['carAhead'] = carAhead;
         if (!Prims.equality(carAhead, Nobody)) {
           procedures["SLOW-DOWN-CAR"](carAhead);
@@ -211,11 +184,7 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -226,11 +195,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("speed", (carAhead.projectionBy(function() { return SelfManager.self().getVariable("speed"); }) - world.observer.getGlobal("deceleration")));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["slowDownCar"] = temp;
@@ -241,11 +206,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + world.observer.getGlobal("acceleration")));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["speedUpCar"] = temp;

@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass"] }])([], [])('globals [   result ;; for benchmarking   tick-length               ;; how much simulation will pass in this step   box-edge                  ;; distance of box edge from axes   colliding-particles   sorted-colliding-particles   colliding-particle-1   colliding-particle-2   original-tick-length   last-view-update   manage-view-updates?   view-update-rate          ;; specifies the minimum amount of simulation time that must                             ;; pass before the view is updated ]  breed [ particles particle ]  particles-own [   speed   mass ]  ;;;;;;;;;;;;;;;;  to benchmark   random-seed 12345   reset-timer   setup   set manage-view-updates? false   repeat 3500 [ go ]   set result timer end  to setup   ca reset-ticks   set-default-shape particles \"circle\"   set manage-view-updates? true   set view-update-rate 0.2   set box-edge (max-pxcor - 1)   make-box   make-particles    ;; set variable tick length based on fastest particle.   If the fastest particle has a speed of 1,   ;; then tick-length is 1.  If the fastest particles has a speed of 10, then tick-length is 1/10.   set tick-length (1 / (ceiling max [speed] of particles))   set original-tick-length tick-length   set colliding-particle-1 nobody   set colliding-particle-2 nobody   rebuild-collision-list end  to rebuild-collision-list   set colliding-particles []   ask particles [check-for-wall-collision]   ask particles [check-for-particle-collision ] end   to go   ;;Since only collisions involving the particles that collided most recently could be affected,   ;;we filter those out of colliding-particles.  Then we recalculate all possible collisions for the   ;;particles that collided last.  The ifelse statement is necessary because colliding-particle-2   ;;can be either a particle or a string representing a wall.  If it is a wall, we don\'t want to   ;;invalidate all collisions involving that wall (because the wall\'s position wasn\'t affected, those   ;;collisions are still valid.   ifelse is-turtle? colliding-particle-2   [     set colliding-particles filter [ [collision] ->       item 1 collision != colliding-particle-1 and       item 2 collision != colliding-particle-1 and       item 1 collision != colliding-particle-2 and       item 2 collision != colliding-particle-2]     colliding-particles     ask colliding-particle-2 [check-for-wall-collision]     ask colliding-particle-2 [check-for-particle-collision]   ]   [     set colliding-particles filter [ [collision] ->       item 1 collision != colliding-particle-1 and       item 2 collision != colliding-particle-1]     colliding-particles   ]   if colliding-particle-1 != nobody [ask colliding-particle-1 [check-for-wall-collision]]   if colliding-particle-1 != nobody [ask colliding-particle-1 [check-for-particle-collision]]    sort-collisions   ask particles [ jump speed * tick-length ]   collide-winners   tick-advance tick-length    ;; flag that updates display only after enough simulation time has passed.   ;; the display-update-rate sets the minimum simulation time that must pass   ;; before updating the display.  This avoids many redisplays of the view for   ;; a series of small time steps in the simulation (which would make the view show   ;; what looks like particles slowing down as they get near multiple collision points)   if manage-view-updates? [     if (ticks - last-view-update) > view-update-rate     [ display       set last-view-update ticks ]       ] end  to-report convert-heading-x [heading-angle]   report sin heading-angle end  to-report convert-heading-y [heading-angle]   report cos heading-angle end   to check-for-particle-collision  ;; check-for-particle-collision is a particle procedure that determines the time it takes to the collision between ;; two particles (if one exists).  It solves for the time by representing the equations of motion for ;; distance, velocity, and time in a quadratic equation of the vector components of the relative velocities ;; and changes in position between the two particles and solves for the time until the next collision    let my-x xcor   let my-y ycor   let my-particle-size size   let my-x-speed (speed * convert-heading-x heading)   let my-y-speed (speed * convert-heading-y heading)    ask other particles   [           let dpx (xcor - my-x)   ;; relative distance between particles in the x direction          let dpy (ycor - my-y)    ;; relative distance between particles in the y direction          let x-speed (speed * convert-heading-x heading) ;; speed of other particle in the x direction          let y-speed (speed * convert-heading-y heading) ;; speed of other particle in the x direction          let dvx (x-speed - my-x-speed) ;; relative speed difference between particles in the x direction          let dvy (y-speed - my-y-speed) ;; relative speed difference between particles in the y direction          let sum-r (((my-particle-size) / 2 ) + (([size] of self) / 2 )) ;; sum of both particle radii            ;; To figure out what the difference in position (P1) between two particles at a future time (t) would be,         ;; one would need to know the current difference in position (P0) between the two particles         ;; and the current difference in the velocity (V0) between of the two particles.          ;; The equation that represents the relationship would be:   P1 = P0 + t * V0          ;; we want find when in time (t), P1 would be equal to the sum of both the particle\'s radii (sum-r).         ;; When P1 is equal to is equal to sum-r, the particles will just be touching each other at         ;; their edges  (a single point of contact).          ;; Therefore we are looking for when:   sum-r =  P0 + t * V0          ;; This equation is not a simple linear equation, since P0 and V0 should both have x and y components         ;;  in their two dimensional vector representation (calculated as dpx, dpy, and dvx, dvy).           ;; By squaring both sides of the equation, we get:     (sum-r) * (sum-r) =  (P0 + t * V0) * (P0 + t * V0)          ;;  When expanded gives:   (sum-r ^ 2) = (P0 ^ 2) + (t * PO * V0) + (t * PO * V0) + (t ^ 2 * VO ^ 2)          ;;  Which can be simplified to:    0 = (P0 ^ 2) - (sum-r ^ 2) + (2 * PO * V0) * t + (VO ^ 2) * t ^ 2          ;;  Below, we will let p-squared represent:   (P0 ^ 2) - (sum-r ^ 2)         ;;  and pv represent: (2 * PO * V0)         ;;  and v-squared represent: (VO ^ 2)          ;;  then the equation will simplify to:     0 = p-squared + pv * t + v-squared * t^2            let p-squared   ((dpx * dpx) + (dpy * dpy)) - (sum-r ^ 2)   ;; p-squared represents difference of the                                                                      ;; square of the radii and the square                                                                      ;; of the initial positions           let pv  (2 * ((dpx * dvx) + (dpy * dvy)))  ;;the vector product of the position times the velocity          let v-squared  ((dvx * dvx) + (dvy * dvy)) ;; the square of the difference in speeds                                                     ;; represented as the sum of the squares of the x-component                                                     ;; and y-component of relative speeds between the two particles            ;; p-squared, pv, and v-squared are coefficients in the quadratic equation shown above that          ;; represents how distance between the particles and relative velocity are related to the time,          ;; t, at which they will next collide (or when their edges will just be touching)           ;; Any quadratic equation that is the function of time (t), can represented in a general form as:          ;;   a*t*t + b*t + c = 0,          ;; where a, b, and c are the coefficients of the three different terms, and has solutions for t          ;; that can be found by using the quadratic formula.  The quadratic formula states that if a is not 0,          ;; then there are two solutions for t, either real or complex.           ;; t is equal to (b +/- sqrt (b^2 - 4*a*c)) / 2*a           ;; the portion of this equation that is under a square root is referred to here          ;; as the determinant, D1.   D1 is equal to (b^2 - 4*a*c)          ;; and:   a = v-squared, b = pv, and c = p-squared.            let D1 pv ^ 2 -  (4 * v-squared * p-squared)            ;; the next line next line tells us that a collision will happen in the future if          ;; the determinant, D1 is >= 0,  since a positive determinant tells us that there is a          ;; real solution for the quadratic equation.  Quadratic equations can have solutions          ;; that are not real (they are square roots of negative numbers).  These are referred          ;; to as imaginary numbers and for many real world systems that the equations represent          ;; are not real world states the system can actually end up in.           ;; Once we determine that a real solution exists, we want to take only one of the two          ;; possible solutions to the quadratic equation, namely the smaller of the two the solutions:           ;;  (b - sqrt (b^2 - 4*a*c)) / 2*a          ;;  which is a solution that represents when the particles first touching on their edges.           ;;  instead of (b + sqrt (b^2 - 4*a*c)) / 2*a          ;;  which is a solution that represents a time after the particles have penetrated          ;;  and are coming back out of each other and when they are just touching on their edges.            let time-to-collision  -1           if D1 >= 0             [set time-to-collision (- pv - sqrt D1) / (2 * v-squared) ]        ;;solution for time step            ;; if time-to-collision is still -1 there is no collision in the future - no valid solution          ;; note:  negative values for time-to-collision represent where particles would collide          ;; if allowed to move backward in time.          ;; if time-to-collision is greater than 1, then we continue to advance the motion          ;; of the particles along their current trajectories.  They do not collide yet.           if time-to-collision > 0              [              ;; time-to-collision is relative (ie, a collision will occur one second from now)              ;; We need to store the absolute time (ie, a collision will occur at time 48.5 seconds.              ;; So, we add clock to time-to-collision when we store it.               let colliding-pair (list (time-to-collision + ticks) self myself) ;; sets a three element list of                                                         ;; time to collision and the colliding pair               set colliding-particles fput colliding-pair colliding-particles  ;; adds above list to collection                                                                                ;; of colliding pairs and time                                                                                ;; steps              ]   ]  end   to check-for-wall-collision ;; particle procedure for determining if a particle will hit one of the                             ;; four walls of the box    let x-speed (speed * convert-heading-x heading)   let y-speed (speed * convert-heading-y heading)   let xpos-plane (box-edge - 0.5)      ;;inside boundary of right side of the box   let xneg-plane (- box-edge + 0.5)    ;;inside boundary of left side of the box   let ypos-plane (box-edge - 0.5)      ;;inside boundary of top side of the box   let yneg-plane (- box-edge + 0.5)    ;;inside boundary of bottom side of the box    ;; find point of contact on edge of circle   ;; points of contact located at 1 radius above, below, to the left, and to the right   ;; of the center of the particle    let contact-point-xpos (xcor + (size / 2))   let contact-point-xneg (xcor - (size / 2))   let contact-point-ypos (ycor + (size / 2))   let contact-point-yneg (ycor - (size / 2))    ;; find difference in position between plane location and edge of circle    let dpxpos (xpos-plane - contact-point-xpos)   let dpxneg (xneg-plane - contact-point-xneg)   let dpypos (ypos-plane - contact-point-ypos)   let dpyneg (yneg-plane - contact-point-yneg)    let t-plane-xpos 0    ;; solve for the time it will take the particle to reach the wall by taking   ;; the distance to the wall and dividing it by the speed in the direction to the wall    ifelse  x-speed != 0 [set t-plane-xpos (dpxpos / x-speed)] [set t-plane-xpos 0]    if t-plane-xpos > 0       [        assign-colliding-wall t-plane-xpos \"plane-xpos\"       ]    let t-plane-xneg 0   ifelse  x-speed != 0 [set t-plane-xneg (dpxneg / x-speed)] [set t-plane-xneg 0]    if t-plane-xneg > 0       [        assign-colliding-wall t-plane-xneg \"plane-xneg\"       ]   let t-plane-ypos 0   ifelse  y-speed != 0 [set t-plane-ypos (dpypos / y-speed)] [set t-plane-ypos 0]    if t-plane-ypos > 0       [        assign-colliding-wall t-plane-ypos \"plane-ypos\"       ]    let t-plane-yneg 0   ifelse  y-speed != 0 [set t-plane-yneg (dpyneg / y-speed)] [set t-plane-yneg 0]   if t-plane-yneg > 0       [        assign-colliding-wall t-plane-yneg \"plane-yneg\"       ]  end  to assign-colliding-wall [time-to-collision wall]   ;; this procedure is used by the check-for-wall-collision procedure   ;; to assemble the correct particle-wall pair   ;; time-to-collision is relative (ie, a collision will occur one second from now)   ;; We need to store the absolute time (ie, a collision will occur at time 48.5 seconds.   ;; So, we add clock to time-to-collision when we store it.    let colliding-pair (list (time-to-collision + ticks) self wall)   set colliding-particles fput colliding-pair colliding-particles  end   to sort-collisions   ;; Slight errors in floating point math can cause a collision that just   ;; happened to be calculated as happening again a very tiny amount of   ;; time into the future, so we remove any collisions that involves   ;; the same two particles (or particle and wall) as last time.   set colliding-particles filter [ [collision] ->     item 1 collision != colliding-particle-1 or     item 2 collision != colliding-particle-2]   colliding-particles   set colliding-particle-1 nobody   set colliding-particle-2 nobody   set tick-length original-tick-length   if colliding-particles = [] [ stop ]   ;; Sort the list of projected collisions between all the particles into an ordered list.   ;; Take the smallest time-step from the list (which represents the next collision that will   ;; happen in time).  Use this time step as the tick-length for all the particles to move through   let winner first colliding-particles   foreach colliding-particles [ [collision] -> if first collision < first winner [set winner collision]]   ;;winner is now the collision that will occur next   let dt item 0 winner   if dt > 0   [     ;;If the next collision is more than 1 in the future,     ;;clear the winners and advance the simulation one tick.     ;;This helps smooth the model on smaller particle counts.     ifelse dt - ticks <= 1     ;;We have to subtract clock back out because now we want the relative time until collision,     ;;not the absolute time the collision will occur.     [set tick-length dt - ticks      set colliding-particle-1 item 1 winner      set colliding-particle-2 item 2 winner]     ;;Since there are no collisions in the next second, we will set winners to [] to keep from     ;;mistakenly colliding any particles that shouldn\'t collide yet.     [set tick-length 1]   ] end   to collide-winners  ;; deal with 3 possible cases of collisions:                     ;; particle and one wall, particle and two walls, and two particles     if colliding-particle-1 = nobody [ stop ]     ;; deal with a case where the next collision in time is between a particle and a wall      if colliding-particle-2 = \"plane-xpos\" or colliding-particle-2 = \"plane-xneg\"          [ask colliding-particle-1 [set heading (- heading)]           stop]     if colliding-particle-2 = \"plane-ypos\" or colliding-particle-2 = \"plane-yneg\"          [ask colliding-particle-1 [set heading (180 - heading)]           stop]      ;; deal with the remaining case of the next collision in time being between two particles.      ask colliding-particle-1 [collide-with colliding-particle-2]  end   to collide-with [ other-particle ] ;; particle procedure    ;;; PHASE 1: initial setup      ;; for convenience, grab some quantities from other-particle     let mass2 [mass] of other-particle     let speed2 [speed] of other-particle     let heading2 [heading] of other-particle    ;;modified so that theta is heading toward other particle   let theta towards other-particle    ;;; PHASE 2: convert velocities to theta-based vector representation    ;; now convert my velocity from speed/heading representation to components   ;; along theta and perpendicular to theta   let v1t (speed * cos (theta - heading))   let v1l (speed * sin (theta - heading))    ;; do the same for other-particle   let v2t (speed2 * cos (theta - heading2))   let v2l (speed2 * sin (theta - heading2))    ;;; PHASE 3: manipulate vectors to implement collision    ;; compute the velocity of the system\'s center of mass along theta   let vcm (((mass * v1t) + (mass2 * v2t)) / (mass + mass2) )    ;; now compute the new velocity for each particle along direction theta.   ;; velocity perpendicular to theta is unaffected by a collision along theta,   ;; so the next two lines actually implement the collision itself, in the   ;; sense that the effects of the collision are exactly the following changes   ;; in particle velocity.   set v1t (2 * vcm - v1t)   set v2t (2 * vcm - v2t)     ;;; PHASE 4: convert back to normal speed/heading    ;; now convert my velocity vector into my new speed and heading   set speed sqrt ((v1t * v1t) + (v1l * v1l))   ;; if the magnitude of the velocity vector is 0, atan is undefined. but   ;; speed will be 0, so heading is irrelevant anyway. therefore, in that   ;; case we\'ll just leave it unmodified.   if v1l != 0 or v1t != 0     [ set heading (theta - (atan v1l v1t)) ]    ;; and do the same for other-particle   ask other-particle [ set speed sqrt (((v2t * v2t) + (v2l * v2l))) ]   if v2l != 0 or v2t != 0     [ ask other-particle [ set heading (theta - (atan v2l v2t)) ] ]    ;; PHASE 5: final updates    ;; now recolor, since color is based on quantities that may have changed   recolor ask other-particle [ recolor ] end   to recolor     if color-scheme = \"red-green-blue\" [ recolor-banded ]     if color-scheme = \"blue shades\" [ recolor-shaded ]     if color-scheme  = \"one color\" [ recolor-none ] end   to recolor-banded  ;; particle procedure   let avg-speed 1   ;; avg-speed is assumed to be 0.5, since particles are assigned a random speed between 0 and 1   ;; particle coloring procedures for visualizing speed with a color palette,   ;; red are fast particles, blue slow, and green in between.    ifelse speed < (0.5 * avg-speed) ;; at lower than 50% the average speed   [     set color blue       ;; slow particles colored blue   ]   [     ifelse speed > (1.5 * avg-speed) ;; above 50% higher the average speed       [ set color red ]        ;; fast particles colored blue       [ set color green ]      ;; medium speed particles colored green   ]  end   to recolor-shaded   let avg-speed 1  ;; avg-speed is assumed to be 0.5, since particles are assigned a random speed between 0 and 1  ;; a particle shading gradient is applied to all particles less than speed 1.5,  ;; the uppermost threshold speed to apply the shading gradient to.    ifelse speed < (3 * avg-speed)   [ set color (sky - 3.001) + (8 * speed / (3 * avg-speed)) ]   [ set color (sky + 4.999)] end  to recolor-none   set color green - 1 end   ;;; ;;; drawing procedures ;;;  to make-box   ask patches with [ ((abs pxcor = box-edge) and (abs pycor <= box-edge)) or                      ((abs pycor = box-edge) and (abs pxcor <= box-edge)) ]     [ set pcolor yellow ] end  ;; creates some particles to make-particles   create-ordered-particles number [     set speed 1     set size smallest-particle-size + random-float (largest-particle-size - smallest-particle-size)     set mass (size * size) ;; set the mass proportional to the area of the particle     recolor     set heading random-float 360   ]   arrange particles end  ;; If the number of particles requested by the user won\'t fit in the box, ;; this code will go into an infinite loop. To work around a NetLogo bug ;; where some kinds of infinite loops cannot be halted by Tools->Halt, ;; we put this code in a separate procedure and write it a certain way. ;; (It\'s necessary for the loop not to be within an ASK.  The reason ;; for this is very obscure.  We plan to fix the problem in a future ;; NetLogo version.) to arrange [particle-set]   if not any? particle-set [ stop ]   ask particle-set [ random-position ]   arrange particle-set with [overlapping?] end  to-report overlapping?  ;; particle procedure   ;; here, we use in-radius just for improved speed   report any? other particles in-radius ((size + largest-particle-size) / 2)                               with [distance myself < (size + [size] of myself) / 2] end  ;; place particle at random location inside the box. to random-position  ;; particle procedure   setxy one-of [1 -1] * random-float (box-edge - 0.5 - size / 2)         one-of [1 -1] * random-float (box-edge - 0.5 - size / 2) end   ;;; ;;; procedure for reversing time ;;;  to reverse-time   ask particles [ rt 180 ]   rebuild-collision-list   ;; the last collision that happened before the model was paused   ;; (if the model was paused immediately after a collision)   ;; won\'t happen again after time is reversed because of the   ;; \"don\'t do the same collision twice in a row\" rule.  We could   ;; try to fool that rule by setting colliding-particle-1 and   ;; colliding-particle-2 to nobody, but that might not always work,   ;; because the vagaries of floating point math means that the   ;; collision might be calculated to be slightly in the past   ;; (the past that used to be the future!) and be skipped.   ;; So to be sure, we force the collision to happen:   collide-winners end  ;; Here\'s a procedure that demonstrates time-reversing the model. ;; You can run it from the command center.  When it finishes, ;; the final particle positions may be slightly different because ;; the amount of time that passes after the reversal might not ;; be exactly the same as the amount that passed before; this ;; doesn\'t indicate a bug in the model. ;; For larger values of n, you will start to notice larger ;; discrepancies, eventually causing the behavior of the system ;; to diverge totally. Unless the model has some bug we don\'t know ;; about, this is due to accumulating tiny inaccuracies in the ;; floating point calculations.  Once these inaccuracies accumulate ;; to the point that a collision is missed or an extra collision ;; happens, after that the reversed model will diverge rapidly. to test-time-reversal [n]   setup   ask particles [ stamp ]   while [ticks < n] [ go ]   let old-clock ticks   reverse-time   while [ticks < 2 * old-clock] [ go ]   ask particles [ set color white ] end')([{"left":212,"top":10,"right":706,"bottom":505,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":6,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":20,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":13,"top":172,"right":106,"bottom":205,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"200","compiledStep":"1","variable":"number","left":10,"top":38,"right":199,"bottom":71,"display":"number","min":"1","max":"200","default":200,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":112,"top":172,"right":199,"bottom":205,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"0.5","variable":"largest-particle-size","left":10,"top":117,"right":198,"bottom":150,"display":"largest-particle-size","min":"1","max":"10","default":4,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"color-scheme","left":14,"top":226,"right":145,"bottom":271,"display":"color-scheme","choices":["red-green-blue","blue shades","one color"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"5","compiledStep":"0.5","variable":"smallest-particle-size","left":10,"top":77,"right":198,"bottom":110,"display":"smallest-particle-size","min":"1","max":"5","default":1,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"benchmark","left":23,"top":359,"right":200,"bottom":504,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":32,"top":455,"right":190,"bottom":500,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number", "largest-particle-size", "color-scheme", "smallest-particle-size", "result", "tick-length", "box-edge", "colliding-particles", "sorted-colliding-particles", "colliding-particle-1", "colliding-particle-2", "original-tick-length", "last-view-update", "manage-view-updates?", "view-update-rate"], ["number", "largest-particle-size", "color-scheme", "smallest-particle-size"], [], -40, 40, -40, 40, 6, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass"] }])([], [])('globals [   result ;; for benchmarking   tick-length               ;; how much simulation will pass in this step   box-edge                  ;; distance of box edge from axes   colliding-particles   sorted-colliding-particles   colliding-particle-1   colliding-particle-2   original-tick-length   last-view-update   manage-view-updates?   view-update-rate          ;; specifies the minimum amount of simulation time that must                             ;; pass before the view is updated ]  breed [ particles particle ]  particles-own [   speed   mass ]  ;;;;;;;;;;;;;;;;  to benchmark   random-seed 12345   reset-timer   setup   set manage-view-updates? false   repeat 3500 [ go ]   set result timer end  to setup   ca reset-ticks   set-default-shape particles \"circle\"   set manage-view-updates? true   set view-update-rate 0.2   set box-edge (max-pxcor - 1)   make-box   make-particles    ;; set variable tick length based on fastest particle.   If the fastest particle has a speed of 1,   ;; then tick-length is 1.  If the fastest particles has a speed of 10, then tick-length is 1/10.   set tick-length (1 / (ceiling max [speed] of particles))   set original-tick-length tick-length   set colliding-particle-1 nobody   set colliding-particle-2 nobody   rebuild-collision-list end  to rebuild-collision-list   set colliding-particles []   ask particles [check-for-wall-collision]   ask particles [check-for-particle-collision ] end   to go   ;;Since only collisions involving the particles that collided most recently could be affected,   ;;we filter those out of colliding-particles.  Then we recalculate all possible collisions for the   ;;particles that collided last.  The ifelse statement is necessary because colliding-particle-2   ;;can be either a particle or a string representing a wall.  If it is a wall, we don\'t want to   ;;invalidate all collisions involving that wall (because the wall\'s position wasn\'t affected, those   ;;collisions are still valid.   ifelse is-turtle? colliding-particle-2   [     set colliding-particles filter [ [collision] ->       item 1 collision != colliding-particle-1 and       item 2 collision != colliding-particle-1 and       item 1 collision != colliding-particle-2 and       item 2 collision != colliding-particle-2]     colliding-particles     ask colliding-particle-2 [check-for-wall-collision]     ask colliding-particle-2 [check-for-particle-collision]   ]   [     set colliding-particles filter [ [collision] ->       item 1 collision != colliding-particle-1 and       item 2 collision != colliding-particle-1]     colliding-particles   ]   if colliding-particle-1 != nobody [ask colliding-particle-1 [check-for-wall-collision]]   if colliding-particle-1 != nobody [ask colliding-particle-1 [check-for-particle-collision]]    sort-collisions   ask particles [ jump speed * tick-length ]   collide-winners   tick-advance tick-length    ;; flag that updates display only after enough simulation time has passed.   ;; the display-update-rate sets the minimum simulation time that must pass   ;; before updating the display.  This avoids many redisplays of the view for   ;; a series of small time steps in the simulation (which would make the view show   ;; what looks like particles slowing down as they get near multiple collision points)   if manage-view-updates? [     if (ticks - last-view-update) > view-update-rate     [ display       set last-view-update ticks ]       ] end  to-report convert-heading-x [heading-angle]   report sin heading-angle end  to-report convert-heading-y [heading-angle]   report cos heading-angle end   to check-for-particle-collision  ;; check-for-particle-collision is a particle procedure that determines the time it takes to the collision between ;; two particles (if one exists).  It solves for the time by representing the equations of motion for ;; distance, velocity, and time in a quadratic equation of the vector components of the relative velocities ;; and changes in position between the two particles and solves for the time until the next collision    let my-x xcor   let my-y ycor   let my-particle-size size   let my-x-speed (speed * convert-heading-x heading)   let my-y-speed (speed * convert-heading-y heading)    ask other particles   [           let dpx (xcor - my-x)   ;; relative distance between particles in the x direction          let dpy (ycor - my-y)    ;; relative distance between particles in the y direction          let x-speed (speed * convert-heading-x heading) ;; speed of other particle in the x direction          let y-speed (speed * convert-heading-y heading) ;; speed of other particle in the x direction          let dvx (x-speed - my-x-speed) ;; relative speed difference between particles in the x direction          let dvy (y-speed - my-y-speed) ;; relative speed difference between particles in the y direction          let sum-r (((my-particle-size) / 2 ) + (([size] of self) / 2 )) ;; sum of both particle radii            ;; To figure out what the difference in position (P1) between two particles at a future time (t) would be,         ;; one would need to know the current difference in position (P0) between the two particles         ;; and the current difference in the velocity (V0) between of the two particles.          ;; The equation that represents the relationship would be:   P1 = P0 + t * V0          ;; we want find when in time (t), P1 would be equal to the sum of both the particle\'s radii (sum-r).         ;; When P1 is equal to is equal to sum-r, the particles will just be touching each other at         ;; their edges  (a single point of contact).          ;; Therefore we are looking for when:   sum-r =  P0 + t * V0          ;; This equation is not a simple linear equation, since P0 and V0 should both have x and y components         ;;  in their two dimensional vector representation (calculated as dpx, dpy, and dvx, dvy).           ;; By squaring both sides of the equation, we get:     (sum-r) * (sum-r) =  (P0 + t * V0) * (P0 + t * V0)          ;;  When expanded gives:   (sum-r ^ 2) = (P0 ^ 2) + (t * PO * V0) + (t * PO * V0) + (t ^ 2 * VO ^ 2)          ;;  Which can be simplified to:    0 = (P0 ^ 2) - (sum-r ^ 2) + (2 * PO * V0) * t + (VO ^ 2) * t ^ 2          ;;  Below, we will let p-squared represent:   (P0 ^ 2) - (sum-r ^ 2)         ;;  and pv represent: (2 * PO * V0)         ;;  and v-squared represent: (VO ^ 2)          ;;  then the equation will simplify to:     0 = p-squared + pv * t + v-squared * t^2            let p-squared   ((dpx * dpx) + (dpy * dpy)) - (sum-r ^ 2)   ;; p-squared represents difference of the                                                                      ;; square of the radii and the square                                                                      ;; of the initial positions           let pv  (2 * ((dpx * dvx) + (dpy * dvy)))  ;;the vector product of the position times the velocity          let v-squared  ((dvx * dvx) + (dvy * dvy)) ;; the square of the difference in speeds                                                     ;; represented as the sum of the squares of the x-component                                                     ;; and y-component of relative speeds between the two particles            ;; p-squared, pv, and v-squared are coefficients in the quadratic equation shown above that          ;; represents how distance between the particles and relative velocity are related to the time,          ;; t, at which they will next collide (or when their edges will just be touching)           ;; Any quadratic equation that is the function of time (t), can represented in a general form as:          ;;   a*t*t + b*t + c = 0,          ;; where a, b, and c are the coefficients of the three different terms, and has solutions for t          ;; that can be found by using the quadratic formula.  The quadratic formula states that if a is not 0,          ;; then there are two solutions for t, either real or complex.           ;; t is equal to (b +/- sqrt (b^2 - 4*a*c)) / 2*a           ;; the portion of this equation that is under a square root is referred to here          ;; as the determinant, D1.   D1 is equal to (b^2 - 4*a*c)          ;; and:   a = v-squared, b = pv, and c = p-squared.            let D1 pv ^ 2 -  (4 * v-squared * p-squared)            ;; the next line next line tells us that a collision will happen in the future if          ;; the determinant, D1 is >= 0,  since a positive determinant tells us that there is a          ;; real solution for the quadratic equation.  Quadratic equations can have solutions          ;; that are not real (they are square roots of negative numbers).  These are referred          ;; to as imaginary numbers and for many real world systems that the equations represent          ;; are not real world states the system can actually end up in.           ;; Once we determine that a real solution exists, we want to take only one of the two          ;; possible solutions to the quadratic equation, namely the smaller of the two the solutions:           ;;  (b - sqrt (b^2 - 4*a*c)) / 2*a          ;;  which is a solution that represents when the particles first touching on their edges.           ;;  instead of (b + sqrt (b^2 - 4*a*c)) / 2*a          ;;  which is a solution that represents a time after the particles have penetrated          ;;  and are coming back out of each other and when they are just touching on their edges.            let time-to-collision  -1           if D1 >= 0             [set time-to-collision (- pv - sqrt D1) / (2 * v-squared) ]        ;;solution for time step            ;; if time-to-collision is still -1 there is no collision in the future - no valid solution          ;; note:  negative values for time-to-collision represent where particles would collide          ;; if allowed to move backward in time.          ;; if time-to-collision is greater than 1, then we continue to advance the motion          ;; of the particles along their current trajectories.  They do not collide yet.           if time-to-collision > 0              [              ;; time-to-collision is relative (ie, a collision will occur one second from now)              ;; We need to store the absolute time (ie, a collision will occur at time 48.5 seconds.              ;; So, we add clock to time-to-collision when we store it.               let colliding-pair (list (time-to-collision + ticks) self myself) ;; sets a three element list of                                                         ;; time to collision and the colliding pair               set colliding-particles fput colliding-pair colliding-particles  ;; adds above list to collection                                                                                ;; of colliding pairs and time                                                                                ;; steps              ]   ]  end   to check-for-wall-collision ;; particle procedure for determining if a particle will hit one of the                             ;; four walls of the box    let x-speed (speed * convert-heading-x heading)   let y-speed (speed * convert-heading-y heading)   let xpos-plane (box-edge - 0.5)      ;;inside boundary of right side of the box   let xneg-plane (- box-edge + 0.5)    ;;inside boundary of left side of the box   let ypos-plane (box-edge - 0.5)      ;;inside boundary of top side of the box   let yneg-plane (- box-edge + 0.5)    ;;inside boundary of bottom side of the box    ;; find point of contact on edge of circle   ;; points of contact located at 1 radius above, below, to the left, and to the right   ;; of the center of the particle    let contact-point-xpos (xcor + (size / 2))   let contact-point-xneg (xcor - (size / 2))   let contact-point-ypos (ycor + (size / 2))   let contact-point-yneg (ycor - (size / 2))    ;; find difference in position between plane location and edge of circle    let dpxpos (xpos-plane - contact-point-xpos)   let dpxneg (xneg-plane - contact-point-xneg)   let dpypos (ypos-plane - contact-point-ypos)   let dpyneg (yneg-plane - contact-point-yneg)    let t-plane-xpos 0    ;; solve for the time it will take the particle to reach the wall by taking   ;; the distance to the wall and dividing it by the speed in the direction to the wall    ifelse  x-speed != 0 [set t-plane-xpos (dpxpos / x-speed)] [set t-plane-xpos 0]    if t-plane-xpos > 0       [        assign-colliding-wall t-plane-xpos \"plane-xpos\"       ]    let t-plane-xneg 0   ifelse  x-speed != 0 [set t-plane-xneg (dpxneg / x-speed)] [set t-plane-xneg 0]    if t-plane-xneg > 0       [        assign-colliding-wall t-plane-xneg \"plane-xneg\"       ]   let t-plane-ypos 0   ifelse  y-speed != 0 [set t-plane-ypos (dpypos / y-speed)] [set t-plane-ypos 0]    if t-plane-ypos > 0       [        assign-colliding-wall t-plane-ypos \"plane-ypos\"       ]    let t-plane-yneg 0   ifelse  y-speed != 0 [set t-plane-yneg (dpyneg / y-speed)] [set t-plane-yneg 0]   if t-plane-yneg > 0       [        assign-colliding-wall t-plane-yneg \"plane-yneg\"       ]  end  to assign-colliding-wall [time-to-collision wall]   ;; this procedure is used by the check-for-wall-collision procedure   ;; to assemble the correct particle-wall pair   ;; time-to-collision is relative (ie, a collision will occur one second from now)   ;; We need to store the absolute time (ie, a collision will occur at time 48.5 seconds.   ;; So, we add clock to time-to-collision when we store it.    let colliding-pair (list (time-to-collision + ticks) self wall)   set colliding-particles fput colliding-pair colliding-particles  end   to sort-collisions   ;; Slight errors in floating point math can cause a collision that just   ;; happened to be calculated as happening again a very tiny amount of   ;; time into the future, so we remove any collisions that involves   ;; the same two particles (or particle and wall) as last time.   set colliding-particles filter [ [collision] ->     item 1 collision != colliding-particle-1 or     item 2 collision != colliding-particle-2]   colliding-particles   set colliding-particle-1 nobody   set colliding-particle-2 nobody   set tick-length original-tick-length   if colliding-particles = [] [ stop ]   ;; Sort the list of projected collisions between all the particles into an ordered list.   ;; Take the smallest time-step from the list (which represents the next collision that will   ;; happen in time).  Use this time step as the tick-length for all the particles to move through   let winner first colliding-particles   foreach colliding-particles [ [collision] -> if first collision < first winner [set winner collision]]   ;;winner is now the collision that will occur next   let dt item 0 winner   if dt > 0   [     ;;If the next collision is more than 1 in the future,     ;;clear the winners and advance the simulation one tick.     ;;This helps smooth the model on smaller particle counts.     ifelse dt - ticks <= 1     ;;We have to subtract clock back out because now we want the relative time until collision,     ;;not the absolute time the collision will occur.     [set tick-length dt - ticks      set colliding-particle-1 item 1 winner      set colliding-particle-2 item 2 winner]     ;;Since there are no collisions in the next second, we will set winners to [] to keep from     ;;mistakenly colliding any particles that shouldn\'t collide yet.     [set tick-length 1]   ] end   to collide-winners  ;; deal with 3 possible cases of collisions:                     ;; particle and one wall, particle and two walls, and two particles     if colliding-particle-1 = nobody [ stop ]     ;; deal with a case where the next collision in time is between a particle and a wall      if colliding-particle-2 = \"plane-xpos\" or colliding-particle-2 = \"plane-xneg\"          [ask colliding-particle-1 [set heading (- heading)]           stop]     if colliding-particle-2 = \"plane-ypos\" or colliding-particle-2 = \"plane-yneg\"          [ask colliding-particle-1 [set heading (180 - heading)]           stop]      ;; deal with the remaining case of the next collision in time being between two particles.      ask colliding-particle-1 [collide-with colliding-particle-2]  end   to collide-with [ other-particle ] ;; particle procedure    ;;; PHASE 1: initial setup      ;; for convenience, grab some quantities from other-particle     let mass2 [mass] of other-particle     let speed2 [speed] of other-particle     let heading2 [heading] of other-particle    ;;modified so that theta is heading toward other particle   let theta towards other-particle    ;;; PHASE 2: convert velocities to theta-based vector representation    ;; now convert my velocity from speed/heading representation to components   ;; along theta and perpendicular to theta   let v1t (speed * cos (theta - heading))   let v1l (speed * sin (theta - heading))    ;; do the same for other-particle   let v2t (speed2 * cos (theta - heading2))   let v2l (speed2 * sin (theta - heading2))    ;;; PHASE 3: manipulate vectors to implement collision    ;; compute the velocity of the system\'s center of mass along theta   let vcm (((mass * v1t) + (mass2 * v2t)) / (mass + mass2) )    ;; now compute the new velocity for each particle along direction theta.   ;; velocity perpendicular to theta is unaffected by a collision along theta,   ;; so the next two lines actually implement the collision itself, in the   ;; sense that the effects of the collision are exactly the following changes   ;; in particle velocity.   set v1t (2 * vcm - v1t)   set v2t (2 * vcm - v2t)     ;;; PHASE 4: convert back to normal speed/heading    ;; now convert my velocity vector into my new speed and heading   set speed sqrt ((v1t * v1t) + (v1l * v1l))   ;; if the magnitude of the velocity vector is 0, atan is undefined. but   ;; speed will be 0, so heading is irrelevant anyway. therefore, in that   ;; case we\'ll just leave it unmodified.   if v1l != 0 or v1t != 0     [ set heading (theta - (atan v1l v1t)) ]    ;; and do the same for other-particle   ask other-particle [ set speed sqrt (((v2t * v2t) + (v2l * v2l))) ]   if v2l != 0 or v2t != 0     [ ask other-particle [ set heading (theta - (atan v2l v2t)) ] ]    ;; PHASE 5: final updates    ;; now recolor, since color is based on quantities that may have changed   recolor ask other-particle [ recolor ] end   to recolor     if color-scheme = \"red-green-blue\" [ recolor-banded ]     if color-scheme = \"blue shades\" [ recolor-shaded ]     if color-scheme  = \"one color\" [ recolor-none ] end   to recolor-banded  ;; particle procedure   let avg-speed 1   ;; avg-speed is assumed to be 0.5, since particles are assigned a random speed between 0 and 1   ;; particle coloring procedures for visualizing speed with a color palette,   ;; red are fast particles, blue slow, and green in between.    ifelse speed < (0.5 * avg-speed) ;; at lower than 50% the average speed   [     set color blue       ;; slow particles colored blue   ]   [     ifelse speed > (1.5 * avg-speed) ;; above 50% higher the average speed       [ set color red ]        ;; fast particles colored blue       [ set color green ]      ;; medium speed particles colored green   ]  end   to recolor-shaded   let avg-speed 1  ;; avg-speed is assumed to be 0.5, since particles are assigned a random speed between 0 and 1  ;; a particle shading gradient is applied to all particles less than speed 1.5,  ;; the uppermost threshold speed to apply the shading gradient to.    ifelse speed < (3 * avg-speed)   [ set color (sky - 3.001) + (8 * speed / (3 * avg-speed)) ]   [ set color (sky + 4.999)] end  to recolor-none   set color green - 1 end   ;;; ;;; drawing procedures ;;;  to make-box   ask patches with [ ((abs pxcor = box-edge) and (abs pycor <= box-edge)) or                      ((abs pycor = box-edge) and (abs pxcor <= box-edge)) ]     [ set pcolor yellow ] end  ;; creates some particles to make-particles   create-ordered-particles number [     set speed 1     set size smallest-particle-size + random-float (largest-particle-size - smallest-particle-size)     set mass (size * size) ;; set the mass proportional to the area of the particle     recolor     set heading random-float 360   ]   arrange particles end  ;; If the number of particles requested by the user won\'t fit in the box, ;; this code will go into an infinite loop. To work around a NetLogo bug ;; where some kinds of infinite loops cannot be halted by Tools->Halt, ;; we put this code in a separate procedure and write it a certain way. ;; (It\'s necessary for the loop not to be within an ASK.  The reason ;; for this is very obscure.  We plan to fix the problem in a future ;; NetLogo version.) to arrange [particle-set]   if not any? particle-set [ stop ]   ask particle-set [ random-position ]   arrange particle-set with [overlapping?] end  to-report overlapping?  ;; particle procedure   ;; here, we use in-radius just for improved speed   report any? other particles in-radius ((size + largest-particle-size) / 2)                               with [distance myself < (size + [size] of myself) / 2] end  ;; place particle at random location inside the box. to random-position  ;; particle procedure   setxy one-of [1 -1] * random-float (box-edge - 0.5 - size / 2)         one-of [1 -1] * random-float (box-edge - 0.5 - size / 2) end   ;;; ;;; procedure for reversing time ;;;  to reverse-time   ask particles [ rt 180 ]   rebuild-collision-list   ;; the last collision that happened before the model was paused   ;; (if the model was paused immediately after a collision)   ;; won\'t happen again after time is reversed because of the   ;; \"don\'t do the same collision twice in a row\" rule.  We could   ;; try to fool that rule by setting colliding-particle-1 and   ;; colliding-particle-2 to nobody, but that might not always work,   ;; because the vagaries of floating point math means that the   ;; collision might be calculated to be slightly in the past   ;; (the past that used to be the future!) and be skipped.   ;; So to be sure, we force the collision to happen:   collide-winners end  ;; Here\'s a procedure that demonstrates time-reversing the model. ;; You can run it from the command center.  When it finishes, ;; the final particle positions may be slightly different because ;; the amount of time that passes after the reversal might not ;; be exactly the same as the amount that passed before; this ;; doesn\'t indicate a bug in the model. ;; For larger values of n, you will start to notice larger ;; discrepancies, eventually causing the behavior of the system ;; to diverge totally. Unless the model has some bug we don\'t know ;; about, this is due to accumulating tiny inaccuracies in the ;; floating point calculations.  Once these inaccuracies accumulate ;; to the point that a collision is missed or an extra collision ;; happens, after that the reversed model will diverge rapidly. to test-time-reversal [n]   setup   ask particles [ stamp ]   while [ticks < n] [ go ]   let old-clock ticks   reverse-time   while [ticks < 2 * old-clock] [ go ]   ask particles [ set color white ] end')([{"left":212,"top":10,"right":706,"bottom":505,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":6,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":20,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":13,"top":172,"right":106,"bottom":205,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"200","compiledStep":"1","variable":"number","left":10,"top":38,"right":199,"bottom":71,"display":"number","min":"1","max":"200","default":200,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":112,"top":172,"right":199,"bottom":205,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"0.5","variable":"largest-particle-size","left":10,"top":117,"right":198,"bottom":150,"display":"largest-particle-size","min":"1","max":"10","default":4,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"color-scheme","left":14,"top":226,"right":145,"bottom":271,"display":"color-scheme","choices":["red-green-blue","blue shades","one color"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"5","compiledStep":"0.5","variable":"smallest-particle-size","left":10,"top":77,"right":198,"bottom":110,"display":"smallest-particle-size","min":"1","max":"5","default":1,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"benchmark","left":23,"top":359,"right":200,"bottom":504,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":32,"top":455,"right":190,"bottom":500,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number", "largest-particle-size", "color-scheme", "smallest-particle-size", "result", "tick-length", "box-edge", "colliding-particles", "sorted-colliding-particles", "colliding-particle-1", "colliding-particle-2", "original-tick-length", "last-view-update", "manage-view-updates?", "view-update-rate"], ["number", "largest-particle-size", "color-scheme", "smallest-particle-size"], [], -40, 40, -40, 40, 6, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -61,11 +62,7 @@ var procedures = (function() {
       }
       world.observer.setGlobal("result", workspace.timer.elapsed());
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["benchmark"] = temp;
@@ -88,11 +85,7 @@ var procedures = (function() {
       world.observer.setGlobal("colliding-particle-2", Nobody);
       procedures["REBUILD-COLLISION-LIST"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -102,14 +95,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.setGlobal("colliding-particles", []);
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["rebuildCollisionList"] = temp;
@@ -120,30 +109,26 @@ var procedures = (function() {
       var letVars = { };
       if (NLType(world.observer.getGlobal("colliding-particle-2")).isValidTurtle()) {
         world.observer.setGlobal("colliding-particles", world.observer.getGlobal("colliding-particles").filter(Tasks.reporterTask(function(collision) {
-          if (arguments.length < 1) {
-            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-          }
+          Errors.procedureArgumentsCheck(1, arguments.length);
           return (((!Prims.equality(ListPrims.item(1, collision), world.observer.getGlobal("colliding-particle-1")) && !Prims.equality(ListPrims.item(2, collision), world.observer.getGlobal("colliding-particle-1"))) && !Prims.equality(ListPrims.item(1, collision), world.observer.getGlobal("colliding-particle-2"))) && !Prims.equality(ListPrims.item(2, collision), world.observer.getGlobal("colliding-particle-2")));
         }, "[ [collision] -> item 1 collision != colliding-particle-1 and item 2 collision != colliding-particle-1 and item 1 collision != colliding-particle-2 and item 2 collision != colliding-particle-2 ]")));
-        world.observer.getGlobal("colliding-particle-2").ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
-        world.observer.getGlobal("colliding-particle-2").ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
+        Errors.askNobodyCheck(world.observer.getGlobal("colliding-particle-2")).ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
+        Errors.askNobodyCheck(world.observer.getGlobal("colliding-particle-2")).ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
       }
       else {
         world.observer.setGlobal("colliding-particles", world.observer.getGlobal("colliding-particles").filter(Tasks.reporterTask(function(collision) {
-          if (arguments.length < 1) {
-            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-          }
+          Errors.procedureArgumentsCheck(1, arguments.length);
           return (!Prims.equality(ListPrims.item(1, collision), world.observer.getGlobal("colliding-particle-1")) && !Prims.equality(ListPrims.item(2, collision), world.observer.getGlobal("colliding-particle-1")));
         }, "[ [collision] -> item 1 collision != colliding-particle-1 and item 2 collision != colliding-particle-1 ]")));
       }
       if (!Prims.equality(world.observer.getGlobal("colliding-particle-1"), Nobody)) {
-        world.observer.getGlobal("colliding-particle-1").ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
+        Errors.askNobodyCheck(world.observer.getGlobal("colliding-particle-1")).ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
       }
       if (!Prims.equality(world.observer.getGlobal("colliding-particle-1"), Nobody)) {
-        world.observer.getGlobal("colliding-particle-1").ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
+        Errors.askNobodyCheck(world.observer.getGlobal("colliding-particle-1")).ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
       }
       procedures["SORT-COLLISIONS"]();
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() {
         SelfManager.self().jumpIfAble((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-length")));
       }, true);
       procedures["COLLIDE-WINNERS"]();
@@ -155,11 +140,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -168,16 +149,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return NLMath.sin(headingAngle)
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return NLMath.sin(headingAngle);
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["convertHeadingX"] = temp;
@@ -186,16 +162,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return NLMath.cos(headingAngle)
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return NLMath.cos(headingAngle);
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["convertHeadingY"] = temp;
@@ -209,7 +180,7 @@ var procedures = (function() {
       let myParticleSize = SelfManager.self().getVariable("size"); letVars['myParticleSize'] = myParticleSize;
       let myXSpeed = (SelfManager.self().getVariable("speed") * procedures["CONVERT-HEADING-X"](SelfManager.self().getVariable("heading"))); letVars['myXSpeed'] = myXSpeed;
       let myYSpeed = (SelfManager.self().getVariable("speed") * procedures["CONVERT-HEADING-Y"](SelfManager.self().getVariable("heading"))); letVars['myYSpeed'] = myYSpeed;
-      SelfPrims.other(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() {
+      Errors.askNobodyCheck(SelfPrims.other(world.turtleManager.turtlesOfBreed("PARTICLES"))).ask(function() {
         let dpx = (SelfManager.self().getVariable("xcor") - myX); letVars['dpx'] = dpx;
         let dpy = (SelfManager.self().getVariable("ycor") - myY); letVars['dpy'] = dpy;
         let xSpeed = (SelfManager.self().getVariable("speed") * procedures["CONVERT-HEADING-X"](SelfManager.self().getVariable("heading"))); letVars['xSpeed'] = xSpeed;
@@ -231,11 +202,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["checkForParticleCollision"] = temp;
@@ -299,11 +266,7 @@ var procedures = (function() {
         procedures["ASSIGN-COLLIDING-WALL"](tPlaneYneg,"plane-yneg");
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["checkForWallCollision"] = temp;
@@ -315,11 +278,7 @@ var procedures = (function() {
       let collidingPair = ListPrims.list((timeToCollision + world.ticker.tickCount()), SelfManager.self(), wall); letVars['collidingPair'] = collidingPair;
       world.observer.setGlobal("colliding-particles", ListPrims.fput(collidingPair, world.observer.getGlobal("colliding-particles")));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["assignCollidingWall"] = temp;
@@ -329,9 +288,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.setGlobal("colliding-particles", world.observer.getGlobal("colliding-particles").filter(Tasks.reporterTask(function(collision) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         return (!Prims.equality(ListPrims.item(1, collision), world.observer.getGlobal("colliding-particle-1")) || !Prims.equality(ListPrims.item(2, collision), world.observer.getGlobal("colliding-particle-2")));
       }, "[ [collision] -> item 1 collision != colliding-particle-1 or item 2 collision != colliding-particle-2 ]")));
       world.observer.setGlobal("colliding-particle-1", Nobody);
@@ -342,9 +299,7 @@ var procedures = (function() {
       }
       let winner = ListPrims.first(world.observer.getGlobal("colliding-particles")); letVars['winner'] = winner;
       var _foreach_14531_14538 = Tasks.forEach(Tasks.commandTask(function(collision) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         if (Prims.lt(ListPrims.first(collision), ListPrims.first(winner))) {
           winner = collision; letVars['winner'] = winner;
         }
@@ -361,11 +316,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["sortCollisions"] = temp;
@@ -378,20 +329,16 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       if ((Prims.equality(world.observer.getGlobal("colliding-particle-2"), "plane-xpos") || Prims.equality(world.observer.getGlobal("colliding-particle-2"), "plane-xneg"))) {
-        world.observer.getGlobal("colliding-particle-1").ask(function() { SelfManager.self().setVariable("heading",  -(SelfManager.self().getVariable("heading"))); }, true);
+        Errors.askNobodyCheck(world.observer.getGlobal("colliding-particle-1")).ask(function() { SelfManager.self().setVariable("heading",  -(SelfManager.self().getVariable("heading"))); }, true);
         throw new Exception.StopInterrupt;
       }
       if ((Prims.equality(world.observer.getGlobal("colliding-particle-2"), "plane-ypos") || Prims.equality(world.observer.getGlobal("colliding-particle-2"), "plane-yneg"))) {
-        world.observer.getGlobal("colliding-particle-1").ask(function() { SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading"))); }, true);
+        Errors.askNobodyCheck(world.observer.getGlobal("colliding-particle-1")).ask(function() { SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading"))); }, true);
         throw new Exception.StopInterrupt;
       }
-      world.observer.getGlobal("colliding-particle-1").ask(function() { procedures["COLLIDE-WITH"](world.observer.getGlobal("colliding-particle-2")); }, true);
+      Errors.askNobodyCheck(world.observer.getGlobal("colliding-particle-1")).ask(function() { procedures["COLLIDE-WITH"](world.observer.getGlobal("colliding-particle-2")); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["collideWinners"] = temp;
@@ -415,18 +362,14 @@ var procedures = (function() {
       if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
         SelfManager.self().setVariable("heading", (theta - NLMath.atan(v1l, v1t)));
       }
-      otherParticle.ask(function() { SelfManager.self().setVariable("speed", NLMath.sqrt(((v2t * v2t) + (v2l * v2l)))); }, true);
+      Errors.askNobodyCheck(otherParticle).ask(function() { SelfManager.self().setVariable("speed", NLMath.sqrt(((v2t * v2t) + (v2l * v2l)))); }, true);
       if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-        otherParticle.ask(function() { SelfManager.self().setVariable("heading", (theta - NLMath.atan(v2l, v2t))); }, true);
+        Errors.askNobodyCheck(otherParticle).ask(function() { SelfManager.self().setVariable("heading", (theta - NLMath.atan(v2l, v2t))); }, true);
       }
       procedures["RECOLOR"]();
-      otherParticle.ask(function() { procedures["RECOLOR"](); }, true);
+      Errors.askNobodyCheck(otherParticle).ask(function() { procedures["RECOLOR"](); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["collideWith"] = temp;
@@ -445,11 +388,7 @@ var procedures = (function() {
         procedures["RECOLOR-NONE"]();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["recolor"] = temp;
@@ -471,11 +410,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["recolorBanded"] = temp;
@@ -492,11 +427,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", (95 + 4.999));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["recolorShaded"] = temp;
@@ -507,11 +438,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("color", (55 - 1));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["recolorNone"] = temp;
@@ -520,15 +447,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().agentFilter(function() {
+      Errors.askNobodyCheck(world.patches().agentFilter(function() {
         return ((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge"))) || (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge"))));
-      }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
+      })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["makeBox"] = temp;
@@ -546,11 +469,7 @@ var procedures = (function() {
       }, true);
       procedures["ARRANGE"](world.turtleManager.turtlesOfBreed("PARTICLES"));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["makeParticles"] = temp;
@@ -562,14 +481,10 @@ var procedures = (function() {
       if (!!particleSet.isEmpty()) {
         throw new Exception.StopInterrupt;
       }
-      particleSet.ask(function() { procedures["RANDOM-POSITION"](); }, true);
+      Errors.askNobodyCheck(particleSet).ask(function() { procedures["RANDOM-POSITION"](); }, true);
       procedures["ARRANGE"](particleSet.agentFilter(function() { return procedures["OVERLAPPING?"](); }));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["arrange"] = temp;
@@ -578,18 +493,13 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), Prims.div((SelfManager.self().getVariable("size") + world.observer.getGlobal("largest-particle-size")), 2))._optimalAnyOtherWith(function() {
+      Errors.reportInContextCheck(reporterContext);
+      return SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), Prims.div((SelfManager.self().getVariable("size") + world.observer.getGlobal("largest-particle-size")), 2))._optimalAnyOtherWith(function() {
         return Prims.lt(SelfManager.self().distance(SelfManager.myself()), Prims.div((SelfManager.self().getVariable("size") + SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("size"); })), 2));
-      })
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      });
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["overlapping_p"] = temp;
@@ -600,11 +510,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setXY((ListPrims.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - Prims.div(SelfManager.self().getVariable("size"), 2)))), (ListPrims.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - Prims.div(SelfManager.self().getVariable("size"), 2)))));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["randomPosition"] = temp;
@@ -613,15 +519,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { SelfManager.self().right(180); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { SelfManager.self().right(180); }, true);
       procedures["REBUILD-COLLISION-LIST"]();
       procedures["COLLIDE-WINNERS"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["reverseTime"] = temp;
@@ -631,7 +533,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       procedures["SETUP"]();
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { SelfManager.self().stamp(); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { SelfManager.self().stamp(); }, true);
       while (Prims.lt(world.ticker.tickCount(), n)) {
         procedures["GO"]();
       }
@@ -640,13 +542,9 @@ var procedures = (function() {
       while (Prims.lt(world.ticker.tickCount(), (2 * oldClock))) {
         procedures["GO"]();
       }
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["testTimeReversal"] = temp;

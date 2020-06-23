@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -36,7 +37,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Food", false, true, 0, 100, 0, 100, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["carrying-food?", "drop-size"], [])('globals [result] turtles-own [ carrying-food? drop-size ] patches-own [ chemical food nest? nest-scent food-source-number ]  ;;;;;;;;;;;;;;;;;;;;;;;; ;;; Setup Procedures ;;; ;;;;;;;;;;;;;;;;;;;;;;;; to setup   ca reset-ticks   setup-turtles   setup-patches   do-plotting end  to benchmark   random-seed 337   reset-timer   setup   repeat 800 [ go ]   set result timer end  to setup-turtles   set-default-shape turtles \"bug\"   cro ants [     set size 2  ;; easier to see this way     rt random-float 360     set color red     set carrying-food? false   ] end  to setup-patches   ask patches [     set chemical 0     set food 0     set food-source-number -1     setup-nest     setup-food     update-display   ] end  to setup-nest  ;; patch procedure   ;; set nest? variable to true inside the nest   set nest? ((distancexy 0 0) < 5)   ;; spread a nest-scent over the whole screen -- stronger near the nest   set nest-scent (200 - (distancexy 0 0)) end  to setup-food  ;; patch procedure   ;; setup food source one on the right of screen   if ((distancexy (0.6 * max-pxcor) 0) < 5)   [ set food-source-number 1 ]    ;; setup food source two on the lower-left of screen   if ((distancexy (-0.6 * max-pxcor) (-0.6 * max-pycor)) < 5)   [ set food-source-number 2 ]    ;; setup food source three on the upper-left of screen   if ((distancexy (-0.8 * max-pxcor) (0.8 * max-pycor)) < 5)   [ set food-source-number 3 ]    ;; set \"food\" at sources to either 1 or 2   if (food-source-number > 0)   [ set food (1 + random 2) ] end  to update-display  ;; patch procedure   ;; give color to nest and food sources   ifelse nest?   [ set pcolor violet ]   [ ifelse (food > 0)     [ if (food-source-number = 1) [ set pcolor cyan ]       if (food-source-number = 2) [ set pcolor sky  ]       if (food-source-number = 3) [ set pcolor blue ]     ]     [ set pcolor scale-color green chemical 0.1 5 ] ;; scale color to show chemical concentration   ] end  ;;;;;;;;;;;;;;;;;;;;;;;;;; ;;; Runtime Procedures ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;  to go  ;; forever button   ask turtles [ go-turtles ]   diffuse chemical (diffusion-rate / 100)   ask patches [ go-patches ]   tick   do-plotting end  to go-turtles  ;; turtle procedure   if (who < ticks) ;; delay the initial departure of ants   [ ifelse carrying-food?     [set color orange + 1 return-to-nest ]  ;; if ant finds food, it returns to the nest     [set color red    look-for-food  ]  ;; otherwise it keeps looking   ] end  to go-patches  ;; patch procedure   set chemical (chemical * (100 - evaporation-rate) / 100)  ;;slowly evaporate chemical   update-display  ;; Refresh the Display end  to return-to-nest  ;; turtle procedure   ifelse nest?  ;; if ant is in the nest, it drops food and heads out again   [ set carrying-food? false     rt 180 fd 1   ]   [ set chemical (chemical + drop-size) ;; drop some chemical, but the amount decreases each time     set drop-size (drop-size - 1.5)     if (drop-size < 1) [set drop-size 1]     uphill-nest-scent   ;; head toward the greatest value of nest-scent     wiggle              ;; which is toward the nest     fd 1] end  to look-for-food  ;; turtle procedure   if (food > 0)   [ set carrying-food? true  ;; pick up food     set food (food - 1)      ;; and reduce the food source     set drop-size 60     rt 180 stop         ;; and turn around   ]   ifelse (chemical > 2)   [ fd 1 ]   [ ifelse (chemical < 0.05) ;; go in the direction where the chemical smell is strongest     [ wiggle       fd 1]     [ uphill-chemical       fd 1]   ] end  to uphill-chemical  ;; turtle procedure   wiggle   ;; sniff left and right, and go where the strongest smell is   let scent-ahead [chemical] of patch-ahead 1   let scent-right chemical-scent 45   let scent-left chemical-scent -45    if ((scent-right > scent-ahead) or (scent-left > scent-ahead))     [ ifelse (scent-right > scent-left)       [ rt 45 ]       [ lt 45 ]   ] end  to uphill-nest-scent  ;; turtle procedure   wiggle    ;; sniff left and right, and go where the strongest smell is   let scent-ahead [nest-scent] of patch-ahead 1   let scent-right get-nest-scent 45   let scent-left get-nest-scent -45    if ((scent-right > scent-ahead) or (scent-left > scent-ahead))   [ ifelse (scent-right > scent-left)     [ rt 45 ]     [ lt 45 ]   ] end  to wiggle  ;; turtle procedure   rt random 40 - random 40   if not can-move? 1   [ rt 180 ] end  to-report get-nest-scent [ angle ]   let p patch-right-and-ahead angle 1   if p != nobody   [ report [nest-scent] of p ]   report 0 end  to-report chemical-scent [ angle ]   let p patch-right-and-ahead angle 1   if p != nobody   [ report [chemical] of p ]   report 0 end  to do-plotting   if not plot? [ stop ]   set-current-plot \"Food in each pile\"   set-current-plot-pen \"food-in-pile1\"   plot count patches with [pcolor = cyan]   set-current-plot-pen \"food-in-pile2\"   plot count patches with [pcolor = sky]   set-current-plot-pen \"food-in-pile3\"   plot count patches with [pcolor = blue] end')([{"left":254,"top":10,"right":769,"bottom":546,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":5,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":9,"top":38,"right":64,"bottom":71,"display":"Setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"diffusion-rate","left":9,"top":128,"right":188,"bottom":161,"display":"diffusion-rate","min":"0","max":"99","default":53,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"evaporation-rate","left":9,"top":169,"right":188,"bottom":202,"display":"evaporation-rate","min":"0","max":"99","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":88,"top":38,"right":143,"bottom":71,"display":"Go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"plot?","left":160,"top":38,"right":250,"bottom":71,"display":"plot?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"300","compiledStep":"1","variable":"ants","left":9,"top":87,"right":188,"bottom":120,"display":"ants","min":"0","max":"300","default":300,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"food-in-pile1","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"food-in-pile2","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"food-in-pile3","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Food in each pile","left":10,"top":360,"right":239,"bottom":524,"xAxis":"Time","yAxis":"Food","xmin":0,"xmax":100,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"food-in-pile1","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"food-in-pile2","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"food-in-pile3","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"benchmark","left":6,"top":211,"right":184,"bottom":339,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":20,"top":290,"right":171,"bottom":335,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["diffusion-rate", "evaporation-rate", "plot?", "ants", "result"], ["diffusion-rate", "evaporation-rate", "plot?", "ants"], ["chemical", "food", "nest?", "nest-scent", "food-source-number"], -50, 50, -50, 50, 5, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["carrying-food?", "drop-size"], [])('globals [result] turtles-own [ carrying-food? drop-size ] patches-own [ chemical food nest? nest-scent food-source-number ]  ;;;;;;;;;;;;;;;;;;;;;;;; ;;; Setup Procedures ;;; ;;;;;;;;;;;;;;;;;;;;;;;; to setup   ca reset-ticks   setup-turtles   setup-patches   do-plotting end  to benchmark   random-seed 337   reset-timer   setup   repeat 800 [ go ]   set result timer end  to setup-turtles   set-default-shape turtles \"bug\"   cro ants [     set size 2  ;; easier to see this way     rt random-float 360     set color red     set carrying-food? false   ] end  to setup-patches   ask patches [     set chemical 0     set food 0     set food-source-number -1     setup-nest     setup-food     update-display   ] end  to setup-nest  ;; patch procedure   ;; set nest? variable to true inside the nest   set nest? ((distancexy 0 0) < 5)   ;; spread a nest-scent over the whole screen -- stronger near the nest   set nest-scent (200 - (distancexy 0 0)) end  to setup-food  ;; patch procedure   ;; setup food source one on the right of screen   if ((distancexy (0.6 * max-pxcor) 0) < 5)   [ set food-source-number 1 ]    ;; setup food source two on the lower-left of screen   if ((distancexy (-0.6 * max-pxcor) (-0.6 * max-pycor)) < 5)   [ set food-source-number 2 ]    ;; setup food source three on the upper-left of screen   if ((distancexy (-0.8 * max-pxcor) (0.8 * max-pycor)) < 5)   [ set food-source-number 3 ]    ;; set \"food\" at sources to either 1 or 2   if (food-source-number > 0)   [ set food (1 + random 2) ] end  to update-display  ;; patch procedure   ;; give color to nest and food sources   ifelse nest?   [ set pcolor violet ]   [ ifelse (food > 0)     [ if (food-source-number = 1) [ set pcolor cyan ]       if (food-source-number = 2) [ set pcolor sky  ]       if (food-source-number = 3) [ set pcolor blue ]     ]     [ set pcolor scale-color green chemical 0.1 5 ] ;; scale color to show chemical concentration   ] end  ;;;;;;;;;;;;;;;;;;;;;;;;;; ;;; Runtime Procedures ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;  to go  ;; forever button   ask turtles [ go-turtles ]   diffuse chemical (diffusion-rate / 100)   ask patches [ go-patches ]   tick   do-plotting end  to go-turtles  ;; turtle procedure   if (who < ticks) ;; delay the initial departure of ants   [ ifelse carrying-food?     [set color orange + 1 return-to-nest ]  ;; if ant finds food, it returns to the nest     [set color red    look-for-food  ]  ;; otherwise it keeps looking   ] end  to go-patches  ;; patch procedure   set chemical (chemical * (100 - evaporation-rate) / 100)  ;;slowly evaporate chemical   update-display  ;; Refresh the Display end  to return-to-nest  ;; turtle procedure   ifelse nest?  ;; if ant is in the nest, it drops food and heads out again   [ set carrying-food? false     rt 180 fd 1   ]   [ set chemical (chemical + drop-size) ;; drop some chemical, but the amount decreases each time     set drop-size (drop-size - 1.5)     if (drop-size < 1) [set drop-size 1]     uphill-nest-scent   ;; head toward the greatest value of nest-scent     wiggle              ;; which is toward the nest     fd 1] end  to look-for-food  ;; turtle procedure   if (food > 0)   [ set carrying-food? true  ;; pick up food     set food (food - 1)      ;; and reduce the food source     set drop-size 60     rt 180 stop         ;; and turn around   ]   ifelse (chemical > 2)   [ fd 1 ]   [ ifelse (chemical < 0.05) ;; go in the direction where the chemical smell is strongest     [ wiggle       fd 1]     [ uphill-chemical       fd 1]   ] end  to uphill-chemical  ;; turtle procedure   wiggle   ;; sniff left and right, and go where the strongest smell is   let scent-ahead [chemical] of patch-ahead 1   let scent-right chemical-scent 45   let scent-left chemical-scent -45    if ((scent-right > scent-ahead) or (scent-left > scent-ahead))     [ ifelse (scent-right > scent-left)       [ rt 45 ]       [ lt 45 ]   ] end  to uphill-nest-scent  ;; turtle procedure   wiggle    ;; sniff left and right, and go where the strongest smell is   let scent-ahead [nest-scent] of patch-ahead 1   let scent-right get-nest-scent 45   let scent-left get-nest-scent -45    if ((scent-right > scent-ahead) or (scent-left > scent-ahead))   [ ifelse (scent-right > scent-left)     [ rt 45 ]     [ lt 45 ]   ] end  to wiggle  ;; turtle procedure   rt random 40 - random 40   if not can-move? 1   [ rt 180 ] end  to-report get-nest-scent [ angle ]   let p patch-right-and-ahead angle 1   if p != nobody   [ report [nest-scent] of p ]   report 0 end  to-report chemical-scent [ angle ]   let p patch-right-and-ahead angle 1   if p != nobody   [ report [chemical] of p ]   report 0 end  to do-plotting   if not plot? [ stop ]   set-current-plot \"Food in each pile\"   set-current-plot-pen \"food-in-pile1\"   plot count patches with [pcolor = cyan]   set-current-plot-pen \"food-in-pile2\"   plot count patches with [pcolor = sky]   set-current-plot-pen \"food-in-pile3\"   plot count patches with [pcolor = blue] end')([{"left":254,"top":10,"right":769,"bottom":546,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":5,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":9,"top":38,"right":64,"bottom":71,"display":"Setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"diffusion-rate","left":9,"top":128,"right":188,"bottom":161,"display":"diffusion-rate","min":"0","max":"99","default":53,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"evaporation-rate","left":9,"top":169,"right":188,"bottom":202,"display":"evaporation-rate","min":"0","max":"99","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":88,"top":38,"right":143,"bottom":71,"display":"Go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"plot?","left":160,"top":38,"right":250,"bottom":71,"display":"plot?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"300","compiledStep":"1","variable":"ants","left":9,"top":87,"right":188,"bottom":120,"display":"ants","min":"0","max":"300","default":300,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"food-in-pile1","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"food-in-pile2","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"food-in-pile3","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Food in each pile","left":10,"top":360,"right":239,"bottom":524,"xAxis":"Time","yAxis":"Food","xmin":0,"xmax":100,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"food-in-pile1","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"food-in-pile2","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"food-in-pile3","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"benchmark","left":6,"top":211,"right":184,"bottom":339,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":20,"top":290,"right":171,"bottom":335,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["diffusion-rate", "evaporation-rate", "plot?", "ants", "result"], ["diffusion-rate", "evaporation-rate", "plot?", "ants"], ["chemical", "food", "nest?", "nest-scent", "food-source-number"], -50, 50, -50, 50, 5, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -67,11 +68,7 @@ var procedures = (function() {
       procedures["SETUP-PATCHES"]();
       procedures["DO-PLOTTING"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -88,11 +85,7 @@ var procedures = (function() {
       }
       world.observer.setGlobal("result", workspace.timer.elapsed());
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["benchmark"] = temp;
@@ -109,11 +102,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("carrying-food?", false);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupTurtles"] = temp;
@@ -122,7 +111,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("chemical", 0);
         SelfManager.self().setPatchVariable("food", 0);
         SelfManager.self().setPatchVariable("food-source-number", -1);
@@ -131,11 +120,7 @@ var procedures = (function() {
         procedures["UPDATE-DISPLAY"]();
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupPatches"] = temp;
@@ -147,11 +132,7 @@ var procedures = (function() {
       SelfManager.self().setPatchVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
       SelfManager.self().setPatchVariable("nest-scent", (200 - SelfManager.self().distanceXY(0, 0)));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupNest"] = temp;
@@ -173,11 +154,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("food", (1 + Prims.random(2)));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupFood"] = temp;
@@ -206,11 +183,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["updateDisplay"] = temp;
@@ -219,17 +192,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() { procedures["GO-TURTLES"](); }, true);
+      Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["GO-TURTLES"](); }, true);
       world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100), false)
-      world.patches().ask(function() { procedures["GO-PATCHES"](); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { procedures["GO-PATCHES"](); }, true);
       world.ticker.tick();
       procedures["DO-PLOTTING"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -249,11 +218,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["goTurtles"] = temp;
@@ -265,11 +230,7 @@ var procedures = (function() {
       SelfManager.self().setPatchVariable("chemical", Prims.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
       procedures["UPDATE-DISPLAY"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["goPatches"] = temp;
@@ -294,11 +255,7 @@ var procedures = (function() {
         SelfManager.self()._optimalFdOne();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["returnToNest"] = temp;
@@ -328,11 +285,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["lookForFood"] = temp;
@@ -354,11 +307,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["uphillChemical"] = temp;
@@ -380,11 +329,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["uphillNestScent"] = temp;
@@ -398,11 +343,7 @@ var procedures = (function() {
         SelfManager.self().right(180);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["wiggle"] = temp;
@@ -413,20 +354,14 @@ var procedures = (function() {
       var letVars = { };
       let p = SelfManager.self().patchRightAndAhead(angle, 1); letVars['p'] = p;
       if (!Prims.equality(p, Nobody)) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return p.projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); })
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return p.projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); });
       }
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return 0
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return 0;
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["getNestScent"] = temp;
@@ -437,20 +372,14 @@ var procedures = (function() {
       var letVars = { };
       let p = SelfManager.self().patchRightAndAhead(angle, 1); letVars['p'] = p;
       if (!Prims.equality(p, Nobody)) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return p.projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); })
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return p.projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
       }
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return 0
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return 0;
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["chemicalScent"] = temp;
@@ -470,11 +399,7 @@ var procedures = (function() {
       plotManager.setCurrentPen("food-in-pile3");
       plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105); }).size());
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["doPlotting"] = temp;

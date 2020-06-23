@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [   row           ;; current row   old-rule      ;; previous rule   rules-shown?  ;; flag to check if rules have been displayed   gone?         ;; flag to check if go has already been pressed   result ]  patches-own [on?]  to startup  ;; initially, nothing has been displayed   set rules-shown? false   set gone? false   set old-rule rule end  to benchmark   random-seed 4378   setup-random   reset-timer   repeat 10 * world-height [ go ]   set result timer end  ;;;;;;;;;;;;;;;;;;;;;;;; ;;; Setup Procedures ;;; ;;;;;;;;;;;;;;;;;;;;;;;;  to setup-general  ;; setup general working environment   cp ct   set row max-pycor   ;; reset current row   refresh-rules   set gone? false   set rules-shown? false  ;; rules are no longer shown since the screen has been cleared end  to single-cell   setup-general   ask patches with [pycor = row] [set on? false set pcolor background]  ;; initialize top row   ask patch 0 row [ set pcolor foreground                     set on? true ]   reset-ticks end  to setup-random   setup-general   ask patches with [pycor = row]  ;; randomly place cells across the top of the screen   [     set on? ((random 100) < density)     color-patch   ]   reset-ticks end  to setup-continue   let on?-list []   if not gone?  ;; make sure go has already been called     [ stop ]   set on?-list map [[p] -> [on?] of p] sort patches with [pycor = row]  ;; copy cell states from the                                                                  ;; current row to a list   setup-general   ask patches with [ pycor = row ]   [     set on? item (pxcor + max-pxcor) on?-list  ;; copy states from list to top row     color-patch   ]   set gone? true end   ;;;;;;;;;;;;;;;;;;;;;;;;;; ;;; GO Procedures      ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;  to go   if (rules-shown?)  ;; don\'t do unless we are properly set up     [ stop ]   if (row = min-pycor)  ;; if we reach the end, continue from the top or stop   [     ifelse auto-continue?       [ display         setup-continue ]       [ stop ]   ]   ask patches with [ pycor = row ]  ;; apply rule     [ do-rule ]   set row (row - 1)   ask patches with [ pycor = row ]  ;; color in changed cells     [ color-patch ]   set gone? true   tick end   to do-rule  ;; patch procedure   let left-on? [on?] of patch-at -1 0  ;; set to true if the patch to the left is on   let right-on? [on?] of patch-at 1 0  ;; set to true if the patch to the right is on    ;; each of these lines checks the local area and (possibly)   ;; sets the lower cell according to the corresponding switch   let new-value     (iii and left-on?       and on?       and right-on?)          or     (iio and left-on?       and on?       and (not right-on?))    or     (ioi and left-on?       and (not on?) and right-on?)          or     (ioo and left-on?       and (not on?) and (not right-on?))    or     (oii and (not left-on?) and on?       and right-on?)          or     (oio and (not left-on?) and on?       and (not right-on?))    or     (ooi and (not left-on?) and (not on?) and right-on?)          or     (ooo and (not left-on?) and (not on?) and (not right-on?))   ask patch-at 0 -1 [ set on? new-value ] end   ;;;;;;;;;;;;;;;;;;;;;;;;;; ;;; Utility Procedures ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;  to color-patch  ;;patch procedure   ifelse on?     [ set pcolor foreground ]     [ set pcolor background ] end   to-report bindigit [number power-of-two]   ifelse (power-of-two = 0)     [ report floor number mod 2 ]     [ report bindigit (floor number / 2) (power-of-two - 1) ] end  to refresh-rules  ;; update either switches or slider depending on which has been changed last   ifelse (rule = old-rule)   [     if (rule != calculate-rule)       [ set rule calculate-rule ]   ]   [ extrapolate-switches ]   set old-rule rule end  to extrapolate-switches   ;; set the switches based on the slider   set ooo ((bindigit rule 0) = 1)   set ooi ((bindigit rule 1) = 1)   set oio ((bindigit rule 2) = 1)   set oii ((bindigit rule 3) = 1)   set ioo ((bindigit rule 4) = 1)   set ioi ((bindigit rule 5) = 1)   set iio ((bindigit rule 6) = 1)   set iii ((bindigit rule 7) = 1) end  to-report calculate-rule   ;; set the slider based on the switches   let rresult 0   if ooo [ set rresult rresult +   1 ]   if ooi [ set rresult rresult +   2 ]   if oio [ set rresult rresult +   4 ]   if oii [ set rresult rresult +   8 ]   if ioo [ set rresult rresult +  16 ]   if ioi [ set rresult rresult +  32 ]   if iio [ set rresult rresult +  64 ]   if iii [ set rresult rresult + 128 ]   report rresult end   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;; SHOW-RULES RELATED PROCEDURES ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to show-rules  ;; preview cell state transitions   setup-general   let rules list-rules    ask patches with [pycor > max-pycor - 5]     [ set pcolor gray ]    ;; create 8 turtles evenly spaced across the screen   ask patches with [ pycor = max-pycor and                     ((pxcor + 1) mod (floor (world-width / 8))) = 0 ]   [     sprout 1     [       set heading 270       fd 18  ;;16px offset + 2px       print-block (item 0 (item who rules))  ;; right cell       fd 2       print-block (item 1 (item who rules))  ;; center cell       fd 2       print-block (item 2 (item who rules))  ;; left cell       bk 2       set heading 180       fd 2       set heading 90       print-block (item 3 (item who rules))  ;; next cell state       die     ]   ]   set rules-shown? true end  ;; turtle procedure to print-block [ state ]  ;; draw a 2x2 block of with a color determined by the state   ifelse state     [ set color foreground ]     [ set color background ]   set heading 90   repeat 4   [     set pcolor color     rt 90     fd 1   ] end  to-report list-rules  ;; return a list of state-transition 4-tuples corresponding to the switches   let rules []   set rules (lput (lput ooo [false false false]) rules)   set rules (lput (lput ooi [false false true ]) rules)   set rules (lput (lput oio [false true  false]) rules)   set rules (lput (lput oii [false true  true ]) rules)   set rules (lput (lput ioo [true  false false]) rules)   set rules (lput (lput ioi [true  false true ]) rules)   set rules (lput (lput iio [true  true  false]) rules)   set rules (lput (lput iii [true  true  true ]) rules)   report rules end')([{"left":244,"top":11,"right":1053,"bottom":621,"dimensions":{"minPxcor":-400,"maxPxcor":400,"minPycor":-300,"maxPycor":300,"patchSize":1,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_44 = procedures[\"SINGLE-CELL\"]();   if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"single-cell","left":6,"top":10,"right":114,"bottom":43,"display":"Setup Single","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_45 = procedures[\"SETUP-RANDOM\"]();   if (_maybestop_33_45 instanceof Exception.StopInterrupt) { return _maybestop_33_45; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup-random","left":120,"top":10,"right":225,"bottom":43,"display":"Setup Random","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"OOO","left":5,"top":187,"right":103,"bottom":220,"display":"OOO","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"OOI","left":103,"top":187,"right":203,"bottom":220,"display":"OOI","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"OIO","left":5,"top":220,"right":103,"bottom":253,"display":"OIO","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"OII","left":103,"top":220,"right":203,"bottom":253,"display":"OII","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"IOO","left":5,"top":253,"right":103,"bottom":286,"display":"IOO","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"IOI","left":103,"top":253,"right":203,"bottom":286,"display":"IOI","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"IIO","left":5,"top":286,"right":103,"bottom":319,"display":"IIO","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"III","left":103,"top":286,"right":203,"bottom":319,"display":"III","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"display":"Rule Switches:","left":6,"top":133,"right":96,"bottom":151,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"139","compiledStep":"1","variable":"foreground","left":7,"top":390,"right":122,"bottom":423,"display":"foreground","min":"0","max":"139","default":55,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"139","compiledStep":"1","variable":"background","left":7,"top":423,"right":122,"bottom":456,"display":"background","min":"0","max":"139","default":0,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"display":"Colors:","left":10,"top":371,"right":100,"bottom":389,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"255","compiledStep":"1","variable":"rule","left":5,"top":154,"right":203,"bottom":187,"display":"rule","min":"0","max":"255","default":105,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"density","left":119,"top":46,"right":225,"bottom":79,"display":"density","min":"0","max":"100","default":10,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_47 = procedures[\"SETUP-CONTINUE\"]();   if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup-continue","left":6,"top":46,"right":114,"bottom":79,"display":"Setup Continue","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":160,"top":83,"right":225,"bottom":116,"display":"Go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"SHOW-RULES\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"show-rules","left":5,"top":319,"right":104,"bottom":352,"display":"Show Rules","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"auto-continue?","left":7,"top":83,"right":147,"bottom":116,"display":"auto-continue?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"benchmark","left":123,"top":321,"right":242,"bottom":516,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":134,"top":465,"right":235,"bottom":510,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["ooo", "ooi", "oio", "oii", "ioo", "ioi", "iio", "iii", "foreground", "background", "rule", "density", "auto-continue?", "row", "old-rule", "rules-shown?", "gone?", "result"], ["ooo", "ooi", "oio", "oii", "ioo", "ioi", "iio", "iii", "foreground", "background", "rule", "density", "auto-continue?"], ["on?"], -400, 400, -300, 300, 1, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [   row           ;; current row   old-rule      ;; previous rule   rules-shown?  ;; flag to check if rules have been displayed   gone?         ;; flag to check if go has already been pressed   result ]  patches-own [on?]  to startup  ;; initially, nothing has been displayed   set rules-shown? false   set gone? false   set old-rule rule end  to benchmark   random-seed 4378   setup-random   reset-timer   repeat 10 * world-height [ go ]   set result timer end  ;;;;;;;;;;;;;;;;;;;;;;;; ;;; Setup Procedures ;;; ;;;;;;;;;;;;;;;;;;;;;;;;  to setup-general  ;; setup general working environment   cp ct   set row max-pycor   ;; reset current row   refresh-rules   set gone? false   set rules-shown? false  ;; rules are no longer shown since the screen has been cleared end  to single-cell   setup-general   ask patches with [pycor = row] [set on? false set pcolor background]  ;; initialize top row   ask patch 0 row [ set pcolor foreground                     set on? true ]   reset-ticks end  to setup-random   setup-general   ask patches with [pycor = row]  ;; randomly place cells across the top of the screen   [     set on? ((random 100) < density)     color-patch   ]   reset-ticks end  to setup-continue   let on?-list []   if not gone?  ;; make sure go has already been called     [ stop ]   set on?-list map [[p] -> [on?] of p] sort patches with [pycor = row]  ;; copy cell states from the                                                                  ;; current row to a list   setup-general   ask patches with [ pycor = row ]   [     set on? item (pxcor + max-pxcor) on?-list  ;; copy states from list to top row     color-patch   ]   set gone? true end   ;;;;;;;;;;;;;;;;;;;;;;;;;; ;;; GO Procedures      ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;  to go   if (rules-shown?)  ;; don\'t do unless we are properly set up     [ stop ]   if (row = min-pycor)  ;; if we reach the end, continue from the top or stop   [     ifelse auto-continue?       [ display         setup-continue ]       [ stop ]   ]   ask patches with [ pycor = row ]  ;; apply rule     [ do-rule ]   set row (row - 1)   ask patches with [ pycor = row ]  ;; color in changed cells     [ color-patch ]   set gone? true   tick end   to do-rule  ;; patch procedure   let left-on? [on?] of patch-at -1 0  ;; set to true if the patch to the left is on   let right-on? [on?] of patch-at 1 0  ;; set to true if the patch to the right is on    ;; each of these lines checks the local area and (possibly)   ;; sets the lower cell according to the corresponding switch   let new-value     (iii and left-on?       and on?       and right-on?)          or     (iio and left-on?       and on?       and (not right-on?))    or     (ioi and left-on?       and (not on?) and right-on?)          or     (ioo and left-on?       and (not on?) and (not right-on?))    or     (oii and (not left-on?) and on?       and right-on?)          or     (oio and (not left-on?) and on?       and (not right-on?))    or     (ooi and (not left-on?) and (not on?) and right-on?)          or     (ooo and (not left-on?) and (not on?) and (not right-on?))   ask patch-at 0 -1 [ set on? new-value ] end   ;;;;;;;;;;;;;;;;;;;;;;;;;; ;;; Utility Procedures ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;  to color-patch  ;;patch procedure   ifelse on?     [ set pcolor foreground ]     [ set pcolor background ] end   to-report bindigit [number power-of-two]   ifelse (power-of-two = 0)     [ report floor number mod 2 ]     [ report bindigit (floor number / 2) (power-of-two - 1) ] end  to refresh-rules  ;; update either switches or slider depending on which has been changed last   ifelse (rule = old-rule)   [     if (rule != calculate-rule)       [ set rule calculate-rule ]   ]   [ extrapolate-switches ]   set old-rule rule end  to extrapolate-switches   ;; set the switches based on the slider   set ooo ((bindigit rule 0) = 1)   set ooi ((bindigit rule 1) = 1)   set oio ((bindigit rule 2) = 1)   set oii ((bindigit rule 3) = 1)   set ioo ((bindigit rule 4) = 1)   set ioi ((bindigit rule 5) = 1)   set iio ((bindigit rule 6) = 1)   set iii ((bindigit rule 7) = 1) end  to-report calculate-rule   ;; set the slider based on the switches   let rresult 0   if ooo [ set rresult rresult +   1 ]   if ooi [ set rresult rresult +   2 ]   if oio [ set rresult rresult +   4 ]   if oii [ set rresult rresult +   8 ]   if ioo [ set rresult rresult +  16 ]   if ioi [ set rresult rresult +  32 ]   if iio [ set rresult rresult +  64 ]   if iii [ set rresult rresult + 128 ]   report rresult end   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;; SHOW-RULES RELATED PROCEDURES ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  to show-rules  ;; preview cell state transitions   setup-general   let rules list-rules    ask patches with [pycor > max-pycor - 5]     [ set pcolor gray ]    ;; create 8 turtles evenly spaced across the screen   ask patches with [ pycor = max-pycor and                     ((pxcor + 1) mod (floor (world-width / 8))) = 0 ]   [     sprout 1     [       set heading 270       fd 18  ;;16px offset + 2px       print-block (item 0 (item who rules))  ;; right cell       fd 2       print-block (item 1 (item who rules))  ;; center cell       fd 2       print-block (item 2 (item who rules))  ;; left cell       bk 2       set heading 180       fd 2       set heading 90       print-block (item 3 (item who rules))  ;; next cell state       die     ]   ]   set rules-shown? true end  ;; turtle procedure to print-block [ state ]  ;; draw a 2x2 block of with a color determined by the state   ifelse state     [ set color foreground ]     [ set color background ]   set heading 90   repeat 4   [     set pcolor color     rt 90     fd 1   ] end  to-report list-rules  ;; return a list of state-transition 4-tuples corresponding to the switches   let rules []   set rules (lput (lput ooo [false false false]) rules)   set rules (lput (lput ooi [false false true ]) rules)   set rules (lput (lput oio [false true  false]) rules)   set rules (lput (lput oii [false true  true ]) rules)   set rules (lput (lput ioo [true  false false]) rules)   set rules (lput (lput ioi [true  false true ]) rules)   set rules (lput (lput iio [true  true  false]) rules)   set rules (lput (lput iii [true  true  true ]) rules)   report rules end')([{"left":244,"top":11,"right":1053,"bottom":621,"dimensions":{"minPxcor":-400,"maxPxcor":400,"minPycor":-300,"maxPycor":300,"patchSize":1,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_44 = procedures[\"SINGLE-CELL\"]();   if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"single-cell","left":6,"top":10,"right":114,"bottom":43,"display":"Setup Single","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_45 = procedures[\"SETUP-RANDOM\"]();   if (_maybestop_33_45 instanceof Exception.StopInterrupt) { return _maybestop_33_45; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup-random","left":120,"top":10,"right":225,"bottom":43,"display":"Setup Random","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"OOO","left":5,"top":187,"right":103,"bottom":220,"display":"OOO","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"OOI","left":103,"top":187,"right":203,"bottom":220,"display":"OOI","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"OIO","left":5,"top":220,"right":103,"bottom":253,"display":"OIO","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"OII","left":103,"top":220,"right":203,"bottom":253,"display":"OII","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"IOO","left":5,"top":253,"right":103,"bottom":286,"display":"IOO","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"IOI","left":103,"top":253,"right":203,"bottom":286,"display":"IOI","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"IIO","left":5,"top":286,"right":103,"bottom":319,"display":"IIO","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"III","left":103,"top":286,"right":203,"bottom":319,"display":"III","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"display":"Rule Switches:","left":6,"top":133,"right":96,"bottom":151,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"139","compiledStep":"1","variable":"foreground","left":7,"top":390,"right":122,"bottom":423,"display":"foreground","min":"0","max":"139","default":55,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"139","compiledStep":"1","variable":"background","left":7,"top":423,"right":122,"bottom":456,"display":"background","min":"0","max":"139","default":0,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"display":"Colors:","left":10,"top":371,"right":100,"bottom":389,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"255","compiledStep":"1","variable":"rule","left":5,"top":154,"right":203,"bottom":187,"display":"rule","min":"0","max":"255","default":105,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"density","left":119,"top":46,"right":225,"bottom":79,"display":"density","min":"0","max":"100","default":10,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_47 = procedures[\"SETUP-CONTINUE\"]();   if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup-continue","left":6,"top":46,"right":114,"bottom":79,"display":"Setup Continue","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":160,"top":83,"right":225,"bottom":116,"display":"Go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"SHOW-RULES\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"show-rules","left":5,"top":319,"right":104,"bottom":352,"display":"Show Rules","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"auto-continue?","left":7,"top":83,"right":147,"bottom":116,"display":"auto-continue?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"benchmark","left":123,"top":321,"right":242,"bottom":516,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":134,"top":465,"right":235,"bottom":510,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["ooo", "ooi", "oio", "oii", "ioo", "ioi", "iio", "iii", "foreground", "background", "rule", "density", "auto-continue?", "row", "old-rule", "rules-shown?", "gone?", "result"], ["ooo", "ooi", "oio", "oii", "ioo", "ioi", "iio", "iii", "foreground", "background", "rule", "density", "auto-continue?"], ["on?"], -400, 400, -300, 300, 1, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -56,11 +57,7 @@ var procedures = (function() {
       world.observer.setGlobal("gone?", false);
       world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["startup"] = temp;
@@ -77,11 +74,7 @@ var procedures = (function() {
       }
       world.observer.setGlobal("result", workspace.timer.elapsed());
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["benchmark"] = temp;
@@ -97,11 +90,7 @@ var procedures = (function() {
       world.observer.setGlobal("gone?", false);
       world.observer.setGlobal("rules-shown?", false);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupGeneral"] = temp;
@@ -111,21 +100,17 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       procedures["SETUP-GENERAL"]();
-      world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() {
+      Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() {
         SelfManager.self().setPatchVariable("on?", false);
         SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("background"));
       }, true);
-      world.getPatchAt(0, world.observer.getGlobal("row")).ask(function() {
+      Errors.askNobodyCheck(world.getPatchAt(0, world.observer.getGlobal("row"))).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("foreground"));
         SelfManager.self().setPatchVariable("on?", true);
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["singleCell"] = temp;
@@ -135,17 +120,13 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       procedures["SETUP-GENERAL"]();
-      world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() {
+      Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() {
         SelfManager.self().setPatchVariable("on?", Prims.lt(Prims.random(100), world.observer.getGlobal("density")));
         procedures["COLOR-PATCH"]();
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupRandom"] = temp;
@@ -159,23 +140,17 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       on_pList = Tasks.map(Tasks.reporterTask(function(p) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         return p.projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
       }, "[ [p] -> [ on? ] of p ]"), ListPrims.sort(world._optimalPatchRow(world.observer.getGlobal("row")))); letVars['on_pList'] = on_pList;
       procedures["SETUP-GENERAL"]();
-      world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() {
+      Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() {
         SelfManager.self().setPatchVariable("on?", ListPrims.item((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), on_pList));
         procedures["COLOR-PATCH"]();
       }, true);
       world.observer.setGlobal("gone?", true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupContinue"] = temp;
@@ -196,17 +171,13 @@ var procedures = (function() {
           throw new Exception.StopInterrupt;
         }
       }
-      world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() { procedures["DO-RULE"](); }, true);
+      Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() { procedures["DO-RULE"](); }, true);
       world.observer.setGlobal("row", (world.observer.getGlobal("row") - 1));
-      world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() { procedures["COLOR-PATCH"](); }, true);
+      Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() { procedures["COLOR-PATCH"](); }, true);
       world.observer.setGlobal("gone?", true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -218,13 +189,9 @@ var procedures = (function() {
       let leftOn_p = SelfManager.self()._optimalPatchWest().projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['leftOn_p'] = leftOn_p;
       let rightOn_p = SelfManager.self()._optimalPatchEast().projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['rightOn_p'] = rightOn_p;
       let newValue = ((((((((((world.observer.getGlobal("iii") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p) || (((world.observer.getGlobal("iio") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ioi") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ioo") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("oii") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("oio") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ooi") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ooo") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p)); letVars['newValue'] = newValue;
-      SelfManager.self()._optimalPatchSouth().ask(function() { SelfManager.self().setPatchVariable("on?", newValue); }, true);
+      Errors.askNobodyCheck(SelfManager.self()._optimalPatchSouth()).ask(function() { SelfManager.self().setPatchVariable("on?", newValue); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["doRule"] = temp;
@@ -240,11 +207,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("background"));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["colorPatch"] = temp;
@@ -254,22 +217,16 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       if (Prims.equality(powerOfTwo, 0)) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return NLMath.mod(NLMath.floor(number), 2)
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return NLMath.mod(NLMath.floor(number), 2);
       }
       else {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return procedures["BINDIGIT"](Prims.div(NLMath.floor(number), 2),(powerOfTwo - 1))
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return procedures["BINDIGIT"](Prims.div(NLMath.floor(number), 2),(powerOfTwo - 1));
       }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["bindigit"] = temp;
@@ -288,11 +245,7 @@ var procedures = (function() {
       }
       world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["refreshRules"] = temp;
@@ -310,11 +263,7 @@ var procedures = (function() {
       world.observer.setGlobal("iio", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),6), 1));
       world.observer.setGlobal("iii", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),7), 1));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["extrapolateSwitches"] = temp;
@@ -348,16 +297,11 @@ var procedures = (function() {
       if (world.observer.getGlobal("iii")) {
         rresult = (rresult + 128); letVars['rresult'] = rresult;
       }
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return rresult
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return rresult;
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["calculateRule"] = temp;
@@ -368,10 +312,10 @@ var procedures = (function() {
       var letVars = { };
       procedures["SETUP-GENERAL"]();
       let rules = procedures["LIST-RULES"](); letVars['rules'] = rules;
-      world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 5)); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
-      world.patches().agentFilter(function() {
+      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 5)); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
+      Errors.askNobodyCheck(world.patches().agentFilter(function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(NLMath.mod((SelfManager.self().getPatchVariable("pxcor") + 1), NLMath.floor(Prims.div(world.topology.width, 8))), 0));
-      }).ask(function() {
+      })).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("heading", 270);
           SelfManager.self().fd(18);
@@ -390,11 +334,7 @@ var procedures = (function() {
       }, true);
       world.observer.setGlobal("rules-shown?", true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["showRules"] = temp;
@@ -416,11 +356,7 @@ var procedures = (function() {
         SelfManager.self()._optimalFdOne();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["printBlock"] = temp;
@@ -438,16 +374,11 @@ var procedures = (function() {
       rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ioi"), [true, false, true]), rules); letVars['rules'] = rules;
       rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iio"), [true, true, false]), rules); letVars['rules'] = rules;
       rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iii"), [true, true, true]), rules); letVars['rules'] = rules;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return rules
-      }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.reportInContextCheck(reporterContext);
+      return rules;
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["listRules"] = temp;

@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [   show-water?     ;; whether the water is visible   drains          ;; agentset of all edge patches where the water drains off   land            ;; agentset of all non-edge patches ]  patches-own [   elevation       ;; elevation here (may be negative)   water           ;; depth of water here   drain?          ;; is this an edge patch? ]  to setup   clear-all   set show-water? true   ask patches [     ifelse bumpy?        [ ifelse hill?            [ set elevation -100 * (distancexy 0 0 / max-pxcor) + 100 + random 100 ]            [ set elevation random 125 ] ]        [ set elevation 100 ]     set water 0     set drain? false   ]   ;; the DIFFUSE command is useful for smoothing out the terrain   if bumpy? [     repeat terrain-smoothness [ diffuse elevation 0.5 ]   ]   ;; make the drain around the edge   ask patches with [count neighbors != 8]     [ set drain? true       set elevation -10000000 ]   set drains patches with [drain?]   set land patches with [not drain?]   ;; display the terrain   ask land [ recolor ]   reset-ticks end  to recolor  ;; patch procedure   ifelse water = 0 or not show-water?     [ set pcolor scale-color white elevation -250 100 ]     [ set pcolor scale-color blue (min list water 75) 100 -10 ] end  to show-water   set show-water? true   ask land [ recolor ] end  to hide-water   set show-water? false   ask land [ recolor ] end  to go   ;; first do rainfall   ask land [     if random-float 1 < rainfall [       set water water + 1     ]   ]   ;; then do flow;  we don\'t want to bias the flow in any   ;; particular direction, so we need to shuffle the execution   ;; order of the patches each time; using an agentset does   ;; this automatically.   ask land [ if water > 0 [ flow ] ]    ;; reset the drains to their initial state   ask drains [     set water 0     set elevation -10000000   ]   ;; update the patch colors   ask land [ recolor ]   ;; update the clock   tick end  to flow  ;; patch procedure   ;; find the neighboring patch where the water is lowest   let target min-one-of neighbors [elevation + water]   ;; the amount of flow is half the level difference, unless   ;; that much water isn\'t available   let amount min list water (0.5 * (elevation + water - [elevation] of target - [water] of target))   ;; don\'t flow unless the water is higher here   if amount > 0 [     ;; first erode     let erosion amount * (1 - soil-hardness)     set elevation elevation - erosion     ;; but now the erosion has changed the amount of flow needed to equalize the level,     ;; so we have to recalculate the flow amount     set amount min list water (0.5 * (elevation + water - [elevation] of target - [water] of target))     set water water - amount     ask target [ set water water + amount ]   ] end   ; Copyright 2004 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":263,"top":10,"right":675,"bottom":423,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":4,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":12,"top":185,"right":113,"bottom":234,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"30","compiledStep":"1","variable":"terrain-smoothness","left":12,"top":118,"right":245,"bottom":151,"display":"terrain-smoothness","min":"1","max":"30","default":6,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"0.5","compiledStep":"0.01","variable":"rainfall","left":12,"top":339,"right":247,"bottom":372,"display":"rainfall","min":"0","max":"0.5","default":0.1,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":119,"top":185,"right":215,"bottom":234,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"Setup parameters:","left":9,"top":30,"right":139,"bottom":58,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Environmental parameters:","left":8,"top":315,"right":233,"bottom":333,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"variable":"bumpy?","left":12,"top":84,"right":176,"bottom":117,"display":"bumpy?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.05","variable":"soil-hardness","left":12,"top":373,"right":247,"bottom":406,"display":"soil-hardness","min":"0","max":"1","default":0.8,"step":"0.05","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"hill?","left":12,"top":50,"right":176,"bottom":83,"display":"hill?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"SHOW-WATER\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"show-water","left":21,"top":270,"right":125,"bottom":303,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"HIDE-WATER\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"hide-water","left":127,"top":270,"right":225,"bottom":303,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"Display controls:","left":7,"top":249,"right":157,"bottom":267,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Simulation controls:","left":7,"top":164,"right":157,"bottom":182,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["terrain-smoothness", "rainfall", "bumpy?", "soil-hardness", "hill?", "show-water?", "drains", "land"], ["terrain-smoothness", "rainfall", "bumpy?", "soil-hardness", "hill?"], ["elevation", "water", "drain?"], -50, 50, -50, 50, 4, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [   show-water?     ;; whether the water is visible   drains          ;; agentset of all edge patches where the water drains off   land            ;; agentset of all non-edge patches ]  patches-own [   elevation       ;; elevation here (may be negative)   water           ;; depth of water here   drain?          ;; is this an edge patch? ]  to setup   clear-all   set show-water? true   ask patches [     ifelse bumpy?        [ ifelse hill?            [ set elevation -100 * (distancexy 0 0 / max-pxcor) + 100 + random 100 ]            [ set elevation random 125 ] ]        [ set elevation 100 ]     set water 0     set drain? false   ]   ;; the DIFFUSE command is useful for smoothing out the terrain   if bumpy? [     repeat terrain-smoothness [ diffuse elevation 0.5 ]   ]   ;; make the drain around the edge   ask patches with [count neighbors != 8]     [ set drain? true       set elevation -10000000 ]   set drains patches with [drain?]   set land patches with [not drain?]   ;; display the terrain   ask land [ recolor ]   reset-ticks end  to recolor  ;; patch procedure   ifelse water = 0 or not show-water?     [ set pcolor scale-color white elevation -250 100 ]     [ set pcolor scale-color blue (min list water 75) 100 -10 ] end  to show-water   set show-water? true   ask land [ recolor ] end  to hide-water   set show-water? false   ask land [ recolor ] end  to go   ;; first do rainfall   ask land [     if random-float 1 < rainfall [       set water water + 1     ]   ]   ;; then do flow;  we don\'t want to bias the flow in any   ;; particular direction, so we need to shuffle the execution   ;; order of the patches each time; using an agentset does   ;; this automatically.   ask land [ if water > 0 [ flow ] ]    ;; reset the drains to their initial state   ask drains [     set water 0     set elevation -10000000   ]   ;; update the patch colors   ask land [ recolor ]   ;; update the clock   tick end  to flow  ;; patch procedure   ;; find the neighboring patch where the water is lowest   let target min-one-of neighbors [elevation + water]   ;; the amount of flow is half the level difference, unless   ;; that much water isn\'t available   let amount min list water (0.5 * (elevation + water - [elevation] of target - [water] of target))   ;; don\'t flow unless the water is higher here   if amount > 0 [     ;; first erode     let erosion amount * (1 - soil-hardness)     set elevation elevation - erosion     ;; but now the erosion has changed the amount of flow needed to equalize the level,     ;; so we have to recalculate the flow amount     set amount min list water (0.5 * (elevation + water - [elevation] of target - [water] of target))     set water water - amount     ask target [ set water water + amount ]   ] end   ; Copyright 2004 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":263,"top":10,"right":675,"bottom":423,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":4,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":12,"top":185,"right":113,"bottom":234,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"30","compiledStep":"1","variable":"terrain-smoothness","left":12,"top":118,"right":245,"bottom":151,"display":"terrain-smoothness","min":"1","max":"30","default":6,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"0.5","compiledStep":"0.01","variable":"rainfall","left":12,"top":339,"right":247,"bottom":372,"display":"rainfall","min":"0","max":"0.5","default":0.1,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":119,"top":185,"right":215,"bottom":234,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"Setup parameters:","left":9,"top":30,"right":139,"bottom":58,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Environmental parameters:","left":8,"top":315,"right":233,"bottom":333,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"variable":"bumpy?","left":12,"top":84,"right":176,"bottom":117,"display":"bumpy?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.05","variable":"soil-hardness","left":12,"top":373,"right":247,"bottom":406,"display":"soil-hardness","min":"0","max":"1","default":0.8,"step":"0.05","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"hill?","left":12,"top":50,"right":176,"bottom":83,"display":"hill?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"SHOW-WATER\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"show-water","left":21,"top":270,"right":125,"bottom":303,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"HIDE-WATER\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"hide-water","left":127,"top":270,"right":225,"bottom":303,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"Display controls:","left":7,"top":249,"right":157,"bottom":267,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Simulation controls:","left":7,"top":164,"right":157,"bottom":182,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["terrain-smoothness", "rainfall", "bumpy?", "soil-hardness", "hill?", "show-water?", "drains", "land"], ["terrain-smoothness", "rainfall", "bumpy?", "soil-hardness", "hill?"], ["elevation", "water", "drain?"], -50, 50, -50, 50, 4, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -54,7 +55,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.observer.setGlobal("show-water?", true);
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         if (world.observer.getGlobal("bumpy?")) {
           if (world.observer.getGlobal("hill?")) {
             SelfManager.self().setPatchVariable("elevation", (((-100 * Prims.div(SelfManager.self().distanceXY(0, 0), world.topology.maxPxcor)) + 100) + Prims.random(100)));
@@ -74,20 +75,16 @@ var procedures = (function() {
           world.topology.diffuse("elevation", 0.5, false)
         }
       }
-      world.patches().agentFilter(function() { return SelfManager.self().getNeighbors()._optimalCheckCount(8, (a, b) => a !== b); }).ask(function() {
+      Errors.askNobodyCheck(world.patches().agentFilter(function() { return SelfManager.self().getNeighbors()._optimalCheckCount(8, (a, b) => a !== b); })).ask(function() {
         SelfManager.self().setPatchVariable("drain?", true);
         SelfManager.self().setPatchVariable("elevation", -10000000);
       }, true);
       world.observer.setGlobal("drains", world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable("drain?"); }));
       world.observer.setGlobal("land", world.patches().agentFilter(function() { return !SelfManager.self().getPatchVariable("drain?"); }));
-      world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+      Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() { procedures["RECOLOR"](); }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -103,11 +100,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(105, ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), 75)), 100, -10));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["recolor"] = temp;
@@ -117,13 +110,9 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.setGlobal("show-water?", true);
-      world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+      Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() { procedures["RECOLOR"](); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["showWater"] = temp;
@@ -133,13 +122,9 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.setGlobal("show-water?", false);
-      world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+      Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() { procedures["RECOLOR"](); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["hideWater"] = temp;
@@ -148,28 +133,24 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.getGlobal("land").ask(function() {
+      Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() {
         if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("rainfall"))) {
           SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + 1));
         }
       }, true);
-      world.observer.getGlobal("land").ask(function() {
+      Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("water"), 0)) {
           procedures["FLOW"]();
         }
       }, true);
-      world.observer.getGlobal("drains").ask(function() {
+      Errors.askNobodyCheck(world.observer.getGlobal("drains")).ask(function() {
         SelfManager.self().setPatchVariable("water", 0);
         SelfManager.self().setPatchVariable("elevation", -10000000);
       }, true);
-      world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+      Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() { procedures["RECOLOR"](); }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -187,16 +168,12 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("elevation", (SelfManager.self().getPatchVariable("elevation") - erosion));
         amount = ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("elevation"); })) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
         SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") - amount));
-        target.ask(function() {
+        Errors.askNobodyCheck(target).ask(function() {
           SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + amount));
         }, true);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["flow"] = temp;

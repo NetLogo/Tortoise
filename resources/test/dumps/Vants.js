@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -27,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   ask patches     [ set pcolor white ]   create-turtles num-vants     [ face one-of neighbors4       set color red       set size 6 ]    ;; much easier to see this way   reset-ticks end  ;; We can\'t use \"ask turtles\", because then the vants would ;; execute in a different random order each time.  So instead ;; we use SORT to get the turtles in order by who number.  to go-forward   foreach sort turtles [ t ->     ask t [       fd 1       turn     ]   ]   tick end  to go-reverse   foreach reverse sort turtles [ t ->     ask t [       turn       bk 1     ]   ]   tick end  to turn   ifelse pcolor = white     [ set pcolor black       rt 90 ]     [ set pcolor white       lt 90 ] end   ; Copyright 2005 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":220,"top":10,"right":710,"bottom":501,"dimensions":{"minPxcor":-120,"maxPxcor":120,"minPycor":-120,"maxPycor":120,"patchSize":2,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":47,"top":73,"right":170,"bottom":106,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"GO-FORWARD\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go-forward","left":67,"top":166,"right":151,"bottom":199,"display":"forward","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"16","compiledStep":"1","variable":"num-vants","left":18,"top":38,"right":207,"bottom":71,"display":"num-vants","min":"1","max":"16","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"GO-REVERSE\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go-reverse","left":67,"top":200,"right":151,"bottom":233,"display":"reverse","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["num-vants"], ["num-vants"], [], -120, 120, -120, 120, 2, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   ask patches     [ set pcolor white ]   create-turtles num-vants     [ face one-of neighbors4       set color red       set size 6 ]    ;; much easier to see this way   reset-ticks end  ;; We can\'t use \"ask turtles\", because then the vants would ;; execute in a different random order each time.  So instead ;; we use SORT to get the turtles in order by who number.  to go-forward   foreach sort turtles [ t ->     ask t [       fd 1       turn     ]   ]   tick end  to go-reverse   foreach reverse sort turtles [ t ->     ask t [       turn       bk 1     ]   ]   tick end  to turn   ifelse pcolor = white     [ set pcolor black       rt 90 ]     [ set pcolor white       lt 90 ] end   ; Copyright 2005 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":220,"top":10,"right":710,"bottom":501,"dimensions":{"minPxcor":-120,"maxPxcor":120,"minPycor":-120,"maxPycor":120,"patchSize":2,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":47,"top":73,"right":170,"bottom":106,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"GO-FORWARD\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go-forward","left":67,"top":166,"right":151,"bottom":199,"display":"forward","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"16","compiledStep":"1","variable":"num-vants","left":18,"top":38,"right":207,"bottom":71,"display":"num-vants","min":"1","max":"16","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_43 = procedures[\"GO-REVERSE\"]();   if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go-reverse","left":67,"top":200,"right":151,"bottom":233,"display":"reverse","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["num-vants"], ["num-vants"], [], -120, 120, -120, 120, 2, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -53,7 +54,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), "").ask(function() {
         SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
         SelfManager.self().setVariable("color", 15);
@@ -61,11 +62,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -75,21 +72,15 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       var _foreach_405_412 = Tasks.forEach(Tasks.commandTask(function(t) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
-        t.ask(function() {
+        Errors.procedureArgumentsCheck(1, arguments.length);
+        Errors.askNobodyCheck(t).ask(function() {
           SelfManager.self()._optimalFdOne();
           procedures["TURN"]();
         }, true);
       }, "[ t -> ask t [ fd 1 turn ] ]"), ListPrims.sort(world.turtles())); if(reporterContext && _foreach_405_412 !== undefined) { return _foreach_405_412; }
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["goForward"] = temp;
@@ -99,21 +90,15 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       var _foreach_505_512 = Tasks.forEach(Tasks.commandTask(function(t) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
-        t.ask(function() {
+        Errors.procedureArgumentsCheck(1, arguments.length);
+        Errors.askNobodyCheck(t).ask(function() {
           procedures["TURN"]();
           SelfManager.self().fd(-(1));
         }, true);
       }, "[ t -> ask t [ turn bk 1 ] ]"), ListPrims.reverse(ListPrims.sort(world.turtles()))); if(reporterContext && _foreach_505_512 !== undefined) { return _foreach_505_512; }
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["goReverse"] = temp;
@@ -131,11 +116,7 @@ var procedures = (function() {
         SelfManager.self().right(-(90));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["turn"] = temp;

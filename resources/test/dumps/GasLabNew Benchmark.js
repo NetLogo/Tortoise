@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -72,7 +73,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Speed", "Number", true, false, 0, 50, 0, 100, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass", "energy", "wall-hits", "momentum-difference", "last-collision"] }, { name: "FLASHES", singular: "flash", varNames: ["birthday"] }, { name: "CLOCKERS", singular: "clocker", varNames: [] }])([], [])('globals [   result   tick-length          ;; clock variable   box-edge                   ;; distance of box edge from axes   pressure   pressure-history   zero-pressure-count        ;; how many zero entries are in pressure-history   wall-hits-per-particle     ;; average number of wall hits per particle   length-horizontal-surface  ;; the size of the wall surfaces that run horizontally - the top and bottom of the box   length-vertical-surface    ;; the size of the wall surfaces that run vertically - the left and right of the box    init-avg-speed init-avg-energy  ;; initial averages   avg-speed avg-energy            ;; current averages   fast medium slow                ;; current counts    fade-needed? ]  breed [ particles particle ] breed [ flashes flash ] breed [clockers clocker ]  flashes-own [birthday]  particles-own [   speed mass energy          ;; particle info   wall-hits                  ;; # of wall hits during this clock cycle (\"big tick\")   momentum-difference        ;; used to calculate pressure from wall hits   last-collision ]  to benchmark   random-seed 361   reset-timer   setup   repeat 17000 [ go ]   set result timer end  to setup   ca reset-ticks   set-default-shape particles \"circle\"   set fade-needed? false   ;; box has constant size...   set box-edge (max-pxcor - 1)   ;;; the length of the horizontal or vertical surface of   ;;; the inside of the box must exclude the two patches   ;; that are the where the perpendicular walls join it,   ;;; but must also add in the axes as an additional patch   ;;; example:  a box with an box-edge of 10, is drawn with   ;;; 19 patches of wall space on the inside of the box   set length-horizontal-surface  ( 2 * (box-edge - 1) + 1)   set length-vertical-surface  ( 2 * (box-edge - 1) + 1)   make-box   make-particles   make-clocker   set pressure-history []   set zero-pressure-count 0   update-variables   set init-avg-speed avg-speed   set init-avg-energy avg-energy   setup-plotz   setup-histograms   do-plotting end  to update-variables   set medium count particles with [color = green]   set slow   count particles with [color = blue]   set fast   count particles with [color = red]   set avg-speed  mean [speed] of particles   set avg-energy mean [energy] of particles end  to go   ask particles [ bounce ]   ask particles [ move ]   ask particles [ if collide? [check-for-collision] ]   if trace?   [ ask particle 0      [ set pcolor gray set fade-needed? true ]   ]   let old-clock ticks   tick-advance tick-length   if floor ticks > floor (ticks - tick-length)   [     ifelse any? particles       [ set wall-hits-per-particle mean [wall-hits] of particles ]       [ set wall-hits-per-particle 0 ]     ask particles       [ set wall-hits 0 ]     if fade-needed? [fade-patches]     calculate-pressure     update-variables     do-plotting   ]   calculate-tick-length   ask clockers [ set heading ticks * 360 ]   ask flashes with [ticks - birthday > 0.4]   [     set pcolor yellow     die   ]   display end  to calculate-tick-length   ifelse any? particles with [speed > 0]     [ set tick-length 1 / (ceiling max [speed] of particles) ]     [ set tick-length 1 ] end  ;;; Pressure is defined as the force per unit area.  In this context, ;;; that means the total momentum per unit time transferred to the walls ;;; by particle hits, divided by the surface area of the walls.  (Here ;;; we\'re in a two dimensional world, so the \"surface area\" of the walls ;;; is just their length.)  Each wall contributes a different amount ;;; to the total pressure in the box, based on the number of collisions, the ;;; direction of each collision, and the length of the wall.  Conservation of momentum ;;; in hits ensures that the difference in momentum for the particles is equal to and ;;; opposite to that for the wall.  The force on each wall is the rate of change in ;;; momentum imparted to the wall, or the sum of change in momentum for each particle: ;;; F = SUM  [d(mv)/dt] = SUM [m(dv/dt)] = SUM [ ma ], in a direction perpendicular to ;;; the wall surface.  The pressure (P) on a given wall is the force (F) applied to that ;;; wall over its surface area.  The total pressure in the box is sum of each wall\'s ;;; pressure contribution.  to calculate-pressure   ;; by summing the momentum change for each particle,   ;; the wall\'s total momentum change is calculated   set pressure 15 * sum [momentum-difference] of particles   set pressure-history lput pressure pressure-history   set zero-pressure-count length filter [ [p] -> p = 0] pressure-history   ask particles     [ set momentum-difference 0 ]  ;; once the contribution to momentum has been calculated                                    ;; this value is reset to zero till the next wall hit end  to bounce  ;; particle procedure   ;; if we\'re not about to hit a wall (yellow patch), or if we\'re already on a   ;; wall, we don\'t need to do any further checks   if shade-of? yellow pcolor     [ stop ]   let new-patch patch-ahead 1   let new-px [pxcor] of new-patch   let new-py [pycor] of new-patch   if not shade-of? yellow [pcolor] of new-patch     [ stop ]   ;; get the coordinates of the patch we\'ll be on if we go forward 1   if (abs new-px != box-edge and abs new-py != box-edge)     [stop]   ;; if hitting left or right wall, reflect heading around x axis   if (abs new-px = box-edge)     [ set heading (- heading)       set wall-hits wall-hits + 1   ;;  if the particle is hitting a vertical wall, only the horizontal component of the speed   ;;  vector can change.  The change in velocity for this component is 2 * the speed of the particle,   ;; due to the reversing of direction of travel from the collision with the wall       set momentum-difference momentum-difference + (abs (sin heading * 2 * mass * speed) / length-vertical-surface) ]   ;; if hitting top or bottom wall, reflect heading around y axis   if (abs new-py = box-edge)     [ set heading (180 - heading)       set wall-hits wall-hits + 1   ;;  if the particle is hitting a horizontal wall, only the vertical component of the speed   ;;  vector can change.  The change in velocity for this component is 2 * the speed of the particle,   ;; due to the reversing of direction of travel from the collision with the wall       set momentum-difference momentum-difference + (abs (cos heading * 2 * mass * speed) / length-horizontal-surface)  ]     ask patch new-px new-py     [ sprout-flashes 1 [ ht                  set birthday ticks                  set pcolor yellow - 3 ] ] end  to move  ;; particle procedure   let old-patch patch-here   jump (speed * tick-length)   if patch-here != old-patch     [ set last-collision nobody ] end  to check-for-collision  ;; particle procedure   ;; Here we impose a rule that collisions only take place when there   ;; are exactly two particles per patch.  We do this because when the   ;; student introduces new particles from the side, we want them to   ;; form a uniform wavefront.   ;;   ;; Why do we want a uniform wavefront?  Because it is actually more   ;; realistic.  (And also because the curriculum uses the uniform   ;; wavefront to help teach the relationship between particle collisions,   ;; wall hits, and pressure.)   ;;   ;; Why is it realistic to assume a uniform wavefront?  Because in reality,   ;; whether a collision takes place would depend on the actual headings   ;; of the particles, not merely on their proximity.  Since the particles   ;; in the wavefront have identical speeds and near-identical headings,   ;; in reality they would not collide.  So even though the two-particles   ;; rule is not itself realistic, it produces a realistic result.  Also,   ;; unless the number of particles is extremely large, it is very rare   ;; for three or more particles to land on the same patch (for example,   ;; with 400 particles it happens less than 1% of the time).  So imposing   ;; this additional rule should have only a negligible effect on the   ;; aggregate behavior of the system.   ;;   ;; Why does this rule produce a uniform wavefront?  The particles all   ;; start out on the same patch, which means that without the only-two   ;; rule, they would all start colliding with each other immediately,   ;; resulting in much random variation of speeds and headings.  With   ;; the only-two rule, they are prevented from colliding with each other   ;; until they have spread out a lot.  (And in fact, if you observe   ;; the wavefront closely, you will see that it is not completely smooth,   ;; because some collisions eventually do start occurring when it thins out while fanning.)    if count other particles-here = 1   [     ;; the following conditions are imposed on collision candidates:     ;;   1. they must have a lower who number than my own, because collision     ;;      code is asymmetrical: it must always happen from the point of view     ;;      of just one particle.     ;;   2. they must not be the same particle that we last collided with on     ;;      this patch, so that we have a chance to leave the patch after we\'ve     ;;      collided with someone.     let candidate one-of other particles-here with       [who < [who] of myself and myself != last-collision]     ;; we also only collide if one of us has non-zero speed. It\'s useless     ;; (and incorrect, actually) for two particles with zero speed to collide.     if (candidate != nobody) and (speed > 0 or [speed] of candidate > 0)     [       collide-with candidate       set last-collision candidate       ask candidate [ set last-collision myself ]     ]   ] end  ;; implements a collision with another particle. ;; ;; THIS IS THE HEART OF THE PARTICLE SIMULATION, AND YOU ARE STRONGLY ADVISED ;; NOT TO CHANGE IT UNLESS YOU REALLY UNDERSTAND WHAT YOU\'RE DOING! ;; ;; The two particles colliding are self and other-particle, and while the ;; collision is performed from the point of view of self, both particles are ;; modified to reflect its effects. This is somewhat complicated, so I\'ll ;; give a general outline here: ;;   1. Do initial setup, and determine the heading between particle centers ;;      (call it theta). ;;   2. Convert the representation of the velocity of each particle from ;;      speed/heading to a theta-based vector whose first component is the ;;      particle\'s speed along theta, and whose second component is the speed ;;      perpendicular to theta. ;;   3. Modify the velocity vectors to reflect the effects of the collision. ;;      This involves: ;;        a. computing the velocity of the center of mass of the whole system ;;           along direction theta ;;        b. updating the along-theta components of the two velocity vectors. ;;   4. Convert from the theta-based vector representation of velocity back to ;;      the usual speed/heading representation for each particle. ;;   5. Perform final cleanup and update derived quantities. to collide-with [ other-particle ] ;; particle procedure    ;;; PHASE 1: initial setup    ;; for convenience, grab some quantities from other-particle   let mass2 [mass] of other-particle   let speed2 [speed] of other-particle   let heading2 [heading] of other-particle    ;; since particles are modeled as zero-size points, theta isn\'t meaningfully   ;; defined. we can assign it randomly without affecting the model\'s outcome.   let theta (random-float 360)      ;;; PHASE 2: convert velocities to theta-based vector representation    ;; now convert my velocity from speed/heading representation to components   ;; along theta and perpendicular to theta   let v1t (speed * cos (theta - heading))   let v1l (speed * sin (theta - heading))    ;; do the same for other-particle   let v2t (speed2 * cos (theta - heading2))   let v2l (speed2 * sin (theta - heading2))      ;;; PHASE 3: manipulate vectors to implement collision    ;; compute the velocity of the system\'s center of mass along theta   let vcm (((mass * v1t) + (mass2 * v2t)) / (mass + mass2) )    ;; now compute the new velocity for each particle along direction theta.   ;; velocity perpendicular to theta is unaffected by a collision along theta,   ;; so the next two lines actually implement the collision itself, in the   ;; sense that the effects of the collision are exactly the following changes   ;; in particle velocity.   set v1t (2 * vcm - v1t)   set v2t (2 * vcm - v2t)      ;;; PHASE 4: convert back to normal speed/heading    ;; now convert my velocity vector into my new speed and heading   set speed sqrt ((v1t * v1t) + (v1l * v1l))   set energy (0.5 * mass * speed * speed)   ;; if the magnitude of the velocity vector is 0, atan is undefined. but   ;; speed will be 0, so heading is irrelevant anyway. therefore, in that   ;; case we\'ll just leave it unmodified.   if v1l != 0 or v1t != 0     [ set heading (theta - (atan v1l v1t)) ]    ;; and do the same for other-particle   ask other-particle [ set speed sqrt ((v2t * v2t) + (v2l * v2l)) ]   ask other-particle [ set energy 0.5 * mass * speed * speed ]   if v2l != 0 or v2t != 0     [ ask other-particle [ set heading (theta - (atan v2l v2t)) ] ]      ;; PHASE 5: final updates    ;; now recolor, since color is based on quantities that may have changed   recolor   ask other-particle     [ recolor ] end  to recolor  ;; particle procedure   ifelse speed < (0.5 * 10)   [     set color blue   ]   [     ifelse speed > (1.5 * 10)       [ set color red ]       [ set color green ]   ] end  to fade-patches   let trace-patches patches with [(pcolor != yellow) and (pcolor != black)]   ifelse any? trace-patches     [ ask trace-patches       [ set pcolor ( pcolor - 0.4 )         if (not trace?) or (round pcolor = black)           [ set pcolor black ] ] ]     [ set fade-needed? false ] end  ;;; ;;; drawing procedures ;;;  ;; draws the box to make-box   ask patches with [ ((abs pxcor = box-edge) and (abs pycor <= box-edge)) or                      ((abs pycor = box-edge) and (abs pxcor <= box-edge)) ]     [ set pcolor yellow ] end  ;; creates initial particles to make-particles   create-ordered-particles number-of-particles   [     setup-particle     random-position     recolor   ]   calculate-tick-length end   to setup-particle  ;; particle procedure   set speed init-particle-speed   set mass particle-mass   set energy (0.5 * mass * speed * speed)   set last-collision nobody   set wall-hits 0   set momentum-difference 0 end  ;; place particle at random location inside the box. to random-position ;; particle procedure   setxy ((1 - box-edge) + random-float ((2 * box-edge) - 2))         ((1 - box-edge) + random-float ((2 * box-edge) - 2))   set heading random-float 360 end  ;;; plotting procedures  to setup-plotz   set-current-plot \"Speed Counts\"   set-plot-y-range 0 ceiling (number-of-particles / 6) end  to setup-histograms   set-current-plot \"Speed Histogram\"   set-plot-x-range 0 (init-particle-speed * 2)   set-plot-y-range 0 ceiling (number-of-particles / 6)   set-current-plot-pen \"medium\"   set-histogram-num-bars 40   set-current-plot-pen \"slow\"   set-histogram-num-bars 40   set-current-plot-pen \"fast\"   set-histogram-num-bars 40   set-current-plot-pen \"init-avg-speed\"   draw-vert-line init-avg-speed    set-current-plot \"Energy Histogram\"   set-plot-x-range 0 (0.5 * (init-particle-speed * 2) * (init-particle-speed * 2) * particle-mass)   set-plot-y-range 0 ceiling (number-of-particles / 6)   set-current-plot-pen \"medium\"   set-histogram-num-bars 40   set-current-plot-pen \"slow\"   set-histogram-num-bars 40   set-current-plot-pen \"fast\"   set-histogram-num-bars 40   set-current-plot-pen \"init-avg-energy\"   draw-vert-line init-avg-energy end   to do-plotting   set-current-plot \"Pressure vs. Time\"   if length pressure-history > 0     [ plotxy ticks (mean last-n 3 pressure-history) ]    set-current-plot \"Speed Counts\"   set-current-plot-pen \"fast\"   plot fast   set-current-plot-pen \"medium\"   plot medium   set-current-plot-pen \"slow\"   plot slow    if ticks > 1   [      set-current-plot \"Wall Hits per Particle\"      plotxy ticks wall-hits-per-particle   ]    plot-histograms end   to plot-histograms   set-current-plot \"Energy histogram\"   set-current-plot-pen \"fast\"   histogram [ energy ] of particles with [color = red]   set-current-plot-pen \"medium\"   histogram [ energy ] of particles with [color = green]   set-current-plot-pen \"slow\"   histogram [ energy ] of particles with [color = blue]   set-current-plot-pen \"avg-energy\"   plot-pen-reset   draw-vert-line avg-energy    set-current-plot \"Speed histogram\"   set-current-plot-pen \"fast\"   histogram [ speed ] of particles with [color = red]   set-current-plot-pen \"medium\"   histogram [ speed ] of particles with [color = green]   set-current-plot-pen \"slow\"   histogram [ speed ] of particles with [color = blue]   set-current-plot-pen \"avg-speed\"   plot-pen-reset   draw-vert-line avg-speed end  ;; histogram procedure to draw-vert-line [ xval ]   plotxy xval plot-y-min   plot-pen-down   plotxy xval plot-y-max   plot-pen-up end  to-report last-n [n the-list]   ifelse n >= length the-list     [ report the-list ]     [ report last-n n butfirst the-list ] end  to make-clocker   set-default-shape clockers \"clocker\"   create-ordered-clockers 1   [     setxy (box-edge - 5) (box-edge - 5)     set color violet + 2     set size 10     set heading 0   ] end')([{"left":325,"top":11,"right":737,"bottom":424,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":4,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":7,"top":43,"right":93,"bottom":76,"display":"go/stop","forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":7,"top":10,"right":93,"bottom":43,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1000","compiledStep":"1","variable":"number-of-particles","left":95,"top":10,"right":302,"bottom":43,"display":"number-of-particles","min":"0","max":"1000","default":150,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"default","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Pressure vs. Time","left":742,"top":11,"right":980,"bottom":190,"xAxis":"time","yAxis":"pressure","xmin":0,"xmax":20,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"pressure\")","source":"pressure","left":155,"top":207,"right":239,"bottom":252,"display":"pressure","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"wall-hits-per-particle\")","source":"wall-hits-per-particle","left":9,"top":207,"right":149,"bottom":252,"display":"wall hits per particle","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Wall Hits per Particle","left":742,"top":192,"right":980,"bottom":361,"xmin":0,"xmax":20,"ymin":0,"ymax":1,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"avg-speed\")","source":"avg-speed","left":70,"top":154,"right":149,"bottom":199,"precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"fast","interval":10,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"medium","interval":10,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"slow","interval":10,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"avg-energy","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"init-avg-energy","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Energy Histogram","left":312,"top":455,"right":602,"bottom":651,"xAxis":"Energy","yAxis":"Number","xmin":0,"xmax":400,"ymin":0,"ymax":10,"autoPlotOn":false,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"fast","interval":10,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"medium","interval":10,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"slow","interval":10,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"avg-energy","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"init-avg-energy","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"avg-energy\")","source":"avg-energy","left":154,"top":154,"right":239,"bottom":199,"precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"fast","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"slow","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed Counts","left":9,"top":264,"right":298,"bottom":449,"xAxis":"time","yAxis":"count","xmin":0,"xmax":20,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"fast","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"slow","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"collide?","left":96,"top":44,"right":199,"bottom":77,"display":"collide?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"fast","interval":5,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"medium","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"slow","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"avg-speed","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"init-avg-speed","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed Histogram","left":10,"top":454,"right":304,"bottom":651,"xAxis":"Speed","yAxis":"Number","xmin":0,"xmax":50,"ymin":0,"ymax":100,"autoPlotOn":false,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"fast","interval":5,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"medium","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"slow","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"avg-speed","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"init-avg-speed","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"trace?","left":199,"top":44,"right":302,"bottom":77,"display":"trace?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"init-particle-speed","left":7,"top":80,"right":180,"bottom":113,"display":"init-particle-speed","min":"1","max":"20","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"particle-mass","left":7,"top":114,"right":180,"bottom":147,"display":"particle-mass","min":"1","max":"20","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"benchmark","left":609,"top":458,"right":780,"bottom":633,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":628,"top":579,"right":767,"bottom":624,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass", "result", "tick-length", "box-edge", "pressure", "pressure-history", "zero-pressure-count", "wall-hits-per-particle", "length-horizontal-surface", "length-vertical-surface", "init-avg-speed", "init-avg-energy", "avg-speed", "avg-energy", "fast", "medium", "slow", "fade-needed?"], ["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass"], [], -50, 50, -50, 50, 4, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass", "energy", "wall-hits", "momentum-difference", "last-collision"] }, { name: "FLASHES", singular: "flash", varNames: ["birthday"] }, { name: "CLOCKERS", singular: "clocker", varNames: [] }])([], [])('globals [   result   tick-length          ;; clock variable   box-edge                   ;; distance of box edge from axes   pressure   pressure-history   zero-pressure-count        ;; how many zero entries are in pressure-history   wall-hits-per-particle     ;; average number of wall hits per particle   length-horizontal-surface  ;; the size of the wall surfaces that run horizontally - the top and bottom of the box   length-vertical-surface    ;; the size of the wall surfaces that run vertically - the left and right of the box    init-avg-speed init-avg-energy  ;; initial averages   avg-speed avg-energy            ;; current averages   fast medium slow                ;; current counts    fade-needed? ]  breed [ particles particle ] breed [ flashes flash ] breed [clockers clocker ]  flashes-own [birthday]  particles-own [   speed mass energy          ;; particle info   wall-hits                  ;; # of wall hits during this clock cycle (\"big tick\")   momentum-difference        ;; used to calculate pressure from wall hits   last-collision ]  to benchmark   random-seed 361   reset-timer   setup   repeat 17000 [ go ]   set result timer end  to setup   ca reset-ticks   set-default-shape particles \"circle\"   set fade-needed? false   ;; box has constant size...   set box-edge (max-pxcor - 1)   ;;; the length of the horizontal or vertical surface of   ;;; the inside of the box must exclude the two patches   ;; that are the where the perpendicular walls join it,   ;;; but must also add in the axes as an additional patch   ;;; example:  a box with an box-edge of 10, is drawn with   ;;; 19 patches of wall space on the inside of the box   set length-horizontal-surface  ( 2 * (box-edge - 1) + 1)   set length-vertical-surface  ( 2 * (box-edge - 1) + 1)   make-box   make-particles   make-clocker   set pressure-history []   set zero-pressure-count 0   update-variables   set init-avg-speed avg-speed   set init-avg-energy avg-energy   setup-plotz   setup-histograms   do-plotting end  to update-variables   set medium count particles with [color = green]   set slow   count particles with [color = blue]   set fast   count particles with [color = red]   set avg-speed  mean [speed] of particles   set avg-energy mean [energy] of particles end  to go   ask particles [ bounce ]   ask particles [ move ]   ask particles [ if collide? [check-for-collision] ]   if trace?   [ ask particle 0      [ set pcolor gray set fade-needed? true ]   ]   let old-clock ticks   tick-advance tick-length   if floor ticks > floor (ticks - tick-length)   [     ifelse any? particles       [ set wall-hits-per-particle mean [wall-hits] of particles ]       [ set wall-hits-per-particle 0 ]     ask particles       [ set wall-hits 0 ]     if fade-needed? [fade-patches]     calculate-pressure     update-variables     do-plotting   ]   calculate-tick-length   ask clockers [ set heading ticks * 360 ]   ask flashes with [ticks - birthday > 0.4]   [     set pcolor yellow     die   ]   display end  to calculate-tick-length   ifelse any? particles with [speed > 0]     [ set tick-length 1 / (ceiling max [speed] of particles) ]     [ set tick-length 1 ] end  ;;; Pressure is defined as the force per unit area.  In this context, ;;; that means the total momentum per unit time transferred to the walls ;;; by particle hits, divided by the surface area of the walls.  (Here ;;; we\'re in a two dimensional world, so the \"surface area\" of the walls ;;; is just their length.)  Each wall contributes a different amount ;;; to the total pressure in the box, based on the number of collisions, the ;;; direction of each collision, and the length of the wall.  Conservation of momentum ;;; in hits ensures that the difference in momentum for the particles is equal to and ;;; opposite to that for the wall.  The force on each wall is the rate of change in ;;; momentum imparted to the wall, or the sum of change in momentum for each particle: ;;; F = SUM  [d(mv)/dt] = SUM [m(dv/dt)] = SUM [ ma ], in a direction perpendicular to ;;; the wall surface.  The pressure (P) on a given wall is the force (F) applied to that ;;; wall over its surface area.  The total pressure in the box is sum of each wall\'s ;;; pressure contribution.  to calculate-pressure   ;; by summing the momentum change for each particle,   ;; the wall\'s total momentum change is calculated   set pressure 15 * sum [momentum-difference] of particles   set pressure-history lput pressure pressure-history   set zero-pressure-count length filter [ [p] -> p = 0] pressure-history   ask particles     [ set momentum-difference 0 ]  ;; once the contribution to momentum has been calculated                                    ;; this value is reset to zero till the next wall hit end  to bounce  ;; particle procedure   ;; if we\'re not about to hit a wall (yellow patch), or if we\'re already on a   ;; wall, we don\'t need to do any further checks   if shade-of? yellow pcolor     [ stop ]   let new-patch patch-ahead 1   let new-px [pxcor] of new-patch   let new-py [pycor] of new-patch   if not shade-of? yellow [pcolor] of new-patch     [ stop ]   ;; get the coordinates of the patch we\'ll be on if we go forward 1   if (abs new-px != box-edge and abs new-py != box-edge)     [stop]   ;; if hitting left or right wall, reflect heading around x axis   if (abs new-px = box-edge)     [ set heading (- heading)       set wall-hits wall-hits + 1   ;;  if the particle is hitting a vertical wall, only the horizontal component of the speed   ;;  vector can change.  The change in velocity for this component is 2 * the speed of the particle,   ;; due to the reversing of direction of travel from the collision with the wall       set momentum-difference momentum-difference + (abs (sin heading * 2 * mass * speed) / length-vertical-surface) ]   ;; if hitting top or bottom wall, reflect heading around y axis   if (abs new-py = box-edge)     [ set heading (180 - heading)       set wall-hits wall-hits + 1   ;;  if the particle is hitting a horizontal wall, only the vertical component of the speed   ;;  vector can change.  The change in velocity for this component is 2 * the speed of the particle,   ;; due to the reversing of direction of travel from the collision with the wall       set momentum-difference momentum-difference + (abs (cos heading * 2 * mass * speed) / length-horizontal-surface)  ]     ask patch new-px new-py     [ sprout-flashes 1 [ ht                  set birthday ticks                  set pcolor yellow - 3 ] ] end  to move  ;; particle procedure   let old-patch patch-here   jump (speed * tick-length)   if patch-here != old-patch     [ set last-collision nobody ] end  to check-for-collision  ;; particle procedure   ;; Here we impose a rule that collisions only take place when there   ;; are exactly two particles per patch.  We do this because when the   ;; student introduces new particles from the side, we want them to   ;; form a uniform wavefront.   ;;   ;; Why do we want a uniform wavefront?  Because it is actually more   ;; realistic.  (And also because the curriculum uses the uniform   ;; wavefront to help teach the relationship between particle collisions,   ;; wall hits, and pressure.)   ;;   ;; Why is it realistic to assume a uniform wavefront?  Because in reality,   ;; whether a collision takes place would depend on the actual headings   ;; of the particles, not merely on their proximity.  Since the particles   ;; in the wavefront have identical speeds and near-identical headings,   ;; in reality they would not collide.  So even though the two-particles   ;; rule is not itself realistic, it produces a realistic result.  Also,   ;; unless the number of particles is extremely large, it is very rare   ;; for three or more particles to land on the same patch (for example,   ;; with 400 particles it happens less than 1% of the time).  So imposing   ;; this additional rule should have only a negligible effect on the   ;; aggregate behavior of the system.   ;;   ;; Why does this rule produce a uniform wavefront?  The particles all   ;; start out on the same patch, which means that without the only-two   ;; rule, they would all start colliding with each other immediately,   ;; resulting in much random variation of speeds and headings.  With   ;; the only-two rule, they are prevented from colliding with each other   ;; until they have spread out a lot.  (And in fact, if you observe   ;; the wavefront closely, you will see that it is not completely smooth,   ;; because some collisions eventually do start occurring when it thins out while fanning.)    if count other particles-here = 1   [     ;; the following conditions are imposed on collision candidates:     ;;   1. they must have a lower who number than my own, because collision     ;;      code is asymmetrical: it must always happen from the point of view     ;;      of just one particle.     ;;   2. they must not be the same particle that we last collided with on     ;;      this patch, so that we have a chance to leave the patch after we\'ve     ;;      collided with someone.     let candidate one-of other particles-here with       [who < [who] of myself and myself != last-collision]     ;; we also only collide if one of us has non-zero speed. It\'s useless     ;; (and incorrect, actually) for two particles with zero speed to collide.     if (candidate != nobody) and (speed > 0 or [speed] of candidate > 0)     [       collide-with candidate       set last-collision candidate       ask candidate [ set last-collision myself ]     ]   ] end  ;; implements a collision with another particle. ;; ;; THIS IS THE HEART OF THE PARTICLE SIMULATION, AND YOU ARE STRONGLY ADVISED ;; NOT TO CHANGE IT UNLESS YOU REALLY UNDERSTAND WHAT YOU\'RE DOING! ;; ;; The two particles colliding are self and other-particle, and while the ;; collision is performed from the point of view of self, both particles are ;; modified to reflect its effects. This is somewhat complicated, so I\'ll ;; give a general outline here: ;;   1. Do initial setup, and determine the heading between particle centers ;;      (call it theta). ;;   2. Convert the representation of the velocity of each particle from ;;      speed/heading to a theta-based vector whose first component is the ;;      particle\'s speed along theta, and whose second component is the speed ;;      perpendicular to theta. ;;   3. Modify the velocity vectors to reflect the effects of the collision. ;;      This involves: ;;        a. computing the velocity of the center of mass of the whole system ;;           along direction theta ;;        b. updating the along-theta components of the two velocity vectors. ;;   4. Convert from the theta-based vector representation of velocity back to ;;      the usual speed/heading representation for each particle. ;;   5. Perform final cleanup and update derived quantities. to collide-with [ other-particle ] ;; particle procedure    ;;; PHASE 1: initial setup    ;; for convenience, grab some quantities from other-particle   let mass2 [mass] of other-particle   let speed2 [speed] of other-particle   let heading2 [heading] of other-particle    ;; since particles are modeled as zero-size points, theta isn\'t meaningfully   ;; defined. we can assign it randomly without affecting the model\'s outcome.   let theta (random-float 360)      ;;; PHASE 2: convert velocities to theta-based vector representation    ;; now convert my velocity from speed/heading representation to components   ;; along theta and perpendicular to theta   let v1t (speed * cos (theta - heading))   let v1l (speed * sin (theta - heading))    ;; do the same for other-particle   let v2t (speed2 * cos (theta - heading2))   let v2l (speed2 * sin (theta - heading2))      ;;; PHASE 3: manipulate vectors to implement collision    ;; compute the velocity of the system\'s center of mass along theta   let vcm (((mass * v1t) + (mass2 * v2t)) / (mass + mass2) )    ;; now compute the new velocity for each particle along direction theta.   ;; velocity perpendicular to theta is unaffected by a collision along theta,   ;; so the next two lines actually implement the collision itself, in the   ;; sense that the effects of the collision are exactly the following changes   ;; in particle velocity.   set v1t (2 * vcm - v1t)   set v2t (2 * vcm - v2t)      ;;; PHASE 4: convert back to normal speed/heading    ;; now convert my velocity vector into my new speed and heading   set speed sqrt ((v1t * v1t) + (v1l * v1l))   set energy (0.5 * mass * speed * speed)   ;; if the magnitude of the velocity vector is 0, atan is undefined. but   ;; speed will be 0, so heading is irrelevant anyway. therefore, in that   ;; case we\'ll just leave it unmodified.   if v1l != 0 or v1t != 0     [ set heading (theta - (atan v1l v1t)) ]    ;; and do the same for other-particle   ask other-particle [ set speed sqrt ((v2t * v2t) + (v2l * v2l)) ]   ask other-particle [ set energy 0.5 * mass * speed * speed ]   if v2l != 0 or v2t != 0     [ ask other-particle [ set heading (theta - (atan v2l v2t)) ] ]      ;; PHASE 5: final updates    ;; now recolor, since color is based on quantities that may have changed   recolor   ask other-particle     [ recolor ] end  to recolor  ;; particle procedure   ifelse speed < (0.5 * 10)   [     set color blue   ]   [     ifelse speed > (1.5 * 10)       [ set color red ]       [ set color green ]   ] end  to fade-patches   let trace-patches patches with [(pcolor != yellow) and (pcolor != black)]   ifelse any? trace-patches     [ ask trace-patches       [ set pcolor ( pcolor - 0.4 )         if (not trace?) or (round pcolor = black)           [ set pcolor black ] ] ]     [ set fade-needed? false ] end  ;;; ;;; drawing procedures ;;;  ;; draws the box to make-box   ask patches with [ ((abs pxcor = box-edge) and (abs pycor <= box-edge)) or                      ((abs pycor = box-edge) and (abs pxcor <= box-edge)) ]     [ set pcolor yellow ] end  ;; creates initial particles to make-particles   create-ordered-particles number-of-particles   [     setup-particle     random-position     recolor   ]   calculate-tick-length end   to setup-particle  ;; particle procedure   set speed init-particle-speed   set mass particle-mass   set energy (0.5 * mass * speed * speed)   set last-collision nobody   set wall-hits 0   set momentum-difference 0 end  ;; place particle at random location inside the box. to random-position ;; particle procedure   setxy ((1 - box-edge) + random-float ((2 * box-edge) - 2))         ((1 - box-edge) + random-float ((2 * box-edge) - 2))   set heading random-float 360 end  ;;; plotting procedures  to setup-plotz   set-current-plot \"Speed Counts\"   set-plot-y-range 0 ceiling (number-of-particles / 6) end  to setup-histograms   set-current-plot \"Speed Histogram\"   set-plot-x-range 0 (init-particle-speed * 2)   set-plot-y-range 0 ceiling (number-of-particles / 6)   set-current-plot-pen \"medium\"   set-histogram-num-bars 40   set-current-plot-pen \"slow\"   set-histogram-num-bars 40   set-current-plot-pen \"fast\"   set-histogram-num-bars 40   set-current-plot-pen \"init-avg-speed\"   draw-vert-line init-avg-speed    set-current-plot \"Energy Histogram\"   set-plot-x-range 0 (0.5 * (init-particle-speed * 2) * (init-particle-speed * 2) * particle-mass)   set-plot-y-range 0 ceiling (number-of-particles / 6)   set-current-plot-pen \"medium\"   set-histogram-num-bars 40   set-current-plot-pen \"slow\"   set-histogram-num-bars 40   set-current-plot-pen \"fast\"   set-histogram-num-bars 40   set-current-plot-pen \"init-avg-energy\"   draw-vert-line init-avg-energy end   to do-plotting   set-current-plot \"Pressure vs. Time\"   if length pressure-history > 0     [ plotxy ticks (mean last-n 3 pressure-history) ]    set-current-plot \"Speed Counts\"   set-current-plot-pen \"fast\"   plot fast   set-current-plot-pen \"medium\"   plot medium   set-current-plot-pen \"slow\"   plot slow    if ticks > 1   [      set-current-plot \"Wall Hits per Particle\"      plotxy ticks wall-hits-per-particle   ]    plot-histograms end   to plot-histograms   set-current-plot \"Energy histogram\"   set-current-plot-pen \"fast\"   histogram [ energy ] of particles with [color = red]   set-current-plot-pen \"medium\"   histogram [ energy ] of particles with [color = green]   set-current-plot-pen \"slow\"   histogram [ energy ] of particles with [color = blue]   set-current-plot-pen \"avg-energy\"   plot-pen-reset   draw-vert-line avg-energy    set-current-plot \"Speed histogram\"   set-current-plot-pen \"fast\"   histogram [ speed ] of particles with [color = red]   set-current-plot-pen \"medium\"   histogram [ speed ] of particles with [color = green]   set-current-plot-pen \"slow\"   histogram [ speed ] of particles with [color = blue]   set-current-plot-pen \"avg-speed\"   plot-pen-reset   draw-vert-line avg-speed end  ;; histogram procedure to draw-vert-line [ xval ]   plotxy xval plot-y-min   plot-pen-down   plotxy xval plot-y-max   plot-pen-up end  to-report last-n [n the-list]   ifelse n >= length the-list     [ report the-list ]     [ report last-n n butfirst the-list ] end  to make-clocker   set-default-shape clockers \"clocker\"   create-ordered-clockers 1   [     setxy (box-edge - 5) (box-edge - 5)     set color violet + 2     set size 10     set heading 0   ] end')([{"left":325,"top":11,"right":737,"bottom":424,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":4,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":7,"top":43,"right":93,"bottom":76,"display":"go/stop","forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":7,"top":10,"right":93,"bottom":43,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1000","compiledStep":"1","variable":"number-of-particles","left":95,"top":10,"right":302,"bottom":43,"display":"number-of-particles","min":"0","max":"1000","default":150,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"default","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Pressure vs. Time","left":742,"top":11,"right":980,"bottom":190,"xAxis":"time","yAxis":"pressure","xmin":0,"xmax":20,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"pressure\")","source":"pressure","left":155,"top":207,"right":239,"bottom":252,"display":"pressure","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"wall-hits-per-particle\")","source":"wall-hits-per-particle","left":9,"top":207,"right":149,"bottom":252,"display":"wall hits per particle","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Wall Hits per Particle","left":742,"top":192,"right":980,"bottom":361,"xmin":0,"xmax":20,"ymin":0,"ymax":1,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"avg-speed\")","source":"avg-speed","left":70,"top":154,"right":149,"bottom":199,"precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"fast","interval":10,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"medium","interval":10,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"slow","interval":10,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"avg-energy","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"init-avg-energy","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Energy Histogram","left":312,"top":455,"right":602,"bottom":651,"xAxis":"Energy","yAxis":"Number","xmin":0,"xmax":400,"ymin":0,"ymax":10,"autoPlotOn":false,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"fast","interval":10,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"medium","interval":10,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"slow","interval":10,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"avg-energy","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"init-avg-energy","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"avg-energy\")","source":"avg-energy","left":154,"top":154,"right":239,"bottom":199,"precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"fast","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"slow","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed Counts","left":9,"top":264,"right":298,"bottom":449,"xAxis":"time","yAxis":"count","xmin":0,"xmax":20,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"fast","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"slow","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"collide?","left":96,"top":44,"right":199,"bottom":77,"display":"collide?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"fast","interval":5,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"medium","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"slow","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"avg-speed","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"init-avg-speed","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed Histogram","left":10,"top":454,"right":304,"bottom":651,"xAxis":"Speed","yAxis":"Number","xmin":0,"xmax":50,"ymin":0,"ymax":100,"autoPlotOn":false,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"fast","interval":5,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"medium","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"slow","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"avg-speed","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"init-avg-speed","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"trace?","left":199,"top":44,"right":302,"bottom":77,"display":"trace?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"init-particle-speed","left":7,"top":80,"right":180,"bottom":113,"display":"init-particle-speed","min":"1","max":"20","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"particle-mass","left":7,"top":114,"right":180,"bottom":147,"display":"particle-mass","min":"1","max":"20","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_42 = procedures[\"BENCHMARK\"]();   if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"benchmark","left":609,"top":458,"right":780,"bottom":633,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":628,"top":579,"right":767,"bottom":624,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass", "result", "tick-length", "box-edge", "pressure", "pressure-history", "zero-pressure-count", "wall-hits-per-particle", "length-horizontal-surface", "length-vertical-surface", "init-avg-speed", "init-avg-energy", "avg-speed", "avg-energy", "fast", "medium", "slow", "fade-needed?"], ["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass"], [], -50, 50, -50, 50, 4, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -105,11 +106,7 @@ var procedures = (function() {
       }
       world.observer.setGlobal("result", workspace.timer.elapsed());
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["benchmark"] = temp;
@@ -137,11 +134,7 @@ var procedures = (function() {
       procedures["SETUP-HISTOGRAMS"]();
       procedures["DO-PLOTTING"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -156,11 +149,7 @@ var procedures = (function() {
       world.observer.setGlobal("avg-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
       world.observer.setGlobal("avg-energy", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["updateVariables"] = temp;
@@ -169,15 +158,15 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures["BOUNCE"](); }, true);
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures["MOVE"](); }, true);
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { procedures["BOUNCE"](); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { procedures["MOVE"](); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() {
         if (world.observer.getGlobal("collide?")) {
           procedures["CHECK-FOR-COLLISION"]();
         }
       }, true);
       if (world.observer.getGlobal("trace?")) {
-        world.turtleManager.getTurtleOfBreed("PARTICLES", 0).ask(function() {
+        Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PARTICLES", 0)).ask(function() {
           SelfManager.self().setPatchVariable("pcolor", 5);
           world.observer.setGlobal("fade-needed?", true);
         }, true);
@@ -191,7 +180,7 @@ var procedures = (function() {
         else {
           world.observer.setGlobal("wall-hits-per-particle", 0);
         }
-        world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { SelfManager.self().setVariable("wall-hits", 0); }, true);
+        Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { SelfManager.self().setVariable("wall-hits", 0); }, true);
         if (world.observer.getGlobal("fade-needed?")) {
           procedures["FADE-PATCHES"]();
         }
@@ -200,18 +189,14 @@ var procedures = (function() {
         procedures["DO-PLOTTING"]();
       }
       procedures["CALCULATE-TICK-LENGTH"]();
-      world.turtleManager.turtlesOfBreed("CLOCKERS").ask(function() { SelfManager.self().setVariable("heading", (world.ticker.tickCount() * 360)); }, true);
-      world.turtleManager.turtlesOfBreed("FLASHES").agentFilter(function() { return Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4); }).ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CLOCKERS")).ask(function() { SelfManager.self().setVariable("heading", (world.ticker.tickCount() * 360)); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FLASHES").agentFilter(function() { return Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4); })).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", 45);
         SelfManager.self().die();
       }, true);
       notImplemented('display', undefined)();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -227,11 +212,7 @@ var procedures = (function() {
         world.observer.setGlobal("tick-length", 1);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["calculateTickLength"] = temp;
@@ -243,18 +224,12 @@ var procedures = (function() {
       world.observer.setGlobal("pressure", (15 * ListPrims.sum(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
       world.observer.setGlobal("pressure-history", ListPrims.lput(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-history")));
       world.observer.setGlobal("zero-pressure-count", ListPrims.length(world.observer.getGlobal("pressure-history").filter(Tasks.reporterTask(function(p) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
+        Errors.procedureArgumentsCheck(1, arguments.length);
         return Prims.equality(p, 0);
       }, "[ [p] -> p = 0 ]"))));
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["calculatePressure"] = temp;
@@ -285,7 +260,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("wall-hits", (SelfManager.self().getVariable("wall-hits") + 1));
         SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + Prims.div(NLMath.abs((((NLMath.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface"))));
       }
-      world.getPatchAt(newPx, newPy).ask(function() {
+      Errors.askNobodyCheck(world.getPatchAt(newPx, newPy)).ask(function() {
         SelfManager.self().sprout(1, "FLASHES").ask(function() {
           SelfManager.self().hideTurtle(true);;
           SelfManager.self().setVariable("birthday", world.ticker.tickCount());
@@ -293,11 +268,7 @@ var procedures = (function() {
         }, true);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["bounce"] = temp;
@@ -312,11 +283,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("last-collision", Nobody);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["move"] = temp;
@@ -332,15 +299,11 @@ var procedures = (function() {
         if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
           procedures["COLLIDE-WITH"](candidate);
           SelfManager.self().setVariable("last-collision", candidate);
-          candidate.ask(function() { SelfManager.self().setVariable("last-collision", SelfManager.myself()); }, true);
+          Errors.askNobodyCheck(candidate).ask(function() { SelfManager.self().setVariable("last-collision", SelfManager.myself()); }, true);
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["checkForCollision"] = temp;
@@ -365,21 +328,17 @@ var procedures = (function() {
       if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
         SelfManager.self().setVariable("heading", (theta - NLMath.atan(v1l, v1t)));
       }
-      otherParticle.ask(function() { SelfManager.self().setVariable("speed", NLMath.sqrt(((v2t * v2t) + (v2l * v2l)))); }, true);
-      otherParticle.ask(function() {
+      Errors.askNobodyCheck(otherParticle).ask(function() { SelfManager.self().setVariable("speed", NLMath.sqrt(((v2t * v2t) + (v2l * v2l)))); }, true);
+      Errors.askNobodyCheck(otherParticle).ask(function() {
         SelfManager.self().setVariable("energy", (((0.5 * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed")) * SelfManager.self().getVariable("speed")));
       }, true);
       if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-        otherParticle.ask(function() { SelfManager.self().setVariable("heading", (theta - NLMath.atan(v2l, v2t))); }, true);
+        Errors.askNobodyCheck(otherParticle).ask(function() { SelfManager.self().setVariable("heading", (theta - NLMath.atan(v2l, v2t))); }, true);
       }
       procedures["RECOLOR"]();
-      otherParticle.ask(function() { procedures["RECOLOR"](); }, true);
+      Errors.askNobodyCheck(otherParticle).ask(function() { procedures["RECOLOR"](); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["collideWith"] = temp;
@@ -400,11 +359,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["recolor"] = temp;
@@ -417,7 +372,7 @@ var procedures = (function() {
         return (!Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45) && !Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
       }); letVars['tracePatches'] = tracePatches;
       if (!tracePatches.isEmpty()) {
-        tracePatches.ask(function() {
+        Errors.askNobodyCheck(tracePatches).ask(function() {
           SelfManager.self().setPatchVariable("pcolor", (SelfManager.self().getPatchVariable("pcolor") - 0.4));
           if ((!world.observer.getGlobal("trace?") || Prims.equality(NLMath.round(SelfManager.self().getPatchVariable("pcolor")), 0))) {
             SelfManager.self().setPatchVariable("pcolor", 0);
@@ -428,11 +383,7 @@ var procedures = (function() {
         world.observer.setGlobal("fade-needed?", false);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["fadePatches"] = temp;
@@ -441,15 +392,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.patches().agentFilter(function() {
+      Errors.askNobodyCheck(world.patches().agentFilter(function() {
         return ((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge"))) || (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge"))));
-      }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
+      })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["makeBox"] = temp;
@@ -465,11 +412,7 @@ var procedures = (function() {
       }, true);
       procedures["CALCULATE-TICK-LENGTH"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["makeParticles"] = temp;
@@ -485,11 +428,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("wall-hits", 0);
       SelfManager.self().setVariable("momentum-difference", 0);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupParticle"] = temp;
@@ -501,11 +440,7 @@ var procedures = (function() {
       SelfManager.self().setXY(((1 - world.observer.getGlobal("box-edge")) + Prims.randomFloat(((2 * world.observer.getGlobal("box-edge")) - 2))), ((1 - world.observer.getGlobal("box-edge")) + Prims.randomFloat(((2 * world.observer.getGlobal("box-edge")) - 2))));
       SelfManager.self().setVariable("heading", Prims.randomFloat(360));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["randomPosition"] = temp;
@@ -517,11 +452,7 @@ var procedures = (function() {
       plotManager.setCurrentPlot("Speed Counts");
       plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal("number-of-particles"), 6)));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupPlotz"] = temp;
@@ -553,11 +484,7 @@ var procedures = (function() {
       plotManager.setCurrentPen("init-avg-energy");
       procedures["DRAW-VERT-LINE"](world.observer.getGlobal("init-avg-energy"));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupHistograms"] = temp;
@@ -583,11 +510,7 @@ var procedures = (function() {
       }
       procedures["PLOT-HISTOGRAMS"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["doPlotting"] = temp;
@@ -617,11 +540,7 @@ var procedures = (function() {
       plotManager.resetPen();
       procedures["DRAW-VERT-LINE"](world.observer.getGlobal("avg-speed"));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["plotHistograms"] = temp;
@@ -635,11 +554,7 @@ var procedures = (function() {
       plotManager.plotPoint(xval, plotManager.getPlotYMax());
       plotManager.raisePen();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["drawVertLine"] = temp;
@@ -649,22 +564,16 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       if (Prims.gte(n, ListPrims.length(theList))) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return theList
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return theList;
       }
       else {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return procedures["LAST-N"](n,ListPrims.butFirst(theList))
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return procedures["LAST-N"](n,ListPrims.butFirst(theList));
       }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["lastN"] = temp;
@@ -681,11 +590,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("heading", 0);
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["makeClocker"] = temp;

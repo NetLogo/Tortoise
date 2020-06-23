@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("percent-similar"));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -60,11 +57,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).size());
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -73,7 +66,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", false, true, 0, 10, 0, 100, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["happy?", "similar-nearby", "other-nearby", "total-nearby"], [])('globals [   percent-similar  ; on the average, what percent of a turtle\'s neighbors                    ; are the same color as that turtle?   percent-unhappy  ; what percent of the turtles are unhappy? ]  turtles-own [   happy?           ; for each turtle, indicates whether at least %-similar-wanted percent of                    ;   that turtle\'s neighbors are the same color as the turtle   similar-nearby   ; how many neighboring patches have a turtle with my color?   other-nearby     ; how many have a turtle of another color?   total-nearby     ; sum of previous two variables ]  to setup   clear-all   ; create turtles on random patches.   ask patches [      set pcolor white     if random 100 < density [   ; set the occupancy density       sprout 1 [         ; 105 is the color number for \"blue\"         ; 27 is the color number for \"orange\"         set color one-of [105 27]         set size 1       ]     ]   ]   update-turtles   update-globals   reset-ticks end  ; run the model for one tick to go   if all? turtles [ happy? ] [ stop ]   move-unhappy-turtles   update-turtles   update-globals   tick end  ; unhappy turtles try a new spot to move-unhappy-turtles   ask turtles with [ not happy? ]     [ find-new-spot ] end  ; move until we find an unoccupied spot to find-new-spot   rt random-float 360   fd random-float 10   if any? other turtles-here [ find-new-spot ] ; keep going until we find an unoccupied patch   move-to patch-here  ; move to center of patch end  to update-turtles   ask turtles [     ; in next two lines, we use \"neighbors\" to test the eight patches     ; surrounding the current patch     set similar-nearby count (turtles-on neighbors)  with [ color = [ color ] of myself ]     set other-nearby count (turtles-on neighbors) with [ color != [ color ] of myself ]     set total-nearby similar-nearby + other-nearby     set happy? similar-nearby >= (%-similar-wanted * total-nearby / 100)     ; add visualization here     if visualization = \"old\" [ set shape \"default\" set size 1.3 ]     if visualization = \"square-x\" [       ifelse happy? [ set shape \"square\" ] [ set shape \"X\" ]     ]   ] end  to update-globals   let similar-neighbors sum [ similar-nearby ] of turtles   let total-neighbors sum [ total-nearby ] of turtles   set percent-similar (similar-neighbors / total-neighbors) * 100   set percent-unhappy (count turtles with [ not happy? ]) / (count turtles) * 100 end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":375,"top":10,"right":791,"bottom":427,"dimensions":{"minPxcor":-25,"maxPxcor":25,"minPycor":-25,"maxPycor":25,"patchSize":8,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"percent-unhappy\")","source":"percent-unhappy","left":265,"top":365,"right":355,"bottom":410,"display":"% unhappy","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"percent-similar\")","source":"percent-similar","left":265,"top":220,"right":355,"bottom":265,"display":"% similar","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Percent Similar', 'percent')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"percent-similar\"));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"percent","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot percent-similar","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Percent Similar","left":10,"top":140,"right":260,"bottom":285,"xAxis":"time","yAxis":"%","xmin":0,"xmax":5,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"percent","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot percent-similar","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"%-similar-wanted","left":10,"top":95,"right":285,"bottom":128,"display":"%-similar-wanted","min":"0","max":"100","default":30,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":10,"top":55,"right":90,"bottom":88,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":200,"top":55,"right":285,"bottom":88,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":100,"top":55,"right":190,"bottom":88,"display":"go once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"visualization","left":801,"top":380,"right":950,"bottom":425,"display":"visualization","choices":["old","square-x"],"currentChoice":1,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"compiledMin":"50","compiledMax":"99","compiledStep":"1","variable":"density","left":10,"top":10,"right":285,"bottom":43,"display":"density","min":"50","max":"99","default":95,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Number-unhappy', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable(\"happy?\"); }).size());       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [not happy?]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Number-unhappy","left":10,"top":295,"right":260,"bottom":445,"xmin":0,"xmax":10,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [not happy?]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtles().agentFilter(function() { return !SelfManager.self().getVariable(\"happy?\"); }).size()","source":"count turtles with [not happy?]","left":265,"top":315,"right":355,"bottom":360,"display":"num-unhappy","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtles().size()","source":"count turtles","left":265,"top":170,"right":355,"bottom":215,"display":"# agents","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["%-similar-wanted", "visualization", "density", "percent-similar", "percent-unhappy"], ["%-similar-wanted", "visualization", "density"], [], -25, 25, -25, 25, 8, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["happy?", "similar-nearby", "other-nearby", "total-nearby"], [])('globals [   percent-similar  ; on the average, what percent of a turtle\'s neighbors                    ; are the same color as that turtle?   percent-unhappy  ; what percent of the turtles are unhappy? ]  turtles-own [   happy?           ; for each turtle, indicates whether at least %-similar-wanted percent of                    ;   that turtle\'s neighbors are the same color as the turtle   similar-nearby   ; how many neighboring patches have a turtle with my color?   other-nearby     ; how many have a turtle of another color?   total-nearby     ; sum of previous two variables ]  to setup   clear-all   ; create turtles on random patches.   ask patches [      set pcolor white     if random 100 < density [   ; set the occupancy density       sprout 1 [         ; 105 is the color number for \"blue\"         ; 27 is the color number for \"orange\"         set color one-of [105 27]         set size 1       ]     ]   ]   update-turtles   update-globals   reset-ticks end  ; run the model for one tick to go   if all? turtles [ happy? ] [ stop ]   move-unhappy-turtles   update-turtles   update-globals   tick end  ; unhappy turtles try a new spot to move-unhappy-turtles   ask turtles with [ not happy? ]     [ find-new-spot ] end  ; move until we find an unoccupied spot to find-new-spot   rt random-float 360   fd random-float 10   if any? other turtles-here [ find-new-spot ] ; keep going until we find an unoccupied patch   move-to patch-here  ; move to center of patch end  to update-turtles   ask turtles [     ; in next two lines, we use \"neighbors\" to test the eight patches     ; surrounding the current patch     set similar-nearby count (turtles-on neighbors)  with [ color = [ color ] of myself ]     set other-nearby count (turtles-on neighbors) with [ color != [ color ] of myself ]     set total-nearby similar-nearby + other-nearby     set happy? similar-nearby >= (%-similar-wanted * total-nearby / 100)     ; add visualization here     if visualization = \"old\" [ set shape \"default\" set size 1.3 ]     if visualization = \"square-x\" [       ifelse happy? [ set shape \"square\" ] [ set shape \"X\" ]     ]   ] end  to update-globals   let similar-neighbors sum [ similar-nearby ] of turtles   let total-neighbors sum [ total-nearby ] of turtles   set percent-similar (similar-neighbors / total-neighbors) * 100   set percent-unhappy (count turtles with [ not happy? ]) / (count turtles) * 100 end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":375,"top":10,"right":791,"bottom":427,"dimensions":{"minPxcor":-25,"maxPxcor":25,"minPycor":-25,"maxPycor":25,"patchSize":8,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"percent-unhappy\")","source":"percent-unhappy","left":265,"top":365,"right":355,"bottom":410,"display":"% unhappy","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"percent-similar\")","source":"percent-similar","left":265,"top":220,"right":355,"bottom":265,"display":"% similar","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Percent Similar', 'percent')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.observer.getGlobal(\"percent-similar\"));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"percent","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot percent-similar","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Percent Similar","left":10,"top":140,"right":260,"bottom":285,"xAxis":"time","yAxis":"%","xmin":0,"xmax":5,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"percent","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot percent-similar","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"%-similar-wanted","left":10,"top":95,"right":285,"bottom":128,"display":"%-similar-wanted","min":"0","max":"100","default":30,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":10,"top":55,"right":90,"bottom":88,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":200,"top":55,"right":285,"bottom":88,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":100,"top":55,"right":190,"bottom":88,"display":"go once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"visualization","left":801,"top":380,"right":950,"bottom":425,"display":"visualization","choices":["old","square-x"],"currentChoice":1,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"compiledMin":"50","compiledMax":"99","compiledStep":"1","variable":"density","left":10,"top":10,"right":285,"bottom":43,"display":"density","min":"50","max":"99","default":95,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Number-unhappy', 'default')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable(\"happy?\"); }).size());       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [not happy?]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Number-unhappy","left":10,"top":295,"right":260,"bottom":445,"xmin":0,"xmax":10,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [not happy?]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtles().agentFilter(function() { return !SelfManager.self().getVariable(\"happy?\"); }).size()","source":"count turtles with [not happy?]","left":265,"top":315,"right":355,"bottom":360,"display":"num-unhappy","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtles().size()","source":"count turtles","left":265,"top":170,"right":355,"bottom":215,"display":"# agents","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["%-similar-wanted", "visualization", "density", "percent-similar", "percent-unhappy"], ["%-similar-wanted", "visualization", "density"], [], -25, 25, -25, 25, 8, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -99,7 +92,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.patches().ask(function() {
+      Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", 9.9);
         if (Prims.lt(Prims.random(100), world.observer.getGlobal("density"))) {
           SelfManager.self().sprout(1, "TURTLES").ask(function() {
@@ -112,11 +105,7 @@ var procedures = (function() {
       procedures["UPDATE-GLOBALS"]();
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -133,11 +122,7 @@ var procedures = (function() {
       procedures["UPDATE-GLOBALS"]();
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -146,13 +131,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).ask(function() { procedures["FIND-NEW-SPOT"](); }, true);
+      Errors.askNobodyCheck(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); })).ask(function() { procedures["FIND-NEW-SPOT"](); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["moveUnhappyTurtles"] = temp;
@@ -168,11 +149,7 @@ var procedures = (function() {
       }
       SelfManager.self().moveTo(SelfManager.self().getPatchHere());
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["findNewSpot"] = temp;
@@ -181,7 +158,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtles().ask(function() {
+      Errors.askNobodyCheck(world.turtles()).ask(function() {
         SelfManager.self().setVariable("similar-nearby", Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
           return Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
         }).size());
@@ -204,11 +181,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["updateTurtles"] = temp;
@@ -222,11 +195,7 @@ var procedures = (function() {
       world.observer.setGlobal("percent-similar", (Prims.div(similarNeighbors, totalNeighbors) * 100));
       world.observer.setGlobal("percent-unhappy", (Prims.div(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).size(), world.turtles().size()) * 100));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["updateGlobals"] = temp;

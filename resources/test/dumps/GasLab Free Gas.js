@@ -1,5 +1,6 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
+var Errors = tortoise_require('util/errors');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -37,11 +38,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.setHistogramBarCount(40);
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -53,11 +50,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).projectionBy(function() { return SelfManager.self().getVariable("energy"); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -70,11 +63,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.setHistogramBarCount(40);
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -86,11 +75,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).projectionBy(function() { return SelfManager.self().getVariable("energy"); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -103,11 +88,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.setHistogramBarCount(40);
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -119,11 +100,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).projectionBy(function() { return SelfManager.self().getVariable("energy"); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -138,11 +115,7 @@ modelConfig.plots = [(function() {
           let _maybestop_49_63 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("avg-energy"));
           if (_maybestop_49_63 instanceof Exception.StopInterrupt) { return _maybestop_49_63; }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -156,11 +129,7 @@ modelConfig.plots = [(function() {
           let _maybestop_33_47 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("init-avg-energy"));
           if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -175,11 +144,7 @@ modelConfig.plots = [(function() {
           plotManager.setXRange(0, (((0.5 * (world.observer.getGlobal("init-particle-speed") * 2)) * (world.observer.getGlobal("init-particle-speed") * 2)) * world.observer.getGlobal("particle-mass")));
           plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal("number-of-particles"), 6)));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -196,11 +161,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-fast"));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -213,11 +174,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-medium"));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -230,11 +187,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-slow"));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -248,11 +201,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.setYRange(0, 100);
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -269,11 +218,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.setHistogramBarCount(40);
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -285,11 +230,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -302,11 +243,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.setHistogramBarCount(40);
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -318,11 +255,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -335,11 +268,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.setHistogramBarCount(40);
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -351,11 +280,7 @@ modelConfig.plots = [(function() {
           var letVars = { };
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -370,11 +295,7 @@ modelConfig.plots = [(function() {
           let _maybestop_50_64 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("avg-speed"));
           if (_maybestop_50_64 instanceof Exception.StopInterrupt) { return _maybestop_50_64; }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -388,11 +309,7 @@ modelConfig.plots = [(function() {
           let _maybestop_33_47 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("init-avg-speed"));
           if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
@@ -407,18 +324,14 @@ modelConfig.plots = [(function() {
           plotManager.setXRange(0, (world.observer.getGlobal("init-particle-speed") * 2));
           plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal("number-of-particles"), 6)));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
-            return e;
-          } else {
-            throw e;
-          }
+          return Errors.stopInCommandCheck(e)
         };
       });
     });
   };
   return new Plot(name, pens, plotOps, "Speed", "Number", true, false, 0, 50, 0, 100, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass", "energy", "last-collision"] }])([], [])('globals [   tick-delta                      ;; how much we advance the tick counter this time through   max-tick-delta                  ;; the largest tick-delta is allowed to be   init-avg-speed init-avg-energy  ;; initial averages   avg-speed avg-energy            ;; current averages   fast medium slow                ;; current counts   percent-fast percent-medium     ;; percentage of the counts   percent-slow                    ;; percentage of the counts  ]  breed [ particles particle ]  particles-own [   speed mass energy          ;; particle info   last-collision ]   to setup   clear-all   set-default-shape particles \"circle\"   set max-tick-delta 0.1073   make-particles   update-variables   set init-avg-speed avg-speed   set init-avg-energy avg-energy   reset-ticks end  to go   ask particles [ move ]   ask particles   [ if collide? [check-for-collision] ]   ifelse (trace?)     [ ask particle 0 [ pen-down ] ]     [ ask particle 0 [ pen-up ] ]   tick-advance tick-delta   if floor ticks > floor (ticks - tick-delta)   [     update-variables     update-plots   ]   calculate-tick-delta    display end  to update-variables   set medium count particles with [color = green]   set slow count particles with [color = blue]   set fast count particles with [color = red]   set percent-medium (medium / count particles) * 100   set percent-slow (slow / count particles) * 100   set percent-fast (fast / count particles) * 100   set avg-speed  mean [speed] of particles   set avg-energy  mean [energy] of particles end    to calculate-tick-delta   ;; tick-delta is calculated in such way that even the fastest   ;; particle will jump at most 1 patch length in a tick. As   ;; particles jump (speed * tick-delta) at every tick, making   ;; tick length the inverse of the speed of the fastest particle   ;; (1/max speed) assures that. Having each particle advance at most   ;; one patch-length is necessary for them not to jump over each other   ;; without colliding.   ifelse any? particles with [speed > 0]     [ set tick-delta min list (1 / (ceiling max [speed] of particles)) max-tick-delta ]     [ set tick-delta max-tick-delta ] end    to move  ;; particle procedure   if patch-ahead (speed * tick-delta) != patch-here     [ set last-collision nobody ]   jump (speed * tick-delta) end  to check-for-collision  ;; particle procedure   ;; Here we impose a rule that collisions only take place when there   ;; are exactly two particles per patch.    if count other particles-here = 1   [     ;; the following conditions are imposed on collision candidates:     ;;   1. they must have a lower who number than my own, because collision     ;;      code is asymmetrical: it must always happen from the point of view     ;;      of just one particle.     ;;   2. they must not be the same particle that we last collided with on     ;;      this patch, so that we have a chance to leave the patch after we\'ve     ;;      collided with someone.     let candidate one-of other particles-here with       [who < [who] of myself and myself != last-collision]     ;; we also only collide if one of us has non-zero speed. It\'s useless     ;; (and incorrect, actually) for two particles with zero speed to collide.     if (candidate != nobody) and (speed > 0 or [speed] of candidate > 0)     [       collide-with candidate       set last-collision candidate       ask candidate [ set last-collision myself ]     ]   ] end  ;; implements a collision with another particle. ;; ;; THIS IS THE HEART OF THE PARTICLE SIMULATION, AND YOU ARE STRONGLY ADVISED ;; NOT TO CHANGE IT UNLESS YOU REALLY UNDERSTAND WHAT YOU\'RE DOING! ;; ;; The two particles colliding are self and other-particle, and while the ;; collision is performed from the point of view of self, both particles are ;; modified to reflect its effects. This is somewhat complicated, so I\'ll ;; give a general outline here: ;;   1. Do initial setup, and determine the heading between particle centers ;;      (call it theta). ;;   2. Convert the representation of the velocity of each particle from ;;      speed/heading to a theta-based vector whose first component is the ;;      particle\'s speed along theta, and whose second component is the speed ;;      perpendicular to theta. ;;   3. Modify the velocity vectors to reflect the effects of the collision. ;;      This involves: ;;        a. computing the velocity of the center of mass of the whole system ;;           along direction theta ;;        b. updating the along-theta components of the two velocity vectors. ;;   4. Convert from the theta-based vector representation of velocity back to ;;      the usual speed/heading representation for each particle. ;;   5. Perform final cleanup and update derived quantities. to collide-with [ other-particle ] ;; particle procedure   ;;; PHASE 1: initial setup    ;; for convenience, grab some quantities from other-particle   let mass2 [mass] of other-particle   let speed2 [speed] of other-particle   let heading2 [heading] of other-particle    ;; since particles are modeled as zero-size points, theta isn\'t meaningfully   ;; defined. we can assign it randomly without affecting the model\'s outcome.   let theta (random-float 360)      ;;; PHASE 2: convert velocities to theta-based vector representation    ;; now convert my velocity from speed/heading representation to components   ;; along theta and perpendicular to theta   let v1t (speed * cos (theta - heading))   let v1l (speed * sin (theta - heading))    ;; do the same for other-particle   let v2t (speed2 * cos (theta - heading2))   let v2l (speed2 * sin (theta - heading2))      ;;; PHASE 3: manipulate vectors to implement collision    ;; compute the velocity of the system\'s center of mass along theta   let vcm (((mass * v1t) + (mass2 * v2t)) / (mass + mass2) )    ;; now compute the new velocity for each particle along direction theta.   ;; velocity perpendicular to theta is unaffected by a collision along theta,   ;; so the next two lines actually implement the collision itself, in the   ;; sense that the effects of the collision are exactly the following changes   ;; in particle velocity.   set v1t (2 * vcm - v1t)   set v2t (2 * vcm - v2t)      ;;; PHASE 4: convert back to normal speed/heading    ;; now convert my velocity vector into my new speed and heading   set speed sqrt ((v1t ^ 2) + (v1l ^ 2))   set energy (0.5 * mass * (speed ^ 2))   ;; if the magnitude of the velocity vector is 0, atan is undefined. but   ;; speed will be 0, so heading is irrelevant anyway. therefore, in that   ;; case we\'ll just leave it unmodified.   if v1l != 0 or v1t != 0     [ set heading (theta - (atan v1l v1t)) ]    ;; and do the same for other-particle   ask other-particle [     set speed sqrt ((v2t ^ 2) + (v2l ^ 2))     set energy (0.5 * mass * (speed ^ 2))     if v2l != 0 or v2t != 0       [ set heading (theta - (atan v2l v2t)) ]   ]    ;; PHASE 5: final updates    ;; now recolor, since color is based on quantities that may have changed   recolor   ask other-particle     [ recolor ] end  to recolor  ;; particle procedure   ifelse speed < (0.5 * 10)   [     set color blue   ]   [     ifelse speed > (1.5 * 10)       [ set color red ]       [ set color green ]   ] end  ;;; ;;; drawing procedures ;;;   ;; creates initial particles to make-particles   create-particles number-of-particles   [     setup-particle     random-position     recolor   ]   calculate-tick-delta end   to setup-particle  ;; particle procedure   set speed init-particle-speed   set mass particle-mass   set energy (0.5 * mass * (speed ^ 2))   set last-collision nobody end   ;; place particle at random location inside the box. to random-position ;; particle procedure   setxy ((1 + min-pxcor) + random-float ((2 * max-pxcor) - 2))         ((1 + min-pycor) + random-float ((2 * max-pycor) - 2)) end  to-report last-n [n the-list]   ifelse n >= length the-list     [ report the-list ]     [ report last-n n butfirst the-list ] end  ;; histogram procedure to draw-vert-line [ xval ]   plotxy xval plot-y-min   plot-pen-down   plotxy xval plot-y-max   plot-pen-up end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":316,"top":11,"right":648,"bottom":344,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":4,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"go","left":8,"top":43,"right":94,"bottom":76,"display":"go/stop","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"setup","left":8,"top":10,"right":94,"bottom":43,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1000","compiledStep":"1","variable":"number-of-particles","left":97,"top":11,"right":303,"bottom":44,"display":"number-of-particles","min":"1","max":"1000","default":100,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"avg-speed\")","source":"avg-speed","left":18,"top":254,"right":150,"bottom":299,"display":"average speed","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setXRange(0, (((0.5 * (world.observer.getGlobal(\"init-particle-speed\") * 2)) * (world.observer.getGlobal(\"init-particle-speed\") * 2)) * world.observer.getGlobal(\"particle-mass\")));         plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal(\"number-of-particles\"), 6)));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledPens":[{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 15); }).projectionBy(function() { return SelfManager.self().getVariable(\"energy\"); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"fast","interval":10,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = red]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 55); }).projectionBy(function() { return SelfManager.self().getVariable(\"energy\"); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"medium","interval":10,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = green]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'slow')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'slow')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 105); }).projectionBy(function() { return SelfManager.self().getVariable(\"energy\"); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"slow","interval":10,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = blue]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'avg-energy')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.resetPen();         let _maybestop_49_63 = procedures[\"DRAW-VERT-LINE\"](world.observer.getGlobal(\"avg-energy\"));         if (_maybestop_49_63 instanceof Exception.StopInterrupt) { return _maybestop_49_63; }       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"avg-energy","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset  draw-vert-line avg-energy","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() {       try {         var reporterContext = false;         var letVars = { };         let _maybestop_33_47 = procedures[\"DRAW-VERT-LINE\"](world.observer.getGlobal(\"init-avg-energy\"));         if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; }       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {}","display":"init-avg-energy","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"draw-vert-line init-avg-energy","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Energy Histogram","left":614,"top":386,"right":904,"bottom":582,"xAxis":"Energy","yAxis":"Number","xmin":0,"xmax":400,"ymin":0,"ymax":10,"autoPlotOn":false,"legendOn":true,"setupCode":"","updateCode":"set-plot-x-range 0 (0.5 * (init-particle-speed * 2) * (init-particle-speed * 2) * particle-mass) set-plot-y-range 0 ceiling (number-of-particles / 6)","pens":[{"display":"fast","interval":10,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = red]","type":"pen"},{"display":"medium","interval":10,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = green]","type":"pen"},{"display":"slow","interval":10,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = blue]","type":"pen"},{"display":"avg-energy","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset  draw-vert-line avg-energy","type":"pen"},{"display":"init-avg-energy","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"draw-vert-line init-avg-energy","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"avg-energy\")","source":"avg-energy","left":173,"top":254,"right":305,"bottom":299,"display":"average energy","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Counts', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setYRange(0, 100);       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Counts', 'fast')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal(\"percent-fast\"));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"fast","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-fast","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Counts', 'medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal(\"percent-medium\"));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-medium","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Counts', 'slow')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal(\"percent-slow\"));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"slow","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-slow","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed Counts","left":15,"top":385,"right":304,"bottom":582,"xAxis":"time","yAxis":"count (%)","xmin":0,"xmax":20,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"set-plot-y-range 0 100","pens":[{"display":"fast","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-fast","type":"pen"},{"display":"medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-medium","type":"pen"},{"display":"slow","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-slow","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"collide?","left":97,"top":44,"right":200,"bottom":77,"display":"collide?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setXRange(0, (world.observer.getGlobal(\"init-particle-speed\") * 2));         plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal(\"number-of-particles\"), 6)));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledPens":[{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 15); }).projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"fast","interval":5,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = red]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 55); }).projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"medium","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = green]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'slow')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'slow')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 105); }).projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); }));       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"slow","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = blue]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'avg-speed')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.resetPen();         let _maybestop_50_64 = procedures[\"DRAW-VERT-LINE\"](world.observer.getGlobal(\"avg-speed\"));         if (_maybestop_50_64 instanceof Exception.StopInterrupt) { return _maybestop_50_64; }       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","display":"avg-speed","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset   draw-vert-line avg-speed","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() {       try {         var reporterContext = false;         var letVars = { };         let _maybestop_33_47 = procedures[\"DRAW-VERT-LINE\"](world.observer.getGlobal(\"init-avg-speed\"));         if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; }       } catch (e) {         if (e instanceof Exception.StopInterrupt) {           return e;         } else {           throw e;         }       };     });   }); }","compiledUpdateCode":"function() {}","display":"init-avg-speed","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"draw-vert-line init-avg-speed","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed Histogram","left":312,"top":385,"right":606,"bottom":582,"xAxis":"Speed","yAxis":"Number","xmin":0,"xmax":50,"ymin":0,"ymax":100,"autoPlotOn":false,"legendOn":true,"setupCode":"","updateCode":"set-plot-x-range 0 (init-particle-speed * 2) set-plot-y-range 0 ceiling (number-of-particles / 6)","pens":[{"display":"fast","interval":5,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = red]","type":"pen"},{"display":"medium","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = green]","type":"pen"},{"display":"slow","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = blue]","type":"pen"},{"display":"avg-speed","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset   draw-vert-line avg-speed","type":"pen"},{"display":"init-avg-speed","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"draw-vert-line init-avg-speed","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"percent-fast\")","source":"percent-fast","left":17,"top":312,"right":104,"bottom":357,"display":"percent fast","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"percent-medium\")","source":"percent-medium","left":108,"top":312,"right":205,"bottom":357,"display":"percent medium","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"percent-slow\")","source":"percent-slow","left":208,"top":312,"right":306,"bottom":357,"display":"percent slow","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"trace?","left":200,"top":44,"right":303,"bottom":77,"display":"trace?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"init-particle-speed","left":8,"top":88,"right":194,"bottom":121,"display":"init-particle-speed","min":"1","max":"20","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"particle-mass","left":8,"top":128,"right":194,"bottom":161,"display":"particle-mass","min":"1","max":"20","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   world.clearDrawing(); } catch (e) {   if (e instanceof Exception.StopInterrupt) {     return e;   } else {     throw e;   } }","source":"clear-drawing","left":200,"top":77,"right":303,"bottom":110,"display":"clear trace","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass", "tick-delta", "max-tick-delta", "init-avg-speed", "init-avg-energy", "avg-speed", "avg-energy", "fast", "medium", "slow", "percent-fast", "percent-medium", "percent-slow"], ["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass"], [], -40, 40, -40, 40, 4, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass", "energy", "last-collision"] }])([], [])('globals [   tick-delta                      ;; how much we advance the tick counter this time through   max-tick-delta                  ;; the largest tick-delta is allowed to be   init-avg-speed init-avg-energy  ;; initial averages   avg-speed avg-energy            ;; current averages   fast medium slow                ;; current counts   percent-fast percent-medium     ;; percentage of the counts   percent-slow                    ;; percentage of the counts  ]  breed [ particles particle ]  particles-own [   speed mass energy          ;; particle info   last-collision ]   to setup   clear-all   set-default-shape particles \"circle\"   set max-tick-delta 0.1073   make-particles   update-variables   set init-avg-speed avg-speed   set init-avg-energy avg-energy   reset-ticks end  to go   ask particles [ move ]   ask particles   [ if collide? [check-for-collision] ]   ifelse (trace?)     [ ask particle 0 [ pen-down ] ]     [ ask particle 0 [ pen-up ] ]   tick-advance tick-delta   if floor ticks > floor (ticks - tick-delta)   [     update-variables     update-plots   ]   calculate-tick-delta    display end  to update-variables   set medium count particles with [color = green]   set slow count particles with [color = blue]   set fast count particles with [color = red]   set percent-medium (medium / count particles) * 100   set percent-slow (slow / count particles) * 100   set percent-fast (fast / count particles) * 100   set avg-speed  mean [speed] of particles   set avg-energy  mean [energy] of particles end    to calculate-tick-delta   ;; tick-delta is calculated in such way that even the fastest   ;; particle will jump at most 1 patch length in a tick. As   ;; particles jump (speed * tick-delta) at every tick, making   ;; tick length the inverse of the speed of the fastest particle   ;; (1/max speed) assures that. Having each particle advance at most   ;; one patch-length is necessary for them not to jump over each other   ;; without colliding.   ifelse any? particles with [speed > 0]     [ set tick-delta min list (1 / (ceiling max [speed] of particles)) max-tick-delta ]     [ set tick-delta max-tick-delta ] end    to move  ;; particle procedure   if patch-ahead (speed * tick-delta) != patch-here     [ set last-collision nobody ]   jump (speed * tick-delta) end  to check-for-collision  ;; particle procedure   ;; Here we impose a rule that collisions only take place when there   ;; are exactly two particles per patch.    if count other particles-here = 1   [     ;; the following conditions are imposed on collision candidates:     ;;   1. they must have a lower who number than my own, because collision     ;;      code is asymmetrical: it must always happen from the point of view     ;;      of just one particle.     ;;   2. they must not be the same particle that we last collided with on     ;;      this patch, so that we have a chance to leave the patch after we\'ve     ;;      collided with someone.     let candidate one-of other particles-here with       [who < [who] of myself and myself != last-collision]     ;; we also only collide if one of us has non-zero speed. It\'s useless     ;; (and incorrect, actually) for two particles with zero speed to collide.     if (candidate != nobody) and (speed > 0 or [speed] of candidate > 0)     [       collide-with candidate       set last-collision candidate       ask candidate [ set last-collision myself ]     ]   ] end  ;; implements a collision with another particle. ;; ;; THIS IS THE HEART OF THE PARTICLE SIMULATION, AND YOU ARE STRONGLY ADVISED ;; NOT TO CHANGE IT UNLESS YOU REALLY UNDERSTAND WHAT YOU\'RE DOING! ;; ;; The two particles colliding are self and other-particle, and while the ;; collision is performed from the point of view of self, both particles are ;; modified to reflect its effects. This is somewhat complicated, so I\'ll ;; give a general outline here: ;;   1. Do initial setup, and determine the heading between particle centers ;;      (call it theta). ;;   2. Convert the representation of the velocity of each particle from ;;      speed/heading to a theta-based vector whose first component is the ;;      particle\'s speed along theta, and whose second component is the speed ;;      perpendicular to theta. ;;   3. Modify the velocity vectors to reflect the effects of the collision. ;;      This involves: ;;        a. computing the velocity of the center of mass of the whole system ;;           along direction theta ;;        b. updating the along-theta components of the two velocity vectors. ;;   4. Convert from the theta-based vector representation of velocity back to ;;      the usual speed/heading representation for each particle. ;;   5. Perform final cleanup and update derived quantities. to collide-with [ other-particle ] ;; particle procedure   ;;; PHASE 1: initial setup    ;; for convenience, grab some quantities from other-particle   let mass2 [mass] of other-particle   let speed2 [speed] of other-particle   let heading2 [heading] of other-particle    ;; since particles are modeled as zero-size points, theta isn\'t meaningfully   ;; defined. we can assign it randomly without affecting the model\'s outcome.   let theta (random-float 360)      ;;; PHASE 2: convert velocities to theta-based vector representation    ;; now convert my velocity from speed/heading representation to components   ;; along theta and perpendicular to theta   let v1t (speed * cos (theta - heading))   let v1l (speed * sin (theta - heading))    ;; do the same for other-particle   let v2t (speed2 * cos (theta - heading2))   let v2l (speed2 * sin (theta - heading2))      ;;; PHASE 3: manipulate vectors to implement collision    ;; compute the velocity of the system\'s center of mass along theta   let vcm (((mass * v1t) + (mass2 * v2t)) / (mass + mass2) )    ;; now compute the new velocity for each particle along direction theta.   ;; velocity perpendicular to theta is unaffected by a collision along theta,   ;; so the next two lines actually implement the collision itself, in the   ;; sense that the effects of the collision are exactly the following changes   ;; in particle velocity.   set v1t (2 * vcm - v1t)   set v2t (2 * vcm - v2t)      ;;; PHASE 4: convert back to normal speed/heading    ;; now convert my velocity vector into my new speed and heading   set speed sqrt ((v1t ^ 2) + (v1l ^ 2))   set energy (0.5 * mass * (speed ^ 2))   ;; if the magnitude of the velocity vector is 0, atan is undefined. but   ;; speed will be 0, so heading is irrelevant anyway. therefore, in that   ;; case we\'ll just leave it unmodified.   if v1l != 0 or v1t != 0     [ set heading (theta - (atan v1l v1t)) ]    ;; and do the same for other-particle   ask other-particle [     set speed sqrt ((v2t ^ 2) + (v2l ^ 2))     set energy (0.5 * mass * (speed ^ 2))     if v2l != 0 or v2t != 0       [ set heading (theta - (atan v2l v2t)) ]   ]    ;; PHASE 5: final updates    ;; now recolor, since color is based on quantities that may have changed   recolor   ask other-particle     [ recolor ] end  to recolor  ;; particle procedure   ifelse speed < (0.5 * 10)   [     set color blue   ]   [     ifelse speed > (1.5 * 10)       [ set color red ]       [ set color green ]   ] end  ;;; ;;; drawing procedures ;;;   ;; creates initial particles to make-particles   create-particles number-of-particles   [     setup-particle     random-position     recolor   ]   calculate-tick-delta end   to setup-particle  ;; particle procedure   set speed init-particle-speed   set mass particle-mass   set energy (0.5 * mass * (speed ^ 2))   set last-collision nobody end   ;; place particle at random location inside the box. to random-position ;; particle procedure   setxy ((1 + min-pxcor) + random-float ((2 * max-pxcor) - 2))         ((1 + min-pycor) + random-float ((2 * max-pycor) - 2)) end  to-report last-n [n the-list]   ifelse n >= length the-list     [ report the-list ]     [ report last-n n butfirst the-list ] end  ;; histogram procedure to draw-vert-line [ xval ]   plotxy xval plot-y-min   plot-pen-down   plotxy xval plot-y-max   plot-pen-up end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":316,"top":11,"right":648,"bottom":344,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":4,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_35 = procedures[\"GO\"]();   if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"go","left":8,"top":43,"right":94,"bottom":76,"display":"go/stop","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   let _maybestop_33_38 = procedures[\"SETUP\"]();   if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; } } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"setup","left":8,"top":10,"right":94,"bottom":43,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1000","compiledStep":"1","variable":"number-of-particles","left":97,"top":11,"right":303,"bottom":44,"display":"number-of-particles","min":"1","max":"1000","default":100,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"avg-speed\")","source":"avg-speed","left":18,"top":254,"right":150,"bottom":299,"display":"average speed","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setXRange(0, (((0.5 * (world.observer.getGlobal(\"init-particle-speed\") * 2)) * (world.observer.getGlobal(\"init-particle-speed\") * 2)) * world.observer.getGlobal(\"particle-mass\")));         plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal(\"number-of-particles\"), 6)));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledPens":[{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 15); }).projectionBy(function() { return SelfManager.self().getVariable(\"energy\"); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"fast","interval":10,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = red]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 55); }).projectionBy(function() { return SelfManager.self().getVariable(\"energy\"); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"medium","interval":10,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = green]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'slow')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'slow')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 105); }).projectionBy(function() { return SelfManager.self().getVariable(\"energy\"); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"slow","interval":10,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = blue]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'avg-energy')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.resetPen();         let _maybestop_49_63 = procedures[\"DRAW-VERT-LINE\"](world.observer.getGlobal(\"avg-energy\"));         if (_maybestop_49_63 instanceof Exception.StopInterrupt) { return _maybestop_49_63; }       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"avg-energy","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset  draw-vert-line avg-energy","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() {       try {         var reporterContext = false;         var letVars = { };         let _maybestop_33_47 = procedures[\"DRAW-VERT-LINE\"](world.observer.getGlobal(\"init-avg-energy\"));         if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; }       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {}","display":"init-avg-energy","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"draw-vert-line init-avg-energy","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Energy Histogram","left":614,"top":386,"right":904,"bottom":582,"xAxis":"Energy","yAxis":"Number","xmin":0,"xmax":400,"ymin":0,"ymax":10,"autoPlotOn":false,"legendOn":true,"setupCode":"","updateCode":"set-plot-x-range 0 (0.5 * (init-particle-speed * 2) * (init-particle-speed * 2) * particle-mass) set-plot-y-range 0 ceiling (number-of-particles / 6)","pens":[{"display":"fast","interval":10,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = red]","type":"pen"},{"display":"medium","interval":10,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = green]","type":"pen"},{"display":"slow","interval":10,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ energy ] of particles with [color = blue]","type":"pen"},{"display":"avg-energy","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset  draw-vert-line avg-energy","type":"pen"},{"display":"init-avg-energy","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"draw-vert-line init-avg-energy","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"avg-energy\")","source":"avg-energy","left":173,"top":254,"right":305,"bottom":299,"display":"average energy","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Counts', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setYRange(0, 100);       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Counts', 'fast')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal(\"percent-fast\"));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"fast","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-fast","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Counts', 'medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal(\"percent-medium\"));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-medium","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Counts', 'slow')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal(\"percent-slow\"));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"slow","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-slow","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed Counts","left":15,"top":385,"right":304,"bottom":582,"xAxis":"time","yAxis":"count (%)","xmin":0,"xmax":20,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"set-plot-y-range 0 100","pens":[{"display":"fast","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-fast","type":"pen"},{"display":"medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-medium","type":"pen"},{"display":"slow","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks percent-slow","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"collide?","left":97,"top":44,"right":200,"bottom":77,"display":"collide?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', undefined)(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setXRange(0, (world.observer.getGlobal(\"init-particle-speed\") * 2));         plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal(\"number-of-particles\"), 6)));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledPens":[{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 15); }).projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"fast","interval":5,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = red]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'medium')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 55); }).projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"medium","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = green]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'slow')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.setHistogramBarCount(40);       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'slow')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed(\"PARTICLES\").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 105); }).projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); }));       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"slow","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = blue]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'avg-speed')(function() {       try {         var reporterContext = false;         var letVars = { };         plotManager.resetPen();         let _maybestop_50_64 = procedures[\"DRAW-VERT-LINE\"](world.observer.getGlobal(\"avg-speed\"));         if (_maybestop_50_64 instanceof Exception.StopInterrupt) { return _maybestop_50_64; }       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","display":"avg-speed","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset   draw-vert-line avg-speed","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {   return workspace.rng.withClone(function() {     return plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() {       try {         var reporterContext = false;         var letVars = { };         let _maybestop_33_47 = procedures[\"DRAW-VERT-LINE\"](world.observer.getGlobal(\"init-avg-speed\"));         if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; }       } catch (e) {         return Errors.stopInCommandCheck(e)       };     });   }); }","compiledUpdateCode":"function() {}","display":"init-avg-speed","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"draw-vert-line init-avg-speed","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed Histogram","left":312,"top":385,"right":606,"bottom":582,"xAxis":"Speed","yAxis":"Number","xmin":0,"xmax":50,"ymin":0,"ymax":100,"autoPlotOn":false,"legendOn":true,"setupCode":"","updateCode":"set-plot-x-range 0 (init-particle-speed * 2) set-plot-y-range 0 ceiling (number-of-particles / 6)","pens":[{"display":"fast","interval":5,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = red]","type":"pen"},{"display":"medium","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = green]","type":"pen"},{"display":"slow","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"set-histogram-num-bars 40","updateCode":"histogram [ speed ] of particles with [color = blue]","type":"pen"},{"display":"avg-speed","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset   draw-vert-line avg-speed","type":"pen"},{"display":"init-avg-speed","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"draw-vert-line init-avg-speed","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"percent-fast\")","source":"percent-fast","left":17,"top":312,"right":104,"bottom":357,"display":"percent fast","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"percent-medium\")","source":"percent-medium","left":108,"top":312,"right":205,"bottom":357,"display":"percent medium","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"percent-slow\")","source":"percent-slow","left":208,"top":312,"right":306,"bottom":357,"display":"percent slow","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"trace?","left":200,"top":44,"right":303,"bottom":77,"display":"trace?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"init-particle-speed","left":8,"top":88,"right":194,"bottom":121,"display":"init-particle-speed","min":"1","max":"20","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"particle-mass","left":8,"top":128,"right":194,"bottom":161,"display":"particle-mass","min":"1","max":"20","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {   var reporterContext = false;   var letVars = { };   world.clearDrawing(); } catch (e) {   return Errors.stopInCommandCheck(e) }","source":"clear-drawing","left":200,"top":77,"right":303,"bottom":110,"display":"clear trace","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass", "tick-delta", "max-tick-delta", "init-avg-speed", "init-avg-energy", "avg-speed", "avg-energy", "fast", "medium", "slow", "percent-fast", "percent-medium", "percent-slow"], ["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass"], [], -40, 40, -40, 40, 4, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -452,11 +365,7 @@ var procedures = (function() {
       world.observer.setGlobal("init-avg-energy", world.observer.getGlobal("avg-energy"));
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setup"] = temp;
@@ -465,17 +374,17 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures["MOVE"](); }, true);
-      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { procedures["MOVE"](); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() {
         if (world.observer.getGlobal("collide?")) {
           procedures["CHECK-FOR-COLLISION"]();
         }
       }, true);
       if (world.observer.getGlobal("trace?")) {
-        world.turtleManager.getTurtleOfBreed("PARTICLES", 0).ask(function() { SelfManager.self().penManager.lowerPen(); }, true);
+        Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PARTICLES", 0)).ask(function() { SelfManager.self().penManager.lowerPen(); }, true);
       }
       else {
-        world.turtleManager.getTurtleOfBreed("PARTICLES", 0).ask(function() { SelfManager.self().penManager.raisePen(); }, true);
+        Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("PARTICLES", 0)).ask(function() { SelfManager.self().penManager.raisePen(); }, true);
       }
       world.ticker.tickAdvance(world.observer.getGlobal("tick-delta"));
       if (Prims.gt(NLMath.floor(world.ticker.tickCount()), NLMath.floor((world.ticker.tickCount() - world.observer.getGlobal("tick-delta"))))) {
@@ -485,11 +394,7 @@ var procedures = (function() {
       procedures["CALCULATE-TICK-DELTA"]();
       notImplemented('display', undefined)();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["go"] = temp;
@@ -507,11 +412,7 @@ var procedures = (function() {
       world.observer.setGlobal("avg-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
       world.observer.setGlobal("avg-energy", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["updateVariables"] = temp;
@@ -527,11 +428,7 @@ var procedures = (function() {
         world.observer.setGlobal("tick-delta", world.observer.getGlobal("max-tick-delta"));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["calculateTickDelta"] = temp;
@@ -545,11 +442,7 @@ var procedures = (function() {
       }
       SelfManager.self().jumpIfAble((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-delta")));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["move"] = temp;
@@ -565,15 +458,11 @@ var procedures = (function() {
         if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
           procedures["COLLIDE-WITH"](candidate);
           SelfManager.self().setVariable("last-collision", candidate);
-          candidate.ask(function() { SelfManager.self().setVariable("last-collision", SelfManager.myself()); }, true);
+          Errors.askNobodyCheck(candidate).ask(function() { SelfManager.self().setVariable("last-collision", SelfManager.myself()); }, true);
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["checkForCollision"] = temp;
@@ -598,7 +487,7 @@ var procedures = (function() {
       if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
         SelfManager.self().setVariable("heading", (theta - NLMath.atan(v1l, v1t)));
       }
-      otherParticle.ask(function() {
+      Errors.askNobodyCheck(otherParticle).ask(function() {
         SelfManager.self().setVariable("speed", NLMath.sqrt((NLMath.pow(v2t, 2) + NLMath.pow(v2l, 2))));
         SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * NLMath.pow(SelfManager.self().getVariable("speed"), 2)));
         if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
@@ -606,13 +495,9 @@ var procedures = (function() {
         }
       }, true);
       procedures["RECOLOR"]();
-      otherParticle.ask(function() { procedures["RECOLOR"](); }, true);
+      Errors.askNobodyCheck(otherParticle).ask(function() { procedures["RECOLOR"](); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["collideWith"] = temp;
@@ -633,11 +518,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["recolor"] = temp;
@@ -653,11 +534,7 @@ var procedures = (function() {
       }, true);
       procedures["CALCULATE-TICK-DELTA"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["makeParticles"] = temp;
@@ -671,11 +548,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * NLMath.pow(SelfManager.self().getVariable("speed"), 2)));
       SelfManager.self().setVariable("last-collision", Nobody);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["setupParticle"] = temp;
@@ -686,11 +559,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setXY(((1 + world.topology.minPxcor) + Prims.randomFloat(((2 * world.topology.maxPxcor) - 2))), ((1 + world.topology.minPycor) + Prims.randomFloat(((2 * world.topology.maxPycor) - 2))));
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["randomPosition"] = temp;
@@ -700,22 +569,16 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       if (Prims.gte(n, ListPrims.length(theList))) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return theList
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return theList;
       }
       else {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return procedures["LAST-N"](n,ListPrims.butFirst(theList))
-        }
+        Errors.reportInContextCheck(reporterContext);
+        return procedures["LAST-N"](n,ListPrims.butFirst(theList));
       }
-      throw new Error("Reached end of reporter procedure without REPORT being called.");
+      Errors.missingReport();
     } catch (e) {
-     if (e instanceof Exception.StopInterrupt) {
-        throw new Error("STOP is not allowed inside TO-REPORT.");
-      } else {
-        throw e;
-      }
+      Errors.stopInReportCheck(e)
     }
   });
   procs["lastN"] = temp;
@@ -729,11 +592,7 @@ var procedures = (function() {
       plotManager.plotPoint(xval, plotManager.getPlotYMax());
       plotManager.raisePen();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
-        return e;
-      } else {
-        throw e;
-      }
+      return Errors.stopInCommandCheck(e)
     }
   });
   procs["drawVertLine"] = temp;
