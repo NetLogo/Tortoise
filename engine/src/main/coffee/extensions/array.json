@@ -1,0 +1,36 @@
+{
+  "name": "array",
+  "prims": [
+    {
+      "name": "from-list",
+      "actionName": "from-list",
+      "argTypes": ["list"],
+      "returnType": "wildcard"
+    }, {
+      "name": "to-list",
+      "actionName": "to-list",
+      "argTypes": ["wildcard"],
+      "returnType": "list"
+    }, {
+      "name": "is-array?",
+      "actionName": "is-array?",
+      "argTypes": ["wildcard"],
+      "returnType": "boolean"
+    }, {
+      "name": "length",
+      "actionName": "length",
+      "argTypes": ["wildcard"],
+      "returnType": "number"
+    }, {
+      "name": "item",
+      "actionName": "item",
+      "argTypes": ["wildcard", "number"],
+      "returnType": "wildcard"
+    }, {
+      "name": "set",
+      "actionName": "set",
+      "argTypes": ["wildcard", "number", "wildcard"],
+      "returnType": "unit"
+    }
+  ]
+}

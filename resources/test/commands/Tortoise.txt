@@ -100,3 +100,18 @@ MiniCsvExtensionRows
   O> set temp [ pxcor ] of turtles
   mini-csv:to-row temp => "-3,-4,-5"
   mini-csv:from-row mini-csv:to-row temp => [-3 -4 -5]
+
+ArrayExtension
+  extensions [array]
+  globals [arr fruits]
+  O> set arr (array:from-list [1 "apple"])
+  array:to-list (array:from-list []) => []
+  array:to-list (array:from-list [1 "apple"]) => [1 "apple"]
+  array:to-list arr => [1 "apple"]
+  array:length arr => 2
+  array:length (array:from-list []) => 0
+  array:item arr 1 => "apple"
+  O> set fruits array:from-list ["apple" "orange"]
+  array:to-list fruits => ["apple" "orange"]
+  O> array:set fruits 0 "pineapple"
+  array:to-list fruits => ["pineapple" "orange"]
