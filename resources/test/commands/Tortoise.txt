@@ -123,8 +123,6 @@ ArrayExtension
   (word fruits) => "{{array: \"apple\" \"orange\"}}"
   O> array:set fruits 0 "pineapple"
   (word fruits) => "{{array: \"pineapple\" \"orange\"}}"
-  array:set [1 2 3] 0 0 => ERROR Extension exception: not an array: [1 2 3] error while observer running ARRAY:SET
-  array:set fruits 4 0 => ERROR Extension exception: 4 is not a valid index into an array of length 2
 
 Array_is-array
   extensions [array]
