@@ -103,15 +103,32 @@ MiniCsvExtensionRows
 
 ArrayExtension
   extensions [array]
-  globals [arr fruits]
-  O> set arr (array:from-list [1 "apple"])
-  array:to-list (array:from-list []) => []
-  array:to-list (array:from-list [1 "apple"]) => [1 "apple"]
-  array:to-list arr => [1 "apple"]
+  globals [arr empty-array fruits arr-with-list]
+  O> set arr (array:from-list [1 2])
+  (word arr) => "{{array: 1 2}}"
+  O> set empty-array array:from-list []
+  (word empty-array) => "{{array: }}"
+  O> set arr-with-list (array:from-list [1 [2 3] 4])
+  (word arr-with-list) => "{{array: 1 [2 3] 4}}"
+  array:to-list empty-array => []
+  array:to-list arr => [1 2]
+  array:to-list [1 2 3] => ERROR Extension exception: not an array: [1 2 3] error while observer running ARRAY:TO-LIST
   array:length arr => 2
-  array:length (array:from-list []) => 0
-  array:item arr 1 => "apple"
+  array:length empty-array => 0
+  array:length [1 2 3] => ERROR Extension exception: not an array: [1 2 3] error while observer running ARRAY:LENGTH
+  array:item arr 1 => 2
+  array:item [1 2 3] 0 => ERROR Extension exception: not an array: [1 2 3] error while observer running ARRAY:ITEM
+  array:item arr 4 => ERROR Extension exception: 4 is not a valid index into an array of length 2
   O> set fruits array:from-list ["apple" "orange"]
-  array:to-list fruits => ["apple" "orange"]
+  (word fruits) => "{{array: \"apple\" \"orange\"}}"
   O> array:set fruits 0 "pineapple"
-  array:to-list fruits => ["pineapple" "orange"]
+  (word fruits) => "{{array: \"pineapple\" \"orange\"}}"
+  array:set [1 2 3] 0 0 => ERROR Extension exception: not an array: [1 2 3] error while observer running ARRAY:SET
+  array:set fruits 4 0 => ERROR Extension exception: 4 is not a valid index into an array of length 2
+
+Array_is-array
+  extensions [array]
+  array:is-array? 0 => false
+  array:is-array? [1 2 3] => false
+  array:is-array? "hi" => false
+  array:is-array? array:from-list [1 2 3] => true

@@ -4,24 +4,23 @@
 isArray = (x) ->
   x._type is "ext_array"
 
-notArrayException = (x, primitive) ->
-  "Extension exception: not an array: #{JSON.stringify(x).replace(/,/g, ' ')} error while observer running #{primitive}"
+notArrayException = (x, prim) ->
+  "Extension exception: not an array: #{JSON.stringify(x).replace(/,/g, ' ')} error while observer running #{prim}"
 
 invalidIndexException = (extArray, index) ->
   "Extension exception: #{index} is not a valid index into an array of length #{Object.keys(extArray).length}"
 
+dumpArray = (array) ->
+  inner = []
+  for index of array
+    inner.push(JSON.stringify(array[index]))
+
+  # when array contains lists, it's a simple way to return lists in the array by replace ',' by ' ' --XZ (6/25/20)
+  inner.join(' ').replace(/,/g, ' ')
 
 module.exports = {
 
-  dumper: {
-    canDump: isArray,
-    dump: (x) ->
-      array = []
-      for index of x
-        array.push(JSON.stringify(x[index]))
-      # when array contains lists, it's a simple way to return lists in an array by replace ',' by ' ' --XZ (6/25/20)
-      "{{array:  #{array.join(' ').replace(/,/g, ' ')}}}"
-  }
+  dumper: { canDump: isArray, dump: (x) -> "{{array: #{dumpArray(x)}}}" }
 
   init: (workspace) ->
 
@@ -70,9 +69,8 @@ module.exports = {
       if extArray[index]
         extArray[index] = value
       else
-        throw new Error(
-          invalidIndexException(extArray, index)
-        )
+        throw new Error(invalidIndexException(extArray, index))
+      return
 
     {
       name: "array"
