@@ -14,7 +14,6 @@ dumpMatrix = (matrix) ->
 
 # Any => Boolean
 isMatrix = (x) ->
-  console.log(x instanceof Matrix)
   x instanceof Matrix
 
 module.exports = {
@@ -41,7 +40,6 @@ module.exports = {
 
     # Matrix => List[List[Number]]
     toRowList = (matrix) ->
-      console.log(matrix)
       matrix.toArray()
 
     # Matrix => List[List[Number]]
@@ -215,13 +213,16 @@ module.exports = {
     transpose = (matrix) ->
       matrix.T
 
+    # Matrix => List
     realEigenvalues = (matrix) ->
       [eigenvalues, _] = matrix.copy().eig()
       return eigenvalues.toArray()
 
+    # Matrix => List
     imaginaryEigenvalues = (matrix) ->
       return
 
+    # Matrix => Matrix
     eigenvectors = (matrix) ->
       [_, eigenvectors] = matrix.copy().eig()
       return eigenvectors
