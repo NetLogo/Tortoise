@@ -16,6 +16,39 @@ dumpMatrix = (matrix) ->
 isMatrix = (x) ->
   x instanceof Matrix
 
+checkNestedList = (list) ->
+  numRows = list.length
+  if numRows is 0
+    throw new Error("Extension exception: input list was empty")
+
+  numCols = -1
+
+  for rowList in list
+    if rowList instanceof Array
+      if numCols is -1
+        numCols = rowList.length
+      else if numCols isnt rowList.length
+        throw new Error(
+          "Extension exception: To convert a nested list into a matrix, all nested lists must be the same length" +
+          " -- e.g. [[1 2 3 4] [1 2 3]] is invalid, because row 1 has one more entry."
+        )
+    else
+      throw new Error(
+        "Extension exception: To convert a nested list into a matrix, there must be exactly two levels of nesting" +
+        " -- e.g. [[1 2 3] [4 5 6]] creates a good 2x3 matrix."
+      )
+
+  if numCols is 0
+    throw new Error("Extension exception: input list contained only empty lists")
+
+  for row in rangeUntil(0)(numRows)
+    for column in rangeUntil(0)(numCols)
+      if typeof(list[row][column]) isnt 'number'
+        list[row][column] = 0
+
+  return list
+
+
 module.exports = {
 
   dumper: { canDump: isMatrix, dump: (x) -> "{{matrix: #{dumpMatrix(x)}}}" }
@@ -32,10 +65,12 @@ module.exports = {
 
     # List[List[Number]] => Matrix
     fromRowList = (nestedList) ->
+      nestedList = checkNestedList(nestedList)
       v.array(nestedList)
 
     # List[List[Number]] => Matrix
     fromColumnList = (nestedList) ->
+      nestedList = checkNestedList(nestedList)
       v.array(nestedList).T
 
     # Matrix => List[List[Number]]

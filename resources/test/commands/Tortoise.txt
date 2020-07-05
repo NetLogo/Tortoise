@@ -101,20 +101,43 @@ MiniCsvExtensionRows
   mini-csv:to-row temp => "-3,-4,-5"
   mini-csv:from-row mini-csv:to-row temp => [-3 -4 -5]
 
-Matrix_creation-and-conversion-to/from-lists
+Matrix_creation
   extensions [matrix]
   globals [glob1 glob2 glob3 glob4]
   O> set glob1 matrix:make-constant 2 2 0
   (word glob1) => "{{matrix:  [ [ 0 0 ][ 0 0 ] ]}}"
   O> set glob2 matrix:make-identity 3
   (word glob2) => "{{matrix:  [ [ 1 0 0 ][ 0 1 0 ][ 0 0 1 ] ]}}"
-  O> set glob3 matrix:from-row-list [[1 2 3] [4 5 6]]
-  (word glob3) => "{{matrix:  [ [ 1 2 3 ][ 4 5 6 ] ]}}"
-  O> set glob4 matrix:from-column-list [[1 2 3] [4 5 6]]
-  (word glob4) => "{{matrix:  [ [ 1 4 ][ 2 5 ][ 3 6 ] ]}}"
-  matrix:to-row-list glob3 => [[1 2 3] [4 5 6]]
 
-Matrix-copy
+Matrix_conversion-from-list
+  extensions [matrix]
+  globals [glob1 glob2 glob3]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6]]
+  (word glob1) => "{{matrix:  [ [ 1 2 3 ][ 4 5 6 ] ]}}"
+  O> set glob2 matrix:from-row-list [[1 2 3] [4 5 "6"]]
+  (word glob2) => "{{matrix:  [ [ 1 2 3 ][ 4 5 0 ] ]}}"
+  O> set glob3 matrix:from-row-list [] => ERROR Extension exception: input list was empty
+  O> set glob3 matrix:from-row-list [[]] => ERROR Extension exception: input list contained only empty lists
+  O> set glob3 matrix:from-row-list [1 2 3] => ERROR Extension exception: To convert a nested list into a matrix, there must be exactly two levels of nesting -- e.g. [[1 2 3] [4 5 6]] creates a good 2x3 matrix.
+  O> set glob3 matrix:from-row-list [[1 2 3] [4 5]] => ERROR Extension exception: To convert a nested list into a matrix, all nested lists must be the same length -- e.g. [[1 2 3 4] [1 2 3]] is invalid, because row 1 has one more entry.
+  O> set glob1 matrix:from-column-list [[1 2 3] [4 5 6]]
+  (word glob1) => "{{matrix:  [ [ 1 4 ][ 2 5 ][ 3 6 ] ]}}"
+  O> set glob2 matrix:from-column-list [[1 2 3] [4 5 "6"]]
+  (word glob2) => "{{matrix:  [ [ 1 4 ][ 2 5 ][ 3 0 ] ]}}"
+  O> set glob3 matrix:from-column-list [] => ERROR Extension exception: input list was empty
+  O> set glob3 matrix:from-column-list [[]] => ERROR Extension exception: input list contained only empty lists
+  O> set glob3 matrix:from-column-list [1 2 3] => ERROR Extension exception: To convert a nested list into a matrix, there must be exactly two levels of nesting -- e.g. [[1 2 3] [4 5 6]] creates a good 2x3 matrix.
+  O> set glob3 matrix:from-column-list [[1 2 3] [4 5]] => ERROR Extension exception: To convert a nested list into a matrix, all nested lists must be the same length -- e.g. [[1 2 3 4] [1 2 3]] is invalid, because row 1 has one more entry.
+
+Matrix_to-row/column-list
+  extensions [matrix]
+  globals [glob1 glob2 glob3]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6]]
+  matrix:to-row-list glob1 => [[1 2 3] [4 5 6]]
+  matrix:to-column-list glob1 => [[1 4] [2 5] [3 6]]
+
+
+Matrix_copy
   extensions [matrix]
   globals [glob1 glob-copy]
   O> set glob1 matrix:make-identity 3
