@@ -248,20 +248,6 @@ module.exports = {
     transpose = (matrix) ->
       matrix.T
 
-    # Matrix => List
-    realEigenvalues = (matrix) ->
-      [eigenvalues, _] = matrix.copy().eig()
-      return eigenvalues.toArray()
-
-    # Matrix => List
-    imaginaryEigenvalues = (matrix) ->
-      return
-
-    # Matrix => Matrix
-    eigenvectors = (matrix) ->
-      [_, eigenvectors] = matrix.copy().eig()
-      return eigenvectors
-
     # Apparently this is inefficient for large matrices. --SL (Spring, 2017)
     # Matrix => Number
     det = (matrix) ->

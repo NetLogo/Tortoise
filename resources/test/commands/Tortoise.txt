@@ -264,15 +264,6 @@ Matrix_transpose
   (word glob2) => "{{matrix:  [ [ 1 3 ][ 2 4 ] ]}}"
   (word glob1) => "{{matrix:  [ [ 1 2 ][ 3 4 ] ]}}"
 
-Matrix_eigenvectors/eigenvalues
-  extensions [matrix]
-  globals [glob1 glob2 glob3]
-  O> set glob1 matrix:from-row-list [[1 0 0] [0 2 0] [0 0 3]]
-  O> set glob2 matrix:eigenvectors glob1
-  (word glob2) => "{{matrix:  [ [ 1 0 0 ][ 0 1 0 ][ 0 0 1 ] ]}}"
-  (word glob1) => "{{matrix:  [ [ 1 0 0 ][ 0 2 0 ][ 0 0 3 ] ]}}"
-  O> set glob3 matrix:real-eigenvalues glob1
-
 Matrix_det/rank/trace/solve
   extensions [matrix]
   globals [glob1 glob2 glob3 glob4]
