@@ -48,6 +48,9 @@ checkNestedList = (list) ->
 
   return list
 
+roundToThree = (num) ->
+  return +(Math.round(num + "e+3") + "e-3")
+
 
 module.exports = {
 
@@ -305,24 +308,25 @@ module.exports = {
     forecastLinearGrowth = (data) ->
       [constant, slope, r2] = forecastGrowthHelper(data)
       forecast              = slope * data.length + constant
-      [forecast, constant, slope, r2]
+      console.log([forecast, constant, slope, r2].map((x) -> roundToThree(x)))
+      [forecast, constant, slope, r2].map((x) -> roundToThree(x))
 
     # List[Number] => (Number, Number, Number, Number)
     forecastCompoundGrowth = (data) ->
-      lnData     = data.map(StrictMath.log)
+      lnData     = data.map((x) -> StrictMath.log(x))
       [c, p, r2] = forecastGrowthHelper(lnData)
       constant   = StrictMath.exp(c)
       proportion = StrictMath.exp(p)
       forecast   = constant * proportion ** data.length
-      [forecast, constant, proportion, r2]
+      [forecast, constant, proportion, r2].map((x) -> roundToThree(x))
 
     # List[Number] => (Number, Number, Number, Number)
     forecastContinuousGrowth = (data) ->
-      lnData        = data.map(StrictMath.log)
+      lnData        = data.map((x) -> StrictMath.log(x))
       [c, rate, r2] = forecastGrowthHelper(lnData)
       constant      = StrictMath.exp(c)
       forecast      = constant * StrictMath.exp(rate * data.length)
-      [forecast, constant, rate, r2]
+      [forecast, constant, rate, r2].map((x) -> roundToThree(x))
 
     # Matrix => (List[Number], (Number, Number, Number))
     regress = (data) ->
@@ -351,7 +355,10 @@ module.exports = {
       rSquared = 1 - (residSumSq / totalSumSq)
       stats    = [rSquared, totalSumSq, residSumSq]
 
-      [getRow(coefficients, 0), stats]
+      # The labrary vectorious uses a TypedArray(FloatArray) to represent a matrix, which only has 7 significant digits.
+      # Thus I round result to avoid floating point rounding errors
+      # -- XZ (Summer, 2020)
+      [getRow(coefficients, 0), stats].map((array) -> array.map((x) -> roundToThree(x)))
 
     {
       name: "matrix"

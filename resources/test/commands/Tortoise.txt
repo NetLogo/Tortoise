@@ -312,13 +312,6 @@ Matrix_map
   (word (matrix:map ([[x y]   -> x + y]) glob1  glob2)) => ERROR Extension exception: All matrices must have the same dimensions: the first was 2x5 and another was 2x4.
   (word (matrix:map ([[x y z] -> x + y]) glob1  glob2)) => ERROR Extension exception: Task expected 3 matrix inputs but only got 2.
 
-Matrix_forecast-growth
-  extensions [matrix]
-  globals [glob1 glob2]
-  (word (matrix:forecast-linear-growth [20 25 28 32 35 39])) => [42.733333333333334 20.619047619047638 3.6857142857142824 0.9953743395474031]
-  (word (matrix:forecast-compound-growth [20 25 28 32 35 39])) => [45.60964465307147 21.15254147944863 1.136621034423892 0.9760867518334806]
-  (word (matrix:forecast-continuous-growth [20 25 28 32 35 39])) => [45.60964465307146 21.15254147944863 0.12805985615332668 0.9760867518334806]
-
 Matrix_regress
   extensions [matrix]
   globals [glob1 glob2]
@@ -328,11 +321,22 @@ Matrix_regress
   to-report nearly [pair] report (list (map [x -> precision x 13] (item 0 pair)) (item 1 pair)) end
   nearly matrix:regress matrix:from-column-list (list glob1 glob2) => [[1 1] [1 0.5 0]]
 
+# The test below does not produce the exact same floating point math results as desktop. This is because the library vectorious uses Float32Array instead of Array, which only have 7 significant digits.
+
 Matrix_regress(with floating point rounding)
   extensions [matrix]
   globals [glob1 glob2]
   O> set glob1 [20 25 28 32 35 39]
   O> set glob2 n-values length glob1 [x -> x]
-  # The test below does not produce the exact same floating point math results as desktop, so we use a particular precision (This is because of JS' floating point rounding errors, e.g. 0.99999999994)
   to-report nearly [pair] report (list (map [x -> precision x 13] (item 0 pair)) (item 1 pair)) end
-  nearly matrix:regress matrix:from-column-list (list glob1 glob2) => [[20.6190476190476 3.6857142857143] [0.9953743395474031 238.83333333333331 1.1047619047619044]]
+  nearly matrix:regress matrix:from-column-list (list glob1 glob2) => [[20.619 3.686] [0.995 238.833 1.105]]
+
+Matrix_forecast-growth
+  extensions [matrix]
+  globals [glob1 glob2]
+  (word (matrix:forecast-linear-growth [1 2])) => "[3 1 1 1]"
+  (word (matrix:forecast-compound-growth [20 25 28 32 35 39])) => "[45.604 21.158 1.137 0.976]"
+  (word (matrix:forecast-continuous-growth [20 25 28 32 35 39])) => "[45.604 21.158 0.128 0.976]"
+  (word (matrix:forecast-linear-growth [20 25 28 32 35 39])) => "[42.735 20.619 3.686 0.995]"
+  (word (matrix:forecast-compound-growth [20 25 28 32 35 39])) => "[45.604 21.158 1.137 0.976]"
+  (word (matrix:forecast-continuous-growth [20 25 28 32 35 39])) => "[45.604 21.158 0.128 0.976]"
