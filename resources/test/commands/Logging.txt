@@ -1,0 +1,14 @@
+LoggingExtension
+  extensions [logging]
+  globals [apples oranges grapes]
+  to do-logging-batch logging:log-message "hi" logging:log-message (word "ticks: " ticks) (logging:log-globals) (logging:log-globals "oranges" "apples" "grapes") (logging:log-globals "grapes" "oranges") tick end
+  O> reset-ticks set apples 91 set grapes "howdy" set oranges false
+  O> do-logging-batch
+  logging:all-logs => ["hi" "ticks: 0" "apples: 91\noranges: false\ngrapes: \"howdy\"" "oranges: false\napples: 91\ngrapes: \"howdy\"" "grapes: \"howdy\"\noranges: false"]
+  O> do-logging-batch
+  logging:all-logs => ["hi" "ticks: 0" "apples: 91\noranges: false\ngrapes: \"howdy\"" "oranges: false\napples: 91\ngrapes: \"howdy\"" "grapes: \"howdy\"\noranges: false" "hi" "ticks: 1" "apples: 91\noranges: false\ngrapes: \"howdy\"" "oranges: false\napples: 91\ngrapes: \"howdy\"" "grapes: \"howdy\"\noranges: false"]
+  O> logging:clear-logs
+  O> do-logging-batch
+  logging:all-logs => ["hi" "ticks: 2" "apples: 91\noranges: false\ngrapes: \"howdy\"" "oranges: false\napples: 91\ngrapes: \"howdy\"" "grapes: \"howdy\"\noranges: false"]
+  O> logging:log-message "All done."
+  logging:all-logs => ["hi" "ticks: 2" "apples: 91\noranges: false\ngrapes: \"howdy\"" "oranges: false\napples: 91\ngrapes: \"howdy\"" "grapes: \"howdy\"\noranges: false" "All done."]

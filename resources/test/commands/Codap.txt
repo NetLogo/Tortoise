@@ -1,0 +1,4 @@
+CodapExtension
+  extensions [codap nlmap]
+  O> codap:init ([[] ->])
+  O> codap:call (nlmap:from-list [])
