@@ -97,54 +97,84 @@ module.exports = {
 
     # (Matrix, Number, Number) => Number
     get = (matrix, i, j) ->
-      matrix.get(i, j)
+      try
+        matrix.get(i, j)
+      catch e
+        console.log(e)
+        throw new Error("Extension exception: #{e} while observer running MATRIX:GET")
+
 
     # (Matrix, Number) => List[Number]
     getRow = (matrix, i) ->
-      [_, cols] = matrix.shape
-      rangeUntil(0)(cols).map((j) -> matrix.get(i, j))
+      try
+        [_, cols] = matrix.shape
+        rangeUntil(0)(cols).map((j) -> matrix.get(i, j))
+      catch e
+        throw new Error("Extension exception: #{e} while observer running MATRIX:GET-ROW")
+
 
     # (Matrix, Number) => List[Number]
     getColumn = (matrix, j) ->
-      [rows, _] = matrix.shape
-      rangeUntil(0)(rows).map((i) -> matrix.get(i, j))
+      try
+        [rows, _] = matrix.shape
+        rangeUntil(0)(rows).map((i) -> matrix.get(i, j))
+      catch e
+        throw new Error("Extension exception: #{e} while observer running MATRIX:GET-COLUMN")
 
     # (Matrix, Number, Number, Number) => Unit
     set = (matrix, i, j, newVal) ->
-      matrix.set(i, j, newVal)
-      return
+      try
+        matrix.set(i, j, newVal)
+        return
+      catch e
+        throw new Error("Extension exception: #{e} while observer running MATRIX:SET")
 
     # (Matrix, Number, Number) => Unit
     setRow = (matrix, i, newVals) ->
-      [_, cols] = matrix.shape
-      rangeUntil(0)(cols).forEach((j) -> matrix.set(i, j, newVals[j]))
-      return
+      try
+        [_, cols] = matrix.shape
+        rangeUntil(0)(cols).forEach((j) -> matrix.set(i, j, newVals[j]))
+        return
+      catch e
+        throw new Error("Extension exception: #{e} while observer running MATRIX:SET-ROW")
 
     # (Matrix, Number, List) => Unit
     setColumn = (matrix, j, newVals) ->
-      [rows, _] = matrix.shape
-      rangeUntil(0)(rows).forEach((i) -> matrix.set(i, j, newVals[i]))
-      return
+      try
+        [rows, _] = matrix.shape
+        rangeUntil(0)(rows).forEach((i) -> matrix.set(i, j, newVals[i]))
+        return
+      catch e
+        throw new Error("Extension exception: #{e} while observer running MATRIX:SET-COLUMN")
 
     # (Matrix, Number, Number) => Unit
     swapRows = (matrix, r1, r2) ->
-      matrix.swap(r1, r2)
-      return
+      try
+        matrix.swap(r1, r2)
+        return
+      catch e
+        throw new Error("Extension exception: #{e} while observer running MATRIX:SWAP-ROWS")
 
     # (Matrix, Number, Number) => Unit
     swapColumns = (matrix, c1, c2) ->
-      [rows, _] = matrix.shape
-      for i in rangeUntil(0)(rows)
-        oldC1 = matrix.get(i, c1)
-        matrix.set(i, c1, matrix.get(i, c2))
-        matrix.set(i, c2, oldC1)
-      return
+      try
+        [rows, _] = matrix.shape
+        for i in rangeUntil(0)(rows)
+          oldC1 = matrix.get(i, c1)
+          matrix.set(i, c1, matrix.get(i, c2))
+          matrix.set(i, c2, oldC1)
+        return
+      catch e
+        throw new Error("Extension exception: #{e} while observer running MATRIX:SWAP-COLUMNS")
 
     # (Matrix, Number, Number, Number) => Matrix
     setAndReport = (matrix, i, j, newVal) ->
-      dupe = matrix.copy()
-      set(dupe, i, j, newVal)
-      dupe
+      try
+        dupe = matrix.copy()
+        set(dupe, i, j, newVal)
+        dupe
+      catch e
+        throw new Error("Extension exception: Error: index out of bounds while observer running MATRIX:SET-AND-REPORT")
 
     # (Matrix) => (Number, Number)
     dimensions = (matrix) ->

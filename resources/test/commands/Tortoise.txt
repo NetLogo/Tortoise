@@ -163,14 +163,20 @@ Matrix_get/set
   O> set glob4 matrix:from-row-list [[1 2 3] [4 5 6]]
   O> set glob5 matrix:from-row-list [[1 2 3] [4 5 6]]
   matrix:get glob1 1 2 => 6
+  matrix:get glob1 9 9 => ERROR Extension exception: Error: index out of bounds while observer running MATRIX:GET
   matrix:get-row glob1 0 => [1 2 3]
+  matrix:get-row glob1 9 => ERROR Extension exception: Error: index out of bounds while observer running MATRIX:GET-ROW
   matrix:get-column glob1 0 => [1 4]
+  matrix:get-column glob1 9 => ERROR Extension exception: Error: index out of bounds while observer running MATRIX:GET-COLUMN
   O> matrix:set glob1 1 2 10
   (word glob1) => "{{matrix:  [ [ 1 2 3 ][ 4 5 10 ] ]}}"
+  O> matrix:set glob1 10 2 10 => ERROR Extension exception: Error: index out of bounds while observer running MATRIX:SET
   O> matrix:set-row glob2 0 [2 3 4]
   (word glob2) => "{{matrix:  [ [ 2 3 4 ][ 4 5 6 ] ]}}"
+  O> matrix:set-row glob2 10 [2 3 4] => ERROR Extension exception: Error: index out of bounds while observer running MATRIX:SET-ROW
   O> matrix:set-column glob3 0 [0 0]
   (word glob3) => "{{matrix:  [ [ 0 2 3 ][ 0 5 6 ] ]}}"
+  O> matrix:set-column glob3 10 [0 0] => ERROR Extension exception: Error: index out of bounds while observer running MATRIX:SET-COLUMN
 
 Matrix_swap-rows/swap-colums
   extensions [matrix]
@@ -179,8 +185,10 @@ Matrix_swap-rows/swap-colums
   O> set glob2 matrix:from-row-list [[1 2 3] [4 5 6]]
   O> matrix:swap-rows glob1 0 1
   (word glob1) => "{{matrix:  [ [ 4 5 6 ][ 1 2 3 ] ]}}"
+  O> matrix:swap-rows glob1 10 1 => ERROR Extension exception: Error: index out of bounds while observer running MATRIX:SWAP-ROWS
   O> matrix:swap-columns glob2 0 1
   (word glob2) => "{{matrix:  [ [ 2 1 3 ][ 5 4 6 ] ]}}"
+  O> matrix:swap-columns glob2 10 1 => ERROR Extension exception: Error: index out of bounds while observer running MATRIX:SWAP-COLUMNS
 
 Matrix_set-and-report
   extensions [matrix]
@@ -189,6 +197,7 @@ Matrix_set-and-report
   O> set glob2 matrix:set-and-report glob1 0 0 9
   (word glob1) => "{{matrix:  [ [ 1 2 3 ][ 4 5 6 ] ]}}"
   (word glob2) => "{{matrix:  [ [ 9 2 3 ][ 4 5 6 ] ]}}"
+  O> set glob2 matrix:set-and-report glob1 10 0 9 => ERROR Extension exception: Error: index out of bounds while observer running MATRIX:SET-AND-REPORT
 
 Matrix_dimensions
   extensions [matrix]
