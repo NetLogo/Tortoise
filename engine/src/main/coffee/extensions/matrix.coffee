@@ -4,8 +4,7 @@
 { fold        } = require('brazierjs/maybe')
 { rangeUntil  } = require('brazierjs/number')
 StrictMath      = require('shim/strictmath')
-Matrix          = require('vectorious')
-v               = require('vectorious')
+vec             = require('vectorious')
 
 # Matrix => String
 dumpMatrix = (matrix) ->
@@ -14,8 +13,9 @@ dumpMatrix = (matrix) ->
 
 # Any => Boolean
 isMatrix = (x) ->
-  x instanceof Matrix
+  x instanceof vec
 
+# check nestedList input for possible problems
 checkNestedList = (list) ->
   numRows = list.length
   if numRows is 0
@@ -57,21 +57,21 @@ module.exports = {
 
     # (Number, Number, Number) => Matrix
     makeConstant = (rows, cols, initialValue) ->
-      v.matrix(rows, cols).fill(initialValue)
+      vec.matrix(rows, cols).fill(initialValue)
 
     # Number => Matrix
     makeIdentity = (size) ->
-      v.eye(size)
+      vec.eye(size)
 
     # List[List[Number]] => Matrix
     fromRowList = (nestedList) ->
       nestedList = checkNestedList(nestedList)
-      v.array(nestedList)
+      vec.array(nestedList)
 
     # List[List[Number]] => Matrix
     fromColumnList = (nestedList) ->
       nestedList = checkNestedList(nestedList)
-      v.array(nestedList).T
+      vec.array(nestedList).T
 
     # Matrix => List[List[Number]]
     toRowList = (matrix) ->
@@ -100,7 +100,6 @@ module.exports = {
       try
         matrix.get(i, j)
       catch e
-        console.log(e)
         throw new Error("Extension exception: #{e} while observer running MATRIX:GET")
 
 
@@ -211,7 +210,7 @@ module.exports = {
         for j in rangeUntil(0)(subCols)
           subArr[i][j] = arr[r1 + i][c1 + j]
 
-      v.array(subArr)
+      vec.array(subArr)
 
     # ((Number* => Number), Matrix, Matrix*) => Matrix
     matrixMap = (reporter, matrix, rest...) ->
@@ -253,22 +252,22 @@ module.exports = {
 
     # (Matrix|Number, Matrix|Number, (Matrix|Number)*) => Matrix|Number
     times = (m1, m2, rest...) ->
-      opReducer(((s1, s2) => s1 * s2), Matrix.multiply, Matrix.scale)(m1, m2, rest...)
+      opReducer(((s1, s2) => s1 * s2), vec.multiply, vec.scale)(m1, m2, rest...)
 
     # (Matrix, Matrix, Matrix*) => Matrix
     timesElementWise = (m1, m2, rest...) ->
-      opReducer(((s1, s2) => s1 * s2), Matrix.product, Matrix.scale)(m1, m2, rest...)
+      opReducer(((s1, s2) => s1 * s2), vec.product, vec.scale)(m1, m2, rest...)
 
     # (Matrix|Number, Matrix|Number, (Matrix|Number)*) => Matrix|Number
     plus = (m1, m2, rest...) ->
-      opReducer(((s1, s2) => s1 + s2), Matrix.add, ((m, s) -> m.map((x) -> x + s)))(m1, m2, rest...)
+      opReducer(((s1, s2) => s1 + s2), vec.add, ((m, s) -> m.map((x) -> x + s)))(m1, m2, rest...)
 
     # (Matrix|Number, Matrix|Number, (Matrix|Number)*) => Matrix|Number
     minus = (m1, m2, rest...) ->
       operands          = [m1, m2, rest...]
       [rows, cols]      = pipeline(find(isMatrix), fold(-> throw new Error("One or more (-) operands must be a matrix..."))((x) -> x.shape))(operands)
       broadcastIfNumber = (x) -> if workspace.typechecker(x).isNumber() then makeConstant(rows, cols, x) else x
-      operands.reduce((left, right) -> v.subtract(broadcastIfNumber(left), broadcastIfNumber(right)))
+      operands.reduce((left, right) -> vec.subtract(broadcastIfNumber(left), broadcastIfNumber(right)))
 
     # Matrix => Matrix
     inverse = (matrix) ->
@@ -335,7 +334,7 @@ module.exports = {
       [nObservations, nVars] = data.shape
       indepVars              = submatrix(data, 0, 1, nObservations, nVars)
       ones                   = y.map(-> 1)
-      matrix                 = Matrix.augment(ones, indepVars)
+      matrix                 = vec.augment(ones, indepVars)
 
       # Solve the system Xb = y for b, the row vector of coefficients for each independent variable.
       # The following form ensures X does not need to be square: y.T * X * (X.T * X)^-1 --SL (Spring, 2017)
@@ -389,9 +388,6 @@ module.exports = {
       , "-":                          minus
       , "INVERSE":                    inverse
       , "TRANSPOSE":                  transpose
-      , "REAL-EIGENVALUES":           realEigenvalues
-      , "IMAGINARY-EIGENVALUES":      imaginaryEigenvalues
-      , "EIGENVECTORS":               eigenvectors
       , "DET":                        det
       , "RANK":                       rank
       , "TRACE":                      trace
