@@ -2,6 +2,7 @@ ArrayExtension
   extensions [array]
   globals [arr empty-array fruits arr-with-list]
 
+  (word (array:from-list [1 2])) => "{{array: 1 2}}"
   O> set arr (array:from-list [1 2])
   (word arr) => "{{array: 1 2}}"
   O> set empty-array array:from-list []
@@ -34,3 +35,17 @@ Array_is-array
   array:is-array? [1 2 3] => false
   array:is-array? "hi" => false
   array:is-array? array:from-list [1 2 3] => true
+
+ArrayDoesNotLeak
+  extensions [array]
+  globals [arr ls]
+  O> set ls ["oranges" "apples" "bananas"]
+  O> set arr array:from-list ls
+  O> array:set arr 0 "kiwi"
+  ls => ["oranges" "apples" "bananas"]
+  array:to-list arr => ["kiwi" "apples" "bananas"]
+  O> set arr array:from-list [0 1 2 3]
+  (word arr) => "{{array: 0 1 2 3
+  O> array:set arr 0 100
+  ls => [0 1 2 3]
+  array:to-list arr => [100 1 2 3]

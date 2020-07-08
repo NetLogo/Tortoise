@@ -19,13 +19,13 @@ module.exports = {
 
     # List[Any] => ExtArray
     fromList = (list) ->
-      new extArray(list)
+      new extArray(list.slice(0))
 
     # (ExtArray) => Number|List[Any]
     toList = (extArray) ->
       if not isArray(extArray)
         throw new Error(notArrayException(extArray))
-      extArray.items
+      extArray.items.slice(0)
 
     # (ExtArray) => Number
     length = (extArray) ->
@@ -46,7 +46,7 @@ module.exports = {
     set = (extArray, index, value) ->
       if not isArray(extArray)
         throw new Error(notArrayException(extArray))
-      if extArray.items[index]
+      if extArray.items[index]?
         extArray.items[index] = value
       else
         throw new Error(invalidIndexException(extArray, index))
