@@ -17,6 +17,7 @@ ArrayExtension
   array:length arr => 2
   array:length empty-array => 0
   array:length [1 2 3] => ERROR Extension exception: not an array: [1 2 3]
+  array:length [1 2 [3 4]] => ERROR Extension exception: not an array: [1 2 [3 4]]
 
   array:item arr 1 => 2
   array:item [1 2 3] 0 => ERROR Extension exception: not an array: [1 2 3]
@@ -45,7 +46,7 @@ ArrayDoesNotLeak
   ls => ["oranges" "apples" "bananas"]
   array:to-list arr => ["kiwi" "apples" "bananas"]
   O> set arr array:from-list [0 1 2 3]
-  (word arr) => "{{array: 0 1 2 3
+  O> set ls array:to-list arr
   O> array:set arr 0 100
   ls => [0 1 2 3]
   array:to-list arr => [100 1 2 3]
