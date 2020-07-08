@@ -2,75 +2,61 @@
 
 # (Any) => Boolean
 isArray = (x) ->
-  x._type is "ext_array"
-
-notArrayException = (x, prim) ->
-  "Extension exception: not an array: #{JSON.stringify(x).replace(/,/g, ' ')} error while observer running #{prim}"
-
-invalidIndexException = (extArray, index) ->
-  "Extension exception: #{index} is not a valid index into an array of length #{Object.keys(extArray).length}"
-
-dumpArray = (array) ->
-  inner = []
-  for index of array
-    inner.push(JSON.stringify(array[index]))
-
-  # when array contains lists, it's a simple way to return lists in the array by replace ',' by ' ' --XZ (6/25/20)
-  inner.join(' ').replace(/,/g, ' ')
+  x.type is "ext_array"
 
 module.exports = {
 
-  dumper: { canDump: isArray, dump: (x) -> "{{array: #{dumpArray(x)}}}" }
+  dumper: { canDump: isArray, dump: (x) -> "{{array: #{x.dump()}}}" }
 
   init: (workspace) ->
 
-    # type ExtArray = Object[Number]
-    newArray = ->
-      out = {}
-      toArray(out)
-
-    toArray = (obj) ->
-      Object.defineProperty(obj, "_type", { enumerable: false, value: "ext_array", writable: false })
-      obj
+    # type ExtArray = { type: "ext_array", items: Array[Any], dump: () => String }
+    extArray = (array) ->
+      this.items = array
+      this.type = "ext_array"
+      this.dump = () -> this.items.map( (item) => workspace.dump(item, true) ).join(' ')
+      return
 
     # List[Any] => ExtArray
     fromList = (list) ->
-      out = newArray()
-      for value, index in list
-        out[index] = value
-      out
+      new extArray(list)
 
-    # (ExtArray) => List[Any]
+    # (ExtArray) => Number|List[Any]
     toList = (extArray) ->
       if not isArray(extArray)
-        throw new Error(notArrayException(extArray, "ARRAY:TO-LIST"))
-      for index of extArray
-        extArray[index]
+        throw new Error(notArrayException(extArray))
+      extArray.items
 
     # (ExtArray) => Number
     length = (extArray) ->
       if not isArray(extArray)
-        throw new Error(notArrayException(extArray, "ARRAY:LENGTH"))
-      Object.keys(extArray).length
+        throw new Error(notArrayException(extArray))
+      extArray.items.length
 
     # (ExtArray, Number) => Any
     item = (extArray, index) ->
       if not isArray(extArray)
-        throw new Error(notArrayException(extArray, "ARRAY:ITEM"))
-      extArray[index] ?
+        throw new Error(notArrayException(extArray))
+      extArray.items[index] ?
         throw new Error(
           invalidIndexException(extArray, index)
         )
 
     # (ExtArray, Number, Any) => Unit
     set = (extArray, index, value) ->
-      if extArray._type isnt "ext_array"
-        throw new Error(notArrayException(extArray, "ARRAY:SET"))
-      if extArray[index]
-        extArray[index] = value
+      if not isArray(extArray)
+        throw new Error(notArrayException(extArray))
+      if extArray.items[index]
+        extArray.items[index] = value
       else
         throw new Error(invalidIndexException(extArray, index))
       return
+
+    notArrayException = (x) ->
+      "Extension exception: not an array: #{workspace.dump(x, true)}"
+
+    invalidIndexException = (extArray, index) ->
+      "Extension exception: #{index} is not a valid index into an array of length #{length(extArray)}"
 
     {
       name: "array"

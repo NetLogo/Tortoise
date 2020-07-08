@@ -11,14 +11,14 @@ ArrayExtension
 
   array:to-list empty-array => []
   array:to-list arr => [1 2]
-  array:to-list [1 2 3] => ERROR Extension exception: not an array: [1 2 3] error while observer running ARRAY:TO-LIST
+  array:to-list [1 2 3] => ERROR Extension exception: not an array: [1 2 3]
 
   array:length arr => 2
   array:length empty-array => 0
-  array:length [1 2 3] => ERROR Extension exception: not an array: [1 2 3] error while observer running ARRAY:LENGTH
+  array:length [1 2 3] => ERROR Extension exception: not an array: [1 2 3]
 
   array:item arr 1 => 2
-  array:item [1 2 3] 0 => ERROR Extension exception: not an array: [1 2 3] error while observer running ARRAY:ITEM
+  array:item [1 2 3] 0 => ERROR Extension exception: not an array: [1 2 3]
   array:item arr 4 => ERROR Extension exception: 4 is not a valid index into an array of length 2
 
   O> set fruits array:from-list ["apple" "orange"]
@@ -26,7 +26,7 @@ ArrayExtension
   O> array:set fruits 0 "pineapple"
   (word fruits) => "{{array: \"pineapple\" \"orange\"}}"
   O> array:set fruits 10 "pineapple" => ERROR Extension exception: 10 is not a valid index into an array of length 2
-  O> array:set [1 2] 0 "pineapple" => ERROR Extension exception: not an array: [1 2] error while observer running ARRAY:SET
+  O> array:set [1 2] 0 "pineapple" => ERROR Extension exception: not an array: [1 2]
 
 Array_is-array
   extensions [array]
