@@ -15,7 +15,8 @@ dumpMatrix = (matrix) ->
 isMatrix = (x) ->
   x instanceof vec
 
-# check nestedList input for possible problems
+# Check nestedList input for possible problems, which was used by fromRowList & fromColumnList -- XZ(Summer, 2020)
+# List[Any] => List[List[Number]]
 checkNestedList = (list) ->
   numRows = list.length
   if numRows is 0
