@@ -1,0 +1,52 @@
+ArrayExtension
+  extensions [array]
+  globals [arr empty-array fruits arr-with-list]
+
+  (word (array:from-list [1 2])) => "{{array: 1 2}}"
+  O> set arr (array:from-list [1 2])
+  (word arr) => "{{array: 1 2}}"
+  O> set empty-array array:from-list []
+  (word empty-array) => "{{array: }}"
+  O> set arr-with-list (array:from-list [1 [2 3] 4])
+  (word arr-with-list) => "{{array: 1 [2 3] 4}}"
+
+  array:to-list empty-array => []
+  array:to-list arr => [1 2]
+  array:to-list [1 2 3] => ERROR Extension exception: not an array: [1 2 3]
+
+  array:length arr => 2
+  array:length empty-array => 0
+  array:length [1 2 3] => ERROR Extension exception: not an array: [1 2 3]
+  array:length [1 2 [3 4]] => ERROR Extension exception: not an array: [1 2 [3 4]]
+
+  array:item arr 1 => 2
+  array:item [1 2 3] 0 => ERROR Extension exception: not an array: [1 2 3]
+  array:item arr 4 => ERROR Extension exception: 4 is not a valid index into an array of length 2
+
+  O> set fruits array:from-list ["apple" "orange"]
+  (word fruits) => "{{array: \"apple\" \"orange\"}}"
+  O> array:set fruits 0 "pineapple"
+  (word fruits) => "{{array: \"pineapple\" \"orange\"}}"
+  O> array:set fruits 10 "pineapple" => ERROR Extension exception: 10 is not a valid index into an array of length 2
+  O> array:set [1 2] 0 "pineapple" => ERROR Extension exception: not an array: [1 2]
+
+Array_is-array
+  extensions [array]
+  array:is-array? 0 => false
+  array:is-array? [1 2 3] => false
+  array:is-array? "hi" => false
+  array:is-array? array:from-list [1 2 3] => true
+
+ArrayDoesNotLeak
+  extensions [array]
+  globals [arr ls]
+  O> set ls ["oranges" "apples" "bananas"]
+  O> set arr array:from-list ls
+  O> array:set arr 0 "kiwi"
+  ls => ["oranges" "apples" "bananas"]
+  array:to-list arr => ["kiwi" "apples" "bananas"]
+  O> set arr array:from-list [0 1 2 3]
+  O> set ls array:to-list arr
+  O> array:set arr 0 100
+  ls => [0 1 2 3]
+  array:to-list arr => [100 1 2 3]
