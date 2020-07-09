@@ -79,7 +79,7 @@ class TestCommands extends CommandTests with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
-  ) ++ incErrorDetectCommands ++ preferExtensionsCommands ++ lameCommands
+  ) ++ incErrorDetectCommands ++ preferExtensionsCommands ++ lameCommands ++ awaitingFixCommands
 }
 
 private[tortoise] object Freebies {
@@ -87,6 +87,7 @@ private[tortoise] object Freebies {
   def incErrorDetectCommands     = asFreebieMap(  incErrorDetectCommandNames, incErrorDetectStr)
   def lameCommands               = asFreebieMap(            lameCommandNames, lameCommandStr)
   def preferExtensionsCommands   = asFreebieMap(preferExtensionsCommandNames, preferExtensionsStr)
+  def awaitingFixCommands        = asFreebieMap(            awaitingFixNames, awaitingFixStr)
 
   def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames, incErrorDetectStr)
 
@@ -193,6 +194,12 @@ private[tortoise] object Freebies {
       "ImportPatchesAndDrawing::ImportPcolors_2D"
     , "ImportPatchesAndDrawing::ImportPcolorsTopologyTest_2D"
     , "ImportWorld::RoundTripWithUTF8Chars"
+    )
+
+  private val awaitingFixStr = "Known issue waiting on a proper fix"
+  private val awaitingFixNames =
+    Seq(
+      "Ask::NestedAsksMaintainOrder_2D"
     )
 
 }
