@@ -96,12 +96,15 @@ module.exports =
 
       Math.max(nums...)
 
-    # (Array[Number]) => Number
+    # (Array[Any]) => Number
     mean: (xs) ->
-      if xs.length is 0
+      nums = xs.filter( (x) -> NLType(x).isNumber() )
+
+      if nums.length is 0
         throw new Error("Can't find the mean of a list with no numbers: #{@_dump(xs)}.")
 
-      @sum(xs) / xs.length
+      sum = nums.reduce(((a, b) -> a + b), 0)
+      sum / nums.length
 
     # (Array[Any]) => Number
     median: (xs) ->
