@@ -50,6 +50,7 @@ checkNestedList = (list) ->
 
   return list
 
+# Number => Number
 roundToThree = (num) ->
   return +(Math.round(num + "e+3") + "e-3")
 
@@ -60,8 +61,12 @@ module.exports = {
 
   init: (workspace) ->
 
-    # (Any, Number, Number) => Unit
-    validate = (matrix, rows, cols) ->
+    # Check input values: matrix is valid; rows & cols are not out of boundary; newVals is a valid list.
+    # It would return [Integer(rows), Integer(cols)] to be used by other apis.
+    # e.g. matrix:get glob1 1.1 2.2 == matrix:get glob1 1 2
+    # -- XZ(Summer, 2020)
+    # (Any, Number*, Number*, List[Number]*) => [Number|Null, Number|Null]
+    validate = (matrix, rows, cols, newVals) ->
       if not isMatrix(matrix)
         throw new Error("Extension exception: not a matrix: #{workspace.dump(matrix, true)}")
 
@@ -74,25 +79,31 @@ module.exports = {
             "[#{rows} #{cols}] are not valid indices for a matrix with dimensions #{numRows}x#{numCols}"
           )
         else
-          return
+          return [Math.floor(rows), Math.floor(cols)]
       else if rows?
         if not (0 <= rows < numRows)
           throw new Error(
             "Extension exception: " +
             "#{rows} is not a valid index for a matrix with dimensions #{numRows}x#{numCols}"
           )
+        if newVals and (len = newVals.length) isnt numCols
+          throw new Error(
+            "Extension exception: " +
+            "The length of the given list (#{len}) is different from the length of the matrix row (#{numRows})")
         else
-          return
+          return [Math.floor(rows), null]
       else if cols?
         if not (0 <= cols < numCols)
           throw new Error(
             "Extension exception: " +
             "#{cols} is not a valid index for a matrix with dimensions #{numRows}x#{numCols}"
           )
+        if newVals and (len = newVals.length) isnt numRows
+            throw new Error(
+              "Extension exception: " +
+              "The length of the given list (#{len}) is different from the length of the matrix column (#{numCols})")
         else
-          return
-      else
-        return
+          return [null, Math.floor(cols)]
 
 
     # (Number, Number, Number) => Matrix
@@ -141,38 +152,38 @@ module.exports = {
 
     # (Matrix, Number, Number) => Number
     get = (matrix, i, j) ->
-      validate(matrix, i, j)
+      [i, j] = validate(matrix, i, j)
       matrix.get(i, j)
 
     # (Matrix, Number) => List[Number]
     getRow = (matrix, i) ->
-      validate(matrix, i)
+      [i, _] = validate(matrix, i)
       [_, cols] = matrix.shape
       rangeUntil(0)(cols).map((j) -> matrix.get(i, j))
 
 
     # (Matrix, Number) => List[Number]
     getColumn = (matrix, j) ->
-      validate(matrix, _, j)
+      [_, j] = validate(matrix, _, j)
       [rows, _] = matrix.shape
       rangeUntil(0)(rows).map((i) -> matrix.get(i, j))
 
     # (Matrix, Number, Number, Number) => Unit
     set = (matrix, i, j, newVal) ->
-      validate(matrix, i, j)
+      [i, j] = validate(matrix, i, j)
       matrix.set(i, j, newVal)
       return
 
-    # (Matrix, Number, List) => Unit
+    # (Matrix, Number, List[Number]) => Unit
     setRow = (matrix, i, newVals) ->
-      validate(matrix, i)
+      [i, _] = validate(matrix, i, _, newVals)
       [_, cols] = matrix.shape
       rangeUntil(0)(cols).forEach((j) -> matrix.set(i, j, newVals[j]))
       return
 
-    # (Matrix, Number, List) => Unit
+    # (Matrix, Number, List[Number]) => Unit
     setColumn = (matrix, j, newVals) ->
-      validate(matrix, _, j)
+      [_, j] = validate(matrix, _, j, newVals)
       [rows, _] = matrix.shape
       rangeUntil(0)(rows).forEach((i) -> matrix.set(i, j, newVals[i]))
       return
@@ -186,8 +197,8 @@ module.exports = {
 
     # (Matrix, Number, Number) => Unit
     swapColumns = (matrix, c1, c2) ->
-      validate(matrix, _, c1)
-      validate(matrix, _, c2)
+      [_, c1] = validate(matrix, _, c1)
+      [_, c2] = validate(matrix, _, c2)
       [rows, _] = matrix.shape
       for i in rangeUntil(0)(rows)
         oldC1 = matrix.get(i, c1)
