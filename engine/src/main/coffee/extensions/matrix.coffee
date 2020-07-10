@@ -15,7 +15,7 @@ dumpMatrix = (matrix) ->
 isMatrix = (x) ->
   x instanceof vec
 
-# Check nestedList input for possible problems, which was used by fromRowList & fromColumnList -- XZ(Summer, 2020)
+# Check nestedList input for possible problems, used by fromRowList & fromColumnList -- XZ(Summer, 2020)
 # List[Any] => List[List[Number]]
 checkNestedList = (list) ->
   numRows = list.length
@@ -42,6 +42,7 @@ checkNestedList = (list) ->
   if numCols is 0
     throw new Error("Extension exception: input list contained only empty lists")
 
+  # Assign zeros if the element is not a number
   for row in rangeUntil(0)(numRows)
     for column in rangeUntil(0)(numCols)
       if typeof(list[row][column]) isnt 'number'
@@ -58,6 +59,41 @@ module.exports = {
   dumper: { canDump: isMatrix, dump: (x) -> "{{matrix: #{dumpMatrix(x)}}}" }
 
   init: (workspace) ->
+
+    # (Any, Number, Number) => Unit
+    validate = (matrix, rows, cols) ->
+      if not isMatrix(matrix)
+        throw new Error("Extension exception: not a matrix: #{workspace.dump(matrix, true)}")
+
+      [numRows, numCols] = matrix.shape
+
+      if rows? and cols?
+        if not (0 <= rows < numRows) or not (0 <= cols < numCols)
+          throw new Error(
+            "Extension exception: " +
+            "[#{rows} #{cols}] are not valid indices for a matrix with dimensions #{numRows}x#{numCols}"
+          )
+        else
+          return
+      else if rows?
+        if not (0 <= rows < numRows)
+          throw new Error(
+            "Extension exception: " +
+            "#{rows} is not a valid index for a matrix with dimensions #{numRows}x#{numCols}"
+          )
+        else
+          return
+      else if cols?
+        if not (0 <= cols < numCols)
+          throw new Error(
+            "Extension exception: " +
+            "#{cols} is not a valid index for a matrix with dimensions #{numRows}x#{numCols}"
+          )
+        else
+          return
+      else
+        return
+
 
     # (Number, Number, Number) => Matrix
     makeConstant = (rows, cols, initialValue) ->
@@ -79,18 +115,22 @@ module.exports = {
 
     # Matrix => List[List[Number]]
     toRowList = (matrix) ->
+      validate(matrix)
       matrix.toArray()
 
     # Matrix => List[List[Number]]
     toColumnList = (matrix) ->
+      validate(matrix)
       matrix.T.toArray()
 
     # Matrix => Matrix
     copy = (matrix) ->
+      validate(matrix)
       matrix.copy()
 
     # Matrix => String
     prettyPrint = (matrix) ->
+      validate(matrix)
 
       alignRow = (row) ->
         "[ #{row.join('  ')} ]"
@@ -101,86 +141,70 @@ module.exports = {
 
     # (Matrix, Number, Number) => Number
     get = (matrix, i, j) ->
-      try
-        matrix.get(i, j)
-      catch e
-        throw new Error("Extension exception: #{e} while observer running MATRIX:GET")
-
+      validate(matrix, i, j)
+      matrix.get(i, j)
 
     # (Matrix, Number) => List[Number]
     getRow = (matrix, i) ->
-      try
-        [_, cols] = matrix.shape
-        rangeUntil(0)(cols).map((j) -> matrix.get(i, j))
-      catch e
-        throw new Error("Extension exception: #{e} while observer running MATRIX:GET-ROW")
+      validate(matrix, i)
+      [_, cols] = matrix.shape
+      rangeUntil(0)(cols).map((j) -> matrix.get(i, j))
 
 
     # (Matrix, Number) => List[Number]
     getColumn = (matrix, j) ->
-      try
-        [rows, _] = matrix.shape
-        rangeUntil(0)(rows).map((i) -> matrix.get(i, j))
-      catch e
-        throw new Error("Extension exception: #{e} while observer running MATRIX:GET-COLUMN")
+      validate(matrix, _, j)
+      [rows, _] = matrix.shape
+      rangeUntil(0)(rows).map((i) -> matrix.get(i, j))
 
     # (Matrix, Number, Number, Number) => Unit
     set = (matrix, i, j, newVal) ->
-      try
-        matrix.set(i, j, newVal)
-        return
-      catch e
-        throw new Error("Extension exception: #{e} while observer running MATRIX:SET")
+      validate(matrix, i, j)
+      matrix.set(i, j, newVal)
+      return
 
-    # (Matrix, Number, Number) => Unit
+    # (Matrix, Number, List) => Unit
     setRow = (matrix, i, newVals) ->
-      try
-        [_, cols] = matrix.shape
-        rangeUntil(0)(cols).forEach((j) -> matrix.set(i, j, newVals[j]))
-        return
-      catch e
-        throw new Error("Extension exception: #{e} while observer running MATRIX:SET-ROW")
+      validate(matrix, i)
+      [_, cols] = matrix.shape
+      rangeUntil(0)(cols).forEach((j) -> matrix.set(i, j, newVals[j]))
+      return
 
     # (Matrix, Number, List) => Unit
     setColumn = (matrix, j, newVals) ->
-      try
-        [rows, _] = matrix.shape
-        rangeUntil(0)(rows).forEach((i) -> matrix.set(i, j, newVals[i]))
-        return
-      catch e
-        throw new Error("Extension exception: #{e} while observer running MATRIX:SET-COLUMN")
+      validate(matrix, _, j)
+      [rows, _] = matrix.shape
+      rangeUntil(0)(rows).forEach((i) -> matrix.set(i, j, newVals[i]))
+      return
 
     # (Matrix, Number, Number) => Unit
     swapRows = (matrix, r1, r2) ->
-      try
-        matrix.swap(r1, r2)
-        return
-      catch e
-        throw new Error("Extension exception: #{e} while observer running MATRIX:SWAP-ROWS")
+      validate(matrix, r1)
+      validate(matrix, r2)
+      matrix.swap(r1, r2)
+      return
 
     # (Matrix, Number, Number) => Unit
     swapColumns = (matrix, c1, c2) ->
-      try
-        [rows, _] = matrix.shape
-        for i in rangeUntil(0)(rows)
-          oldC1 = matrix.get(i, c1)
-          matrix.set(i, c1, matrix.get(i, c2))
-          matrix.set(i, c2, oldC1)
-        return
-      catch e
-        throw new Error("Extension exception: #{e} while observer running MATRIX:SWAP-COLUMNS")
+      validate(matrix, _, c1)
+      validate(matrix, _, c2)
+      [rows, _] = matrix.shape
+      for i in rangeUntil(0)(rows)
+        oldC1 = matrix.get(i, c1)
+        matrix.set(i, c1, matrix.get(i, c2))
+        matrix.set(i, c2, oldC1)
+      return
 
     # (Matrix, Number, Number, Number) => Matrix
     setAndReport = (matrix, i, j, newVal) ->
-      try
-        dupe = matrix.copy()
-        set(dupe, i, j, newVal)
-        dupe
-      catch e
-        throw new Error("Extension exception: Error: index out of bounds while observer running MATRIX:SET-AND-REPORT")
+      validate(matrix, i, j)
+      dupe = matrix.copy()
+      set(dupe, i, j, newVal)
+      dupe
 
     # (Matrix) => (Number, Number)
     dimensions = (matrix) ->
+      validate(matrix)
       matrix.shape
 
     # (Matrix, Number, Number, Number, Number) => Matrix
@@ -275,27 +299,34 @@ module.exports = {
 
     # Matrix => Matrix
     inverse = (matrix) ->
+      validate(matrix)
       matrix.inv()
 
     # Matrix => Matrix
     transpose = (matrix) ->
+      validate(matrix)
       matrix.T
 
     # Apparently this is inefficient for large matrices. --SL (Spring, 2017)
     # Matrix => Number
     det = (matrix) ->
+      validate(matrix)
       matrix.det()
 
     # Matrix => Number
     rank = (matrix) ->
+      validate(matrix)
       matrix.rank()
 
     # Matrix => Number
     trace = (matrix) ->
+      validate(matrix)
       matrix.trace()
 
     # (Matrix, Matrix) => Matrix
     solve = (m1, m2) ->
+      validate(m1)
+      validate(m2)
       m1.solve(m2)
 
     # List[Number] => (Number, Number, Number, Number)
@@ -357,7 +388,7 @@ module.exports = {
       stats    = [rSquared, totalSumSq, residSumSq]
 
       # The labrary vectorious uses a TypedArray(FloatArray) to represent a matrix, which only has 7 significant digits.
-      # Thus I round result to avoid floating point rounding errors
+      # Thus We round result to avoid floating point rounding errors
       # -- XZ (Summer, 2020)
       [getRow(coefficients, 0), stats].map((array) -> array.map((x) -> roundToThree(x)))
 
