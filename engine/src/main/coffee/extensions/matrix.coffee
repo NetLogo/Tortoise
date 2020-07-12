@@ -15,7 +15,9 @@ dumpMatrix = (matrix) ->
 isMatrix = (x) ->
   x instanceof vec
 
-# Check nestedList input for possible problems, used by fromRowList & fromColumnList -- XZ(Summer, 2020)
+# Check nestedList input for possible problems, used by fromRowList & fromColumnList
+# If input nestedList includes items, not numbers, replace them by zeros.
+# -- XZ(Summer, 2020)
 # List[Any] => List[List[Number]]
 checkNestedList = (list) ->
   numRows = list.length
@@ -50,10 +52,6 @@ checkNestedList = (list) ->
 
   return list
 
-# Number => Number
-roundToThree = (num) ->
-  return +(Math.round(num + "e+3") + "e-3")
-
 
 module.exports = {
 
@@ -62,7 +60,7 @@ module.exports = {
   init: (workspace) ->
 
     # Check input values: matrix is valid; rows & cols are not out of boundary; newVals is a valid list.
-    # It would return [Integer(rows), Integer(cols)] to be used by other apis.
+    # Return [Integer(rows), Integer(cols)].
     # e.g. matrix:get glob1 1.1 2.2 == matrix:get glob1 1 2
     # -- XZ(Summer, 2020)
     # (Any, Number*, Number*, List[Number]*) => [Number|Null, Number|Null]
@@ -351,8 +349,7 @@ module.exports = {
     forecastLinearGrowth = (data) ->
       [constant, slope, r2] = forecastGrowthHelper(data)
       forecast              = slope * data.length + constant
-      console.log([forecast, constant, slope, r2].map((x) -> roundToThree(x)))
-      [forecast, constant, slope, r2].map((x) -> roundToThree(x))
+      [forecast, constant, slope, r2]
 
     # List[Number] => (Number, Number, Number, Number)
     forecastCompoundGrowth = (data) ->
@@ -361,7 +358,7 @@ module.exports = {
       constant   = StrictMath.exp(c)
       proportion = StrictMath.exp(p)
       forecast   = constant * proportion ** data.length
-      [forecast, constant, proportion, r2].map((x) -> roundToThree(x))
+      [forecast, constant, proportion, r2]
 
     # List[Number] => (Number, Number, Number, Number)
     forecastContinuousGrowth = (data) ->
@@ -369,7 +366,7 @@ module.exports = {
       [c, rate, r2] = forecastGrowthHelper(lnData)
       constant      = StrictMath.exp(c)
       forecast      = constant * StrictMath.exp(rate * data.length)
-      [forecast, constant, rate, r2].map((x) -> roundToThree(x))
+      [forecast, constant, rate, r2]
 
     # Matrix => (List[Number], (Number, Number, Number))
     regress = (data) ->
@@ -398,10 +395,7 @@ module.exports = {
       rSquared = 1 - (residSumSq / totalSumSq)
       stats    = [rSquared, totalSumSq, residSumSq]
 
-      # The labrary vectorious uses a TypedArray(FloatArray) to represent a matrix, which only has 7 significant digits.
-      # Thus We round result to avoid floating point rounding errors
-      # -- XZ (Summer, 2020)
-      [getRow(coefficients, 0), stats].map((array) -> array.map((x) -> roundToThree(x)))
+      [getRow(coefficients, 0), stats]
 
     {
       name: "matrix"

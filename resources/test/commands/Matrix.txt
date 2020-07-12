@@ -200,25 +200,32 @@ Matrix_regress
   matrix:regress matrix:from-column-list (list glob1 glob2) => [[1 1] [1 0.5 0]]
 
 
-# The test below does not produce the exact same floating point math results as desktop. This is because the library vectorious uses Float32Array instead of Array, which only have 7 significant digits. So we round the result. -- XZ (Summer, 2020)
+# The test below does not produce the exact same floating point math results as desktop. This is because the library vectorious uses Float32Array instead of 64-bit Array. Thusresults only have 7 significant digits. -- XZ (Summer, 2020)
 
 Matrix_regress(has floating point)
   extensions [matrix]
   globals [glob1 glob2]
   O> set glob1 [20 25 28 32 35 39]
   O> set glob2 n-values length glob1 [x -> x]
-  to-report nearly [pair] report (list (map [x -> precision x 13] (item 0 pair)) (item 1 pair)) end
-  nearly matrix:regress matrix:from-column-list (list glob1 glob2) => [[20.619 3.686] [0.995 238.833 1.105]]
+  matrix:regress matrix:from-column-list (list glob1 glob2) => [[20.619049072265625 3.685713291168213] [0.9953743437176583 238.8333282470703 1.1047608852386475]]
 
 Matrix_forecast-growth(has floating point)
   extensions [matrix]
   globals [glob1 glob2]
   matrix:forecast-linear-growth [1 2] => [3 1 1 1]
-  matrix:forecast-compound-growth [20 25 28 32 35 39] => [45.604 21.158 1.137 0.976]
-  matrix:forecast-continuous-growth [20 25 28 32 35 39] => [45.604 21.158 0.128 0.976]
-  matrix:forecast-linear-growth [20 25 28 32 35 39] => [42.735 20.619 3.686 0.995]
-  matrix:forecast-compound-growth [20 25 28 32 35 39] => [45.604 21.158 1.137 0.976]
-  matrix:forecast-continuous-growth [20 25 28 32 35 39] => [45.604 21.158 0.128 0.976]
+  matrix:forecast-compound-growth [20 25 28 32 35 39] => [45.60963524903546 21.15254935492885 1.1366209248340051 0.9760867573787624]
+  matrix:forecast-continuous-growth [20 25 28 32 35 39] => [45.60963524903548 21.15254935492885 0.1280597597360611 0.9760867573787624]
+  matrix:forecast-linear-growth [20 25 28 32 35 39] => [42.7333288192749 20.619049072265625 3.685713291168213 0.9953743437176583]
+  matrix:forecast-compound-growth [20 25 28 32 35 39] => [45.60963524903546 21.15254935492885 1.1366209248340051 0.9760867573787624]
+  matrix:forecast-continuous-growth [20 25 28 32 35 39] => [45.60963524903548 21.15254935492885 0.1280597597360611 0.9760867573787624]
+
+Matrix_inverse(has floating point)
+  extensions [matrix]
+  globals [glob1 glob2]
+  O> set glob1 matrix:from-row-list [[1 2 7] [1 4 5] [7 4 6]]
+  O> set glob2 matrix:inverse glob1
+  matrix:to-row-list glob1 => [[1 2 7] [1 4 5] [7 4 6]]
+  matrix:to-row-list glob2 => [[-0.03773587942123413 -0.15094338357448578 0.16981132328510284] [-0.27358490228652954 0.40566039085388184 -0.01886792480945587] [0.22641509771347046 -0.09433962404727936 -0.01886792480945587]]
 
 
 MatrixDoesNotLeak
