@@ -3,6 +3,7 @@
 { pipeline    } = require('brazierjs/function')
 { fold        } = require('brazierjs/maybe')
 { rangeUntil  } = require('brazierjs/number')
+{ floor }       = require('util/nlmath')
 StrictMath      = require('shim/strictmath')
 vec             = require('vectorious')
 
@@ -77,7 +78,7 @@ module.exports = {
             "[#{rows} #{cols}] are not valid indices for a matrix with dimensions #{numRows}x#{numCols}"
           )
         else
-          return [Math.floor(rows), Math.floor(cols)]
+          return [floor(rows), floor(cols)]
       else if rows?
         if not (0 <= rows < numRows)
           throw new Error(
@@ -89,7 +90,7 @@ module.exports = {
             "Extension exception: " +
             "The length of the given list (#{len}) is different from the length of the matrix row (#{numRows})")
         else
-          return [Math.floor(rows), null]
+          return [floor(rows), null]
       else if cols?
         if not (0 <= cols < numCols)
           throw new Error(
@@ -101,7 +102,7 @@ module.exports = {
               "Extension exception: " +
               "The length of the given list (#{len}) is different from the length of the matrix column (#{numCols})")
         else
-          return [null, Math.floor(cols)]
+          return [null, floor(cols)]
 
 
     # (Number, Number, Number) => Matrix
@@ -264,7 +265,7 @@ module.exports = {
 
       matrix.map(
         (item, i) ->
-          restItems = rest.map((m) -> m.get(Math.floor(i / m.shape[1]), i % m.shape[1]))
+          restItems = rest.map((m) -> m.get(floor(i / m.shape[1]), i % m.shape[1]))
           reporter(item, restItems...)
       )
 
