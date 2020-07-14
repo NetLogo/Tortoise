@@ -1,0 +1,50 @@
+TablesBasics
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:make
+  O> table:put glob1 0 "testvalue"
+  O> table:put glob1 "testkey" 1
+  table:length glob1 => 2
+  table:get glob1 "testkey" => 1
+  table:get glob1 0 => "testvalue"
+  table:keys glob1 => [0 "testkey"]
+  table:has-key? glob1 0 => true
+  table:has-key? glob1 3 => false
+  table:has-key? glob1 "testkey" => true
+  table:has-key? glob1 "somestring" => false
+  O> table:clear glob1
+  table:length glob1 => 0
+
+TablesToFromList
+  extensions [ table ]
+  globals [glob1 glob2]
+  O> set glob1 [[1 2] ["key" "value"]]
+  O> set glob2 table:from-list glob1
+  (word glob2) => "{{table: [[1 2] [\"key\" \"value\"]]}}"
+  table:get glob2 "key" => "value"
+  table:get glob2 1 => 2
+  glob1 = table:to-list glob2 => true
+
+TablesOfTables
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:from-list ( list (list 0 table:from-list [[1 2] [3 4]]) )
+  (word glob1) => "{{table: [[0 {{table: [[1 2] [3 4]]}}]]}}"
+
+TableValues
+  extensions [ table ]
+  globals [ t ]
+  O> set t table:make
+  table:values t => []
+  O> table:put t 1 "a"
+  table:values t => ["a"]
+  O> table:put t 2 "b"
+  table:values t => ["a" "b"]
+  O> table:put t list 1 2 -1
+  table:values t => ["a" "b" -1]
+  O> table:put t "a" "testing values"
+  table:values t => ["a" "b" -1 "testing values"]
+  O> table:remove t 2
+  table:values t => ["a" -1 "testing values"]
+  O> table:put t -1 -1
+  table:values t => ["a" -1 "testing values" -1]
