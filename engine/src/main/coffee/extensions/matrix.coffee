@@ -16,6 +16,9 @@ dumpMatrix = (matrix) ->
 isMatrix = (x) ->
   x instanceof vec
 
+notImplementedException = (prim) ->
+  throw new Error("Extension exception: #{prim} has not been implemented.")
+
 # Check nestedList input for possible problems, used by fromRowList & fromColumnList
 # If input nestedList includes items, not numbers, replace them by zeros.
 # -- XZ(Summer, 2020)
@@ -339,6 +342,20 @@ module.exports = {
       validate(m2)
       m1.solve(m2)
 
+    # Following three eigen-related APIs are dummy implementations.
+    # We throw an error to explain we have not implemented them yet. -- XZ (Summer, 2020)
+    # (Matrix) => List
+    realEigenvalues = (matrix) ->
+      notImplementedException("matrix:real-eigenvalues")
+
+    # (Matrix) => List
+    imaginaryEigenvalues = (matrix) ->
+      notImplementedException("matrix:imaginary-eigenvalues")
+
+    # (Matrix) => Matrix
+    eigenvectors = (matrix) ->
+      notImplementedException("matrix:eigenvectors")
+
     # List[Number] => (Number, Number, Number, Number)
     forecastGrowthHelper = (data) ->
       indepVar                  = rangeUntil(0)(data.length)
@@ -441,6 +458,9 @@ module.exports = {
       , "FORECAST-CONTINUOUS-GROWTH": forecastContinuousGrowth
       , "REGRESS":                    regress
       , "IS-MATRIX?":                 isMatrix
+      , "REAL-EIGENVALUES":           realEigenvalues
+      , "IMAGINARY-EIGENVALUES":      imaginaryEigenvalues
+      , "EIGENVECTORS":               eigenvectors
       }
     }
 

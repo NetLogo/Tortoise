@@ -200,7 +200,7 @@ Matrix_regress
   matrix:regress matrix:from-column-list (list glob1 glob2) => [[1 1] [1 0.5 0]]
 
 
-# The test below does not produce the exact same floating point math results as desktop. This is because the library vectorious uses Float32Array instead of 64-bit Array. Thusresults only have 7 significant digits. -- XZ (Summer, 2020)
+# The test below does not produce the exact same floating point math results as desktop. This is because the library vectorious uses Float32Array instead of 64-bit Array. Thus results only have 7 significant digits. -- XZ (Summer, 2020)
 
 Matrix_regress(has floating point)
   extensions [matrix]
@@ -293,3 +293,11 @@ MatrixAPIsShouldFloorInputRows/Cols
   O> matrix:swap-columns glob2 0.5 1.2
   (word glob2) => "{{matrix:  [ [ 2 1 ][ 4 3 ] ]}}"
   (word (matrix:set-and-report glob2 0.9 0.9 0)) => "{{matrix:  [ [ 0 1 ][ 4 3 ] ]}}"
+
+MatrixNotImplementedException
+  extensions [matrix]
+  globals [glob1]
+  O> set glob1 matrix:from-row-list [[1 2] [5 6]]
+  matrix:real-eigenvalues glob1 => ERROR Extension exception: matrix:real-eigenvalues has not been implemented.
+  matrix:imaginary-eigenvalues glob1 => ERROR Extension exception: matrix:imaginary-eigenvalues has not been implemented.
+  matrix:eigenvectors glob1 => ERROR Extension exception: matrix:eigenvectors has not been implemented.

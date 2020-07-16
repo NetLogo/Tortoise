@@ -373,6 +373,30 @@
         "wildcard"
       ],
       "returnType": "wildcard"
+    },
+    {
+      "name": "REAL-EIGENVALUES",
+      "actionName": "realEigenvalues",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "list"
+    },
+    {
+      "name": "IMAGINARY-EIGENVALUES",
+      "actionName": "imaginaryEigenvalues",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "list"
+    },
+    {
+      "name": "EIGENVECTORS",
+      "actionName": "eigenvectors",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "wildcard"
     }
   ]
 }
