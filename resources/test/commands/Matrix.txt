@@ -1,0 +1,303 @@
+Matrix_creation
+  extensions [matrix]
+  globals [glob1 glob2 glob3 glob4]
+  O> set glob1 matrix:make-constant 2 2 0
+  (word glob1) => "{{matrix:  [ [ 0 0 ][ 0 0 ] ]}}"
+  O> set glob2 matrix:make-identity 3
+  (word glob2) => "{{matrix:  [ [ 1 0 0 ][ 0 1 0 ][ 0 0 1 ] ]}}"
+
+Matrix_conversion-from-list
+  extensions [matrix]
+  globals [glob1 glob2 glob3]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6]]
+  (word glob1) => "{{matrix:  [ [ 1 2 3 ][ 4 5 6 ] ]}}"
+  O> set glob2 matrix:from-row-list [[1 2 3] [4 5 "6"]]
+  (word glob2) => "{{matrix:  [ [ 1 2 3 ][ 4 5 0 ] ]}}"
+  O> set glob1 matrix:from-column-list [[1 2 3] [4 5 6]]
+  (word glob1) => "{{matrix:  [ [ 1 4 ][ 2 5 ][ 3 6 ] ]}}"
+  O> set glob2 matrix:from-column-list [[1 2 3] [4 5 "6"]]
+  (word glob2) => "{{matrix:  [ [ 1 4 ][ 2 5 ][ 3 0 ] ]}}"
+
+Matrix_to-row/column-list
+  extensions [matrix]
+  globals [glob1 glob2 glob3]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6]]
+  matrix:to-row-list glob1 => [[1 2 3] [4 5 6]]
+  matrix:to-column-list glob1 => [[1 4] [2 5] [3 6]]
+
+Matrix_copy
+  extensions [matrix]
+  globals [glob1 glob-copy]
+  O> set glob1 matrix:make-identity 3
+  O> set glob-copy matrix:copy glob1
+  (word glob-copy) => "{{matrix:  [ [ 1 0 0 ][ 0 1 0 ][ 0 0 1 ] ]}}"
+  O> matrix:set glob1 0 0 3
+  (word glob1) => "{{matrix:  [ [ 3 0 0 ][ 0 1 0 ][ 0 0 1 ] ]}}"
+  (word glob-copy) => "{{matrix:  [ [ 1 0 0 ][ 0 1 0 ][ 0 0 1 ] ]}}"
+
+Matrix_pretty-print
+  extensions [matrix]
+  globals [glob1]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6]]
+  matrix:pretty-print-text glob1 => "[[ 1  2  3 ]\n [ 4  5  6 ]]"
+  (word glob1) => "{{matrix:  [ [ 1 2 3 ][ 4 5 6 ] ]}}"
+
+Matrix_get/set
+  extensions [matrix]
+  globals [glob1 glob2 glob3 glob4 glob5]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6]]
+  O> set glob2 matrix:from-row-list [[1 2 3] [4 5 6]]
+  O> set glob3 matrix:from-row-list [[1 2 3] [4 5 6]]
+  O> set glob4 matrix:from-row-list [[1 2 3] [4 5 6]]
+  O> set glob5 matrix:from-row-list [[1 2 3] [4 5 6]]
+  matrix:get glob1 1 2 => 6
+  matrix:get-row glob1 0 => [1 2 3]
+  matrix:get-column glob1 0 => [1 4]
+  O> matrix:set glob1 1 2 10
+  (word glob1) => "{{matrix:  [ [ 1 2 3 ][ 4 5 10 ] ]}}"
+  O> matrix:set-row glob2 0 [2 3 4]
+  (word glob2) => "{{matrix:  [ [ 2 3 4 ][ 4 5 6 ] ]}}"
+  O> matrix:set-column glob3 0 [0 0]
+  (word glob3) => "{{matrix:  [ [ 0 2 3 ][ 0 5 6 ] ]}}"
+
+Matrix_swap-rows/swap-colums
+  extensions [matrix]
+  globals [glob1 glob2]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6]]
+  O> set glob2 matrix:from-row-list [[1 2 3] [4 5 6]]
+  O> matrix:swap-rows glob1 0 1
+  (word glob1) => "{{matrix:  [ [ 4 5 6 ][ 1 2 3 ] ]}}"
+  O> matrix:swap-columns glob2 0 1
+  (word glob2) => "{{matrix:  [ [ 2 1 3 ][ 5 4 6 ] ]}}"
+
+Matrix_set-and-report
+  extensions [matrix]
+  globals [glob1 glob2]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6]]
+  O> set glob2 matrix:set-and-report glob1 0 0 9
+  (word glob1) => "{{matrix:  [ [ 1 2 3 ][ 4 5 6 ] ]}}"
+  (word glob2) => "{{matrix:  [ [ 9 2 3 ][ 4 5 6 ] ]}}"
+
+Matrix_dimensions
+  extensions [matrix]
+  matrix:dimensions matrix:from-row-list [[1 2 3] [4 5 6]] => [2 3]
+
+Matrix_submatrix
+  extensions [matrix]
+  globals [glob1]
+  O> set glob1 matrix:from-row-list [[0 1 2 3 4] [5 6 7 8 9]]
+  (word (matrix:submatrix glob1 0 0 2 2)) => "{{matrix:  [ [ 0 1 ][ 5 6 ] ]}}"
+
+Matrix_matrix-is-matrix
+  extensions [ matrix ]
+  matrix:is-matrix? 0 => false
+  matrix:is-matrix? "hi" => false
+  matrix:is-matrix? [[1 2 3][4 5 6]] => false
+  matrix:is-matrix? matrix:make-identity 3 => true
+  matrix:is-matrix? matrix:to-row-list (matrix:make-identity 3) => false
+
+Matrix_matrix-times-scalar
+  extensions [ matrix ]
+  globals [glob1]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6]]
+  (word matrix:times-scalar glob1 -1) => "{{matrix:  [ [ -1 -2 -3 ][ -4 -5 -6 ] ]}}"
+  (word glob1) => "{{matrix:  [ [ 1 2 3 ][ 4 5 6 ] ]}}"
+
+Matrix_matrix-times
+  extensions [ matrix ]
+  globals [glob1 glob2 glob3 glob4 glob5]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6] [7 8 9]]
+  (word (matrix:times 2 glob1 glob1)) => "{{matrix:  [ [ 60 72 84 ][ 132 162 192 ][ 204 252 300 ] ]}}"
+  (word (matrix:times 2 glob1 glob1)) => "{{matrix:  [ [ 60 72 84 ][ 132 162 192 ][ 204 252 300 ] ]}}"
+  (word (matrix:times matrix:make-identity 1 2 3)) => "{{matrix:  [ [ 6 ] ]}}"
+  O> set glob2 matrix:from-row-list [[ 6 ]]
+  (word (list matrix:times glob2 glob2 glob2)) => "[{{matrix:  [ [ 36 ] ]}} {{matrix:  [ [ 6 ] ]}}]"
+  (word (2 matrix:* glob1 matrix:* glob1)) => "{{matrix:  [ [ 60 72 84 ][ 132 162 192 ][ 204 252 300 ] ]}}"
+  O> set glob3 matrix:from-row-list [[1 2 3] [4 5 6]]
+  O> set glob4 matrix:make-identity 3
+  (word matrix:times glob3 glob4) => "{{matrix:  [ [ 1 2 3 ][ 4 5 6 ] ]}}"
+  O> set glob5 (matrix:set-and-report glob4 1 1 -1)
+  (word matrix:times glob3 glob5) => "{{matrix:  [ [ 1 -2 3 ][ 4 -5 6 ] ]}}"
+
+Matrix_matrix-plus
+  extensions [ matrix ]
+  globals [glob1]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6] [7 8 9]]
+  (word (matrix:plus 1 glob1 glob1 glob1)) => "{{matrix:  [ [ 4 7 10 ][ 13 16 19 ][ 22 25 28 ] ]}}"
+  (word (matrix:plus glob1 glob1 glob1)) => "{{matrix:  [ [ 3 6 9 ][ 12 15 18 ][ 21 24 27 ] ]}}"
+  (word (matrix:plus glob1 glob1 glob1)) => "{{matrix:  [ [ 3 6 9 ][ 12 15 18 ][ 21 24 27 ] ]}}"
+  (word (glob1 matrix:+ glob1 matrix:+ glob1)) => "{{matrix:  [ [ 3 6 9 ][ 12 15 18 ][ 21 24 27 ] ]}}"
+
+Matrix_matrix-minus
+  extensions [ matrix ]
+  globals [glob1]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6] [7 8 9]]
+  (word matrix:minus glob1 glob1) => "{{matrix:  [ [ 0 0 0 ][ 0 0 0 ][ 0 0 0 ] ]}}"
+  (word matrix:minus glob1 1) => "{{matrix:  [ [ 0 1 2 ][ 3 4 5 ][ 6 7 8 ] ]}}"
+  (word matrix:minus 1 glob1) => "{{matrix:  [ [ 0 -1 -2 ][ -3 -4 -5 ][ -6 -7 -8 ] ]}}"
+  (word (matrix:minus glob1 glob1 glob1)) => "{{matrix:  [ [ -1 -2 -3 ][ -4 -5 -6 ][ -7 -8 -9 ] ]}}"
+  (word (glob1 matrix:- glob1 matrix:- glob1)) => "{{matrix:  [ [ -1 -2 -3 ][ -4 -5 -6 ][ -7 -8 -9 ] ]}}"
+
+Matrix_inverse
+  extensions [matrix]
+  globals [glob1 glob2]
+  O> set glob1 matrix:from-row-list [[1 2] [1 1]]
+  O> set glob2 matrix:inverse glob1
+  (word glob2) => "{{matrix:  [ [ -1 2 ][ 1 -1 ] ]}}"
+
+Matrix_transpose
+  extensions [matrix]
+  globals [glob1 glob2]
+  O> set glob1 matrix:from-row-list [[1 2] [3 4]]
+  O> set glob2 matrix:transpose glob1
+  (word glob2) => "{{matrix:  [ [ 1 3 ][ 2 4 ] ]}}"
+  (word glob1) => "{{matrix:  [ [ 1 2 ][ 3 4 ] ]}}"
+
+Matrix_det/rank/trace/solve
+  extensions [matrix]
+  globals [glob1 glob2 glob3 glob4]
+  O> set glob1 matrix:from-row-list [[1 0 0] [0 2 0] [0 0 3]]
+  (word (matrix:det glob1)) => "6"
+  (word glob1) => "{{matrix:  [ [ 1 0 0 ][ 0 2 0 ][ 0 0 3 ] ]}}"
+  O> set glob2 matrix:make-constant 2 3 0
+  (word glob2) => "{{matrix:  [ [ 0 0 0 ][ 0 0 0 ] ]}}"
+  (word (matrix:rank glob2)) => "0"
+  (word (matrix:rank glob1)) => "3"
+  O> set glob3 matrix:from-row-list [[1 3 5] [2 4 7] [1 1 0]]
+  O> set glob4 matrix:from-row-list [[1] [3] [5]]
+  (word (matrix:solve glob3 glob4)) => "{{matrix:  [ [ 3.25 ][ 1.75 ][ -1.5 ] ]}}"
+
+Matrix_matrix:precedence
+  extensions [ matrix ]
+  globals [glob1]
+  O> set glob1 matrix:from-row-list [[1 2 3] [4 5 6] [7 8 9]]
+  (word (glob1 matrix:+ 2 matrix:* glob1)) => "{{matrix:  [ [ 3 6 9 ][ 12 15 18 ][ 21 24 27 ] ]}}"
+
+Matrix_matrix-times-element-wise
+  extensions [ matrix ]
+  globals [glob1 glob2]
+  O> set glob1 matrix:from-row-list [[1 2 3] [1 2 3]]
+  (word (matrix:times-element-wise glob1 glob1 glob1)) => "{{matrix:  [ [ 1 8 27 ][ 1 8 27 ] ]}}"
+  O> set glob2 matrix:from-row-list [[ 6 ]]
+  (word (list matrix:times-element-wise glob2 glob2 glob2)) => "[{{matrix:  [ [ 36 ] ]}} {{matrix:  [ [ 6 ] ]}}]"
+
+Matrix_map
+  extensions [matrix]
+  globals [glob1 glob2]
+  O> set glob1 matrix:from-row-list [[0 1 2 3 4] [5 6 7 8 9]]
+  (word matrix:map ([x -> x ^ 2]) glob1) => "{{matrix:  [ [ 0 1 4 9 16 ][ 25 36 49 64 81 ] ]}}"
+  O> set glob2 matrix:from-row-list [[9 8 7 6 5] [4 3 2 1 0]]
+  (word (matrix:map ([[x y] -> x + y]) glob1  glob2)) => "{{matrix:  [ [ 9 9 9 9 9 ][ 9 9 9 9 9 ] ]}}"
+  O> set glob2 matrix:from-row-list [[9 8 7 6] [4 3 2 1]]
+  (word (matrix:map ([[x y]   -> x + y]) glob1  glob2)) => ERROR Extension exception: All matrices must have the same dimensions: the first was 2x5 and another was 2x4.
+  (word (matrix:map ([[x y z] -> x + y]) glob1  glob2)) => ERROR Extension exception: Task expected 3 matrix inputs but only got 2.
+
+Matrix_regress
+  extensions [matrix]
+  globals [glob1 glob2]
+  O> set glob1 [1 2]
+  O> set glob2 n-values length glob1 [x -> x]
+  matrix:regress matrix:from-column-list (list glob1 glob2) => [[1 1] [1 0.5 0]]
+
+
+# The test below does not produce the exact same floating point math results as desktop. This is because the library vectorious uses Float32Array instead of 64-bit Array. Thus results only have 7 significant digits. -- XZ (Summer, 2020)
+
+Matrix_regress(has floating point)
+  extensions [matrix]
+  globals [glob1 glob2]
+  O> set glob1 [20 25 28 32 35 39]
+  O> set glob2 n-values length glob1 [x -> x]
+  matrix:regress matrix:from-column-list (list glob1 glob2) => [[20.619049072265625 3.685713291168213] [0.9953743437176583 238.8333282470703 1.1047608852386475]]
+
+Matrix_forecast-growth(has floating point)
+  extensions [matrix]
+  globals [glob1 glob2]
+  matrix:forecast-linear-growth [1 2] => [3 1 1 1]
+  matrix:forecast-compound-growth [20 25 28 32 35 39] => [45.60963524903546 21.15254935492885 1.1366209248340051 0.9760867573787624]
+  matrix:forecast-continuous-growth [20 25 28 32 35 39] => [45.60963524903548 21.15254935492885 0.1280597597360611 0.9760867573787624]
+  matrix:forecast-linear-growth [20 25 28 32 35 39] => [42.7333288192749 20.619049072265625 3.685713291168213 0.9953743437176583]
+  matrix:forecast-compound-growth [20 25 28 32 35 39] => [45.60963524903546 21.15254935492885 1.1366209248340051 0.9760867573787624]
+  matrix:forecast-continuous-growth [20 25 28 32 35 39] => [45.60963524903548 21.15254935492885 0.1280597597360611 0.9760867573787624]
+
+Matrix_inverse(has floating point)
+  extensions [matrix]
+  globals [glob1 glob2]
+  O> set glob1 matrix:from-row-list [[1 2 7] [1 4 5] [7 4 6]]
+  O> set glob2 matrix:inverse glob1
+  matrix:to-row-list glob1 => [[1 2 7] [1 4 5] [7 4 6]]
+  matrix:to-row-list glob2 => [[-0.03773587942123413 -0.15094338357448578 0.16981132328510284] [-0.27358490228652954 0.40566039085388184 -0.01886792480945587] [0.22641509771347046 -0.09433962404727936 -0.01886792480945587]]
+
+
+MatrixDoesNotLeak
+  extensions [matrix]
+  globals [ls glob1 glob2]
+  O> set ls [[1 2 3] [4 5 6]]
+  O> set glob1 matrix:from-row-list ls
+  O> matrix:set glob1 0 0 10
+  (word glob1) => "{{matrix:  [ [ 10 2 3 ][ 4 5 6 ] ]}}"
+  ls => [[1 2 3] [4 5 6]]
+  O> set glob2 matrix:make-identity 3
+  O> set ls matrix:to-row-list glob2
+  O> matrix:set glob2 0 0 10
+  (word glob2) => "{{matrix:  [ [ 10 0 0 ][ 0 1 0 ][ 0 0 1 ] ]}}"
+  ls => [[1 0 0] [0 1 0] [0 0 1]]
+
+
+MatrixExceptions_isValidNestedList
+  extensions [matrix]
+  globals [glob1]
+
+  matrix:from-row-list [] => ERROR Extension exception: input list was empty
+  matrix:from-row-list [[]] => ERROR Extension exception: input list contained only empty lists
+  matrix:from-row-list [1 2 3] => ERROR Extension exception: To convert a nested list into a matrix, there must be exactly two levels of nesting -- e.g. [[1 2 3] [4 5 6]] creates a good 2x3 matrix.
+  matrix:from-row-list [[1 2 3] [4 5]] => ERROR Extension exception: To convert a nested list into a matrix, all nested lists must be the same length -- e.g. [[1 2 3 4] [1 2 3]] is invalid, because row 1 has one more entry.
+
+  matrix:from-column-list [] => ERROR Extension exception: input list was empty
+  matrix:from-column-list [[]] => ERROR Extension exception: input list contained only empty lists
+  matrix:from-column-list [1 2 3] => ERROR Extension exception: To convert a nested list into a matrix, there must be exactly two levels of nesting -- e.g. [[1 2 3] [4 5 6]] creates a good 2x3 matrix.
+  matrix:from-column-list [[1 2 3] [4 5]] => ERROR Extension exception: To convert a nested list into a matrix, all nested lists must be the same length -- e.g. [[1 2 3 4] [1 2 3]] is invalid, because row 1 has one more entry.
+
+
+MatrixExceptions_hasValidInputs
+  extensions [matrix]
+  globals [glob1 glob2]
+  O> set glob1 matrix:from-row-list [[1 2] [3 4]]
+
+  # Check if input is a matrix
+  matrix:to-row-list [[1 2 3]] => ERROR Extension exception: not a matrix: [[1 2 3]]
+  matrix:to-column-list [[1 2 3]] => ERROR Extension exception: not a matrix: [[1 2 3]]
+  matrix:set-and-report [1 2 3] 0 0 9 => ERROR Extension exception: not a matrix: [1 2 3]
+
+  # Check if input is out of boundary
+  matrix:get glob1 10 10 => ERROR Extension exception: [10 10] are not valid indices for a matrix with dimensions 2x2
+  matrix:set-and-report glob1 10 0 9 => ERROR Extension exception: [10 0] are not valid indices for a matrix with dimensions 2x2
+  matrix:get-row glob1 5 => ERROR Extension exception: 5 is not a valid index for a matrix with dimensions 2x2
+  matrix:get-column glob1 5 => ERROR Extension exception: 5 is not a valid index for a matrix with dimensions 2x2
+
+  # Check if input has the same length as the matrix's rows or cols
+  O> matrix:set-row glob1 0 [1 2 3] => ERROR Extension exception: The length of the given list (3) is different from the length of the matrix row (2)
+  O> matrix:set-column glob1 0 [1 2 3] => ERROR Extension exception: The length of the given list (3) is different from the length of the matrix column (2)
+
+MatrixAPIsShouldFloorInputRows/Cols
+  extensions [matrix]
+  globals [glob1 glob2]
+  O> set glob1 matrix:from-row-list [[1 2] [3 4]]
+  matrix:get glob1 0.2 0.9 => 1
+  matrix:get-row glob1 1.34 => [3 4]
+  matrix:get-column glob1 0.99 => [1 3]
+  O> matrix:set glob1 0.1 0.5 5
+  (word glob1) => "{{matrix:  [ [ 5 2 ][ 3 4 ] ]}}"
+  O> set glob2 matrix:from-row-list [[1 2] [3 4]]
+  O> matrix:swap-rows glob2 0.2 0.1
+  (word glob2) => "{{matrix:  [ [ 1 2 ][ 3 4 ] ]}}"
+  O> matrix:swap-columns glob2 0.5 1.2
+  (word glob2) => "{{matrix:  [ [ 2 1 ][ 4 3 ] ]}}"
+  (word (matrix:set-and-report glob2 0.9 0.9 0)) => "{{matrix:  [ [ 0 1 ][ 4 3 ] ]}}"
+
+MatrixNotImplementedException
+  extensions [matrix]
+  globals [glob1]
+  O> set glob1 matrix:from-row-list [[1 2] [5 6]]
+  matrix:real-eigenvalues glob1 => ERROR Extension exception: matrix:real-eigenvalues has not been implemented.
+  matrix:imaginary-eigenvalues glob1 => ERROR Extension exception: matrix:imaginary-eigenvalues has not been implemented.
+  matrix:eigenvectors glob1 => ERROR Extension exception: matrix:eigenvectors has not been implemented.

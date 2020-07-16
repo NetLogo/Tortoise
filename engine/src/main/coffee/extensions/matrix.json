@@ -1,0 +1,402 @@
+{
+  "name": "matrix",
+  "prims": [
+    {
+      "name": "IS-MATRIX?",
+      "actionName": "isMatrix",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "boolean"
+    },
+    {
+      "name": "REGRESS",
+      "actionName": "regress",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "list"
+    },
+    {
+      "name": "FORECAST-CONTINUOUS-GROWTH",
+      "actionName": "forecastContinuousGrowth",
+      "argTypes": [
+        "list"
+      ],
+      "returnType": "list"
+    },
+    {
+      "name": "FORECAST-COMPOUND-GROWTH",
+      "actionName": "forecastCompoundGrowth",
+      "argTypes": [
+        "list"
+      ],
+      "returnType": "list"
+    },
+    {
+      "name": "FORECAST-LINEAR-GROWTH",
+      "actionName": "forecastLinearGrowth",
+      "argTypes": [
+        "list"
+      ],
+      "returnType": "list"
+    },
+    {
+      "name": "MAKE-CONSTANT",
+      "actionName": "makeConstant",
+      "argTypes": [
+        "number",
+        "number",
+        "number"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "DIMENSIONS",
+      "actionName": "dimensions",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "list"
+    },
+    {
+      "name": "DET",
+      "actionName": "det",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "number"
+    },
+    {
+      "name": "RANK",
+      "actionName": "rank",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "number"
+    },
+    {
+      "name": "TRACE",
+      "actionName": "trace",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "number"
+    },
+    {
+      "name": "MAKE-IDENTITY",
+      "actionName": "makeIdentity",
+      "argTypes": [
+        "number"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "FROM-ROW-LIST",
+      "actionName": "fromRowList",
+      "argTypes": [
+        "list"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "FROM-COLUMN-LIST",
+      "actionName": "fromColumnList",
+      "argTypes": [
+        "list"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "TO-ROW-LIST",
+      "actionName": "toRowList",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "list"
+    },
+    {
+      "name": "TO-COLUMN-LIST",
+      "actionName": "toColumnList",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "list"
+    },
+    {
+      "name": "COPY",
+      "actionName": "copy",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "PRETTY-PRINT-TEXT",
+      "actionName": "prettyPrintText",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "string"
+    },
+    {
+      "name": "SOLVE",
+      "actionName": "solve",
+      "argTypes": [
+        "wildcard",
+        "wildcard"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "GET",
+      "actionName": "get",
+      "argTypes": [
+        "wildcard",
+        "number",
+        "number"
+      ],
+      "returnType": "number"
+    },
+    {
+      "name": "GET-ROW",
+      "actionName": "getRow",
+      "argTypes": [
+        "wildcard",
+        "number"
+      ],
+      "returnType": "number"
+    },
+    {
+      "name": "GET-COLUMN",
+      "actionName": "getColumn",
+      "argTypes": [
+        "wildcard",
+        "number"
+      ],
+      "returnType": "number"
+    },
+    {
+      "name": "SET",
+      "actionName": "set",
+      "argTypes": [
+        "wildcard",
+        "number",
+        "number",
+        "number"
+      ]
+    },
+    {
+      "name": "SET-ROW",
+      "actionName": "setRow",
+      "argTypes": [
+        "wildcard",
+        "number",
+        "list"
+      ]
+    },
+    {
+      "name": "SET-COLUMN",
+      "actionName": "setColumn",
+      "argTypes": [
+        "wildcard",
+        "number",
+        "list"
+      ]
+    },
+    {
+      "name": "SWAP-ROWS",
+      "actionName": "swapRows",
+      "argTypes": [
+        "wildcard",
+        "number",
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "SWAP-COLUMNS",
+      "actionName": "swapColumns",
+      "argTypes": [
+        "wildcard",
+        "number",
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "SET-AND-REPORT",
+      "actionName": "setAndReport",
+      "argTypes": [
+        "wildcard",
+        "number",
+        "number",
+        "number"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "SUBMATRIX",
+      "actionName": "submatrix",
+      "argTypes": [
+        "wildcard",
+        "number",
+        "number",
+        "number",
+        "number"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "MAP",
+      "actionName": "map",
+      "argTypes": [
+        "reporter",
+        {
+          "type": "wildcard",
+          "isRepeatable": true
+        }
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "TIMES-SCALAR",
+      "actionName": "times",
+      "argTypes": [
+        "wildcard",
+        "number"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "TIMES",
+      "actionName": "times",
+      "argTypes": [
+        "wildcard",
+        {
+          "type": "wildcard",
+          "isRepeatable": true
+        }
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "*",
+      "actionName": "times",
+      "argTypes": [
+        "wildcard",
+        "wildcard"
+      ],
+      "returnType": "wildcard",
+      "isInfix": true,
+      "precedenceOffset": -2
+    },
+    {
+      "name": "TIMES-ELEMENT-WISE",
+      "actionName": "timesElementWise",
+      "argTypes": [
+        "wildcard",
+        {
+          "type": "wildcard",
+          "isRepeatable": true
+        }
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "PLUS-SCALAR",
+      "actionName": "plus",
+      "argTypes": [
+        "wildcard",
+        "number"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "PLUS",
+      "actionName": "plus",
+      "argTypes": [
+        "wildcard",
+        {
+          "type": "wildcard",
+          "isRepeatable": true
+        }
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "+",
+      "actionName": "plus",
+      "argTypes": [
+        "wildcard",
+        "wildcard"
+      ],
+      "returnType": "wildcard",
+      "isInfix": true,
+      "precedenceOffset": -3
+    },
+    {
+      "name": "MINUS",
+      "actionName": "minus",
+      "argTypes": [
+        "wildcard",
+        {
+          "type": "wildcard",
+          "isRepeatable": true
+        }
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "-",
+      "actionName": "minus",
+      "argTypes": [
+        "wildcard",
+        "wildcard"
+      ],
+      "returnType": "wildcard",
+      "isInfix": true,
+      "precedenceOffset": -3
+    },
+    {
+      "name": "INVERSE",
+      "actionName": "inverse",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "TRANSPOSE",
+      "actionName": "transpose",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "wildcard"
+    },
+    {
+      "name": "REAL-EIGENVALUES",
+      "actionName": "realEigenvalues",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "list"
+    },
+    {
+      "name": "IMAGINARY-EIGENVALUES",
+      "actionName": "imaginaryEigenvalues",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "list"
+    },
+    {
+      "name": "EIGENVECTORS",
+      "actionName": "eigenvectors",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "wildcard"
+    }
+  ]
+}

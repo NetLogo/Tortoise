@@ -1818,6 +1818,11 @@ nanomatch@^1.2.9:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
+nblas@^2.1.6:
+  version "2.1.9"
+  resolved "https://registry.npm.taobao.org/nblas/download/nblas-2.1.9.tgz#5cbdd948b8bef5b0a3ff4cc6c2b081145853b48e"
+  integrity sha1-XL3ZSLi+9bCj/0zGwrCBFFhTtI4=
+
 needle@^2.2.1:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/needle/-/needle-2.4.0.tgz#6833e74975c444642590e15a750288c5f939b57c"
@@ -1826,6 +1831,11 @@ needle@^2.2.1:
     debug "^3.2.6"
     iconv-lite "^0.4.4"
     sax "^1.2.4"
+
+nlapack@^2.0.2:
+  version "2.0.4"
+  resolved "https://registry.npm.taobao.org/nlapack/download/nlapack-2.0.4.tgz#ab04cdafc32edb98a3d28864f231f5bc78a1515f"
+  integrity sha1-qwTNr8Mu25ij0ohk8jH1vHihUV8=
 
 node-pre-gyp@^0.12.0:
   version "0.12.0"
@@ -2797,6 +2807,14 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+vectorious@^6.0.0-beta.11:
+  version "6.0.0-beta.11"
+  resolved "https://registry.npm.taobao.org/vectorious/download/vectorious-6.0.0-beta.11.tgz#4adbaa1e09260808b7a5561ca4f3b6c86095924b"
+  integrity sha1-StuqHgkmCAi3pVYcpPO2yGCVkks=
+  optionalDependencies:
+    nblas "^2.1.6"
+    nlapack "^2.0.2"
 
 vm-browserify@^1.0.0:
   version "1.1.2"
