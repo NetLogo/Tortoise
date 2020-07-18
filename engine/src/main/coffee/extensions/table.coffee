@@ -4,9 +4,21 @@
 isTable = (x) ->
   x.type = "table"
 
+# (Table) => String
+dumpTable = (table) ->
+  inner = Array.from(table).map( (item) => workspace.dump(item, true) ).join(' ')
+  "[#{inner}]"
+
+# (Any, Any) => Boolean
+equals = (a, b) ->
+  if a instanceof Array and b instanceof Array
+    a.length is b.length and a.every((val, index) -> equals(val, b[index]))
+  else
+    a is b
+
 module.exports = {
 
-  dumper: { canDump: isTable, dump: (x) -> "{{table: [#{Array.from(x).map( (item) => workspace.dump(item, true) ).join(' ')}]}}" }
+  dumper: { canDump: isTable, dump: (x) -> "{{table: #{dumpTable(x)}}}" }
 
   init: (workspace) ->
 
@@ -25,14 +37,22 @@ module.exports = {
     # (Table) => Unit
     clear = (table) ->
       table.clear()
+      return
 
     # (Table, Any) => Any
     get = (table, key) ->
-      table.get(key)
+      if key instanceof Array
+        if key = Array.from(table.keys()).find((k) -> equals(k, key))
+          table.get(key)
+      else
+        table.get(key)
 
     # (Table, Any) => Boolean
     hasKey = (table, key) ->
-      table.has(key)
+      if key instanceof Array
+        Array.from(table.keys()).some((k) -> equals(k, key))
+      else
+        table.has(key)
 
     # (Table) => List
     keys = (table) ->
@@ -42,27 +62,55 @@ module.exports = {
     values = (table) ->
       Array.from(table.values())
 
+    # (Table) => Number
     length = (table) ->
       table.size
 
+    # (Table, Any, Any) => Unit
     put = (table, key, value) ->
-      table.set(key, value)
+      if not hasKey(table, key)
+        table.set(key, value)
+
+      if key instanceof Array
+        if key = Array.from(table.keys()).find((k) -> equals(k, key))
+          table.set(key, value)
+      else
+        table.set(key, value)
+
       return
 
+    # (Table, Any) => Unit
     remove = (table, key) ->
-      table.delete(key)
+      if key instanceof Array
+        if key = Array.from(table.keys()).find((k) -> equals(k, key))
+          table.delete(key)
+      else
+        table.delete(key)
+
       return
 
-    counts = () ->
-      return
+    # (List) => Table
+    counts = (list) ->
+      counts = new Map()
+
+      for key in list
+        count = if hasKey(counts, key) then get(counts, key) + 1 else 1
+        put(counts, key, count)
+
+      counts
+
+    # (Table, Any, Any) => Any
+    getOrDefault = (table, key, defaultValue) ->
+      if hasKey(table, key)
+        get(table, key)
+      else
+        defaultValue
 
     groupAgents = () ->
       return
 
-    groupItems = () ->
-      return
 
-    getOrDefault = () ->
+    groupItems = () ->
       return
 
     {

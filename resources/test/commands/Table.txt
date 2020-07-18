@@ -15,6 +15,12 @@ TablesBasics
   O> table:clear glob1
   table:length glob1 => 0
 
+TableGet
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:from-list [[[1 2] 1] [[3 4] 2]]
+  table:get glob1 [1 2] => 1
+
 TablesToFromList
   extensions [ table ]
   globals [glob1 glob2]
@@ -24,6 +30,8 @@ TablesToFromList
   table:get glob2 "key" => "value"
   table:get glob2 1 => 2
   glob1 = table:to-list glob2 => true
+  O> set glob1 table:make
+  table:to-list glob1 => []
 
 TablesOfTables
   extensions [ table ]
@@ -48,3 +56,41 @@ TableValues
   table:values t => ["a" -1 "testing values"]
   O> table:put t -1 -1
   table:values t => ["a" -1 "testing values" -1]
+
+TableHasKeys
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:from-list [[[1] 1] [2 2]]
+  table:has-key? glob1 [2] => false
+  table:has-key? glob1 [1] => true
+  table:has-key? glob1 2 => true
+
+TableKeys
+  extensions [ table ]
+  globals [ t ]
+  O> set t table:make
+  table:keys t => []
+  O> table:put t 1 "a"
+  table:keys t => [1]
+  O> table:put t 2 "b"
+  table:keys t => [1 2]
+  O> table:put t list 1 2 -1
+  table:keys t => [1 2 [1 2]]
+  O> table:put t "testing values" "a"
+  table:keys t => [1 2 [1 2] "testing values"]
+  O> table:remove t [1 2]
+  table:keys t => [1 2 "testing values"]
+  O> table:put t -1 -1
+  table:keys t => [1 2 "testing values" -1]
+
+TableCounts
+  extensions [ table ]
+  globals [ ls glob1 ]
+  O> set ls [1 1 2 3 3]
+  (word table:counts ls) => "{{table: [[1 2] [2 1] [3 2]]}}"
+  (word table:counts ["a" 0 "a" 4 [5] [5]]) => "{{table: [[\"a\" 2] [0 1] [4 1] [[5] 2]]}}"
+
+TableGetOrDefault
+  extensions [ table ]
+  table:get-or-default (table:from-list [[1 2]]) 1 3 => 2
+  table:get-or-default (table:from-list [[1 2]]) 2 3 => 3
