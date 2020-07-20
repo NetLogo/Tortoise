@@ -2,6 +2,12 @@
   "name": "table",
   "prims": [
     {
+      "name": "is-table?",
+      "actionName": "is-table?",
+      "argTypes": ["wildcard"],
+      "returnType": "boolean"
+    },
+    {
       "name": "clear",
       "actionName": "clear",
       "argTypes": ["wildcard"],

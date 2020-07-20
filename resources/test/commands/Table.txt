@@ -1,7 +1,17 @@
+Table_isTable
+  extensions [ table ]
+  globals [glob1]
+  table:is-table? 0 => false
+  table:is-table? [1 2 3] => false
+  table:is-table? "hello" => false
+  table:is-table? table:make => true
+  table:is-table? table:to-list table:make => false
+
 TablesBasics
   extensions [ table ]
   globals [glob1]
   O> set glob1 table:make
+  (word glob1) => "{{table: []}}"
   O> table:put glob1 0 "testvalue"
   O> table:put glob1 "testkey" 1
   table:length glob1 => 2
@@ -15,12 +25,6 @@ TablesBasics
   O> table:clear glob1
   table:length glob1 => 0
 
-TableGet
-  extensions [ table ]
-  globals [glob1]
-  O> set glob1 table:from-list [[[1 2] 1] [[3 4] 2]]
-  table:get glob1 [1 2] => 1
-
 TablesToFromList
   extensions [ table ]
   globals [glob1 glob2]
@@ -32,6 +36,12 @@ TablesToFromList
   glob1 = table:to-list glob2 => true
   O> set glob1 table:make
   table:to-list glob1 => []
+
+TableGet
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:from-list [[[1 2] 1] [[3 4] 2]]
+  table:get glob1 [1 2] => 1
 
 TablesOfTables
   extensions [ table ]

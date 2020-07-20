@@ -2,7 +2,7 @@
 
 # (Any) => Boolean
 isTable = (x) ->
-  x.type = "table"
+  x instanceof Map
 
 # (Table) => String
 dumpTable = (table) ->
@@ -131,6 +131,7 @@ module.exports = {
       ,         "REMOVE": remove
       ,        "TO-LIST": toList
       ,         "VALUES": values
+      ,      "IS-TABLE?": isTable
       }
     }
 
