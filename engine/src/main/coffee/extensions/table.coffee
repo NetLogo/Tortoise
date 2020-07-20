@@ -106,12 +106,21 @@ module.exports = {
       else
         defaultValue
 
-    groupAgents = () ->
+    # (Agentset, Reporter) => Table
+    groupAgents = (agentset, reporter) ->
       return
 
+    # (List, (Number => Number)) => Table
+    groupItems = (list, reporter) ->
+      group = new Map()
 
-    groupItems = () ->
-      return
+      for item in list
+        key = Array.from(group.keys()).find((k) -> equals(k, reporter(item))) ? reporter(item)
+        value = group.get(key) ? []
+        value.push(item)
+        group.set(key, value)
+
+      group
 
     {
       name: "table"
