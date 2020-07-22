@@ -76,6 +76,30 @@ class BrowserCompiler {
       .map(comp => CompilerUtilities.isReporter(code, comp.program, comp.procedures, NLWExtensionManager))
       .getOrElse(false)
 
+  // This method compiles a single additional command for the compiled model.
+  @JSExport
+  def compileCommand(command : String): NativeJson = {
+    val results : CompiledStringV = lastCompiledModel.compileCommand(command)
+    JsonLibrary.toNative(compileResult2Json.apply(results))
+  }
+  
+  // This method compiles a single additional reporter for the compiled model.
+  @JSExport
+  def compileReporter(command : String): NativeJson = {
+    val results : CompiledStringV = lastCompiledModel.compileReporter(command)
+    JsonLibrary.toNative(compileResult2Json.apply(results))
+  }
+  
+  // This method compiles a single additional raw command for the compiled model.
+  @JSExport
+  def compileRawCommand(command : String): NativeJson = {
+    val results : CompiledStringV = lastCompiledModel.compileRawCommand(command)
+    JsonLibrary.toNative(compileResult2Json.apply(results))
+  }
+  
+  // This is intended to cache the last compiled model.
+  private var lastCompiledModel : CompiledModel = _
+
   private def compileRequest(compilationRequest: NativeJson): ValidationNel[TortoiseFailure, ModelCompilation] = {
 
     val compilationResult =
@@ -117,9 +141,12 @@ class BrowserCompiler {
   }
 
   private def compileExtras(commands: Seq[String], reporters: Seq[String])
-                           (model: CompiledModel, compilation: ModelCompilation): ModelCompilation =
+                           (model: CompiledModel, compilation: ModelCompilation): ModelCompilation = {
+    // This is intended to cache the compiled model - I have no knowledge about how to implement in more appropriate location
+    this.lastCompiledModel = model
     compilation.copy(commands  = commands. map(model.compileCommand(_)),
                      reporters = reporters.map(model.compileReporter(_)))
+  }
 
   private def readNative[A](n: NativeJson)(implicit ev: JsonReader[TortoiseJson, A]): ValidationNel[TortoiseFailure, A] =
     JsonReader.read(toTortoise(n))(ev).leftMap(_.map(s => FailureString(s)))
