@@ -23,6 +23,9 @@ import org.nlogo.parse.CompilerUtilities
 import
   scala.reflect.ClassTag
 
+import 
+  scala.scalajs.js
+
 import
   scala.scalajs.js.annotation.{ JSExport, JSExportTopLevel }
 
@@ -94,6 +97,14 @@ class BrowserCompiler {
   @JSExport
   def compileRawCommand(command : String): NativeJson = {
     val results : CompiledStringV = lastCompiledModel.compileRawCommand(command)
+    JsonLibrary.toNative(compileResult2Json.apply(results))
+  }
+  
+  // This method compiles additional procedures for the compiled model.
+  @JSExport
+  def compileProceduresIncremental(command : String, overriding : js.Array[String]): NativeJson = {
+    val overridingSeq : Seq[String] = overriding
+    val results : CompiledStringV = lastCompiledModel.compileProceduresIncremental(command, overridingSeq)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
   

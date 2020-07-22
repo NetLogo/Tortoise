@@ -34,6 +34,10 @@ case class CompiledModel(compiledCode: String        = "",
     _.compileRawCommands(logo, procedures, program)
   }
   
+  def compileProceduresIncremental(logo: String, overriding: Seq[String]): CompileResult[String] = validate {
+    _.compileProceduresIncremental(logo, procedures, program, overriding)
+  }
+  
   private val validate: (CompilerLike => String) => CompileResult[String] = CompiledModel.validate(compiler)
 
 }

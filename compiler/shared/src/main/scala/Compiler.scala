@@ -83,6 +83,29 @@ object Compiler extends CompilerLike {
             (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
     compile(logo, commands = true, oldProcedures, program, true)
 
+  // To compile more procedures after the main body is compiled
+  def compileProceduresIncremental(logo:          String,
+                                   oldProcedures: ProceduresMap = NoProcedures,
+                                   program:       Program       = Program.empty(), 
+                                   overriding:    Seq[String]   = Seq())
+            (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String = {
+    
+    // In order to compile existing procedures, we have to remove the one from the procedure map first
+    val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
+    frontEnd.frontEnd(logo,
+                      program = program,
+                      oldProcedures = oldProcedures.filter({ case (name, procedure) => !overriding.contains(name) }),
+                      extensionManager = NLWExtensionManager,
+                      subprogram = false)
+
+    implicit val context   = new CompilerContext(logo)
+    val compiledProcedures = new ProcedureCompiler(handlers).compileProcedures(defs)
+
+    // Here we don't want the full symbols..
+    val symbols = ProcedureCompiler.formatProcedures(compiledProcedures)
+    symbols.map(_.toJS).mkString("", "\n", "\n")
+  }
+
   def compileMoreProcedures(model:         Model,
                             program:       Program,
                             oldProcedures: ProceduresMap)

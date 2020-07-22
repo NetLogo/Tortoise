@@ -24,6 +24,9 @@ trait CompilerLike {
   def compileRawCommands(logo: String, oldProcedures: ProceduresMap, program: Program)
     (implicit compilerFlags: CompilerFlags): String
 
+  def compileProceduresIncremental(logo: String, oldProcedures: ProceduresMap, program: Program, overriding: Seq[String])
+    (implicit compilerFlags: CompilerFlags): String
+
   def compileProcedures(model: Model)
     (implicit compilerFlags: CompilerFlags): Compilation
 
