@@ -102,8 +102,7 @@ object Compiler extends CompilerLike {
     val compiledProcedures = new ProcedureCompiler(handlers).compileProcedures(defs)
 
     // Here we don't want the full symbols..
-    val symbols = ProcedureCompiler.formatProcedures(compiledProcedures)
-    symbols.map(_.toJS).mkString("", "\n", "\n")
+    ProcedureCompiler.formatProceduresIncrementals(compiledProcedures)
   }
 
   def compileMoreProcedures(model:         Model,
