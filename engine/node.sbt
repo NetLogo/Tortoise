@@ -20,7 +20,7 @@ lazy val yarnInstall = taskKey[Seq[File]]("Runs `yarn install` from within SBT")
 yarnInstall := {
   val log = streams.value.log
   if (nodeDeps.value.isEmpty || (nodeDeps.value exists (_.olderThan(packageJson.value))))
-    Process(Seq("yarn", "install"), baseDirectory.value).!(log)
+    Process(Seq("yarn", "install", "--ignore-optional"), baseDirectory.value).!(log)
   nodeDeps.value
 }
 
