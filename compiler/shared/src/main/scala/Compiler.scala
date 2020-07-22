@@ -102,7 +102,7 @@ object Compiler extends CompilerLike {
     val compiledProcedures = new ProcedureCompiler(handlers).compileProcedures(defs)
 
     // Here we don't want the full symbols..
-    ProcedureCompiler.formatProceduresIncrementals(compiledProcedures)
+    ProcedureCompiler.formatProceduresBody(compiledProcedures)
   }
 
   def compileMoreProcedures(model:         Model,
