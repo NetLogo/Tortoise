@@ -41,26 +41,29 @@ module.exports = {
 
     # (Table, Any) => Any
     get = (table, key) ->
-      if key instanceof Array
-        if key = Array.from(table.keys()).find((k) -> equals(k, key))
-          table.get(key)
+      if key not instanceof Array
+        return table.get(key)
+
+      origin_key = Array.from(table.keys()).find((k) -> equals(k, key))
+      if origin_key?
+        table.get(origin_key)
       else
-        table.get(key)
+        throw new Error("Extension Exception: No value for #{key} in table.")
 
     # (Table, Any) => Boolean
     hasKey = (table, key) ->
-      if key instanceof Array
-        Array.from(table.keys()).some((k) -> equals(k, key))
-      else
-        table.has(key)
+      if key not instanceof Array
+        return table.has(key)
+
+      Array.from(table.keys()).some((k) -> equals(k, key))
 
     # (Table) => List
     keys = (table) ->
-      Array.from(table.keys())
+      Array.from(table.keys()).slice(0)
 
     # (Table) => List
     values = (table) ->
-      Array.from(table.values())
+      Array.from(table.values()).slice(0)
 
     # (Table) => Number
     length = (table) ->
@@ -93,9 +96,9 @@ module.exports = {
     counts = (list) ->
       counts = new Map()
 
-      for key in list
-        count = if hasKey(counts, key) then get(counts, key) + 1 else 1
-        put(counts, key, count)
+      for item in list
+        count = if hasKey(counts, item) then get(counts, item) + 1 else 1
+        put(counts, item, count)
 
       counts
 

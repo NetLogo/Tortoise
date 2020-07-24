@@ -76,10 +76,11 @@ TableValues
 TableHasKeys
   extensions [ table ]
   globals [glob1]
-  O> set glob1 table:from-list [[[1] 1] [2 2]]
+  O> set glob1 table:from-list [[[1] 1] [2 2] [0 0]]
   table:has-key? glob1 [2] => false
   table:has-key? glob1 [1] => true
   table:has-key? glob1 2 => true
+  table:has-key? glob1 0 => true
 
 TableKeys
   extensions [ table ]
