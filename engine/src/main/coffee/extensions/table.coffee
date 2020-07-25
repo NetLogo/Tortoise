@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+NLType = require('../engine/core/typechecker')
+
 # (Any) => Boolean
 isTable = (x) ->
   x instanceof Map
@@ -9,12 +11,37 @@ dumpTable = (table) ->
   inner = Array.from(table).map( (item) => workspace.dump(item, true) ).join(' ')
   "[#{inner}]"
 
+# Compare two Array by their values instead of references.
 # (Any, Any) => Boolean
 equals = (a, b) ->
   if a instanceof Array and b instanceof Array
     a.length is b.length and a.every((val, index) -> equals(val, b[index]))
   else
     a is b
+
+# (Any) => Boolean
+isValidKey = (x) ->
+  type = NLType(x)
+  if not type.isList()
+    return type.isString() or type.isNumber() or type.isBoolean()
+  else
+    x.every((item) -> isValidKey(item))
+
+# (List) => Boolean
+checkIsValidList = (list) ->
+  for pair in list
+    if not (pair instanceof Array and pair.length >= 2)
+      throw new Error("Extension Exception: expected a two-element list: #{workspace.dump(pair, true)}")
+  return
+
+# (Any, String|Boolean|Number|List) -> Boolean
+checkInput = ({table, key}) ->
+  if not isTable(table)
+    throw new Error("Extension Exception: not a table #{workspace.dump(table, true)}")
+
+  if key? and not isValidKey(key)
+      throw new Error("Extension Exception: #{workspace.dump(key, true)} is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)")
+
 
 module.exports = {
 
@@ -28,19 +55,23 @@ module.exports = {
 
     # (List) => Map
     fromList = (list) ->
+      checkIsValidList(list)
       new Map(list.slice(0))
 
     # (Table) => List
     toList = (table) ->
+      checkInput({table: table})
       Array.from(table).slice(0)
 
     # (Table) => Unit
     clear = (table) ->
+      checkInput({table: table})
       table.clear()
       return
 
     # (Table, Any) => Any
     get = (table, key) ->
+      checkInput({table: table})
       if key not instanceof Array
         return table.get(key)
 
@@ -52,6 +83,7 @@ module.exports = {
 
     # (Table, Any) => Boolean
     hasKey = (table, key) ->
+      checkInput({table: table})
       if key not instanceof Array
         return table.has(key)
 
@@ -59,36 +91,42 @@ module.exports = {
 
     # (Table) => List
     keys = (table) ->
+      checkInput({table: table})
       Array.from(table.keys()).slice(0)
 
     # (Table) => List
     values = (table) ->
+      checkInput({table: table})
       Array.from(table.values()).slice(0)
 
     # (Table) => Number
     length = (table) ->
+      checkInput({table: table})
       table.size
 
     # (Table, Any, Any) => Unit
     put = (table, key, value) ->
-      if not hasKey(table, key)
-        table.set(key, value)
+      checkInput({table: table, key: key})
 
-      if key instanceof Array
-        if key = Array.from(table.keys()).find((k) -> equals(k, key))
-          table.set(key, value)
-      else
+      if key not instanceof Array
         table.set(key, value)
+        return
 
+      key = Array.from(table.keys()).find((k) -> equals(k, key)) ? key
+      table.set(key, value)
       return
 
     # (Table, Any) => Unit
     remove = (table, key) ->
-      if key instanceof Array
-        if key = Array.from(table.keys()).find((k) -> equals(k, key))
-          table.delete(key)
-      else
+      checkInput({table: table})
+
+      if key not instanceof Array
         table.delete(key)
+        return
+
+      origin_key = Array.from(table.keys()).find((k) -> equals(k, key))
+      if origin_key?
+        table.delete(origin_key)
 
       return
 
@@ -104,6 +142,8 @@ module.exports = {
 
     # (Table, Any, Any) => Any
     getOrDefault = (table, key, defaultValue) ->
+      checkInput({table: table})
+
       if hasKey(table, key)
         get(table, key)
       else

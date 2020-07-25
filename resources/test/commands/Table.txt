@@ -117,8 +117,66 @@ TableGroupItems
   (word table:group-items range 10 [ n -> n mod 2 ]) => "{{table: [[0 [0 2 4 6 8]] [1 [1 3 5 7 9]]]}}"
   (word table:group-items [[1] [2] [3]] [ arr -> arr ]) => "{{table: [[[1] [[1]]] [[2] [[2]]] [[3] [[3]]]]}}"
 
-TableExceoption_isValidKey
+TableException_isTable
   extensions [ table ]
+  table:to-list [1] => ERROR Extension Exception: not a table [1]
+  O> table:clear [1] => ERROR Extension Exception: not a table [1]
+  table:get [1] 1 => ERROR Extension Exception: not a table [1]
+  table:has-key? [1] 1 => ERROR Extension Exception: not a table [1]
+  table:keys [] => ERROR Extension Exception: not a table []
+  table:values [] => ERROR Extension Exception: not a table []
+  table:length [[1]] => ERROR Extension Exception: not a table [[1]]
+  O> table:put [1 2 3] 1 1 => ERROR Extension Exception: not a table [1 2 3]
+  O> table:remove [1 2 3] 1 => ERROR Extension Exception: not a table [1 2 3]
+  table:get-or-default [1 2 3] 2 3 => ERROR Extension Exception: not a table [1 2 3]
+
+TableException_isValidList
+  extensions [ table ]
+  table:from-list [[1]] => ERROR Extension Exception: expected a two-element list: [1]
+
+TableException_isValidKey
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:from-list [[1 1]]
+  O> table:put glob1 [n -> n] 1 => ERROR Extension Exception: (anonymous reporter: [ n -> n ]) is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+
+TablesAllowableTypes
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:make
+  O> table:put glob1 0 "number"
+  O> table:put glob1 "foo" "string"
+  O> table:put glob1 true "boolean"
+  O> table:put glob1 false "boolean"
+  O> table:put glob1 nobody "nobody" => ERROR Extension Exception: nobody is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> table:put glob1 turtles "turtle set" => ERROR Extension Exception: turtles is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> table:put glob1 patches "patch set" => ERROR Extension Exception: patches is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> table:put glob1 links "link set" => ERROR Extension Exception: links is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> table:put glob1 turtle 0 "nonexistent turtle" => ERROR Extension Exception: nobody is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> crt 1
+  O> table:put glob1 turtle 0 "turtle" => ERROR Extension Exception: (turtle 0) is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> ct
+  O> table:put glob1 turtle 0 "dead turtle" => ERROR Extension Exception: nobody is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> table:put glob1 [] "list"
+  O> table:put glob1 [1] "1"
+  O> table:put glob1 [1] "2"
+  table:get glob1 [1] => "2"
+  O> table:put glob1 [[1] ["two" "three"] [4]] "uh huh"
+  table:get glob1 [[1] ["two" "three"] [4]] => "uh huh"
+
+TablesAllowableTypes_2D
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:make
+  O> crt 1
+  O> table:put glob1 [patch-here] of turtle 0 "patch" => ERROR Extension Exception: (patch 0 0) is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+
+TablesAllowableTypes_3D
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:make
+  O> crt 1
+  O> table:put glob1 patch 0 0 0 "patch" => ERROR Extension Exception: (patch 0 0 0) is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
 
 TableDoesNotLeak
   extensions [ table ]
