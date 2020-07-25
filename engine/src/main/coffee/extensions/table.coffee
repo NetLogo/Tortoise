@@ -11,6 +11,14 @@ dumpTable = (table) ->
   inner = Array.from(table).map( (item) => workspace.dump(item, true) ).join(' ')
   "[#{inner}]"
 
+# This method is to get the same-value key in a table.
+# e.g (table:get glob1 [1 2]) where passing `key` param is an array; array is a reference type in JavaScript.
+# So we need to find whether there's a same-value key in the table.
+# -- XZ (July, 2020)
+# (Table, Any) => Any | Undefined
+getOriginKey = (table, key) ->
+  Array.from(table.keys()).find((k) -> equals(k, key))
+
 # Compare two Array by their values instead of references.
 # (Any, Any) => Boolean
 equals = (a, b) ->
@@ -40,7 +48,9 @@ checkInput = ({table, key}) ->
     throw new Error("Extension Exception: not a table #{workspace.dump(table, true)}")
 
   if key? and not isValidKey(key)
-      throw new Error("Extension Exception: #{workspace.dump(key, true)} is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)")
+      throw new Error("Extension Exception: " +
+        "#{workspace.dump(key, true)} is not a valid table key " +
+        "(a table key may only be a number, a string, true or false, or a list whose items are valid keys)")
 
 
 module.exports = {
@@ -75,7 +85,7 @@ module.exports = {
       if key not instanceof Array
         return table.get(key)
 
-      origin_key = Array.from(table.keys()).find((k) -> equals(k, key))
+      origin_key = getOriginKey(table, key)
       if origin_key?
         table.get(origin_key)
       else
@@ -112,7 +122,7 @@ module.exports = {
         table.set(key, value)
         return
 
-      key = Array.from(table.keys()).find((k) -> equals(k, key)) ? key
+      key = getOriginKey(table, key) ? key
       table.set(key, value)
       return
 
@@ -124,7 +134,7 @@ module.exports = {
         table.delete(key)
         return
 
-      origin_key = Array.from(table.keys()).find((k) -> equals(k, key))
+      origin_key = getOriginKey(table, key)
       if origin_key?
         table.delete(origin_key)
 
@@ -158,7 +168,7 @@ module.exports = {
       group = new Map()
 
       for item in list
-        key = Array.from(group.keys()).find((k) -> equals(k, reporter(item))) ? reporter(item)
+        key = getOriginKey(group, reporter(item)) ? reporter(item)
         value = group.get(key) ? []
         value.push(item)
         group.set(key, value)
