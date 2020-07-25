@@ -42,7 +42,7 @@ checkIsValidList = (list) ->
       throw new Error("Extension Exception: expected a two-element list: #{workspace.dump(pair, true)}")
   return
 
-# (Any, String|Boolean|Number|List) -> Boolean
+# (Any, String|Boolean|Number|List) ->
 checkInput = ({table, key}) ->
   if not isTable(table)
     throw new Error("Extension Exception: not a table #{workspace.dump(table, true)}")
