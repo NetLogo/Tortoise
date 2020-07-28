@@ -1,0 +1,6 @@
+-J-Xms2M
+-J-Xmx2048M
+-J-Xss2M
+-J-XX:MaxMetaspaceSize=1024M
+-J-Djava.awt.headless=true
+-J-Dfile.encoding=UTF-8
