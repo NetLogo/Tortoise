@@ -1,0 +1,22 @@
+{
+  "name": "tutorial",
+  "prims": [
+    {
+      "name": "show-dialog",
+      "actionName": "show-dialog",
+      "argTypes": [
+        "string",
+        { "type": "boolean", "isOptional": true },
+        { "type": "wildcard", "isOptional": true }
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "minimize-dialog",
+      "actionName": "minimize-dialog",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }
+  ]
+}
