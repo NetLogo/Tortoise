@@ -6,8 +6,7 @@
       "actionName": "show-dialog",
       "argTypes": [
         "string",
-        { "type": "boolean", "isOptional": true },
-        { "type": "wildcard", "isOptional": true }
+        "boolean"
       ],
       "returnType": "unit"
     }, {

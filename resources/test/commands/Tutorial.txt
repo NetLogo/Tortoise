@@ -1,6 +1,4 @@
 TutorialExtension
   extensions [tutorial]
-
-  O> tutorial:show-dialog "example"
-  O> tutorial:show-dialog "example" TRUE
-  O> tutorial:minimize-dialog "example"
+  O> tutorial:show-dialog "example" True => ERROR Show Dialog example, minimized: true
+  O> tutorial:minimize-dialog "example" => ERROR Minimize Dialog example
