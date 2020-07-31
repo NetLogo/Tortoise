@@ -1,22 +1,24 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+getTortugaSession = () =>
+  if window?.TortugaSession?
+    return window.TortugaSession.Instance
+  else
+    return null
+
 module.exports = {
   init: (workspace) =>
 
     # (String, Boolean*, Any*) => Unit
     showDialog = (name, minimized) ->
-      if window?.TortugaSession?
-        window.TortugaSession.Instance.showDialog(name, minimized)
-      else
-        throw new Error("Show Dialog #{name}, minimized: #{minimized}")
+      if tortugaSession = getTortugaSession()
+        tortugaSession.ShowDialog(name, minimized)
       return
 
     # (String) => Unit
     minimizeDialog = (name) ->
-      if window?.TortugaSession?
-        window.TortugaSession.Instance.RecordDialog(name, "Minimize")
-      else
-        throw new Error("Minimize Dialog #{name}")
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue({ Type: "Dialog", Action: "Minimize", Target: name })
       return
 
     {
