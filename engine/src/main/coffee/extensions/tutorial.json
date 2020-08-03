@@ -6,7 +6,7 @@
       "actionName": "show-dialog",
       "argTypes": [
         "string",
-        { "type": "wildcard", "isRepeatable": true }
+        { "type": "boolean", "isRepeatable": true }
       ],
       "returnType": "unit"
     }, {
@@ -14,6 +14,13 @@
       "actionName": "minimize-dialog",
       "argTypes": [
         "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "hide-dialog",
+      "actionName": "hide-dialog",
+      "argTypes": [
+        { "type": "string", "isRepeatable": true }
       ],
       "returnType": "unit"
     }

@@ -14,14 +14,14 @@ module.exports = {
     # We would ignore useless arguments and check type inside function.
     # -- XZ(08/2020)
     # (String, Boolean*, Any*) => Unit
-    showDialog = (name, minimized, extraData) ->
+    showDialog = (name, minimized) ->
       if tortugaSession = getTortugaSession()
         if typeof(minimized) == 'boolean'
-          tortugaSession.ShowDialog(name, minimized, extraData)
+          tortugaSession.ShowDialog(name, minimized)
         else
-          tortugaSession.ShowDialog(name, false, extraData)
+          tortugaSession.ShowDialog(name, false)
       else
-        workspace.printPrims.print("Show Dialog #{name}, with Minimize property: #{minimized}", true)
+        workspace.printPrims.print("Show dialog #{name} in #{minimized ? "minimized" : "full"} status", true)
       return
 
     # (String) => Unit
@@ -29,7 +29,15 @@ module.exports = {
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Dialog", Action: "Minimize", Target: name })
       else
-        workspace.printPrims.print("Minimize Dialog #{name}", true)
+        workspace.printPrims.print("Minimize dialog #{name}", true)
+      return
+
+    # (String) => Unit
+    hideDialog = (name) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue({ Type: "Dialog", Action: "Hide", Target: name })
+      else
+        workspace.printPrims.print("Hide dialog #{name}", true)
       return
 
     {
@@ -37,6 +45,7 @@ module.exports = {
     , prims: {
         "SHOW-DIALOG": showDialog
       , "MINIMIZE-DIALOG": minimizeDialog
+      , "HIDE-DIALOG": hideDialog
       }
     }
 }
