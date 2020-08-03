@@ -16,12 +16,12 @@ module.exports = {
     # (String, Boolean*, Any*) => Unit
     showDialog = (name, minimized) ->
       if tortugaSession = getTortugaSession()
-        if typeof(minimized) == 'boolean'
+        if typeof(minimized) is 'boolean'
           tortugaSession.ShowDialog(name, minimized)
         else
           tortugaSession.ShowDialog(name, false)
       else
-        workspace.printPrims.print("Show dialog #{name} in #{minimized ? "minimized" : "full"} status", true)
+        workspace.printPrims.print("Show dialog #{name} in #{if minimized then "minimized" else "full"} status", true)
       return
 
     # (String) => Unit
