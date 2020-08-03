@@ -21,6 +21,18 @@ module.exports = {
         tortugaSession.MessageQueue.Enqueue({ Type: "Control", Action: "Pause" })
       return
       
+    # () => Unit
+    show = (name) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue({ Type: "Layout", Action: "Show", Value: name })
+      return
+
+    # () => Unit
+    hide = (name) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue({ Type: "Layout", Action: "Hide", Value: name })
+      return
+
     # (Number) => Unit
     setSpeed = (speed) ->
       if tortugaSession = getTortugaSession()
@@ -44,6 +56,8 @@ module.exports = {
     , prims: {
         "PLAY": play
       , "PAUSE": pause
+      , "SHOW": show
+      , "HIDE": hide
       , "SET-SPEED": setSpeed
       , "RECOMPILE": recompile
       , "RECOMPILE-NT": recompileNT

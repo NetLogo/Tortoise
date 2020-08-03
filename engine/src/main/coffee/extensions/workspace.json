@@ -12,6 +12,20 @@
       "argTypes": [],
       "returnType": "unit"
     }, {
+      "name": "show",
+      "actionName": "show",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "hide",
+      "actionName": "hide",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
       "name": "set-speed",
       "actionName": "set-speed",
       "argTypes": [
