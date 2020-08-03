@@ -1,0 +1,33 @@
+{
+  "name": "workspace",
+  "prims": [
+    {
+      "name": "pause",
+      "actionName": "pause",
+      "argTypes": [],
+      "returnType": "unit"
+    }, {
+      "name": "play",
+      "actionName": "play",
+      "argTypes": [],
+      "returnType": "unit"
+    }, {
+      "name": "set-speed",
+      "actionName": "set-speed",
+      "argTypes": [
+        "number"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "recompile",
+      "actionName": "recompile",
+      "argTypes": [],
+      "returnType": "unit"
+    }, {
+      "name": "recompile-nt",
+      "actionName": "recompile-nt",
+      "argTypes": [],
+      "returnType": "unit"
+    }
+  ]
+}
