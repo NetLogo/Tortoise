@@ -6,7 +6,7 @@
       "actionName": "show-dialog",
       "argTypes": [
         "string",
-        "boolean"
+        { "type": "wildcard", "isRepeatable": true }
       ],
       "returnType": "unit"
     }, {
