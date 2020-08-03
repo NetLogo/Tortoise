@@ -21,7 +21,7 @@ module.exports = {
         else
           tortugaSession.ShowDialog(name, false)
       else
-        workspace.printPrims.print("Show dialog #{name} in #{if minimized then "minimized" else "full"} status", true)
+        workspace.printPrims.print("Show dialog #{name} in #{if minimized then "minimized" else "full"} status")
       return
 
     # (String) => Unit
@@ -29,7 +29,7 @@ module.exports = {
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Dialog", Action: "Minimize", Target: name })
       else
-        workspace.printPrims.print("Minimize dialog #{name}", true)
+        workspace.printPrims.print("Minimize dialog #{name}")
       return
 
     # (String) => Unit
@@ -37,7 +37,7 @@ module.exports = {
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Dialog", Action: "Hide", Target: name })
       else
-        workspace.printPrims.print("Hide dialog #{name}", true)
+        workspace.printPrims.print("Hide dialog #{name}")
       return
 
     {
