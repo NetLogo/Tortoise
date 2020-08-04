@@ -68,12 +68,12 @@ module.exports = {
     {
       name: "workspace"
     , prims: {
-        "PLAY": play
-      , "PAUSE": pause
-      , "SHOW": show
-      , "HIDE": hide
-      , "SET-SPEED": setSpeed
-      , "RECOMPILE": recompile
+                "PLAY": play
+      ,        "PAUSE": pause
+      ,         "SHOW": show
+      ,         "HIDE": hide
+      ,    "SET-SPEED": setSpeed
+      ,    "RECOMPILE": recompile
       , "RECOMPILE-NT": recompileNT
       }
     }

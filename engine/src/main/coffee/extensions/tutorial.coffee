@@ -43,9 +43,9 @@ module.exports = {
     {
       name: "tutorial"
     , prims: {
-        "SHOW-DIALOG": showDialog
+            "SHOW-DIALOG": showDialog
       , "MINIMIZE-DIALOG": minimizeDialog
-      , "HIDE-DIALOG": hideDialog
+      ,     "HIDE-DIALOG": hideDialog
       }
     }
 }
