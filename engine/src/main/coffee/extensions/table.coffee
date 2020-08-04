@@ -85,9 +85,9 @@ module.exports = {
       if key not instanceof Array
         return table.get(key)
 
-      origin_key = getOriginKey(table, key)
-      if origin_key?
-        table.get(origin_key)
+      originKey = getOriginKey(table, key)
+      if originKey?
+        table.get(originKey)
       else
         throw new Error("Extension Exception: No value for #{key} in table.")
 
@@ -134,9 +134,9 @@ module.exports = {
         table.delete(key)
         return
 
-      origin_key = getOriginKey(table, key)
-      if origin_key?
-        table.delete(origin_key)
+      originKey = getOriginKey(table, key)
+      if originKey?
+        table.delete(originKey)
 
       return
 
