@@ -7,8 +7,18 @@
       "argTypes": ["string"],
       "returnType": "unit"
     }, {
+      "name": "hide",
+      "actionName": "hide",
+      "argTypes": ["string"],
+      "returnType": "unit"
+    }, {
       "name": "activate",
       "actionName": "activate",
+      "argTypes": ["string"],
+      "returnType": "unit"
+    }, {
+      "name": "deactivate",
+      "actionName": "deactivate",
       "argTypes": ["string"],
       "returnType": "unit"
     }, {
@@ -20,6 +30,11 @@
       "name": "set-title",
       "actionName": "set-title",
       "argTypes": ["string", "string"],
+      "returnType": "unit"
+    }, {
+      "name": "get-title",
+      "actionName": "get-title",
+      "argTypes": ["string"],
       "returnType": "unit"
     }
   ]

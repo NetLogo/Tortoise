@@ -1,0 +1,9 @@
+TutorialExtension
+  extensions [plot]
+  O> plot:show "example"
+  O> plot:hide "example"
+  O> plot:activate "example"
+  O> plot:deactivate "example"
+  O> plot:move "example" 0
+  O> plot:set-title "example" "title"
+  O> plot:get-title "example"

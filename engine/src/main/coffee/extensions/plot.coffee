@@ -20,6 +20,16 @@ module.exports = {
       return
 
     # (String) => Unit
+    hide = (name) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Plot", Action: "Hide", Target: name }
+        )
+      else
+        workspace.printPrims.print("Hide and deactivate the plot #{name}")
+      return
+
+    # (String) => Unit
     activate = (name) ->
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue(
@@ -27,6 +37,16 @@ module.exports = {
         )
       else
         workspace.printPrims.print("Activate the plot #{name}")
+      return
+
+    # (String) => Unit
+    deactivate = (name) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Plot", Action: "Deactivate", Target: name }
+        )
+      else
+        workspace.printPrims.print("Deactivate the plot #{name}")
       return
 
     # (String, Number) => Unit
@@ -43,19 +63,32 @@ module.exports = {
     setTitle = (name, title) ->
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue(
-          { Type: "Plot", Action: "setTitle", Target: name, Value: title }
+          { Type: "Plot", Action: "SetTitle", Target: name, Value: title }
         )
       else
         workspace.printPrims.print("Set plot #{name} with title #{title}")
       return
 
+    # (String) => Unit
+    getTitle = (name) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Plot", Action: "GetTitle", Target: name }
+        )
+      else
+        workspace.printPrims.print("Get plot #{name}'s title")
+      return
+
     {
-      name: "tutorial"
+      name: "plot"
     , prims: {
-             "SHOW": show
-      ,  "ACTIVATE": activate
-      ,      "MOVE": move
-      , "SET-TITLE": setTitle
+               "SHOW": show
+               "HIDE": hide
+      ,    "ACTIVATE": activate
+      ,  "DEACTIVATE": deactivate
+      ,        "MOVE": move
+      ,   "SET-TITLE": setTitle
+      ,   "GET-TITLE": getTitle
       }
     }
 }
