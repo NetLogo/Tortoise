@@ -161,7 +161,25 @@ module.exports = {
 
     # (Agentset, Reporter) => Table
     groupAgents = (agentset, reporter) ->
-      return
+      group = new Map()
+
+      agentset.shufflerator().forEach( (agent) ->
+        key = workspace.world.selfManager.askAgent(reporter)(agent)
+        value = group.get(key) ? []
+        value.push(agent)
+        group.set(key, value)
+      )
+
+      group.forEach( (value, key, map) ->
+        newAgentset = switch agentset._agentTypeName
+          when "turtles" then new TurtleSet(value, workspace.world)
+          when "patches" then new PatchSet(value, workspace.world)
+          when "links"   then new LinkSet(value, workspace.world)
+          else throw new Error("Unknown agentset type")
+        group.set(key, newAgentset)
+      )
+
+      group
 
     # (List, (Number => Number)) => Table
     groupItems = (list, reporter) ->
