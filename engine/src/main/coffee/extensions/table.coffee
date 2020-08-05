@@ -170,12 +170,12 @@ module.exports = {
         group.set(key, value)
       )
 
-      group.forEach( (value, key, map) ->
+      group.forEach( (value, key) ->
         newAgentset = switch agentset._agentTypeName
           when "turtles" then new TurtleSet(value, workspace.world)
           when "patches" then new PatchSet(value, workspace.world)
           when "links"   then new LinkSet(value, workspace.world)
-          else throw new Error("Unknown agentset type")
+          else throw new Error("Extension Exception: Unknown agentset type")
         group.set(key, newAgentset)
       )
 
