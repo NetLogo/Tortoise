@@ -9,44 +9,97 @@ getTortugaSession = () =>
 module.exports = {
   init: (workspace) =>
 
-    # (String, Boolean*, Any*) => Unit
+    # (String) => Unit
     show = (name) ->
       if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue({ Type: "Widget", Action: "Show", Value: name })
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Widget", Action: "Show", Target: name }
+        )
       else
         workspace.printPrims.print("Show widget #{name}")
       return
 
-    # (String) => Unit
+     # (String) => Unit
     hide = (name) ->
       if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue({ Type: "Widget", Action: "Hide", Value: name })
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Widget", Action: "Hide", Target: name }
+        )
       else
         workspace.printPrims.print("Hide widget #{name}")
       return
 
-    showGroup = () ->
+    # (String, Number) => Unit
+    move = (name, index) ->
       if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue({ Type: "WidgetGroup", Action: "Show" })
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Widget", Action: "Move", Target: name, Value: index }
+        )
       else
-        workspace.printPrims.print("Hide widget group")
+        workspace.printPrims.print("Move the widget #{name} to the place #{index} in its group")
+      return
+
+    # (String, String) => Unit
+    setTitle = (name, title) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Widget", Action: "SetTitle", Target: name, Value: title }
+        )
+      else
+        workspace.printPrims.print("Set widget #{name} with title #{title}")
+      return
+
+    # (String, String) => Unit
+    setGroup = (widgetName, groupName) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Widget", Action: "SetGroup", Target: widgetName, Value: groupName }
+        )
+      else
+        workspace.printPrims.print("Put widget #{widgetName} into group #{groupName}")
       return
 
     # (String) => Unit
-    hideGroup = () ->
+    showGroup = (name) ->
       if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue({ Type: "WidgetGroup", Action: "Hide" })
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Widget", Action: "ShowGroup", Target: name }
+        )
       else
-        workspace.printPrims.print("Hide widget group")
+        workspace.printPrims.print("Show group #{name}")
+      return
+
+    # (String) => Unit
+    hideGroup = (name) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Widget", Action: "HideGroup", Target: name }
+        )
+      else
+        workspace.printPrims.print("Hide group #{name}")
+      return
+
+    # (String, String) => Unit
+    setGroupTitle = (groupName, title) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Widget", Action: "SetGroupTitle", Target: groupName, Value: title }
+        )
+      else
+        workspace.printPrims.print("Set group #{groupName} with title #{title}")
       return
 
     {
-      name: "tutorial"
+      name: "widget"
     , prims: {
-              "SHOW": show
-      ,       "HIDE": hide
-      , "SHOW-GROUP": showGroup
-      , "HIDE-GROUP": hideGroup
+                   "SHOW": show
+                   "HIDE": hide
+      ,            "MOVE": move
+      ,       "SET-TITLE": setTitle
+      ,       "SET-GROUP": setGroup
+      ,      "SHOW-GROUP": showGroup
+      ,      "HIDE-GROUP": hideGroup
+      , "SET-GROUP-TITLE": setGroupTitle
       }
     }
 }

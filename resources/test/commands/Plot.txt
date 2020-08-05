@@ -1,4 +1,4 @@
-TutorialExtension
+Tutorial_PlotExtension
   extensions [plot]
   O> plot:show "example"
   O> plot:hide "example"

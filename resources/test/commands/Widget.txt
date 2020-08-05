@@ -1,0 +1,10 @@
+Tutorial_WidgetExtension
+  extensions [widget]
+  O> widget:show "example"
+  O> widget:hide "example"
+  O> widget:move "example" 0
+  O> widget:set-title "example" "title"
+  O> widget:set-group "example" "group"
+  O> widget:show-group "example"
+  O> widget:hide-group "example"
+  O> widget:set-group-title "groupName" "title"

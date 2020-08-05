@@ -16,14 +16,50 @@
       ],
       "returnType": "unit"
     }, {
+      "name": "move",
+      "actionName": "move",
+      "argTypes": [
+        "string",
+        "number"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "set-title",
+      "actionName": "set-title",
+      "argTypes": [
+        "string",
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "set-group",
+      "actionName": "set-group",
+      "argTypes": [
+        "string",
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
       "name": "show-group",
       "actionName": "show-group",
-      "argTypes": [],
+      "argTypes": [
+        "string"
+      ],
       "returnType": "unit"
     }, {
       "name": "hide-group",
       "actionName": "hide-group",
-      "argTypes": [],
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "set-group-title",
+      "actionName": "set-group-title",
+      "argTypes": [
+        "string",
+        "string"
+      ],
       "returnType": "unit"
     }
   ]
