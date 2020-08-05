@@ -69,16 +69,6 @@ module.exports = {
         workspace.printPrims.print("Set plot #{name} with title #{title}")
       return
 
-    # (String) => Unit
-    getTitle = (name) ->
-      if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue(
-          { Type: "Plot", Action: "GetTitle", Target: name }
-        )
-      else
-        workspace.printPrims.print("Get plot #{name}'s title")
-      return
-
     {
       name: "plot"
     , prims: {
@@ -88,7 +78,6 @@ module.exports = {
       ,  "DEACTIVATE": deactivate
       ,        "MOVE": move
       ,   "SET-TITLE": setTitle
-      ,   "GET-TITLE": getTitle
       }
     }
 }

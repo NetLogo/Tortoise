@@ -31,11 +31,6 @@
       "actionName": "set-title",
       "argTypes": ["string", "string"],
       "returnType": "unit"
-    }, {
-      "name": "get-title",
-      "actionName": "get-title",
-      "argTypes": ["string"],
-      "returnType": "unit"
     }
   ]
 }
