@@ -1,0 +1,26 @@
+{
+  "name": "plot",
+  "prims": [
+    {
+      "name": "show",
+      "actionName": "show",
+      "argTypes": ["string"],
+      "returnType": "unit"
+    }, {
+      "name": "activate",
+      "actionName": "activate",
+      "argTypes": ["string"],
+      "returnType": "unit"
+    }, {
+      "name": "move",
+      "actionName": "move",
+      "argTypes": ["string", "number"],
+      "returnType": "unit"
+    }, {
+      "name": "set-title",
+      "actionName": "set-title",
+      "argTypes": ["string", "string"],
+      "returnType": "unit"
+    }
+  ]
+}
