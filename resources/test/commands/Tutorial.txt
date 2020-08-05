@@ -2,5 +2,7 @@ TutorialExtension
   extensions [tutorial]
   O> (tutorial:show-dialog "example")
   O> (tutorial:show-dialog "example" True)
-  O> (tutorial:show-dialog "example" True [])
   O> tutorial:minimize-dialog "example"
+  O> tutorial:hide-dialog "example"
+  O> (tutorial:hide-dialog)
+  O> tutorial:set "finished" False

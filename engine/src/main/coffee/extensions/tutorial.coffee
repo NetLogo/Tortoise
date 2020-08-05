@@ -27,17 +27,31 @@ module.exports = {
     # (String) => Unit
     minimizeDialog = (name) ->
       if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue({ Type: "Dialog", Action: "Minimize", Target: name })
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Dialog", Action: "Minimize", Target: name }
+        )
       else
-        workspace.printPrims.print("Minimize dialog #{name}")
+        workspace.printPrims.print("Make dialog #{name} minimized")
       return
 
     # (String) => Unit
     hideDialog = (name) ->
       if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue({ Type: "Dialog", Action: "Hide", Target: name })
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Dialog", Action: "Hide", Target: name }
+        )
       else
-        workspace.printPrims.print("Hide dialog #{name}")
+        workspace.printPrims.print("Hide the active dialog #{name}")
+      return
+
+    #(String, Boolean) => Unit
+    set = (variable, value) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Tutorial", Action: "Set", Target: variable, Value: value }
+        )
+      else
+        workspace.printPrims.print("Set the tutorial variable #{variable} with value #{value}")
       return
 
     {
@@ -46,6 +60,7 @@ module.exports = {
             "SHOW-DIALOG": showDialog
       , "MINIMIZE-DIALOG": minimizeDialog
       ,     "HIDE-DIALOG": hideDialog
+      ,             "SET": set
       }
     }
 }
