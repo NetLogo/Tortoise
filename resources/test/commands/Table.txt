@@ -1,0 +1,203 @@
+Table_isTable
+  extensions [ table ]
+  globals [glob1]
+  table:is-table? 0 => false
+  table:is-table? [1 2 3] => false
+  table:is-table? "hello" => false
+  table:is-table? table:make => true
+  table:is-table? table:to-list table:make => false
+
+TablesBasics
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:make
+  (word glob1) => "{{table: []}}"
+  O> table:put glob1 0 "testvalue"
+  O> table:put glob1 "testkey" 1
+  table:length glob1 => 2
+  table:get glob1 "testkey" => 1
+  table:get glob1 0 => "testvalue"
+  table:keys glob1 => [0 "testkey"]
+  table:has-key? glob1 0 => true
+  table:has-key? glob1 3 => false
+  table:has-key? glob1 "testkey" => true
+  table:has-key? glob1 "somestring" => false
+  O> table:clear glob1
+  table:length glob1 => 0
+
+TablesToFromList
+  extensions [ table ]
+  globals [glob1 glob2]
+  O> set glob1 [[1 2] ["key" "value"]]
+  O> set glob2 table:from-list glob1
+  (word glob2) => "{{table: [[1 2] [\"key\" \"value\"]]}}"
+  table:get glob2 "key" => "value"
+  table:get glob2 1 => 2
+  glob1 = table:to-list glob2 => true
+  O> set glob1 table:make
+  table:to-list glob1 => []
+
+Table_dumpTable
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:from-list [[1 1] [[2 2] [2 2]] ["3" "3"] [true true]]
+  (word glob1) => "{{table: [[1 1] [[2 2] [2 2]] [\"3\" \"3\"] [true true]]}}"
+
+TableGet
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:from-list [[[1 2] 1] [[3 4] 2]]
+  table:get glob1 [1 2] => 1
+
+TablesOfTables
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:from-list ( list (list 0 table:from-list [[1 2] [3 4]]) )
+  (word glob1) => "{{table: [[0 {{table: [[1 2] [3 4]]}}]]}}"
+
+TableValues
+  extensions [ table ]
+  globals [ t ]
+  O> set t table:make
+  table:values t => []
+  O> table:put t 1 "a"
+  table:values t => ["a"]
+  O> table:put t 2 "b"
+  table:values t => ["a" "b"]
+  O> table:put t list 1 2 -1
+  table:values t => ["a" "b" -1]
+  O> table:put t "a" "testing values"
+  table:values t => ["a" "b" -1 "testing values"]
+  O> table:remove t 2
+  table:values t => ["a" -1 "testing values"]
+  O> table:put t -1 -1
+  table:values t => ["a" -1 "testing values" -1]
+
+TableHasKeys
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:from-list [[[1] 1] [2 2] [0 0]]
+  table:has-key? glob1 [2] => false
+  table:has-key? glob1 [1] => true
+  table:has-key? glob1 2 => true
+  table:has-key? glob1 0 => true
+
+TableKeys
+  extensions [ table ]
+  globals [ t ]
+  O> set t table:make
+  table:keys t => []
+  O> table:put t 1 "a"
+  table:keys t => [1]
+  O> table:put t 2 "b"
+  table:keys t => [1 2]
+  O> table:put t list 1 2 -1
+  table:keys t => [1 2 [1 2]]
+  O> table:put t "testing values" "a"
+  table:keys t => [1 2 [1 2] "testing values"]
+  O> table:remove t [1 2]
+  table:keys t => [1 2 "testing values"]
+  O> table:put t -1 -1
+  table:keys t => [1 2 "testing values" -1]
+
+TableCounts
+  extensions [ table ]
+  globals [ ls glob1 ]
+  O> set ls [1 1 2 3 3]
+  (word table:counts ls) => "{{table: [[1 2] [2 1] [3 2]]}}"
+  (word table:counts ["a" 0 "a" 4 [5] [5]]) => "{{table: [[\"a\" 2] [0 1] [4 1] [[5] 2]]}}"
+
+TableGetOrDefault
+  extensions [ table ]
+  table:get-or-default (table:from-list [[1 2]]) 1 3 => 2
+  table:get-or-default (table:from-list [[1 2]]) 2 3 => 3
+
+TableGroupItems
+  extensions [ table ]
+  (word table:group-items range 10 [ n -> n mod 2 ]) => "{{table: [[0 [0 2 4 6 8]] [1 [1 3 5 7 9]]]}}"
+  (word table:group-items [[1] [2] [3]] [ arr -> arr ]) => "{{table: [[[1] [[1]]] [[2] [[2]]] [[3] [[3]]]]}}"
+
+TableGroupAgents
+  extensions [ table ]
+  globals [ t ]
+  O> crt 3 [ set color red ]
+  O> crt 4 [ set color green ]
+  O> crt 5 [ set color blue ]
+  O> set t table:group-agents turtles [ color ]
+  count table:get t red => 3
+  count table:get t green => 4
+  count table:get t blue => 5
+
+TableException_isTable
+  extensions [ table ]
+  table:to-list [1] => ERROR Extension Exception: not a table [1]
+  O> table:clear [1] => ERROR Extension Exception: not a table [1]
+  table:get [1] 1 => ERROR Extension Exception: not a table [1]
+  table:has-key? [1] 1 => ERROR Extension Exception: not a table [1]
+  table:keys [] => ERROR Extension Exception: not a table []
+  table:values [] => ERROR Extension Exception: not a table []
+  table:length [[1]] => ERROR Extension Exception: not a table [[1]]
+  O> table:put [1 2 3] 1 1 => ERROR Extension Exception: not a table [1 2 3]
+  O> table:remove [1 2 3] 1 => ERROR Extension Exception: not a table [1 2 3]
+  table:get-or-default [1 2 3] 2 3 => ERROR Extension Exception: not a table [1 2 3]
+
+TableException_isValidList
+  extensions [ table ]
+  table:from-list [[1]] => ERROR Extension Exception: expected a two-element list: [1]
+
+TableException_isValidKey
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:from-list [[1 1]]
+  O> table:put glob1 [n -> n] 1 => ERROR Extension Exception: (anonymous reporter: [ n -> n ]) is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+
+TablesAllowableTypes
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:make
+  O> table:put glob1 0 "number"
+  O> table:put glob1 "foo" "string"
+  O> table:put glob1 true "boolean"
+  O> table:put glob1 false "boolean"
+  O> table:put glob1 nobody "nobody" => ERROR Extension Exception: nobody is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> table:put glob1 turtles "turtle set" => ERROR Extension Exception: turtles is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> table:put glob1 patches "patch set" => ERROR Extension Exception: patches is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> table:put glob1 links "link set" => ERROR Extension Exception: links is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> table:put glob1 turtle 0 "nonexistent turtle" => ERROR Extension Exception: nobody is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> crt 1
+  O> table:put glob1 turtle 0 "turtle" => ERROR Extension Exception: (turtle 0) is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> ct
+  O> table:put glob1 turtle 0 "dead turtle" => ERROR Extension Exception: nobody is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> table:put glob1 [] "list"
+  O> table:put glob1 [1] "1"
+  O> table:put glob1 [1] "2"
+  table:get glob1 [1] => "2"
+  O> table:put glob1 [[1] ["two" "three"] [4]] "uh huh"
+  table:get glob1 [[1] ["two" "three"] [4]] => "uh huh"
+
+TablesAllowableTypes_2D
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:make
+  O> crt 1
+  O> table:put glob1 [patch-here] of turtle 0 "patch" => ERROR Extension Exception: (patch 0 0) is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+
+TablesAllowableTypes_3D
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:make
+  O> crt 1
+  O> table:put glob1 patch 0 0 0 "patch" => ERROR Extension Exception: (patch 0 0 0) is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+
+TableDoesNotLeak
+  extensions [ table ]
+  globals [ls glob1]
+  O> set ls [[1 1] [2 2]]
+  O> set glob1 table:from-list ls
+  O> table:put glob1 3 3
+  table:to-list glob1 => [[1 1] [2 2] [3 3]]
+  ls => [[1 1] [2 2]]
+  O> set ls table:to-list glob1
+  O> table:remove glob1 3
+  table:to-list glob1 => [[1 1] [2 2]]
+  ls => [[1 1] [2 2] [3 3]]
