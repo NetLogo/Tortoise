@@ -90,7 +90,7 @@ module.exports = {
       return
 
     # (String, Number) => Unit
-    move = (name, index) ->
+    moveGroup = (name, index) ->
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue(
           { Type: "WidgetGroup", Action: "Move", Target: name, Value: index }
