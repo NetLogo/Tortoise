@@ -63,7 +63,7 @@ module.exports = {
     showGroup = (name) ->
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue(
-          { Type: "Widget", Action: "ShowGroup", Target: name }
+          { Type: "WidgetGroup", Action: "Show", Target: name }
         )
       else
         workspace.printPrims.print("Show group #{name}")
@@ -73,20 +73,30 @@ module.exports = {
     hideGroup = (name) ->
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue(
-          { Type: "Widget", Action: "HideGroup", Target: name }
+          { Type: "WidgetGroup", Action: "Hide", Target: name }
         )
       else
         workspace.printPrims.print("Hide group #{name}")
       return
 
     # (String, String) => Unit
-    setGroupTitle = (groupName, title) ->
+    setGroupTitle = (name, title) ->
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue(
-          { Type: "Widget", Action: "SetGroupTitle", Target: groupName, Value: title }
+          { Type: "WidgetGroup", Action: "SetTitle", Target: name, Value: title }
         )
       else
-        workspace.printPrims.print("Set group #{groupName} with title #{title}")
+        workspace.printPrims.print("Set group #{name} with title #{title}")
+      return
+
+    # (String, Number) => Unit
+    move = (name, index) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "WidgetGroup", Action: "Move", Target: name, Value: index }
+        )
+      else
+        workspace.printPrims.print("Move group #{name} to the place #{index} in the panel")
       return
 
     {
@@ -99,6 +109,7 @@ module.exports = {
       ,       "SET-GROUP": setGroup
       ,      "SHOW-GROUP": showGroup
       ,      "HIDE-GROUP": hideGroup
+      ,      "MOVE-GROUP": moveGroup
       , "SET-GROUP-TITLE": setGroupTitle
       }
     }

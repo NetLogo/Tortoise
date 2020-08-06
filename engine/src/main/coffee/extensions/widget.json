@@ -54,6 +54,14 @@
       ],
       "returnType": "unit"
     }, {
+      "name": "move-group",
+      "actionName": "move-group",
+      "argTypes": [
+        "string",
+        "number"
+      ],
+      "returnType": "unit"
+    }, {
       "name": "set-group-title",
       "actionName": "set-group-title",
       "argTypes": [
