@@ -39,16 +39,6 @@ module.exports = {
         workspace.printPrims.print("Activate the plot #{name}")
       return
 
-    # (String) => Unit
-    deactivate = (name) ->
-      if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue(
-          { Type: "Plot", Action: "Deactivate", Target: name }
-        )
-      else
-        workspace.printPrims.print("Deactivate the plot #{name}")
-      return
-
     # (String, Number) => Unit
     move = (name, index) ->
       if tortugaSession = getTortugaSession()
@@ -75,7 +65,6 @@ module.exports = {
                "SHOW": show
                "HIDE": hide
       ,    "ACTIVATE": activate
-      ,  "DEACTIVATE": deactivate
       ,        "MOVE": move
       ,   "SET-TITLE": setTitle
       }

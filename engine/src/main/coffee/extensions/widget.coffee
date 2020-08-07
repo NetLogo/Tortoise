@@ -80,13 +80,13 @@ module.exports = {
       return
 
     # (String, String) => Unit
-    setGroupTitle = (name, title) ->
+    renameGroup = (name, title) ->
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue(
-          { Type: "WidgetGroup", Action: "SetTitle", Target: name, Value: title }
+          { Type: "WidgetGroup", Action: "Rename", Target: name, Value: title }
         )
       else
-        workspace.printPrims.print("Set group #{name} with title #{title}")
+        workspace.printPrims.print("Rename group #{name} with title #{title}")
       return
 
     # (String, Number) => Unit
@@ -110,7 +110,7 @@ module.exports = {
       ,      "SHOW-GROUP": showGroup
       ,      "HIDE-GROUP": hideGroup
       ,      "MOVE-GROUP": moveGroup
-      , "SET-GROUP-TITLE": setGroupTitle
+      ,    "RENAME-GROUP": renameGroup
       }
     }
 }

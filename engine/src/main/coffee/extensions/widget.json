@@ -62,8 +62,8 @@
       ],
       "returnType": "unit"
     }, {
-      "name": "set-group-title",
-      "actionName": "set-group-title",
+      "name": "rename-group",
+      "actionName": "rename-group",
       "argTypes": [
         "string",
         "string"

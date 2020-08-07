@@ -17,11 +17,6 @@
       "argTypes": ["string"],
       "returnType": "unit"
     }, {
-      "name": "deactivate",
-      "actionName": "deactivate",
-      "argTypes": ["string"],
-      "returnType": "unit"
-    }, {
       "name": "move",
       "actionName": "move",
       "argTypes": ["string", "number"],
