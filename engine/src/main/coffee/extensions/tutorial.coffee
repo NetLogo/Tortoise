@@ -60,6 +60,24 @@ module.exports = {
         workspace.printPrims.print("Set the tutorial variable #{variable} with value #{value}")
       return
 
+    # (String) -> Unit
+    activate = (sectionName) ->
+      if tortugaSession = getTortugaSession()
+        section = tortugaSession.Tutorial.Sections[sectionName]
+        tortugaSession.ActivateSection(section)
+      else
+        workspace.printPrims.print("Activate section #{sectionName}")
+      return
+
+    # (String) -> Unit
+    deactivate = (sectionName) ->
+      if tortugaSession = getTortugaSession()
+        section = tortugaSession.Tutorial.Sections[sectionName]
+        tortugaSession.DeactivateSection(section)
+      else
+        workspace.printPrims.print("Deactivate section #{sectionName}")
+      return
+
     {
       name: "tutorial"
     , prims: {
@@ -68,6 +86,8 @@ module.exports = {
       ,     "HIDE-DIALOG": hideDialog
       ,             "GET": get
       ,             "SET": set
+      ,        "ACTIVATE": activate
+      ,      "DEACTIVATE": deactivate
       }
     }
 }

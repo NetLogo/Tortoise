@@ -7,4 +7,5 @@ Tutorial_WidgetExtension
   O> widget:set-group "example" "group"
   O> widget:show-group "example"
   O> widget:hide-group "example"
-  O> widget:set-group-title "groupName" "title"
+  O> widget:rename-group "example" "new-name"
+  O> widget:move-group "example" 0

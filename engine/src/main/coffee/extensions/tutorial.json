@@ -38,6 +38,20 @@
         "string"
       ],
       "returnType": "wildcard"
+    }, {
+      "name": "activate",
+      "actionName": "activate",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "deactivate",
+      "actionName": "deactivate",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
     }
   ]
 }
