@@ -78,6 +78,22 @@ module.exports = {
         workspace.printPrims.print("Deactivate section #{sectionName}")
       return
 
+    # () -> Unit
+    forward = () ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.ForwardSection()
+      else
+        workspace.printPrims.print("Visit the next available section")
+      return
+    
+    # () -> Unit
+    back = () ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.BackSection()
+      else
+        workspace.printPrims.print("Visit the last available section")
+      return
+
     {
       name: "tutorial"
     , prims: {
@@ -88,6 +104,8 @@ module.exports = {
       ,             "SET": set
       ,        "ACTIVATE": activate
       ,      "DEACTIVATE": deactivate
+      ,         "FORWARD": forward
+      ,            "BACK": back
       }
     }
 }
