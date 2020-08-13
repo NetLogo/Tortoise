@@ -8,7 +8,7 @@
       "returnType":      "wildcard"
     }, {
       "name":            "set",
-      "actionName":      "sets",
+      "actionName":      "set",
       "argTypes":        ["string", "wildcard"],
       "returnType":      "unit"
     }
