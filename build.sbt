@@ -96,18 +96,38 @@ lazy val compiler = CrossProject("compiler", file("compiler"))(JSPlatform, JVMPl
         "org.nlogo"         %   "parser-js"   % parserJsDependencyVersion cross ScalaJSCrossVersion.binary,
         "com.typesafe.play" %%% "play-json"   % "2.6.11",
         "org.scalaz"        %%% "scalaz-core" % scalazVersion)
-    })
+    }
+  )
 
 lazy val compilerJS  = compiler.js
 
 lazy val compilerJVM = compiler.jvm
+
+lazy val recompileWhenExtensionsChange = taskKey[Unit]("Recompiles the macros when extension files change")
+
+recompileWhenExtensionsChange := {
+  val extensionsDir  = (baseDirectory in root).value / "engine" / "src" / "main" / "coffee" / "extensions"
+  val extensionCache = streams.value.cacheStoreFactory.make("extensions_cache")
+  val cleanMacros    = () => {
+    // I would love to just do a `(clean in macrosJVM).value`, but such things are evaluated independently
+    // of the actual running of this anonymous function, meaning the clean happens every time.  Perhaps a
+    // more skilled sbt-wrangler will come along and improve this, but for now this works.
+    // -Jeremy B August 2020
+    IO.delete((baseDirectory in macrosJVM).value / "target" )
+    IO.delete((baseDirectory in macrosJS).value / "target" )
+  }
+  val cacheCheck     = NonSourceCache.cached(extensionCache, FilesInfo.lastModified)(cleanMacros)
+  val extensionFiles = (extensionsDir ** "*.json").get
+  cacheCheck(extensionFiles.toSet)
+}
 
 lazy val macros = CrossProject("macros", file("macros"))(JSPlatform, JVMPlatform).crossType(CrossType.Pure).
   settings(commonSettings: _*).
   settings(
     libraryDependencies ++= Seq(
       "org.scala-lang" %  "scala-reflect" % scalaVersion.value,
-      "org.scalaz"     %% "scalaz-core"   % scalazVersion)
+      "org.scalaz"     %% "scalaz-core"   % scalazVersion),
+    (compile in Compile) := ((compile in Compile) dependsOn (recompileWhenExtensionsChange in root)).value
   )
 
 lazy val macrosJS  = macros.js
