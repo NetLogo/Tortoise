@@ -9,7 +9,8 @@
     "csv-parse": "4.6.5",
     "iframe-phone": "1.2.0",
     "mori": "0.3.2",
-    "vectorious": "^6.0.0-beta.11"
+    "vectorious": "^6.0.0-beta.11",
+	"tone": "14.7.39"
   },
   "devDependencies": {
     "coffeelint": "2.1.0",

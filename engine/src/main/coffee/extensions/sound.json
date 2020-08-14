@@ -1,0 +1,11 @@
+{
+  "name": "sound",
+  "prims": [
+	{
+	  "name":       "play-note",
+      "actionName": "play-note",
+      "argTypes":   ["string", "number", "number"],
+      "returnType": "unit"
+	}
+  ]
+}
