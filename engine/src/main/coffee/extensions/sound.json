@@ -2,8 +2,8 @@
   "name": "sound",
   "prims": [
 	{
-      "name" :       "play-note",
-      "actionName" : "play-note",
+      "name" :       "play-tone",
+      "actionName" : "play-tone",
       "argTypes" :   ["string", "number", "number"],
       "returnType" : "unit"
 	}
