@@ -9,6 +9,7 @@
     "csv-parse": "4.6.5",
     "iframe-phone": "1.2.0",
     "mori": "0.3.2",
+    "tone": "14.7.39",
     "vectorious": "^6.0.0-beta.11"
   },
   "devDependencies": {
