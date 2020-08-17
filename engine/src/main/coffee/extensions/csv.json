@@ -1,5 +1,5 @@
 {
-  "name": "mini-csv",
+  "name": "csv",
   "prims": [
     {
       "name":            "from-string",
@@ -12,6 +12,11 @@
       "defaultArgCount": 1,
       "returnType":      "list"
     }, {
+      "name":            "from-file",
+      "argTypes":        ["string", { "type": "string", "isRepeatable": true }],
+      "defaultArgCount": 1,
+      "returnType":      "list"
+    }, {
       "name":            "to-string",
       "argTypes":        ["list", { "type": "string", "isRepeatable": true }],
       "defaultArgCount": 1,
@@ -21,6 +26,11 @@
       "argTypes":        ["list", { "type": "string", "isRepeatable": true }],
       "defaultArgCount": 1,
       "returnType":      "string"
+    }, {
+      "name":            "to-file",
+      "argTypes":        ["string", "list", { "type": "string", "isRepeatable": true }],
+      "defaultArgCount": 2,
+      "returnType":      "unit"
     }
   ]
 }
