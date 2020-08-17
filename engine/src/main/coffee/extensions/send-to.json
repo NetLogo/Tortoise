@@ -3,7 +3,6 @@
   "prims": [
     {
       "name":       "file",
-      "actionName": "file",
       "argTypes":   ["string", "string"],
       "returnType": "unit"
     }

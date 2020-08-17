@@ -3,22 +3,18 @@
   "prims": [
     {
       "name":            "drawing",
-      "actionName":      "drawing",
       "argTypes":        ["string"],
       "returnType":      "unit"
     }, {
       "name":            "pcolors",
-      "actionName":      "pcolors",
       "argTypes":        ["string"],
       "returnType":      "unit"
     }, {
       "name":            "pcolors-rgb",
-      "actionName":      "pcolors-rgb",
       "argTypes":        ["string"],
       "returnType":      "unit"
     }, {
       "name":            "world",
-      "actionName":      "world",
       "argTypes":        ["string"],
       "returnType":      "unit"
     }

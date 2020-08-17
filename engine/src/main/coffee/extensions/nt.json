@@ -3,12 +3,10 @@
   "prims": [
     {
       "name":            "get",
-      "actionName":      "get",
       "argTypes":        ["string"],
       "returnType":      "wildcard"
     }, {
       "name":            "set",
-      "actionName":      "set",
       "argTypes":        ["string", "wildcard"],
       "returnType":      "unit"
     }

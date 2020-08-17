@@ -3,22 +3,18 @@
   "prims": [
     {
       "name":       "user-input",
-      "actionName": "user-input",
       "argTypes":   ["string", "command"],
       "returnType": "unit"
     }, {
       "name":       "user-message",
-      "actionName": "user-message",
       "argTypes":   ["string", "command"],
       "returnType": "unit"
     }, {
       "name":       "user-one-of",
-      "actionName": "user-one-of",
       "argTypes":   ["string", "list", "command"],
       "returnType": "unit"
     }, {
       "name":       "user-yes-or-no?",
-      "actionName": "user-yes-or-no?",
       "argTypes":   ["string", "command"],
       "returnType": "unit"
     }

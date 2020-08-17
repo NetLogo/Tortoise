@@ -3,25 +3,21 @@
   "prims": [
     {
       "name":            "from-string",
-      "actionName":      "from-string",
       "argTypes":        [{ "type": "string", "isRepeatable": true }],
       "defaultArgCount": 1,
       "returnType":      "list"
     }, {
       "name":            "from-row",
-      "actionName":      "from-row",
       "argTypes":        [{ "type": "string", "isRepeatable": true }],
       "defaultArgCount": 1,
       "returnType":      "list"
     }, {
       "name":            "to-string",
-      "actionName":      "to-string",
       "argTypes":        ["list", { "type": "string", "isRepeatable": true }],
       "defaultArgCount": 1,
       "returnType":      "string"
     }, {
       "name":            "to-row",
-      "actionName":      "to-row",
       "argTypes":        ["list", { "type": "string", "isRepeatable": true }],
       "defaultArgCount": 1,
       "returnType":      "string"

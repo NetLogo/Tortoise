@@ -3,83 +3,67 @@
   "prims": [
     {
       "name": "is-table?",
-      "actionName": "is-table?",
       "argTypes": ["wildcard"],
       "returnType": "boolean"
     },
     {
       "name": "clear",
-      "actionName": "clear",
       "argTypes": ["wildcard"],
       "returnType": "unit"
     }, {
       "name": "counts",
-      "actionName": "counts",
       "argTypes": ["list"],
       "returnType": "wildcard"
     }, {
       "name": "group-agents",
-      "actionName": "group-agents",
       "argTypes": ["agentset", "reporter"],
       "returnType": "wildcard"
     }, {
       "name": "group-items",
-      "actionName": "group-items",
       "argTypes": ["list", "reporter"],
       "returnType": "wildcard"
     }, {
       "name": "from-list",
-      "actionName": "from-list",
       "argTypes": ["list"],
       "returnType": "wildcard"
     }, {
       "name": "get",
-      "actionName": "get",
       "argTypes": ["wildcard", "wildcard"],
       "returnType": "wildcard"
     }, {
       "name": "get-or-default",
-      "actionName": "get-or-default",
       "argTypes": ["list", "wildcard", "wildcard"],
       "returnType": "wildcard"
     }, {
       "name": "has-key?",
-      "actionName": "has-key?",
       "argTypes": ["wildcard", "wildcard"],
       "returnType": "boolean"
     }, {
       "name": "keys",
-      "actionName": "keys",
       "argTypes": ["wildcard"],
       "returnType": "list"
     }, {
       "name": "length",
-      "actionName": "length",
       "argTypes": ["wildcard"],
       "returnType": "number"
     }, {
       "name": "make",
-      "actionName": "make",
       "argTypes": [],
       "returnType": "wildcard"
     }, {
       "name": "put",
-      "actionName": "put",
       "argTypes": ["wildcard", "wildcard", "wildcard"],
       "returnType": "unit"
     }, {
       "name": "remove",
-      "actionName": "remove",
       "argTypes": ["wildcard", "wildcard"],
       "returnType": "unit"
     }, {
       "name": "to-list",
-      "actionName": "to-list",
       "argTypes": ["wildcard"],
       "returnType": "list"
     }, {
       "name": "values",
-      "actionName": "values",
       "argTypes": ["wildcard"],
       "returnType": "list"
     }

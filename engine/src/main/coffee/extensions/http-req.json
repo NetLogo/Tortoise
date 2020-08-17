@@ -3,12 +3,10 @@
   "prims": [
     {
       "name":       "get",
-      "actionName": "get",
       "argTypes":   ["string"],
       "returnType": "list"
     }, {
       "name":       "post",
-      "actionName": "post",
       "argTypes":   ["string", "string", "string"],
       "returnType": "list"
     }

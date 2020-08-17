@@ -15,7 +15,7 @@ import
     TurtlesetType, TurtleType, WildcardType, VoidType
   }
 
-case class ExtensionPrim(primitive: Primitive, name: String, actionName: String)
+case class ExtensionPrim(primitive: Primitive, name: String)
 
 private trait Extension {
   def getName : String
@@ -71,7 +71,7 @@ private object CreateExtension {
         }
       }
 
-    ExtensionPrim(prim, jsPrim("name").as[String], jsPrim("actionName").as[String])
+    ExtensionPrim(prim, jsPrim("name").as[String])
 
   }
 
@@ -147,7 +147,7 @@ object NLWExtensionManager extends ExtensionManager {
   override def importExtension(extName: String, errors: ErrorSource): Unit = {
     val extension    = extNameToExtMap.getOrElse(extName, throwCompilerError(s"No such extension: ${extName}"))
     val extPrimPairs = extension.getPrims.map(prim => (extension.getName, prim))
-    val shoutedPairs = extPrimPairs.map { case (extName, ExtensionPrim(prim, name, _)) => (s"$extName:$name".toUpperCase, prim) }
+    val shoutedPairs = extPrimPairs.map { case (extName, ExtensionPrim(prim, name)) => (s"$extName:$name".toUpperCase, prim) }
     primNameToPrimMap ++= shoutedPairs
   }
 

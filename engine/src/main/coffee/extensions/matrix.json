@@ -3,7 +3,6 @@
   "prims": [
     {
       "name": "IS-MATRIX?",
-      "actionName": "isMatrix",
       "argTypes": [
         "wildcard"
       ],
@@ -11,7 +10,6 @@
     },
     {
       "name": "REGRESS",
-      "actionName": "regress",
       "argTypes": [
         "wildcard"
       ],
@@ -19,7 +17,6 @@
     },
     {
       "name": "FORECAST-CONTINUOUS-GROWTH",
-      "actionName": "forecastContinuousGrowth",
       "argTypes": [
         "list"
       ],
@@ -27,7 +24,6 @@
     },
     {
       "name": "FORECAST-COMPOUND-GROWTH",
-      "actionName": "forecastCompoundGrowth",
       "argTypes": [
         "list"
       ],
@@ -35,7 +31,6 @@
     },
     {
       "name": "FORECAST-LINEAR-GROWTH",
-      "actionName": "forecastLinearGrowth",
       "argTypes": [
         "list"
       ],
@@ -43,7 +38,6 @@
     },
     {
       "name": "MAKE-CONSTANT",
-      "actionName": "makeConstant",
       "argTypes": [
         "number",
         "number",
@@ -53,7 +47,6 @@
     },
     {
       "name": "DIMENSIONS",
-      "actionName": "dimensions",
       "argTypes": [
         "wildcard"
       ],
@@ -61,7 +54,6 @@
     },
     {
       "name": "DET",
-      "actionName": "det",
       "argTypes": [
         "wildcard"
       ],
@@ -69,7 +61,6 @@
     },
     {
       "name": "RANK",
-      "actionName": "rank",
       "argTypes": [
         "wildcard"
       ],
@@ -77,7 +68,6 @@
     },
     {
       "name": "TRACE",
-      "actionName": "trace",
       "argTypes": [
         "wildcard"
       ],
@@ -85,7 +75,6 @@
     },
     {
       "name": "MAKE-IDENTITY",
-      "actionName": "makeIdentity",
       "argTypes": [
         "number"
       ],
@@ -93,7 +82,6 @@
     },
     {
       "name": "FROM-ROW-LIST",
-      "actionName": "fromRowList",
       "argTypes": [
         "list"
       ],
@@ -101,7 +89,6 @@
     },
     {
       "name": "FROM-COLUMN-LIST",
-      "actionName": "fromColumnList",
       "argTypes": [
         "list"
       ],
@@ -109,7 +96,6 @@
     },
     {
       "name": "TO-ROW-LIST",
-      "actionName": "toRowList",
       "argTypes": [
         "wildcard"
       ],
@@ -117,7 +103,6 @@
     },
     {
       "name": "TO-COLUMN-LIST",
-      "actionName": "toColumnList",
       "argTypes": [
         "wildcard"
       ],
@@ -125,7 +110,6 @@
     },
     {
       "name": "COPY",
-      "actionName": "copy",
       "argTypes": [
         "wildcard"
       ],
@@ -133,7 +117,6 @@
     },
     {
       "name": "PRETTY-PRINT-TEXT",
-      "actionName": "prettyPrintText",
       "argTypes": [
         "wildcard"
       ],
@@ -141,7 +124,6 @@
     },
     {
       "name": "SOLVE",
-      "actionName": "solve",
       "argTypes": [
         "wildcard",
         "wildcard"
@@ -150,7 +132,6 @@
     },
     {
       "name": "GET",
-      "actionName": "get",
       "argTypes": [
         "wildcard",
         "number",
@@ -160,7 +141,6 @@
     },
     {
       "name": "GET-ROW",
-      "actionName": "getRow",
       "argTypes": [
         "wildcard",
         "number"
@@ -169,7 +149,6 @@
     },
     {
       "name": "GET-COLUMN",
-      "actionName": "getColumn",
       "argTypes": [
         "wildcard",
         "number"
@@ -178,7 +157,6 @@
     },
     {
       "name": "SET",
-      "actionName": "set",
       "argTypes": [
         "wildcard",
         "number",
@@ -188,7 +166,6 @@
     },
     {
       "name": "SET-ROW",
-      "actionName": "setRow",
       "argTypes": [
         "wildcard",
         "number",
@@ -197,7 +174,6 @@
     },
     {
       "name": "SET-COLUMN",
-      "actionName": "setColumn",
       "argTypes": [
         "wildcard",
         "number",
@@ -206,7 +182,6 @@
     },
     {
       "name": "SWAP-ROWS",
-      "actionName": "swapRows",
       "argTypes": [
         "wildcard",
         "number",
@@ -216,7 +191,6 @@
     },
     {
       "name": "SWAP-COLUMNS",
-      "actionName": "swapColumns",
       "argTypes": [
         "wildcard",
         "number",
@@ -226,7 +200,6 @@
     },
     {
       "name": "SET-AND-REPORT",
-      "actionName": "setAndReport",
       "argTypes": [
         "wildcard",
         "number",
@@ -237,7 +210,6 @@
     },
     {
       "name": "SUBMATRIX",
-      "actionName": "submatrix",
       "argTypes": [
         "wildcard",
         "number",
@@ -249,7 +221,6 @@
     },
     {
       "name": "MAP",
-      "actionName": "map",
       "argTypes": [
         "reporter",
         {
@@ -261,7 +232,6 @@
     },
     {
       "name": "TIMES-SCALAR",
-      "actionName": "times",
       "argTypes": [
         "wildcard",
         "number"
@@ -270,7 +240,6 @@
     },
     {
       "name": "TIMES",
-      "actionName": "times",
       "argTypes": [
         "wildcard",
         {
@@ -282,7 +251,6 @@
     },
     {
       "name": "*",
-      "actionName": "times",
       "argTypes": [
         "wildcard",
         "wildcard"
@@ -293,7 +261,6 @@
     },
     {
       "name": "TIMES-ELEMENT-WISE",
-      "actionName": "timesElementWise",
       "argTypes": [
         "wildcard",
         {
@@ -305,7 +272,6 @@
     },
     {
       "name": "PLUS-SCALAR",
-      "actionName": "plus",
       "argTypes": [
         "wildcard",
         "number"
@@ -314,7 +280,6 @@
     },
     {
       "name": "PLUS",
-      "actionName": "plus",
       "argTypes": [
         "wildcard",
         {
@@ -326,7 +291,6 @@
     },
     {
       "name": "+",
-      "actionName": "plus",
       "argTypes": [
         "wildcard",
         "wildcard"
@@ -337,7 +301,6 @@
     },
     {
       "name": "MINUS",
-      "actionName": "minus",
       "argTypes": [
         "wildcard",
         {
@@ -349,7 +312,6 @@
     },
     {
       "name": "-",
-      "actionName": "minus",
       "argTypes": [
         "wildcard",
         "wildcard"
@@ -360,7 +322,6 @@
     },
     {
       "name": "INVERSE",
-      "actionName": "inverse",
       "argTypes": [
         "wildcard"
       ],
@@ -368,7 +329,6 @@
     },
     {
       "name": "TRANSPOSE",
-      "actionName": "transpose",
       "argTypes": [
         "wildcard"
       ],
@@ -376,7 +336,6 @@
     },
     {
       "name": "REAL-EIGENVALUES",
-      "actionName": "realEigenvalues",
       "argTypes": [
         "wildcard"
       ],
@@ -384,7 +343,6 @@
     },
     {
       "name": "IMAGINARY-EIGENVALUES",
-      "actionName": "imaginaryEigenvalues",
       "argTypes": [
         "wildcard"
       ],
@@ -392,7 +350,6 @@
     },
     {
       "name": "EIGENVECTORS",
-      "actionName": "eigenvectors",
       "argTypes": [
         "wildcard"
       ],

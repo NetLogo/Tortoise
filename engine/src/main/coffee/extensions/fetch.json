@@ -3,32 +3,26 @@
   "prims": [
     {
       "name":       "file",
-      "actionName": "file",
       "argTypes":   ["string"],
       "returnType": "string"
     }, {
       "name":       "file-async",
-      "actionName": "file-async",
       "argTypes":   ["string", "command"],
       "returnType": "unit"
     }, {
       "name":       "url",
-      "actionName": "url",
       "argTypes":   ["string"],
       "returnType": "string"
     }, {
       "name":       "url-async",
-      "actionName": "url-async",
       "argTypes":   ["string", "command"],
       "returnType": "unit"
     }, {
       "name":       "user-file",
-      "actionName": "user-file",
       "argTypes":   [],
       "returnType": "string"
     }, {
       "name":       "user-file-async",
-      "actionName": "user-file-async",
       "argTypes":   ["command"],
       "returnType": "unit"
     }

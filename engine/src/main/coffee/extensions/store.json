@@ -3,55 +3,46 @@
   "prims": [
     {
       "name":       "list-stores",
-      "actionName": "list-stores",
       "argTypes":   ["command"],
       "returnType":  "unit"
     },
     {
       "name":       "switch-store",
-      "actionName": "switch-store",
       "argTypes":   ["string"],
       "returnType": "unit"
     },
     {
       "name":       "delete-store",
-      "actionName": "delete-store",
       "argTypes":   ["string"],
       "returnType": "unit"
     },
     {
       "name":       "put",
-      "actionName": "put",
       "argTypes":   ["string", "string", { "type": "commandblock", "isOptional": true }],
       "returnType": "unit"
     },
     {
       "name":       "get",
-      "actionName": "get",
       "argTypes":   ["string", "command"],
       "returnType": "unit"
     },
     {
       "name":       "get-keys",
-      "actionName": "get-keys",
       "argTypes":   ["command"],
       "returnType": "unit"
     },
     {
       "name":       "has-key",
-      "actionName": "has-key",
       "argTypes":   ["string", "command"],
       "returnType": "unit"
     },
     {
       "name":       "remove",
-      "actionName": "remove",
       "argTypes":   ["string", { "type": "commandblock", "isOptional": true }],
       "returnType": "unit"
     },
     {
       "name":       "clear",
-      "actionName": "clear",
       "argTypes":   [{ "type": "commandblock", "isOptional": true }],
       "returnType": "unit"
     }
