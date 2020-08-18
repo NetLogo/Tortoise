@@ -1,0 +1,35 @@
+MiniCsvExtensionStrings
+  O> random-seed 5768
+  extensions [mini-csv]
+  globals [temp]
+  mini-csv:from-string "" => []
+  mini-csv:to-string [] => ""
+  mini-csv:from-string "apples,oranges,1,2" => [["apples" "oranges" 1 2]]
+  (mini-csv:from-string "apples|oranges|1|2" "|") => [["apples" "oranges" 1 2]]
+  mini-csv:to-string [[ "apples" "oranges" 1 2 ]] => "apples,oranges,1,2"
+  (mini-csv:to-string [[ "apples" "oranges,too" 1 2 ]] "|") => "apples|oranges,too|1|2"
+  mini-csv:to-string [[ "apples" "oranges" 1 2 ] [ "fresas, pepinos" "uvas\nuvas" 3 4 ]] => "apples,oranges,1,2\n\"fresas, pepinos\",\"uvas\nuvas\",3,4"
+  O> create-turtles 3 [ fd 20 set label "hi, how are ya?" ]
+  mini-csv:to-string (list (sort turtles) ) => "(turtle 0),(turtle 1),(turtle 2)"
+  O> set temp [ (list who pxcor pycor color label) ] of turtles
+  mini-csv:to-string temp => "1,-3,-2,85,\"hi, how are ya?\"\n0,-4,2,85,\"hi, how are ya?\"\n2,-5,3,65,\"hi, how are ya?\""
+  mini-csv:from-string mini-csv:to-string temp => [[1 -3 -2 85 "hi, how are ya?"] [0 -4 2 85 "hi, how are ya?"] [2 -5 3 65 "hi, how are ya?"]]
+  mini-csv:to-string [ [ [0 1 2] [3 4 5] ] [ [6 7 8] [9 0 1] ] [ [2 3 4] [5 6 7] ] ] => "[0 1 2],[3 4 5]\n[6 7 8],[9 0 1]\n[2 3 4],[5 6 7]"
+  O> set temp mini-csv:from-string "[0 1 2],[3 4 5]\n[6 7 8],[9 0 1]\n[2 3 4],[5 6 7]"
+  temp => [["[0 1 2]" "[3 4 5]"] ["[6 7 8]" "[9 0 1]"] ["[2 3 4]" "[5 6 7]"]]
+  map [ row -> map [ cell -> read-from-string cell ] row ] temp => [[[0 1 2] [3 4 5]] [[6 7 8] [9 0 1]] [[2 3 4] [5 6 7]]]
+
+MiniCsvExtensionRows
+  O> random-seed 5768
+  extensions [mini-csv]
+  globals [temp]
+  mini-csv:from-row "" => [""]
+  mini-csv:to-row [] => ""
+  mini-csv:from-row "14,10,-2" => [14 10 -2]
+  (mini-csv:from-row "14|10|-2" "|") => [14 10 -2]
+  mini-csv:to-row [14 10 "delim,here"] => "14,10,\"delim,here\""
+  (mini-csv:to-row [14 10 "delim,here"] "|") => "14|10|delim,here"
+  O> create-turtles 3 [ fd 20 set label "hi, how are ya?" ]
+  O> set temp [ pxcor ] of turtles
+  mini-csv:to-row temp => "-3,-4,-5"
+  mini-csv:from-row mini-csv:to-row temp => [-3 -4 -5]

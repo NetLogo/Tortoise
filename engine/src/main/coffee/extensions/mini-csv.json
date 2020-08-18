@@ -1,0 +1,26 @@
+{
+  "name": "mini-csv",
+  "prims": [
+    {
+      "name":            "from-string",
+      "argTypes":        [{ "type": "string", "isRepeatable": true }],
+      "defaultArgCount": 1,
+      "returnType":      "list"
+    }, {
+      "name":            "from-row",
+      "argTypes":        [{ "type": "string", "isRepeatable": true }],
+      "defaultArgCount": 1,
+      "returnType":      "list"
+    }, {
+      "name":            "to-string",
+      "argTypes":        ["list", { "type": "string", "isRepeatable": true }],
+      "defaultArgCount": 1,
+      "returnType":      "string"
+    }, {
+      "name":            "to-row",
+      "argTypes":        ["list", { "type": "string", "isRepeatable": true }],
+      "defaultArgCount": 1,
+      "returnType":      "string"
+    }
+  ]
+}
