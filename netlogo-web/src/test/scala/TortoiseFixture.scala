@@ -102,13 +102,15 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
     }
     catch {
       case ex: PolyglotException =>
-        val AfterFirstColonRegex        = "^.*?: (.*)".r
+        val AfterFirstColonRegex        = "(?s)^.*?: (.*)".r
         val AfterFirstColonRegex(exMsg) = ex.getMessage
-        assertResult(msg)(exMsg)
+        val message = msg.replaceAll("\\\\n", "\n")
+        assertResult(message)(exMsg)
         ()
       case e: TestFailedException => throw e
       case e: TestPendingException => throw e
       case e: Exception => fail(s"expected RuntimeError, but got ${e.getClass.getSimpleName}")
+      case e: Throwable => fail(s"Unknown throwable? ${e.getClass.getSimpleName}")
     }
   }
 
