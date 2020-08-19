@@ -47,7 +47,7 @@ module.exports = {
     #(String) => Wildcard
     get = (variable) ->
       if tortugaSession = getTortugaSession()
-        tortugaSession.GetVariable(variable, value)
+        tortugaSession.GetVariable(variable)
       else
         workspace.printPrims.print("Get the tutorial variable #{variable}")
         return
