@@ -88,6 +88,18 @@ module.exports =
       [x2, y2] = agent.getCoords()
       @distanceXY(x1, y1, x2, y2)
 
+    distanceXYNotWrapped: (x1, y1, x2, y2) ->
+      a2 = StrictMath.pow(@_shortestNotWrapped(x1, x2), 2)
+      b2 = StrictMath.pow(@_shortestNotWrapped(y1, y2), 2)
+      StrictMath.sqrt(a2 + b2)
+
+    # Some prims, like `layout-spring`, want the "visual" view distance rather than the wrapped distance, so this
+    # lives here even for wrapping topologies. -Jeremy B August 2020
+    # (Number, Number, Turtle|Patch) => Number
+    distanceNotWrapped: (x1, y1, agent) ->
+      [x2, y2] = agent.getCoords()
+      @distanceXYNotWrapped(x1, y1, x2, y2)
+
     # (Number, Number, Number, Number, Number, Number) => Number
     distanceToLine: (x1, y1, x2, y2, xcor, ycor) ->
 

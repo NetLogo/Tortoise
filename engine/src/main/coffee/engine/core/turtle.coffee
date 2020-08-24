@@ -83,6 +83,10 @@ module.exports =
     distance: (agent) ->
       @world.topology.distance(@xcor, @ycor, agent)
 
+    # (Turtle|Patch) => Number
+    distanceNotWrapped: (agent) ->
+      @world.topology.distanceNotWrapped(@xcor, @ycor, agent)
+
     # (Number, Number) => Number
     distanceXY: (x, y) ->
       @world.topology.distanceXY(@xcor, @ycor, x, y)

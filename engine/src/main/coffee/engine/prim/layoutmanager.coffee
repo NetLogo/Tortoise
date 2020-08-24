@@ -268,7 +268,7 @@ module.exports =
           [t1Index, degCount1] = indexAndCountOf(t1)
           [t2Index, degCount2] = indexAndCountOf(t2)
 
-          dist = t1.distance(t2)
+          dist = t1.distanceNotWrapped(t2)
 
           # links that are connecting high degree nodes should not
           # be as springy, to help prevent "jittering" behavior -FD
@@ -313,7 +313,7 @@ module.exports =
             newDY = -(rep / div * NLMath.squash(NLMath.cos(ang)))
             [newDX, newDY]
           else
-            dist  = t1.distance(t2)
+            dist  = t1.distanceNotWrapped(t2)
             f     = rep / (dist * dist) / div
             newDX = -(f * (t2.xcor - t1.xcor) / dist)
             newDY = -(f * (t2.ycor - t1.ycor) / dist)
