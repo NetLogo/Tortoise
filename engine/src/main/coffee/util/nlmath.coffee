@@ -82,7 +82,7 @@ module.exports = {
 
   # (Number, Number) => Number
   precision: (n, places) ->
-    multiplier = StrictMath.pow(10, places)
+    multiplier = StrictMath.pow(10, NLMath.trunc(places))
     result = StrictMath.floor(n * multiplier + .5) / multiplier
     if places > 0
       result
