@@ -88,6 +88,7 @@ module.exports =
       [x2, y2] = agent.getCoords()
       @distanceXY(x1, y1, x2, y2)
 
+    # (Number, Number, Number, Number) => Number
     distanceXYNotWrapped: (x1, y1, x2, y2) ->
       a2 = StrictMath.pow(@_shortestNotWrapped(x1, x2), 2)
       b2 = StrictMath.pow(@_shortestNotWrapped(y1, y2), 2)
