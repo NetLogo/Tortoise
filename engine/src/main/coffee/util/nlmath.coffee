@@ -130,6 +130,9 @@ module.exports = {
   toInt: (n) ->
     n | 0
 
+  trunc: (n) ->
+    StrictMath.trunc(n)
+
   # (Number) => Number
   validateNumber: (x) ->
     if not isFinite(x)

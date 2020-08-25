@@ -104,7 +104,14 @@ module.exports =
 
     # (Number, Number, Number, Number, Boolean, Boolean) => Unit
     resize: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
-      @_resizeHelper(minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX, wrapsInY)
+      @_resizeHelper(
+          NLMath.trunc(minPxcor)
+        , NLMath.trunc(maxPxcor)
+        , NLMath.trunc(minPycor)
+        , NLMath.trunc(maxPycor)
+        , wrapsInX
+        , wrapsInY
+      )
       @clearDrawing()
 
     # (Number, Number, Number, Number, Boolean, Boolean) => Unit

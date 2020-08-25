@@ -91,7 +91,7 @@ BaseRGBs = [
             rgb       = BaseRGBs[baseIndex]
             step      = (colorTimesTen % 100 - 50) / 50.48 + 0.012
             clamp     = if step <= 0 then (x) -> x else (x) -> 0xFF - x
-            rgb.map((x) -> x + StrictMath.truncate(clamp(x) * step))
+            rgb.map((x) -> x + StrictMath.trunc(clamp(x) * step))
 
         rgbMap[componentsToKey(finalRGB...)] = colorTimesTen / 10
         finalRGB

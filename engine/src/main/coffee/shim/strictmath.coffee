@@ -9,7 +9,6 @@ genEnhancedMath = ->
   obj.toRadians = (degrees) -> degrees * Math.PI / 180
   obj.toDegrees = (radians) -> radians * 180 / Math.PI
   obj.PI        = -> Math.PI # Scala forces it to be a function in Nashorn, so it's a function here --JAB (4/8/15)
-  obj.truncate  = (x) -> if x >= 0 then Math.floor(x) else Math.ceil(x)
   obj
 
 module.exports = genEnhancedMath()

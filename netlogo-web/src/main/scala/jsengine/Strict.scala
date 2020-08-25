@@ -29,5 +29,5 @@ object Strict {
   def tan(x: Double):              Double = StrictMath.tan(x)
   def toDegrees(x: Double):        Double = StrictMath.toDegrees(x)
   def toRadians(x: Double):        Double = StrictMath.toRadians(x)
-  def truncate(x: Double):         Double = x.toInt
+  def trunc(x: Double):            Double = x.toInt
 }
