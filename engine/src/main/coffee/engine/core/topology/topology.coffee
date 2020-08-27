@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 inCone         = require('./incone')
+InRadius       = require('./inradius')
 Topology       = require('./topology')
 Diffuser       = require('./diffuser')
 StrictMath     = require('shim/strictmath')
@@ -169,118 +170,7 @@ module.exports =
 
     # [T] @ (Number, Number, AbstractAgents[T], Number) => AbstractAgentSet[T]
     inRadius: (x, y, agents, radius) ->
-
-      agentIds = new Set(agents._unsafeIterator().toArray().map( (a) -> a.id ))
-
-      distanceRaw = (p1, p2) ->
-        NLMath.abs(p1 - p2)
-
-      distanceWrap = (full, half, p1, p2) ->
-        d = distanceRaw(p1, p2)
-        if d > half then (full - d) else d
-
-      distanceX =
-        if @_wrapInX
-          fullWidth = @width
-          halfWorldWidth = @width / 2
-          (x1, x2) -> distanceWrap(fullWidth, halfWorldWidth, x1, x2)
-        else
-          distanceRaw
-
-      distanceY =
-        if @_wrapInY
-          fullHeight = @height
-          halfWorldHeight = @height / 2
-          (y1, y2) -> distanceWrap(fullHeight, halfWorldHeight, y1, y2)
-        else
-          distanceRaw
-
-      inRadiusSq = (radiusSq, x1, y1, x2, y2) ->
-        dx = distanceX(x1, x2)
-        dy = distanceY(y1, y2)
-        distanceSq = (dx * dx) + (dy * dy)
-        return (distanceSq <= radiusSq)
-
-      patchRadiusSq = (NLMath.round(radius) + 1) * (NLMath.round(radius) + 1)
-      patchX        = NLMath.round(x)
-      patchY        = NLMath.round(y)
-      couldBeInRadius = (pxcor, pycor) ->
-        inRadiusSq(patchRadiusSq, patchX, patchY, pxcor, pycor)
-
-      exactRadiusSq = radius * radius
-      exactInRadius = (xcor, ycor) ->
-        inRadiusSq(exactRadiusSq, x, y, xcor, ycor)
-
-      results = []
-
-      width      = @width
-      maxPycor   = @maxPycor
-      minPxcor   = @minPxcor
-      allPatches = @_getPatches()._agentArr
-      getPatchAt = (pxcor, pycor) ->
-        patchIndex = (maxPycor - pycor) * width + (pxcor - minPxcor)
-        allPatches[patchIndex]
-
-      checkPatchHere = (pxcor, pycor) ->
-        patch = getPatchAt(pxcor, pycor)
-        if agentIds.has(patch.id) and exactInRadius(pxcor, pycor)
-          results.push(patch)
-        return
-
-      checkTurtlesHere = (pxcor, pycor) ->
-        if couldBeInRadius(pxcor, pycor)
-          patch = getPatchAt(pxcor, pycor)
-          patch.turtlesHere()._unsafeIterator().forEach( (turtle) ->
-            if agentIds.has(turtle.id) and exactInRadius(turtle.xcor, turtle.ycor)
-              results.push(turtle)
-        )
-        return
-
-      checkAgentsHere =
-        switch agents._agentTypeName
-          when "turtles" then checkTurtlesHere
-          when "patches" then checkPatchHere
-          else throw new Error("Cannot use `in-radius` on this agentset type.")
-
-      if radius <= 2
-        patches = new Set()
-        centerPatch = getPatchAt(patchX, patchY)
-        patches.add(centerPatch)
-        neighbors = centerPatch.getNeighbors()._unsafeIterator()
-        neighbors.forEach( (neighbor) -> patches.add(neighbor) )
-
-        if radius > 1
-          patchGetters = [
-            @_getPatchNorth,
-            @_getPatchNorthEast,
-            @_getPatchEast,
-            @_getPatchSouthEast,
-            @_getPatchSouth,
-            @_getPatchSouthWest,
-            @_getPatchWest,
-            @_getPatchNorthWest
-          ]
-          topology = this
-          neighbors.forEach( (neighbor) ->
-            patchGetters.forEach( (getter) ->
-              maybePatch = getter.call(topology, neighbor.pxcor, neighbor.pycor)
-              if maybePatch
-                patches.add(maybePatch)
-            )
-          )
-
-        patches.forEach( (patch) -> checkAgentsHere(patch.pxcor, patch.pycor) )
-      else
-        pxValues = [@minPxcor..@maxPxcor]
-        pyValues = [@maxPycor..@minPycor]
-        pyValues.forEach( (pycor) ->
-          pxValues.forEach( (pxcor) -> checkAgentsHere(pxcor, pycor) )
-        )
-
-      switch agents._agentTypeName
-        when "turtles" then new TurtleSet(results, agents._world)
-        when "patches" then new PatchSet(results, agents._world)
-        else throw new Error("Cannot use `in-radius` on this agentset type.")
+      InRadius.filterAgents(this, x, y, agents, radius)
 
     # (Number, Number) => Array[Patch]
     _getNeighbors: (pxcor, pycor) ->
