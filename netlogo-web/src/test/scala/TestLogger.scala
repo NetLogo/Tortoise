@@ -56,7 +56,11 @@ private[tortoise] trait TestLogger extends BrowserReporter {
       runTest
     }
     catch {
-      case e@(_: TestFailedException | _: AssertionError) =>
+      case e@(
+          _: TestFailedException
+        | _: AssertionError
+        | _: org.graalvm.polyglot.PolyglotException
+      ) =>
         testFailed(suite, name)
         throw e
     }
