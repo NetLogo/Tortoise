@@ -199,7 +199,6 @@ private[tortoise] object Freebies {
   private val awaitingFixStr = "Known issue waiting on a proper fix"
   private val awaitingFixNames =
     Seq(
-      "Ask::NestedAsksMaintainOrder_2D"
     )
 
 }
