@@ -117,8 +117,8 @@ class TestTopologies extends DockingSuite {
   inAllTopologies("in-radius", baseView = View(dimensions = WorldDimensions(minPxcor = -4, maxPxcor = 3, minPycor = -2, maxPycor = 6))) {
     implicit fixture => import fixture._
     testCommand("crt 50 [ setxy random-xcor random-ycor ]")
-    testCommand("ask turtles [ output-print [ who ] of turtles in-radius random 10 ]")
-    testCommand("ask turtles [ output-print [ who ] of turtles in-radius random-float 17.3934 ]")
+    testCommand("ask turtles [ output-print self output-print [ who ] of turtles in-radius random 10 ]")
+    testCommand("ask turtles [ output-print self output-print [ who ] of turtles in-radius random-float 17.3934 ]")
   }
 
   inAllTopologies("distance move") {
