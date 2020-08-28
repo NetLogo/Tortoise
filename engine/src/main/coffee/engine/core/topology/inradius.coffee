@@ -10,6 +10,8 @@
 #    b. Using a class.  It would help organize the code, but we don't want member
 #       accessor calls
 #    c. Worrying about safety checks where possible, when we can make assumptions.
+#    d. Making intermediate objects during the search loop, like arrays or
+#       `new Class()` that would be immediately discarded and add GC pressure
 
 # More comments about specific oddities are below.
 
@@ -37,46 +39,8 @@ distance = (wrap, full) ->
   else
     distanceRaw
 
-# (Topology, Number, Number, TurtleSet | PatchSet, Number) -> TurtleSet | PatchSet
-filterAgents = (topology, x, y, agentset, radius) ->
-  # Instead of iterating over the agentset to find ones that might be in the radius,
-  # We iterate over patches and only check agents on patches that could be within
-  # the radius.  That's how desktop does it, so that's how we do it, too. But we
-  # need an easy way to check if an agent from a patch is, you know, actually one
-  # of the ones we're supposed to be looking for, hence this set of IDs.
-  # -Jeremy B August 2020
-  agentIds = new Set(agentset._unsafeIterator().toArray().map( (a) -> a.id ))
-
-  # (Number, Number) => Number
-  distanceX = distance(topology._wrapInX, topology.width)
-  # (Number, Number) => Number
-  distanceY = distance(topology._wrapInY, topology.height)
-
-  # We do not ever take the square root of the distances we calculate, because we
-  # can just compare the squared values.  -Jeremy B August 2020
-  # (Number, Number, Number, Number, Number) => Boolean
-  inRadiusSq = (radiusSq, x1, y1, x2, y2) ->
-    dx = distanceX(x1, x2)
-    dy = distanceY(y1, y2)
-    distanceSq = (dx * dx) + (dy * dy)
-    return (distanceSq <= radiusSq)
-
-  # If the source turtle is in a corner of its patch, and a target turtle is in the closest
-  # corner of its patch, the patch distances will be off by sqrt(2).  We have to correct
-  # for this by "over-sampling" the patches.  We could do 1.414..., but we'll use 2 to
-  # stick with integer arithmetic for patches.  -Jeremy B August 2020
-  patchRadiusSq = (NLMath.round(radius) + 2) * (NLMath.round(radius) + 2)
-  patchX        = NLMath.round(x)
-  patchY        = NLMath.round(y)
-  # (Int, Int) => Boolean
-  couldBeInRadius = (pxcor, pycor) ->
-    inRadiusSq(patchRadiusSq, patchX, patchY, pxcor, pycor)
-
-  exactRadiusSq = radius * radius
-  # (Number, Number) => Boolean
-  exactInRadius = (xcor, ycor) ->
-    inRadiusSq(exactRadiusSq, x, y, xcor, ycor)
-
+# (Topology) => (Int, Int) => Patch
+makePatchGetter = (topology) ->
   # The world's version of `getPatchAt()` does rounding and such on the
   # provided values.  We don't need that kind of safety here.
   # -Jeremy B August 2020
@@ -85,46 +49,52 @@ filterAgents = (topology, x, y, agentset, radius) ->
   minPxcor   = topology.minPxcor
   allPatches = topology._getPatches()._agentArr
   # (Int, Int) => Patch
-  getPatchAt = (pxcor, pycor) ->
+  return (pxcor, pycor) ->
     patchIndex = (maxPycor - pycor) * width + (pxcor - minPxcor)
     allPatches[patchIndex]
 
-  results = []
-  # (Agent, Number, Number) => Unit
-  checkAgent = (agent, xcor, ycor) ->
-    if agentIds.has(agent.id) and exactInRadius(xcor, ycor)
-      # We could do a `reduce` or `flatMap` or something over the patches
-      # instead of mutating this closed-over variable, but we do not want
-      # to generate extra GC pressure from excess arrays getting created then
-      # immediately dropped, nor spend time re-iterating over our results to
-      # collect them into the final set.  -Jeremy B August 2020
-      results.push(agent)
+# (Agentset, Agentset) => (Agent) => Boolean
+makeTargetChecker = (agentset, globalName) ->
+  # Instead of iterating over the agentset to find ones that might be in the radius,
+  # We iterate over patches and only check agents on patches that could be within
+  # the radius.  That's how desktop does it, so that's how we do it, too. But we
+  # need an easy way to check if an agent from a patch is, you know, actually one
+  # of the ones we're supposed to be looking for, hence this set of IDs.
+  # -Jeremy B August 2020
+  return if agentset.getSpecialName() is globalName
+    (agent) -> true
+  else
+    # We could in theory check the breed of each agent against the breed of the source
+    # agentset (as desktop does), but I'm guessing the ID check is just as fast if not
+    # faster than a string comparison, so we'll skip it for now.  -Jeremy B August 2020
+    agentIds = new Set(agentset._unsafeIterator().toArray().map( (a) -> a.id ))
+    (agent) -> agentIds.has(agent.id)
 
-  # (Int, Int) => Unit
-  checkPatchHere = (pxcor, pycor) ->
-    patch = getPatchAt(pxcor, pycor)
-    checkAgent(patch, pxcor, pycor)
-    return
+# (Topology) => (Number, Number, Number, Number, Number) => Boolean
+makeInRadiusSq = (topology) ->
+  # (Number, Number) => Number
+  distanceX = distance(topology._wrapInX, topology.width)
+  # (Number, Number) => Number
+  distanceY = distance(topology._wrapInY, topology.height)
 
-  # (Int, Int) => Unit
-  checkTurtlesHere = (pxcor, pycor) ->
-    if couldBeInRadius(pxcor, pycor)
-      patch = getPatchAt(pxcor, pycor)
-      patch.turtlesHere()._unsafeIterator().forEach( (turtle) ->
-        checkAgent(turtle, turtle.xcor, turtle.ycor)
-      )
-    return
+  # We do not ever take the square root of the distances we calculate, because we
+  # can just compare the squared values.  -Jeremy B August 2020
+  # (Number, Number, Number, Number, Number) => Boolean
+  return (radiusSq, x1, y1, x2, y2) ->
+    dx = distanceX(x1, x2)
+    dy = distanceY(y1, y2)
+    distanceSq = (dx * dx) + (dy * dy)
+    return (distanceSq <= radiusSq)
 
-  # Because of things like this and the final result below, it's tempting to split
-  # `filterAgents()` into a turtle version and a patch version, but it's hard to
-  # do that and to re-use common code between them while avoiding things like making
-  # a class to handle each.  -Jeremy B August 2020
-  checkAgentsHere =
-    switch agentset._agentTypeName
-      when "turtles" then checkTurtlesHere
-      when "patches" then checkPatchHere
-      else throw new Error("Cannot use `in-radius` on this agentset type.")
+# ((Number, Number, Number, Number, Number) => Boolean, Number) => (Number, Number) => Boolean
+makeInExactRadiusSq = (inRadiusSq, x, y, radius) ->
+  exactRadiusSq = radius * radius
+  # (Number, Number) => Boolean
+  return (xcor, ycor) ->
+    inRadiusSq(exactRadiusSq, x, y, xcor, ycor)
 
+# (Topology, Number, Int, Int, (Int, Int) => Patch, (Int, Int) => Unit) => Unit
+searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) ->
   # NetLogo desktop special-cases on radius length. -Jeremy B August 2020.
   if radius <= 2
     patches = new Set()
@@ -158,16 +128,80 @@ filterAgents = (topology, x, y, agentset, radius) ->
     patches.forEach( (patch) -> checkAgentsHere(patch.pxcor, patch.pycor) )
 
   else
-
+    i = 0
     # This is the order NetLogo desktop searches the patches, so we follow suit.
     # -Jeremy B August 2020
     for pycor in [topology.maxPycor..topology.minPycor]
       for pxcor in [topology.minPxcor..topology.maxPxcor]
         checkAgentsHere(pxcor, pycor)
 
-  switch agentset._agentTypeName
-    when "turtles" then new TurtleSet(results, agentset._world)
-    when "patches" then new PatchSet(results, agentset._world)
-    else throw new Error("Cannot use `in-radius` on this agentset type.")
+# (Topology, Number, Number, TurtleSet, Number) -> TurtleSet
+filterTurtles = (topology, x, y, turtleset, radius) ->
+
+  patchX          = NLMath.round(x)
+  patchY          = NLMath.round(y)
+  getPatchAt      = makePatchGetter(topology)
+  isInTargetSet   = makeTargetChecker(turtleset, "turtles")
+  inRadiusSq      = makeInRadiusSq(topology)
+  inExactRadiusSq = makeInExactRadiusSq(inRadiusSq, x, y, radius)
+
+  # If the source turtle is in a corner of its patch, and a target turtle is in the closest
+  # corner of its patch, the patch distances will be off by sqrt(2).  We have to correct
+  # for this by "over-sampling" the patches.  We could do 1.414..., but we'll use 2 to
+  # stick with integer arithmetic for patches.  -Jeremy B August 2020
+  patchRadiusSq = (NLMath.round(radius) + 2) * (NLMath.round(radius) + 2)
+  # (Int, Int) => Boolean
+  couldBeInRadiusSq = (pxcor, pycor) ->
+    inRadiusSq(patchRadiusSq, patchX, patchY, pxcor, pycor)
+
+  results = []
+  # (Int, Int) => Unit
+  checkTurtlesHere = (pxcor, pycor) ->
+    if couldBeInRadiusSq(pxcor, pycor)
+      patch = getPatchAt(pxcor, pycor)
+      patch.turtlesHere()._unsafeIterator().forEach( (turtle) ->
+        if isInTargetSet(turtle) and inExactRadiusSq(turtle.xcor, turtle.ycor)
+          # We could do a `reduce` or `flatMap` or something over the patches
+          # instead of mutating this closed-over variable, but we do not want
+          # to generate extra GC pressure from excess arrays getting created then
+          # immediately dropped, nor spend time re-iterating over our results to
+          # collect them into the final set.  -Jeremy B August 2020
+          results.push(turtle)
+      )
+    return
+
+  searchPatches(topology, patchX, patchY, radius, getPatchAt, checkTurtlesHere)
+
+  new TurtleSet(results, turtleset._world)
+
+# (Topology, Number, Number, PatchSet, Number) -> PatchSet
+filterPatches = (topology, x, y, patchset, radius) ->
+
+  patchX          = NLMath.round(x)
+  patchY          = NLMath.round(y)
+  getPatchAt      = makePatchGetter(topology)
+  isInTarget      = makeTargetChecker(patchset, "patches")
+  inRadiusSq      = makeInRadiusSq(topology)
+  inExactRadiusSq = makeInExactRadiusSq(inRadiusSq, x, y, radius)
+
+  results = []
+  # (Int, Int) => Unit
+  checkPatchHere = (pxcor, pycor) ->
+    patch = getPatchAt(pxcor, pycor)
+    if isInTarget(patch) and inExactRadiusSq(patch.pxcor, patch.pycor)
+      results.push(patch)
+    return
+
+  searchPatches(topology, patchX, patchY, radius, getPatchAt, checkPatchHere)
+
+  new PatchSet(results, patchset._world)
+
+# (Topology, Number, Number, TurtleSet | PatchSet, Number) -> TurtleSet | PatchSet
+filterAgents = (topology, x, y, agentset, radius) ->
+  checkAgentsHere =
+    switch agentset._agentTypeName
+      when "turtles" then filterTurtles(topology, x, y, agentset, radius)
+      when "patches" then filterPatches(topology, x, y, agentset, radius)
+      else throw new Error("Cannot use `in-radius` on this agentset type.")
 
 module.exports = { filterAgents }
