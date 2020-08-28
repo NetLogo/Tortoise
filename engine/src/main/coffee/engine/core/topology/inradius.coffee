@@ -5,10 +5,10 @@
 # 1. We need to match how NetLogo desktop handles in-radius, especially for
 #    returning agents in the same order for reproducibility.
 
-# 2. We do want this to be optimized, so we want to avoid the following things:
+# 2. We do want this to be optimized, so we want to *avoid* the following things:
 #    a. Binding our functions. We want to call them without binding a `this`.
 #    b. Using a class.  It would help organize the code, but we don't want member
-#       accessor calls
+#       accessor calls.
 #    c. Worrying about safety checks where possible, when we can make assumptions.
 #    d. Making intermediate objects during the search loop, like arrays or
 #       `new Class()` that would be immediately discarded and add GC pressure
@@ -93,42 +93,77 @@ makeInExactRadiusSq = (inRadiusSq, x, y, radius) ->
   return (xcor, ycor) ->
     inRadiusSq(exactRadiusSq, x, y, xcor, ycor)
 
+maybeAddPatch = (ps, maybePatch) ->
+  if maybePatch and not ps.includes(maybePatch)
+    ps.push(maybePatch)
+
 # (Topology, Number, Int, Int, (Int, Int) => Patch, (Int, Int) => Unit) => Unit
 searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) ->
   # NetLogo desktop special-cases on radius length. -Jeremy B August 2020.
   if radius <= 2
-    patches = new Set()
+    patches = []
     centerPatch = getPatchAt(patchX, patchY)
-    patches.add(centerPatch)
+    patches.push(centerPatch)
     # We rely on `getNeighbors()` returning patches in the same order as desktop,
     # which it does, fortunately.  -Jeremy B August 2020.
     neighbors = centerPatch.getNeighbors()._unsafeIterator()
-    neighbors.forEach( (neighbor) -> patches.add(neighbor) )
+    neighbors.forEach( (neighbor) -> patches.push(neighbor) )
 
-    if radius > 1
-      # The order here must match what is done in desktop's version. -Jeremy B August 2020
-      patchGetters = [
-        topology._getPatchNorth,
-        topology._getPatchNorthEast,
-        topology._getPatchEast,
-        topology._getPatchSouthEast,
-        topology._getPatchSouth,
-        topology._getPatchSouthWest,
-        topology._getPatchWest,
-        topology._getPatchNorthWest
-      ]
-      neighbors.forEach( (neighbor) ->
-        patchGetters.forEach( (getter) ->
-          maybePatch = getter.call(topology, neighbor.pxcor, neighbor.pycor)
-          if maybePatch
-            patches.add(maybePatch)
-        )
+    # `radius is 0` is another quirk from desktop.  -Jeremy B August 2020
+    if radius > 1 or radius is 0
+
+      # I'm sure all of this makes perfect sense, consult the desktop version if you're curious about what
+      # this is doing and why.  The patch order we use here must match the order over there, and the order differs
+      # between the two branches of this check.  -Jeremy B August 2020
+      if (
+        (topology._wrapInX and topology.width < 5) or
+        (topology._wrapInY and topology.height < 5) or
+        (not topology._wrapInX and (patchX - topology.minPxcor < 2 or topology.maxPxcor - patchX < 2)) or
+        (not topology._wrapInY and (patchY - topology.minPycor < 2 or topology.maxPycor - patchY < 2))
       )
 
-    patches.forEach( (patch) -> checkAgentsHere(patch.pxcor, patch.pycor) )
+        newPatches = []
+        patches.forEach( (p) ->
+          maybeAddPatch(newPatches, p)
+          maybeAddPatch(newPatches, topology._getPatchNorth(p.pxcor, p.pycor))
+          maybeAddPatch(newPatches, topology._getPatchNorthEast(p.pxcor, p.pycor))
+          maybeAddPatch(newPatches, topology._getPatchEast(p.pxcor, p.pycor))
+          maybeAddPatch(newPatches, topology._getPatchSouthEast(p.pxcor, p.pycor))
+          maybeAddPatch(newPatches, topology._getPatchSouth(p.pxcor, p.pycor))
+          maybeAddPatch(newPatches, topology._getPatchSouthWest(p.pxcor, p.pycor))
+          maybeAddPatch(newPatches, topology._getPatchWest(p.pxcor, p.pycor))
+          maybeAddPatch(newPatches, topology._getPatchNorthWest(p.pxcor, p.pycor))
+        )
+        patches = newPatches
+
+      else
+
+        patches.push(patches[1]._optimalPatchNorth())
+        patches.push(patches[2]._optimalPatchEast())
+        patches.push(patches[3]._optimalPatchSouth())
+        patches.push(patches[4]._optimalPatchWest())
+
+        patches.push(patches[5]._optimalPatchNorth())
+        patches.push(patches[5]._optimalPatchNorthEast())
+        patches.push(patches[5]._optimalPatchEast())
+
+        patches.push(patches[6]._optimalPatchEast())
+        patches.push(patches[6]._optimalPatchSouthEast())
+        patches.push(patches[6]._optimalPatchSouth())
+
+        patches.push(patches[7]._optimalPatchSouth())
+        patches.push(patches[7]._optimalPatchSouthWest())
+        patches.push(patches[7]._optimalPatchWest())
+
+        patches.push(patches[8]._optimalPatchWest())
+        patches.push(patches[8]._optimalPatchNorthWest())
+        patches.push(patches[8]._optimalPatchNorth())
+
+    patches.forEach( (patch) ->
+      checkAgentsHere(patch.pxcor, patch.pycor)
+    )
 
   else
-    i = 0
     # This is the order NetLogo desktop searches the patches, so we follow suit.
     # -Jeremy B August 2020
     for pycor in [topology.maxPycor..topology.minPycor]
