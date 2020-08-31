@@ -86,18 +86,20 @@ makeInRadiusSq = (topology) ->
     distanceSq = (dx * dx) + (dy * dy)
     return (distanceSq <= radiusSq)
 
-# ((Number, Number, Number, Number, Number) => Boolean, Number) => (Number, Number) => Boolean
+# ((Number, Number, Number, Number, Number) => Boolean, Number, Number, Number) => (Number, Number) => Boolean
 makeInExactRadiusSq = (inRadiusSq, x, y, radius) ->
   exactRadiusSq = radius * radius
   # (Number, Number) => Boolean
   return (xcor, ycor) ->
     inRadiusSq(exactRadiusSq, x, y, xcor, ycor)
 
-maybeAddPatch = (ps, maybePatch) ->
-  if maybePatch and not ps.includes(maybePatch)
-    ps.push(maybePatch)
+# (Array[Patch], Patch | false) => Unit
+maybeAddPatch = (patches, maybePatch) ->
+  if maybePatch and not patches.includes(maybePatch)
+    patches.push(maybePatch)
+  return
 
-# (Topology, Number, Int, Int, (Int, Int) => Patch, (Int, Int) => Unit) => Unit
+# (Topology, Int, Int, Number, (Int, Int) => Patch, (Int, Int) => Unit) => Unit
 searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) ->
   # NetLogo desktop special-cases on radius length. -Jeremy B August 2020.
   if radius <= 2
