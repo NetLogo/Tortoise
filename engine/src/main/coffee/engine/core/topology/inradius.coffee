@@ -101,8 +101,110 @@ maybeAddPatch = (patches, maybePatch) ->
     patches.push(maybePatch)
   return
 
+# (Segment, Int) => Boolean
+isInSegment = (segment, value) ->
+  segment.min <= value and segment.max >= value
+
+# (Region, Int, Int) => Boolean
+isInRegion = (region, pxcor, pycor) ->
+  isInSegment(region.pxSegment, pxcor) and isInSegment(region.pySegment, pycor)
+
+# (Topology, Int, Int, Number) => (Int, Int) => Boolean
+makeInBoundingBox = (topology, patchX, patchY, radius) ->
+  patchRadius = NLMath.ceil(radius)
+
+  boxRegion = {
+    pxSegment: { min: patchX - patchRadius, max: patchX + patchRadius }
+    pySegment: { min: patchY - patchRadius, max: patchY + patchRadius }
+  }
+
+  # Pre-determine checks for box, cylinders, or torus.  -Jeremy B August 2020
+  if not topology._wrapInX and not topology._wrapInY
+    return (pxcor, pycor) ->
+      isInRegion(boxRegion, pxcor, pycor)
+
+  if topology._wrapInX and not topology._wrapInY
+    return (pxcor, pycor) ->
+      if isInRegion(boxRegion, pxcor, pycor)
+        return true
+
+      if boxRegion.pxSegment.min < topology.minPxcor
+        if isInRegion(boxRegion, pxcor - topology.width, pycor)
+          return true
+
+      if boxRegion.pxSegment.max > topology.maxPxcor
+        if isInRegion(boxRegion, pxcor + topology.width, pycor)
+          return true
+
+      return false
+
+  if not topology._wrapInX and topology._wrapInY
+    return (pxcor, pycor) ->
+      if isInRegion(boxRegion, pxcor, pycor)
+        return true
+
+      if boxRegion.pySegment.min < topology.minPycor
+        if isInRegion(boxRegion, pxcor, pycor - topology.height)
+          return true
+
+      if boxRegion.pySegment.max > topology.maxPycor
+        if isInRegion(boxRegion, pxcor, pycor + topology.height)
+          return true
+
+      return false
+
+  return (pxcor, pycor) ->
+    if isInRegion(boxRegion, pxcor, pycor)
+      return true
+
+    # We could pre-calc these wrapping checks and positions which would make the code cleaner to read,
+    # but we may not need them, so do it "lazily".
+    # -Jeremy B August 202
+    couldWrapLeft = boxRegion.pxSegment.min < topology.minPxcor
+    if couldWrapLeft
+      wrapLeft = pxcor - topology.width
+      if isInRegion(boxRegion, wrapLeft, pycor)
+        return true
+
+    couldWrapRight = boxRegion.pxSegment.max > topology.maxPxcor
+    if couldWrapRight
+      wrapRight = pxcor + topology.width
+      if isInRegion(boxRegion, wrapRight, pycor)
+        return true
+
+    couldWrapBottom = boxRegion.pySegment.min < topology.minPycor
+    if couldWrapBottom
+      wrapBottom = pycor - topology.height
+      if isInRegion(boxRegion, pxcor, wrapBottom)
+        return true
+
+    couldWrapTop = boxRegion.pySegment.max > topology.maxPycor
+    if couldWrapTop
+      wrapTop = pycor + topology.height
+      if isInRegion(boxRegion, pxcor, wrapTop)
+        return true
+
+    if couldWrapLeft
+      if couldWrapBottom
+        if isInRegion(boxRegion, wrapLeft, wrapBottom)
+          return true
+      if couldWrapTop
+        if isInRegion(boxRegion, wrapLeft, wrapTop)
+          return true
+
+    if couldWrapRight
+      if couldWrapBottom
+        if isInRegion(boxRegion, wrapRight, wrapBottom)
+          return true
+      if couldWrapTop
+        if isInRegion(boxRegion, wrapRight, wrapTop)
+          return true
+
+    return false
+
 # (Topology, Int, Int, Number, (Int, Int) => Patch, (Int, Int) => Unit) => Unit
 searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) ->
+
   # NetLogo desktop special-cases on radius length. -Jeremy B August 2020.
   if radius <= 2
     patches = []
@@ -168,11 +270,15 @@ searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) 
     )
 
   else
+
+    isInBoundingBox = makeInBoundingBox(topology, patchX, patchY, radius)
+
     # This is the order NetLogo desktop searches the patches, so we follow suit.
     # -Jeremy B August 2020
     for pycor in [topology.maxPycor..topology.minPycor]
       for pxcor in [topology.minPxcor..topology.maxPxcor]
-        checkAgentsHere(pxcor, pycor)
+        if isInBoundingBox(pxcor, pycor)
+          checkAgentsHere(pxcor, pycor)
 
 # (Topology, Number, Number, TurtleSet, Number) -> TurtleSet
 filterTurtles = (topology, x, y, turtleset, radius) ->
