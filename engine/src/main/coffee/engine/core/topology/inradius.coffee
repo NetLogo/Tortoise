@@ -302,9 +302,18 @@ filterTurtles = (topology, x, y, turtleset, radius) ->
   results = []
   # (Int, Int) => Unit
   checkTurtlesHere = (pxcor, pycor) ->
+
+    # This empty patch check may help with sparser models.  Because the bounding box check
+    # should already have filtered out most of the patches, this is worth the expense of
+    # getting the patch to check even if the patch might not be in radius, as the size check should
+    # be pretty fast and often 0.  -Jeremy B August 2020
+    patch = getPatchAt(pxcor, pycor)
+    patchTurtles = patch.turtlesHere()._unsafeIterator()
+    if patchTurtles.size() is 0
+      return
+
     if couldBeInRadiusSq(pxcor, pycor)
-      patch = getPatchAt(pxcor, pycor)
-      patch.turtlesHere()._unsafeIterator().forEach( (turtle) ->
+      patchTurtles.forEach( (turtle) ->
         if isInTargetSet(turtle) and inExactRadiusSq(turtle.xcor, turtle.ycor)
           # We could do a `reduce` or `flatMap` or something over the patches
           # instead of mutating this closed-over variable, but we do not want
