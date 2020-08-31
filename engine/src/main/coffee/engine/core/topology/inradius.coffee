@@ -61,12 +61,14 @@ makeTargetChecker = (agentset, globalName) ->
   # need an easy way to check if an agent from a patch is, you know, actually one
   # of the ones we're supposed to be looking for, hence this set of IDs.
   # -Jeremy B August 2020
-  return if agentset.getSpecialName() is globalName
+  specialName = agentset.getSpecialName()
+  return if specialName is globalName
     (agent) -> true
+  else if specialName?
+    # Do not use `agent.isBreed()` because it calls `toUpperCase()` on the arguments, and they
+    # should already be proper case.  -Jeremy B
+    (agent) -> agent._breed.name is specialName
   else
-    # We could in theory check the breed of each agent against the breed of the source
-    # agentset (as desktop does), but I'm guessing the ID check is just as fast if not
-    # faster than a string comparison, so we'll skip it for now.  -Jeremy B August 2020
     agentIds = new Set(agentset._unsafeIterator().toArray().map( (a) -> a.id ))
     (agent) -> agentIds.has(agent.id)
 
