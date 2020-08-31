@@ -26,8 +26,6 @@ class TestTopologies extends DockingSuite {
       }
   }
 
-  ///
-
   inAllTopologies("distance") {
     implicit fixture => import fixture._
     testCommand("cro 8")
@@ -131,22 +129,8 @@ class TestTopologies extends DockingSuite {
     }
   }
 
-  ///
-
-  test("box layout spring - no wrap") {
+  inAllTopologies("layout-spring") {
     implicit fixture => import fixture._
-    declare(Model(widgets = List(default.copy(dimensions = default.dimensions.copy(wrappingAllowedInX = false, wrappingAllowedInY = false)))))
-    testCommand("crt 10 [ setxy random-xcor random-ycor ]")
-    testCommand("ask turtles [ create-links-with other turtles ]")
-    testCommand("repeat 5 [ layout-spring turtles links .1 .2 .3 ]")
-    testCommand("repeat 5 [ layout-spring turtles with [ ycor > 0 ] links .1 .2 .3 ]")
-    testCommand("repeat 5 [ layout-spring turtles [ my-links ] of turtle 0 .1 .2 .3 ]")
-    testCommand("repeat 5 [ layout-spring turtles with [ ycor > 0 ] [ my-links ] of turtle 0 .1 .2 .3 ]")
-  }
-
-  test("box layout spring - wrap") {
-    implicit fixture => import fixture._
-    declare(Model(widgets = List(default.copy(dimensions = default.dimensions.copy(wrappingAllowedInX = false, wrappingAllowedInY = false)))))
     testCommand("crt 10 [ setxy random-xcor random-ycor ]")
     testCommand("ask turtles [ create-links-with other turtles ]")
     testCommand("repeat 5 [ layout-spring turtles links .1 .2 .3 ]")
