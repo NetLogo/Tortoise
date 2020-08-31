@@ -112,11 +112,31 @@ class TestTopologies extends DockingSuite {
     testCommand("ask turtles [ set xcor xcor - 1 ]")
   }
 
-  inAllTopologies("in-radius", baseView = View(dimensions = WorldDimensions(minPxcor = -4, maxPxcor = 3, minPycor = -2, maxPycor = 6))) {
+  inAllTopologies("in-radius turtles", baseView = View(dimensions = WorldDimensions(minPxcor = -4, maxPxcor = 3, minPycor = -2, maxPycor = 6))) {
     implicit fixture => import fixture._
     testCommand("crt 50 [ setxy random-xcor random-ycor ]")
-    testCommand("ask turtles [ output-print self output-print [ who ] of turtles in-radius random 10 ]")
-    testCommand("ask turtles [ output-print self output-print [ who ] of turtles in-radius random-float 17.3934 ]")
+    testCommand("ask turtles [ output-print self let radius random 10 output-print radius output-print [ who ] of turtles in-radius radius ]")
+    testCommand("ask turtles [ output-print self let radius random-float 17.3934 output-print radius output-print [ who ] of turtles in-radius radius ]")
+  }
+
+  inAllTopologies("in-radius turtles seeking patches", baseView = View(dimensions = WorldDimensions(minPxcor = -4, maxPxcor = 3, minPycor = -2, maxPycor = 6))) {
+    implicit fixture => import fixture._
+    testCommand("crt 50 [ setxy random-xcor random-ycor ]")
+    testCommand("ask turtles [ output-print self let radius random 10 output-print radius output-print [ list pxcor pycor ] of patches in-radius radius ]")
+    testCommand("ask turtles [ output-print self let radius random-float 7.3934 output-print radius output-print [ list pxcor pycor ] of patches in-radius radius ]")
+  }
+
+  inAllTopologies("in-radius patches", baseView = View(dimensions = WorldDimensions(minPxcor = -4, maxPxcor = 3, minPycor = -2, maxPycor = 6))) {
+    implicit fixture => import fixture._
+    testCommand("ask n-of 10 patches [ output-print self let radius random 10 output-print radius output-print [ list pxcor pycor ] of patches in-radius radius ]")
+    testCommand("ask n-of 10 patches [ output-print self let radius random-float 17.3934 output-print radius output-print [ list pxcor pycor ] of patches in-radius radius ]")
+  }
+
+  inAllTopologies("in-radius patches seeking turtles", baseView = View(dimensions = WorldDimensions(minPxcor = -4, maxPxcor = 3, minPycor = -2, maxPycor = 6))) {
+    implicit fixture => import fixture._
+    testCommand("crt 50 [ setxy random-xcor random-ycor ]")
+    testCommand("ask n-of 10 patches [ output-print self let radius random 10 output-print radius output-print [ who ] of turtles in-radius radius ]")
+    testCommand("ask n-of 10 patches [ output-print self let radius random-float 7.3934 output-print radius output-print [ who ] of turtles in-radius radius ]")
   }
 
   inAllTopologies("distance move") {
