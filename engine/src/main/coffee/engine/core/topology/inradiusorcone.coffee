@@ -156,8 +156,7 @@ makeTargetChecker = (agentset, globalName) ->
       (agent) -> agent._breed.name is specialName
     )
   else
-    agentIds = new Set(agentset._unsafeIterator().toArray().map( (a) -> a.id ))
-    (agent) -> agentIds.has(agent.id)
+    (agent) -> agentset.contains(agent)
 
 # (Topology) => (Number, Number, Number, Number, Number) => Boolean
 makeInRadiusSq = (topology) ->
