@@ -337,13 +337,13 @@ getRadius2BPatches = (patches) ->
 # (Topology, Int, Int, Number, (Int, Int) => Patch) => Array[Patch]
 getSmallRadiusPatches = (topology, patchX, patchY, radius, getPatchAt) ->
 
-  patches = if isInCache("getRadius1Patches", patchX, patchY) then getFromCache() else
+  patches = if isInCache("patch", patchX, patchY, "getRadius1Patches") then getFromCache() else
     addToCache(getRadius1Patches(getPatchAt(patchX, patchY)))
 
   # `radius is 0` is another quirk from desktop.  -Jeremy B August 2020
   if radius > 1 or radius is 0
 
-    smallWorldCheck = if isInCache("smallWorldCheck", patchX, patchY) then getFromCache() else addToCache(
+    smallWorldCheck = if isInCache("patch", patchX, patchY, "smallWorldCheck") then getFromCache() else addToCache(
       (topology._wrapInX and topology.width < 5) or
       (topology._wrapInY and topology.height < 5) or
       (not topology._wrapInX and (patchX - topology.minPxcor < 2 or topology.maxPxcor - patchX < 2)) or
@@ -354,11 +354,11 @@ getSmallRadiusPatches = (topology, patchX, patchY, radius, getPatchAt) ->
     # `smallWorldCheck` is doing and why.  The patch order we use here must match the order over there, and the order
     # differs between the two branches of this check.  -Jeremy B August 2020
     if (smallWorldCheck)
-      patches = if isInCache("getRadius2APatches", patchX, patchY) then getFromCache() else
+      patches = if isInCache("patch", patchX, patchY, "getRadius2APatches") then getFromCache() else
         addToCache(getRadius2APatches(topology, patches))
 
     else
-      patches = if isInCache("getRadius2BPatches", patchX, patchY) then getFromCache() else
+      patches = if isInCache("patch", patchX, patchY, "getRadius2BPatches") then getFromCache() else
         addToCache(getRadius2BPatches(patches))
 
   return patches
@@ -375,7 +375,7 @@ searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) 
 
   else
     patchRadius = NLMath.ceil(radius)
-    isInBoundingBox = if isInCache("isInBoundingBox", patchX, patchY, patchRadius) then getFromCache() else
+    isInBoundingBox = if isInCache("patch", patchX, patchY, "isInBoundingBox", patchRadius) then getFromCache() else
       addToCache(makeInBoundingBox(topology, patchX, patchY, patchRadius))
 
     # This is the order NetLogo desktop searches the patches, so we follow suit.
@@ -402,7 +402,7 @@ filterTurtles = (topology, x, y, turtleset, radius) ->
   # for this by "over-sampling" the patches.  We could do 1.414..., but we'll use 2 to
   # stick with integer arithmetic for patches.  -Jeremy B August 2020
   roundedRadius = NLMath.round(radius)
-  couldBeInRadiusSq = if isInCache("couldBeInRadiusSq", patchX, patchY, roundedRadius) then getFromCache() else
+  couldBeInRadiusSq = if isInCache("patch", patchX, patchY, "couldBeInRadiusSq", roundedRadius) then getFromCache() else
     addToCache(
       # (Int, Int) => Boolean
       (pxcor, pycor) ->
