@@ -189,9 +189,8 @@ maybeAddPatch = (patches, maybePatch) ->
 isInRegion = (pxMin, pxMax, pyMin, pyMax, pxcor, pycor) ->
   pxMin <= pxcor and pxMax >= pxcor and pyMin <= pycor and pyMax >= pycor
 
-# (Topology, Int, Int, Number) => (Int, Int) => Boolean
-makeInBoundingBox = (topology, patchX, patchY, radius) ->
-  patchRadius = NLMath.ceil(radius)
+# (Topology, Int, Int, Int) => (Int, Int) => Boolean
+makeInBoundingBox = (topology, patchX, patchY, patchRadius) ->
 
   pxMin = patchX - patchRadius
   pxMax = patchX + patchRadius
@@ -353,7 +352,7 @@ searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) 
 
   else
 
-    isInBoundingBox = makeInBoundingBox(topology, patchX, patchY, radius)
+    isInBoundingBox = makeInBoundingBox(topology, patchX, patchY, NLMath.ceil(radius))
 
     # This is the order NetLogo desktop searches the patches, so we follow suit.
     # -Jeremy B August 2020
