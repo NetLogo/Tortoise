@@ -352,7 +352,9 @@ searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) 
 
   else
 
-    isInBoundingBox = makeInBoundingBox(topology, patchX, patchY, NLMath.ceil(radius))
+    patchRadius = NLMath.ceil(radius)
+    isInBoundingBox = if isInCache("isInBoundingBox", patchX, patchY, patchRadius) then getFromCache() else
+      addToCache(makeInBoundingBox(topology, patchX, patchY, patchRadius))
 
     # This is the order NetLogo desktop searches the patches, so we follow suit.
     # -Jeremy B August 2020
