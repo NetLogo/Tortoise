@@ -425,8 +425,9 @@ filterTurtles = (topology, x, y, turtleset, radius) ->
     # getting the patch to check even if the patch might not be in radius, as the size check should
     # be pretty fast and often 0.  -Jeremy B August 2020
     patch = getPatchAt(pxcor, pycor)
-    patchTurtles = patch.turtlesHere()._unsafeIterator()
-    if patchTurtles.size() is 0
+    # This relies on patches removing their dead turtles, which they should do.  -Jeremy B August 2020
+    patchTurtles = patch._turtles
+    if patchTurtles.length is 0
       return
 
     if couldBeInRadiusSq(pxcor, pycor)
