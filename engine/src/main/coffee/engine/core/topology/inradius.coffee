@@ -281,77 +281,99 @@ makeInBoundingBox = (topology, patchX, patchY, patchRadius) ->
 
     return false
 
+# ((Int, Int) => Patch) => Array[Patch]
+getRadius1Patches = (centerPatch) ->
+  patches = []
+  patches.push(centerPatch)
+  # We rely on `getNeighbors()` returning patches in the same order as desktop,
+  # which it does, fortunately.  -Jeremy B August 2020.
+  neighbors = centerPatch.getNeighbors()._unsafeIterator()
+  neighbors.forEach( (neighbor) -> patches.push(neighbor) )
+  return patches
+
+# (Topology, Array[Patch]) => Array[Patch]
+getRadius2APatches = (topology, patches) ->
+  newPatches = []
+  patches.forEach( (p) ->
+    maybeAddPatch(newPatches, p)
+    maybeAddPatch(newPatches, topology._getPatchNorth(p.pxcor, p.pycor))
+    maybeAddPatch(newPatches, topology._getPatchNorthEast(p.pxcor, p.pycor))
+    maybeAddPatch(newPatches, topology._getPatchEast(p.pxcor, p.pycor))
+    maybeAddPatch(newPatches, topology._getPatchSouthEast(p.pxcor, p.pycor))
+    maybeAddPatch(newPatches, topology._getPatchSouth(p.pxcor, p.pycor))
+    maybeAddPatch(newPatches, topology._getPatchSouthWest(p.pxcor, p.pycor))
+    maybeAddPatch(newPatches, topology._getPatchWest(p.pxcor, p.pycor))
+    maybeAddPatch(newPatches, topology._getPatchNorthWest(p.pxcor, p.pycor))
+  )
+  return newPatches
+
+# (Array[Patch]) => Array[Patch]
+getRadius2BPatches = (patches) ->
+  newPatches = patches.slice(0)
+
+  newPatches.push(patches[1]._optimalPatchNorth())
+  newPatches.push(patches[2]._optimalPatchEast())
+  newPatches.push(patches[3]._optimalPatchSouth())
+  newPatches.push(patches[4]._optimalPatchWest())
+
+  newPatches.push(patches[5]._optimalPatchNorth())
+  newPatches.push(patches[5]._optimalPatchNorthEast())
+  newPatches.push(patches[5]._optimalPatchEast())
+
+  newPatches.push(patches[6]._optimalPatchEast())
+  newPatches.push(patches[6]._optimalPatchSouthEast())
+  newPatches.push(patches[6]._optimalPatchSouth())
+
+  newPatches.push(patches[7]._optimalPatchSouth())
+  newPatches.push(patches[7]._optimalPatchSouthWest())
+  newPatches.push(patches[7]._optimalPatchWest())
+
+  newPatches.push(patches[8]._optimalPatchWest())
+  newPatches.push(patches[8]._optimalPatchNorthWest())
+  newPatches.push(patches[8]._optimalPatchNorth())
+
+  return newPatches
+
+# (Topology, Int, Int, Number, (Int, Int) => Patch) => Array[Patch]
+getSmallRadiusPatches = (topology, patchX, patchY, radius, getPatchAt) ->
+
+  patches = if isInCache("getRadius1Patches", patchX, patchY) then getFromCache() else
+    addToCache(getRadius1Patches(getPatchAt(patchX, patchY)))
+
+  # `radius is 0` is another quirk from desktop.  -Jeremy B August 2020
+  if radius > 1 or radius is 0
+
+    smallWorldCheck = if isInCache("smallWorldCheck", patchX, patchY) then getFromCache() else addToCache(
+      (topology._wrapInX and topology.width < 5) or
+      (topology._wrapInY and topology.height < 5) or
+      (not topology._wrapInX and (patchX - topology.minPxcor < 2 or topology.maxPxcor - patchX < 2)) or
+      (not topology._wrapInY and (patchY - topology.minPycor < 2 or topology.maxPycor - patchY < 2))
+    )
+
+    # I'm sure all of this makes perfect sense, consult the desktop version if you're curious about what
+    # `smallWorldCheck` is doing and why.  The patch order we use here must match the order over there, and the order
+    # differs between the two branches of this check.  -Jeremy B August 2020
+    if (smallWorldCheck)
+      patches = if isInCache("getRadius2APatches", patchX, patchY) then getFromCache() else
+        addToCache(getRadius2APatches(topology, patches))
+
+    else
+      patches = if isInCache("getRadius2BPatches", patchX, patchY) then getFromCache() else
+        addToCache(getRadius2BPatches(patches))
+
+  return patches
+
 # (Topology, Int, Int, Number, (Int, Int) => Patch, (Int, Int) => Unit) => Unit
 searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) ->
 
   # NetLogo desktop special-cases on radius length. -Jeremy B August 2020.
   if radius <= 2
-    patches = []
-    centerPatch = getPatchAt(patchX, patchY)
-    patches.push(centerPatch)
-    # We rely on `getNeighbors()` returning patches in the same order as desktop,
-    # which it does, fortunately.  -Jeremy B August 2020.
-    neighbors = centerPatch.getNeighbors()._unsafeIterator()
-    neighbors.forEach( (neighbor) -> patches.push(neighbor) )
-
-    # `radius is 0` is another quirk from desktop.  -Jeremy B August 2020
-    if radius > 1 or radius is 0
-
-      smallWorldCheck = if isInCache("smallWorldCheck", patchX, patchY) then getFromCache() else addToCache(
-        (topology._wrapInX and topology.width < 5) or
-        (topology._wrapInY and topology.height < 5) or
-        (not topology._wrapInX and (patchX - topology.minPxcor < 2 or topology.maxPxcor - patchX < 2)) or
-        (not topology._wrapInY and (patchY - topology.minPycor < 2 or topology.maxPycor - patchY < 2))
-      )
-
-      # I'm sure all of this makes perfect sense, consult the desktop version if you're curious about what
-      # `smallWorldCheck` is doing and why.  The patch order we use here must match the order over there, and the order
-      # differs between the two branches of this check.  -Jeremy B August 2020
-      if (smallWorldCheck)
-
-        newPatches = []
-        patches.forEach( (p) ->
-          maybeAddPatch(newPatches, p)
-          maybeAddPatch(newPatches, topology._getPatchNorth(p.pxcor, p.pycor))
-          maybeAddPatch(newPatches, topology._getPatchNorthEast(p.pxcor, p.pycor))
-          maybeAddPatch(newPatches, topology._getPatchEast(p.pxcor, p.pycor))
-          maybeAddPatch(newPatches, topology._getPatchSouthEast(p.pxcor, p.pycor))
-          maybeAddPatch(newPatches, topology._getPatchSouth(p.pxcor, p.pycor))
-          maybeAddPatch(newPatches, topology._getPatchSouthWest(p.pxcor, p.pycor))
-          maybeAddPatch(newPatches, topology._getPatchWest(p.pxcor, p.pycor))
-          maybeAddPatch(newPatches, topology._getPatchNorthWest(p.pxcor, p.pycor))
-        )
-        patches = newPatches
-
-      else
-
-        patches.push(patches[1]._optimalPatchNorth())
-        patches.push(patches[2]._optimalPatchEast())
-        patches.push(patches[3]._optimalPatchSouth())
-        patches.push(patches[4]._optimalPatchWest())
-
-        patches.push(patches[5]._optimalPatchNorth())
-        patches.push(patches[5]._optimalPatchNorthEast())
-        patches.push(patches[5]._optimalPatchEast())
-
-        patches.push(patches[6]._optimalPatchEast())
-        patches.push(patches[6]._optimalPatchSouthEast())
-        patches.push(patches[6]._optimalPatchSouth())
-
-        patches.push(patches[7]._optimalPatchSouth())
-        patches.push(patches[7]._optimalPatchSouthWest())
-        patches.push(patches[7]._optimalPatchWest())
-
-        patches.push(patches[8]._optimalPatchWest())
-        patches.push(patches[8]._optimalPatchNorthWest())
-        patches.push(patches[8]._optimalPatchNorth())
-
+    patches = getSmallRadiusPatches(topology, patchX, patchY, radius, getPatchAt)
     patches.forEach( (patch) ->
       checkAgentsHere(patch.pxcor, patch.pycor)
     )
 
   else
-
     patchRadius = NLMath.ceil(radius)
     isInBoundingBox = if isInCache("isInBoundingBox", patchX, patchY, patchRadius) then getFromCache() else
       addToCache(makeInBoundingBox(topology, patchX, patchY, patchRadius))
