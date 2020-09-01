@@ -379,10 +379,13 @@ filterTurtles = (topology, x, y, turtleset, radius) ->
   # corner of its patch, the patch distances will be off by sqrt(2).  We have to correct
   # for this by "over-sampling" the patches.  We could do 1.414..., but we'll use 2 to
   # stick with integer arithmetic for patches.  -Jeremy B August 2020
-  patchRadiusSq = (NLMath.round(radius) + 2) * (NLMath.round(radius) + 2)
-  # (Int, Int) => Boolean
-  couldBeInRadiusSq = (pxcor, pycor) ->
-    inRadiusSq(patchRadiusSq, patchX, patchY, pxcor, pycor)
+  roundedRadius = NLMath.round(radius)
+  couldBeInRadiusSq = if isInCache("couldBeInRadiusSq", patchX, patchY, roundedRadius) then getFromCache() else
+    addToCache(
+      # (Int, Int) => Boolean
+      (pxcor, pycor) ->
+        inRadiusSq((roundedRadius + 2) * (roundedRadius + 2), patchX, patchY, pxcor, pycor)
+    )
 
   results = []
   # (Int, Int) => Unit
