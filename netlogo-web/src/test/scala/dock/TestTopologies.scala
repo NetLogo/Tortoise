@@ -151,6 +151,60 @@ class TestTopologies extends DockingSuite {
     testCommand("ask n-of 25 frogs [ output-print self let radius random-float 7.3934 output-print radius output-print [ list pxcor pycor ] of patches in-radius radius ]")
   }
 
+  inAllTopologies("in-cone turtle breeds", decls = "breed [mice mouse] breed [frogs frog]", baseView = View(dimensions = WorldDimensions(minPxcor = -4, maxPxcor = 3, minPycor = -2, maxPycor = 6))) {
+    implicit fixture => import fixture._
+    testCommand("create-mice 50 [ setxy random-xcor random-ycor ]")
+    testCommand("create-frogs 50 [ setxy random-xcor random-ycor ]")
+    testCommand("""| ask n-of 25 turtles [
+                   |   output-print self
+                   |   let radius random 10
+                   |   let angle random 180
+                   |   output-print (word "radius " radius)
+                   |   output-print (word "angle " angle)
+                   |   output-print [ who ] of turtles in-cone radius angle
+                   | ]""".stripMargin)
+    testCommand("""| ask n-of 25 frogs [
+                   |   output-print self
+                   |   let radius random-float 17.3934
+                   |   let angle random 180
+                   |   output-print (word "radius " radius)
+                   |   output-print (word "angle " angle)
+                   |   output-print [ who ] of frogs in-cone radius angle
+                   | ]""".stripMargin)
+    testCommand("""| ask n-of 25 mice [
+                   |   output-print self
+                   |   let radius random 10
+                   |   let angle random 180
+                   |   output-print (word "radius " radius)
+                   |   output-print (word "angle " angle)
+                   |   output-print [ who ] of turtles in-cone radius angle
+                   | ]""".stripMargin)
+    testCommand("""| ask n-of 25 turtles [
+                   |   output-print self
+                   |   let radius random 10
+                   |   let angle random 180
+                   |   output-print (word "radius " radius)
+                   |   output-print (word "angle " angle)
+                   |   output-print [ list pxcor pycor ] of patches in-cone radius angle
+                   | ]""".stripMargin)
+    testCommand("""| ask n-of 25 mice [
+                   |   output-print self
+                   |   let radius random 10
+                   |   let angle random 180
+                   |   output-print (word "radius " radius)
+                   |   output-print (word "angle " angle)
+                   |   output-print [ list pxcor pycor ] of patches in-cone radius angle
+                   | ]""".stripMargin)
+    testCommand("""| ask n-of 25 frogs [
+                   |   output-print self
+                   |   let radius random-float 7.3934
+                   |   let angle random 180
+                   |   output-print (word "radius " radius)
+                   |   output-print (word "angle " angle)
+                   |   output-print [ list pxcor pycor ] of patches in-cone radius angle
+                   | ]""".stripMargin)
+  }
+
   inAllTopologies("distance move") {
     implicit fixture => import fixture._
     testCommand("crt 50 [ setxy random-xcor random-ycor ]")

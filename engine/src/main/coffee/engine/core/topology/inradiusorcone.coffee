@@ -483,7 +483,10 @@ inRadius = (topology, x, y, agentset, radius) ->
 
 ###
 
-Begin `in-cone` section
+Begin `in-cone` section.
+
+This code is updated to match the `in-radius` style above and to use some of those optimizations and caching, but it
+hasn't been fully converted or optimized.  -Jeremy B August 2020
 
 ###
 
@@ -532,28 +535,28 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
   wrapCountInX = findWrapCount(@_wrapInX, @width)
   wrapCountInY = findWrapCount(@_wrapInY, @height)
 
-  patchIsGood_  =  patchIsGood(wrapCountInX, wrapCountInY)
-  turtleIsGood_ = turtleIsGood(wrapCountInX, wrapCountInY)
+  getPatchAt = if isInCache("getPatchAt") then getFromCache() else addToCache(makePatchGetter(this))
 
   isPatchSet  = NLType(agents).isPatchSet()
   isTurtleSet = NLType(agents).isTurtleSet()
 
   results = []
-
   checkAgentsHere = if isPatchSet
     isInTargetSet = makeTargetChecker(agents, "patches")
+    isInCone      = patchIsGood(wrapCountInX, wrapCountInY)
     (pxcor, pycor) ->
       patch = getPatchAt(pxcor, pycor)
-      if isInTargetSet(patch) and patchIsGood_(patch)
+      if isInTargetSet(patch) and isInCone(patch)
         results.push(patch)
       return
 
   else if isTurtleSet
     isInTargetSet = makeTargetChecker(agents, "turtles")
+    isInCone      = turtleIsGood(wrapCountInX, wrapCountInY)
     (pxcor, pycor) ->
       patch = getPatchAt(pxcor, pycor)
       patch._turtles.forEach( (turtle) =>
-        if isInTargetSet(turtle) and turtleIsGood_(turtle)
+        if isInTargetSet(turtle) and isInCone(turtle)
           results.push(turtle)
         return
       )
@@ -562,9 +565,7 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
   else
     throw new Error("Cannot use `in-cone` on this agentset type.")
 
-  getPatchAt = if isInCache("getPatchAt") then getFromCache() else addToCache(makePatchGetter(this))
   searchPatches(this, pxcor, pycor, distance, getPatchAt, checkAgentsHere)
-
   agents.copyWithNewAgents(results)
 
 module.exports = { inRadius, inCone }
