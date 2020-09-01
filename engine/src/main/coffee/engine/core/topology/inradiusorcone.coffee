@@ -1,6 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-# This code looks pretty weird, huh?  That is for a few reasons:
+NLMath = require('util/nlmath')
+NLType = require('../typechecker')
+
+# This `in-radius` code looks pretty weird, huh?  That is for a few reasons:
 
 # 1. We need to match how NetLogo desktop handles in-radius, especially for
 #    returning agents in the same order for reproducibility.
@@ -471,11 +474,103 @@ filterPatches = (topology, x, y, patchset, radius) ->
   new PatchSet(results, patchset._world)
 
 # (Topology, Number, Number, TurtleSet | PatchSet, Number) -> TurtleSet | PatchSet
-filterAgents = (topology, x, y, agentset, radius) ->
+inRadius = (topology, x, y, agentset, radius) ->
   initializeCache(topology)
   switch agentset._agentTypeName
     when "turtles" then filterTurtles(topology, x, y, agentset, radius)
     when "patches" then filterPatches(topology, x, y, agentset, radius)
     else throw new Error("Cannot use `in-radius` on this agentset type.")
 
-module.exports = { filterAgents }
+# Begin `in-cone` section
+
+# (Boolean, Number, Number, Number, Number, Number) => (Number, Number)
+findCircleBounds = (wrapsInDim, worldSpan, distance, minDim, maxDim, currentDim) ->
+  dist = NLMath.ceil(distance)
+  if wrapsInDim
+    halfSpan = worldSpan / 2
+    if dist < halfSpan
+      [-dist, dist]
+    else
+      [-NLMath.ceil(halfSpan - 1), NLMath.floor(halfSpan)]
+  else
+    diff = minDim - currentDim
+    min  = if NLMath.abs(diff) < dist then diff else -dist
+    max  = NLMath.min((maxDim - currentDim), dist)
+    [min, max]
+
+# this.type: Topology
+# [T] @ (Number, Number, Number, AbstractAgents[T], Number, Number) => AbstractAgentSet[T]
+inCone =
+  (x, y, turtleHeading, agents, distance, angle) ->
+
+    # (Number, Number) => Number
+    findWrapCount = (wrapsInDim, dimSize) ->
+      if wrapsInDim then NLMath.ceil(distance / dimSize) else 0
+
+    # (Number, Number, Number, Number, Number, Number) => Boolean
+    isInSector = (ax, ay, cx, cy, radius, heading) =>
+
+      isWithinArc = =>
+        theta = @_towardsNotWrapped(cx, cy, ax, ay)
+        diff  = NLMath.abs(theta - heading)
+        half  = angle / 2
+        (diff <= half) or ((360 - diff) <= half)
+
+      isWithinRange = ->
+        NLMath.distance4_2D(cx, cy, ax, ay) <= radius
+
+      isTheSameSpot = ax is cx and ay is cy
+      isTheSameSpot or (isWithinRange() and isWithinArc())
+
+    # (Number, Number, Number, Number) => Boolean
+    isInWrappableSector = (agentX, agentY, xBound, yBound) =>
+      for xWrapCoefficient in [-xBound..xBound]
+        for yWrapCoefficient in [-yBound..yBound]
+          if isInSector(agentX + @width * xWrapCoefficient, agentY + @height * yWrapCoefficient, x, y, distance, turtleHeading)
+            return true
+      false
+
+    # (Number, Number) => (Patch) => Boolean
+    patchIsGood = (wrapCountInX, wrapCountInY) => (patch) =>
+      isPlausible = agents.getSpecialName() is "patches" or agents.contains(patch)
+      isPlausible and isInWrappableSector(patch.pxcor, patch.pycor, wrapCountInX, wrapCountInY)
+
+    # (Number, Number) => (Turtle) => Boolean
+    turtleIsGood = (wrapCountInX, wrapCountInY) => (turtle) =>
+      breedName = agents.getSpecialName()
+      isPlausible =
+        breedName is "turtles" or
+          (breedName? and breedName is turtle.getBreedName()) or
+          ((not breedName?) and agents.contains(turtle))
+      isPlausible and isInWrappableSector(turtle.xcor, turtle.ycor, wrapCountInX, wrapCountInY)
+
+
+    { pxcor, pycor } = @_getPatchAt(x, y)
+
+    wrapCountInX = findWrapCount(@_wrapInX, @width)
+    wrapCountInY = findWrapCount(@_wrapInY, @height)
+
+    patchIsGood_  =  patchIsGood(wrapCountInX, wrapCountInY)
+    turtleIsGood_ = turtleIsGood(wrapCountInX, wrapCountInY)
+
+    [dxMin, dxMax] = findCircleBounds(@_wrapInX, @width,  distance, @minPxcor, @maxPxcor, pxcor)
+    [dyMin, dyMax] = findCircleBounds(@_wrapInY, @height, distance, @minPycor, @maxPycor, pycor)
+
+    isPatchSet  = NLType(agents).isPatchSet()
+    isTurtleSet = NLType(agents).isTurtleSet()
+
+    result = []
+
+    for dy in [dyMax..dyMin]
+      for dx in [dxMin..dxMax]
+        patch = @_getPatchAt(pxcor + dx, pycor + dy)
+        if not NLType(patch).isNobody()
+          if isPatchSet and patchIsGood_(patch)
+            result.push(patch)
+          else if isTurtleSet and NLMath.distance2_2D(dx, dy) <= distance + 1.415
+            goodTurtles = patch.turtlesHere().toArray().filter((turtle) => turtleIsGood_(turtle))
+            result      = result.concat(goodTurtles)
+
+    agents.copyWithNewAgents(result)
+
+module.exports = { inRadius, inCone }

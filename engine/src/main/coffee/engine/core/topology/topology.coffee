@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-inCone         = require('./incone')
-InRadius       = require('./inradius')
+InRadiusOrCone = require('./inradiusorcone')
 Topology       = require('./topology')
 Diffuser       = require('./diffuser')
 StrictMath     = require('shim/strictmath')
@@ -166,11 +165,11 @@ module.exports =
 
     # [T] @ (Number, Number, Number, AbstractAgents[T], Number, Number) => AbstractAgentSet[T]
     inCone: (x, y, heading, agents, distance, angle) ->
-      inCone.call(this, x, y, heading, agents, distance, angle)
+      InRadiusOrCone.inCone.call(this, x, y, heading, agents, distance, angle)
 
     # [T] @ (Number, Number, AbstractAgents[T], Number) => AbstractAgentSet[T]
     inRadius: (x, y, agents, radius) ->
-      InRadius.filterAgents(this, x, y, agents, radius)
+      InRadiusOrCone.inRadius(this, x, y, agents, radius)
 
     # (Number, Number) => Array[Patch]
     _getNeighbors: (pxcor, pycor) ->
