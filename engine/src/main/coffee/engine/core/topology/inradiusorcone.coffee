@@ -398,7 +398,7 @@ searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) 
   return
 
 # (Topology, Number, Number, TurtleSet, Number) -> TurtleSet
-filterTurtles = (topology, x, y, turtleset, radius) ->
+filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
 
   patchX          = NLMath.round(x)
   patchY          = NLMath.round(y)
@@ -452,7 +452,7 @@ filterTurtles = (topology, x, y, turtleset, radius) ->
   new TurtleSet(results, turtleset._world)
 
 # (Topology, Number, Number, PatchSet, Number) -> PatchSet
-filterPatches = (topology, x, y, patchset, radius) ->
+filterPatchesInRadius = (topology, x, y, patchset, radius) ->
 
   patchX          = NLMath.round(x)
   patchY          = NLMath.round(y)
@@ -477,8 +477,8 @@ filterPatches = (topology, x, y, patchset, radius) ->
 inRadius = (topology, x, y, agentset, radius) ->
   initializeCache(topology)
   switch agentset._agentTypeName
-    when "turtles" then filterTurtles(topology, x, y, agentset, radius)
-    when "patches" then filterPatches(topology, x, y, agentset, radius)
+    when "turtles" then filterTurtlesInRadius(topology, x, y, agentset, radius)
+    when "patches" then filterPatchesInRadius(topology, x, y, agentset, radius)
     else throw new Error("Cannot use `in-radius` on this agentset type.")
 
 ###
@@ -521,17 +521,11 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
 
   # (Number, Number) => (Patch) => Boolean
   patchIsGood = (wrapCountInX, wrapCountInY) => (patch) =>
-    isPlausible = agents.getSpecialName() is "patches" or agents.contains(patch)
-    isPlausible and isInWrappableSector(patch.pxcor, patch.pycor, wrapCountInX, wrapCountInY)
+    isInWrappableSector(patch.pxcor, patch.pycor, wrapCountInX, wrapCountInY)
 
   # (Number, Number) => (Turtle) => Boolean
   turtleIsGood = (wrapCountInX, wrapCountInY) => (turtle) =>
-    breedName = agents.getSpecialName()
-    isPlausible =
-      breedName is "turtles" or
-        (breedName? and breedName is turtle.getBreedName()) or
-        ((not breedName?) and agents.contains(turtle))
-    isPlausible and isInWrappableSector(turtle.xcor, turtle.ycor, wrapCountInX, wrapCountInY)
+    isInWrappableSector(turtle.xcor, turtle.ycor, wrapCountInX, wrapCountInY)
 
   { pxcor, pycor } = @_getPatchAt(x, y)
 
@@ -546,23 +540,30 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
 
   results = []
 
-  checkHere = (pxcor, pycor) ->
-    patch = getPatchAt(pxcor, pycor)
+  checkAgentsHere = if isPatchSet
+    isInTargetSet = makeTargetChecker(agents, "patches")
+    (pxcor, pycor) ->
+      patch = getPatchAt(pxcor, pycor)
+      if isInTargetSet(patch) and patchIsGood_(patch)
+        results.push(patch)
+      return
 
-    if isPatchSet and patchIsGood_(patch)
-      results.push(patch)
-
-    else if isTurtleSet
+  else if isTurtleSet
+    isInTargetSet = makeTargetChecker(agents, "turtles")
+    (pxcor, pycor) ->
+      patch = getPatchAt(pxcor, pycor)
       patch._turtles.forEach( (turtle) =>
-        if turtleIsGood_(turtle)
+        if isInTargetSet(turtle) and turtleIsGood_(turtle)
           results.push(turtle)
         return
       )
+      return
 
-    return
+  else
+    throw new Error("Cannot use `in-cone` on this agentset type.")
 
   getPatchAt = if isInCache("getPatchAt") then getFromCache() else addToCache(makePatchGetter(this))
-  searchPatches(this, pxcor, pycor, distance, getPatchAt, checkHere)
+  searchPatches(this, pxcor, pycor, distance, getPatchAt, checkAgentsHere)
 
   agents.copyWithNewAgents(results)
 
