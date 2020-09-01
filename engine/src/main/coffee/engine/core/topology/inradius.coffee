@@ -185,98 +185,105 @@ maybeAddPatch = (patches, maybePatch) ->
     patches.push(maybePatch)
   return
 
-# (Int, Int, Int, Int, Int, Int) => Boolean
-isInRegion = (pxMin, pxMax, pyMin, pyMax, pxcor, pycor) ->
-  pxMin <= pxcor and pxMax >= pxcor and pyMin <= pycor and pyMax >= pycor
+# (Segment, Segment, Int, Int) => Boolean
+isInRegion = (pxSegment, pySegment, pxcor, pycor) ->
+  pxSegment.min <= pxcor and pxSegment.max >= pxcor and pySegment.min <= pycor and pySegment.max >= pycor
+
+# (Int, Int, Int, Int) => Segment
+makeSegment = (p, patchRadius, topologyMin, topologyMax) ->
+  min = p - patchRadius
+  max = p + patchRadius
+  # Since we're caching these, we'll go ahead and make object instances.  -Jeremy B August 2020
+  {
+    min,
+    max,
+    couldWrapMin: min < topologyMin
+    couldWrapMax: max > topologyMax
+  }
 
 # (Topology, Int, Int, Int) => (Int, Int) => Boolean
 makeInBoundingBox = (topology, patchX, patchY, patchRadius) ->
 
-  pxMin = patchX - patchRadius
-  pxMax = patchX + patchRadius
-  pyMin = patchY - patchRadius
-  pyMax = patchY + patchRadius
+  pxSegment = if isInCache("boundingBoxSegment", patchX, patchRadius) then getFromCache() else addToCache(
+    makeSegment(patchX, patchRadius, topology.minPxcor, topology.maxPxcor)
+  )
+  pySegment = if isInCache("boundingBoxSegment", patchY, patchRadius) then getFromCache() else addToCache(
+    makeSegment(patchY, patchRadius, topology.minPycor, topology.maxPycor)
+  )
 
   # Pre-determine checks for box, cylinders, or torus.  -Jeremy B August 2020
   if not topology._wrapInX and not topology._wrapInY
     return (pxcor, pycor) ->
-      isInRegion(pxMin, pxMax, pyMin, pyMax, pxcor, pycor)
+      isInRegion(pxSegment, pySegment, pxcor, pycor)
 
   if topology._wrapInX and not topology._wrapInY
     return (pxcor, pycor) ->
-      if isInRegion(pxMin, pxMax, pyMin, pyMax, pxcor, pycor)
+      if isInRegion(pxSegment, pySegment, pxcor, pycor)
         return true
 
-      if pxMin < topology.minPxcor
-        if isInRegion(pxMin, pxMax, pyMin, pyMax, pxcor - topology.width, pycor)
+      if pxSegment.couldWrapMin
+        if isInRegion(pxSegment, pySegment, pxcor - topology.width, pycor)
           return true
 
-      if pxMax > topology.maxPxcor
-        if isInRegion(pxMin, pxMax, pyMin, pyMax, pxcor + topology.width, pycor)
+      if pxSegment.couldWrapMax
+        if isInRegion(pxSegment, pySegment, pxcor + topology.width, pycor)
           return true
 
       return false
 
   if not topology._wrapInX and topology._wrapInY
     return (pxcor, pycor) ->
-      if isInRegion(pxMin, pxMax, pyMin, pyMax, pxcor, pycor)
+      if isInRegion(pxSegment, pySegment, pxcor, pycor)
         return true
 
-      if pyMin < topology.minPycor
-        if isInRegion(pxMin, pxMax, pyMin, pyMax, pxcor, pycor - topology.height)
+      if pySegment.couldWrapMin
+        if isInRegion(pxSegment, pySegment, pxcor, pycor - topology.height)
           return true
 
-      if pyMax > topology.maxPycor
-        if isInRegion(pxMin, pxMax, pyMin, pyMax, pxcor, pycor + topology.height)
+      if pySegment.couldWrapMax
+        if isInRegion(pxSegment, pySegment, pxcor, pycor + topology.height)
           return true
 
       return false
 
   return (pxcor, pycor) ->
-    if isInRegion(pxMin, pxMax, pyMin, pyMax, pxcor, pycor)
+    if isInRegion(pxSegment, pySegment, pxcor, pycor)
       return true
 
-    # We could pre-calc these wrapping checks and positions which would make the code cleaner to read,
-    # but we may not need them, so do it "lazily".
-    # -Jeremy B August 202
-    couldWrapLeft = pxMin < topology.minPxcor
-    if couldWrapLeft
+    if pxSegment.couldWrapMin
       wrapLeft = pxcor - topology.width
-      if isInRegion(pxMin, pxMax, pyMin, pyMax, wrapLeft, pycor)
+      if isInRegion(pxSegment, pySegment, wrapLeft, pycor)
         return true
 
-    couldWrapRight = pxMax > topology.maxPxcor
-    if couldWrapRight
+    if pxSegment.couldWrapMax
       wrapRight = pxcor + topology.width
-      if isInRegion(pxMin, pxMax, pyMin, pyMax, wrapRight, pycor)
+      if isInRegion(pxSegment, pySegment, wrapRight, pycor)
         return true
 
-    couldWrapBottom = pyMin < topology.minPycor
-    if couldWrapBottom
+    if pySegment.couldWrapMin
       wrapBottom = pycor - topology.height
-      if isInRegion(pxMin, pxMax, pyMin, pyMax, pxcor, wrapBottom)
+      if isInRegion(pxSegment, pySegment, pxcor, wrapBottom)
         return true
 
-    couldWrapTop = pyMax > topology.maxPycor
-    if couldWrapTop
+    if pySegment.couldWrapMax
       wrapTop = pycor + topology.height
-      if isInRegion(pxMin, pxMax, pyMin, pyMax, pxcor, wrapTop)
+      if isInRegion(pxSegment, pySegment, pxcor, wrapTop)
         return true
 
-    if couldWrapLeft
-      if couldWrapBottom
-        if isInRegion(pxMin, pxMax, pyMin, pyMax, wrapLeft, wrapBottom)
+    if pxSegment.couldWrapMin
+      if pySegment.couldWrapMin
+        if isInRegion(pxSegment, pySegment, wrapLeft, wrapBottom)
           return true
-      if couldWrapTop
-        if isInRegion(pxMin, pxMax, pyMin, pyMax, wrapLeft, wrapTop)
+      if pySegment.couldWrapMax
+        if isInRegion(pxSegment, pySegment, wrapLeft, wrapTop)
           return true
 
-    if couldWrapRight
-      if couldWrapBottom
-        if isInRegion(pxMin, pxMax, pyMin, pyMax, wrapRight, wrapBottom)
+    if pxSegment.couldWrapMax
+      if pySegment.couldWrapMin
+        if isInRegion(pxSegment, pySegment, wrapRight, wrapBottom)
           return true
-      if couldWrapTop
-        if isInRegion(pxMin, pxMax, pyMin, pyMax, wrapRight, wrapTop)
+      if pySegment.couldWrapMax
+        if isInRegion(pxSegment, pySegment, wrapRight, wrapTop)
           return true
 
     return false
