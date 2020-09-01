@@ -139,6 +139,18 @@ class TestTopologies extends DockingSuite {
     testCommand("ask n-of 10 patches [ output-print self let radius random-float 7.3934 output-print radius output-print [ who ] of turtles in-radius radius ]")
   }
 
+  inAllTopologies("in-radius turtle breeds", decls = "breed [mice mouse] breed [frogs frog]", baseView = View(dimensions = WorldDimensions(minPxcor = -4, maxPxcor = 3, minPycor = -2, maxPycor = 6))) {
+    implicit fixture => import fixture._
+    testCommand("create-mice 50 [ setxy random-xcor random-ycor ]")
+    testCommand("create-frogs 50 [ setxy random-xcor random-ycor ]")
+    testCommand("ask n-of 25 mice [ output-print self let radius random 10 output-print radius output-print [ who ] of mice in-radius radius ]")
+    testCommand("ask n-of 25 frogs [ output-print self let radius random-float 17.3934 output-print radius output-print [ who ] of frogs in-radius radius ]")
+    testCommand("ask n-of 25 mice [ output-print self let radius random 10 output-print radius output-print [ who ] of turtles in-radius radius ]")
+    testCommand("ask n-of 25 frogs [ output-print self let radius random-float 17.3934 output-print radius output-print [ who ] of mice in-radius radius ]")
+    testCommand("ask n-of 25 mice [ output-print self let radius random 10 output-print radius output-print [ list pxcor pycor ] of patches in-radius radius ]")
+    testCommand("ask n-of 25 frogs [ output-print self let radius random-float 7.3934 output-print radius output-print [ list pxcor pycor ] of patches in-radius radius ]")
+  }
+
   inAllTopologies("distance move") {
     implicit fixture => import fixture._
     testCommand("crt 50 [ setxy random-xcor random-ycor ]")
