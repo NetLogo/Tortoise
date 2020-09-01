@@ -17,6 +17,84 @@
 
 # -Jeremy B August 2020
 
+# This simple cache is not at all safe or general purpose.  It's made to be used *only* like this:
+# `myVariable = if isInCache("myVariable", pxcor, pycor) then getFromCache() else addToCache(calcMyVar(pxcor, pycor))`
+# We could do things like take in anonymous functions as "lazy values" instead of the weird `isInCache()`/`addToCache()`
+# setup, but we're trying hard to avoid making extra intermediate objects/functions.
+# -Jeremy B August 2020
+
+cacheStore = {
+  nextGet: null
+  nextKey: null
+  nextSubKeys: null
+  topology: null
+}
+
+# (Topology) => Unit
+initializeCache = (topology) ->
+  if (cacheStore.topology isnt topology)
+    cacheStore = { topology }
+  return
+
+# This method also sets the `nextGet` for use by `getFromCache()` or the `nextKey` and `nextSubKeys` values
+# for use by `addToCache()`.  -Jeremy B August 2020
+# (String | Int, Array[String \ Int]) => Boolan
+isInCache = (key, subKeys...) ->
+  cacheStore.nextGet = null
+  cacheStore.nextKey = null
+  cacheStore.nextSubKeys = null
+
+  if not Object.hasOwnProperty(cacheStore, key)
+    cacheStore.nextKey = key
+    cacheStore.nextSubKeys = subKeys
+    return false
+
+  if subKeys.length is 0
+    cacheStore.nextGet = cacheStore[key]
+    return true
+
+  subStore = cacheStore[key]
+  for subKey in subKeys
+    if not Object.hasOwnProperty(subStore, subKey)
+      cacheStore.nextKey = key
+      cacheStore.nextSubKeys = subKeys
+      return false
+    subStore = subStore[subKey]
+
+  cacheStore.nextGet = subStore
+  return true
+
+# `isInCache()` must be called first to prepare a value to get. -Jeremy B August 2020
+# () => Any
+getFromCache = () ->
+  return subStore.nextGet
+
+# This method puts the value into the cache at the location defined by the last `isInCache()` call key and sub keys.
+# -Jeremy B August 2020
+# (Any) => Any
+addToCache = (value) ->
+  key     = cacheStore.nextKey
+  subKeys = cacheStore.nextSubKeys
+
+  if subKeys.length is 0
+    cacheStore[key] = value
+    return value
+
+  subStore = if Object.hasOwnProperty(cacheStore, key)
+    cacheStore[key]
+  else
+    cacheStore[key] = {}
+
+  for subKeyIndex in [0..(subKeys.length - 2)]
+    subKey = subKeys[subKeyIndex]
+    subStore = if Object.hasOwnProperty(subStore, subKey)
+      subStore[subKey]
+    else
+      subStore[subKey] = {}
+
+  subStore[subKeys[subKeys.length - 1]] = value
+  return value
+
 # (Number, Number) => Number
 distanceRaw = (p1, p2) ->
   NLMath.abs(p1 - p2)
@@ -53,6 +131,10 @@ makePatchGetter = (topology) ->
     patchIndex = (maxPycor - pycor) * width + (pxcor - minPxcor)
     allPatches[patchIndex]
 
+# () => true
+theTruth = () ->
+  true
+
 # (Agentset, Agentset) => (Agent) => Boolean
 makeTargetChecker = (agentset, globalName) ->
   # Instead of iterating over the agentset to find ones that might be in the radius,
@@ -63,11 +145,13 @@ makeTargetChecker = (agentset, globalName) ->
   # -Jeremy B August 2020
   specialName = agentset.getSpecialName()
   return if specialName is globalName
-    (agent) -> true
+    theTruth
   else if specialName?
-    # Do not use `agent.isBreed()` because it calls `toUpperCase()` on the arguments, and they
-    # should already be proper case.  -Jeremy B
-    (agent) -> agent._breed.name is specialName
+    if isInCache("targtChecker", specialName) then getFromCache() else addToCache(
+      # Do not use `agent.isBreed()` because it calls `toUpperCase()` on the arguments, and they
+      # should already be proper case.  -Jeremy B
+      (agent) -> agent._breed.name is specialName
+    )
   else
     agentIds = new Set(agentset._unsafeIterator().toArray().map( (a) -> a.id ))
     (agent) -> agentIds.has(agent.id)
@@ -214,15 +298,17 @@ searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) 
     # `radius is 0` is another quirk from desktop.  -Jeremy B August 2020
     if radius > 1 or radius is 0
 
-      # I'm sure all of this makes perfect sense, consult the desktop version if you're curious about what
-      # this is doing and why.  The patch order we use here must match the order over there, and the order differs
-      # between the two branches of this check.  -Jeremy B August 2020
-      if (
+      smallWorldCheck = if isInCache("smallWorldCheck", patchX, patchY) then getFromCache() else addToCache(
         (topology._wrapInX and topology.width < 5) or
         (topology._wrapInY and topology.height < 5) or
         (not topology._wrapInX and (patchX - topology.minPxcor < 2 or topology.maxPxcor - patchX < 2)) or
         (not topology._wrapInY and (patchY - topology.minPycor < 2 or topology.maxPycor - patchY < 2))
       )
+
+      # I'm sure all of this makes perfect sense, consult the desktop version if you're curious about what
+      # `smallWorldCheck` is doing and why.  The patch order we use here must match the order over there, and the order
+      # differs between the two branches of this check.  -Jeremy B August 2020
+      if (smallWorldCheck)
 
         newPatches = []
         patches.forEach( (p) ->
@@ -283,9 +369,9 @@ filterTurtles = (topology, x, y, turtleset, radius) ->
 
   patchX          = NLMath.round(x)
   patchY          = NLMath.round(y)
-  getPatchAt      = makePatchGetter(topology)
+  getPatchAt      = if isInCache("getPatchAt") then getFromCache() else addToCache(makePatchGetter(topology))
   isInTargetSet   = makeTargetChecker(turtleset, "turtles")
-  inRadiusSq      = makeInRadiusSq(topology)
+  inRadiusSq      = if isInCache("inRadiusSq") then getFromCache() else addToCache(makeInRadiusSq(topology))
   inExactRadiusSq = makeInExactRadiusSq(inRadiusSq, x, y, radius)
 
   # If the source turtle is in a corner of its patch, and a target turtle is in the closest
@@ -333,9 +419,9 @@ filterPatches = (topology, x, y, patchset, radius) ->
 
   patchX          = NLMath.round(x)
   patchY          = NLMath.round(y)
-  getPatchAt      = makePatchGetter(topology)
+  getPatchAt      = if isInCache("getPatchAt") then getFromCache() else addToCache(makePatchGetter(topology))
   isInTarget      = makeTargetChecker(patchset, "patches")
-  inRadiusSq      = makeInRadiusSq(topology)
+  inRadiusSq      = if isInCache("inRadiusSq") then getFromCache() else addToCache(makeInRadiusSq(topology))
   inExactRadiusSq = makeInExactRadiusSq(inRadiusSq, x, y, radius)
 
   results = []
@@ -352,10 +438,10 @@ filterPatches = (topology, x, y, patchset, radius) ->
 
 # (Topology, Number, Number, TurtleSet | PatchSet, Number) -> TurtleSet | PatchSet
 filterAgents = (topology, x, y, agentset, radius) ->
-  checkAgentsHere =
-    switch agentset._agentTypeName
-      when "turtles" then filterTurtles(topology, x, y, agentset, radius)
-      when "patches" then filterPatches(topology, x, y, agentset, radius)
-      else throw new Error("Cannot use `in-radius` on this agentset type.")
+  initializeCache(topology)
+  switch agentset._agentTypeName
+    when "turtles" then filterTurtles(topology, x, y, agentset, radius)
+    when "patches" then filterPatches(topology, x, y, agentset, radius)
+    else throw new Error("Cannot use `in-radius` on this agentset type.")
 
 module.exports = { filterAgents }
