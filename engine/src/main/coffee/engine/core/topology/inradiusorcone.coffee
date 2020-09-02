@@ -144,7 +144,7 @@ makeTargetChecker = (agentset, globalName) ->
   # We iterate over patches and only check agents on patches that could be within
   # the radius.  That's how desktop does it, so that's how we do it, too. But we
   # need an easy way to check if an agent from a patch is, you know, actually one
-  # of the ones we're supposed to be looking for, hence this set of IDs.
+  # of the ones we're supposed to be looking for.
   # -Jeremy B August 2020
   specialName = agentset.getSpecialName()
   return if specialName is globalName
@@ -186,109 +186,6 @@ maybeAddPatch = (patches, maybePatch) ->
   if maybePatch and not patches.includes(maybePatch)
     patches.push(maybePatch)
   return
-
-# (Segment, Segment, Int, Int) => Boolean
-isInRegion = (pxSegment, pySegment, pxcor, pycor) ->
-  pxSegment.min <= pxcor and pxSegment.max >= pxcor and pySegment.min <= pycor and pySegment.max >= pycor
-
-# (Int, Int, Int, Int) => Segment
-makeSegment = (p, patchRadius, topologyMin, topologyMax) ->
-  min = p - patchRadius
-  max = p + patchRadius
-  # Since we're caching these, we'll go ahead and make object instances.  -Jeremy B August 2020
-  {
-    min,
-    max,
-    couldWrapMin: min < topologyMin
-    couldWrapMax: max > topologyMax
-  }
-
-# (Topology, Int, Int, Int) => (Int, Int) => Boolean
-makeInBoundingBox = (topology, patchX, patchY, patchRadius) ->
-
-  pxSegment = if isInCache("boundingBoxSegment", patchX, patchRadius) then getFromCache() else addToCache(
-    makeSegment(patchX, patchRadius, topology.minPxcor, topology.maxPxcor)
-  )
-  pySegment = if isInCache("boundingBoxSegment", patchY, patchRadius) then getFromCache() else addToCache(
-    makeSegment(patchY, patchRadius, topology.minPycor, topology.maxPycor)
-  )
-
-  # Pre-determine checks for box, cylinders, or torus.  -Jeremy B August 2020
-  if not topology._wrapInX and not topology._wrapInY
-    return (pxcor, pycor) ->
-      isInRegion(pxSegment, pySegment, pxcor, pycor)
-
-  if topology._wrapInX and not topology._wrapInY
-    return (pxcor, pycor) ->
-      if isInRegion(pxSegment, pySegment, pxcor, pycor)
-        return true
-
-      if pxSegment.couldWrapMin
-        if isInRegion(pxSegment, pySegment, pxcor - topology.width, pycor)
-          return true
-
-      if pxSegment.couldWrapMax
-        if isInRegion(pxSegment, pySegment, pxcor + topology.width, pycor)
-          return true
-
-      return false
-
-  if not topology._wrapInX and topology._wrapInY
-    return (pxcor, pycor) ->
-      if isInRegion(pxSegment, pySegment, pxcor, pycor)
-        return true
-
-      if pySegment.couldWrapMin
-        if isInRegion(pxSegment, pySegment, pxcor, pycor - topology.height)
-          return true
-
-      if pySegment.couldWrapMax
-        if isInRegion(pxSegment, pySegment, pxcor, pycor + topology.height)
-          return true
-
-      return false
-
-  return (pxcor, pycor) ->
-    if isInRegion(pxSegment, pySegment, pxcor, pycor)
-      return true
-
-    if pxSegment.couldWrapMin
-      wrapLeft = pxcor - topology.width
-      if isInRegion(pxSegment, pySegment, wrapLeft, pycor)
-        return true
-
-    if pxSegment.couldWrapMax
-      wrapRight = pxcor + topology.width
-      if isInRegion(pxSegment, pySegment, wrapRight, pycor)
-        return true
-
-    if pySegment.couldWrapMin
-      wrapBottom = pycor - topology.height
-      if isInRegion(pxSegment, pySegment, pxcor, wrapBottom)
-        return true
-
-    if pySegment.couldWrapMax
-      wrapTop = pycor + topology.height
-      if isInRegion(pxSegment, pySegment, pxcor, wrapTop)
-        return true
-
-    if pxSegment.couldWrapMin
-      if pySegment.couldWrapMin
-        if isInRegion(pxSegment, pySegment, wrapLeft, wrapBottom)
-          return true
-      if pySegment.couldWrapMax
-        if isInRegion(pxSegment, pySegment, wrapLeft, wrapTop)
-          return true
-
-    if pxSegment.couldWrapMax
-      if pySegment.couldWrapMin
-        if isInRegion(pxSegment, pySegment, wrapRight, wrapBottom)
-          return true
-      if pySegment.couldWrapMax
-        if isInRegion(pxSegment, pySegment, wrapRight, wrapTop)
-          return true
-
-    return false
 
 # ((Int, Int) => Patch) => Array[Patch]
 getRadius1Patches = (centerPatch) ->
@@ -372,27 +269,258 @@ getSmallRadiusPatches = (topology, patchX, patchY, radius, getPatchAt) ->
 
   return patches
 
-# (Topology, Int, Int, Number, (Int, Int) => Patch, (Int, Int) => Unit) => Unit
-searchPatches = (topology, patchX, patchY, radius, getPatchAt, checkAgentsHere) ->
+# (Topology) => (Int, Int, Int) => Array[Region]
+makeGetRegions = (topology) ->
+  getRegions = if topology._wrapInX
+    if topology._wrapInY
+      getRegionsTorus
+    else
+      getRegionsHorizontal
+  else
+    if topology._wrapInY
+      getRegionsVertical
+    else
+      getRegionsBox
+
+  (patchX, patchY, patchRadius) -> getRegions(topology, patchX, patchY, patchRadius)
+
+# (Int, Int, Array[Int]) => Region
+makeRegion = (top, bottom, segmentValues...) ->
+  segments = []
+  for i in [0...segmentValues.length] by 2
+    segments.push({ left: segmentValues[i], right: segmentValues[i + 1] })
+
+  { top, bottom, segments }
+
+# The various `getRegions*` functions must return the patch coordinates in desktop order - maxPycor to minPycor outer,
+# mminPxcor to maxPxcor inner.  Hence the weirdness with making sure we get the "upper" and "lower" regions correctly
+# ordered, when they exist.
+# - Jeremy B September 2020
+
+# (Topology, Int, Int, Int) => Array[Region]
+getRegionsBox = (topology, patchX, patchY, patchRadius) ->
+  doubleRadius = patchRadius * 2
+
+  left   = NLMath.max(patchX - patchRadius, topology.minPxcor)
+  right  = NLMath.min(patchX + patchRadius, topology.maxPxcor)
+  top    = NLMath.min(patchY + patchRadius, topology.maxPycor)
+  bottom = NLMath.max(patchY - patchRadius, topology.minPycor)
+
+  [makeRegion(top, bottom, left, right)]
+
+# (Topology, Int, Int) => { upperTop, upperBottom, lowerTop, lowerBottom }
+topSplitLimits = (topology, maybeTop, maybeBottom) ->
+  upperTop    = topology.maxPycor
+  upperBottom = maybeBottom
+  lowerTop    = topology.minPycor + maybeTop - topology.maxPycor
+  lowerBottom = topology.minPycor
+  { upperTop, upperBottom, lowerTop, lowerBottom }
+
+# (Topology, Int, Int) => { upperTop, upperBottom, lowerTop, lowerBottom }
+bottomSplitLimits = (topology, maybeTop, maybeBottom) ->
+  upperTop    = topology.maxPycor
+  upperBottom = topology.maxPycor + (maybeBottom - topology.minPycor)
+  lowerTop    = maybeTop
+  lowerBottom = topology.minPycor
+  { upperTop, upperBottom, lowerTop, lowerBottom }
+
+# (Topology, Int, Int, Int, Int) => Array[Region]
+splitVertical = (topology, patchY, patchRadius, left, right) ->
+  maybeTop    = patchY + patchRadius
+  maybeBottom = patchY - patchRadius
+
+  if maybeTop > topology.maxPycor
+    # wrap the top off -Jeremy B September 2020
+    vertical = topSplitLimits(topology, maybeTop, maybeBottom)
+
+    upper = makeRegion(vertical.upperTop, vertical.upperBottom, left, right)
+    lower = makeRegion(vertical.lowerTop, vertical.lowerBottom, left, right)
+
+    return [upper, lower]
+
+  if maybeBottom < topology.minPycor
+    # wrap the bottom off -Jeremy B September 2020
+    vertical = bottomSplitLimits(topology, maybeTop, maybeBottom)
+
+    upper = makeRegion(vertical.upperTop, vertical.upperBottom, left, right)
+    lower = makeRegion(vertical.lowerTop, vertical.lowerBottom, left, right)
+
+    return [upper, lower]
+
+  # else wrap neither! -Jeremy B September 2020
+  [makeRegion(maybeTop, maybeBottom, left, right)]
+
+# (Topology, Int, Int, Int) => Array[Region]
+getRegionsVertical = (topology, patchX, patchY, patchRadius) ->
+  doubleRadius = patchRadius * 2
+
+  left  = NLMath.max(patchX - patchRadius, topology.minPxcor)
+  right = NLMath.min(patchX + patchRadius, topology.maxPxcor)
+
+  # handle the "whole world" case so we don't worry about it below. -Jeremy B September 2020
+  if doubleRadius >= (topology.height - 1)
+    return [makeRegion(topology.maxPycor, topology.minPycor, left, right)]
+
+  splitVertical(topology, patchY, patchRadius, left, right)
+
+# (Topology, Int, Int) => Array[Int]
+leftSplitLimits = (topology, maybeLeft, maybeRight) ->
+  segment1Left  = topology.minPxcor
+  segment1Right = maybeRight
+  segment2Left  = topology.maxPxcor + (maybeLeft - topology.minPxcor)
+  segment2Right = topology.maxPxcor
+  [ segment1Left, segment1Right, segment2Left, segment2Right ]
+
+# (Topology, Int, Int) => Array[Int]
+rightSplitLimits = (topology, maybeLeft, maybeRight) ->
+  segment1Left  = topology.minPxcor
+  segment1Right = topology.minPxcor + (maybeRight - topology.maxPxcor)
+  segment2Left  = maybeLeft
+  segment2Right = topology.maxPxcor
+  [ segment1Left, segment1Right, segment2Left, segment2Right ]
+
+# (Topology, Int, Int, Int, Int) => Array[Region]
+splitHorizontal = (topology, patchX, patchRadius, top, bottom) ->
+  maybeLeft  = patchX - patchRadius
+  maybeRight = patchX + patchRadius
+
+  if maybeLeft < topology.minPxcor
+    # wrap the left off -Jeremy B September 2020
+    horizontal = leftSplitLimits(topology, maybeLeft, maybeRight)
+    return [makeRegion(top, bottom, horizontal...)]
+
+  if maybeRight > topology.maxPxcor
+    # wrap the right off -Jeremy B September 2020
+    horizontal = rightSplitLimits(topology, maybeLeft, maybeRight)
+    return [makeRegion(top, bottom, horizontal...)]
+
+  # else wrap neither! -Jeremy B September 2020
+  [makeRegion(top, bottom, maybeLeft, maybeRight)]
+
+# (Topology, Int, Int, Int) => Array[Region]
+getRegionsHorizontal = (topology, patchX, patchY, patchRadius) ->
+  doubleRadius = patchRadius * 2
+
+  top    = NLMath.min(patchY + patchRadius, topology.maxPycor)
+  bottom = NLMath.max(patchY - patchRadius, topology.minPycor)
+
+  # handle the "whole world" case so we don't worry about it below. -Jeremy B September 2020
+  if doubleRadius >= (topology.width - 1)
+    return [makeRegion(top, bottom, topology.minPxcor, topology.maxPxcor)]
+
+  splitHorizontal(topology, patchX, patchRadius, top, bottom)
+
+# (Topology, Int, Int, Int) => Array[Region]
+getRegionsTorus = (topology, patchX, patchY, patchRadius) ->
+  doubleRadius = patchRadius * 2
+
+  # handle the "whole world" cases so we don't worry about it below. -Jeremy B September 2020
+  if doubleRadius >= (topology.width - 1)
+    if doubleRadius >= (topology.height - 1)
+      return [makeRegion(topology.maxPycor, topology.minPycor, topology.minPxcor, topology.maxPxcor)]
+    else
+      # we wrapped the whole world width, so this should be a simple vertical wrapping thing. -Jeremy B September 2020
+      left  = topology.minPxcor
+      right = topology.maxPxcor
+      return splitVertical(topology, patchY, patchRadius, left, right)
+
+  if doubleRadius >= (topology.height - 1)
+    # we wrapped the whole world height, so this should be a simple horizontal wrapping thing. -Jeremy B September 2020
+    top    = topology.maxPycor
+    bottom = topology.minPycor
+    return splitHorizontal(topology, patchX, patchRadius, top, bottom)
+
+  maybeLeft   = patchX - patchRadius
+  maybeRight  = patchX + patchRadius
+  maybeTop    = patchY + patchRadius
+  maybeBottom = patchY - patchRadius
+
+  isLeftInBounds   = maybeLeft >= topology.minPxcor
+  isRightInBounds  = maybeRight <= topology.maxPxcor
+  isTopInBounds    = maybeTop <= topology.maxPycor
+  isBottomInBounds = maybeBottom >= topology.minPycor
+
+  # handle the unwrapped case so we don't have to worry about that below. -Jeremy B September 2020
+  if (isLeftInBounds and isRightInBounds and isTopInBounds and isBottomInBounds)
+    return [makeRegion(maybeTop, maybeBottom, maybeLeft, maybeRight)]
+
+  # We aren't "whole world" and we aren't unwrapped, so there are a few scenarios left:
+
+  # - There is a single edge outside the world - a simple two region split like vertical/horizontal
+  # - There are two adjacent edges outside the world - a point in a "corner" needing four wrapped regions
+
+  # -Jeremy B September 2020
+
+  if isTopInBounds and isBottomInBounds
+    return splitHorizontal(topology, patchX, patchRadius, maybeTop, maybeBottom)
+
+  if isLeftInBounds and isRightInBounds
+    return splitVertical(topology, patchY, patchRadius, maybeLeft, maybeRight)
+
+  if not isTopInBounds
+    if not isLeftInBounds
+      # top left corner -Jeremy B September 2020
+      vertical   = topSplitLimits(topology, maybeTop, maybeBottom)
+      horizontal = leftSplitLimits(topology, maybeLeft, maybeRight)
+
+      upper = makeRegion(vertical.upperTop, vertical.upperBottom, horizontal...)
+      lower = makeRegion(vertical.lowerTop, vertical.lowerBottom, horizontal...)
+
+      return [upper, lower]
+    else
+      # top right corner -Jeremy B September 2020
+      vertical   = topSplitLimits(topology, maybeTop, maybeBottom)
+      horizontal = rightSplitLimits(topology, maybeLeft, maybeRight)
+
+      upper = makeRegion(vertical.upperTop, vertical.upperBottom, horizontal...)
+      lower = makeRegion(vertical.lowerTop, vertical.lowerBottom, horizontal...)
+
+      return [upper, lower]
+
+  if not isLeftInBounds
+    # bottom left corner -Jeremy B September 2020
+    vertical   = bottomSplitLimits(topology, maybeTop, maybeBottom)
+    horizontal = leftSplitLimits(topology, maybeLeft, maybeRight)
+
+    upper = makeRegion(vertical.upperTop, vertical.upperBottom, horizontal...)
+    lower = makeRegion(vertical.lowerTop, vertical.lowerBottom, horizontal...)
+
+    return [upper, lower]
+
+  # bottom right corner -Jeremy B September 2020
+  vertical   = bottomSplitLimits(topology, maybeTop, maybeBottom)
+  horizontal = rightSplitLimits(topology, maybeLeft, maybeRight)
+
+  upper = makeRegion(vertical.upperTop, vertical.upperBottom, horizontal...)
+  lower = makeRegion(vertical.lowerTop, vertical.lowerBottom, horizontal...)
+
+  [upper, lower]
+
+# (Region, (Int, Int) => Unit) => Unit
+searchRegion = (region, checkAgentsHere) ->
+  if not region?
+    return
+
+  for pycor in [region.top..region.bottom]
+    for segment in region.segments
+      for pxcor in [segment.left..segment.right]
+        checkAgentsHere(pxcor, pycor)
+
+  return
+
+# (Topology, Int, Int, Number, (Int, Int, Int) => Array[Region], (Int, Int) => Patch, (Int, Int) => Unit) => Unit
+searchPatches = (topology, patchX, patchY, radius, getRegions, getPatchAt, checkAgentsHere) ->
 
   # NetLogo desktop special-cases on radius length. -Jeremy B August 2020.
   if radius <= 2
     patches = getSmallRadiusPatches(topology, patchX, patchY, radius, getPatchAt)
-    patches.forEach( (patch) ->
-      checkAgentsHere(patch.pxcor, patch.pycor)
-    )
+    patches.forEach( (patch) -> checkAgentsHere(patch.pxcor, patch.pycor) )
 
   else
     patchRadius = NLMath.ceil(radius)
-    isInBoundingBox = if isInCache("patch", patchX, patchY, "isInBoundingBox", patchRadius) then getFromCache() else
-      addToCache(makeInBoundingBox(topology, patchX, patchY, patchRadius))
-
-    # This is the order NetLogo desktop searches the patches, so we follow suit.
-    # -Jeremy B August 2020
-    for pycor in [topology.maxPycor..topology.minPycor]
-      for pxcor in [topology.minPxcor..topology.maxPxcor]
-        if isInBoundingBox(pxcor, pycor)
-          checkAgentsHere(pxcor, pycor)
+    regions = getRegions(patchX, patchY, patchRadius)
+    for region in regions
+      searchRegion(region, checkAgentsHere)
 
   return
 
@@ -401,6 +529,7 @@ filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
 
   patchX          = NLMath.round(x)
   patchY          = NLMath.round(y)
+  getRegions      = if isInCache("getRegions") then getFromCache() else addToCache(makeGetRegions(topology))
   getPatchAt      = if isInCache("getPatchAt") then getFromCache() else addToCache(makePatchGetter(topology))
   isInTargetSet   = makeTargetChecker(turtleset, "turtles")
   inRadiusSq      = if isInCache("inRadiusSq") then getFromCache() else addToCache(makeInRadiusSq(topology))
@@ -427,6 +556,8 @@ filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
     # getting the patch to check even if the patch might not be in radius, as the size check should
     # be pretty fast and often 0.  -Jeremy B August 2020
     patch = getPatchAt(pxcor, pycor)
+    if (patch is undefined)
+      console.log("patch coords: ", pxcor, pycor)
     # This relies on patches removing their dead turtles, which they should do.  -Jeremy B August 2020
     patchTurtles = patch._turtles
     if patchTurtles.length is 0
@@ -446,7 +577,7 @@ filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
 
     return
 
-  searchPatches(topology, patchX, patchY, radius, getPatchAt, checkTurtlesHere)
+  searchPatches(topology, patchX, patchY, radius, getRegions, getPatchAt, checkTurtlesHere)
 
   new TurtleSet(results, turtleset._world)
 
@@ -455,6 +586,7 @@ filterPatchesInRadius = (topology, x, y, patchset, radius) ->
 
   patchX          = NLMath.round(x)
   patchY          = NLMath.round(y)
+  getRegions      = if isInCache("getRegions") then getFromCache() else addToCache(makeGetRegions(topology))
   getPatchAt      = if isInCache("getPatchAt") then getFromCache() else addToCache(makePatchGetter(topology))
   isInTarget      = makeTargetChecker(patchset, "patches")
   inRadiusSq      = if isInCache("inRadiusSq") then getFromCache() else addToCache(makeInRadiusSq(topology))
@@ -464,11 +596,13 @@ filterPatchesInRadius = (topology, x, y, patchset, radius) ->
   # (Int, Int) => Unit
   checkPatchHere = (pxcor, pycor) ->
     patch = getPatchAt(pxcor, pycor)
+    if (patch is undefined)
+      console.log("patch coords: ", pxcor, pycor)
     if isInTarget(patch) and inExactRadiusSq(patch.pxcor, patch.pycor)
       results.push(patch)
     return
 
-  searchPatches(topology, patchX, patchY, radius, getPatchAt, checkPatchHere)
+  searchPatches(topology, patchX, patchY, radius, getRegions, getPatchAt, checkPatchHere)
 
   new PatchSet(results, patchset._world)
 
@@ -485,7 +619,10 @@ inRadius = (topology, x, y, agentset, radius) ->
 Begin `in-cone` section.
 
 This code is updated to match the `in-radius` style above and to use some of those optimizations and caching, but it
-hasn't been fully converted or optimized.  -Jeremy B August 2020
+hasn't been fully converted or optimized.  Most critically, it gives the same ordering of resulting agents as desktop
+NetLogo.
+
+-Jeremy B August 2020
 
 ###
 
@@ -534,6 +671,7 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
   wrapCountInX = findWrapCount(@_wrapInX, @width)
   wrapCountInY = findWrapCount(@_wrapInY, @height)
 
+  getRegions = if isInCache("getRegions") then getFromCache() else addToCache(makeGetRegions(this))
   getPatchAt = if isInCache("getPatchAt") then getFromCache() else addToCache(makePatchGetter(this))
 
   isPatchSet  = NLType(agents).isPatchSet()
@@ -564,7 +702,7 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
   else
     throw new Error("Cannot use `in-cone` on this agentset type.")
 
-  searchPatches(this, pxcor, pycor, distance, getPatchAt, checkAgentsHere)
+  searchPatches(this, pxcor, pycor, distance, getRegions, getPatchAt, checkAgentsHere)
   agents.copyWithNewAgents(results)
 
 module.exports = { inRadius, inCone }
