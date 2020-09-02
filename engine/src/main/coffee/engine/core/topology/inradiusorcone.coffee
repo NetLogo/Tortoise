@@ -526,7 +526,9 @@ searchPatches = (topology, patchX, patchY, radius, checkAgentsHere) ->
 
   else
     patchRadius = NLMath.ceil(radius)
-    regions = topologyHelpers.getRegions(patchX, patchY, patchRadius)
+    regions = if isInCache("patch", patchX, patchY, "regions", patchRadius) then getFromCache() else addToCache(
+      topologyHelpers.getRegions(patchX, patchY, patchRadius)
+    )
     for region in regions
       searchRegion(region, checkAgentsHere)
 
