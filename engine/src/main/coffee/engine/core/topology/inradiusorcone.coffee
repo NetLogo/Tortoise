@@ -30,13 +30,13 @@ cacheStore = {
   nextGet: null
   nextKey: null
   nextSubKeys: null
-  topology: null
+  initializationKey: null
 }
 
-# (Topology) => Unit
-initializeCache = (topology) ->
-  if (cacheStore.topology isnt topology)
-    cacheStore = { topology }
+# (Any) => Unit
+initializeCache = (initializationKey) ->
+  if (cacheStore.initializationKey isnt initializationKey)
+    cacheStore = { initializationKey }
   return
 
 # This method also sets the `nextGet` for use by `getFromCache()` or the `nextKey` and `nextSubKeys` values
@@ -97,6 +97,14 @@ addToCache = (value) ->
 
   subStore[subKeys[subKeys.length - 1]] = value
   return value
+
+topologyHelpers = {}
+
+initialize = (topology) ->
+  initializeCache(topology)
+  topologyHelpers.getRegions = makeRegionGetter(topology)
+  topologyHelpers.getPatchAt = makePatchGetter(topology)
+  topologyHelpers.inRadiusSq = makeInRadiusSq(topology)
 
 # (Number, Number) => Number
 distanceRaw = (p1, p2) ->
@@ -241,10 +249,10 @@ getRadius2BPatches = (patches) ->
   return newPatches
 
 # (Topology, Int, Int, Number, (Int, Int) => Patch) => Array[Patch]
-getSmallRadiusPatches = (topology, patchX, patchY, radius, getPatchAt) ->
+getSmallRadiusPatches = (topology, patchX, patchY, radius) ->
 
   patches = if isInCache("patch", patchX, patchY, "getRadius1Patches") then getFromCache() else
-    addToCache(getRadius1Patches(getPatchAt(patchX, patchY)))
+    addToCache(getRadius1Patches(topologyHelpers.getPatchAt(patchX, patchY)))
 
   # `radius is 0` is another quirk from desktop.  -Jeremy B August 2020
   if radius > 1 or radius is 0
@@ -270,7 +278,7 @@ getSmallRadiusPatches = (topology, patchX, patchY, radius, getPatchAt) ->
   return patches
 
 # (Topology) => (Int, Int, Int) => Array[Region]
-makeGetRegions = (topology) ->
+makeRegionGetter = (topology) ->
   getRegions = if topology._wrapInX
     if topology._wrapInY
       getRegionsTorus
@@ -508,17 +516,17 @@ searchRegion = (region, checkAgentsHere) ->
 
   return
 
-# (Topology, Int, Int, Number, (Int, Int, Int) => Array[Region], (Int, Int) => Patch, (Int, Int) => Unit) => Unit
-searchPatches = (topology, patchX, patchY, radius, getRegions, getPatchAt, checkAgentsHere) ->
+# (Topology, Int, Int, Number, (Int, Int) => Unit) => Unit
+searchPatches = (topology, patchX, patchY, radius, checkAgentsHere) ->
 
   # NetLogo desktop special-cases on radius length. -Jeremy B August 2020.
   if radius <= 2
-    patches = getSmallRadiusPatches(topology, patchX, patchY, radius, getPatchAt)
+    patches = getSmallRadiusPatches(topology, patchX, patchY, radius)
     patches.forEach( (patch) -> checkAgentsHere(patch.pxcor, patch.pycor) )
 
   else
     patchRadius = NLMath.ceil(radius)
-    regions = getRegions(patchX, patchY, patchRadius)
+    regions = topologyHelpers.getRegions(patchX, patchY, patchRadius)
     for region in regions
       searchRegion(region, checkAgentsHere)
 
@@ -529,11 +537,8 @@ filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
 
   patchX          = NLMath.round(x)
   patchY          = NLMath.round(y)
-  getRegions      = if isInCache("getRegions") then getFromCache() else addToCache(makeGetRegions(topology))
-  getPatchAt      = if isInCache("getPatchAt") then getFromCache() else addToCache(makePatchGetter(topology))
   isInTargetSet   = makeTargetChecker(turtleset, "turtles")
-  inRadiusSq      = if isInCache("inRadiusSq") then getFromCache() else addToCache(makeInRadiusSq(topology))
-  inExactRadiusSq = makeInExactRadiusSq(inRadiusSq, x, y, radius)
+  inExactRadiusSq = makeInExactRadiusSq(topologyHelpers.inRadiusSq, x, y, radius)
 
   # If the source turtle is in a corner of its patch, and a target turtle is in the closest
   # corner of its patch, the patch distances will be off by sqrt(2).  We have to correct
@@ -544,7 +549,7 @@ filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
     addToCache(
       # (Int, Int) => Boolean
       (pxcor, pycor) ->
-        inRadiusSq((roundedRadius + 2) * (roundedRadius + 2), patchX, patchY, pxcor, pycor)
+        topologyHelpers.inRadiusSq((roundedRadius + 2) * (roundedRadius + 2), patchX, patchY, pxcor, pycor)
     )
 
   results = []
@@ -555,7 +560,7 @@ filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
     # should already have filtered out most of the patches, this is worth the expense of
     # getting the patch to check even if the patch might not be in radius, as the size check should
     # be pretty fast and often 0.  -Jeremy B August 2020
-    patch = getPatchAt(pxcor, pycor)
+    patch = topologyHelpers.getPatchAt(pxcor, pycor)
     if (patch is undefined)
       console.log("patch coords: ", pxcor, pycor)
     # This relies on patches removing their dead turtles, which they should do.  -Jeremy B August 2020
@@ -577,7 +582,7 @@ filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
 
     return
 
-  searchPatches(topology, patchX, patchY, radius, getRegions, getPatchAt, checkTurtlesHere)
+  searchPatches(topology, patchX, patchY, radius, checkTurtlesHere)
 
   new TurtleSet(results, turtleset._world)
 
@@ -586,29 +591,26 @@ filterPatchesInRadius = (topology, x, y, patchset, radius) ->
 
   patchX          = NLMath.round(x)
   patchY          = NLMath.round(y)
-  getRegions      = if isInCache("getRegions") then getFromCache() else addToCache(makeGetRegions(topology))
-  getPatchAt      = if isInCache("getPatchAt") then getFromCache() else addToCache(makePatchGetter(topology))
   isInTarget      = makeTargetChecker(patchset, "patches")
-  inRadiusSq      = if isInCache("inRadiusSq") then getFromCache() else addToCache(makeInRadiusSq(topology))
-  inExactRadiusSq = makeInExactRadiusSq(inRadiusSq, x, y, radius)
+  inExactRadiusSq = makeInExactRadiusSq(topologyHelpers.inRadiusSq, x, y, radius)
 
   results = []
   # (Int, Int) => Unit
   checkPatchHere = (pxcor, pycor) ->
-    patch = getPatchAt(pxcor, pycor)
+    patch = topologyHelpers.getPatchAt(pxcor, pycor)
     if (patch is undefined)
       console.log("patch coords: ", pxcor, pycor)
     if isInTarget(patch) and inExactRadiusSq(patch.pxcor, patch.pycor)
       results.push(patch)
     return
 
-  searchPatches(topology, patchX, patchY, radius, getRegions, getPatchAt, checkPatchHere)
+  searchPatches(topology, patchX, patchY, radius, checkPatchHere)
 
   new PatchSet(results, patchset._world)
 
 # (Topology, Number, Number, TurtleSet | PatchSet, Number) -> TurtleSet | PatchSet
 inRadius = (topology, x, y, agentset, radius) ->
-  initializeCache(topology)
+  initialize(topology)
   switch agentset._agentTypeName
     when "turtles" then filterTurtlesInRadius(topology, x, y, agentset, radius)
     when "patches" then filterPatchesInRadius(topology, x, y, agentset, radius)
@@ -629,7 +631,7 @@ NetLogo.
 # this.type: Topology
 # [T] @ (Number, Number, Number, AbstractAgents[T], Number, Number) => AbstractAgentSet[T]
 inCone = (x, y, turtleHeading, agents, distance, angle) ->
-  initializeCache(this)
+  initialize(this)
 
   # (Number, Number) => Number
   findWrapCount = (wrapsInDim, dimSize) ->
@@ -671,9 +673,6 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
   wrapCountInX = findWrapCount(@_wrapInX, @width)
   wrapCountInY = findWrapCount(@_wrapInY, @height)
 
-  getRegions = if isInCache("getRegions") then getFromCache() else addToCache(makeGetRegions(this))
-  getPatchAt = if isInCache("getPatchAt") then getFromCache() else addToCache(makePatchGetter(this))
-
   isPatchSet  = NLType(agents).isPatchSet()
   isTurtleSet = NLType(agents).isTurtleSet()
 
@@ -682,7 +681,7 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
     isInTargetSet = makeTargetChecker(agents, "patches")
     isInCone      = patchIsGood(wrapCountInX, wrapCountInY)
     (pxcor, pycor) ->
-      patch = getPatchAt(pxcor, pycor)
+      patch = topologyHelpers.getPatchAt(pxcor, pycor)
       if isInTargetSet(patch) and isInCone(patch)
         results.push(patch)
       return
@@ -691,7 +690,7 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
     isInTargetSet = makeTargetChecker(agents, "turtles")
     isInCone      = turtleIsGood(wrapCountInX, wrapCountInY)
     (pxcor, pycor) ->
-      patch = getPatchAt(pxcor, pycor)
+      patch = topologyHelpers.getPatchAt(pxcor, pycor)
       patch._turtles.forEach( (turtle) =>
         if isInTargetSet(turtle) and isInCone(turtle)
           results.push(turtle)
@@ -702,7 +701,7 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
   else
     throw new Error("Cannot use `in-cone` on this agentset type.")
 
-  searchPatches(this, pxcor, pycor, distance, getRegions, getPatchAt, checkAgentsHere)
+  searchPatches(this, pxcor, pycor, distance, checkAgentsHere)
   agents.copyWithNewAgents(results)
 
 module.exports = { inRadius, inCone }
