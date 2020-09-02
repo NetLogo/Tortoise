@@ -506,9 +506,6 @@ getRegionsTorus = (topology, patchX, patchY, patchRadius) ->
 
 # (Region, (Int, Int) => Unit) => Unit
 searchRegion = (region, checkAgentsHere) ->
-  if not region?
-    return
-
   for pycor in [region.top..region.bottom]
     for segment in region.segments
       for pxcor in [segment.left..segment.right]
@@ -526,9 +523,8 @@ searchPatches = (topology, patchX, patchY, radius, checkAgentsHere) ->
 
   else
     patchRadius = NLMath.ceil(radius)
-    regions = if isInCache("patch", patchX, patchY, "regions", patchRadius) then getFromCache() else addToCache(
-      topologyHelpers.getRegions(patchX, patchY, patchRadius)
-    )
+    regions = if isInCache("patch", patchX, patchY, "regions", patchRadius) then getFromCache() else
+      addToCache(topologyHelpers.getRegions(patchX, patchY, patchRadius))
     for region in regions
       searchRegion(region, checkAgentsHere)
 
@@ -563,8 +559,6 @@ filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
     # getting the patch to check even if the patch might not be in radius, as the size check should
     # be pretty fast and often 0.  -Jeremy B August 2020
     patch = topologyHelpers.getPatchAt(pxcor, pycor)
-    if (patch is undefined)
-      console.log("patch coords: ", pxcor, pycor)
     # This relies on patches removing their dead turtles, which they should do.  -Jeremy B August 2020
     patchTurtles = patch._turtles
     if patchTurtles.length is 0
@@ -600,8 +594,6 @@ filterPatchesInRadius = (topology, x, y, patchset, radius) ->
   # (Int, Int) => Unit
   checkPatchHere = (pxcor, pycor) ->
     patch = topologyHelpers.getPatchAt(pxcor, pycor)
-    if (patch is undefined)
-      console.log("patch coords: ", pxcor, pycor)
     if isInTarget(patch) and inExactRadiusSq(patch.pxcor, patch.pycor)
       results.push(patch)
     return
