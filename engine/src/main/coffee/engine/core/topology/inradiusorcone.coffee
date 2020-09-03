@@ -47,7 +47,7 @@ isInCache = (key, subKeys...) ->
   cacheStore.nextKey = null
   cacheStore.nextSubKeys = null
 
-  if not Object.hasOwnProperty(cacheStore, key)
+  if not cacheStore.hasOwnProperty(key)
     cacheStore.nextKey = key
     cacheStore.nextSubKeys = subKeys
     return false
@@ -58,7 +58,7 @@ isInCache = (key, subKeys...) ->
 
   subStore = cacheStore[key]
   for subKey in subKeys
-    if not Object.hasOwnProperty(subStore, subKey)
+    if not subStore.hasOwnProperty(subKey)
       cacheStore.nextKey = key
       cacheStore.nextSubKeys = subKeys
       return false
@@ -83,14 +83,14 @@ addToCache = (value) ->
     cacheStore[key] = value
     return value
 
-  subStore = if Object.hasOwnProperty(cacheStore, key)
+  subStore = if cacheStore.hasOwnProperty(key)
     cacheStore[key]
   else
     cacheStore[key] = {}
 
   for subKeyIndex in [0..(subKeys.length - 2)]
     subKey = subKeys[subKeyIndex]
-    subStore = if Object.hasOwnProperty(subStore, subKey)
+    subStore = if subStore.hasOwnProperty(subKey)
       subStore[subKey]
     else
       subStore[subKey] = {}
@@ -100,6 +100,7 @@ addToCache = (value) ->
 
 topologyHelpers = {}
 
+# (Topology) => Unit
 initialize = (topology) ->
   initializeCache(topology)
   topologyHelpers.getRegions = makeRegionGetter(topology)
