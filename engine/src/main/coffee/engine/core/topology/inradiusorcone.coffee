@@ -20,89 +20,10 @@ NLType = require('../typechecker')
 
 # -Jeremy B August 2020
 
-# This simple cache is not at all safe or general purpose.  It's made to be used *only* like this:
-# `myVariable = if isInCache("myVariable", pxcor, pycor) then getFromCache() else addToCache(calcMyVar(pxcor, pycor))`
-# We could do things like take in anonymous functions as "lazy values" instead of the weird `isInCache()`/`addToCache()`
-# setup, but we're trying hard to avoid making extra intermediate objects/functions.
-# -Jeremy B August 2020
-
-cacheStore = {
-  nextGetValue: null
-  nextAddKey: null
-  nextAddStore: null
-  initializationKey: null
-}
-
-# (Any) => Unit
-initializeCache = (initializationKey) ->
-  if (cacheStore.initializationKey isnt initializationKey)
-    cacheStore = { initializationKey }
-  return
-
-# This method also sets the `nextGetValue` for use by `getFromCache()` or the `nextAddKey` and `nextAddStore` values
-# for use by `addToCache()` on a cache miss.  -Jeremy B August 2020
-# (String | Int, Array[String \ Int]) => Boolan
-isInCache = (key, subKeys...) ->
-  if subKeys.length is 0
-    if cacheStore.hasOwnProperty(key)
-      cacheStore.nextGetValue = cacheStore[key]
-      return true
-    else
-      cacheStore.nextAddKey = key
-      cacheStore.nextAddStore = cacheStore
-      return false
-
-  found = true
-
-  subStore = if cacheStore.hasOwnProperty(key)
-    cacheStore[key]
-  else
-    found = false
-    newStore = {}
-    cacheStore[key] = newStore
-    newStore
-
-  for subKeyIndex in [0..(subKeys.length - 2)]
-    subKey = subKeys[subKeyIndex]
-    subStore = if found and subStore.hasOwnProperty(subKey)
-      subStore[subKey]
-    else
-      found = false
-      newStore = {}
-      subStore[subKey] = newStore
-      newStore
-
-  finalKey = subKeys[subKeys.length - 1]
-  if found and subStore.hasOwnProperty(finalKey)
-    cacheStore.nextGetValue = subStore[finalKey]
-  else
-    found = false
-    cacheStore.nextAddKey = finalKey
-    cacheStore.nextAddStore = subStore
-
-  found
-
-# `isInCache()` must be called first to prepare a value to get. -Jeremy B August 2020
-# () => Any
-getFromCache = () ->
-  value = cacheStore.nextGetValue
-  cacheStore.nextGetValue = null
-  value
-
-# This method puts the value into the cache at the location defined by the last `isInCache()` call key and sub keys.
-# -Jeremy B August 2020
-# (Any) => Any
-addToCache = (value) ->
-  cacheStore.nextAddStore[cacheStore.nextAddKey] = value
-  cacheStore.nextAddKey   = null
-  cacheStore.nextAddStore = null
-  value
-
 topologyHelpers = {}
 
 # (Topology) => Unit
 initialize = (topology) ->
-  initializeCache(topology)
   topologyHelpers.getRegions = makeRegionGetter(topology)
   topologyHelpers.getPatchAt = makePatchGetter(topology)
   topologyHelpers.inRadiusSq = makeInRadiusSq(topology)
@@ -160,11 +81,9 @@ makeTargetChecker = (agentset, globalName) ->
   return if specialName is globalName
     theTruth
   else if specialName?
-    if isInCache("targtChecker", specialName) then getFromCache() else addToCache(
-      # Do not use `agent.isBreed()` because it calls `toUpperCase()` on the arguments, and they
-      # should already be proper case.  -Jeremy B
-      (agent) -> agent._breed.name is specialName
-    )
+    # Do not use `agent.isBreed()` because it calls `toUpperCase()` on the arguments, and they
+    # should already be proper case.  -Jeremy B
+    (agent) -> agent._breed.name is specialName
   else
     (agent) -> agentset.contains(agent)
 
@@ -253,29 +172,25 @@ getRadius2BPatches = (patches) ->
 # (Topology, Int, Int, Number, (Int, Int) => Patch) => Array[Patch]
 getSmallRadiusPatches = (topology, patchX, patchY, radius) ->
 
-  patches = if isInCache("patch", patchX, patchY, "getRadius1Patches") then getFromCache() else
-    addToCache(getRadius1Patches(topologyHelpers.getPatchAt(patchX, patchY)))
+  patches = getRadius1Patches(topologyHelpers.getPatchAt(patchX, patchY))
 
   # `radius is 0` is another quirk from desktop.  -Jeremy B August 2020
   if radius > 1 or radius is 0
 
-    smallWorldCheck = if isInCache("patch", patchX, patchY, "smallWorldCheck") then getFromCache() else addToCache(
+    smallWorldCheck =
       (topology._wrapInX and topology.width < 5) or
       (topology._wrapInY and topology.height < 5) or
       (not topology._wrapInX and (patchX - topology.minPxcor < 2 or topology.maxPxcor - patchX < 2)) or
       (not topology._wrapInY and (patchY - topology.minPycor < 2 or topology.maxPycor - patchY < 2))
-    )
 
     # I'm sure all of this makes perfect sense, consult the desktop version if you're curious about what
     # `smallWorldCheck` is doing and why.  The patch order we use here must match the order over there, and the order
     # differs between the two branches of this check.  -Jeremy B August 2020
     if (smallWorldCheck)
-      patches = if isInCache("patch", patchX, patchY, "getRadius2APatches") then getFromCache() else
-        addToCache(getRadius2APatches(topology, patches))
+      patches = getRadius2APatches(topology, patches)
 
     else
-      patches = if isInCache("patch", patchX, patchY, "getRadius2BPatches") then getFromCache() else
-        addToCache(getRadius2BPatches(patches))
+      patches = getRadius2BPatches(patches)
 
   return patches
 
@@ -525,8 +440,7 @@ searchPatches = (topology, patchX, patchY, radius, checkAgentsHere) ->
 
   else
     patchRadius = NLMath.ceil(radius)
-    regions = if isInCache("patch", patchX, patchY, "regions", patchRadius) then getFromCache() else
-      addToCache(topologyHelpers.getRegions(patchX, patchY, patchRadius))
+    regions = topologyHelpers.getRegions(patchX, patchY, patchRadius)
     for region in regions
       searchRegion(region, checkAgentsHere)
 
@@ -545,12 +459,10 @@ filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
   # for this by "over-sampling" the patches.  We could do 1.414..., but we'll use 2 to
   # stick with integer arithmetic for patches.  -Jeremy B August 2020
   roundedRadius = NLMath.round(radius)
-  couldBeInRadiusSq = if isInCache("patch", patchX, patchY, "couldBeInRadiusSq", roundedRadius) then getFromCache() else
-    addToCache(
-      # (Int, Int) => Boolean
-      (pxcor, pycor) ->
-        topologyHelpers.inRadiusSq((roundedRadius + 2) * (roundedRadius + 2), patchX, patchY, pxcor, pycor)
-    )
+  couldBeInRadiusSq =
+    # (Int, Int) => Boolean
+    (pxcor, pycor) ->
+      topologyHelpers.inRadiusSq((roundedRadius + 2) * (roundedRadius + 2), patchX, patchY, pxcor, pycor)
 
   results = []
   # (Int, Int) => Unit
