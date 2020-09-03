@@ -27,9 +27,9 @@ NLType = require('../typechecker')
 # -Jeremy B August 2020
 
 cacheStore = {
-  nextGet: null
-  nextKey: null
-  nextSubKeys: null
+  nextGetValue: null
+  nextAddKey: null
+  nextAddStore: null
   initializationKey: null
 }
 
@@ -39,64 +39,64 @@ initializeCache = (initializationKey) ->
     cacheStore = { initializationKey }
   return
 
-# This method also sets the `nextGet` for use by `getFromCache()` or the `nextKey` and `nextSubKeys` values
-# for use by `addToCache()`.  -Jeremy B August 2020
+# This method also sets the `nextGetValue` for use by `getFromCache()` or the `nextAddKey` and `nextAddStore` values
+# for use by `addToCache()` on a cache miss.  -Jeremy B August 2020
 # (String | Int, Array[String \ Int]) => Boolan
 isInCache = (key, subKeys...) ->
-  cacheStore.nextGet = null
-  cacheStore.nextKey = null
-  cacheStore.nextSubKeys = null
-
-  if not cacheStore.hasOwnProperty(key)
-    cacheStore.nextKey = key
-    cacheStore.nextSubKeys = subKeys
-    return false
-
   if subKeys.length is 0
-    cacheStore.nextGet = cacheStore[key]
-    return true
-
-  subStore = cacheStore[key]
-  for subKey in subKeys
-    if not subStore.hasOwnProperty(subKey)
-      cacheStore.nextKey = key
-      cacheStore.nextSubKeys = subKeys
+    if cacheStore.hasOwnProperty(key)
+      cacheStore.nextGetValue = cacheStore[key]
+      return true
+    else
+      cacheStore.nextAddKey = key
+      cacheStore.nextAddStore = cacheStore
       return false
-    subStore = subStore[subKey]
 
-  cacheStore.nextGet = subStore
-  return true
+  found = true
+
+  subStore = if cacheStore.hasOwnProperty(key)
+    cacheStore[key]
+  else
+    found = false
+    newStore = {}
+    cacheStore[key] = newStore
+    newStore
+
+  for subKeyIndex in [0..(subKeys.length - 2)]
+    subKey = subKeys[subKeyIndex]
+    subStore = if found and subStore.hasOwnProperty(subKey)
+      subStore[subKey]
+    else
+      found = false
+      newStore = {}
+      subStore[subKey] = newStore
+      newStore
+
+  finalKey = subKeys[subKeys.length - 1]
+  if found and subStore.hasOwnProperty(finalKey)
+    cacheStore.nextGetValue = subStore[finalKey]
+  else
+    found = false
+    cacheStore.nextAddKey = finalKey
+    cacheStore.nextAddStore = subStore
+
+  found
 
 # `isInCache()` must be called first to prepare a value to get. -Jeremy B August 2020
 # () => Any
 getFromCache = () ->
-  return subStore.nextGet
+  value = cacheStore.nextGetValue
+  cacheStore.nextGetValue = null
+  value
 
 # This method puts the value into the cache at the location defined by the last `isInCache()` call key and sub keys.
 # -Jeremy B August 2020
 # (Any) => Any
 addToCache = (value) ->
-  key     = cacheStore.nextKey
-  subKeys = cacheStore.nextSubKeys
-
-  if subKeys.length is 0
-    cacheStore[key] = value
-    return value
-
-  subStore = if cacheStore.hasOwnProperty(key)
-    cacheStore[key]
-  else
-    cacheStore[key] = {}
-
-  for subKeyIndex in [0..(subKeys.length - 2)]
-    subKey = subKeys[subKeyIndex]
-    subStore = if subStore.hasOwnProperty(subKey)
-      subStore[subKey]
-    else
-      subStore[subKey] = {}
-
-  subStore[subKeys[subKeys.length - 1]] = value
-  return value
+  cacheStore.nextAddStore[cacheStore.nextAddKey] = value
+  cacheStore.nextAddKey   = null
+  cacheStore.nextAddStore = null
+  value
 
 topologyHelpers = {}
 
@@ -106,6 +106,7 @@ initialize = (topology) ->
   topologyHelpers.getRegions = makeRegionGetter(topology)
   topologyHelpers.getPatchAt = makePatchGetter(topology)
   topologyHelpers.inRadiusSq = makeInRadiusSq(topology)
+  return
 
 # (Number, Number) => Number
 distanceRaw = (p1, p2) ->
