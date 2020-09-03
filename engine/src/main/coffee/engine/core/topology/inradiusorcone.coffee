@@ -26,6 +26,7 @@ topologyHelpers = {}
 initialize = (topology) ->
   topologyHelpers.getRegions = makeRegionGetter(topology)
   topologyHelpers.getPatchAt = makePatchGetter(topology)
+  topologyHelpers.distanceSq = makeDistanceSq(topology)
   topologyHelpers.inRadiusSq = makeInRadiusSq(topology)
   return
 
@@ -87,20 +88,24 @@ makeTargetChecker = (agentset, globalName) ->
   else
     (agent) -> agentset.contains(agent)
 
-# (Topology) => (Number, Number, Number, Number, Number) => Boolean
-makeInRadiusSq = (topology) ->
+# (Topology) => (Number, Number, Number, Number) => Number
+makeDistanceSq = (topology) ->
   # (Number, Number) => Number
   distanceX = distance(topology._wrapInX, topology.width)
   # (Number, Number) => Number
   distanceY = distance(topology._wrapInY, topology.height)
+  return (x1, y1, x2, y2) ->
+    dx = distanceX(x1, x2)
+    dy = distanceY(y1, y2)
+    (dx * dx) + (dy * dy)
 
+# (Topology) => (Number, Number, Number, Number, Number) => Boolean
+makeInRadiusSq = (topology) ->
   # We do not ever take the square root of the distances we calculate, because we
   # can just compare the squared values.  -Jeremy B August 2020
   # (Number, Number, Number, Number, Number) => Boolean
   return (radiusSq, x1, y1, x2, y2) ->
-    dx = distanceX(x1, x2)
-    dy = distanceY(y1, y2)
-    distanceSq = (dx * dx) + (dy * dy)
+    distanceSq = topologyHelpers.distanceSq(x1, y1, x2, y2)
     return (distanceSq <= radiusSq)
 
 # ((Number, Number, Number, Number, Number) => Boolean, Number, Number, Number) => (Number, Number) => Boolean
@@ -454,15 +459,12 @@ filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
   isInTargetSet   = makeTargetChecker(turtleset, "turtles")
   inExactRadiusSq = makeInExactRadiusSq(topologyHelpers.inRadiusSq, x, y, radius)
 
-  # If the source turtle is in a corner of its patch, and a target turtle is in the closest
-  # corner of its patch, the patch distances will be off by sqrt(2).  We have to correct
-  # for this by "over-sampling" the patches.  We could do 1.414..., but we'll use 2 to
-  # stick with integer arithmetic for patches.  -Jeremy B August 2020
-  roundedRadius = NLMath.round(radius)
-  couldBeInRadiusSq =
-    # (Int, Int) => Boolean
-    (pxcor, pycor) ->
-      topologyHelpers.inRadiusSq((roundedRadius + 2) * (roundedRadius + 2), patchX, patchY, pxcor, pycor)
+  # If the source turtle is in a corner of its patch, the patch distances will be off by sqrt(2) / 2.  We correct
+  # for this by "over-sampling" the patches. -Jeremy B September 2020
+  couldBeRadius   = radius + 0.71
+  couldBeRadiusSq = couldBeRadius * couldBeRadius
+  mustBeRadius    = if radius < 1.414 then 0 else radius - 0.71
+  mustBeRadiusSq  = mustBeRadius * mustBeRadius
 
   results = []
   # (Int, Int) => Unit
@@ -478,14 +480,20 @@ filterTurtlesInRadius = (topology, x, y, turtleset, radius) ->
     if patchTurtles.length is 0
       return
 
-    if couldBeInRadiusSq(pxcor, pycor)
+    distanceSq = topologyHelpers.distanceSq(x, y, pxcor, pycor)
+
+    # We could do a `reduce` or `flatMap` or something over the patches
+    # instead of mutating the closed-over `results` variable, but we do not want
+    # to generate extra GC pressure from excess arrays getting created then
+    # immediately dropped, nor spend time re-iterating over our results to
+    # collect them into the final set.  -Jeremy B August 2020
+    if distanceSq < mustBeRadiusSq
+      patchTurtles.forEach( (turtle) -> if isInTargetSet(turtle) then results.push(turtle) )
+      return
+
+    if distanceSq <= couldBeRadiusSq
       patchTurtles.forEach( (turtle) ->
         if isInTargetSet(turtle) and inExactRadiusSq(turtle.xcor, turtle.ycor)
-          # We could do a `reduce` or `flatMap` or something over the patches
-          # instead of mutating this closed-over variable, but we do not want
-          # to generate extra GC pressure from excess arrays getting created then
-          # immediately dropped, nor spend time re-iterating over our results to
-          # collect them into the final set.  -Jeremy B August 2020
           results.push(turtle)
         return
       )
