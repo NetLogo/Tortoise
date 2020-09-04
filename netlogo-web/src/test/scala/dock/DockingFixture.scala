@@ -60,15 +60,39 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   val netLogoCode = new StringBuilder
 
   val implementedOptimizations = {
-    val commands  = (OCommand,  Seq("CroFast", "CrtFast", "Fd1", "FdLessThan1", "HatchFast", "SproutFast"))
-    val reporters = (OReporter,
-      Seq(
-        "AnyOther", "AnyOtherWith", "AnyWith1", "AnyWith2", "AnyWith3", "AnyWith4", "AnyWith5",
-        "CountOther", "CountOtherWith", "Nsum", "Nsum4", "OneOfWith", "OtherWith",
-        "PatchAt", "PatchVariableDouble", "TurtleVariableDouble", "With", "WithOther",
-        "HasNotEqual", "HasGreaterThan", "HasLessThan", "HasEqual"
-      )
-    )
+    val commands  = (OCommand,  Seq(
+      "CroFast",
+      "CrtFast",
+      "Fd1",
+      "FdLessThan1",
+      "HatchFast",
+      "SproutFast"
+    ))
+
+    val reporters = (OReporter, Seq(
+      "AnyOther",
+      "AnyOtherWith",
+      "AnyWith1",
+      "AnyWith2",
+      "AnyWith3",
+      "AnyWith4",
+      "AnyWith5",
+      "CountOther",
+      "CountOtherWith",
+      "HasEqual",
+      "HasGreaterThan",
+      "HasLessThan",
+      "HasNotEqual",
+      "Nsum",
+      "Nsum4",
+      "OneOfWith",
+      "OtherWith",
+      "PatchAt",
+      "PatchVariableDouble",
+      "TurtleVariableDouble",
+      "With",
+      "WithOther"
+    ))
     Seq(commands, reporters).flatMap {
       case (typ, optNames) =>
         optNames.map(
