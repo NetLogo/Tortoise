@@ -976,7 +976,7 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let r = Prims.random(4); letVars['r'] = r;
+      let r = Prims.randomLong(4); letVars['r'] = r;
       let letterToReport = ""; letVars['letterToReport'] = letterToReport;
       if (Prims.equality(r, 0)) {
         letterToReport = "A"; letVars['letterToReport'] = letterToReport;

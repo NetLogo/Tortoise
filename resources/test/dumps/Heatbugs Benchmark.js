@@ -128,7 +128,7 @@ var procedures = (function() {
       }
       else {
         let target = procedures["FIND-TARGET"](); letVars['target'] = target;
-        if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), Prims.random(100)))) {
+        if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), Prims.randomLong(100)))) {
           procedures["BUG-MOVE"](target);
         }
         SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));

@@ -230,7 +230,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-ambulance"), "").ask(function() {
-        if (Prims.lt(Prims.random(2), 1)) {
+        if (Prims.lt(Prims.randomLong(2), 1)) {
           SelfManager.self().setVariable("continent", 1);
           SelfManager.self().setXY(Prims.div( -(world.topology.maxPxcor), 2), 0);
         }
@@ -346,12 +346,12 @@ var procedures = (function() {
         }
       }, true);
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        if ((((!SelfManager.self().getVariable("isolated?") && !SelfManager.self().getVariable("hospitalized?")) && SelfManager.self().getVariable("infected?")) && Prims.lt(Prims.random(100), SelfManager.self().getVariable("isolation-tendency")))) {
+        if ((((!SelfManager.self().getVariable("isolated?") && !SelfManager.self().getVariable("hospitalized?")) && SelfManager.self().getVariable("infected?")) && Prims.lt(Prims.randomLong(100), SelfManager.self().getVariable("isolation-tendency")))) {
           procedures["ISOLATE"]();
         }
       }, true);
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        if ((((!SelfManager.self().getVariable("isolated?") && !SelfManager.self().getVariable("hospitalized?")) && SelfManager.self().getVariable("infected?")) && Prims.lt(Prims.random(100), SelfManager.self().getVariable("hospital-going-tendency")))) {
+        if ((((!SelfManager.self().getVariable("isolated?") && !SelfManager.self().getVariable("hospitalized?")) && SelfManager.self().getVariable("infected?")) && Prims.lt(Prims.randomLong(100), SelfManager.self().getVariable("hospital-going-tendency")))) {
           procedures["HOSPITALIZE"]();
         }
       }, true);
@@ -391,7 +391,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (world.observer.getGlobal("travel?")) {
-        if ((Prims.lt(Prims.random(100), world.observer.getGlobal("travel-tendency")) && !SelfManager.self().getVariable("ambulance?"))) {
+        if ((Prims.lt(Prims.randomLong(100), world.observer.getGlobal("travel-tendency")) && !SelfManager.self().getVariable("ambulance?"))) {
           SelfManager.self().setVariable("xcor",  -(SelfManager.self().getVariable("xcor")));
         }
       }
@@ -547,13 +547,13 @@ var procedures = (function() {
       if (!Prims.equality(nearbyUninfected, Nobody)) {
         Errors.askNobodyCheck(nearbyUninfected).ask(function() {
           if (LinkPrims.isLinkNeighbor("LINKS", caller)) {
-            if (Prims.lt(Prims.random(100), (world.observer.getGlobal("infection-chance") * 2))) {
+            if (Prims.lt(Prims.randomLong(100), (world.observer.getGlobal("infection-chance") * 2))) {
               SelfManager.self().setVariable("infected?", true);
               SelfManager.self().setVariable("nb-infected", (SelfManager.self().getVariable("nb-infected") + 1));
             }
           }
           else {
-            if (Prims.lt(Prims.random(100), world.observer.getGlobal("infection-chance"))) {
+            if (Prims.lt(Prims.randomLong(100), world.observer.getGlobal("infection-chance"))) {
               SelfManager.self().setVariable("infected?", true);
               SelfManager.self().setVariable("nb-infected", (SelfManager.self().getVariable("nb-infected") + 1));
             }

@@ -55,7 +55,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.turtleManager.createTurtles((world.observer.getGlobal("rows") * world.observer.getGlobal("columns")), "SPAWNERS").ask(function() {
-        SelfManager.self().setVariable("num-colors", (Prims.random(14) + 1));
+        SelfManager.self().setVariable("num-colors", (Prims.randomLong(14) + 1));
         SelfManager.self().setVariable("step-size", Prims.randomFloat(0.5));
         SelfManager.self().setVariable("turn-increment", Prims.randomFloat(4));
         SelfManager.self().setVariable("size-modifier", Prims.randomFloat(2));

@@ -224,8 +224,8 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().right(Prims.random(50));
-        SelfManager.self().right(-(Prims.random(50)));
+        SelfManager.self().right(Prims.randomLong(50));
+        SelfManager.self().right(-(Prims.randomLong(50)));
         SelfManager.self()._optimalFdOne();
       }, true);
       procedures["BIRTH"]();
@@ -242,7 +242,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().hatch(Prims.random(5), "").ask(function() { SelfManager.self()._optimalFdOne(); }, true);
+        SelfManager.self().hatch(Prims.randomLong(5), "").ask(function() { SelfManager.self()._optimalFdOne(); }, true);
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)

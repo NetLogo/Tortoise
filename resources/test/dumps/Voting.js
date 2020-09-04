@@ -55,7 +55,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("vote", Prims.random(2));
+        SelfManager.self().setPatchVariable("vote", Prims.randomLong(2));
         procedures["RECOLOR-PATCH"]();
       }, true);
       world.ticker.reset();

@@ -330,14 +330,14 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.random(360));
+      SelfManager.self().right(Prims.randomLong(360));
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
         if (world.observer.getGlobal("spend-fuel?")) {
           SelfManager.self().setPatchVariable("pcolor", 35);
         }
         let gain = Prims.div(1, SelfManager.self().turtlesHere().size()); letVars['gain'] = gain;
         world.observer.setGlobal("power", (world.observer.getGlobal("power") + gain));
-        SelfManager.self().hatch(((2 + Prims.random(2)) * gain), "").ask(function() { SelfManager.self().right(Prims.random(360)); }, true);
+        SelfManager.self().hatch(((2 + Prims.randomLong(2)) * gain), "").ask(function() { SelfManager.self().right(Prims.randomLong(360)); }, true);
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)

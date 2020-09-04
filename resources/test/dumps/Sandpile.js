@@ -187,7 +187,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["SETUP"](Tasks.reporterTask(function() { return Prims.random(4); }, "[ -> random 4 ]"));
+      procedures["SETUP"](Tasks.reporterTask(function() { return Prims.randomLong(4); }, "[ -> random 4 ]"));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

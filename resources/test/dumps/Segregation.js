@@ -94,7 +94,7 @@ var procedures = (function() {
       world.clearAll();
       Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", 9.9);
-        if (Prims.lt(Prims.random(100), world.observer.getGlobal("density"))) {
+        if (Prims.lt(Prims.randomLong(100), world.observer.getGlobal("density"))) {
           SelfManager.self().sprout(1, "TURTLES").ask(function() {
             SelfManager.self().setVariable("color", ListPrims.oneOf([105, 27]));
             SelfManager.self().setVariable("size", 1);

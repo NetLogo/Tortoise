@@ -236,8 +236,8 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtles().agentFilter(function() {
         return (SelfManager.self().getVariable("infected?") && Prims.equality(SelfManager.self().getVariable("virus-check-timer"), 0));
       })).ask(function() {
-        if (Prims.lt(Prims.random(100), world.observer.getGlobal("recovery-chance"))) {
-          if (Prims.lt(Prims.random(100), world.observer.getGlobal("gain-resistance-chance"))) {
+        if (Prims.lt(Prims.randomLong(100), world.observer.getGlobal("recovery-chance"))) {
+          if (Prims.lt(Prims.randomLong(100), world.observer.getGlobal("gain-resistance-chance"))) {
             procedures["BECOME-RESISTANT"]();
           }
           else {

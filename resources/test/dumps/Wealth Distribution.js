@@ -285,7 +285,7 @@ var procedures = (function() {
       SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
       SelfManager.self().setVariable("life-expectancy", (world.observer.getGlobal("life-expectancy-min") + Prims.random(((world.observer.getGlobal("life-expectancy-max") - world.observer.getGlobal("life-expectancy-min")) + 1))));
       SelfManager.self().setVariable("metabolism", (1 + Prims.random(world.observer.getGlobal("metabolism-max"))));
-      SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("metabolism") + Prims.random(50)));
+      SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("metabolism") + Prims.randomLong(50)));
       SelfManager.self().setVariable("vision", (1 + Prims.random(world.observer.getGlobal("max-vision"))));
     } catch (e) {
       return Errors.stopInCommandCheck(e)

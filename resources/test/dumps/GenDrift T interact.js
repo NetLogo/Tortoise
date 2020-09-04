@@ -223,13 +223,13 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().right((Prims.random(50) - Prims.random(50)));
+        SelfManager.self().right((Prims.randomLong(50) - Prims.randomLong(50)));
         procedures["MEET"]();
         if (Prims.equality(SelfManager.self().patchAhead(0.5).projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 0)) {
           SelfManager.self()._optimalFdLessThan1(0.5);
         }
         else {
-          SelfManager.self().right(Prims.random(360));
+          SelfManager.self().right(Prims.randomLong(360));
         }
       }, true);
       procedures["FIND-TOP-SPECIES"]();

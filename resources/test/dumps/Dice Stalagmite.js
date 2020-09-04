@@ -164,7 +164,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.observer.getGlobal("generators")).ask(function() {
         SelfManager.self().sprout(1, "PAIRED-DICE").ask(function() {
           SelfManager.self().setVariable("color", 9.9);
-          SelfManager.self().setVariable("die-value", (1 + Prims.random(6)));
+          SelfManager.self().setVariable("die-value", (1 + Prims.randomLong(6)));
           SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("die ") + workspace.dump(SelfManager.self().getVariable("die-value"))));
           SelfManager.self().setVariable("heading", 90);
         }, true);

@@ -90,7 +90,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (Prims.lt(Prims.random(100), world.observer.getGlobal("probability-of-spin-up"))) {
+        if (Prims.lt(Prims.randomLong(100), world.observer.getGlobal("probability-of-spin-up"))) {
           SelfManager.self().setPatchVariable("spin", 1);
         }
         else {

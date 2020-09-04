@@ -159,11 +159,11 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {
-        SelfManager.self().setVariable("heading", Prims.random(((180 - Prims.random(20)) + Prims.random(20))));
+        SelfManager.self().setVariable("heading", Prims.random(((180 - Prims.randomLong(20)) + Prims.randomLong(20))));
         SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) + 3), (world.topology.maxPycor - 1));
       }, true);
       world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {
-        SelfManager.self().setVariable("heading", ((90 - Prims.random(20)) + Prims.random(20)));
+        SelfManager.self().setVariable("heading", ((90 - Prims.randomLong(20)) + Prims.randomLong(20)));
         SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) - 5), (world.topology.maxPycor - 1));
       }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("POLYMERASES")).ask(function() {
@@ -724,7 +724,7 @@ var procedures = (function() {
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PHOSPHATES"));
         SelfManager.self().setVariable("shape", "phosphate-pair");
-        SelfManager.self().setVariable("heading", Prims.random(360));
+        SelfManager.self().setVariable("heading", Prims.randomLong(360));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -867,7 +867,7 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let r = Prims.random(4); letVars['r'] = r;
+      let r = Prims.randomLong(4); letVars['r'] = r;
       let letterToReport = ""; letVars['letterToReport'] = letterToReport;
       if (Prims.equality(r, 0)) {
         letterToReport = "A"; letVars['letterToReport'] = letterToReport;

@@ -227,7 +227,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("wait-time", 0);
       procedures["PUT-ON-EMPTY-ROAD"]();
       if (SelfManager.self().getPatchVariable("intersection?")) {
-        if (Prims.equality(Prims.random(2), 0)) {
+        if (Prims.equality(Prims.randomLong(2), 0)) {
           SelfManager.self().setVariable("up-car?", true);
         }
         else {

@@ -61,7 +61,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(ListPrims.nOf(5, world.turtles())).ask(function() {
         LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS").ask(function() {
           SelfManager.self().setVariable("color", 105);
-          SelfManager.self().setVariable("weight", Prims.random(10));
+          SelfManager.self().setVariable("weight", Prims.randomLong(10));
           SelfManager.self().setVariable("label", SelfManager.self().getVariable("weight"));
         }, true);
       }, true);

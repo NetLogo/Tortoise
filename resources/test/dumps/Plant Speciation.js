@@ -238,7 +238,7 @@ var procedures = (function() {
             SelfManager.self().setVariable("tolerance", Prims.randomFloat(100));
           }
           SelfManager.self().setVariable("flower-time", Prims.div(365, 2));
-          SelfManager.self().setVariable("heading", Prims.random(360));
+          SelfManager.self().setVariable("heading", Prims.randomLong(360));
           SelfManager.self().fd(Prims.randomFloat(0.5));
           SelfManager.self().setVariable("fitness", 1);
           SelfManager.self().setVariable("shape", "plant");
@@ -441,7 +441,7 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-seed-dispersal"))) {
         SelfManager.self().moveTo(ListPrims.oneOf(SelfManager.self().getNeighbors()));
-        SelfManager.self().right(Prims.random(360));
+        SelfManager.self().right(Prims.randomLong(360));
         SelfManager.self().fd(Prims.randomFloat(0.45));
       }
     } catch (e) {

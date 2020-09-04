@@ -116,7 +116,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "RABBITS").ask(function() {
         SelfManager.self().setVariable("color", 9.9);
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-        SelfManager.self().setVariable("energy", Prims.random(10));
+        SelfManager.self().setVariable("energy", Prims.randomLong(10));
       }, true);
       world.ticker.reset();
     } catch (e) {
@@ -171,8 +171,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.random(50));
-      SelfManager.self().right(-(Prims.random(50)));
+      SelfManager.self().right(Prims.randomLong(50));
+      SelfManager.self().right(-(Prims.randomLong(50)));
       SelfManager.self()._optimalFdOne();
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 0.5));
     } catch (e) {

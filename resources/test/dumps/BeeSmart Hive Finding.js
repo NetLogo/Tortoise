@@ -187,7 +187,7 @@ var procedures = (function() {
       }, true);
       Errors.askNobodyCheck(ListPrims.nOf(world.observer.getGlobal("initial-percentage"), world.turtleManager.turtlesOfBreed("SCOUTS"))).ask(function() {
         SelfManager.self().setVariable("initial-scout?", true);
-        SelfManager.self().setVariable("bee-timer", Prims.random(100));
+        SelfManager.self().setVariable("bee-timer", Prims.randomLong(100));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -282,13 +282,13 @@ var procedures = (function() {
               SelfManager.self().setVariable("bee-timer", 100);
             }
             else {
-              SelfManager.self().right((Prims.random(60) - Prims.random(60)));
+              SelfManager.self().right((Prims.randomLong(60) - Prims.randomLong(60)));
               procedures["PROCEED"]();
               SelfManager.self().setVariable("bee-timer", (SelfManager.self().getVariable("bee-timer") - 1));
             }
           }
           else {
-            SelfManager.self().right((Prims.random(60) - Prims.random(60)));
+            SelfManager.self().right((Prims.randomLong(60) - Prims.randomLong(60)));
             procedures["PROCEED"]();
           }
           SelfManager.self().setVariable("bee-timer", (SelfManager.self().getVariable("bee-timer") - 1));
@@ -326,7 +326,7 @@ var procedures = (function() {
             SelfManager.self().setVariable("on-site?", false);
             SelfManager.self().setVariable("piping?", true);
           }
-          if (Prims.equality(Prims.random(3), 0)) {
+          if (Prims.equality(Prims.randomLong(3), 0)) {
             SelfManager.self().hideTurtle(true);;
           }
           else {
@@ -393,14 +393,14 @@ var procedures = (function() {
           SelfManager.self().setVariable("piping?", true);
         }
         else {
-          if ((Prims.gt(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + Prims.random(5))))) && Prims.gt(SelfManager.self().getVariable("interest"), 0))) {
+          if ((Prims.gt(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + Prims.randomLong(5))))) && Prims.gt(SelfManager.self().getVariable("interest"), 0))) {
             SelfManager.self().setVariable("next-task", world.observer.getGlobal("re-visit-task"));
             SelfManager.self().setVariable("task-string", "revisiting");
             SelfManager.self().penManager.raisePen();
-            SelfManager.self().setVariable("interest", (SelfManager.self().getVariable("interest") - (15 + Prims.random(5))));
+            SelfManager.self().setVariable("interest", (SelfManager.self().getVariable("interest") - (15 + Prims.randomLong(5))));
             SelfManager.self().setVariable("bee-timer", 25);
           }
-          if ((Prims.gt(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + Prims.random(5))))) && Prims.lte(SelfManager.self().getVariable("interest"), 0))) {
+          if ((Prims.gt(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + Prims.randomLong(5))))) && Prims.lte(SelfManager.self().getVariable("interest"), 0))) {
             SelfManager.self().setVariable("next-task", world.observer.getGlobal("watch-dance-task"));
             SelfManager.self().setVariable("task-string", "watching-dance");
             SelfManager.self().setVariable("target", Nobody);
@@ -409,11 +409,11 @@ var procedures = (function() {
             SelfManager.self().setVariable("color", 5);
             SelfManager.self().setVariable("bee-timer", 50);
           }
-          if (Prims.lte(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + Prims.random(5)))))) {
-            if ((Prims.lte(SelfManager.self().getVariable("interest"), 50) && Prims.lt(Prims.random(100), 43))) {
+          if (Prims.lte(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + Prims.randomLong(5)))))) {
+            if ((Prims.lte(SelfManager.self().getVariable("interest"), 50) && Prims.lt(Prims.randomLong(100), 43))) {
               SelfManager.self().setVariable("next-task", world.observer.getGlobal("re-visit-task"));
               SelfManager.self().setVariable("task-string", "revisiting");
-              SelfManager.self().setVariable("interest", (SelfManager.self().getVariable("interest") - (15 + Prims.random(5))));
+              SelfManager.self().setVariable("interest", (SelfManager.self().getVariable("interest") - (15 + Prims.randomLong(5))));
               SelfManager.self().setVariable("bee-timer", 10);
             }
             else {
@@ -611,7 +611,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right((Prims.random(20) - Prims.random(20)));
+      SelfManager.self().right((Prims.randomLong(20) - Prims.randomLong(20)));
       if (!SelfManager.self().canMove(1)) {
         SelfManager.self().right(180);
       }
@@ -626,7 +626,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right((Prims.random(60) - Prims.random(60)));
+      SelfManager.self().right((Prims.randomLong(60) - Prims.randomLong(60)));
       SelfManager.self().fd(Prims.randomFloat(0.1));
       if (Prims.gt(SelfManager.self().distanceXY(0, 0), 4)) {
         SelfManager.self().faceXY(0, 0);

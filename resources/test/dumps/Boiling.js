@@ -74,7 +74,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("heat", Prims.random(212));
+        SelfManager.self().setPatchVariable("heat", Prims.randomLong(212));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("heat"), 0, 212));
       }, true);
       world.ticker.reset();

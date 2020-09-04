@@ -55,7 +55,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
-        SelfManager.self().setVariable("color", ((45 - 2) + Prims.random(7)));
+        SelfManager.self().setVariable("color", ((45 - 2) + Prims.randomLong(7)));
         SelfManager.self().setVariable("size", 1.5);
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("flockmates", new TurtleSet([], world));

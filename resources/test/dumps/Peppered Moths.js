@@ -150,7 +150,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return (Prims.random(9) + 1);
+      return (Prims.randomLong(9) + 1);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -207,7 +207,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("size", 1.5);
         SelfManager.self().setVariable("color", procedures["RANDOM-COLOR"]());
         procedures["MOTHS-PICK-SHAPE"]();
-        SelfManager.self().setVariable("age", Prims.random(3));
+        SelfManager.self().setVariable("age", Prims.randomLong(3));
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       }, true);
     } catch (e) {
@@ -244,7 +244,7 @@ var procedures = (function() {
       if ((Prims.equality(SelfManager.self().getVariable("age"), 2) || Prims.equality(SelfManager.self().getVariable("age"), 3))) {
         SelfManager.self().hatch(2, "").ask(function() {
           if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation"))) {
-            if (Prims.equality(Prims.random(2), 0)) {
+            if (Prims.equality(Prims.randomLong(2), 0)) {
               SelfManager.self().setVariable("color", NLMath.round((SelfManager.self().getVariable("color") + Prims.div(Prims.randomFloat(world.observer.getGlobal("mutation")), 12.5))));
               if (Prims.gte(SelfManager.self().getVariable("color"), 9)) {
                 SelfManager.self().setVariable("color", 9);
@@ -286,11 +286,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(Prims.random(13), 0)) {
+      if (Prims.equality(Prims.randomLong(13), 0)) {
         SelfManager.self().die();
       }
       if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), procedures["UPPER-BOUND"]())) {
-        if (Prims.equality(Prims.random(2), 0)) {
+        if (Prims.equality(Prims.randomLong(2), 0)) {
           SelfManager.self().die();
         }
       }

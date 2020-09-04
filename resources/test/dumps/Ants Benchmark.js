@@ -151,7 +151,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("food-source-number", 3);
       }
       if (Prims.gt(SelfManager.self().getPatchVariable("food-source-number"), 0)) {
-        SelfManager.self().setPatchVariable("food", (1 + Prims.random(2)));
+        SelfManager.self().setPatchVariable("food", (1 + Prims.randomLong(2)));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -338,7 +338,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right((Prims.random(40) - Prims.random(40)));
+      SelfManager.self().right((Prims.randomLong(40) - Prims.randomLong(40)));
       if (!SelfManager.self().canMove(1)) {
         SelfManager.self().right(180);
       }

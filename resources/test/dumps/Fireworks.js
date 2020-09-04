@@ -135,7 +135,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().hatch(world.observer.getGlobal("fragments"), "FRAGS").ask(function() {
         SelfManager.self().setVariable("dim", 0);
-        SelfManager.self().right(Prims.random(360));
+        SelfManager.self().right(Prims.randomLong(360));
         SelfManager.self().setVariable("size", 1);
         SelfManager.self().setVariable("x-vel", ((((SelfManager.self().getVariable("x-vel") * 0.5) + SelfManager.self().dx()) + Prims.randomFloat(2)) - 1));
         SelfManager.self().setVariable("y-vel", ((((SelfManager.self().getVariable("y-vel") * 0.3) + SelfManager.self().dy()) + Prims.randomFloat(2)) - 1));

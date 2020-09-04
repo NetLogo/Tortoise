@@ -186,8 +186,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.random(50));
-      SelfManager.self().right(-(Prims.random(50)));
+      SelfManager.self().right(Prims.randomLong(50));
+      SelfManager.self().right(-(Prims.randomLong(50)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)

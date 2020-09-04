@@ -315,7 +315,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(ListPrims.oneOf(prey)).ask(function() { procedures["DEATH"](); }, true);
       Errors.askNobodyCheck(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BACTERIA"))).ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().right(Prims.random(360));
+          SelfManager.self().right(Prims.randomLong(360));
           procedures["MAKE-FLAGELLA"]();
         }, true);
       }, true);

@@ -161,10 +161,10 @@ var procedures = (function() {
       var letVars = { };
       let xd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius")))); letVars['xd'] = xd;
       let yd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius")))); letVars['yd'] = yd;
-      if (Prims.equality(Prims.random(2), 0)) {
+      if (Prims.equality(Prims.randomLong(2), 0)) {
         xd =  -(xd); letVars['xd'] = xd;
       }
-      if (Prims.equality(Prims.random(2), 0)) {
+      if (Prims.equality(Prims.randomLong(2), 0)) {
         yd =  -(yd); letVars['yd'] = yd;
       }
       let candidate = SelfManager.self().turtlesAt(xd, yd)._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("follower"), Nobody); }); letVars['candidate'] = candidate;

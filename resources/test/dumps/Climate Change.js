@@ -153,12 +153,12 @@ var procedures = (function() {
       if (!world.turtleManager.turtlesOfBreed("CLOUDS").isEmpty()) {
         id = (ListPrims.max(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() { return SelfManager.self().getVariable("cloud-id"); })) + 1); letVars['id'] = id;
       }
-      world.turtleManager.createTurtles((3 + Prims.random(20)), "CLOUDS").ask(function() {
+      world.turtleManager.createTurtles((3 + Prims.randomLong(20)), "CLOUDS").ask(function() {
         SelfManager.self().setVariable("cloud-speed", speed);
         SelfManager.self().setVariable("cloud-id", id);
-        SelfManager.self().setXY(((x + Prims.random(9)) - 4), (((y + 2.5) + Prims.randomFloat(2)) - Prims.randomFloat(2)));
+        SelfManager.self().setXY(((x + Prims.randomLong(9)) - 4), (((y + 2.5) + Prims.randomFloat(2)) - Prims.randomFloat(2)));
         SelfManager.self().setVariable("color", 9.9);
-        SelfManager.self().setVariable("size", (2 + Prims.random(2)));
+        SelfManager.self().setVariable("size", (2 + Prims.randomLong(2)));
         SelfManager.self().setVariable("heading", 90);
       }, true);
     } catch (e) {
@@ -204,11 +204,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.gt((10 * world.observer.getGlobal("sun-brightness")), Prims.random(50))) {
+      if (Prims.gt((10 * world.observer.getGlobal("sun-brightness")), Prims.randomLong(50))) {
         world.turtleManager.createTurtles(1, "RAYS").ask(function() {
           SelfManager.self().setVariable("heading", 160);
           SelfManager.self().setVariable("color", 45);
-          SelfManager.self().setXY((Prims.random(10) + world.topology.minPxcor), world.topology.maxPycor);
+          SelfManager.self().setXY((Prims.randomLong(10) + world.topology.minPxcor), world.topology.maxPycor);
         }, true);
       }
     } catch (e) {
@@ -233,12 +233,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("RAYS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top")); })).ask(function() {
-        if (Prims.gt((100 * world.observer.getGlobal("albedo")), Prims.random(100))) {
+        if (Prims.gt((100 * world.observer.getGlobal("albedo")), Prims.randomLong(100))) {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
         }
         else {
-          SelfManager.self().right((Prims.random(45) - Prims.random(45)));
-          SelfManager.self().setVariable("color", ((15 - 2) + Prims.random(4)));
+          SelfManager.self().right((Prims.randomLong(45) - Prims.randomLong(45)));
+          SelfManager.self().setVariable("color", ((15 - 2) + Prims.randomLong(4)));
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
         }
       }, true);
@@ -262,13 +262,13 @@ var procedures = (function() {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
         }
         if (Prims.gte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top"))) {
-          if (((Prims.gt(world.observer.getGlobal("temperature"), (20 + Prims.random(40))) && Prims.gt(SelfManager.self().getVariable("xcor"), 0)) && Prims.lt(SelfManager.self().getVariable("xcor"), (world.topology.maxPxcor - 8)))) {
+          if (((Prims.gt(world.observer.getGlobal("temperature"), (20 + Prims.randomLong(40))) && Prims.gt(SelfManager.self().getVariable("xcor"), 0)) && Prims.lt(SelfManager.self().getVariable("xcor"), (world.topology.maxPxcor - 8)))) {
             SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("IRS"));
             SelfManager.self().setVariable("heading", 20);
             SelfManager.self().setVariable("color", 125);
           }
           else {
-            SelfManager.self().setVariable("heading", (100 + Prims.random(160)));
+            SelfManager.self().setVariable("heading", (100 + Prims.randomLong(160)));
           }
         }
       }, true);
@@ -289,9 +289,9 @@ var procedures = (function() {
         SelfManager.self()._optimalFdLessThan1(0.3);
         if (Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top"))) {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
-          SelfManager.self().right(Prims.random(45));
-          SelfManager.self().right(-(Prims.random(45)));
-          SelfManager.self().setVariable("color", ((15 - 2) + Prims.random(4)));
+          SelfManager.self().right(Prims.randomLong(45));
+          SelfManager.self().right(-(Prims.randomLong(45)));
+          SelfManager.self().setVariable("color", ((15 - 2) + Prims.randomLong(4)));
         }
         if (!SelfManager.self().breedHere("CO2S").isEmpty()) {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
@@ -338,7 +338,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CO2S")).ask(function() {
-        SelfManager.self().right((Prims.random(51) - 25));
+        SelfManager.self().right((Prims.randomLong(51) - 25));
         let dist = (0.05 + Prims.randomFloat(0.1)); letVars['dist'] = dist;
         if (SelfManager.self().patchAhead(dist).projectionBy(function() { return !ColorModel.areRelatedByShade(105, SelfManager.self().getPatchVariable("pcolor")); })) {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));

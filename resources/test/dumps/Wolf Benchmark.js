@@ -85,7 +85,7 @@ var procedures = (function() {
       if (world.observer.getGlobal("grass?")) {
         Errors.askNobodyCheck(world.patches()).ask(function() {
           SelfManager.self().setPatchVariable("countdown", Prims.random(world.observer.getGlobal("grass-delay")));
-          if (Prims.equality(Prims.random(2), 0)) {
+          if (Prims.equality(Prims.randomLong(2), 0)) {
             SelfManager.self().setPatchVariable("pcolor", 35);
           }
         }, true);
@@ -153,7 +153,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right((Prims.random(50) - Prims.random(50)));
+      SelfManager.self().right((Prims.randomLong(50) - Prims.randomLong(50)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -182,7 +182,7 @@ var procedures = (function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("sheep-reproduce"))) {
         SelfManager.self().setVariable("energy", NLMath.round(Prims.div(SelfManager.self().getVariable("energy"), 2)));
         SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().right(Prims.random(360));
+          SelfManager.self().right(Prims.randomLong(360));
           SelfManager.self()._optimalFdOne();
         }, true);
       }
@@ -199,7 +199,7 @@ var procedures = (function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("wolf-reproduce"))) {
         SelfManager.self().setVariable("energy", NLMath.round(Prims.div(SelfManager.self().getVariable("energy"), 2)));
         SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().right(Prims.random(360));
+          SelfManager.self().right(Prims.randomLong(360));
           SelfManager.self()._optimalFdOne();
         }, true);
       }

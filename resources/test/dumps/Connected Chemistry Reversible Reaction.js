@@ -360,7 +360,7 @@ var procedures = (function() {
       let hitHydrogen = world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
         return (Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"));
       }); letVars['hitHydrogen'] = hitHydrogen;
-      if ((Prims.gte(hitHydrogen.size(), 3) && Prims.equality(Prims.random(2), 0))) {
+      if ((Prims.gte(hitHydrogen.size(), 3) && Prims.equality(Prims.randomLong(2), 0))) {
         if (Prims.lt(SelfManager.self().getVariable("speed"), 0)) {
           SelfManager.self().setVariable("speed", 0);
         }
@@ -391,7 +391,7 @@ var procedures = (function() {
       let hitNh3 = world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
         return ((Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(SelfManager.self().getVariable("molecule-type"), "nh3")) && !Prims.equality(SelfManager.self(), SelfManager.myself()));
       }); letVars['hitNh3'] = hitNh3;
-      if ((Prims.gte(hitNh3.size(), 1) && Prims.equality(Prims.random(2), 0))) {
+      if ((Prims.gte(hitNh3.size(), 1) && Prims.equality(Prims.randomLong(2), 0))) {
         let reactants = ListPrims.nOf(1, hitNh3); letVars['reactants'] = reactants;
         let totalInputEnergy = (SelfManager.self().getVariable("energy") + ListPrims.sum(reactants.projectionBy(function() { return SelfManager.self().getVariable("energy"); }))); letVars['totalInputEnergy'] = totalInputEnergy;
         if (Prims.gt(totalInputEnergy, world.observer.getGlobal("activation-energy"))) {
@@ -407,7 +407,7 @@ var procedures = (function() {
             SelfManager.self().setVariable("mass", 2);
             SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 2), 20));
             SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
-            SelfManager.self().setVariable("heading", Prims.random(360));
+            SelfManager.self().setVariable("heading", Prims.randomLong(360));
           }, true);
           Errors.askNobodyCheck(reactants).ask(function() { SelfManager.self().die(); }, true);
           world.observer.setGlobal("number-reverse-reactions", (world.observer.getGlobal("number-reverse-reactions") + 1));

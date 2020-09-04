@@ -308,8 +308,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.random(40));
-      SelfManager.self().right(-(Prims.random(40)));
+      SelfManager.self().right(Prims.randomLong(40));
+      SelfManager.self().right(-(Prims.randomLong(40)));
       if (!SelfManager.self().canMove(1)) {
         SelfManager.self().right(180);
       }

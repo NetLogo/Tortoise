@@ -121,7 +121,7 @@ var procedures = (function() {
       var letVars = { };
       procedures["SETUP-GENERAL"]();
       Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() {
-        SelfManager.self().setPatchVariable("on?", Prims.lt(Prims.random(100), world.observer.getGlobal("density")));
+        SelfManager.self().setPatchVariable("on?", Prims.lt(Prims.randomLong(100), world.observer.getGlobal("density")));
         procedures["COLOR-PATCH"]();
       }, true);
       world.ticker.reset();

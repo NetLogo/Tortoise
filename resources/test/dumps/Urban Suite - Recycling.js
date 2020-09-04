@@ -282,12 +282,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); })).ask(function() {
-        if (Prims.lt(Prims.random(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10))) {
+        if (Prims.lt(Prims.randomLong(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10))) {
           SelfManager.self().setPatchVariable("resource-type", "new");
         }
       }, true);
       Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "waste"); })).ask(function() {
-        if ((Prims.equality(Prims.random(5), 0) && Prims.lt(Prims.random(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10)))) {
+        if ((Prims.equality(Prims.randomLong(5), 0) && Prims.lt(Prims.randomLong(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10)))) {
           SelfManager.self().setPatchVariable("resource-type", "new");
         }
       }, true);

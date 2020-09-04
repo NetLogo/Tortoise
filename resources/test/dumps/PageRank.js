@@ -182,7 +182,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(ListPrims.item(k, nodeList)).ask(function() {
         var _foreach_2544_2551 = Tasks.forEach(Tasks.commandTask(function(neighbor) {
           Errors.procedureArgumentsCheck(1, arguments.length);
-          if (Prims.equality(Prims.random(2), 0)) {
+          if (Prims.equality(Prims.randomLong(2), 0)) {
             LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
           }
           else {
@@ -199,7 +199,7 @@ var procedures = (function() {
             let neighbor = ListPrims.oneOf(tempNeighborList); letVars['neighbor'] = neighbor;
             tempNeighborList = ListPrims.remove(neighbor, tempNeighborList); letVars['tempNeighborList'] = tempNeighborList;
             neighborChoiceList = ListPrims.fput(neighbor, neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
-            if (Prims.equality(Prims.random(2), 0)) {
+            if (Prims.equality(Prims.randomLong(2), 0)) {
               LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
             }
             else {

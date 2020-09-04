@@ -166,7 +166,7 @@ var procedures = (function() {
       else {
         SelfManager.self().setVariable("shape", "bird 1");
       }
-      SelfManager.self().setVariable("heading", (180 + Prims.random(180)));
+      SelfManager.self().setVariable("heading", (180 + Prims.randomLong(180)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -178,8 +178,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.random(100));
-      SelfManager.self().right(-(Prims.random(100)));
+      SelfManager.self().right(Prims.randomLong(100));
+      SelfManager.self().right(-(Prims.randomLong(100)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)

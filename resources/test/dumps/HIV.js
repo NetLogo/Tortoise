@@ -145,7 +145,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("known?", false);
         SelfManager.self().setVariable("coupled?", false);
         SelfManager.self().setVariable("partner", Nobody);
-        if (Prims.equality(Prims.random(2), 0)) {
+        if (Prims.equality(Prims.randomLong(2), 0)) {
           SelfManager.self().setVariable("shape", "person righty");
         }
         else {

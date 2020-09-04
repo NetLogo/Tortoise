@@ -193,7 +193,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.random(360));
+      SelfManager.self().right(Prims.randomLong(360));
       SelfManager.self().fd(world.observer.getGlobal("stride-length"));
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("metabolism")));
       if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
