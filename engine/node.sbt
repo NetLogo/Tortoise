@@ -19,7 +19,7 @@ lazy val yarnInstall = taskKey[Seq[File]]("Runs `yarn install` from within SBT")
 
 yarnInstall := {
   val log = streams.value.log
-  if (nodeDeps.value.isEmpty || (nodeDeps.value exists (_.olderThan(packageJson.value))))
+  if (!yarnIntegrity.value.exists || yarnIntegrity.value.olderThan(packageJson.value))
     Process(Seq("yarn", "install", "--ignore-optional"), baseDirectory.value).!(log)
   nodeDeps.value
 }
@@ -49,6 +49,10 @@ lazy val installGrunt = Def.task[Unit] {
 
 lazy val packageJson = Def.task[File] {
   baseDirectory.value / "package.json"
+}
+
+lazy val yarnIntegrity = Def.task[File] {
+  baseDirectory.value / "node_modules" / ".yarn-integrity"
 }
 
 lazy val nodeDeps = Def.task[Seq[File]] {
