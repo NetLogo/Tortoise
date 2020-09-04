@@ -230,6 +230,11 @@ module.exports =
       else
         -@_rng.nextLong(-truncated)
 
+    # This is for `_randomconst`, `n` must also be >0. -Jeremy B September 2020
+    # (Long) => Long
+    randomLong: (n) ->
+      @_rng.nextLong(n)
+
     # (Number, Number) => Number
     randomCoord: (min, max) ->
       min - 0.5 + @_rng.nextDouble() * (max - min + 1)

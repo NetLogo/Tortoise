@@ -89,6 +89,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
       "OtherWith",
       "PatchAt",
       "PatchVariableDouble",
+      "RandomConst",
       "TurtleVariableDouble",
       "With",
       "WithOther"

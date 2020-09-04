@@ -10,7 +10,7 @@ import
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, CommandBlock, ReporterBlock },
     prim.{ _any, _const, _count, _createorderedturtles, _createturtles, _equal, _fd, _greaterthan, _hatch, _lessthan,
       _neighbors, _neighbors4, _not, _notequal, _observervariable, _of, _oneof, _other, _patchat, _patches, _patchvariable,
-      _procedurevariable, _sprout, _sum, _with }
+      _procedurevariable, _random, _sprout, _sum, _with }
 
 // scalastyle:off number.of.methods
 object Optimizer {
@@ -438,6 +438,21 @@ object Optimizer {
     }
   }
 
+  class _randomconst extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.NumberType), ret = Syntax.NumberType)
+  }
+
+  object RandomConstTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _random, Seq(ReporterApp(_const(value: java.lang.Double), _, _)), _) if value > 0 && value == value.toLong =>
+          ra.copy(reporter = new _randomconst)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
   def apply(pd: ProcedureDefinition): ProcedureDefinition =
     (Fd1Transformer            .visitProcedureDefinition _ andThen
      FdLessThan1Transformer    .visitProcedureDefinition   andThen
@@ -461,7 +476,8 @@ object Optimizer {
      AnyWith3Transformer       .visitProcedureDefinition   andThen
      AnyWith4Transformer       .visitProcedureDefinition   andThen
      AnyWith5Transformer       .visitProcedureDefinition   andThen
-     OptimizeCountTransformer  .visitProcedureDefinition
+     OptimizeCountTransformer  .visitProcedureDefinition   andThen
+     RandomConstTransformer    .visitProcedureDefinition
     )(pd)
 
 }
