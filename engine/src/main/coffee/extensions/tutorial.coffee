@@ -27,9 +27,14 @@ module.exports = {
     # (String) => Unit
     minimizeDialog = (name) ->
       if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue(
-          { Type: "Dialog", Action: "Minimize", Target: name }
-        )
+        if name of tortugaSession.Tutorial.Dialogs
+          tortugaSession.MessageQueue.Enqueue(
+            { Type: "Dialog", Action: "Minimize", Target: name }
+          )
+        else
+          tortugaSession.MessageQueue.Enqueue(
+            { Type: "Error", Message: "Dialog #{name} is not defined in the tutorial" }
+          )
       else
         workspace.printPrims.print("Make dialog #{name} minimized")
       return
@@ -37,9 +42,14 @@ module.exports = {
     # (String) => Unit
     hideDialog = (name) ->
       if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue(
-          { Type: "Dialog", Action: "Hide", Target: name }
-        )
+        if name of tortugaSession.Tutorial.Dialogs
+          tortugaSession.MessageQueue.Enqueue(
+            { Type: "Dialog", Action: "Hide", Target: name }
+          )
+        else
+          tortugaSession.MessageQueue.Enqueue(
+            { Type: "Error", Message: "Dialog #{name} is not defined in the tutorial" }
+          )
       else
         workspace.printPrims.print("Hide the active dialog #{name}")
       return
@@ -63,8 +73,13 @@ module.exports = {
     # (String) -> Unit
     activate = (sectionName) ->
       if tortugaSession = getTortugaSession()
-        section = tortugaSession.Tutorial.Sections[sectionName]
-        tortugaSession.ActivateSection(section)
+        if sectionName of tortugaSession.Tutorial.Sections
+          section = tortugaSession.Tutorial.Sections[sectionName]
+          tortugaSession.ActivateSection(section)
+        else
+          tortugaSession.MessageQueue.Enqueue(
+            { Type: "Error", Message: "Section #{sectionName} is not defined in the tutorial" }
+          )
       else
         workspace.printPrims.print("Activate section #{sectionName}")
       return
@@ -72,8 +87,13 @@ module.exports = {
     # (String) -> Unit
     deactivate = (sectionName) ->
       if tortugaSession = getTortugaSession()
-        section = tortugaSession.Tutorial.Sections[sectionName]
-        tortugaSession.DeactivateSection(section)
+        if sectionName of tortugaSession.Tutorial.Sections
+          section = tortugaSession.Tutorial.Sections[sectionName]
+          tortugaSession.DeactivateSection(section)
+        else
+          tortugaSession.MessageQueue.Enqueue(
+            { Type: "Error", Message: "Section #{sectionName} is not defined in the tutorial" }
+          )
       else
         workspace.printPrims.print("Deactivate section #{sectionName}")
       return
