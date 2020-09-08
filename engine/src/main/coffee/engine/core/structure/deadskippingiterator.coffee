@@ -95,6 +95,7 @@ module.exports =
     _isntEmpty: ->
       @_i < @_items.length
 
+    # (Number, (Number, Number) => Boolean) => Boolean
     checkCount: (n, check) ->
       totalCount = 0
       for x in @_items when not x.isDead()

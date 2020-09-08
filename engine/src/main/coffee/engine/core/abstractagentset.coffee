@@ -293,5 +293,6 @@ module.exports =
       filterer = (x) -> Iterator.boolOrError(x, x.projectionBy(f))
       @_unsafeIterator().filter(filterer).length
 
+    # (Number, (Number, Number) => Boolean) => Boolean
     _optimalCheckCount: (n, operator) ->
       @_unsafeIterator().checkCount(n, operator)

@@ -72,5 +72,6 @@ module.exports =
     toArray: ->
       @_items
 
+    # (Number, (Number, Number) => Boolean) => Boolean
     checkCount: (n, check) ->
       check(@_items.length, n)
