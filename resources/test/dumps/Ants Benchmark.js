@@ -393,11 +393,11 @@ var procedures = (function() {
       }
       plotManager.setCurrentPlot("Food in each pile");
       plotManager.setCurrentPen("food-in-pile1");
-      plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 85); }).size());
+      plotManager.plotValue(world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 85); }));
       plotManager.setCurrentPen("food-in-pile2");
-      plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 95); }).size());
+      plotManager.plotValue(world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 95); }));
       plotManager.setCurrentPen("food-in-pile3");
-      plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105); }).size());
+      plotManager.plotValue(world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

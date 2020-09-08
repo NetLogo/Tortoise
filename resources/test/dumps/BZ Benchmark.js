@@ -106,10 +106,10 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("new-state", 0);
       }
       else {
-        let a = SelfManager.self().getNeighbors().agentFilter(function() {
+        let a = SelfManager.self().getNeighbors()._optimalCountWith(function() {
           return (Prims.gt(SelfManager.self().getPatchVariable("state"), 0) && Prims.lt(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")));
-        }).size(); letVars['a'] = a;
-        let b = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")); }).size(); letVars['b'] = b;
+        }); letVars['a'] = a;
+        let b = SelfManager.self().getNeighbors()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")); }); letVars['b'] = b;
         if (Prims.equality(SelfManager.self().getPatchVariable("state"), 0)) {
           SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(Prims.div(a, world.observer.getGlobal("k1"))) + NLMath.toInt(Prims.div(b, world.observer.getGlobal("k2")))));
         }

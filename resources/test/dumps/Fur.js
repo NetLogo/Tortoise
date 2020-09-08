@@ -110,8 +110,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let activator = SelfManager.self().getPatchVariable("inner-neighbors").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }).size(); letVars['activator'] = activator;
-      let inhibitor = SelfManager.self().getPatchVariable("outer-neighbors").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }).size(); letVars['inhibitor'] = inhibitor;
+      let activator = SelfManager.self().getPatchVariable("inner-neighbors")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }); letVars['activator'] = activator;
+      let inhibitor = SelfManager.self().getPatchVariable("outer-neighbors")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }); letVars['inhibitor'] = inhibitor;
       let difference = (activator - (world.observer.getGlobal("ratio") * inhibitor)); letVars['difference'] = difference;
       if (Prims.gt(difference, 0)) {
         SelfManager.self().setPatchVariable("new-color", 9.9);

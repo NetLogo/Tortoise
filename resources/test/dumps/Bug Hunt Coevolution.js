@@ -696,17 +696,17 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       plotManager.setCurrentPen("speed=1");
-      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 1); }).size());
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 1); }));
       plotManager.setCurrentPen("speed=2");
-      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 2); }).size());
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 2); }));
       plotManager.setCurrentPen("speed=3");
-      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 3); }).size());
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 3); }));
       plotManager.setCurrentPen("speed=4");
-      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 4); }).size());
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 4); }));
       plotManager.setCurrentPen("speed=5");
-      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 5); }).size());
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 5); }));
       plotManager.setCurrentPen("speed=6");
-      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 6); }).size());
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 6); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

@@ -403,9 +403,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("medium", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
-      world.observer.setGlobal("slow", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
-      world.observer.setGlobal("fast", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
+      world.observer.setGlobal("medium", world.turtleManager.turtlesOfBreed("PARTICLES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }));
+      world.observer.setGlobal("slow", world.turtleManager.turtlesOfBreed("PARTICLES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }));
+      world.observer.setGlobal("fast", world.turtleManager.turtlesOfBreed("PARTICLES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }));
       world.observer.setGlobal("percent-medium", (Prims.div(world.observer.getGlobal("medium"), world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
       world.observer.setGlobal("percent-slow", (Prims.div(world.observer.getGlobal("slow"), world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
       world.observer.setGlobal("percent-fast", (Prims.div(world.observer.getGlobal("fast"), world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));

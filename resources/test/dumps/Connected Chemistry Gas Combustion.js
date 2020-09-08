@@ -291,9 +291,9 @@ var procedures = (function() {
         world.observer.setGlobal("avg-energy", 0);
         world.observer.setGlobal("temperature", 0);
       }
-      world.observer.setGlobal("number-oxygen-molecules", world.turtleManager.turtlesOfBreed("GAS-MOLECULES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "oxygen"); }).size());
-      world.observer.setGlobal("number-hydrogen-molecules", world.turtleManager.turtlesOfBreed("GAS-MOLECULES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); }).size());
-      world.observer.setGlobal("number-water-molecules", world.turtleManager.turtlesOfBreed("GAS-MOLECULES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "water"); }).size());
+      world.observer.setGlobal("number-oxygen-molecules", world.turtleManager.turtlesOfBreed("GAS-MOLECULES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "oxygen"); }));
+      world.observer.setGlobal("number-hydrogen-molecules", world.turtleManager.turtlesOfBreed("GAS-MOLECULES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); }));
+      world.observer.setGlobal("number-water-molecules", world.turtleManager.turtlesOfBreed("GAS-MOLECULES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "water"); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

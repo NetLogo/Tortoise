@@ -331,8 +331,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("light-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() { return Prims.gte(SelfManager.self().getVariable("color"), 7); }).size());
-      world.observer.setGlobal("dark-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("color"), 3); }).size());
+      world.observer.setGlobal("light-moths", world.turtleManager.turtlesOfBreed("MOTHS")._optimalCountWith(function() { return Prims.gte(SelfManager.self().getVariable("color"), 7); }));
+      world.observer.setGlobal("dark-moths", world.turtleManager.turtlesOfBreed("MOTHS")._optimalCountWith(function() { return Prims.lte(SelfManager.self().getVariable("color"), 3); }));
       world.observer.setGlobal("medium-moths", (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal("light-moths") + world.observer.getGlobal("dark-moths"))));
     } catch (e) {
       return Errors.stopInCommandCheck(e)

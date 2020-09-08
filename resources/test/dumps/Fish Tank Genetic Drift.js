@@ -754,18 +754,18 @@ var procedures = (function() {
       let allAlleles = world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return LinkPrims.isInLinkNeighbor("LINKS", thisZygote); }); letVars['allAlleles'] = allAlleles;
       var _foreach_14051_14058 = Tasks.forEach(Tasks.commandTask(function(thisGene) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        if (allAlleles.agentFilter(function() {
+        if (Prims.gt(allAlleles._optimalCountWith(function() {
           return (Prims.equality(SelfManager.self().getVariable("gene"), thisGene) && Prims.equality(SelfManager.self().getVariable("side"), "left"));
-        })._optimalCheckCount(1, (a, b) => a > b)) {
+        }), 1)) {
           Errors.askNobodyCheck(allAlleles._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("gene"), thisGene); })).ask(function() {
             SelfManager.self().setVariable("heading", 90);
             SelfManager.self().fd(world.observer.getGlobal("intra-chromosome-pair-spacing"));
             SelfManager.self().setVariable("side", "right");
           }, true);
         }
-        if (allAlleles.agentFilter(function() {
+        if (Prims.gt(allAlleles._optimalCountWith(function() {
           return (Prims.equality(SelfManager.self().getVariable("gene"), thisGene) && Prims.equality(SelfManager.self().getVariable("side"), "right"));
-        })._optimalCheckCount(1, (a, b) => a > b)) {
+        }), 1)) {
           Errors.askNobodyCheck(allAlleles._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("gene"), thisGene); })).ask(function() {
             SelfManager.self().setVariable("heading", 90);
             SelfManager.self().fd(-(world.observer.getGlobal("intra-chromosome-pair-spacing")));
@@ -1047,42 +1047,42 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.setGlobal("num-fish-in-tank", world.turtleManager.turtlesOfBreed("FISH").size());
-      world.observer.setGlobal("#-big-b-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "B"); }).size());
-      world.observer.setGlobal("#-small-b-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "b"); }).size());
-      world.observer.setGlobal("#-big-t-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "T"); }).size());
-      world.observer.setGlobal("#-small-t-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "t"); }).size());
-      world.observer.setGlobal("#-big-f-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "F"); }).size());
-      world.observer.setGlobal("#-small-f-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "f"); }).size());
-      world.observer.setGlobal("#-big-g-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "G"); }).size());
-      world.observer.setGlobal("#-small-g-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "g"); }).size());
-      world.observer.setGlobal("#-y-chromosomes", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "Y"); }).size());
-      world.observer.setGlobal("#-x-chromosomes", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "X"); }).size());
-      world.observer.setGlobal("#-of-green-dorsal-fins", world.turtleManager.turtlesOfBreed("FISH-PARTS").agentFilter(function() {
+      world.observer.setGlobal("#-big-b-alleles", world.turtleManager.turtlesOfBreed("ALLELES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("value"), "B"); }));
+      world.observer.setGlobal("#-small-b-alleles", world.turtleManager.turtlesOfBreed("ALLELES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("value"), "b"); }));
+      world.observer.setGlobal("#-big-t-alleles", world.turtleManager.turtlesOfBreed("ALLELES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("value"), "T"); }));
+      world.observer.setGlobal("#-small-t-alleles", world.turtleManager.turtlesOfBreed("ALLELES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("value"), "t"); }));
+      world.observer.setGlobal("#-big-f-alleles", world.turtleManager.turtlesOfBreed("ALLELES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("value"), "F"); }));
+      world.observer.setGlobal("#-small-f-alleles", world.turtleManager.turtlesOfBreed("ALLELES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("value"), "f"); }));
+      world.observer.setGlobal("#-big-g-alleles", world.turtleManager.turtlesOfBreed("ALLELES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("value"), "G"); }));
+      world.observer.setGlobal("#-small-g-alleles", world.turtleManager.turtlesOfBreed("ALLELES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("value"), "g"); }));
+      world.observer.setGlobal("#-y-chromosomes", world.turtleManager.turtlesOfBreed("ALLELES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("value"), "Y"); }));
+      world.observer.setGlobal("#-x-chromosomes", world.turtleManager.turtlesOfBreed("ALLELES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("value"), "X"); }));
+      world.observer.setGlobal("#-of-green-dorsal-fins", world.turtleManager.turtlesOfBreed("FISH-PARTS")._optimalCountWith(function() {
         return Prims.equality(SelfManager.self().getVariable("color"), world.observer.getGlobal("green-dorsal-fin-color"));
-      }).size());
-      world.observer.setGlobal("#-of-no-green-dorsal-fins", world.turtleManager.turtlesOfBreed("FISH-PARTS").agentFilter(function() {
+      }));
+      world.observer.setGlobal("#-of-no-green-dorsal-fins", world.turtleManager.turtlesOfBreed("FISH-PARTS")._optimalCountWith(function() {
         return Prims.equality(SelfManager.self().getVariable("color"), world.observer.getGlobal("no-green-dorsal-fin-color"));
-      }).size());
-      world.observer.setGlobal("#-of-yellow-tail-fins", world.turtleManager.turtlesOfBreed("FISH-PARTS").agentFilter(function() {
+      }));
+      world.observer.setGlobal("#-of-yellow-tail-fins", world.turtleManager.turtlesOfBreed("FISH-PARTS")._optimalCountWith(function() {
         return Prims.equality(SelfManager.self().getVariable("color"), world.observer.getGlobal("yellow-tail-fin-color"));
-      }).size());
-      world.observer.setGlobal("#-of-no-yellow-tail-fins", world.turtleManager.turtlesOfBreed("FISH-PARTS").agentFilter(function() {
+      }));
+      world.observer.setGlobal("#-of-no-yellow-tail-fins", world.turtleManager.turtlesOfBreed("FISH-PARTS")._optimalCountWith(function() {
         return Prims.equality(SelfManager.self().getVariable("color"), world.observer.getGlobal("no-yellow-tail-fin-color"));
-      }).size());
-      world.observer.setGlobal("#-of-spots", world.turtleManager.turtlesOfBreed("FISH-PARTS").agentFilter(function() {
+      }));
+      world.observer.setGlobal("#-of-spots", world.turtleManager.turtlesOfBreed("FISH-PARTS")._optimalCountWith(function() {
         return (Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("spots-shape")) && Prims.equality(SelfManager.self().getVariable("hidden?"), false));
-      }).size());
-      world.observer.setGlobal("#-of-no-spots", world.turtleManager.turtlesOfBreed("FISH-PARTS").agentFilter(function() {
+      }));
+      world.observer.setGlobal("#-of-no-spots", world.turtleManager.turtlesOfBreed("FISH-PARTS")._optimalCountWith(function() {
         return (Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("spots-shape")) && Prims.equality(SelfManager.self().getVariable("hidden?"), true));
-      }).size());
-      world.observer.setGlobal("#-of-forked-tails", world.turtleManager.turtlesOfBreed("FISH-PARTS").agentFilter(function() {
+      }));
+      world.observer.setGlobal("#-of-forked-tails", world.turtleManager.turtlesOfBreed("FISH-PARTS")._optimalCountWith(function() {
         return Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("forked-tail-shape"));
-      }).size());
-      world.observer.setGlobal("#-of-no-forked-tails", world.turtleManager.turtlesOfBreed("FISH-PARTS").agentFilter(function() {
+      }));
+      world.observer.setGlobal("#-of-no-forked-tails", world.turtleManager.turtlesOfBreed("FISH-PARTS")._optimalCountWith(function() {
         return Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("no-forked-tail-shape"));
-      }).size());
-      world.observer.setGlobal("#-of-males", world.turtleManager.turtlesOfBreed("FISH").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); }).size());
-      world.observer.setGlobal("#-of-females", world.turtleManager.turtlesOfBreed("FISH").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "female"); }).size());
+      }));
+      world.observer.setGlobal("#-of-males", world.turtleManager.turtlesOfBreed("FISH")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); }));
+      world.observer.setGlobal("#-of-females", world.turtleManager.turtlesOfBreed("FISH")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "female"); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -1232,9 +1232,9 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       let thisSomaticCell = SelfManager.self(); letVars['thisSomaticCell'] = thisSomaticCell;
-      let _pound_OfDominantAlleles = world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() {
+      let _pound_OfDominantAlleles = world.turtleManager.turtlesOfBreed("ALLELES")._optimalCountWith(function() {
         return (LinkPrims.isInLinkNeighbor("LINKS", thisSomaticCell) && Prims.equality(SelfManager.self().getVariable("value"), dominantAllele));
-      }).size(); letVars['_pound_OfDominantAlleles'] = _pound_OfDominantAlleles;
+      }); letVars['_pound_OfDominantAlleles'] = _pound_OfDominantAlleles;
       if (Prims.gt(_pound_OfDominantAlleles, 0)) {
         Errors.reportInContextCheck(reporterContext);
         return true;

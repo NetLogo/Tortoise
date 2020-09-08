@@ -266,7 +266,7 @@ var procedures = (function() {
       plotManager.plotValue(world.turtleManager.turtlesOfBreed("WOLVES").size());
       if (world.observer.getGlobal("grass?")) {
         plotManager.setCurrentPen("grass / 4");
-        plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size(), 4));
+        plotManager.plotValue(Prims.div(world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }), 4));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)

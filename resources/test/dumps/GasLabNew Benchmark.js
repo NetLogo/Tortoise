@@ -143,9 +143,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("medium", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
-      world.observer.setGlobal("slow", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
-      world.observer.setGlobal("fast", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
+      world.observer.setGlobal("medium", world.turtleManager.turtlesOfBreed("PARTICLES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }));
+      world.observer.setGlobal("slow", world.turtleManager.turtlesOfBreed("PARTICLES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }));
+      world.observer.setGlobal("fast", world.turtleManager.turtlesOfBreed("PARTICLES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }));
       world.observer.setGlobal("avg-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
       world.observer.setGlobal("avg-energy", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
     } catch (e) {

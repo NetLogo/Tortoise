@@ -218,7 +218,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return NLMath.precision(Prims.div((100 * world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size()), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2);
+      return NLMath.precision(Prims.div((100 * world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); })), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -244,14 +244,14 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       let maxColumn = ListPrims.max(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
-        return SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
+        return SelfManager.self().getVariable("my-column-patches")._optimalCountWith(function() {
           return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
-        }).size();
+        });
       })); letVars['maxColumn'] = maxColumn;
       let minColumn = ListPrims.min(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
-        return SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
+        return SelfManager.self().getVariable("my-column-patches")._optimalCountWith(function() {
           return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
-        }).size();
+        });
       })); letVars['minColumn'] = minColumn;
       Errors.reportInContextCheck(reporterContext);
       return (maxColumn - minColumn);
