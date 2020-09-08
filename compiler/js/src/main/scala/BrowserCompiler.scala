@@ -235,23 +235,7 @@ object BrowserCompiler {
       errors => ModelCompilation(model = errors.failure, "", "", Seq()),
       success => success))
 
-  case class ModelCompilation(
-    model: ValidationNel[TortoiseFailure, CompiledModel],
-    code: String,
-    info: String,
-    widgets: Seq[CompiledWidget],
-    commands: Seq[CompiledStringV] = Seq(),
-    reporters: Seq[CompiledStringV] = Seq())
-
   implicit def exportResult2Json(exportResult: ValidationNel[TortoiseFailure, String]): JsonWritable =
     JsonWriter.convert(exportResult)
 
-  object ModelCompilation {
-    def fromCompiledModel(compiledModel: CompiledModel): ModelCompilation =
-      ModelCompilation(
-        compiledModel.successNel,
-        compiledModel.model.code,
-        compiledModel.model.info,
-        compiledModel.widgets)
-  }
 }

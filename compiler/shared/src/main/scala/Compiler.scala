@@ -13,7 +13,6 @@ import
     Scalaz.ToValidationOps
 
 import CompilerFlags.WidgetPropagation
-import CompilerLike.Compilation
 import TortoiseSymbol.JsStatement
 
 // there are four main entry points here:

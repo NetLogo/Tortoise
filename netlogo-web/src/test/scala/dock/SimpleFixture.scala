@@ -14,8 +14,7 @@ import
   jsengine.GraalJS
 
 import
-  org.nlogo.tortoise.compiler.{ Compiler, CompilerLike },
-    CompilerLike.Compilation
+  org.nlogo.tortoise.compiler.{ Compiler, Compilation }
 
 trait SimpleSuite extends FunSuite with TestLogger {
 

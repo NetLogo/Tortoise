@@ -3,9 +3,6 @@
 package org.nlogo.tortoise.compiler
 
 import
-  CompilerLike.Compilation
-
-import
   org.nlogo.{ core, parse },
     core.{ model, CompilerException, Model, View },
     model.ModelReader,
@@ -15,8 +12,8 @@ import
   scalaz.{ Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
-case class CompiledModel(compiledCode: String        = "",
-                         compilation:  Compilation,
+case class CompiledModel(compiledCode: String = "",
+                         compilation: Compilation,
                          private val compiler: CompilerLike = Compiler) {
   import CompiledModel.CompileResult
 
