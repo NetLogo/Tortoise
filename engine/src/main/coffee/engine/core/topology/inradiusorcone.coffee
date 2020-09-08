@@ -387,39 +387,15 @@ getRegionsTorus = (topology, patchX, patchY, patchRadius) ->
   if isLeftInBounds and isRightInBounds
     return splitVertical(topology, patchY, patchRadius, maybeLeft, maybeRight)
 
-  if not isTopInBounds
-    if not isLeftInBounds
-      # top left corner -Jeremy B September 2020
-      vertical   = topSplitLimits(topology, maybeTop, maybeBottom)
-      horizontal = leftSplitLimits(topology, maybeLeft, maybeRight)
+  vertical = if not isTopInBounds
+    topSplitLimits(topology, maybeTop, maybeBottom)
+  else
+    bottomSplitLimits(topology, maybeTop, maybeBottom)
 
-      upper = makeRegion(vertical.upperTop, vertical.upperBottom, horizontal...)
-      lower = makeRegion(vertical.lowerTop, vertical.lowerBottom, horizontal...)
-
-      return [upper, lower]
-    else
-      # top right corner -Jeremy B September 2020
-      vertical   = topSplitLimits(topology, maybeTop, maybeBottom)
-      horizontal = rightSplitLimits(topology, maybeLeft, maybeRight)
-
-      upper = makeRegion(vertical.upperTop, vertical.upperBottom, horizontal...)
-      lower = makeRegion(vertical.lowerTop, vertical.lowerBottom, horizontal...)
-
-      return [upper, lower]
-
-  if not isLeftInBounds
-    # bottom left corner -Jeremy B September 2020
-    vertical   = bottomSplitLimits(topology, maybeTop, maybeBottom)
-    horizontal = leftSplitLimits(topology, maybeLeft, maybeRight)
-
-    upper = makeRegion(vertical.upperTop, vertical.upperBottom, horizontal...)
-    lower = makeRegion(vertical.lowerTop, vertical.lowerBottom, horizontal...)
-
-    return [upper, lower]
-
-  # bottom right corner -Jeremy B September 2020
-  vertical   = bottomSplitLimits(topology, maybeTop, maybeBottom)
-  horizontal = rightSplitLimits(topology, maybeLeft, maybeRight)
+  horizontal = if not isLeftInBounds
+    leftSplitLimits(topology, maybeLeft, maybeRight)
+  else
+    rightSplitLimits(topology, maybeLeft, maybeRight)
 
   upper = makeRegion(vertical.upperTop, vertical.upperBottom, horizontal...)
   lower = makeRegion(vertical.lowerTop, vertical.lowerBottom, horizontal...)
