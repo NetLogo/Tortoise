@@ -422,8 +422,6 @@ object Optimizer {
     override def syntax: Syntax =
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.BooleanType)
   }
-  // scalastyle:on number.of.types
-  // scalastyle:on class.name
 
   object OptimizeCountTransformer extends AstTransformer {
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
@@ -467,6 +465,8 @@ object Optimizer {
       }
     }
   }
+  // scalastyle:on number.of.types
+  // scalastyle:on class.name
 
   def apply(pd: ProcedureDefinition): ProcedureDefinition =
     (Fd1Transformer            .visitProcedureDefinition _ andThen
