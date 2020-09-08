@@ -79,6 +79,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
       "AnyWith5",
       "CountOther",
       "CountOtherWith",
+      "CountWith",
       "HasEqual",
       "HasGreaterThan",
       "HasLessThan",

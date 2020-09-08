@@ -171,6 +171,10 @@ trait ReporterPrims extends PrimUtils {
         val agents = arg(0)
         s"$agents._optimalCountOtherWith(${handlers.fun(r.args(1), true)})"
 
+      case _: Optimizer._countwith =>
+        val agents = arg(0)
+        s"$agents._optimalCountWith(${handlers.fun(r.args(1), true)})"
+
       case _: Optimizer._otherwith =>
         val agents = arg(0)
         s"$agents._optimalOtherWith(${handlers.fun(r.args(1), true)})"

@@ -191,6 +191,21 @@ object Optimizer {
     }
   }
 
+  class _countwith extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.NumberType)
+  }
+
+  object CountWithTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _count, Seq(ReporterApp(_: _with, withArgs, _)), _) =>
+          ra.copy(reporter = new _countwith, args = withArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
   class _oneofwith extends Reporter {
     override def syntax: Syntax =
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentType)
@@ -471,6 +486,7 @@ object Optimizer {
      WithOtherTransformer      .visitProcedureDefinition   andThen
      CountOtherWithTransformer .visitProcedureDefinition   andThen
      CountOtherTransformer     .visitProcedureDefinition   andThen
+     CountWithTransformer      .visitProcedureDefinition   andThen
      AnyWith1Transformer       .visitProcedureDefinition   andThen
      AnyWith2Transformer       .visitProcedureDefinition   andThen
      AnyWith3Transformer       .visitProcedureDefinition   andThen
