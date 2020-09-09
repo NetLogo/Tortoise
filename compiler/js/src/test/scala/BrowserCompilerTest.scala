@@ -120,6 +120,16 @@ object BrowserCompilerTest extends TestSuite {
       assert(isSuccess(compiledModel))
     }
 
+    "testCompilesFromInvalidModel"-{
+      val invalidModel = validModel.copy(code = "to foo fd 1")
+      val compilationRequest =
+        modelToCompilationRequest(invalidModel,
+          fields("commands" -> JsArray(Seq(JsString("ask turtles [fd 1]")))))
+      val compiledModel = withBrowserCompiler(_.fromModel(compilationRequest))
+      assert(!isSuccess(compiledModel))
+      assertErrorMessage(compiledModel, "END expected")
+    }
+
     "testExportsNlogo"-{
       val exportResult = withBrowserCompiler(_.exportNlogo(modelToCompilationRequest(validModel)))
       assert(exportResult[Boolean]("success"))

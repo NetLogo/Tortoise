@@ -50,15 +50,16 @@ class BrowserCompiler {
   def fromNlogo(contents: String, commandJson: NativeJson): NativeJson = {
     val compilationResult =
       for {
-        commands    <- readArray[String](commandJson, "commands")
-        compilation <- compilingModel(_.fromNlogoContents(contents), compileExtras(commands, Seq()))
+        commands      <- readArray[String](commandJson, "commands")
+        compiledModel =  CompiledModel.fromNlogoContents(contents)
+        compilation   <- transformErrorsAndUpdateModel(compiledModel, compileExtras(commands, Seq()))
       } yield compilation
     JsonLibrary.toNative(compilationResult.toJsonObj)
   }
 
   @JSExport
   def fromNlogo(contents: String): NativeJson =
-    JsonLibrary.toNative(compilingModel(_.fromNlogoContents(contents)).toJsonObj)
+    JsonLibrary.toNative(transformErrorsAndUpdateModel(CompiledModel.fromNlogoContents(contents)).toJsonObj)
 
   @JSExport
   def exportNlogo(exportRequest: NativeJson): NativeJson = {
@@ -117,26 +118,36 @@ class BrowserCompiler {
       for {
         tortoiseReq   <- readNative[JsObject](compilationRequest)
         parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
-        compilation   <- compilingModel(
-          _.fromModel(parsedRequest.toModel).leftMap(_.map(ex => ex: Exception)),
-          compileExtras(parsedRequest.allCommands, parsedRequest.allReporters))
+        compiledModel =  CompiledModel.fromModel(parsedRequest.toModel).leftMap(_.map(ex => ex: Exception))
+        compilation   <- transformErrorsAndUpdateModel(
+          compiledModel,
+          compileExtras(parsedRequest.allCommands, parsedRequest.allReporters)
+        )
       } yield compilation
 
     compilationResult.leftMap(_.map(fail => fail: TortoiseFailure))
 
   }
 
-  private def compilingModel(
-    f: CompiledModel.type => ValidationNel[Exception, CompiledModel],
-    g: (CompiledModel, ModelCompilation) => ModelCompilation = (a, b) => b): ValidationNel[TortoiseFailure, ModelCompilation] =
-    Validation.fromTryCatchThrowable[ValidationNel[TortoiseFailure, ModelCompilation], Throwable](
-      f(CompiledModel).leftMap(_.map {
-        case e: CompilerException => FailureCompilerException(e): TortoiseFailure
-        case e: Exception         => FailureException        (e): TortoiseFailure
-      }).map(m => g(m, ModelCompilation.fromCompiledModel(m)))
-    ).fold(
+  private def transformErrorsAndUpdateModel(
+    compiledModel:     ValidationNel[Exception, CompiledModel],
+    updateCompilation: (CompiledModel, ModelCompilation) => ModelCompilation = (a, b) => b
+  ): ValidationNel[TortoiseFailure, ModelCompilation] = {
+
+    val compiledModelWithFailures = compiledModel.leftMap(_.map {
+      case e: CompilerException => FailureCompilerException(e): TortoiseFailure
+      case e: Exception         => FailureException        (e): TortoiseFailure
+    })
+
+    val compilation          = compiledModelWithFailures.map(m => updateCompilation(m, ModelCompilation.fromCompiledModel(m)))
+    val validatedCompilation = Validation.fromTryCatchThrowable[ValidationNel[TortoiseFailure, ModelCompilation], Throwable](compilation)
+
+    validatedCompilation.fold(
       error => (FailureException(error): TortoiseFailure).failureNel[ModelCompilation],
-      success => success)
+      success => success
+    )
+
+  }
 
   private def readArray[A](native: NativeJson, name: String)
                           (implicit ct: ClassTag[A], ev: JsonReader[TortoiseJson, A]): ValidationNel[TortoiseFailure, List[A]] = {
