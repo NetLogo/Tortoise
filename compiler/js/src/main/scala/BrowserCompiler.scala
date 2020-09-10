@@ -46,8 +46,22 @@ class BrowserCompiler {
 
   @JSExport
   def fromModel(compilationRequest: NativeJson): NativeJson = {
-    val compiledRequest = compileRequest(compilationRequest)
+
+    val compilationResult =
+      for {
+        tortoiseReq   <- readNative[JsObject](compilationRequest)
+        parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
+        compiledModel =  CompiledModel.fromModel(parsedRequest.toModel).leftMap(_.map(ex => ex: Exception))
+        compilation   <- transformErrorsAndUpdateModel(
+          compiledModel,
+          compileExtras(parsedRequest.allCommands, parsedRequest.allReporters)
+        )
+      } yield compilation
+
+    val compiledRequest = compilationResult.leftMap(_.map(fail => fail: TortoiseFailure))
+
     JsonLibrary.toNative(compiledRequest.toJsonObj)
+
   }
 
   @JSExport
@@ -113,23 +127,6 @@ class BrowserCompiler {
     val overridingSeq: Seq[String] = overriding
     val results: CompiledStringV   = lastCompiledModel.compileProceduresIncremental(command, overridingSeq)
     JsonLibrary.toNative(compileResult2Json.apply(results))
-  }
-
-  private def compileRequest(compilationRequest: NativeJson): ValidationNel[TortoiseFailure, ModelCompilation] = {
-
-    val compilationResult =
-      for {
-        tortoiseReq   <- readNative[JsObject](compilationRequest)
-        parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
-        compiledModel =  CompiledModel.fromModel(parsedRequest.toModel).leftMap(_.map(ex => ex: Exception))
-        compilation   <- transformErrorsAndUpdateModel(
-          compiledModel,
-          compileExtras(parsedRequest.allCommands, parsedRequest.allReporters)
-        )
-      } yield compilation
-
-    compilationResult.leftMap(_.map(fail => fail: TortoiseFailure))
-
   }
 
   private def transformErrorsAndUpdateModel(
