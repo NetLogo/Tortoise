@@ -113,7 +113,7 @@ object Compiler extends CompilerLike {
     implicit val context   = new CompilerContext(logo)
     val compiledProcedures = new ProcedureCompiler(handlers).compileProcedures(defs)
 
-    ProcedureCompiler.formatProceduresBody(compiledProcedures)
+    ProcedureCompiler.formatProcedureBodies(compiledProcedures)
 
   }
 

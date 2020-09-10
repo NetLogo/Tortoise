@@ -47,14 +47,14 @@ object ProcedureCompiler {
   def formatProcedures(procedures: CompiledProceduresDictionary): Seq[TortoiseSymbol] =
     Seq(JsDeclare("procedures", proceduresObject(procedures), Seq("workspace", "world")))
 
-  def formatProceduresBody(procedures: CompiledProceduresDictionary) : String =
+  def formatProcedureBodies(procedures: CompiledProceduresDictionary): String =
       procedures.map {
         case (js, names) =>
           names.map(name => s"""procs["$name"] = temp;""").mkString(s"temp = $js;\n", "\n", "")
       }.mkString("\n")
 
   private def proceduresObject(procedureDefs: CompiledProceduresDictionary) = {
-    val procedureDefsJs = formatProceduresBody(procedureDefs)
+    val procedureDefsJs = formatProcedureBodies(procedureDefs)
     val propertyFunctionBody =
       s"""|var procs = {};
           |var temp = undefined;
