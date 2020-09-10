@@ -9,7 +9,7 @@ case class CompilerFlags(
   onTickCallback:         String           = "function(){}",
   propagationStyle:       PropagationStyle = NoPropagation,
   optimizationsEnabled:   Boolean          = true
-  )
+)
 
 object CompilerFlags {
 

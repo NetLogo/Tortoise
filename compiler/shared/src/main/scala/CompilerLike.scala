@@ -7,6 +7,7 @@ import
     FrontEndInterface.ProceduresMap
 
 trait CompilerLike {
+
   def toJS(result:           Compilation)
     (implicit compilerFlags: CompilerFlags): String
 
@@ -27,4 +28,5 @@ trait CompilerLike {
 
   def compileProcedures(code: String)
     (implicit compilerFlags: CompilerFlags): Compilation = compileProcedures(Model(code))
+
 }

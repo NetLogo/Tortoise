@@ -40,6 +40,10 @@ class BrowserCompiler {
 
   import BrowserCompiler._
 
+  // scalastyle:off null
+  private var lastCompiledModel: CompiledModel = null
+  // scalastyle:on null
+
   @JSExport
   def fromModel(compilationRequest: NativeJson): NativeJson = {
     val compiledRequest = compileRequest(compilationRequest)
@@ -48,13 +52,16 @@ class BrowserCompiler {
 
   @JSExport
   def fromNlogo(contents: String, commandJson: NativeJson): NativeJson = {
+
     val compilationResult =
       for {
         commands      <- readArray[String](commandJson, "commands")
         compiledModel =  CompiledModel.fromNlogoContents(contents)
         compilation   <- transformErrorsAndUpdateModel(compiledModel, compileExtras(commands, Seq()))
       } yield compilation
+
     JsonLibrary.toNative(compilationResult.toJsonObj)
+
   }
 
   @JSExport
@@ -63,6 +70,7 @@ class BrowserCompiler {
 
   @JSExport
   def exportNlogo(exportRequest: NativeJson): NativeJson = {
+
     val model =
       for {
         tortoiseReq   <- readNative[JsObject](exportRequest)
@@ -70,6 +78,7 @@ class BrowserCompiler {
       } yield ModelReader.formatModel(parsedRequest.toModel)
 
     JsonLibrary.toNative(model.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
+
   }
 
   @JSExport
@@ -80,37 +89,30 @@ class BrowserCompiler {
       .map(comp => CompilerUtilities.isReporter(code, comp.program, comp.procedures, NLWExtensionManager))
       .getOrElse(false)
 
-  // This method compiles a single additional command for the compiled model.
   @JSExport
-  def compileCommand(command : String): NativeJson = {
-    val results : CompiledStringV = lastCompiledModel.compileCommand(command)
+  def compileCommand(command: String): NativeJson = {
+    val results: CompiledStringV = lastCompiledModel.compileCommand(command)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
 
-  // This method compiles a single additional reporter for the compiled model.
   @JSExport
-  def compileReporter(command : String): NativeJson = {
-    val results : CompiledStringV = lastCompiledModel.compileReporter(command)
+  def compileReporter(command: String): NativeJson = {
+    val results: CompiledStringV = lastCompiledModel.compileReporter(command)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
 
-  // This method compiles a single additional raw command for the compiled model.
   @JSExport
-  def compileRawCommand(command : String): NativeJson = {
-    val results : CompiledStringV = lastCompiledModel.compileRawCommand(command)
+  def compileRawCommand(command: String): NativeJson = {
+    val results: CompiledStringV = lastCompiledModel.compileRawCommand(command)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
 
-  // This method compiles additional procedures for the compiled model.
   @JSExport
-  def compileProceduresIncremental(command : String, overriding : js.Array[String]): NativeJson = {
-    val overridingSeq : Seq[String] = overriding
-    val results : CompiledStringV = lastCompiledModel.compileProceduresIncremental(command, overridingSeq)
+  def compileProceduresIncremental(command: String, overriding: js.Array[String]): NativeJson = {
+    val overridingSeq: Seq[String] = overriding
+    val results: CompiledStringV   = lastCompiledModel.compileProceduresIncremental(command, overridingSeq)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
-
-  // This is intended to cache the last compiled model.
-  private var lastCompiledModel : CompiledModel = _
 
   private def compileRequest(compilationRequest: NativeJson): ValidationNel[TortoiseFailure, ModelCompilation] = {
 
@@ -150,7 +152,7 @@ class BrowserCompiler {
   }
 
   private def readArray[A](native: NativeJson, name: String)
-                          (implicit ct: ClassTag[A], ev: JsonReader[TortoiseJson, A]): ValidationNel[TortoiseFailure, List[A]] = {
+    (implicit ct: ClassTag[A], ev: JsonReader[TortoiseJson, A]): ValidationNel[TortoiseFailure, List[A]] = {
 
     def defaultError = FailureString(s"$name must be an Array of ${ct.runtimeClass.getSimpleName}")
 
@@ -163,11 +165,13 @@ class BrowserCompiler {
   }
 
   private def compileExtras(commands: Seq[String], reporters: Seq[String])
-                           (model: CompiledModel, compilation: ModelCompilation): ModelCompilation = {
+    (model: CompiledModel, compilation: ModelCompilation): ModelCompilation = {
     // This is intended to cache the compiled model - I have no knowledge about how to implement in more appropriate location
     this.lastCompiledModel = model
-    compilation.copy(commands  = commands. map(model.compileCommand(_)),
-                     reporters = reporters.map(model.compileReporter(_)))
+    compilation.copy(
+      commands  = commands. map(model.compileCommand(_)),
+      reporters = reporters.map(model.compileReporter(_))
+    )
   }
 
   private def readNative[A](n: NativeJson)(implicit ev: JsonReader[TortoiseJson, A]): ValidationNel[TortoiseFailure, A] =

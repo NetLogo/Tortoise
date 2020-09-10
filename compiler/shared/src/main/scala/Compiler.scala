@@ -9,7 +9,7 @@ import
     parse.FrontEnd
 
 import
-  scalaz.{ Scalaz, ValidationNel },
+  scalaz.{ NonEmptyList, Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
 import CompilerFlags.WidgetPropagation
@@ -48,77 +48,95 @@ object Compiler extends CompilerLike {
   val frontEnd: FrontEndInterface = FrontEnd
 
   def toJS(result:           Compilation)
-    (implicit compilerFlags: CompilerFlags = CompilerFlags.Default) : String = {
+    (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String = {
+
     import result.model
+
+    val cesError          = (ces: NonEmptyList[CompilerException]) =>
+      s"""modelConfig.dialog.notify("Error(s) in interface global init: ${ces.map(_.getMessage).list.toList.mkString(", ")}")"""
+    val globalCommands    = (v: ValidationNel[CompilerException, String]) => v.fold(cesError, identity)
     val init              = new RuntimeInit(result.program, result.widgets, model, compilerFlags.onTickCallback).init
     val plotConfig        = PlotCompiler.formatPlots(result.widgets)
     val procedures        = ProcedureCompiler.formatProcedures(result.compiledProcedures)
-    val interfaceGlobalJs = result.interfaceGlobalCommands.map(
-      (v: ValidationNel[CompilerException, String]) => v.fold(
-        ces => s"""modelConfig.dialog.notify("Error(s) in interface global init: ${ces.map(_.getMessage).list.toList.mkString(", ")}")""",
-        identity)).mkString("\n")
+    val interfaceGlobalJs = result.interfaceGlobalCommands.map(globalCommands).mkString("\n")
 
-    val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
-    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures :+
-                                    JsStatement("global.modelConfig", Polyfills.content) :+
-                                    resolveModelConfig :+ interfaceInit)
+    val interfaceInit     = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
+    val globalModelConfig = JsStatement("global.modelConfig", Polyfills.content)
+    TortoiseLoader.integrateSymbols(
+         init
+      ++ plotConfig
+      ++ procedures
+      :+ globalModelConfig
+      :+ resolveModelConfig
+      :+ interfaceInit
+    )
+
   }
 
-  def compileReporter(logo:          String,
-                      oldProcedures: ProceduresMap = NoProcedures,
-                      program:       Program       = Program.empty())
-            (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
-      compile(logo, commands = false, oldProcedures, program)
+  def compileReporter(
+    logo:          String,
+    oldProcedures: ProceduresMap = NoProcedures,
+    program:       Program       = Program.empty()
+  )(implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
+    compile(logo, commands = false, oldProcedures, program)
 
-  def compileCommands(logo:          String,
-                      oldProcedures: ProceduresMap = NoProcedures,
-                      program:       Program       = Program.empty())
-            (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
+  def compileCommands(
+    logo:          String,
+    oldProcedures: ProceduresMap = NoProcedures,
+    program:       Program       = Program.empty()
+  )(implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
     compile(logo, commands = true, oldProcedures, program)
 
-  override def compileRawCommands(logo:          String,
-                                  oldProcedures: ProceduresMap = NoProcedures,
-                                  program:       Program       = Program.empty())
-            (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
+  override def compileRawCommands(
+    logo:          String,
+    oldProcedures: ProceduresMap = NoProcedures,
+    program:       Program       = Program.empty()
+  )(implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
     compile(logo, commands = true, oldProcedures, program, true)
 
-  // To compile more procedures after the main body is compiled
-  def compileProceduresIncremental(logo:          String,
-                                   oldProcedures: ProceduresMap = NoProcedures,
-                                   program:       Program       = Program.empty(),
-                                   overriding:    Seq[String]   = Seq())
-            (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String = {
+  def compileProceduresIncremental(
+    logo:          String,
+    oldProcedures: ProceduresMap = NoProcedures,
+    program:       Program       = Program.empty(),
+    overriding:    Seq[String]   = Seq()
+  )(implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String = {
 
-    // In order to compile existing procedures, we have to remove the one from the procedure map first
     val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
-    frontEnd.frontEnd(logo,
-                      program = program,
-                      oldProcedures = oldProcedures.filter({ case (name, procedure) => !overriding.contains(name) }),
-                      extensionManager = NLWExtensionManager,
-                      subprogram = false)
+      frontEnd.frontEnd(
+          logo
+        , program          = program
+        , oldProcedures    = oldProcedures.filter({ case (name, procedure) => !overriding.contains(name) })
+        , extensionManager = NLWExtensionManager
+        , subprogram       = false
+      )
 
     implicit val context   = new CompilerContext(logo)
     val compiledProcedures = new ProcedureCompiler(handlers).compileProcedures(defs)
 
-    // Here we don't want the full symbols..
     ProcedureCompiler.formatProceduresBody(compiledProcedures)
+
   }
 
-  def compileMoreProcedures(model:         Model,
-                            program:       Program,
-                            oldProcedures: ProceduresMap)
-                  : (Seq[ProcedureDefinition], Program, ProceduresMap) = {
+  def compileMoreProcedures(
+    model:         Model,
+    program:       Program,
+    oldProcedures: ProceduresMap
+  ): (Seq[ProcedureDefinition], Program, ProceduresMap) = {
+
     val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
-      frontEnd.frontEnd(model.code,
-                        program = program,
-                        oldProcedures = oldProcedures,
-                        extensionManager = NLWExtensionManager,
-                        subprogram = false)
+      frontEnd.frontEnd(
+          model.code
+        , program          = program
+        , oldProcedures    = oldProcedures
+        , extensionManager = NLWExtensionManager
+        , subprogram       = false
+      )
+
     (defs, results.program, results.procedures)
+
   }
 
-  def compileProcedures(model:         Model)
-              (implicit compilerFlags: CompilerFlags): Compilation = {
+  def compileProcedures(model: Model)(implicit compilerFlags: CompilerFlags): Compilation = {
 
     val (procedureDefs, program, procedures) =
       {
@@ -163,12 +181,13 @@ object Compiler extends CompilerLike {
   //   `__observer-code` command followed by the `report` command, so the
   //   actual reporter is the first (and only) argument to `report`
 
-  private def compile(logo:          String,
-                      commands:      Boolean,
-                      oldProcedures: ProceduresMap,
-                      program:       Program,
-                      raw:           Boolean       = false)
-            (implicit compilerFlags: CompilerFlags): String = {
+  private def compile(
+    logo:          String,
+    commands:      Boolean,
+    oldProcedures: ProceduresMap,
+    program:       Program,
+    raw:           Boolean = false
+  )(implicit compilerFlags: CompilerFlags): String = {
 
     val header  = SourceWrapping.getHeader(AgentKind.Observer, commands)
     val footer  = SourceWrapping.getFooter(commands)
@@ -178,8 +197,12 @@ object Compiler extends CompilerLike {
     implicit val procContext = ProcedureContext(!raw, Seq())
 
     val (defs, _) =
-      frontEnd.frontEnd( wrapped, oldProcedures = oldProcedures
-                       , program = program, extensionManager = NLWExtensionManager)
+      frontEnd.frontEnd(
+          wrapped
+        , oldProcedures    = oldProcedures
+        , program          = program
+        , extensionManager = NLWExtensionManager
+      )
 
     val pd =
       if (compilerFlags.optimizationsEnabled)
@@ -195,12 +218,13 @@ object Compiler extends CompilerLike {
   }
 
   private def resolveModelConfig: JsStatement = {
-    val js = """var modelConfig =
-               |  (
-               |    (typeof global !== "undefined" && global !== null) ? global :
-               |    (typeof window !== "undefined" && window !== null) ? window :
-               |    {}
-               |  ).modelConfig || {};""".stripMargin
+    val js =
+      """var modelConfig =
+        |  (
+        |    (typeof global !== "undefined" && global !== null) ? global :
+        |    (typeof window !== "undefined" && window !== null) ? window :
+        |    {}
+        |  ).modelConfig || {};""".stripMargin
     JsStatement("modelConfig", js, Seq("global.modelConfig"))
   }
 

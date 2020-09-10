@@ -27,8 +27,10 @@ import
   WidgetCompiler.{ ExceptionValidation, ValidationContextualizer }
 
 
-class WidgetCompiler(compileCommand:  String => CompiledStringV,
-                     compileReporter: String => CompiledStringV) {
+class WidgetCompiler(
+  compileCommand:  String => CompiledStringV,
+  compileReporter: String => CompiledStringV
+) {
 
   def compileWidgets(widgets: Seq[Widget]): Seq[CompiledWidget] = {
     validatePlots(widgets)
@@ -120,9 +122,7 @@ class WidgetCompiler(compileCommand:  String => CompiledStringV,
     new CompiledPen(pen, Apply[ExceptionValidation].apply2(setup, update)(UpdateableCompilation.apply))
   }
 
-  private def compileInContext(code:        String,
-                               plotNameRaw: String,
-                               penNameOpt:  Option[String] = None): CompiledStringV = {
+  private def compileInContext(code: String, plotNameRaw: String, penNameOpt: Option[String] = None): CompiledStringV = {
     val penName       = penNameOpt map (name => s"'$name'") getOrElse "undefined"
     val inTempContext = (f: String) => s"plotManager.withTemporaryContext('$plotNameRaw', $penName)($f)"
     val withCloneRNG  = (f: String) => s"workspace.rng.withClone($f)"
@@ -154,17 +154,16 @@ object WidgetCompiler {
         new JavascriptObject().addObjectProperties(compiledWidget.toJsonObj.asInstanceOf[JsObject])
 
       compiledWidget match {
-        case CompiledWidget(monitor: Monitor, Success(comp: SourceCompilation))     =>
+        case CompiledWidget(monitor: Monitor, Success(comp: SourceCompilation)) =>
           comp.fold(javascriptObject)(addCompiledField(monitorRenames))
-        case CompiledWidget(slider:  Slider,  Success(comp: SliderCompilation))     =>
+        case CompiledWidget(slider:  Slider,  Success(comp: SliderCompilation)) =>
           comp.fold(javascriptObject)(addCompiledField(sliderRenames))
         case cw => javascriptObject
       }
     }
 
-  private def addCompiledField(fnNames:          Map[String, String])
-                              (javascriptObject: JavascriptObject,
-                               compileResult:    (String, String)) =
+  private def addCompiledField(fnNames: Map[String, String])
+    (javascriptObject: JavascriptObject, compileResult: (String, String)) =
     compileResult match {
       case (fieldName, body) =>
         javascriptObject.addFunction(fnNames(fieldName), JsFunction(Seq(), Seq(s"return $body;")))

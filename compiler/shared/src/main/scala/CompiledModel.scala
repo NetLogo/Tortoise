@@ -12,9 +12,12 @@ import
   scalaz.{ Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
-case class CompiledModel(compiledCode: String = "",
-                         compilation: Compilation,
-                         private val compiler: CompilerLike = Compiler) {
+case class CompiledModel(
+  compiledCode:         String = "",
+  compilation:          Compilation,
+  private val compiler: CompilerLike = Compiler
+) {
+
   import CompiledModel.CompileResult
 
   val Compilation(_, widgets, _, model, procedures, program) = compilation
@@ -47,17 +50,15 @@ object CompiledModel {
 
   private val DefaultViewSize = 16
 
-  def fromModel(model:         Model,
-                compiler:      CompilerLike = Compiler)
-      (implicit compilerFlags: CompilerFlags): CompiledModelV = validate(compiler) {
+  def fromModel(model: Model, compiler: CompilerLike = Compiler)
+    (implicit compilerFlags: CompilerFlags): CompiledModelV = validate(compiler) {
     (c) =>
       val compilation = c.compileProcedures(model)
       CompiledModel(compiler.toJS(compilation), compilation, c)
   }
 
-  def fromNlogoContents(contents:      String,
-                        compiler:      CompilerLike  = Compiler)
-              (implicit compilerFlags: CompilerFlags): ValidationNel[Exception, CompiledModel] = {
+  def fromNlogoContents(contents: String, compiler: CompilerLike = Compiler)
+    (implicit compilerFlags: CompilerFlags): ValidationNel[Exception, CompiledModel] = {
     val validation =
       try fromModel(ModelReader.parseModel(contents, CompilerUtilities, Map()))
       catch {
@@ -66,20 +67,19 @@ object CompiledModel {
     validation.leftMap(_.map(ex => ex: Exception))
   }
 
-  def fromCode(netlogoCode:   String,
-               compiler:      CompilerLike = Compiler)
-     (implicit compilerFlags: CompilerFlags): CompiledModelV =
+  def fromCode(netlogoCode: String, compiler: CompilerLike = Compiler)
+    (implicit compilerFlags: CompilerFlags): CompiledModelV =
     fromModel(Model(netlogoCode, List(View.square(DefaultViewSize))))
 
-  def fromCompiledModel(netlogoCode:   String,
-                        oldModel:      CompiledModel)
-              (implicit compilerFlags: CompilerFlags): CompiledModelV = {
+  def fromCompiledModel(netlogoCode: String, oldModel:    CompiledModel)
+    (implicit compilerFlags: CompilerFlags): CompiledModelV = {
     val CompiledModel(_, compilation, compiler) = oldModel
     val model                                   = compilation.model
     fromModel(model.copy(code = netlogoCode), compiler)
   }
 
-  private def validate[T](compiler: CompilerLike)(compileFunc: (CompilerLike) => T): CompileResult[T] =
+  private def validate[T](compiler: CompilerLike)
+    (compileFunc: (CompilerLike) => T): CompileResult[T] =
     try compileFunc(compiler).successNel
     catch {
       case ex: CompilerException => ex.failureNel
