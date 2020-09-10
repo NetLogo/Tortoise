@@ -82,12 +82,13 @@ class BrowserCompiler {
   }
 
   @JSExport
-  def isReporter(code: String, compilationRequest: NativeJson): Boolean =
-    compileRequest(compilationRequest)
-      .toOption.flatMap(_.model.toOption)
-      .map(_.compilation)
-      .map(comp => CompilerUtilities.isReporter(code, comp.program, comp.procedures, NLWExtensionManager))
-      .getOrElse(false)
+  def isReporter(code: String): Boolean =
+    CompilerUtilities.isReporter(
+        code
+      , this.lastCompiledModel.compilation.program
+      , this.lastCompiledModel.compilation.procedures
+      , NLWExtensionManager
+    )
 
   @JSExport
   def compileCommand(command: String): NativeJson = {

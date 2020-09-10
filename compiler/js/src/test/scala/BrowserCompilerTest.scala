@@ -175,7 +175,8 @@ object BrowserCompilerTest extends TestSuite {
         )))
       val compiler = new BrowserCompiler
       val strs     = Seq("3", "3 + 1", "apples", "oranges", "3 + apples", "3 + (bananas 8 10)", "(3 / apples + (bananas 9001 3) > 0) or oranges", "sum [xcor] of turtles")
-      assert(strs.map(code => compiler.isReporter(code, compReq)).forall(_ == true))
+      compiler.fromModel(compReq)
+      assert(strs.map(code => compiler.isReporter(code)).forall(_ == true))
     }
 
     "isReporterFails"-{
@@ -186,7 +187,8 @@ object BrowserCompilerTest extends TestSuite {
         )))
       val compiler = new BrowserCompiler
       val strs     = Seq("create-turtle 1", "show true", "ask turtles [ set color red ]", "foo")
-      assert(strs.map(code => compiler.isReporter(code, compReq)).forall(_ == false))
+      compiler.fromModel(compReq)
+      assert(strs.map(code => compiler.isReporter(code)).forall(_ == false))
     }
 
   }
