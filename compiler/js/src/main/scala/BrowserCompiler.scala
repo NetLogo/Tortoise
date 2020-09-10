@@ -141,7 +141,10 @@ class BrowserCompiler {
       case e: Exception         => FailureException        (e): TortoiseFailure
     })
 
-    val compilation          = compiledModelWithFailures.map(m => updateCompilation(m, ModelCompilation.fromCompiledModel(m)))
+    val compilation = compiledModelWithFailures.map(m => {
+      this.lastCompiledModel = m
+      updateCompilation(m, ModelCompilation.fromCompiledModel(m))
+    })
     val validatedCompilation = Validation.fromTryCatchThrowable[ValidationNel[TortoiseFailure, ModelCompilation], Throwable](compilation)
 
     validatedCompilation.fold(
@@ -166,8 +169,6 @@ class BrowserCompiler {
 
   private def compileExtras(commands: Seq[String], reporters: Seq[String])
     (model: CompiledModel, compilation: ModelCompilation): ModelCompilation = {
-    // This is intended to cache the compiled model - I have no knowledge about how to implement in more appropriate location
-    this.lastCompiledModel = model
     compilation.copy(
       commands  = commands. map(model.compileCommand(_)),
       reporters = reporters.map(model.compileReporter(_))
