@@ -133,18 +133,18 @@ class BrowserCompiler {
   }
 
   private def transformErrorsAndUpdateModel(
-    compiledModel:     ValidationNel[Exception, CompiledModel],
-    updateCompilation: (CompiledModel, ModelCompilation) => ModelCompilation = (a, b) => b
+    compiledModelWithExceptions: ValidationNel[Exception, CompiledModel],
+    updateCompilation:           (CompiledModel, ModelCompilation) => ModelCompilation = (a, b) => b
   ): ValidationNel[TortoiseFailure, ModelCompilation] = {
 
-    val compiledModelWithFailures = compiledModel.leftMap(_.map {
+    val compiledModelWithFailures = compiledModelWithExceptions.leftMap(_.map {
       case e: CompilerException => FailureCompilerException(e): TortoiseFailure
       case e: Exception         => FailureException        (e): TortoiseFailure
     })
 
-    val compilation = compiledModelWithFailures.map(m => {
-      this.lastCompiledModel = m
-      updateCompilation(m, ModelCompilation.fromCompiledModel(m))
+    val compilation = compiledModelWithFailures.map(compiledModel => {
+      this.lastCompiledModel = compiledModel
+      updateCompilation(compiledModel, ModelCompilation.fromCompiledModel(compiledModel))
     })
     val validatedCompilation = Validation.fromTryCatchThrowable[ValidationNel[TortoiseFailure, ModelCompilation], Throwable](compilation)
 
