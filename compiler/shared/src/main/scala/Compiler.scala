@@ -86,10 +86,10 @@ object Compiler extends CompilerLike {
   // To compile more procedures after the main body is compiled
   def compileProceduresIncremental(logo:          String,
                                    oldProcedures: ProceduresMap = NoProcedures,
-                                   program:       Program       = Program.empty(), 
+                                   program:       Program       = Program.empty(),
                                    overriding:    Seq[String]   = Seq())
             (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String = {
-    
+
     // In order to compile existing procedures, we have to remove the one from the procedure map first
     val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
     frontEnd.frontEnd(logo,

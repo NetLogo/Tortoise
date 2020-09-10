@@ -23,7 +23,7 @@ import org.nlogo.parse.CompilerUtilities
 import
   scala.reflect.ClassTag
 
-import 
+import
   scala.scalajs.js
 
 import
@@ -85,21 +85,21 @@ class BrowserCompiler {
     val results : CompiledStringV = lastCompiledModel.compileCommand(command)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
-  
+
   // This method compiles a single additional reporter for the compiled model.
   @JSExport
   def compileReporter(command : String): NativeJson = {
     val results : CompiledStringV = lastCompiledModel.compileReporter(command)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
-  
+
   // This method compiles a single additional raw command for the compiled model.
   @JSExport
   def compileRawCommand(command : String): NativeJson = {
     val results : CompiledStringV = lastCompiledModel.compileRawCommand(command)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
-  
+
   // This method compiles additional procedures for the compiled model.
   @JSExport
   def compileProceduresIncremental(command : String, overriding : js.Array[String]): NativeJson = {
@@ -107,7 +107,7 @@ class BrowserCompiler {
     val results : CompiledStringV = lastCompiledModel.compileProceduresIncremental(command, overridingSeq)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
-  
+
   // This is intended to cache the last compiled model.
   private var lastCompiledModel : CompiledModel = _
 

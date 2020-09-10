@@ -46,7 +46,7 @@ object ProcedureCompiler {
   def formatProcedures(procedures: CompiledProceduresDictionary): Seq[TortoiseSymbol] =
     Seq(JsDeclare("procedures", proceduresObject(procedures), Seq("workspace", "world")))
 
-  def formatProceduresBody(procedures: CompiledProceduresDictionary) : String = 
+  def formatProceduresBody(procedures: CompiledProceduresDictionary) : String =
       procedures.map {
         case (js, names) =>
           names.map(name => s"""procs["$name"] = temp;""").mkString(s"temp = $js;\n", "\n", "")
