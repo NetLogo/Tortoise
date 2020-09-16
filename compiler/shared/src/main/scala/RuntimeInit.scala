@@ -77,8 +77,8 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
   private def genBreedObjects: String = {
     val breedObjects = (program.breeds.values ++ program.linkBreeds.values).map {
       b =>
-        val name        = jsString(b.name)
-        val singular    = jsString(b.singular.toLowerCase)
+        val name        = jsString(b.originalName)
+        val singular    = jsString(b.originalSingular)
         val varNames    = jsArrayString(b.owns map (_.toLowerCase) map jsString)
         val directedStr = if (b.isLinkBreed) s", isDirected: ${b.isDirected}" else ""
         s"""{ name: $name, singular: $singular, varNames: $varNames$directedStr }"""

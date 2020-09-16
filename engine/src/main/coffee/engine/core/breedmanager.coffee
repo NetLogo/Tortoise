@@ -12,8 +12,10 @@ class Breed
   ordinal: undefined # Number
 
   # (String, String, BreedManager, Array[String], Boolean, String, Array[Agent]) => Breed
-  constructor: (@name, @singular, @_manager, @varNames = [], @_isDirectedLinkBreed, @_shape = undefined, @members = []) ->
-    @ordinal = getNextOrdinal()
+  constructor: (@originalName, @originalSingular, @_manager, @varNames = [], @_isDirectedLinkBreed, @_shape = undefined, @members = []) ->
+    @name     = @originalName.toUpperCase()
+    @singular = @originalSingular.toLowerCase()
+    @ordinal  = getNextOrdinal()
 
   # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
   # default shape --JAB (5/27/14)
@@ -75,16 +77,15 @@ module.exports =
     constructor: (breedObjs, turtlesOwns = [], linksOwns = []) ->
 
       defaultBreeds = {
-        TURTLES: new Breed("TURTLES", "turtle", this, turtlesOwns, undefined, "default"),
-        LINKS:   new Breed("LINKS",   "link",   this, linksOwns,   false,     "default")
+        TURTLES: new Breed("turtles", "turtle", this, turtlesOwns, undefined, "default"),
+        LINKS:   new Breed("links",   "link",   this, linksOwns,   false,     "default")
       }
 
       @_breeds = foldl(
         (acc, breedObj) =>
-          trueName      = breedObj.name.toUpperCase()
-          trueSingular  = breedObj.singular.toLowerCase()
-          trueVarNames  = breedObj.varNames ? []
-          acc[trueName] = new Breed(trueName, trueSingular, this, trueVarNames, breedObj.isDirected)
+          trueVarNames    = breedObj.varNames ? []
+          breed           = new Breed(breedObj.name, breedObj.singular, this, trueVarNames, breedObj.isDirected)
+          acc[breed.name] = breed
           acc
       )(defaultBreeds)(breedObjs)
 
