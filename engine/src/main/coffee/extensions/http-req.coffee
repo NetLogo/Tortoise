@@ -2,7 +2,7 @@
 
 module.exports = {
 
-  dumper: undefined
+  porter: undefined
 
   init: (workspace) ->
 

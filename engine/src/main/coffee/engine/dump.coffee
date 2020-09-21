@@ -7,12 +7,16 @@ Tasks  = require('./prim/tasks')
 { apply, flip, pipeline } = require('brazierjs/function')
 { fold                  } = require('brazierjs/maybe')
 
-# type ExtensionDumper = { canDump: (Any) => Boolean, dumper: (Any) => String }
+# type ExtensionPorter[T] = {
+#   canHandle:      (Any) => Boolean,
+#   dump:           (T) => String,
+#   importValue:    (T, (Any) => Any) => T
+# }
 
 # Needs a name here since it's recursive --JAB (4/16/14)
-# (Array[ExtensionDumper]) => (Any, Boolean) => String
+# (Array[ExtensionPorter]) => (Any, Boolean) => String
 dump =
-  (extensionDumpers) ->
+  (extensionPorters) ->
     helper =
       (x, isReadable = false) ->
         type = NLType(x)
@@ -28,7 +32,7 @@ dump =
         else if type.isNumber()
           String(x).toUpperCase() # For scientific notation, handles correct casing of the 'E' --JAB (8/28/17)
         else
-          pipeline(find((d) -> d.canDump(x)), fold(-> String)((d) -> d.dump), flip(apply)(x))(extensionDumpers)
+          pipeline(find((d) -> d.canHandle(x)), fold(-> String)((d) -> d.dump), flip(apply)(x))(extensionPorters)
     helper
 
 module.exports = dump

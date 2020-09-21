@@ -43,7 +43,7 @@ class MiniWorkspace
   constructor: (@selfManager, @updater, @breedManager, @rng, @plotManager) ->
 
 module.exports =
-  (modelConfig) -> (breedObjs) -> (turtlesOwns, linksOwns) -> (code) -> (widgets) -> (extensionDumpers) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
+  (modelConfig) -> (breedObjs) -> (turtlesOwns, linksOwns) -> (code) -> (widgets) -> (extensionPorters) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
@@ -63,7 +63,7 @@ module.exports =
 
     Meta.version = modelConfig?.version ? Meta.version
 
-    dump        = Dump(extensionDumpers)
+    dump        = Dump(extensionPorters)
     rng         = new RNG
     typechecker = NLType
     outputStore = ""

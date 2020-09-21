@@ -56,10 +56,12 @@ checkNestedList = (list) ->
 
   return list
 
-
 module.exports = {
 
-  dumper: { canDump: isMatrix, dump: (x) -> "{{matrix: #{dumpMatrix(x)}}}" }
+  porter: {
+    canHandle: isMatrix
+    dump:      (x) -> "{{matrix: #{dumpMatrix(x)}}}"
+  }
 
   init: (workspace) ->
 

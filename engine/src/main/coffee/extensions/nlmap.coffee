@@ -6,7 +6,10 @@ isMap = (x) ->
 
 module.exports = {
 
-  dumper: { canDump: isMap, dump: (x) -> "{{nlmap:  #{JSON.stringify(x)}}}" }
+  porter: {
+    canHandle: isMap
+    dump:      (x) -> "{{nlmap:  #{JSON.stringify(x)}}}"
+  }
 
   init: (workspace) ->
 

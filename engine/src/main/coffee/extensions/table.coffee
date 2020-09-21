@@ -52,10 +52,12 @@ checkInput = ({table, key}) ->
         "#{workspace.dump(key, true)} is not a valid table key " +
         "(a table key may only be a number, a string, true or false, or a list whose items are valid keys)")
 
-
 module.exports = {
 
-  dumper: { canDump: isTable, dump: (x) -> "{{table: #{dumpTable(x)}}}" }
+  porter: {
+    canHandle: isTable
+    dump:      (x) -> "{{table: #{dumpTable(x)}}}"
+  }
 
   init: (workspace) ->
 

@@ -6,7 +6,10 @@ isArray = (x) ->
 
 module.exports = {
 
-  dumper: { canDump: isArray, dump: (x) -> "{{array: #{x.dump()}}}" }
+  porter: {
+    canHandle: isArray
+    dump:      (x) -> "{{array: #{x.dump()}}}"
+  }
 
   init: (workspace) ->
 

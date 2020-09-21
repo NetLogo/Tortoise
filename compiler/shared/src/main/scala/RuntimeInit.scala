@@ -29,7 +29,7 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
         , genBreedsOwnArgs
         , Seq(s"'${jsReplace(model.code)}'")
         , Seq(jsArrayString(widgets.map(_.toJsonObj.toString)))
-        , Seq("tortoise_require(\"extensions/all\").dumpers()")
+        , Seq("tortoise_require(\"extensions/all\").porters()")
         , genWorkspaceArgs
         )
       , Seq("turtleShapes", "linkShapes")
