@@ -55,8 +55,15 @@ checkInput = ({table, key}) ->
 module.exports = {
 
   porter: {
-    canHandle: isTable
-    dump:      (x) -> "{{table: #{dumpTable(x)}}}"
+    canHandle:   isTable
+    dump:        (x) -> "{{table: #{dumpTable(x)}}}"
+    importState: (x, reify) ->
+      Array.from(x.keys()).forEach( (key) ->
+        value = x.get(key)
+        x.set(key, reify(value))
+        return
+      )
+      x
   }
 
   init: (workspace) ->

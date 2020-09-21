@@ -73,10 +73,21 @@ module.exports =
     plotManager  = new PlotManager(plots)
     timer        = new Timer
     updater      = new Updater(dump)
+    workspace    = new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager)
 
     # The world is only given `dump` for stupid `atpoints` in `AbstractAgentSet`... --JAB (8/24/17)
-    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, (-> importExportConfig.getViewBase64()), (-> outputConfig.clear(); outputStore = ""), (-> outputStore), ((text) -> outputStore = text), dump, worldArgs...)
-    layoutManager   = new LayoutManager(world, rng.nextDouble)
+    world = new World(
+      workspace
+    , worldConfig
+    , (-> importExportConfig.getViewBase64())
+    , (-> outputConfig.clear(); outputStore = "")
+    , (-> outputStore)
+    , ((text) -> outputStore = text)
+    , dump
+    , extensionPorters
+    , worldArgs...
+    )
+    layoutManager = new LayoutManager(world, rng.nextDouble)
 
     evalPrims = new EvalPrims(code, widgets)
     prims     = new Prims(dump, Hasher, rng, world, evalPrims)

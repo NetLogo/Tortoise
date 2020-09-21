@@ -7,8 +7,11 @@ isArray = (x) ->
 module.exports = {
 
   porter: {
-    canHandle: isArray
-    dump:      (x) -> "{{array: #{x.dump()}}}"
+    canHandle:   isArray
+    dump:        (x) -> "{{array: #{x.dump()}}}"
+    importState: (x, reify) ->
+      x.items = x.items.map( (i) -> reify(i) )
+      x
   }
 
   init: (workspace) ->

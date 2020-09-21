@@ -23,6 +23,32 @@ TurtleSet = require('../turtleset')
 
 { fold } = require('brazier/maybe')
 
+extensionsHandler = (extensionPorters) ->
+  extensionReferences = new Map()
+  inProgressMarker    = Object.freeze({ type: "reify-in-progress" })
+
+  {
+    canHandle: (x) ->
+      applicablePorters = extensionPorters.filter( (p) -> p.canHandle(x) )
+      if applicablePorters.length > 1
+        throw new Error("Multiple extensions claim to know how to handle this object type: #{JSON.stringify(x)}")
+      (applicablePorters.length is 1)
+
+    reify: (x, helper) ->
+      if not extensionReferences.has(x)
+        porter = extensionPorters.filter( (p) -> p.canHandle(x) )[0]
+        extensionReferences.set(x, inProgressMarker)
+        extensionObject = porter.importState(x, helper)
+        extensionReferences.set(x, extensionObject)
+        extensionObject
+
+      else
+        extensionObject = extensionReferences.get(x)
+        if extensionObject is inProgressMarker
+          throw new Error("Circular references within extension objects are not supported.")
+        extensionObject
+  }
+
 # ( (Number) => Agent
 # , (Number, Number) => Agent
 # , (Number, Number, String) => Agent
@@ -30,7 +56,10 @@ TurtleSet = require('../turtleset')
 # , () => Breed
 # , World
 # ) => (Any) => Any
-reifyExported = (getTurtle, getPatch, getLink, getAllPatches, getBreed, world) ->
+reifyExported = (getTurtle, getPatch, getLink, getAllPatches, getBreed, world, extensionPorters) ->
+
+  extensions = extensionsHandler(extensionPorters)
+
   helper = (x) ->
     type = NLType(x)
     if type.isList()
@@ -68,6 +97,8 @@ reifyExported = (getTurtle, getPatch, getLink, getAllPatches, getBreed, world) -
       fn.isReporter = true
       fn.nlogoBody  = x.source
       fn
+    else if extensions.canHandle(x)
+      extensions.reify(x, helper)
     else
       throw new Error("Unknown item for reification: #{JSON.stringify(x)}")
 
@@ -95,6 +126,7 @@ module.exports.importWorld = (
     , drawingDataMaybe
     , output
     }
+  , extensionPorters
   ) ->
 
     reify =
@@ -105,6 +137,7 @@ module.exports.importWorld = (
       , @patches.bind(this)
       , @breedManager.get.bind(@breedManager)
       , this
+      , @extensionPorters
       )
 
     @clearAll()

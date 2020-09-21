@@ -4,23 +4,29 @@
 isMap = (x) ->
   x._type is "ext_map"
 
+# type ExtMap = Object[Any]
+newMap = ->
+  out = {}
+  toMap(out)
+
+# (POJO) => ExtMap
+toMap = (obj) ->
+  Object.defineProperty(obj, "_type", { enumerable: false, value: "ext_map", writable: false })
+  obj
+
 module.exports = {
 
   porter: {
-    canHandle: isMap
-    dump:      (x) -> "{{nlmap:  #{JSON.stringify(x)}}}"
+    canHandle:   isMap
+    dump:        (x) -> "{{nlmap:  #{JSON.stringify(x)}}}"
+    importValue: (x, reify) ->
+      out = newMap()
+      for k of x
+        out[k] = reify(x[k])
+      out
   }
 
   init: (workspace) ->
-
-    # type ExtMap = Object[Any]
-    newMap = ->
-      out = {}
-      toMap(out)
-
-    toMap = (obj) ->
-      Object.defineProperty(obj, "_type", { enumerable: false, value: "ext_map", writable: false })
-      obj
 
     # List[(String, Any)] => ExtMap
     fromList = (list) ->
