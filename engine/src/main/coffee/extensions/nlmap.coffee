@@ -2,87 +2,94 @@
 
 # (Any) => Boolean
 isMap = (x) ->
-  x._type is "ext_map"
+  x._type is "nl_map"
 
-# type ExtMap = Object[Any]
-newMap = ->
+# type NLMap = Object[Any]
+
+# ((NLMap) => String) => NLMap
+newMap = (dump) ->
   out = {}
-  toMap(out)
+  toMap(out, dump)
 
-# (POJO) => ExtMap
-toMap = (obj) ->
-  Object.defineProperty(obj, "_type", { enumerable: false, value: "ext_map", writable: false })
+# (POJO, (NLMap) => String) => NLMap
+toMap = (obj, dump) ->
+  _dump = () -> dump(obj)
+  Object.defineProperty(obj, "_type", { enumerable: false, value: "nl_map", writable: false })
+  Object.defineProperty(obj, "_dump", { enumerable: false, value: _dump, writable: false })
   obj
 
 module.exports = {
 
   porter: {
     canHandle:   isMap
-    dump:        (x) -> "{{nlmap:  #{JSON.stringify(x)}}}"
+    dump:        (x) -> "{{nlmap:  #{x._dump()}}}"
     importState: (x, reify) ->
-      out = newMap()
-      for k of x
-        out[k] = reify(x[k])
-      out
+      out = {}
+      Object.keys(obj).map( (k) -> out[k] = reify(x[k]) )
+      toMap(out, x._dump)
   }
 
   init: (workspace) ->
 
-    # List[(String, Any)] => ExtMap
+    # (NLMap) => String
+    dump = (nlMap) ->
+      Object.keys(nlMap).map( (key) => "[\"#{key}\" #{workspace.dump(nlMap[key], true)}]" ).join(' ')
+
+    # List[(String, Any)] => NLMap
     fromList = (list) ->
-      out = newMap()
+      out = newMap(dump)
       for [k, v] in list
         out[k] = v
       out
 
-    # (ExtMap) => List[(String, Any)]
-    toList = (extMap) ->
-      for k of extMap
-        [k, extMap[k]]
+    # (NLMap) => List[(String, Any)]
+    toList = (nlMap) ->
+      for k of nlMap
+        [k, nlMap[k]]
 
-    # (ExtMap, String, Any) -> ExtMap
-    add = (extMap, key, value) ->
-      out = newMap()
-      for k of extMap
-        out[k] = extMap[k]
+    # (NLMap, String, Any) -> NLMap
+    add = (nlMap, key, value) ->
+      out = newMap(dump)
+      for k of nlMap
+        out[k] = nlMap[k]
       out[key] = value
       out
 
-    # (ExtMap, String) => Any
-    get = (extMap, key) ->
-      extMap[key] ? throw new Error("#{key} does not exist in this map")
+    # (NLMap, String) => Any
+    get = (nlMap, key) ->
+      nlMap[key] ? throw new Error("#{key} does not exist in this map")
 
-    # (ExtMap, String) => ExtMap
-    remove = (extMap, key) ->
-      out = newMap()
-      for k of extMap when k isnt key
-        out[k] = extMap[k]
+    # (NLMap, String) => NLMap
+    remove = (nlMap, key) ->
+      out = newMap(dump)
+      for k of nlMap when k isnt key
+        out[k] = nlMap[k]
       out
 
-    # NLMAP => String
-    mapToJson = (nlmap) ->
-      if nlmap._type isnt "ext_map"
+    # NLMap => String
+    mapToJson = (nlMap) ->
+      if nlMap._type isnt "nl_map"
         throw new Error("Only nlmap type values can be converted to JSON format.")
-      JSON.stringify(nlmap)
+      JSON.stringify(nlMap)
 
-    # NLMAP => String
-    mapToUrlEncoded = (nlmap) ->
-      if nlmap._type isnt "ext_map"
+    # NLMap => String
+    mapToUrlEncoded = (nlMap) ->
+      if nlMap._type isnt "nl_map"
         throw new Error("Only nlmap type values can be converted to URL format.")
       else
         kvps = []
 
-        for own key,value of nlmap
+        for own key,value of nlMap
           if (typeof value isnt 'object')
             kvps.push("#{encodeURIComponent(key)}=#{encodeURIComponent(value)}")
 
         kvps.join('&')
 
-    # String => NLMAP
+    # String => NLMap
     jsonToMap = (json) ->
       JSON.parse(json, (key, value) ->
         if (typeof value is 'object')
-          toMap(value)
+          toMap(value, dump)
         else
           value
       )
