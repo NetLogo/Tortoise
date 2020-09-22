@@ -136,6 +136,7 @@ module.exports = {
       ,     "HIDE-DIALOG": hideDialog
       ,             "GET": get
       ,             "SET": set
+      ,              "GO": go
       ,        "ACTIVATE": activate
       ,      "DEACTIVATE": deactivate
       ,         "FORWARD": forward
