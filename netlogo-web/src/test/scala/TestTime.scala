@@ -1,7 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 package org.nlogo.tortoise.nlw
-package dock
 
 import
   org.scalacheck.Gen

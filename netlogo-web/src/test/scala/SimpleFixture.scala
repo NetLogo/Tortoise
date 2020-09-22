@@ -1,7 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 package org.nlogo.tortoise.nlw
-package dock
 
 import
   org.scalatest.fixture.FunSuite
@@ -43,7 +42,7 @@ class SimpleFixture(engine: GraalJS) {
 
   private val compileCommands = Compiler.compileRawCommands(_: String, procedures, program)
   private val compileReporter = Compiler.compileReporter(_: String, procedures, program)
-  private val eval            = engine.eval _
+  val eval                    = engine.eval _
 
   private val compilation = Compilation(Seq(), Seq(), Seq(), Model(), procedures, program)
   private val js          = Compiler.toJS(compilation)

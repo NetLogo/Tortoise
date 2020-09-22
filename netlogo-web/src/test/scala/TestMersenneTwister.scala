@@ -2,31 +2,10 @@
 
 package org.nlogo.tortoise.nlw
 
-import org.scalatest.fixture.FunSuite
-
-class BrowserSuite extends FunSuite with TestLogger {
-
-  class BrowserFixture(val eval: (String) => AnyRef)
+class TestMersenneTwister extends SimpleSuite {
 
   engine.eval(   "Random = new tortoise_require('shim/engine-scala').MersenneTwisterFast()")
   engine.eval("AuxRandom = new tortoise_require('shim/engine-scala').MersenneTwisterFast()")
-
-  override type FixtureParam = BrowserFixture
-
-  override def withFixture(test: OneArgTest) = {
-    val fixture = new BrowserFixture(engine.eval)
-    loggingFailures(suiteName, test.name, {
-      val outcome = withFixture(test.toNoArgTest(fixture))
-      if (outcome.isFailed || outcome.isExceptional) {
-        testFailed(this.getClass.getName, test.name)
-      }
-      outcome
-    })
-  }
-
-}
-
-class TestMersenneTwister extends BrowserSuite {
 
   test("setSeed") { implicit fixture =>
     val result = fixture.eval("Random.setSeed(10); Random.nextInt()")
