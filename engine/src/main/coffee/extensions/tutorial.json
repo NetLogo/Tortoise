@@ -28,7 +28,7 @@
       "actionName": "set",
       "argTypes": [
         "string",
-        "boolean"
+        "wildcard"
       ],
       "returnType": "unit"
     }, {
