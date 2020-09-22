@@ -97,6 +97,20 @@ module.exports = {
       else
         workspace.printPrims.print("Deactivate section #{sectionName}")
       return
+      
+    # (String) -> Unit
+    go = (sectionName) ->
+      if tortugaSession = getTortugaSession()
+        if sectionName of tortugaSession.Tutorial.Sections
+          section = tortugaSession.Tutorial.Sections[sectionName]
+          tortugaSession.GoSection(section)
+        else
+          tortugaSession.MessageQueue.Enqueue(
+            { Type: "Error", Message: "Section #{sectionName} is not defined in the tutorial" }
+          )
+      else
+        workspace.printPrims.print("Go to section #{sectionName}")
+      return
 
     # () -> Unit
     forward = () ->
