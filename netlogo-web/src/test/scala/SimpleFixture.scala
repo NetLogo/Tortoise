@@ -49,9 +49,12 @@ class SimpleFixture(engine: GraalJS) {
 
   eval(js)
 
-  (compileCommands andThen eval)("clear-all random-seed 0")
+  evalCommand("clear-all random-seed 0")
 
-  def evaluate(nlCode: String): AnyRef =
+  def evalCommand(netLogoCommand: String): AnyRef =
+    (compileCommands andThen eval)(netLogoCommand)
+
+  def evalReporter(nlCode: String): AnyRef =
     (compileReporter andThen eval)(nlCode)
 
 }

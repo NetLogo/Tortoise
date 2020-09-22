@@ -3,18 +3,12 @@
 package org.nlogo.tortoise.nlw
 
 import
-  jsengine.GraalJS
-
-import
   org.nlogo.tortoise.compiler.CompiledModel
 
 import
   scala.io.Source
 
-import
-  org.scalatest.FunSuite
-
-class TestExtensionWorldState extends FunSuite {
+class TestExtensionWorldState extends SimpleSuite {
 
   private val model = {
     val input = Source.fromFile("resources/test/models/ExtensionStateTest.nlogo")
@@ -23,24 +17,24 @@ class TestExtensionWorldState extends FunSuite {
     CompiledModel.fromNlogoContents(nlogo) valueOr ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
   }
 
-  test("creating extension objects doesn't blow up") {
-    engine.eval(model.compiledCode)
-    evalNLCommand("make-extension-objects")
+  test("creating extension objects doesn't blow up") { fixture =>
+    fixture.eval(model.compiledCode)
+    evalCommand("make-extension-objects")
   }
 
-  private lazy val engine = {
-    val preCode = ""
-    val engine = new GraalJS
-    engine.setupTortoise
-    engine.eval(preCode)
-    engine
+  test("extension objects remain unchanged with world state export and import") { fixture =>
+    fixture.eval(model.compiledCode)
+    evalCommand("make-extension-objects")
+    fixture.eval("var state = workspace.world.exportState();")
+    fixture.eval("workspace.world.clearAll();")
   }
 
-  private def evalNLCommand(netlogo: String): AnyRef =
-    evalNL(netlogo, model.compileRawCommand)
+  private def evalCommand(netlogo: String): AnyRef =
+    evalModel(netlogo, model.compileRawCommand)
 
-  private def evalNL(netlogo: String, evaluator: (String) => CompiledModel.CompileResult[String]): AnyRef = {
+  private def evalModel(netlogo: String, evaluator: (String) => CompiledModel.CompileResult[String]): AnyRef = {
     val result = evaluator(netlogo) valueOr ((nel) => throw new Exception(nel.list.toList.mkString))
     engine.eval(result)
   }
+
 }
