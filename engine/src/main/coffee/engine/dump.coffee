@@ -10,7 +10,7 @@ Tasks  = require('./prim/tasks')
 # type ExtensionPorter[T] = {
 #   canHandle:      (Any) => Boolean,
 #   dump:           (T) => String,
-#   importValue:    (T, (Any) => Any) => T
+#   importState:    (T, (Any) => Any) => T
 # }
 
 # Needs a name here since it's recursive --JAB (4/16/14)

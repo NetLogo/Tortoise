@@ -19,7 +19,7 @@ module.exports = {
   porter: {
     canHandle:   isMap
     dump:        (x) -> "{{nlmap:  #{JSON.stringify(x)}}}"
-    importValue: (x, reify) ->
+    importState: (x, reify) ->
       out = newMap()
       for k of x
         out[k] = reify(x[k])
