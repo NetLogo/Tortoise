@@ -23,9 +23,13 @@ module.exports = {
   porter: {
     canHandle:   isMap
     dump:        (x) -> "{{nlmap:  #{x._dump()}}}"
+    exportState: (x, exportValue) ->
+      out = {}
+      Object.keys(x).map( (k) -> out[k] = exportValue(x[k]) )
+      toMap(out, x._dump)
     importState: (x, reify) ->
       out = {}
-      Object.keys(obj).map( (k) -> out[k] = reify(x[k]) )
+      Object.keys(x).map( (k) -> out[k] = reify(x[k]) )
       toMap(out, x._dump)
   }
 

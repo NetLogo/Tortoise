@@ -9,6 +9,12 @@ module.exports = {
   porter: {
     canHandle:   isArray
     dump:        (x) -> "{{array: #{x.dump()}}}"
+    exportState: (x, exportValue) ->
+      {
+        items: x.items.map( (i) -> exportValue(i) )
+        type:  "ext_array"
+        dump:  x.dump
+      }
     importState: (x, reify) ->
       x.items = x.items.map( (i) -> reify(i) )
       x

@@ -61,6 +61,7 @@ module.exports = {
   porter: {
     canHandle:   isMatrix
     dump:        (x) -> "{{matrix: #{dumpMatrix(x)}}}"
+    exportState: (x, _) -> x
     importState: (x, _) -> x
   }
 

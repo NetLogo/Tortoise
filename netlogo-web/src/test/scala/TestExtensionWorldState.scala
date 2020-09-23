@@ -27,6 +27,7 @@ class TestExtensionWorldState extends SimpleSuite {
     evalCommand("make-extension-objects")
     fixture.eval("var state = workspace.world.exportState();")
     fixture.eval("workspace.world.clearAll();")
+    fixture.eval("workspace.world.importState(state);")
   }
 
   private def evalCommand(netlogo: String): AnyRef =

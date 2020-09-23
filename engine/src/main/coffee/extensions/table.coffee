@@ -57,6 +57,14 @@ module.exports = {
   porter: {
     canHandle:   isTable
     dump:        (x) -> "{{table: #{dumpTable(x)}}}"
+    exportState: (x, exportValue) ->
+      map = new Map()
+      Array.from(x.keys()).forEach( (key) ->
+        value = x.get(key)
+        map.set(key, exportValue(value))
+        return
+      )
+      map
     importState: (x, reify) ->
       Array.from(x.keys()).forEach( (key) ->
         value = x.get(key)

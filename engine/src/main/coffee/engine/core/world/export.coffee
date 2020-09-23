@@ -93,8 +93,36 @@ exportAgentReference = (agent) ->
   else
     throw new Error("Cannot make agent reference out of: #{JSON.stringify(agent)}")
 
+extensionsHandler = (extensionPorters) ->
+  extensionReferences = new Map()
+  inProgressMarker    = Object.freeze({ type: "reify-in-progress" })
+
+  {
+    canHandle: (x) ->
+      applicablePorters = extensionPorters.filter( (p) -> p.canHandle(x) )
+      if applicablePorters.length > 1
+        throw new Error("Multiple extensions claim to know how to handle this object type: #{JSON.stringify(x)}")
+      (applicablePorters.length is 1)
+
+    exportState: (x, helper) ->
+      if not extensionReferences.has(x)
+        porter = extensionPorters.filter( (p) -> p.canHandle(x) )[0]
+        extensionReferences.set(x, inProgressMarker)
+        value = porter.exportState(x, helper)
+        extensionReferences.set(x, value)
+        value
+
+      else
+        value = extensionReferences.get(x)
+        if value is inProgressMarker
+          throw new Error("Circular references within extension objects are not supported.")
+        value
+  }
+
 # (Agent) => (String) => Any
-exportWildcardVar = (agent) -> (varName) ->
+exportWildcardVar = (agent, extensionPorters) -> (varName) ->
+
+  extensions = extensionsHandler(extensionPorters)
 
   exportWildcardValue = (value) ->
     type = NLType(value)
@@ -114,6 +142,8 @@ exportWildcardVar = (agent) -> (varName) ->
       new ExportedReporterLambda(value.nlogoBody)
     else if type.isList()
       value.map(exportWildcardValue)
+    else if extensions.canHandle(value)
+      extensions.exportState(value, exportWildcardValue)
     else
       value
 
@@ -125,12 +155,19 @@ exportMetadata = ->
   new Metadata(version, '[IMPLEMENT .NLOGO]', new Date())
 
 # [T, U <: ExportedAgent[T]] @ (Class[U], Array[(String, (Any) => Any)]) => (T) => U
-exportAgent = (clazz, builtInsMappings) -> (agent) ->
+exportAgent = (clazz, builtInsMappings, labelVarName, extensionPorters) -> (agent) ->
 
-  builtInsValues  = builtInsMappings.map(([name, f]) -> f(agent.getVariable(name)))
-  builtInsNames   = builtInsMappings.map(([name]) -> name)
-  extrasNames     = difference(agent.varNames())(builtInsNames)
-  extras          = toObject(extrasNames.map(tee(id)(exportWildcardVar(agent))))
+  wildcard = exportWildcardVar(agent, extensionPorters)
+
+  builtInsValues = builtInsMappings.map(([name, f]) ->
+    if name is labelVarName
+      wildcard(name)
+    else
+      f(agent.getVariable(name))
+  )
+  builtInsNames  = builtInsMappings.map(([name]) -> name)
+  extrasNames    = difference(agent.varNames())(builtInsNames)
+  extras         = toObject(extrasNames.map(tee(id)(wildcard)))
 
   new clazz(builtInsValues..., extras)
 
@@ -175,7 +212,7 @@ exportPlotManager = ->
 # () => Object[Any]
 exportMiniGlobals = ->
   namesNotDeleted = @observer.varNames().filter((name) => @observer.getVariable(name)?).sort()
-  toObject(namesNotDeleted.map(tee(id)(exportWildcardVar(@observer))))
+  toObject(namesNotDeleted.map(tee(id)(exportWildcardVar(@observer, @extensionPorters))))
 
 # () => ExportedGlobals
 exportGlobals = ->
@@ -230,6 +267,9 @@ module.exports.exportWorld = ->
   makeMappings = (builtins) -> (mapper) ->
     builtins.map(tee(id)(mapper))
 
+  labelExporter = (varName) => (agent) =>
+    exportWildcardVar(agent, @extensionPorters)(varName)
+
   patchMapper = (varName) ->
     switch varName
       when "pcolor", "plabel-color" then (color) -> exportColor(color)
@@ -251,9 +291,9 @@ module.exports.exportWorld = ->
   metadata    = exportMetadata.call(this)
   randomState = @rng.exportState()
   globals     = exportGlobals.call(this, false)
-  patches     =               @patches().toArray().map(exportAgent(ExportedPatch , makeMappings( patchBuiltins)( patchMapper)))
-  turtles     = @turtleManager.turtles().toArray().map(exportAgent(ExportedTurtle, makeMappings(turtleBuiltins)(turtleMapper)))
-  links       =     @linkManager.links().toArray().map(exportAgent(ExportedLink  , makeMappings(  linkBuiltins)(  linkMapper)))
+  patches     =               @patches().toArray().map(exportAgent(ExportedPatch , makeMappings( patchBuiltins)( patchMapper), "plabel", @extensionPorters))
+  turtles     = @turtleManager.turtles().toArray().map(exportAgent(ExportedTurtle, makeMappings(turtleBuiltins)(turtleMapper), "label",  @extensionPorters))
+  links       =     @linkManager.links().toArray().map(exportAgent(ExportedLink  , makeMappings(  linkBuiltins)(  linkMapper), "llabel", @extensionPorters))
   drawingM    = if not @_updater.drawingWasJustCleared() then maybe([@patchSize, @_getViewBase64()]) else None
   output      = @_getOutput()
   plotManager = exportPlotManager.call(this)
