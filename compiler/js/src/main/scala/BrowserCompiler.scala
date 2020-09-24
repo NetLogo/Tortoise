@@ -44,6 +44,8 @@ class BrowserCompiler {
   private var lastCompiledModel: CompiledModel = null
   // scalastyle:on null
 
+  private val compiler = new Compiler()
+
   @JSExport
   def fromModel(compilationRequest: NativeJson): NativeJson = {
 
@@ -51,7 +53,7 @@ class BrowserCompiler {
       for {
         tortoiseReq   <- readNative[JsObject](compilationRequest)
         parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
-        compiledModel =  CompiledModel.fromModel(parsedRequest.toModel).leftMap(_.map(ex => ex: Exception))
+        compiledModel =  CompiledModel.fromModel(parsedRequest.toModel, compiler).leftMap(_.map(ex => ex: Exception))
         compilation   <- transformErrorsAndUpdateModel(
           compiledModel,
           compileExtras(parsedRequest.allCommands, parsedRequest.allReporters)
@@ -70,7 +72,7 @@ class BrowserCompiler {
     val compilationResult =
       for {
         commands      <- readArray[String](commandJson, "commands")
-        compiledModel =  CompiledModel.fromNlogoContents(contents)
+        compiledModel =  CompiledModel.fromNlogoContents(contents, compiler)
         compilation   <- transformErrorsAndUpdateModel(compiledModel, compileExtras(commands, Seq()))
       } yield compilation
 
@@ -80,7 +82,7 @@ class BrowserCompiler {
 
   @JSExport
   def fromNlogo(contents: String): NativeJson =
-    JsonLibrary.toNative(transformErrorsAndUpdateModel(CompiledModel.fromNlogoContents(contents)).toJsonObj)
+    JsonLibrary.toNative(transformErrorsAndUpdateModel(CompiledModel.fromNlogoContents(contents, compiler)).toJsonObj)
 
   @JSExport
   def exportNlogo(exportRequest: NativeJson): NativeJson = {
@@ -101,7 +103,7 @@ class BrowserCompiler {
         code
       , this.lastCompiledModel.compilation.program
       , this.lastCompiledModel.compilation.procedures
-      , NLWExtensionManager
+      , compiler.extensionManager
     )
 
   @JSExport

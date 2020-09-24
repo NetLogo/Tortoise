@@ -53,6 +53,8 @@ trait DockingSuite extends FunSuite with TestLogger {
 
 class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
 
+  private val tortoiseCompiler = new Compiler()
+
   def mirrorables: Iterable[mirror.Mirrorable] =
     mirror.Mirrorables.allMirrorables(workspace.world)
   var state: mirror.Mirroring.State = Map()
@@ -119,7 +121,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   override def runReporter(reporter: Reporter, mode: TestMode) {
     if (!opened) declare(Model())
     netLogoCode ++= s"${reporter.reporter}\n"
-    val compiledJS = "var letVars = { }; " + Compiler.compileReporter(
+    val compiledJS = "var letVars = { }; " + tortoiseCompiler.compileReporter(
       reporter.reporter, workspace.procedures, workspace.world.program)
     reporter.result match {
       case Success(expected) =>
@@ -205,7 +207,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   override def runCommand(command: Command, mode: TestMode) = {
     val logo = command.command
     netLogoCode ++= s"$logo\n"
-    val compiledJS = "var letVars = { }; " + Compiler.compileRawCommands(logo, workspace.procedures, workspace.world.program)
+    val compiledJS = "var letVars = { }; " + tortoiseCompiler.compileRawCommands(logo, workspace.procedures, workspace.world.program)
     runDocked(_.command(logo))(_.run(compiledJS))
   }
 
@@ -282,8 +284,8 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
 
   def declareHelper(model: Model) {
     netLogoCode ++= s"${model.code}\n"
-    val result = Compiler.compileProcedures(model)
-    val js = Compiler.toJS(result)
+    val result = tortoiseCompiler.compileProcedures(model)
+    val js     = tortoiseCompiler.toJS(result)
     evalJS(js)
     evalJS(s"var widgets = ${WidgetCompiler.formatWidgets(result.widgets)};")
     state = Map()

@@ -26,7 +26,9 @@ object CompilerService {
     val nlogo = input.mkString
     input.close()
 
-    val model = CompiledModel.fromNlogoContents(nlogo) valueOr {
+    val compiler = new Compiler()
+
+    val model = CompiledModel.fromNlogoContents(nlogo, compiler) valueOr {
       case NonEmptyList(head, _) => throw head
     }
 

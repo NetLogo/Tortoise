@@ -15,7 +15,7 @@ import
 case class CompiledModel(
   compiledCode:         String = "",
   compilation:          Compilation,
-  private val compiler: CompilerLike = Compiler
+  private val compiler: CompilerLike
 ) {
 
   import CompiledModel.CompileResult
@@ -50,28 +50,28 @@ object CompiledModel {
 
   private val DefaultViewSize = 16
 
-  def fromModel(model: Model, compiler: CompilerLike = Compiler)
+  def fromModel(model: Model, compiler: CompilerLike)
     (implicit compilerFlags: CompilerFlags): CompiledModelV = validate(compiler) {
     (c) =>
       val compilation = c.compileProcedures(model)
       CompiledModel(compiler.toJS(compilation), compilation, c)
   }
 
-  def fromNlogoContents(contents: String, compiler: CompilerLike = Compiler)
+  def fromNlogoContents(contents: String, compiler: CompilerLike)
     (implicit compilerFlags: CompilerFlags): ValidationNel[Exception, CompiledModel] = {
     val validation =
-      try fromModel(ModelReader.parseModel(contents, CompilerUtilities, Map()))
+      try fromModel(ModelReader.parseModel(contents, CompilerUtilities, Map()), compiler)
       catch {
         case e: RuntimeException => e.failureNel
       }
     validation.leftMap(_.map(ex => ex: Exception))
   }
 
-  def fromCode(netlogoCode: String, compiler: CompilerLike = Compiler)
+  def fromCode(netlogoCode: String, compiler: CompilerLike)
     (implicit compilerFlags: CompilerFlags): CompiledModelV =
-    fromModel(Model(netlogoCode, List(View.square(DefaultViewSize))))
+    fromModel(Model(netlogoCode, List(View.square(DefaultViewSize))), compiler)
 
-  def fromCompiledModel(netlogoCode: String, oldModel:    CompiledModel)
+  def fromCompiledModel(netlogoCode: String, oldModel: CompiledModel)
     (implicit compilerFlags: CompilerFlags): CompiledModelV = {
     val CompiledModel(_, compilation, compiler) = oldModel
     val model                                   = compilation.model

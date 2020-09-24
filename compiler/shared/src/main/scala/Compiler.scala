@@ -4,7 +4,17 @@ package org.nlogo.tortoise.compiler
 
 import
   org.nlogo.{ core, parse },
-    core.{ AgentKind, CompilerException, FrontEndInterface, Model, ProcedureDefinition, Program, SourceWrapping, StructureResults },
+    core.{
+      AgentKind
+    , CompilerException
+    , ExtensionManager
+    , FrontEndInterface
+    , Model
+    , ProcedureDefinition
+    , Program
+    , SourceWrapping
+    , StructureResults
+    },
       FrontEndInterface.{ ProceduresMap, NoProcedures },
     parse.FrontEnd
 
@@ -38,12 +48,14 @@ import TortoiseSymbol.JsStatement
 // - Compiler calls Handlers
 // - Handlers calls Prims
 // - Prims calls back to Handlers
-object Compiler extends CompilerLike {
+class Compiler extends CompilerLike {
 
   self =>
 
   private val prims:    Prims    = new Prims    { override lazy val handlers = self.handlers }
   private val handlers: Handlers = new Handlers { override lazy val prims    = self.prims }
+
+  val extensionManager: ExtensionManager = new NLWExtensionManager()
 
   val frontEnd: FrontEndInterface = FrontEnd
 
@@ -106,7 +118,7 @@ object Compiler extends CompilerLike {
           logo
         , program          = program
         , oldProcedures    = oldProcedures.filter({ case (name, procedure) => !overriding.contains(name) })
-        , extensionManager = NLWExtensionManager
+        , extensionManager = extensionManager
         , subprogram       = false
       )
 
@@ -128,7 +140,7 @@ object Compiler extends CompilerLike {
           model.code
         , program          = program
         , oldProcedures    = oldProcedures
-        , extensionManager = NLWExtensionManager
+        , extensionManager = extensionManager
         , subprogram       = false
       )
 
@@ -201,7 +213,7 @@ object Compiler extends CompilerLike {
           wrapped
         , oldProcedures    = oldProcedures
         , program          = program
-        , extensionManager = NLWExtensionManager
+        , extensionManager = extensionManager
       )
 
     val pd =
@@ -227,9 +239,5 @@ object Compiler extends CompilerLike {
         |  ).modelConfig || {};""".stripMargin
     JsStatement("modelConfig", js, Seq("global.modelConfig"))
   }
-
-  // This is a workaround for GraalJS interop - we need string bytes in `exportFile`, but GraalJS converts
-  // JVM strings to JS strings.  So convert them back!  -JMB Feb 2019
-  def getBytes(value: String): Array[Byte] = value.getBytes(java.nio.charset.StandardCharsets.UTF_8)
 
 }

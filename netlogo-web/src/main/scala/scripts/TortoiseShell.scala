@@ -18,13 +18,15 @@ object TortoiseShell extends workspace.Shell {
 
   def main(argv: Array[String]) {
     workspace.AbstractWorkspace.setHeadlessProperty()
-    val compilation = Compiler.compileProcedures(defaultModel)
+
+    val compiler = new Compiler()
+    val compilation = compiler.compileProcedures(defaultModel)
     jsRuntime.setupTortoise
-    jsRuntime.eval(Compiler.toJS(compilation))
+    jsRuntime.eval(compiler.toJS(compilation))
     System.err.println("Tortoise Shell 1.0")
     for(line <- input.takeWhile(!isQuit(_)))
       printingExceptions {
-        run(Compiler.compileRawCommands(line, compilation.procedures, compilation.program))
+        run(compiler.compileRawCommands(line, compilation.procedures, compilation.program))
       }
   }
 

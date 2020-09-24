@@ -7,7 +7,7 @@ if (typeof Polyglot !== "undefined") {
   const Base64   = Java.type('java.util.Base64');
   const ByteArr  = Java.type("byte[]");
   const Color    = Java.type('java.awt.Color');
-  const Compiler = Java.type('org.nlogo.tortoise.compiler.Compiler');
+  const Compiler = Java.type('org.nlogo.tortoise.compiler.Polyfills');
   const Files    = Java.type('java.nio.file.Files');
   const ImageIO  = Java.type('javax.imageio.ImageIO');
   const Paths    = Java.type('java.nio.file.Paths');

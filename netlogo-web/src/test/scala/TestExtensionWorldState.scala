@@ -14,7 +14,7 @@ class TestExtensionWorldState extends SimpleSuite {
     val input = Source.fromFile("resources/test/models/ExtensionStateTest.nlogo")
     val nlogo = input.mkString
     input.close()
-    CompiledModel.fromNlogoContents(nlogo) valueOr ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
+    CompiledModel.fromNlogoContents(nlogo, compiler) valueOr ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
   }
 
   test("creating extension objects doesn't blow up") { fixture =>

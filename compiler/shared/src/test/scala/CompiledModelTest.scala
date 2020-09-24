@@ -16,6 +16,8 @@ import
 
 class CompiledModelTest extends FunSuite {
 
+  private val compiler = new Compiler()
+
   private val goodModelCode =
     s"""|to go
         |end
@@ -39,7 +41,7 @@ class CompiledModelTest extends FunSuite {
   }
 
   test("invalid model from nlogo") {
-    assert(CompiledModel.fromNlogoContents("").isFailure)
+    assert(CompiledModel.fromNlogoContents("", compiler).isFailure)
   }
 
   test("model with unimplemented primitives can be compiled") {
@@ -96,9 +98,9 @@ class CompiledModelTest extends FunSuite {
 
     val (compileFunc, modelCompileFunc) =
       if (isReporter)
-        (Compiler.compileReporter _, model.compileReporter _)
+        (compiler.compileReporter _, model.compileReporter _)
       else
-        (Compiler.compileCommands _, model.compileCommand(_: String))
+        (compiler.compileCommands _, model.compileCommand(_: String))
 
     val genJS = compileFunc(_: String, model.procedures, model.program)
 
@@ -111,9 +113,9 @@ class CompiledModelTest extends FunSuite {
                             compilerFlags: CompilerFlags = CompilerFlags.Default): Unit = {
 
     val genJS         = (codeToModel                                                  andThen
-                        ((m: CModel) => Compiler.compileProcedures(m)(compilerFlags)) andThen
-                        Compiler.toJS)(_)
-    val genValidation = (code: String) => CompiledModel.fromCode(code)(compilerFlags) map (_.compiledCode)
+                        ((m: CModel) => compiler.compileProcedures(m)(compilerFlags)) andThen
+                        compiler.toJS)(_)
+    val genValidation = (code: String) => CompiledModel.fromCode(code, compiler)(compilerFlags) map (_.compiledCode)
 
     runTest(modelCode, genJS, genValidation)
 
@@ -153,7 +155,7 @@ class CompiledModelTest extends FunSuite {
   }
 
   private def unsafeGenModelFromCode(code: String): CompiledModel =
-    CompiledModel.fromCode(code) valueOr { case NonEmptyList(head, _) => throw head }
+    CompiledModel.fromCode(code, compiler) valueOr { case NonEmptyList(head, _) => throw head }
 
   private val codeToModel = (code: String) =>
     CModel(code, List(View.square(16)))

@@ -23,14 +23,16 @@ import jsengine.GraalJS
 
 class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) => Nothing) extends Fixture {
 
+  private val compiler = new Compiler()
+
   private var program: Program = Program.empty
   private var procs: ProceduresMap = NoProcedures
 
   private def modelJS(model: CModel): String = {
-    val compilation = cautiously(Compiler.compileProcedures(model))
+    val compilation = cautiously(compiler.compileProcedures(model))
     program = compilation.program
     procs   = compilation.procedures
-    Compiler.toJS(compilation)
+    compiler.toJS(compilation)
   }
 
   override def declare(model: CModel): Unit = {
@@ -39,10 +41,10 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
   }
 
   override def readFromString(literal: String): AnyRef =
-    cautiously(engine.eval(Compiler.compileReporter(literal)))
+    cautiously(engine.eval(compiler.compileReporter(literal)))
 
   override def runCommand(command: Command, mode: TestMode): Unit = {
-    lazy val js = Compiler.compileCommands(wrapCommand(command), procs, program)
+    lazy val js = compiler.compileCommands(wrapCommand(command), procs, program)
     command.result match {
       case Success(_) =>
         cautiously{ engine.run(js); () }
@@ -56,7 +58,7 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
   }
 
   override def runReporter(reporter: Reporter, mode: TestMode): Unit = {
-    lazy val js = "var letVars = { }; " + Compiler.compileReporter(reporter.reporter, procs, program)
+    lazy val js = "var letVars = { }; " + compiler.compileReporter(reporter.reporter, procs, program)
     reporter.result match {
       case Success(expectedResult) =>
         val actualResult = cautiously(engine.eval(js))

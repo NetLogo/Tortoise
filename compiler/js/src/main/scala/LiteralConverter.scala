@@ -25,6 +25,8 @@ import
 @JSExportTopLevel("Converter")
 object LiteralConverter {
 
+  private val compiler = new Compiler()
+
   class WrappedException(@(JSExport @field) val message: String) extends Throwable
 
   @JSExport
@@ -68,7 +70,7 @@ object LiteralConverter {
       errors    => throw new WrappedException(errors.map((e) => e).toList.mkString("\n")),
       parsedReq => {
         val compilation = try {
-           Compiler.compileProcedures(reqToModelWithRun(parsedReq, isRunResult, procVars, runString))
+           compiler.compileProcedures(reqToModelWithRun(parsedReq, isRunResult, procVars, runString))
         } catch {
           case ex: Exception => throw new WrappedException(ex.getMessage)
         }

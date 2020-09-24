@@ -131,7 +131,8 @@ private object CreateExtension {
   }
   // scalastyle:on cyclomatic.complexity
 }
-object NLWExtensionManager extends ExtensionManager {
+
+class NLWExtensionManager extends ExtensionManager {
 
   import org.nlogo.core.{ CompilerException, Token }
   import org.nlogo.tortoise.macros.ExtDefReader

@@ -45,6 +45,8 @@ object Benchmarker extends App {
 
   private val engineToEvalMap = Seq(GraalJS, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
 
+  private val compiler = new org.nlogo.tortoise.compiler.Compiler()
+
   val (dirStr, models, numIterations, numTicks, enginesAndEvals, comment) = processArgs(args)
 
   val dir       = new File(dirStr)
@@ -100,7 +102,7 @@ object Benchmarker extends App {
         val nlogo  = source.mkString.replaceAll("""\sdisplay\s""", "")
         source.close()
 
-        val modelV = CompiledModel.fromNlogoContents(nlogo)
+        val modelV = CompiledModel.fromNlogoContents(nlogo, compiler)
 
         val benchmarkPattern = """(?s).*\n\s*to\s+benchmark\s+(?s).*\n\s*end(?s).*"""
         val benchmarkable = nlogo.matches(benchmarkPattern)
