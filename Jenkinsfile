@@ -14,7 +14,7 @@ pipeline {
 
     stage('Clean') {
       steps {
-        sh "./sbt.sh netLogoWeb/clean compilerCore/clean compilerJVM/clean compilerJS/clean macrosCore/clean engine/clean"
+        sh "./sbt.sh netLogoWeb/clean compilerCore/clean compilerJVM/clean compilerJS/clean macrosJVM/clean macrosJS/clean engine/clean"
       }
     }
 
