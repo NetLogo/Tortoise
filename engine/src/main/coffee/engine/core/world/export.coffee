@@ -119,10 +119,8 @@ extensionsHandler = (extensionPorters) ->
         value
   }
 
-# (Agent) => (String) => Any
-exportWildcardVar = (agent, extensionPorters) -> (varName) ->
-
-  extensions = extensionsHandler(extensionPorters)
+# (Agent, ExtensionExports) => (String) => Any
+exportWildcardVar = (agent, extensions) -> (varName) ->
 
   exportWildcardValue = (value) ->
     type = NLType(value)
@@ -154,10 +152,10 @@ exportMetadata = ->
   # TODO: Get filename from metadata from compiler, once NetLogo/NetLogo#1547 has been merged --JAB (2/8/18)
   new Metadata(version, '[IMPLEMENT .NLOGO]', new Date())
 
-# [T, U <: ExportedAgent[T]] @ (Class[U], Array[(String, (Any) => Any)]) => (T) => U
-exportAgent = (clazz, builtInsMappings, labelVarName, extensionPorters) -> (agent) ->
+# [T, U <: ExportedAgent[T]] @ (Class[U], Array[(String, (Any) => Any)], String, ExtensionExports) => (T) => U
+exportAgent = (clazz, builtInsMappings, labelVarName, extensions) -> (agent) ->
 
-  wildcard = exportWildcardVar(agent, extensionPorters)
+  wildcard = exportWildcardVar(agent, extensions)
 
   builtInsValues = builtInsMappings.map(([name, f]) ->
     if name is labelVarName
@@ -171,8 +169,8 @@ exportAgent = (clazz, builtInsMappings, labelVarName, extensionPorters) -> (agen
 
   new clazz(builtInsValues..., extras)
 
-# (Plot) => ExportedPlot
-exportPlot = (plot) ->
+# (Plot, ExtensionExports) => ExportedPlot
+exportPlot = (plot, extensions) ->
 
   exportPen = (pen) ->
 
@@ -201,21 +199,22 @@ exportPlot = (plot) ->
 
   new ExportedPlot(currentPenNameOrNull, isAutoplotting, isLegendOpen, name, pens, xMax, xMin, yMax, yMin)
 
-# () => ExportedPlotManager
-exportPlotManager = ->
+# (ExtensionExports) => ExportedPlotManager
+exportPlotManager = (extensions) ->
 
   currentPlotNameOrNull = fold(-> null)((cp) -> cp.name)(@_plotManager.getCurrentPlotMaybe())
-  plots                 = @_plotManager.getPlots().map(exportPlot)
+  exporter              = (plot) -> exportPlot(plot, extensions)
+  plots                 = @_plotManager.getPlots().map(exporter)
 
   new ExportedPlotManager(currentPlotNameOrNull, plots)
 
-# () => Object[Any]
-exportMiniGlobals = ->
+# (ExtensionExports) => Object[Any]
+exportMiniGlobals = (extensions) ->
   namesNotDeleted = @observer.varNames().filter((name) => @observer.getVariable(name)?).sort()
-  toObject(namesNotDeleted.map(tee(id)(exportWildcardVar(@observer, @extensionPorters))))
+  toObject(namesNotDeleted.map(tee(id)(exportWildcardVar(@observer, extensions))))
 
-# () => ExportedGlobals
-exportGlobals = ->
+# (ExtensionExports) => ExportedGlobals
+exportGlobals = (extensions) ->
 
   noUnbreededLinks = isEmpty(@links().toArray().filter((l) -> l.getBreedName().toUpperCase() is "LINKS"))
 
@@ -236,7 +235,7 @@ exportGlobals = ->
   subject       = exportAgentReference(@observer.subject())
   ticks         = if @ticker.ticksAreStarted() then @ticker.tickCount() else -1
 
-  codeGlobals = exportMiniGlobals.call(this)
+  codeGlobals = exportMiniGlobals.call(this, extensions)
 
   new ExportedGlobals( linkDirectedness, maxPxcor, maxPycor, minPxcor, minPycor, nextWhoNumber
                      , perspective, subject, ticks, codeGlobals)
@@ -245,7 +244,8 @@ exportGlobals = ->
 module.exports.exportAllPlots = ->
 
   metadata    = exportMetadata.call(this)
-  miniGlobals = exportMiniGlobals.call(this)
+  extensions  = extensionsHandler(@extensionPorters)
+  miniGlobals = exportMiniGlobals.call(this, extensions)
   plots       = @_plotManager.getPlots().map(exportPlot)
 
   new ExportAllPlotsData(metadata, miniGlobals, plots)
@@ -256,8 +256,10 @@ module.exports.exportPlot = (plotName) ->
   desiredPlotMaybe = find((x) -> x.name is plotName)(@_plotManager.getPlots())
 
   metadata    = exportMetadata.call(this)
-  miniGlobals = exportMiniGlobals.call(this)
-  plot        = fold(-> throw new Error("no such plot: \"#{plotName}\""))(exportPlot)(desiredPlotMaybe)
+  extensions  = extensionsHandler(@extensionPorters)
+  miniGlobals = exportMiniGlobals.call(this, extensions)
+  exporter    = (plot) -> exportPlot(plot, extensions)
+  plot        = fold(-> throw new Error("no such plot: \"#{plotName}\""))(exporter)(desiredPlotMaybe)
 
   new ExportPlotData(metadata, miniGlobals, plot)
 
@@ -267,8 +269,10 @@ module.exports.exportWorld = ->
   makeMappings = (builtins) -> (mapper) ->
     builtins.map(tee(id)(mapper))
 
+  extensions = extensionsHandler(@extensionPorters)
+
   labelExporter = (varName) => (agent) =>
-    exportWildcardVar(agent, @extensionPorters)(varName)
+    exportWildcardVar(agent, extensions)(varName)
 
   patchMapper = (varName) ->
     switch varName
@@ -290,13 +294,13 @@ module.exports.exportWorld = ->
 
   metadata    = exportMetadata.call(this)
   randomState = @rng.exportState()
-  globals     = exportGlobals.call(this, false)
-  patches     =               @patches().toArray().map(exportAgent(ExportedPatch , makeMappings( patchBuiltins)( patchMapper), "plabel", @extensionPorters))
-  turtles     = @turtleManager.turtles().toArray().map(exportAgent(ExportedTurtle, makeMappings(turtleBuiltins)(turtleMapper), "label",  @extensionPorters))
-  links       =     @linkManager.links().toArray().map(exportAgent(ExportedLink  , makeMappings(  linkBuiltins)(  linkMapper), "llabel", @extensionPorters))
+  globals     = exportGlobals.call(this, extensions)
+  patches     =               @patches().toArray().map(exportAgent(ExportedPatch , makeMappings( patchBuiltins)( patchMapper), "plabel", extensions))
+  turtles     = @turtleManager.turtles().toArray().map(exportAgent(ExportedTurtle, makeMappings(turtleBuiltins)(turtleMapper), "label",  extensions))
+  links       =     @linkManager.links().toArray().map(exportAgent(ExportedLink  , makeMappings(  linkBuiltins)(  linkMapper), "llabel", extensions))
   drawingM    = if not @_updater.drawingWasJustCleared() then maybe([@patchSize, @_getViewBase64()]) else None
   output      = @_getOutput()
-  plotManager = exportPlotManager.call(this)
+  plotManager = exportPlotManager.call(this, extensions)
   extensions  = []
 
   new ExportWorldData(metadata, randomState, globals, patches, turtles, links, drawingM, output, plotManager, extensions)

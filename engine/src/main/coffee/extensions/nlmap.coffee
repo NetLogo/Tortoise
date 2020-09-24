@@ -7,41 +7,42 @@ isMap = (x) ->
 # type NLMap = Object[Any]
 
 # ((NLMap) => String) => NLMap
-newMap = (dump) ->
+newMap = () ->
   out = {}
-  toMap(out, dump)
+  toMap(out)
 
 # (POJO, (NLMap) => String) => NLMap
-toMap = (obj, dump) ->
-  _dump = () -> dump(obj)
+toMap = (obj) ->
   Object.defineProperty(obj, "_type", { enumerable: false, value: "nl_map", writable: false })
-  Object.defineProperty(obj, "_dump", { enumerable: false, value: _dump, writable: false })
   obj
 
 module.exports = {
 
   porter: {
+
     canHandle:   isMap
-    dump:        (x) -> "{{nlmap:  #{x._dump()}}}"
+
+    dump: (x, dumpValue) ->
+      values = Object.keys(x).map( (key) => "[\"#{key}\" #{dumpValue(x[key], true)}]" ).join(' ')
+      "{{nlmap:  #{values}}}"
+
     exportState: (x, exportValue) ->
       out = {}
       Object.keys(x).map( (k) -> out[k] = exportValue(x[k]) )
-      toMap(out, x._dump)
+      toMap(out)
+
     importState: (x, reify) ->
       out = {}
       Object.keys(x).map( (k) -> out[k] = reify(x[k]) )
-      toMap(out, x._dump)
+      toMap(out)
+
   }
 
   init: (workspace) ->
 
-    # (NLMap) => String
-    dump = (nlMap) ->
-      Object.keys(nlMap).map( (key) => "[\"#{key}\" #{workspace.dump(nlMap[key], true)}]" ).join(' ')
-
     # List[(String, Any)] => NLMap
     fromList = (list) ->
-      out = newMap(dump)
+      out = newMap()
       for [k, v] in list
         out[k] = v
       out
@@ -53,7 +54,7 @@ module.exports = {
 
     # (NLMap, String, Any) -> NLMap
     add = (nlMap, key, value) ->
-      out = newMap(dump)
+      out = newMap()
       for k of nlMap
         out[k] = nlMap[k]
       out[key] = value
@@ -65,7 +66,7 @@ module.exports = {
 
     # (NLMap, String) => NLMap
     remove = (nlMap, key) ->
-      out = newMap(dump)
+      out = newMap()
       for k of nlMap when k isnt key
         out[k] = nlMap[k]
       out
@@ -93,7 +94,7 @@ module.exports = {
     jsonToMap = (json) ->
       JSON.parse(json, (key, value) ->
         if (typeof value is 'object')
-          toMap(value, dump)
+          toMap(value)
         else
           value
       )

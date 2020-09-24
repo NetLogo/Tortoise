@@ -7,26 +7,31 @@ isArray = (x) ->
 module.exports = {
 
   porter: {
-    canHandle:   isArray
-    dump:        (x) -> "{{array: #{x.dump()}}}"
+
+    canHandle: isArray
+
+    dump: (x, dumpValue) ->
+      values = x.items.map( (item) => dumpValue(item, true) ).join(' ')
+      "{{array: #{values}}}"
+
     exportState: (x, exportValue) ->
       {
         items: x.items.map( (i) -> exportValue(i) )
         type:  "ext_array"
-        dump:  x.dump
       }
+
     importState: (x, reify) ->
       x.items = x.items.map( (i) -> reify(i) )
       x
+
   }
 
   init: (workspace) ->
 
-    # type ExtArray = { type: "ext_array", items: Array[Any], dump: () => String }
+    # type ExtArray = { type: "ext_array", items: Array[Any] }
     extArray = (array) ->
       this.items = array
       this.type = "ext_array"
-      this.dump = () -> this.items.map( (item) => workspace.dump(item, true) ).join(' ')
       return
 
     # List[Any] => ExtArray

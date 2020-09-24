@@ -6,11 +6,6 @@ NLType = require('../engine/core/typechecker')
 isTable = (x) ->
   x instanceof Map
 
-# (Table) => String
-dumpTable = (table) ->
-  inner = Array.from(table).map( (item) => workspace.dump(item, true) ).join(' ')
-  "[#{inner}]"
-
 # This method is to get the same-value key in a table.
 # e.g (table:get glob1 [1 2]) where passing `key` param is an array; array is a reference type in JavaScript.
 # So we need to find whether there's a same-value key in the table.
@@ -55,8 +50,13 @@ checkInput = ({table, key}) ->
 module.exports = {
 
   porter: {
+
     canHandle:   isTable
-    dump:        (x) -> "{{table: #{dumpTable(x)}}}"
+
+    dump: (x, dumpValue) ->
+      values = Array.from(x).map( (item) => dumpValue(item, true) ).join(' ')
+      "{{table: [#{values}]}}"
+
     exportState: (x, exportValue) ->
       map = new Map()
       Array.from(x.keys()).forEach( (key) ->
@@ -65,6 +65,7 @@ module.exports = {
         return
       )
       map
+
     importState: (x, reify) ->
       Array.from(x.keys()).forEach( (key) ->
         value = x.get(key)
@@ -72,6 +73,7 @@ module.exports = {
         return
       )
       x
+
   }
 
   init: (workspace) ->
