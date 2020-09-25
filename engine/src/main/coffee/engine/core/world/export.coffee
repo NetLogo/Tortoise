@@ -38,6 +38,8 @@
 { linkBuiltins, patchBuiltins, turtleBuiltins }                      = require('../structure/builtins')
 { DisplayMode: { displayModeToString }, PenMode: { penModeToBool } } = require('engine/plot/pen')
 
+extensionsHandler = require('./extensionshandler')
+
 { difference, find, isEmpty, toObject } = require('brazierjs/array')
 { id, tee }                             = require('brazierjs/function')
 { fold, maybe, None }                   = require('brazierjs/maybe')
@@ -92,32 +94,6 @@ exportAgentReference = (agent) ->
     exportTurtleReference(agent)
   else
     throw new Error("Cannot make agent reference out of: #{JSON.stringify(agent)}")
-
-extensionsHandler = (extensionPorters) ->
-  extensionReferences = new Map()
-  inProgressMarker    = Object.freeze({ type: "reify-in-progress" })
-
-  {
-    canHandle: (x) ->
-      applicablePorters = extensionPorters.filter( (p) -> p.canHandle(x) )
-      if applicablePorters.length > 1
-        throw new Error("Multiple extensions claim to know how to handle this object type: #{JSON.stringify(x)}")
-      (applicablePorters.length is 1)
-
-    exportState: (x, helper) ->
-      if not extensionReferences.has(x)
-        porter = extensionPorters.filter( (p) -> p.canHandle(x) )[0]
-        extensionReferences.set(x, inProgressMarker)
-        value = porter.exportState(x, helper)
-        extensionReferences.set(x, value)
-        value
-
-      else
-        value = extensionReferences.get(x)
-        if value is inProgressMarker
-          throw new Error("Circular references within extension objects are not supported.")
-        value
-  }
 
 # (Agent, ExtensionExports) => (String) => Any
 exportWildcardVar = (agent, extensions) -> (varName) ->
