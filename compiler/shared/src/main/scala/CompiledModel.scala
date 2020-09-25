@@ -15,7 +15,7 @@ import
 case class CompiledModel(
   compiledCode:         String = "",
   compilation:          Compilation,
-  private val compiler: CompilerLike
+  private val compiler: Compiler
 ) {
 
   import CompiledModel.CompileResult
@@ -38,7 +38,7 @@ case class CompiledModel(
     _.compileProceduresIncremental(logo, procedures, program, overriding)
   }
 
-  private val validate: (CompilerLike => String) => CompileResult[String] = CompiledModel.validate(compiler)
+  private val validate: (Compiler => String) => CompileResult[String] = CompiledModel.validate(compiler)
 
 }
 
@@ -50,14 +50,14 @@ object CompiledModel {
 
   private val DefaultViewSize = 16
 
-  def fromModel(model: Model, compiler: CompilerLike)
+  def fromModel(model: Model, compiler: Compiler)
     (implicit compilerFlags: CompilerFlags): CompiledModelV = validate(compiler) {
     (c) =>
       val compilation = c.compileProcedures(model)
       CompiledModel(compiler.toJS(compilation), compilation, c)
   }
 
-  def fromNlogoContents(contents: String, compiler: CompilerLike)
+  def fromNlogoContents(contents: String, compiler: Compiler)
     (implicit compilerFlags: CompilerFlags): ValidationNel[Exception, CompiledModel] = {
     val validation =
       try fromModel(ModelReader.parseModel(contents, CompilerUtilities, Map()), compiler)
@@ -67,7 +67,7 @@ object CompiledModel {
     validation.leftMap(_.map(ex => ex: Exception))
   }
 
-  def fromCode(netlogoCode: String, compiler: CompilerLike)
+  def fromCode(netlogoCode: String, compiler: Compiler)
     (implicit compilerFlags: CompilerFlags): CompiledModelV =
     fromModel(Model(netlogoCode, List(View.square(DefaultViewSize))), compiler)
 
@@ -78,8 +78,8 @@ object CompiledModel {
     fromModel(model.copy(code = netlogoCode), compiler)
   }
 
-  private def validate[T](compiler: CompilerLike)
-    (compileFunc: (CompilerLike) => T): CompileResult[T] =
+  private def validate[T](compiler: Compiler)
+    (compileFunc: (Compiler) => T): CompileResult[T] =
     try compileFunc(compiler).successNel
     catch {
       case ex: CompilerException => ex.failureNel

@@ -48,12 +48,12 @@ import TortoiseSymbol.JsStatement
 // - Compiler calls Handlers
 // - Handlers calls Prims
 // - Prims calls back to Handlers
-class Compiler extends CompilerLike {
+class Compiler {
 
   self =>
 
-  private val prims:    Prims    = new Prims    { override lazy val handlers = self.handlers }
-  private val handlers: Handlers = new Handlers { override lazy val prims    = self.prims }
+  private val prims:    Prims    = new Prims    { lazy val handlers = self.handlers }
+  private val handlers: Handlers = new Handlers { lazy val prims    = self.prims }
 
   val extensionManager: ExtensionManager = new NLWExtensionManager()
 
@@ -99,7 +99,7 @@ class Compiler extends CompilerLike {
   )(implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
     compile(logo, commands = true, oldProcedures, program)
 
-  override def compileRawCommands(
+  def compileRawCommands(
     logo:          String,
     oldProcedures: ProceduresMap = NoProcedures,
     program:       Program       = Program.empty()
