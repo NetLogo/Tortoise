@@ -2,7 +2,8 @@
 
 # type ExtensionPorter[T] = {
 #   canHandle:      (Any) => Boolean,
-#   dump:           (T) => String,
+#   dump:           (T, (Any) => String) => String,
+#   exportState:    (T, (Any) => Any) => T,
 #   importState:    (T, (Any) => Any) => T
 # }
 
