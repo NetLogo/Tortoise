@@ -13,8 +13,7 @@ module.exports = {
     canHandle: isArray
 
     dump: (x, dumpValue) ->
-      values = x.items.map( (item) => dumpValue(item, true) ).join(' ')
-      "{{array: #{values}}}"
+      x.items.map( (item) => dumpValue(item, true) ).join(' ')
 
     exportState: (x, exportValue) ->
       {

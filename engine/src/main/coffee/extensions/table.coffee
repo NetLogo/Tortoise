@@ -56,8 +56,7 @@ module.exports = {
     canHandle: isTable
 
     dump: (x, dumpValue) ->
-      values = Array.from(x).map( (item) => dumpValue(item, true) ).join(' ')
-      "{{table: [#{values}]}}"
+      "[#{Array.from(x).map( (item) => dumpValue(item, true) ).join(' ')}]"
 
     exportState: (x, exportValue) ->
       map = new Map()

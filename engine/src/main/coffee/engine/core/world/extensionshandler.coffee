@@ -69,7 +69,9 @@ formatPlaceholder = (x) ->
 
 # (Array[ExtensionPorter]) => ExtensionsDumper
 makeDumper = (extensionPorters) ->
-  dumpPorterObject = (porter, x, helper) -> porter.dump(x, helper)
+  dumpPorterObject = (porter, x, helper) ->
+    "{{#{porter.extensionName}: #{porter.dump(x, helper)}}}"
+
   traverser = makeTraverse(extensionPorters, dumpPorterObject, canHandleCheck)
 
   {

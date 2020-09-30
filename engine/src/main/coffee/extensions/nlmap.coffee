@@ -26,7 +26,7 @@ module.exports = {
 
     dump: (x, dumpValue) ->
       values = Object.keys(x).map( (key) => "[\"#{key}\" #{dumpValue(x[key], true)}]" ).join(' ')
-      "{{nlmap:  #{values}}}"
+      " #{values}"
 
     exportState: (x, exportValue) ->
       out = {}
