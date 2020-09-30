@@ -10,7 +10,7 @@ vec             = require('vectorious')
 # Matrix => String
 dumpMatrix = (matrix) ->
   inner = matrix.toArray().map((row) -> "[ #{row.join(" ")} ]").join("")
-  " [ #{inner} ]"
+  "[ #{inner} ]"
 
 # Any => Boolean
 isMatrix = (x) ->
@@ -61,7 +61,7 @@ module.exports = {
   porter: {
     extensionName: "matrix"
     canHandle:     isMatrix
-    dump:          (x, _) -> "{{matrix: #{dumpMatrix(x)}}}"
+    dump:          (x, _) -> "{{matrix:  #{dumpMatrix(x)}}}"
     exportState:   (x, _) -> x
     formatCsv:     (x, _) -> dumpMatrix(x)
     importState:   (x, _) -> x

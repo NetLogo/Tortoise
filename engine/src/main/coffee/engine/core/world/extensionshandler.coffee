@@ -106,12 +106,14 @@ makeCsvFormatter = (extensionPorters) ->
     porter.formatCsv(x, helper)
 
   formatExtensionObjects = (extensionObjects, helper) ->
-    porterStrings = Array.from(extensionObjects.keys()).map( (porter) ->
+    # `reverse()` to match the order desktop returns the extensions in -Jeremy B September 2020
+    porterStrings = Array.from(extensionObjects.keys()).reverse().map( (porter) ->
       objectsCSV = extensionObjects.get(porter).map( (x, index) ->
         "\"{{#{porter.extensionName}: #{index}: #{porter.formatCsv(x, helper)}}}\""
       ).join("\n")
       "\"#{porter.extensionName}\"\n#{objectsCSV}"
     )
+    porterStrings.join("\n\n")
 
   {
     canHandle:         makeCanHandle(extensionPorters, eitherCheck)
