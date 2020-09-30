@@ -221,11 +221,11 @@ module.exports =
 
     # () => String
     exportAllPlotsCSV: ->
-      allPlotsDataToCSV(exportAllPlots.call(this))
+      allPlotsDataToCSV(exportAllPlots.call(this), @extensionPorters)
 
     # (String) => String
     exportPlotCSV: (name) ->
-      plotDataToCSV(exportPlot.call(this, name))
+      plotDataToCSV(exportPlot.call(this, name), @extensionPorters)
 
     # () => String
     exportCSV: ->
@@ -239,7 +239,14 @@ module.exports =
 
       state = exportWorld.call(this)
 
-      worldDataToCSV(allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleBuiltins, linkBuiltins)(state)
+      worldDataToCSV(
+        allTurtlesOwnsNames
+      , allLinksOwnsNames
+      , patchBuiltins
+      , turtleBuiltins
+      , linkBuiltins
+      , @extensionPorters
+      )(state)
 
     # (Number, Number) => PatchSet
     getNeighbors: (pxcor, pycor) ->

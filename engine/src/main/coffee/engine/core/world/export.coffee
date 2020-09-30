@@ -38,7 +38,7 @@
 { linkBuiltins, patchBuiltins, turtleBuiltins }                      = require('../structure/builtins')
 { DisplayMode: { displayModeToString }, PenMode: { penModeToBool } } = require('engine/plot/pen')
 
-extensionsHandler = require('./extensionshandler')
+ExtensionsHandler = require('./extensionshandler')
 
 { difference, find, isEmpty, toObject } = require('brazierjs/array')
 { id, tee }                             = require('brazierjs/function')
@@ -220,7 +220,7 @@ exportGlobals = (extensions) ->
 module.exports.exportAllPlots = ->
 
   metadata    = exportMetadata.call(this)
-  extensions  = extensionsHandler(@extensionPorters)
+  extensions  = ExtensionsHandler.makeStateExporter(@extensionPorters)
   miniGlobals = exportMiniGlobals.call(this, extensions)
   plots       = @_plotManager.getPlots().map(exportPlot)
 
@@ -232,7 +232,7 @@ module.exports.exportPlot = (plotName) ->
   desiredPlotMaybe = find((x) -> x.name is plotName)(@_plotManager.getPlots())
 
   metadata    = exportMetadata.call(this)
-  extensions  = extensionsHandler(@extensionPorters)
+  extensions  = ExtensionsHandler.makeStateExporter(@extensionPorters)
   miniGlobals = exportMiniGlobals.call(this, extensions)
   exporter    = (plot) -> exportPlot(plot, extensions)
   plot        = fold(-> throw new Error("no such plot: \"#{plotName}\""))(exporter)(desiredPlotMaybe)
@@ -245,10 +245,10 @@ module.exports.exportWorld = ->
   makeMappings = (builtins) -> (mapper) ->
     builtins.map(tee(id)(mapper))
 
-  extensions = extensionsHandler(@extensionPorters)
+  exportExtensionState = ExtensionsHandler.makeStateExporter(@extensionPorters)
 
   labelExporter = (varName) => (agent) =>
-    exportWildcardVar(agent, extensions)(varName)
+    exportWildcardVar(agent, exportExtensionState)(varName)
 
   patchMapper = (varName) ->
     switch varName
@@ -270,13 +270,13 @@ module.exports.exportWorld = ->
 
   metadata    = exportMetadata.call(this)
   randomState = @rng.exportState()
-  globals     = exportGlobals.call(this, extensions)
-  patches     =               @patches().toArray().map(exportAgent(ExportedPatch , makeMappings( patchBuiltins)( patchMapper), "plabel", extensions))
-  turtles     = @turtleManager.turtles().toArray().map(exportAgent(ExportedTurtle, makeMappings(turtleBuiltins)(turtleMapper), "label",  extensions))
-  links       =     @linkManager.links().toArray().map(exportAgent(ExportedLink  , makeMappings(  linkBuiltins)(  linkMapper), "llabel", extensions))
+  globals     = exportGlobals.call(this, exportExtensionState)
+  patches     =               @patches().toArray().map(exportAgent(ExportedPatch , makeMappings( patchBuiltins)( patchMapper), "plabel", exportExtensionState))
+  turtles     = @turtleManager.turtles().toArray().map(exportAgent(ExportedTurtle, makeMappings(turtleBuiltins)(turtleMapper), "label",  exportExtensionState))
+  links       =     @linkManager.links().toArray().map(exportAgent(ExportedLink  , makeMappings(  linkBuiltins)(  linkMapper), "llabel", exportExtensionState))
   drawingM    = if not @_updater.drawingWasJustCleared() then maybe([@patchSize, @_getViewBase64()]) else None
   output      = @_getOutput()
-  plotManager = exportPlotManager.call(this, extensions)
-  extensions  = []
+  plotManager = exportPlotManager.call(this, exportExtensionState)
+  extensions  = exportExtensionState.extensionObjects
 
   new ExportWorldData(metadata, randomState, globals, patches, turtles, links, drawingM, output, plotManager, extensions)

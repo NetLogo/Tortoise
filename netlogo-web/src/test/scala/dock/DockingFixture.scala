@@ -18,7 +18,7 @@ import
     api.{ Dump, FileIO, Workspace },
     headless.{ lang, test => headlessTest },
       lang.Fixture,
-      headlessTest.{ RuntimeError, TestMode, Command, Reporter, Success },
+      headlessTest.{ RuntimeError, TestMode, NormalMode, Command, Reporter, Success },
     core.{ model, Model },
       model.ModelReader,
     nvm.Optimizations.{ Command => OCommand, Reporter => OReporter }
@@ -108,17 +108,30 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   // so we don't need ASM, so no generator. also to save time
   workspace.flags = nvm.CompilerFlags(useOptimizer = true, useGenerator = false, optimizations = implementedOptimizations)
 
-  def compare(reporter: String) {
-    runReporter(Reporter(reporter,
+  def id[T](a: T): T = a
+
+  def compare(reporter: String) =
+    compareMunged(reporter, id, id)
+
+  def compareMunged(reporter: String, mungeExpected: (String) => String, mungeActual: (String) => String) {
+    runReporterMunged(Reporter(reporter,
         try {
-          Success(Dump.logoObject(workspace.report(reporter)))
+          val expected = Dump.logoObject(workspace.report(reporter))
+          val munged   = mungeExpected(expected)
+          Success(munged)
         } catch {
           case ex : Exception => RuntimeError(ex.getMessage)
         }
-        ))
+      )
+    , NormalMode
+    , mungeActual
+    )
   }
 
-  override def runReporter(reporter: Reporter, mode: TestMode) {
+  override def runReporter(reporter: Reporter, mode: TestMode) =
+    runReporterMunged(reporter, mode, id)
+
+  def runReporterMunged(reporter: Reporter, mode: TestMode, mungeActual: (String) => String) {
     if (!opened) declare(Model())
     netLogoCode ++= s"${reporter.reporter}\n"
     val compiledJS = "var letVars = { }; " + tortoiseCompiler.compileReporter(
@@ -127,7 +140,8 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
       case Success(expected) =>
         withClue(reporter.reporter) {
           assertResult(expected) {
-            engine.evalAndDump(compiledJS)
+            val actual = engine.evalAndDump(compiledJS)
+            mungeActual(actual)
           }
           ()
         }

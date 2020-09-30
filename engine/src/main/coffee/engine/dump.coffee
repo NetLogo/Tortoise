@@ -3,7 +3,7 @@
 NLType = require('./core/typechecker')
 Tasks  = require('./prim/tasks')
 
-extensionsHandler = require('./core/world/extensionshandler')
+ExtensionsHandler = require('./core/world/extensionshandler')
 
 { find, map             } = require('brazierjs/array')
 { apply, flip, pipeline } = require('brazierjs/function')
@@ -13,7 +13,7 @@ extensionsHandler = require('./core/world/extensionshandler')
 # (Array[ExtensionPorter]) => (Any, Boolean) => String
 dump =
   (extensionPorters) ->
-    extensions = extensionsHandler(extensionPorters)
+    extensions = ExtensionsHandler.makeDumper(extensionPorters)
 
     helper =
       (x, isReadable = false) ->

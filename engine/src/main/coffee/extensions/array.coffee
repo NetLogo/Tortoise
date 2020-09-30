@@ -8,6 +8,8 @@ module.exports = {
 
   porter: {
 
+    extensionName: "array"
+
     canHandle: isArray
 
     dump: (x, dumpValue) ->
@@ -19,6 +21,9 @@ module.exports = {
         items: x.items.map( (i) -> exportValue(i) )
         type:  "ext_array"
       }
+
+    formatCsv: (x, formatAny) ->
+      x.items.map( (item) => formatAny(item) ).join(' ')
 
     importState: (x, reify) ->
       x.items = x.items.map( (i) -> reify(i) )

@@ -20,6 +20,8 @@ module.exports = {
 
   porter: {
 
+    extensionName: "nlmap"
+
     canHandle:   isMap
 
     dump: (x, dumpValue) ->
@@ -30,6 +32,9 @@ module.exports = {
       out = {}
       Object.keys(x).map( (k) -> out[k] = exportValue(x[k]) )
       toMap(out)
+
+    formatCsv: (x, formatAny) ->
+      Object.keys(x).map( (key) => "[\"#{key}\" #{formatAny(x[key])}]" ).join(' ')
 
     importState: (x, reify) ->
       out = {}

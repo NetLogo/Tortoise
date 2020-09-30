@@ -51,7 +51,9 @@ module.exports = {
 
   porter: {
 
-    canHandle:   isTable
+    extensionName: "table"
+
+    canHandle: isTable
 
     dump: (x, dumpValue) ->
       values = Array.from(x).map( (item) => dumpValue(item, true) ).join(' ')
@@ -65,6 +67,12 @@ module.exports = {
         return
       )
       map
+
+    formatCsv: (x, formatAny) ->
+      values = Array.from(x.keys()).map( (key) ->
+        "[\"\"#{key}\"\" #{formatAny(x.get(key))}]"
+      )
+      "[#{values.join(' ')}]"
 
     importState: (x, reify) ->
       Array.from(x.keys()).forEach( (key) ->

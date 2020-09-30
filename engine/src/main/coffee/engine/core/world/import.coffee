@@ -4,7 +4,7 @@ LinkSet   = require('../linkset')
 PatchSet  = require('../patchset')
 TurtleSet = require('../turtleset')
 
-extensionsHandler = require('./extensionshandler')
+ExtensionsHandler = require('./extensionshandler')
 
 { Perspective: { perspectiveFromString } } = require('../observer')
 
@@ -32,9 +32,9 @@ extensionsHandler = require('./extensionshandler')
 # , () => Breed
 # , World
 # ) => (Any) => Any
-reifyExported = (getTurtle, getPatch, getLink, getAllPatches, getBreed, world, extensionPorters) ->
+reifyExported = (getTurtle, getPatch, getLink, getAllPatches, getBreed, world, extensionPorters, extensionObjects) ->
 
-  extensions = extensionsHandler(extensionPorters)
+  extensions = ExtensionsHandler.makeStateImporter(extensionPorters, extensionObjects)
 
   helper = (x) ->
     type = NLType(x)
@@ -74,7 +74,7 @@ reifyExported = (getTurtle, getPatch, getLink, getAllPatches, getBreed, world, e
       fn.nlogoBody  = x.source
       fn
     else if extensions.canHandle(x)
-      extensions.reify(x, helper)
+      extensions.importState(x, helper)
     else
       throw new Error("Unknown item for reification: #{JSON.stringify(x)}")
 
@@ -101,6 +101,7 @@ module.exports.importWorld = (
     , patchSize
     , drawingDataMaybe
     , output
+    , extensions
     }
   , extensionPorters
   ) ->
@@ -114,6 +115,7 @@ module.exports.importWorld = (
       , @breedManager.get.bind(@breedManager)
       , this
       , @extensionPorters
+      , extensions
       )
 
     @clearAll()

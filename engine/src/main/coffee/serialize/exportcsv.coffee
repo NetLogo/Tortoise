@@ -8,6 +8,8 @@ JSType = require('util/typechecker')
 { rangeUntil }                                     = require('brazierjs/number')
 { keys, pairs, values }                            = require('brazierjs/object')
 
+ExtensionsHandler = require('../engine/core/world/extensionshandler')
+
 { BreedReference
 , ExportedColorNum
 , ExportedCommandLambda
@@ -97,114 +99,118 @@ formatAgentRef = (ref) ->
   else
     throw new Error("Unknown agent reference: #{JSON.stringify(ref)}")
 
-# (Array[_]) => String
-formatList = (xs) ->
-  "[#{xs.map((x) -> formatAnyInner(x)).join(" ")}]"
+# (Array[_], (Any) => String) => String
+formatList = (xs, formatter) ->
+  "[#{xs.map((x) -> formatter(x)).join(" ")}]"
 
 # (ExportedColor) => String
 formatColor = (color) ->
   if color instanceof ExportedColorNum
     formatNumber(color.value)
   else if color instanceof ExportedRGB
-    formatPlain(formatList([color.r, color.g, color.b]))
+    formatPlain(formatList([color.r, color.g, color.b], formatNumberInner))
   else if color instanceof ExportedRGBA
-    formatPlain(formatList([color.r, color.g, color.b, color.a]))
+    formatPlain(formatList([color.r, color.g, color.b, color.a], formatNumberInner))
   else
     throw new Error("Unknown color: #{JSON.stringify(color)}")
 
-# (Any) => String
-formatAnyInner = (x) ->
+# (ExtensionsFormat, Boolean) => (Any) => String
+formatAny = (extensions, isOuterValue = true) -> (any) ->
 
-  type = JSType(x)
+  # (Any) => String
+  formatter = (x) ->
 
-  if type.isArray()
-    formatList(x)
-  else if type.isBoolean()
-    x
-  else if type.isNumber()
-    formatNumberInner(x)
-  else if type.isString()
-    formatStringInner(x)
-  else if x instanceof BreedReference
-    formatBreedRef(x)
-  else if x is NobodyReference
-    "nobody"
-  else if x instanceof LinkReference
-    formatLinkRef(x)
-  else if x instanceof PatchReference
-    formatPatchRef(x)
-  else if x instanceof TurtleReference
-    formatTurtleRef(x)
-  else if x instanceof ExportedCommandLambda
-    "(anonymous command: #{x.source.replace(/"/g, '""')})"
-  else if x instanceof ExportedReporterLambda
-    "(anonymous reporter: #{x.source.replace(/"/g, '""')})"
-  else if x instanceof ExportedLinkSet
-    exportInnerLink =
-      ({ breed: { plural }, id1, id2 }) ->
-        " [#{id1} #{id2} #{formatBreedRef(new BreedReference(plural))}]"
-    "{links#{x.references.map(exportInnerLink).join("")}}"
-  else if x instanceof ExportedPatchSet
-    exportInnerPatch = ({ pxcor, pycor }) -> " [#{pxcor} #{pycor}]"
-    "{patches#{x.references.map(exportInnerPatch).join("")}}"
-  else if x instanceof ExportedTurtleSet
-    exportInnerTurtle = (ref) -> " #{ref.id}"
-    "{turtles#{x.references.map(exportInnerTurtle).join("")}}"
-  else
-    throw new Error("I don't know how to CSVify this: #{JSON.stringify(x)}")
+    type = JSType(x)
 
-# (Any) => String
-formatAny = (any) ->
+    if type.isArray()
+      formatList(x, formatter)
+    else if type.isBoolean()
+      x
+    else if type.isNumber()
+      formatNumberInner(x)
+    else if type.isString()
+      formatStringInner(x)
+    else if x instanceof BreedReference
+      formatBreedRef(x)
+    else if x is NobodyReference
+      "nobody"
+    else if x instanceof LinkReference
+      formatLinkRef(x)
+    else if x instanceof PatchReference
+      formatPatchRef(x)
+    else if x instanceof TurtleReference
+      formatTurtleRef(x)
+    else if x instanceof ExportedCommandLambda
+      "(anonymous command: #{x.source.replace(/"/g, '""')})"
+    else if x instanceof ExportedReporterLambda
+      "(anonymous reporter: #{x.source.replace(/"/g, '""')})"
+    else if x instanceof ExportedLinkSet
+      exportInnerLink =
+        ({ breed: { plural }, id1, id2 }) ->
+          " [#{id1} #{id2} #{formatBreedRef(new BreedReference(plural))}]"
+      "{links#{x.references.map(exportInnerLink).join("")}}"
+    else if x instanceof ExportedPatchSet
+      exportInnerPatch = ({ pxcor, pycor }) -> " [#{pxcor} #{pycor}]"
+      "{patches#{x.references.map(exportInnerPatch).join("")}}"
+    else if x instanceof ExportedTurtleSet
+      exportInnerTurtle = (ref) -> " #{ref.id}"
+      "{turtles#{x.references.map(exportInnerTurtle).join("")}}"
+    else if extensions.canHandle(x)
+      extensions.formatPlaceholder(x, formatter)
+    else
+      throw new Error("I don't know how to CSVify this: #{JSON.stringify(x)}")
 
   if not any?
     ""
+  else if isOuterValue
+    formatPlain(formatter(any))
   else
-    formatPlain(formatAnyInner(any))
+    formatter(any)
 
 # (Object[String]) => String
 formatKeys   = pipeline(keys  , map(formatPlain), joinCommaed)
 formatValues = pipeline(values, map(formatPair ), joinCommaed)
 # (Object[Any]) => String
 
-# (ExportedTurtle) => Object[(Any, (Any) => String)]
-schemafyTurtle = ({ who, color, heading, xcor, ycor, shape, label, labelColor, breed, isHidden, size, penSize, penMode }) ->
+# (ExportedTurtle) => (ExtensionsFormat) => Object[(Any, (Any) => String)]
+schemafyTurtle = (formatAnyValue) -> ({ who, color, heading, xcor, ycor, shape, label, labelColor, breed, isHidden, size, penSize, penMode }) ->
   formatWrapped = pipeline(formatBreedRef, formatPlain)
   {
-    "who":         [who       , formatNumber ]
-  , "color":       [color     , formatColor  ]
-  , "heading":     [heading   , formatNumber ]
-  , "xcor":        [xcor      , formatNumber ]
-  , "ycor":        [ycor      , formatNumber ]
-  , "shape":       [shape     , formatString ]
-  , "label":       [label     , formatAny    ]
-  , "label-color": [labelColor, formatColor  ]
-  , "breed":       [breed     , formatWrapped]
-  , "hidden?":     [isHidden  , formatBoolean]
-  , "size":        [size      , formatNumber ]
-  , "pen-size":    [penSize   , formatNumber ]
-  , "pen-mode":    [penMode   , formatString ]
+    "who":         [who       , formatNumber  ]
+  , "color":       [color     , formatColor   ]
+  , "heading":     [heading   , formatNumber  ]
+  , "xcor":        [xcor      , formatNumber  ]
+  , "ycor":        [ycor      , formatNumber  ]
+  , "shape":       [shape     , formatString  ]
+  , "label":       [label     , formatAnyValue]
+  , "label-color": [labelColor, formatColor   ]
+  , "breed":       [breed     , formatWrapped ]
+  , "hidden?":     [isHidden  , formatBoolean ]
+  , "size":        [size      , formatNumber  ]
+  , "pen-size":    [penSize   , formatNumber  ]
+  , "pen-mode":    [penMode   , formatString  ]
   }
 
-# (ExportedPatch) => Object[(Any, (Any) => String)]
-schemafyPatch = ({ pxcor, pycor, pcolor, plabel, plabelColor }) ->
+# (ExportedPatch) => (ExtensionsFormat) => Object[(Any, (Any) => String)]
+schemafyPatch = (formatAnyValue) -> ({ pxcor, pycor, pcolor, plabel, plabelColor }) ->
   {
-    "pxcor":        [pxcor      , formatNumber]
-  , "pycor":        [pycor      , formatNumber]
-  , "pcolor":       [pcolor     , formatColor ]
-  , "plabel":       [plabel     , formatAny   ]
-  , "plabel-color": [plabelColor, formatColor ]
+    "pxcor":        [pxcor      , formatNumber  ]
+  , "pycor":        [pycor      , formatNumber  ]
+  , "pcolor":       [pcolor     , formatColor   ]
+  , "plabel":       [plabel     , formatAnyValue]
+  , "plabel-color": [plabelColor, formatColor   ]
 
   }
 
-# (ExportedLink) => Object[(Any, (Any) => String)]
-schemafyLink = ({ end1, end2, color, label, labelColor, isHidden, breed, thickness, shape, tieMode }) ->
+# (ExportedLink) => (ExtensionsFormat) => Object[(Any, (Any) => String)]
+schemafyLink = (formatAnyValue) -> ({ end1, end2, color, label, labelColor, isHidden, breed, thickness, shape, tieMode }) ->
   formatWrappedBreed  = pipeline(formatBreedRef , formatPlain)
   formatWrappedTurtle = pipeline(formatTurtleRef, formatPlain)
   {
     "end1":        [end1      , formatWrappedTurtle]
   , "end2":        [end2      , formatWrappedTurtle]
   , "color":       [color     , formatColor        ]
-  , "label":       [label     , formatAny          ]
+  , "label":       [label     , formatAnyValue     ]
   , "label-color": [labelColor, formatColor        ]
   , "hidden?":     [isHidden  , formatBoolean      ]
   , "breed":       [breed     , formatWrappedBreed ]
@@ -213,8 +219,8 @@ schemafyLink = ({ end1, end2, color, label, labelColor, isHidden, breed, thickne
   , "tie-mode":    [tieMode   , formatString       ]
   }
 
-# (Object[Any]) => Object[(Any, (Any) => String)]
-schemafyAny = pipeline(pairs, map(([k, v]) -> [k, [v, formatAny]]), toObject)
+# (???) => (Object[Any]) => Object[(Any, (Any) => String)]
+schemafyAny = (formatAnyValue) -> pipeline(pairs, map(([k, v]) -> [k, [v, formatAnyValue]]), toObject)
 
 # Based on le_m's solution at https://codereview.stackexchange.com/a/164141/139601
 # (Date) => String
@@ -237,7 +243,7 @@ formatDate = (date) ->
 
 # (ExportedGlobals) => String
 formatGlobals = ({ linkDirectedness, maxPxcor, maxPycor, minPxcor, minPycor, nextWhoNumber
-                 , perspective, subject, ticks, codeGlobals }) ->
+                 , perspective, subject, ticks, codeGlobals }, formatAnyValue) ->
 
   formatPerspective = (p) ->
     formatNumber(
@@ -266,17 +272,17 @@ formatGlobals = ({ linkDirectedness, maxPxcor, maxPycor, minPxcor, minPycor, nex
       'ticks':          [ticks           , formatNumber      ]
     }
 
-  globals = Object.assign(builtins, schemafyAny(codeGlobals))
+  globals = Object.assign(builtins, schemafyAny(formatAnyValue)(codeGlobals))
 
   """#{formatPlain('GLOBALS')}
 #{formatKeys(  globals)}
 #{formatValues(globals)}"""
 
-# (Object[Any]) => String
-formatMiniGlobals = (miniGlobals) ->
+# (Object[Any], ExtensionsFormat) => String
+formatMiniGlobals = (miniGlobals, formatAnyValue) ->
   """#{formatPlain('MODEL SETTINGS')}
 #{formatKeys(              miniGlobals )}
-#{formatValues(schemafyAny(miniGlobals))}"""
+#{formatValues(schemafyAny(formatAnyValue)(miniGlobals))}"""
 
 # (Metadata) => String
 formatMetadata = ({ version, filename, date }) ->
@@ -285,7 +291,7 @@ formatMetadata = ({ version, filename, date }) ->
 #{formatPlain(formatDate(date))}"""
 
 # [T <: ExportedAgent] @ (Array[T], (T) => Object[(Any, (Any) => String)], Array[String], Array[String]) => String
-formatAgents = (agents, schemafy, builtinsNames, ownsNames) ->
+formatAgents = (agents, schemafy, builtinsNames, ownsNames, formatAnyValue) ->
 
   keysRow = pipeline(unique, map(formatPlain), joinCommaed)(builtinsNames.concat(ownsNames))
 
@@ -294,7 +300,7 @@ formatAgents = (agents, schemafy, builtinsNames, ownsNames) ->
       (agent) ->
         lookup = (key) -> (agent.breedsOwns ? agent.patchesOwns)[key]
         base   = schemafy(agent)
-        extras = pipeline(map(tee(id)(lookup)), toObject, schemafyAny)(ownsNames)
+        extras = pipeline(map(tee(id)(lookup)), toObject, schemafyAny(formatAnyValue))(ownsNames)
         formatValues(Object.assign(base, extras))
     ).join('\n')
 
@@ -380,19 +386,21 @@ formatPointsData = (pens) ->
   """#{penNames}
 #{pointKeys}#{onNextLineIfNotEmpty(pointValues)}"""
 
-# (ExportPlotData) => String
-plotDataToCSV = ({ metadata, miniGlobals, plot }) ->
+# (ExportPlotData, Array[ExtensionPorter]) => String
+plotDataToCSV = ({ metadata, miniGlobals, plot }, extensionPorters) ->
+  extensions = ExtensionsHandler.makeCsvFormatter(extensionPorters)
   """#{formatMetadata(metadata)}
 
-#{formatMiniGlobals(miniGlobals)}
+#{formatMiniGlobals(miniGlobals, formatAny(extensions))}
 
 #{formatPlotData(plot)}"""
 
 # (ExportAllPlotsData) => String
-allPlotsDataToCSV = ({ metadata, miniGlobals, plots }) ->
+allPlotsDataToCSV = ({ metadata, miniGlobals, plots }, extensionPorters) ->
+  extensions = ExtensionsHandler.makeCsvFormatter(extensionPorters)
   """#{formatMetadata(metadata)}
 
-#{formatMiniGlobals(miniGlobals)}
+#{formatMiniGlobals(miniGlobals, formatAny(extensions))}
 
 #{plots.map(formatPlotData).join("\n")}"""
 
@@ -406,8 +414,10 @@ formatDrawingData = ([patchSize, drawing]) ->
 #{formatPlain('DRAWING')}
 #{formatPlain(patchSizeStr)}#{onNextLineIfNotEmpty(if drawing is "" then "" else formatPlain(drawing))}"""
 
-# (Array[String], Array[String], Array[String], Array[String], Array[String]) => (ExportWorldData) => String
-worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleBuiltins, linkBuiltins) -> (worldData) ->
+# (Array[String], Array[String], Array[String], Array[String], Array[String], Array[ExtensionPorter]) => (ExportWorldData) => String
+worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleBuiltins, linkBuiltins, extensionPorters) -> (worldData) ->
+
+  extensionsFormatter = ExtensionsHandler.makeCsvFormatter(extensionPorters)
 
   { metadata, randomState, globals, patches, turtles, links, plotManager, drawingDataMaybe, output, extensions } = worldData
 
@@ -416,9 +426,11 @@ worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleB
   # one patch (`patch 0 0`), so we take the first patch and its varnames. --JAB (12/16/17)
   allPatchesOwnsNames = Object.keys(patches[0].patchesOwns)
 
-  patchesStr = formatAgents(patches, schemafyPatch ,  patchBuiltins, allPatchesOwnsNames)
-  turtlesStr = formatAgents(turtles, schemafyTurtle, turtleBuiltins, allTurtlesOwnsNames)
-  linksStr   = formatAgents(  links, schemafyLink  ,   linkBuiltins, allLinksOwnsNames  )
+  formatAnyValue = formatAny(extensionsFormatter)
+
+  patchesStr = formatAgents(patches,  schemafyPatch(formatAnyValue),  patchBuiltins, allPatchesOwnsNames, formatAnyValue)
+  turtlesStr = formatAgents(turtles, schemafyTurtle(formatAnyValue), turtleBuiltins, allTurtlesOwnsNames, formatAnyValue)
+  linksStr   = formatAgents(  links,   schemafyLink(formatAnyValue),   linkBuiltins,   allLinksOwnsNames, formatAnyValue)
 
   { currentPlotNameOrNull, plots } = plotManager
   currentPlotName  = currentPlotNameOrNull ? ''
@@ -427,12 +439,14 @@ worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleB
 
   drawingStr = pipeline(mapMaybe(formatDrawingData), fold(-> "")(id))(drawingDataMaybe)
 
+  extensionsCSV = extensionsFormatter.formatExtensionObjects(extensions, formatAny(extensionsFormatter, isOuterValue = false))
+
   """#{formatMetadata(metadata)}
 
 #{formatPlain('RANDOM STATE')}
 #{formatPlain(randomState)}
 
-#{formatGlobals(globals)}
+#{formatGlobals(globals, formatAnyValue)}
 
 #{formatPlain('TURTLES')}
 #{turtlesStr}
@@ -447,6 +461,7 @@ worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleB
 #{formatPlain('OUTPUT')}#{onNextLineIfNotEmpty(if output is "" then "" else formatString(output))}
 #{formatPlain('PLOTS')}
 #{formatPlain(currentPlotName)}#{onNextLineIfNotEmpty(obnoxiousPlotCSV)}
-#{formatPlain('EXTENSIONS')}\n\n"""
+#{formatPlain('EXTENSIONS')}
+#{onNextLineIfNotEmpty(extensionsCSV)}\n\n"""
 
 module.exports = { allPlotsDataToCSV, plotDataToCSV, worldDataToCSV }

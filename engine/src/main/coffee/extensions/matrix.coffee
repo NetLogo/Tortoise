@@ -59,10 +59,12 @@ checkNestedList = (list) ->
 module.exports = {
 
   porter: {
-    canHandle:   isMatrix
-    dump:        (x, _) -> "{{matrix: #{dumpMatrix(x)}}}"
-    exportState: (x, _) -> x
-    importState: (x, _) -> x
+    extensionName: "matrix"
+    canHandle:     isMatrix
+    dump:          (x, _) -> "{{matrix: #{dumpMatrix(x)}}}"
+    exportState:   (x, _) -> x
+    formatCsv:     (x, _) -> dumpMatrix(x)
+    importState:   (x, _) -> x
   }
 
   init: (workspace) ->
