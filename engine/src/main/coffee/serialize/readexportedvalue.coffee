@@ -26,10 +26,10 @@ firstIndexOfUnescapedQuote = (str) ->
   else
     index
 
-# (String, (String) => Any, (String) => Any) => Array[Any]
+# (String, (String) => Any, (String) => Any, ExtensionsCsvImporter) => Array[Any]
 parseList = ->
 
-  parseListHelper = (list, readValue, readAgentLike) ->
+  parseListHelper = (list, readValue, readAgentLike, extensions) ->
 
     parseInner = (contents, acc = [], accIndex = 0) ->
 
@@ -46,11 +46,19 @@ parseList = ->
           when ']' # End of list
             [acc, accIndex + 1]
           when '[' # Start of list
-            [item, endIndex] = parseListHelper(contents, readValue, readAgentLike)
+            [item, endIndex] = parseListHelper(contents, readValue, readAgentLike, extensions)
             recurse(tempered(endIndex), item)
-          when '{' # Start of agent/agentset
-            index = strIndex('}')
-            recurse(tempered(   index), readAgentLike(strUntil(index + 1)))
+          when '{' # Start of agent/agentset or extension placeholder
+            if contents[1] is '{'
+              index = strIndex('}}') + 1
+              placeholder = strUntil(index + 1)
+              placeholderMatch = extensions.matchesPlaceholder(placeholder)
+              if not placeholderMatch?
+                throw new Error("This looks like an extension object, but it's not?")
+              recurse(tempered(index), extensions.readPlaceholder(placeholderMatch))
+            else
+              index = strIndex('}')
+              recurse(tempered(   index), readAgentLike(strUntil(index + 1)))
           when '"' # Start of string
             index = firstIndexOfUnescapedQuote(strFrom(1)) + 1
             recurse(tempered(   index), readValue(    strUntil(index + 1)))
@@ -185,8 +193,8 @@ readAgenty = (singularToPlural, pluralToSingular) -> (x) ->
   fold(-> throw new Error("You supplied #{x}, and I don't know what the heck that is!"))((x) -> x)(parsedMaybe)
 
 
-# ((String) => String, (String) => String) => (String) => Any
-module.exports.parseAny = (singularToPlural, pluralToSingular) ->
+# ((String) => String, (String) => String, ExtensionsCsvImporter) => (String) => Any
+module.exports.parseAny = (singularToPlural, pluralToSingular, extensions) ->
 
   helper = (x) ->
 
@@ -220,7 +228,7 @@ module.exports.parseAny = (singularToPlural, pluralToSingular) ->
     fold(->
       listMatch = x.match(/^\[.*\]$/)
       if listMatch?
-        parseList(x, helper, readAgenty(singularToPlural, pluralToSingular))
+        parseList(x, helper, readAgenty(singularToPlural, pluralToSingular), extensions)
       else # If not a list
         strMatch =  x.match(/^"(.*)"$/)
         if strMatch?
@@ -238,7 +246,11 @@ module.exports.parseAny = (singularToPlural, pluralToSingular) ->
               if reporterLambdaMatch?
                 new ExportedReporterLambda(reporterLambdaMatch[1])
               else # If not a lambda
-                readAgenty(singularToPlural, pluralToSingular)(lowerCased)
+                extensionsMatch = extensions.matchesPlaceholder(x)
+                if extensionsMatch?
+                  extensions.readPlaceholder(extensionsMatch, helper)
+                else # If not an extension placeholder
+                  readAgenty(singularToPlural, pluralToSingular)(lowerCased)
     )((res) -> res)(result)
 
   helper

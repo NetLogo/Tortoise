@@ -6,6 +6,8 @@ JSType = require('util/typechecker')
 
 { parseAgentRefMaybe, parseAny, parseBool, parseBreed, parseString, parseTurtleRefMaybe } = require('./readexportedvalue')
 
+ExtensionsHandler = require('../engine/core/world/extensionshandler')
+
 { ExportedColorNum
 , ExportedExtension
 , ExportedGlobals
@@ -122,7 +124,7 @@ identity = (x) ->
 # (String) => String|(Number, Number, Number)|(Number, Number, Number, Number)
 parseColor = (x) ->
   unpossible = -> throw new Error("Why is this even getting called?  We shouldn't be parsing breed names where colors are expected.")
-  parseAny(unpossible, unpossible)(x)
+  parseAny(unpossible, unpossible, { matchesPlaceholder: () -> false })(x)
 
 # (String) => Number
 parseDate = (x) ->
@@ -158,77 +160,82 @@ parseVersion = (x) ->
 parseAndExtract = (typeOfEntry) -> (f) -> (x) ->
   fold((x) -> throw new Error("Unable to parse #{typeOfEntry}: #{JSON.stringify(x)}"))(id)(f(x))
 
-# ((String) => String, (String) => String) => Object[Schema]
-nameToSchema = (singularToPlural, pluralToSingular) -> {
-  plots: {
-    color:        parseFloat
-  , currentPen:   parseStringMaybe
-  , interval:     parseFloat
-  , isAutoplot:   parseBool
-  , isLegendOpen: parseBool
-  , isPenDown:    parseBool
-  , mode:         parsePenMode
-  , penName:      parseString
-  , xMax:         parseFloat
-  , xMin:         parseFloat
-  , x:            parseFloat
-  , yMax:         parseFloat
-  , yMin:         parseFloat
-  , y:            parseFloat
+# ((String) => String, (String) => String, ExtensionsCsvImporter) => Object[Schema]
+nameToSchema = (singularToPlural, pluralToSingular, extensions) ->
+  parseAnyLocal    = parseAny(singularToPlural, pluralToSingular, extensions)
+  parseAgentLocal  = parseAndExtract("agent ref")(parseAgentRefMaybe(singularToPlural))
+  parseTurtleLocal = parseAndExtract("turtle ref")(parseTurtleRefMaybe(singularToPlural))
+
+  {
+    plots: {
+      color:        parseFloat
+    , currentPen:   parseStringMaybe
+    , interval:     parseFloat
+    , isAutoplot:   parseBool
+    , isLegendOpen: parseBool
+    , isPenDown:    parseBool
+    , mode:         parsePenMode
+    , penName:      parseString
+    , xMax:         parseFloat
+    , xMin:         parseFloat
+    , x:            parseFloat
+    , yMax:         parseFloat
+    , yMin:         parseFloat
+    , y:            parseFloat
+    }
+    randomState: {
+      value: identity
+    }
+    globals: {
+      directedLinks: parseString
+    , minPxcor:      parseInt
+    , maxPxcor:      parseInt
+    , minPycor:      parseInt
+    , maxPycor:      parseInt
+    , nextIndex:     parseInt
+    , perspective:   parsePerspective
+    , subject:       parseAgentLocal
+    , ticks:         parseFloat
+    }
+    turtles: {
+      breed:      parseBreed
+    , color:      parseColor
+    , heading:    parseFloat
+    , isHidden:   parseBool
+    , labelColor: parseColor
+    , label:      parseAnyLocal
+    , penMode:    parseString
+    , penSize:    parseFloat
+    , shape:      parseString
+    , size:       parseFloat
+    , who:        parseInt
+    , xcor:       parseFloat
+    , ycor:       parseFloat
+    }
+    patches: {
+      pcolor:      parseColor
+    , plabelColor: parseColor
+    , plabel:      parseAnyLocal
+    , pxcor:       parseInt
+    , pycor:       parseInt
+    }
+    links: {
+      breed:      parseBreed
+    , color:      parseColor
+    , end1:       parseTurtleLocal
+    , end2:       parseTurtleLocal
+    , isHidden:   parseBool
+    , labelColor: parseColor
+    , label:      parseAnyLocal
+    , shape:      parseString
+    , thickness:  parseFloat
+    , tieMode:    parseString
+    }
+    output: {
+      value: parseString
+    }
+    extensions: {}
   }
-  randomState: {
-    value: identity
-  }
-  globals: {
-    directedLinks: parseString
-  , minPxcor:      parseInt
-  , maxPxcor:      parseInt
-  , minPycor:      parseInt
-  , maxPycor:      parseInt
-  , nextIndex:     parseInt
-  , perspective:   parsePerspective
-  , subject:       parseAndExtract("agent ref")(parseAgentRefMaybe(singularToPlural))
-  , ticks:         parseFloat
-  }
-  turtles: {
-    breed:      parseBreed
-  , color:      parseColor
-  , heading:    parseFloat
-  , isHidden:   parseBool
-  , labelColor: parseColor
-  , label:      parseAny(singularToPlural, pluralToSingular)
-  , penMode:    parseString
-  , penSize:    parseFloat
-  , shape:      parseString
-  , size:       parseFloat
-  , who:        parseInt
-  , xcor:       parseFloat
-  , ycor:       parseFloat
-  }
-  patches: {
-    pcolor:      parseColor
-  , plabelColor: parseColor
-  , plabel:      parseAny(singularToPlural, pluralToSingular)
-  , pxcor:       parseInt
-  , pycor:       parseInt
-  }
-  links: {
-    breed:      parseBreed
-  , color:      parseColor
-  , end1:       parseAndExtract("turtle ref")(parseTurtleRefMaybe(singularToPlural))
-  , end2:       parseAndExtract("turtle ref")(parseTurtleRefMaybe(singularToPlural))
-  , isHidden:   parseBool
-  , labelColor: parseColor
-  , label:      parseAny(singularToPlural, pluralToSingular)
-  , shape:      parseString
-  , thickness:  parseFloat
-  , tieMode:    parseString
-  }
-  output: {
-    value: parseString
-  }
-  extensions: {}
-}
 
 # END SCHEMA STUFF
 
@@ -243,8 +250,8 @@ singletonParse = (x, schema) ->
   else
     ''
 
-# ((String) => String, (String) => String) => Parser[Array[ImpObj]]
-arrayParse = (singularToPlural, pluralToSingular) -> ([keys, rows...], schema) ->
+# ((String) => String, (String) => String, ExtensionsCsvImporter) => Parser[Array[ImpObj]]
+arrayParse = (singularToPlural, pluralToSingular, extensions) -> ([keys, rows...], schema) ->
 
   f =
     (acc, row) ->
@@ -255,14 +262,14 @@ arrayParse = (singularToPlural, pluralToSingular) -> ([keys, rows...], schema) -
         if schema[saneKey]?
           obj[saneKey] = schema[saneKey](value)
         else if value isnt "" # DO NOT USE `saneKey`!  Do not touch user global names! --JAB (8/2/17)
-          obj.extraVars[rawKey] = parseAny(singularToPlural, pluralToSingular)(value)
+          obj.extraVars[rawKey] = parseAny(singularToPlural, pluralToSingular, extensions)(value)
       acc.concat([obj])
 
   foldl(f)([])(rows)
 
 # ((String) => String, (String) => String) => Parser[ImpObj]
-globalParse = (singularToPlural, pluralToSingular) -> (csvBucket, schema) ->
-  arrayParse(singularToPlural, pluralToSingular)(csvBucket, schema)[0]
+globalParse = (singularToPlural, pluralToSingular, extensions) -> (csvBucket, schema) ->
+  arrayParse(singularToPlural, pluralToSingular, extensions)(csvBucket, schema)[0]
 
 # Parser[ImpObj]
 plotParse = (csvBucket, schema) ->
@@ -325,17 +332,17 @@ drawingParse = (csvBucket, schema) ->
   else
     throw new Error("NetLogo Web cannot parse `export-world` drawings from before NetLogo 6.1.")
 
-# ((String) => String, (String) => String) => Object[Parser[Any]]
-buckets = (singularToPlural, pluralToSingular) -> {
+# ((String) => String, (String) => String, ExtensionsCsvImporter) => Object[Parser[Any]]
+buckets = (singularToPlural, pluralToSingular, extensions) -> {
   extensions:  extensionParse
 , drawing:     drawingParse
-, globals:     globalParse(singularToPlural, pluralToSingular)
-, links:       arrayParse(singularToPlural, pluralToSingular)
+, globals:     globalParse(singularToPlural, pluralToSingular, extensions)
+, links:       arrayParse(singularToPlural, pluralToSingular, extensions)
 , output:      singletonParse
-, patches:     arrayParse(singularToPlural, pluralToSingular)
+, patches:     arrayParse(singularToPlural, pluralToSingular, extensions)
 , plots:       plotParse
 , randomState: singletonParse
-, turtles:     arrayParse(singularToPlural, pluralToSingular)
+, turtles:     arrayParse(singularToPlural, pluralToSingular, extensions)
 }
 
 # END PARSER STUFF
@@ -354,12 +361,14 @@ extractGlobals = (globals, knownNames) ->
   [builtIn, user]
 
 
-# ((String) => String, (String) => String) => (String) => WorldState
+# ((String) => String, (String) => String, Array[ExtensionPorter]) => (String) => WorldState
 module.exports =
-  (singularToPlural, pluralToSingular) -> (csvText) ->
+  (singularToPlural, pluralToSingular, extensionPorters) -> (csvText) ->
 
-    buckies   = buckets(singularToPlural, pluralToSingular)
-    getSchema = nameToSchema(singularToPlural, pluralToSingular)
+    extensionImporter = ExtensionsHandler.makeCsvImporter(extensionPorters)
+
+    buckies   = buckets(singularToPlural, pluralToSingular, extensionImporter)
+    getSchema = nameToSchema(singularToPlural, pluralToSingular, extensionImporter)
 
     parsedCSV = parse(csvText, {
       comment: '#'
@@ -414,7 +423,8 @@ module.exports =
     outTurtles     = turtles.map(toExportedTurtle)
     outLinks       = links.map(toExportedLink)
     outPlotManager = toExportedPlotManager(plots)
-    outExtensions  = extensions.map(-> new ExportedExtension)
+    parseAnyLocal  = parseAny(singularToPlural, pluralToSingular, extensionImporter)
+    outExtensions  = extensionImporter.readExtensionObjects(extensions, parseAnyLocal)
 
     new ExportWorldData( outMetadata, randomState, outGlobals, outPatches, outTurtles
                        , outLinks, maybe(drawing), output, outPlotManager, outExtensions)

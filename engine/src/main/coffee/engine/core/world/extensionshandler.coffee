@@ -89,6 +89,7 @@ makeStateExporter = (extensionPorters) ->
       pos = []
       extensionObjects.set(porter, pos)
       pos
+    else extensionObjects.get(porter)
 
     porterObjects.push(porter.exportState(x, helper))
     createPlaceholder(porter.extensionName, porterObjects.length - 1)
@@ -144,9 +145,49 @@ makeStateImporter = (extensionPorters, extensionObjects) ->
     importState: makeTraverse(extensionPorters, importExtensionObject, placeholderCheck).traverse
   }
 
+makeCsvImporter = (extensionPorters) ->
+  placeholderRegEx = /{{(.+)\: (\d+)}}/
+  matchesPlaceholder = (x) ->
+    x.match(placeholderRegEx)
+
+  readPlaceholder = (match) ->
+    console.log(match)
+    createPlaceholder(match[1], parseFloat(match[2]))
+
+  readExtensionObjects = (porterSections, helper) ->
+    extensionObjects  = new Map()
+    porterStringRegEx = /{{(.+)\: (\d+)\:  ?(.+)}}/
+    porterSections.forEach( (porterStrings) ->
+      porterStrings.forEach( (porterString) ->
+        match = porterString.match(porterStringRegEx)
+        if not match?
+          throw new Error("Cannot read this extension object string: #{porterString}")
+        extensionName = match[1]
+        index         = parseFloat(match[2])
+        formattedData = match[3]
+        porter        = extensionPorters.filter( (p) -> p.extensionName is extensionName )[0]
+        porterObject  = porter.readCsv(formattedData, helper)
+        porterObjects = if not extensionObjects.has(porter)
+          pos = []
+          extensionObjects.set(porter, pos)
+          pos
+        else
+          extensionObjects.get(porter)
+        porterObjects[index] = porterObject
+      )
+    )
+    extensionObjects
+
+  {
+    matchesPlaceholder
+  , readPlaceholder
+  , readExtensionObjects
+  }
+
 module.exports = {
   makeDumper
   makeStateExporter
   makeCsvFormatter
   makeStateImporter
+  makeCsvImporter
 }

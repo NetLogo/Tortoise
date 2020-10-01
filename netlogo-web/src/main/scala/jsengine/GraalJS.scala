@@ -12,7 +12,12 @@ import org.nlogo.core.{ LogoList, Nobody, Resource }
 
 class GraalJS {
   var baos = new ByteArrayOutputStream
-  var jsRuntime = Context.newBuilder("js").option("js.global-property", "true").out(baos).allowAllAccess(true).build
+  var jsRuntime = Context.newBuilder("js")
+    .option("js.global-property", "true")
+    .option("js.ecmascript-version", "2020")
+    .out(baos)
+    .allowAllAccess(true)
+    .build
 
   val versionNumber: String = jsRuntime.getEngine.getVersion
 

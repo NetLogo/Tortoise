@@ -65,6 +65,11 @@ module.exports = {
     exportState:   (x, _) -> x
     formatCsv:     (x, _) -> dumpMatrix(x)
     importState:   (x, _) -> x
+    readCsv: (x, parseAny) ->
+      parseable = x.replaceAll("\[ ", "[").replaceAll(" \]", "]").replaceAll("][", "] [")
+      list = parseAny(parseable)
+      vec.array(list)
+
   }
 
   init: (workspace) ->

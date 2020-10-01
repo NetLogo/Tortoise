@@ -113,7 +113,7 @@ module.exports =
       pluralToSingular = functionify(ptsObject)
       singularToPlural = functionify(stpObject)
 
-      worldState = csvToWorldState(singularToPlural, pluralToSingular)(csvText)
+      worldState = csvToWorldState(singularToPlural, pluralToSingular, extensionPorters)(csvText)
       world.importState(worldState)
 
     importPatchColors =

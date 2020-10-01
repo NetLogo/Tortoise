@@ -81,6 +81,10 @@ module.exports = {
       )
       x
 
+    readCsv: (x, parseAny) ->
+      list = parseAny(x)
+      new Map(list)
+
   }
 
   init: (workspace) ->

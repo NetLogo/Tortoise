@@ -28,6 +28,13 @@ module.exports = {
       x.items = x.items.map( (i) -> reify(i) )
       x
 
+    readCsv: (x, parseAny) ->
+      items = parseAny("[#{x}]")
+      {
+        items,
+        type: "ext_array"
+      }
+
   }
 
   init: (workspace) ->

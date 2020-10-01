@@ -41,6 +41,10 @@ module.exports = {
       Object.keys(x).map( (k) -> out[k] = reify(x[k]) )
       toMap(out)
 
+    readCsv: (x, parseAny) ->
+      console.log(x)
+      throw new Error("Not yet implemented, thanks!")
+
   }
 
   init: (workspace) ->
