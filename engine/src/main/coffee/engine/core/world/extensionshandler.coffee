@@ -4,7 +4,9 @@
 #   canHandle:      (Any) => Boolean,
 #   dump:           (T, (Any) => String) => String,
 #   exportState:    (T, (Any) => Any) => T,
+#   formatCsv:      (T, (Any) => String) => String
 #   importState:    (T, (Any) => Any) => T
+#   readCsv:        (String, (String) => Any) => T
 # }
 
 # (ExtensionPorter, Any) => Boolean
@@ -145,6 +147,7 @@ makeStateImporter = (extensionPorters, extensionObjects) ->
     importState: makeTraverse(extensionPorters, importExtensionObject, placeholderCheck).traverse
   }
 
+# (Array[ExtensionPorter]) => ExtensionsCsvImport
 makeCsvImporter = (extensionPorters) ->
   placeholderRegEx = /{{(.+)\: (\d+)}}/
   matchesPlaceholder = (x) ->

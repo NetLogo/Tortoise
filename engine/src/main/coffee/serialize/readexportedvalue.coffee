@@ -26,7 +26,7 @@ firstIndexOfUnescapedQuote = (str) ->
   else
     index
 
-# (String, (String) => Any, (String) => Any, ExtensionsCsvImporter) => Array[Any]
+# (String, (String) => Any, (String) => Any, ExtensionsCsvImport) => Array[Any]
 parseList = ->
 
   parseListHelper = (list, readValue, readAgentLike, extensions) ->
@@ -193,7 +193,7 @@ readAgenty = (singularToPlural, pluralToSingular) -> (x) ->
   fold(-> throw new Error("You supplied #{x}, and I don't know what the heck that is!"))((x) -> x)(parsedMaybe)
 
 
-# ((String) => String, (String) => String, ExtensionsCsvImporter) => (String) => Any
+# ((String) => String, (String) => String, ExtensionsCsvImport) => (String) => Any
 module.exports.parseAny = (singularToPlural, pluralToSingular, extensions) ->
 
   helper = (x) ->

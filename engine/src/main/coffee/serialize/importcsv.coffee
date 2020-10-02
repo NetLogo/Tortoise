@@ -160,7 +160,7 @@ parseVersion = (x) ->
 parseAndExtract = (typeOfEntry) -> (f) -> (x) ->
   fold((x) -> throw new Error("Unable to parse #{typeOfEntry}: #{JSON.stringify(x)}"))(id)(f(x))
 
-# ((String) => String, (String) => String, ExtensionsCsvImporter) => Object[Schema]
+# ((String) => String, (String) => String, ExtensionsCsvImport) => Object[Schema]
 nameToSchema = (singularToPlural, pluralToSingular, extensions) ->
   parseAnyLocal    = parseAny(singularToPlural, pluralToSingular, extensions)
   parseAgentLocal  = parseAndExtract("agent ref")(parseAgentRefMaybe(singularToPlural))
@@ -250,7 +250,7 @@ singletonParse = (x, schema) ->
   else
     ''
 
-# ((String) => String, (String) => String, ExtensionsCsvImporter) => Parser[Array[ImpObj]]
+# ((String) => String, (String) => String, ExtensionsCsvImport) => Parser[Array[ImpObj]]
 arrayParse = (singularToPlural, pluralToSingular, extensions) -> ([keys, rows...], schema) ->
 
   f =
@@ -267,7 +267,7 @@ arrayParse = (singularToPlural, pluralToSingular, extensions) -> ([keys, rows...
 
   foldl(f)([])(rows)
 
-# ((String) => String, (String) => String) => Parser[ImpObj]
+# ((String) => String, (String) => String, ExtensionsCsvImport) => Parser[ImpObj]
 globalParse = (singularToPlural, pluralToSingular, extensions) -> (csvBucket, schema) ->
   arrayParse(singularToPlural, pluralToSingular, extensions)(csvBucket, schema)[0]
 
@@ -332,7 +332,7 @@ drawingParse = (csvBucket, schema) ->
   else
     throw new Error("NetLogo Web cannot parse `export-world` drawings from before NetLogo 6.1.")
 
-# ((String) => String, (String) => String, ExtensionsCsvImporter) => Object[Parser[Any]]
+# ((String) => String, (String) => String, ExtensionsCsvImport) => Object[Parser[Any]]
 buckets = (singularToPlural, pluralToSingular, extensions) -> {
   extensions:  extensionParse
 , drawing:     drawingParse
