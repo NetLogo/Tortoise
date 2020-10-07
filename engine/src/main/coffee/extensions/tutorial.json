@@ -24,6 +24,16 @@
       ],
       "returnType": "unit"
     }, {
+      "name": "back-dialog",
+      "actionName": "back-dialog",
+      "argTypes": [ ],
+      "returnType": "unit"
+    }, {
+      "name": "submit-input",
+      "actionName": "submit-input",
+      "argTypes": [ "boolean" ],
+      "returnType": "unit"
+    }, {
       "name": "set",
       "actionName": "set",
       "argTypes": [

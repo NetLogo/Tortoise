@@ -54,6 +54,28 @@ module.exports = {
         workspace.printPrims.print("Hide the active dialog #{name}")
       return
 
+    # (String) => Unit
+    backDialog = (name) ->
+      if tortugaSession = getTortugaSession()
+          tortugaSession.MessageQueue.Enqueue(
+            { Type: "Dialog", Action: "Back" }
+          )
+      else
+        workspace.printPrims.print("Hide the active dialog #{name} and show the first minimized dialog")
+      return
+
+    # (Boolean) => Unit
+    submitInput = (share) ->
+      if tortugaSession = getTortugaSession()
+          tortugaSession.MessageQueue.Enqueue(
+            { Type: "Dialog", Action: "Submit-Input", Share: Share }
+          )
+      else if Share
+        workspace.printPrims.print("Submit the user input and share it with other users")
+      elses
+        workspace.printPrims.print("Submit the user input and keep it locally")
+      return
+
     #(String) => Wildcard
     get = (variable) ->
       if tortugaSession = getTortugaSession()
@@ -134,6 +156,8 @@ module.exports = {
             "SHOW-DIALOG": showDialog
       , "MINIMIZE-DIALOG": minimizeDialog
       ,     "HIDE-DIALOG": hideDialog
+      ,     "BACK-DIALOG": backDialog
+      ,    "SUBMIT-INPUT": submitInput
       ,             "GET": get
       ,             "SET": set
       ,              "GO": go
