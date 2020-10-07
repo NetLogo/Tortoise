@@ -25,9 +25,12 @@ object TortoiseSymbol {
     def toJS:         String      = s"var $provides = tortoise_require('$filePath');"
   }
 
-  case class JsDepend(provides: String, filePath: String, projection: String, dependencies: Seq[String])
+  case class JsDepend(provides: String, filePath: String, projection: String, dependencies: Seq[String], arguments: Seq[String] = Seq())
     extends TortoiseSymbol {
-    def toJS: String = s"var $provides = tortoise_require('$filePath')$projection(${dependencies.mkString(", ")});"
+    def toJS: String = {
+      val quotedArgs = arguments.map( (arg) => s""""$arg"""" )
+      s"var $provides = tortoise_require('$filePath')$projection(${(dependencies ++ quotedArgs).mkString(", ")});"
+    }
   }
 
   case class WorkspaceInit(args: Seq[Seq[String]], argumentDependencies: Seq[String] = Seq())

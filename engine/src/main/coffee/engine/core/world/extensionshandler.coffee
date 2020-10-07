@@ -1,12 +1,22 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 # type ExtensionPorter[T] = {
-#   canHandle:      (Any) => Boolean,
-#   dump:           (T, (Any) => String) => String,
-#   exportState:    (T, (Any) => Any) => T,
-#   formatCsv:      (T, (Any) => String) => String
-#   importState:    (T, (Any) => Any) => T
-#   readCsv:        (String, (String) => Any) => T
+#   canHandle: (Any) => Boolean,
+
+#   dump: (T, (Any) => String) => String,
+
+#   exportObject: (T, (Any) => Any) => ExportedExtensionObject,
+#   export:       (Array[ExportedExtensionObject]) => ExportedExtension
+
+#   format:       (ExportedExtension, (Any) => String) => String
+#   formatObject: (ExportedExtensionObject, (Any) => String) => String
+
+#   readObject: (String, String, (String) => Any) => ExportedExtensionObject
+#   read:       (String, (String) => Any) => ExportedExtension
+
+#   import:       (ExportedExtension, (Any) => Any) => Unit
+#   importObject: (ExportedExtension, ExtensionPlaceholder, (Any) => Any)) => T
+
 # }
 
 # (ExtensionPorter, Any) => Boolean
@@ -53,11 +63,12 @@ makeTraverse = (extensionPorters, objectHandler, check) ->
   , extensionReferences
   }
 
-# (String, Int) => ExtensionPlaceholder
-createPlaceholder = (extensionName, index) ->
+# (String, String, Int) => ExtensionPlaceholder
+createPlaceholder = (extensionName, subType, index) ->
   {
     type: "extension-object-placeholder"
   , extensionName
+  , subType
   , index
   }
 
@@ -67,12 +78,12 @@ isPlaceholder = (x) ->
 
 # (ExtensionPlaceholder) => String
 formatPlaceholder = (x) ->
-  "{{#{x.extensionName}: #{x.index}}}"
+  "{{#{x.extensionName}:#{x.subType} #{x.index}}}"
 
 # (Array[ExtensionPorter]) => ExtensionsDumper
 makeDumper = (extensionPorters) ->
   dumpPorterObject = (porter, x, helper) ->
-    "{{#{porter.extensionName}: #{porter.dump(x, helper)}}}"
+    porter.dump(x, helper)
 
   traverser = makeTraverse(extensionPorters, dumpPorterObject, canHandleCheck)
 
@@ -82,115 +93,124 @@ makeDumper = (extensionPorters) ->
     reset:     () -> traverser.extensionReferences.clear()
   }
 
-# (Array[ExtensionPorter]) => ExtensionsStateExport
-makeStateExporter = (extensionPorters) ->
-  # Map[ExtensionPorter, Array[Any]]
+# (Array[ExtensionPorter]) => ExtensionsExporter
+makeExporter = (extensionPorters) ->
+  # Map[ExtensionPorter, Array[ExportedExtensionObject]]
   extensionObjects = new Map()
-  exportExtensionObject = (porter, x, helper) ->
+  exportObject = (porter, x, helper) ->
     porterObjects = if not extensionObjects.has(porter)
       pos = []
       extensionObjects.set(porter, pos)
       pos
-    else extensionObjects.get(porter)
+    else
+      extensionObjects.get(porter)
 
-    porterObjects.push(porter.exportState(x, helper))
-    createPlaceholder(porter.extensionName, porterObjects.length - 1)
+    porterObject = porter.exportObject(x, helper)
+    porterObjects.push(porterObject)
+    createPlaceholder(porter.extensionName, porterObject.subType, porterObjects.length - 1)
+
+  # () => Map[ExtensionPorter, ExportedExtension]
+  exportExt = () ->
+    extensionStates = new Map()
+    extensionPorters.forEach( (porter) ->
+      porterObjects = extensionObjects.get(porter)
+      extensionStates.set(porter, porter.export(porterObjects ? []))
+    )
+    extensionStates
 
   {
-    canHandle:        makeCanHandle(extensionPorters, canHandleCheck)
-    exportState:      makeTraverse(extensionPorters, exportExtensionObject, canHandleCheck).traverse
-    extensionObjects: extensionObjects
+    canHandle:    makeCanHandle(extensionPorters, canHandleCheck)
+    exportObject: makeTraverse(extensionPorters, exportObject, canHandleCheck).traverse
+    export:       exportExt
   }
 
-# (Array[ExtensionPorter]) => ExtensionsFormat
-makeCsvFormatter = (extensionPorters) ->
+# (Array[ExtensionPorter]) => ExtensionsFormatter
+makeFormatter = (extensionPorters) ->
   formatPlaceholderObject = (_1, x, _2) ->
     formatPlaceholder(x)
 
-  formatPorterObject = (porter, x, helper) ->
-    porter.formatCsv(x, helper)
-
-  formatExtensionObjects = (extensionObjects, helper) ->
+  # (Map[ExtensionPorter, ExportedExtension], (Any) => String) => String
+  format = (extensionExports, helper) ->
+    porters = Array.from(extensionExports.keys())
     # `sort()` to match the order desktop returns the extensions in -Jeremy B September 2020
-    porters = Array.from(extensionObjects.keys())
     porters.sort( (p1, p2) -> p1.extensionName.localeCompare(p2.extensionName) )
     porterStrings = porters.map( (porter) ->
-      objectsCSV = extensionObjects.get(porter).map( (x, index) ->
-        "\"{{#{porter.extensionName}: #{index}: #{porter.formatCsv(x, helper)}}}\""
-      ).join("\n")
-      "\"#{porter.extensionName}\"\n#{objectsCSV}"
+      extensionCSV = porter.format(extensionExports.get(porter), helper)
+      if extensionCSV.trim() is ''
+        ''
+      else
+        "\"#{porter.extensionName}\"\n#{extensionCSV}"
     )
-    porterStrings.join("\n\n")
+    porterStrings.filter( (str) -> str isnt '' ).join("\n\n")
 
   {
     canHandle:         makeCanHandle(extensionPorters, eitherCheck)
     formatPlaceholder: makeTraverse(extensionPorters, formatPlaceholderObject, placeholderCheck).traverse
-    formatExtensionObjects
+    format
   }
 
-# (Array[ExtensionPorter], Map[ExtensionPorter, List[Any]]) => ExtensionsStateImport
-makeStateImporter = (extensionPorters, extensionObjects) ->
+# (Array[ExtensionPorter], Map[ExtensionPorter, ExportedExtension]) => ExtensionsImporter
+makeImporter = (extensionPorters, extensionExports) ->
   importedObjects = new Map()
 
-  importExtensionObject = (porter, placeholder, helper) ->
+  importObject = (porter, placeholder, helper) ->
     if importedObjects.has(placeholder)
       importedObjects.get(placeholder)
     else
-      porterObjects   = extensionObjects.get(porter)
-      extensionObject = porterObjects[placeholder.index]
-      importedObject  = porter.importState(extensionObject, helper)
+      exportedExt     = extensionExports.get(porter)
+      importedObject  = porter.importObject(exportedExt, placeholder, helper)
       importedObjects.set(placeholder, importedObject)
       importedObject
 
+  importState = (porter, extensionStates) ->
+    porter.importState(extensionStates.get(porter), extensionObjects.get(porter) ? [])
+
   {
-    canHandle:   makeCanHandle(extensionPorters, placeholderCheck)
-    importState: makeTraverse(extensionPorters, importExtensionObject, placeholderCheck).traverse
+    canHandle:    makeCanHandle(extensionPorters, placeholderCheck)
+    importObject: makeTraverse(extensionPorters, importObject, placeholderCheck).traverse
+    importState:  importState
   }
 
-# (Array[ExtensionPorter]) => ExtensionsCsvImport
-makeCsvImporter = (extensionPorters) ->
-  placeholderRegEx = /{{(.+)\: (\d+)}}/
+placeholderRegEx = /{{(.+)\:(.*) (\d+)}}/
+
+# (Array[ExtensionPorter]) => ExtensionsReader
+makeReader = (extensionPorters) ->
   matchesPlaceholder = (x) ->
     x.match(placeholderRegEx)
 
   readPlaceholder = (match) ->
-    console.log(match)
-    createPlaceholder(match[1], parseFloat(match[2]))
+    createPlaceholder(match[1], match[2], parseFloat(match[3]))
 
-  readExtensionObjects = (porterSections, helper) ->
-    extensionObjects  = new Map()
-    porterStringRegEx = /{{(.+)\: (\d+)\:  ?(.+)}}/
-    porterSections.forEach( (porterStrings) ->
-      porterStrings.forEach( (porterString) ->
-        match = porterString.match(porterStringRegEx)
-        if not match?
-          throw new Error("Cannot read this extension object string: #{porterString}")
-        extensionName = match[1]
-        index         = parseFloat(match[2])
-        formattedData = match[3]
-        porter        = extensionPorters.filter( (p) -> p.extensionName is extensionName )[0]
-        porterObject  = porter.readCsv(formattedData, helper)
-        porterObjects = if not extensionObjects.has(porter)
-          pos = []
-          extensionObjects.set(porter, pos)
-          pos
-        else
-          extensionObjects.get(porter)
-        porterObjects[index] = porterObject
-      )
+  extensionNames = extensionPorters.map( (porter) -> porter.extensionName.toUpperCase() )
+
+  readExtensions = (porterSections, parseAny) ->
+    extensionExps = new Map()
+    Object.keys(porterSections).forEach( (extensionName) ->
+
+      possiblePorters = extensionPorters.filter( (porter) -> porter.extensionName is extensionName )
+      if possiblePorters.length is 0
+        throw new Error("No extension porter found for this thing?")
+      if possiblePorters.length > 1
+        throw new Error("Multiple extension porters found for this thing?")
+
+      porter       = possiblePorters[0]
+      section      = porterSections[extensionName]
+      extensionExp = porter.read(section, parseAny)
+      extensionExps.set(porter, extensionExp)
     )
-    extensionObjects
+    extensionExps
 
   {
     matchesPlaceholder
   , readPlaceholder
-  , readExtensionObjects
+  , extensionNames
+  , readExtensions
   }
 
 module.exports = {
   makeDumper
-  makeStateExporter
-  makeCsvFormatter
-  makeStateImporter
-  makeCsvImporter
+  makeExporter
+  makeFormatter
+  makeImporter
+  makeReader
 }

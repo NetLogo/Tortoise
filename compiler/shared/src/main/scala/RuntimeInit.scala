@@ -16,7 +16,7 @@ import
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
 
-class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, onTickFunction: String = jsFunction()) {
+class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, importedExtensions: Set[String], onTickFunction: String = jsFunction()) {
 
   // scalastyle:off method.length
   def init: Seq[TortoiseSymbol] = Seq(
@@ -29,7 +29,7 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
         , genBreedsOwnArgs
         , Seq(s"'${jsReplace(model.code)}'")
         , Seq(jsArrayString(widgets.map(_.toJsonObj.toString)))
-        , Seq("tortoise_require(\"extensions/all\").porters()")
+        , Seq(genPorters)
         , genWorkspaceArgs
         )
       , Seq("turtleShapes", "linkShapes")
@@ -69,7 +69,7 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
     JsRequire("Random",         "shim/random"),
     JsRequire("StrictMath",     "shim/strictmath"),
 
-    JsDepend("Extensions", "extensions/all", ".initialize", Seq("workspace"))
+    JsDepend("Extensions", "extensions/all", ".initialize", Seq("workspace"), importedExtensions.toSeq)
 
   )
   // scalastyle:on method.length
@@ -98,6 +98,12 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
     val turtlesOwnNames = jsArrayString(turtleVarNames map (_.toLowerCase) map jsString)
 
     Seq(turtlesOwnNames, linksOwnNames)
+  }
+
+  private def genPorters: String = {
+    val quotedExtensions = importedExtensions.map( (extName) => s""""$extName"""" )
+    val porters          = quotedExtensions.mkString(", ")
+    s"""tortoise_require("extensions/all").porters($porters)"""
   }
 
   private def genWorkspaceArgs: Seq[String] = {

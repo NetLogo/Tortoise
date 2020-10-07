@@ -95,8 +95,8 @@ exportAgentReference = (agent) ->
   else
     throw new Error("Cannot make agent reference out of: #{JSON.stringify(agent)}")
 
-# (Agent, ExtensionExports) => (String) => Any
-exportWildcardVar = (agent, extensions) -> (varName) ->
+# (Agent, ExtensionsExporter) => (String) => Any
+exportWildcardVar = (agent, extensionExporter) -> (varName) ->
 
   exportWildcardValue = (value) ->
     type = NLType(value)
@@ -116,8 +116,8 @@ exportWildcardVar = (agent, extensions) -> (varName) ->
       new ExportedReporterLambda(value.nlogoBody)
     else if type.isList()
       value.map(exportWildcardValue)
-    else if extensions.canHandle(value)
-      extensions.exportState(value, exportWildcardValue)
+    else if extensionExporter.canHandle(value)
+      extensionExporter.exportObject(value, exportWildcardValue)
     else
       value
 
@@ -219,10 +219,10 @@ exportGlobals = (extensions) ->
 # () => ExportAllPlotsData
 module.exports.exportAllPlots = ->
 
-  metadata    = exportMetadata.call(this)
-  extensions  = ExtensionsHandler.makeStateExporter(@extensionPorters)
-  miniGlobals = exportMiniGlobals.call(this, extensions)
-  plots       = @_plotManager.getPlots().map(exportPlot)
+  metadata          = exportMetadata.call(this)
+  extensionExporter = ExtensionsHandler.makeExporter(@extensionPorters)
+  miniGlobals       = exportMiniGlobals.call(this, extensionExport)
+  plots             = @_plotManager.getPlots().map(exportPlot)
 
   new ExportAllPlotsData(metadata, miniGlobals, plots)
 
@@ -231,11 +231,11 @@ module.exports.exportPlot = (plotName) ->
 
   desiredPlotMaybe = find((x) -> x.name is plotName)(@_plotManager.getPlots())
 
-  metadata    = exportMetadata.call(this)
-  extensions  = ExtensionsHandler.makeStateExporter(@extensionPorters)
-  miniGlobals = exportMiniGlobals.call(this, extensions)
-  exporter    = (plot) -> exportPlot(plot, extensions)
-  plot        = fold(-> throw new Error("no such plot: \"#{plotName}\""))(exporter)(desiredPlotMaybe)
+  metadata          = exportMetadata.call(this)
+  extensionExporter = ExtensionsHandler.makeExporter(@extensionPorters)
+  miniGlobals       = exportMiniGlobals.call(this, extensionExport)
+  exporter          = (plot) -> exportPlot(plot, extensionExport)
+  plot              = fold(-> throw new Error("no such plot: \"#{plotName}\""))(exporter)(desiredPlotMaybe)
 
   new ExportPlotData(metadata, miniGlobals, plot)
 
@@ -245,10 +245,10 @@ module.exports.exportWorld = ->
   makeMappings = (builtins) -> (mapper) ->
     builtins.map(tee(id)(mapper))
 
-  exportExtensionState = ExtensionsHandler.makeStateExporter(@extensionPorters)
+  extensionExporter = ExtensionsHandler.makeExporter(@extensionPorters)
 
   labelExporter = (varName) => (agent) =>
-    exportWildcardVar(agent, exportExtensionState)(varName)
+    exportWildcardVar(agent, extensionExporter)(varName)
 
   patchMapper = (varName) ->
     switch varName
@@ -268,15 +268,18 @@ module.exports.exportWorld = ->
       when "end1", "end2"         then (end)   -> exportTurtleReference(end)
       else                             id
 
-  metadata    = exportMetadata.call(this)
-  randomState = @rng.exportState()
-  globals     = exportGlobals.call(this, exportExtensionState)
-  patches     =               @patches().toArray().map(exportAgent(ExportedPatch , makeMappings( patchBuiltins)( patchMapper), "plabel", exportExtensionState))
-  turtles     = @turtleManager.turtles().toArray().map(exportAgent(ExportedTurtle, makeMappings(turtleBuiltins)(turtleMapper), "label",  exportExtensionState))
-  links       =     @linkManager.links().toArray().map(exportAgent(ExportedLink  , makeMappings(  linkBuiltins)(  linkMapper), "llabel", exportExtensionState))
-  drawingM    = if not @_updater.drawingWasJustCleared() then maybe([@patchSize, @_getViewBase64()]) else None
-  output      = @_getOutput()
-  plotManager = exportPlotManager.call(this, exportExtensionState)
-  extensions  = exportExtensionState.extensionObjects
+  metadata     = exportMetadata.call(this)
+  randomState  = @rng.exportState()
+  globals      = exportGlobals.call(this, extensionExporter)
+  patchExport  = exportAgent(ExportedPatch , makeMappings( patchBuiltins)( patchMapper), "plabel", extensionExporter)
+  turtleExport = exportAgent(ExportedTurtle, makeMappings(turtleBuiltins)(turtleMapper), "label",  extensionExporter)
+  linkExport   = exportAgent(ExportedLink  , makeMappings(  linkBuiltins)(  linkMapper), "llabel", extensionExporter)
+  patches      =               @patches().toArray().map( patchExport)
+  turtles      = @turtleManager.turtles().toArray().map(turtleExport)
+  links        =     @linkManager.links().toArray().map(  linkExport)
+  drawingM     = if not @_updater.drawingWasJustCleared() then maybe([@patchSize, @_getViewBase64()]) else None
+  output       = @_getOutput()
+  plotManager  = exportPlotManager.call(this, extensionExporter)
+  extensions   = extensionExporter.export()
 
   new ExportWorldData(metadata, randomState, globals, patches, turtles, links, drawingM, output, plotManager, extensions)

@@ -162,9 +162,22 @@ module.exports.ExportedTurtleSet =
     constructor: (@references) ->
       super("turtleset")
 
-module.exports.ExportedExtension =
+class ExportedExtension
+  # (String)
+  constructor: (@extensionName) ->
+
+module.exports.ExportedExtension = ExportedExtension
+
+module.exports.ExportedSimpleExtension =
+  class extends ExportedExtension
+    # (String, Array[ExportedExtensionObject])
+    constructor: (extensionName, @objects) ->
+      super(extensionName)
+
+module.exports.ExportedExtensionObject =
   class
-    constructor: ->
+    # (String, String, Any)
+    constructor: (@extensionName, @subType, @data) ->
 
 module.exports.Metadata =
   class

@@ -136,10 +136,12 @@ class NLWExtensionManager extends ExtensionManager {
 
   import org.nlogo.core.{ CompilerException, Token }
   import org.nlogo.tortoise.macros.ExtDefReader
-  import scala.collection.mutable.{ Map => MMap }
+  import scala.collection.mutable.{ Map => MMap, Set => MSet }
 
   private val extNameToExtMap                            = ExtDefReader.getAll().map(CreateExtension.apply).map(x => (x.getName, x)).toMap
   private val primNameToPrimMap: MMap[String, Primitive] = MMap()
+
+  val importedExtensions: MSet[String] = MSet()
 
   override def anyExtensionsLoaded: Boolean = true
 
@@ -150,6 +152,8 @@ class NLWExtensionManager extends ExtensionManager {
     val extPrimPairs = extension.getPrims.map(prim => (extension.getName, prim))
     val shoutedPairs = extPrimPairs.map { case (extName, ExtensionPrim(prim, name)) => (s"$extName:$name".toUpperCase, prim) }
     primNameToPrimMap ++= shoutedPairs
+    importedExtensions.add(extName)
+    ()
   }
 
   override def replaceIdentifier(name: String): Primitive =

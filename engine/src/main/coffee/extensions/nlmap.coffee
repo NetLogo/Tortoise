@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensionporter')
+
 # (Any) => Boolean
 isMap = (x) ->
   x._type is "nl_map"
@@ -16,36 +18,35 @@ toMap = (obj) ->
   Object.defineProperty(obj, "_type", { enumerable: false, value: "nl_map", writable: false })
   obj
 
+extensionName = "nlmap"
+
+dumpMap = (x, dumpValue) ->
+  values = Object.keys(x).map( (key) => "[\"#{key}\" #{dumpValue(x[key], true)}]" ).join(' ')
+  " #{values}"
+
+exportMap = (x, exportValue) ->
+  out = {}
+  Object.keys(x).map( (k) -> out[k] = exportValue(x[k]) )
+  toMap(out)
+
+formatMap = (exportedObj, formatAny) ->
+  Object.keys(exportedObj.data).map( (key) => "[\"#{key}\" #{formatAny(x[key])}]" ).join(' ')
+
+readMap = (x, parseAny) ->
+  out = {}
+  list = parseAny("[#{x}]")
+  for [k, v] in list
+    out[k] = v
+  out
+
+importMap = (exportedObj, reify) ->
+  out = {}
+  Object.keys(exportedObj.data).map( (k) -> out[k] = reify(exportedObj.data[k]) )
+  toMap(out)
+
 module.exports = {
 
-  porter: {
-
-    extensionName: "nlmap"
-
-    canHandle:   isMap
-
-    dump: (x, dumpValue) ->
-      values = Object.keys(x).map( (key) => "[\"#{key}\" #{dumpValue(x[key], true)}]" ).join(' ')
-      " #{values}"
-
-    exportState: (x, exportValue) ->
-      out = {}
-      Object.keys(x).map( (k) -> out[k] = exportValue(x[k]) )
-      toMap(out)
-
-    formatCsv: (x, formatAny) ->
-      Object.keys(x).map( (key) => "[\"#{key}\" #{formatAny(x[key])}]" ).join(' ')
-
-    importState: (x, reify) ->
-      out = {}
-      Object.keys(x).map( (k) -> out[k] = reify(x[k]) )
-      toMap(out)
-
-    readCsv: (x, parseAny) ->
-      console.log(x)
-      throw new Error("Not yet implemented, thanks!")
-
-  }
+  porter: new SingleObjectExtensionPorter(extensionName, isMap, dumpMap, exportMap, formatMap, readMap, importMap)
 
   init: (workspace) ->
 
@@ -109,7 +110,7 @@ module.exports = {
       )
 
     {
-      name: "nlmap"
+      name: extensionName
     , prims: {
         "FROM-LIST": fromList
       ,   "TO-LIST": toList

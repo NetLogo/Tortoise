@@ -160,9 +160,9 @@ parseVersion = (x) ->
 parseAndExtract = (typeOfEntry) -> (f) -> (x) ->
   fold((x) -> throw new Error("Unable to parse #{typeOfEntry}: #{JSON.stringify(x)}"))(id)(f(x))
 
-# ((String) => String, (String) => String, ExtensionsCsvImport) => Object[Schema]
-nameToSchema = (singularToPlural, pluralToSingular, extensions) ->
-  parseAnyLocal    = parseAny(singularToPlural, pluralToSingular, extensions)
+# ((String) => String, (String) => String, ExtensionsReader) => Object[Schema]
+nameToSchema = (singularToPlural, pluralToSingular, extensionReader) ->
+  parseAnyLocal    = parseAny(singularToPlural, pluralToSingular, extensionReader)
   parseAgentLocal  = parseAndExtract("agent ref")(parseAgentRefMaybe(singularToPlural))
   parseTurtleLocal = parseAndExtract("turtle ref")(parseTurtleRefMaybe(singularToPlural))
 
@@ -250,8 +250,8 @@ singletonParse = (x, schema) ->
   else
     ''
 
-# ((String) => String, (String) => String, ExtensionsCsvImport) => Parser[Array[ImpObj]]
-arrayParse = (singularToPlural, pluralToSingular, extensions) -> ([keys, rows...], schema) ->
+# ((String) => String, (String) => String, ExtensionsReader) => Parser[Array[ImpObj]]
+arrayParse = (singularToPlural, pluralToSingular, extensionReader) -> ([keys, rows...], schema) ->
 
   f =
     (acc, row) ->
@@ -262,14 +262,14 @@ arrayParse = (singularToPlural, pluralToSingular, extensions) -> ([keys, rows...
         if schema[saneKey]?
           obj[saneKey] = schema[saneKey](value)
         else if value isnt "" # DO NOT USE `saneKey`!  Do not touch user global names! --JAB (8/2/17)
-          obj.extraVars[rawKey] = parseAny(singularToPlural, pluralToSingular, extensions)(value)
+          obj.extraVars[rawKey] = parseAny(singularToPlural, pluralToSingular, extensionReader)(value)
       acc.concat([obj])
 
   foldl(f)([])(rows)
 
-# ((String) => String, (String) => String, ExtensionsCsvImport) => Parser[ImpObj]
-globalParse = (singularToPlural, pluralToSingular, extensions) -> (csvBucket, schema) ->
-  arrayParse(singularToPlural, pluralToSingular, extensions)(csvBucket, schema)[0]
+# ((String) => String, (String) => String, ExtensionsReader) => Parser[ImpObj]
+globalParse = (singularToPlural, pluralToSingular, extensionReader) -> (csvBucket, schema) ->
+  arrayParse(singularToPlural, pluralToSingular, extensionReader)(csvBucket, schema)[0]
 
 # Parser[ImpObj]
 plotParse = (csvBucket, schema) ->
@@ -311,15 +311,27 @@ plotParse = (csvBucket, schema) ->
 
   output
 
-# Parser[Array[Array[String]]]
-extensionParse = (csvBucket, schema) ->
-  output = []
-  for [item] in csvBucket
-    if not item.startsWith('{{')
-      output.push([])
+# (Array[String]) => Parser[Map[String, Array[String]]]
+extensionParse = (extensionNames) -> (csvBucket, schema) ->
+  if csvBucket.length is 0
+    return {}
+
+  [first] = csvBucket[0]
+  if not extensionNames.includes(first.toUpperCase())
+    throw new Error("Extension section must start with an extension name.")
+
+  output        = {}
+  current       = []
+  output[first] = current
+
+  for index in [1...csvBucket.length]
+    [line] = csvBucket[index]
+    if extensionNames.includes(line.toUpperCase())
+      current      = []
+      output[line] = current
     else
-      extNames = Object.keys(output)
-      output[output.length - 1].push(item)
+      current.push(line)
+
   output
 
 # Parser[(Number, String)]
@@ -332,17 +344,17 @@ drawingParse = (csvBucket, schema) ->
   else
     throw new Error("NetLogo Web cannot parse `export-world` drawings from before NetLogo 6.1.")
 
-# ((String) => String, (String) => String, ExtensionsCsvImport) => Object[Parser[Any]]
-buckets = (singularToPlural, pluralToSingular, extensions) -> {
-  extensions:  extensionParse
+# ((String) => String, (String) => String, ExtensionsReader) => Object[Parser[Any]]
+buckets = (singularToPlural, pluralToSingular, extensionReader) -> {
+  extensions:  extensionParse(extensionReader.extensionNames)
 , drawing:     drawingParse
-, globals:     globalParse(singularToPlural, pluralToSingular, extensions)
-, links:       arrayParse(singularToPlural, pluralToSingular, extensions)
+, globals:     globalParse(singularToPlural, pluralToSingular, extensionReader)
+, links:       arrayParse(singularToPlural, pluralToSingular, extensionReader)
 , output:      singletonParse
-, patches:     arrayParse(singularToPlural, pluralToSingular, extensions)
+, patches:     arrayParse(singularToPlural, pluralToSingular, extensionReader)
 , plots:       plotParse
 , randomState: singletonParse
-, turtles:     arrayParse(singularToPlural, pluralToSingular, extensions)
+, turtles:     arrayParse(singularToPlural, pluralToSingular, extensionReader)
 }
 
 # END PARSER STUFF
@@ -365,10 +377,10 @@ extractGlobals = (globals, knownNames) ->
 module.exports =
   (singularToPlural, pluralToSingular, extensionPorters) -> (csvText) ->
 
-    extensionImporter = ExtensionsHandler.makeCsvImporter(extensionPorters)
+    extensionReader = ExtensionsHandler.makeReader(extensionPorters)
 
-    buckies   = buckets(singularToPlural, pluralToSingular, extensionImporter)
-    getSchema = nameToSchema(singularToPlural, pluralToSingular, extensionImporter)
+    buckies   = buckets(singularToPlural, pluralToSingular, extensionReader)
+    getSchema = nameToSchema(singularToPlural, pluralToSingular, extensionReader)
 
     parsedCSV = parse(csvText, {
       comment: '#'
@@ -423,8 +435,8 @@ module.exports =
     outTurtles     = turtles.map(toExportedTurtle)
     outLinks       = links.map(toExportedLink)
     outPlotManager = toExportedPlotManager(plots)
-    parseAnyLocal  = parseAny(singularToPlural, pluralToSingular, extensionImporter)
-    outExtensions  = extensionImporter.readExtensionObjects(extensions, parseAnyLocal)
+    parseAnyLocal  = parseAny(singularToPlural, pluralToSingular, extensionReader)
+    outExtensions  = extensionReader.readExtensions(extensions, parseAnyLocal)
 
     new ExportWorldData( outMetadata, randomState, outGlobals, outPatches, outTurtles
                        , outLinks, maybe(drawing), output, outPlotManager, outExtensions)

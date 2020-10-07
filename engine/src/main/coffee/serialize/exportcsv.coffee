@@ -114,8 +114,8 @@ formatColor = (color) ->
   else
     throw new Error("Unknown color: #{JSON.stringify(color)}")
 
-# (ExtensionsFormat, Boolean) => (Any) => String
-formatAny = (extensions, isOuterValue = true) -> (any) ->
+# (ExtensionsFormatter, Boolean) => (Any) => String
+formatAny = (extensionFormatter, isOuterValue = true) -> (any) ->
 
   # (Any) => String
   formatter = (x) ->
@@ -155,8 +155,8 @@ formatAny = (extensions, isOuterValue = true) -> (any) ->
     else if x instanceof ExportedTurtleSet
       exportInnerTurtle = (ref) -> " #{ref.id}"
       "{turtles#{x.references.map(exportInnerTurtle).join("")}}"
-    else if extensions.canHandle(x)
-      extensions.formatPlaceholder(x, formatter)
+    else if extensionFormatter.canHandle(x)
+      extensionFormatter.formatPlaceholder(x, formatter)
     else
       throw new Error("I don't know how to CSVify this: #{JSON.stringify(x)}")
 
@@ -172,7 +172,7 @@ formatKeys   = pipeline(keys  , map(formatPlain), joinCommaed)
 formatValues = pipeline(values, map(formatPair ), joinCommaed)
 # (Object[Any]) => String
 
-# (ExportedTurtle) => (ExtensionsFormat) => Object[(Any, (Any) => String)]
+# ((Any) => String) => (ExportedTurtle) => Object[(Any, (Any) => String)]
 schemafyTurtle = (formatAnyValue) -> ({ who, color, heading, xcor, ycor, shape, label, labelColor, breed, isHidden, size, penSize, penMode }) ->
   formatWrapped = pipeline(formatBreedRef, formatPlain)
   {
@@ -191,7 +191,7 @@ schemafyTurtle = (formatAnyValue) -> ({ who, color, heading, xcor, ycor, shape, 
   , "pen-mode":    [penMode   , formatString  ]
   }
 
-# (ExportedPatch) => (ExtensionsFormat) => Object[(Any, (Any) => String)]
+# ((Any) => String) => (ExportedPatch) => Object[(Any, (Any) => String)]
 schemafyPatch = (formatAnyValue) -> ({ pxcor, pycor, pcolor, plabel, plabelColor }) ->
   {
     "pxcor":        [pxcor      , formatNumber  ]
@@ -202,7 +202,7 @@ schemafyPatch = (formatAnyValue) -> ({ pxcor, pycor, pcolor, plabel, plabelColor
 
   }
 
-# (ExportedLink) => (ExtensionsFormat) => Object[(Any, (Any) => String)]
+# ((Any) => String) => (ExportedLink) => Object[(Any, (Any) => String)]
 schemafyLink = (formatAnyValue) -> ({ end1, end2, color, label, labelColor, isHidden, breed, thickness, shape, tieMode }) ->
   formatWrappedBreed  = pipeline(formatBreedRef , formatPlain)
   formatWrappedTurtle = pipeline(formatTurtleRef, formatPlain)
@@ -219,7 +219,7 @@ schemafyLink = (formatAnyValue) -> ({ end1, end2, color, label, labelColor, isHi
   , "tie-mode":    [tieMode   , formatString       ]
   }
 
-# (???) => (Object[Any]) => Object[(Any, (Any) => String)]
+# ((Any) => String) => (Object[Any]) => Object[(Any, (Any) => String)]
 schemafyAny = (formatAnyValue) -> pipeline(pairs, map(([k, v]) -> [k, [v, formatAnyValue]]), toObject)
 
 # Based on le_m's solution at https://codereview.stackexchange.com/a/164141/139601
@@ -241,7 +241,7 @@ formatDate = (date) ->
 
   "#{month}/#{day}/#{year} #{hour}:#{minute}:#{second}:#{milli} #{tzSign}#{tzOffset1}#{tzOffset2}"
 
-# (ExportedGlobals) => String
+# (ExportedGlobals, (Any) => String) => String
 formatGlobals = ({ linkDirectedness, maxPxcor, maxPycor, minPxcor, minPycor, nextWhoNumber
                  , perspective, subject, ticks, codeGlobals }, formatAnyValue) ->
 
@@ -278,7 +278,7 @@ formatGlobals = ({ linkDirectedness, maxPxcor, maxPycor, minPxcor, minPycor, nex
 #{formatKeys(  globals)}
 #{formatValues(globals)}"""
 
-# (Object[Any], ExtensionsFormat) => String
+# (Object[Any], (Any) => String) => String
 formatMiniGlobals = (miniGlobals, formatAnyValue) ->
   """#{formatPlain('MODEL SETTINGS')}
 #{formatKeys(              miniGlobals )}
@@ -388,19 +388,19 @@ formatPointsData = (pens) ->
 
 # (ExportPlotData, Array[ExtensionPorter]) => String
 plotDataToCSV = ({ metadata, miniGlobals, plot }, extensionPorters) ->
-  extensions = ExtensionsHandler.makeCsvFormatter(extensionPorters)
+  extensionFormatter = ExtensionsHandler.makeFormatter(extensionPorters)
   """#{formatMetadata(metadata)}
 
-#{formatMiniGlobals(miniGlobals, formatAny(extensions))}
+#{formatMiniGlobals(miniGlobals, formatAny(extensionFormatter))}
 
 #{formatPlotData(plot)}"""
 
 # (ExportAllPlotsData) => String
 allPlotsDataToCSV = ({ metadata, miniGlobals, plots }, extensionPorters) ->
-  extensions = ExtensionsHandler.makeCsvFormatter(extensionPorters)
+  extensionFormatter = ExtensionsHandler.makeFormatter(extensionPorters)
   """#{formatMetadata(metadata)}
 
-#{formatMiniGlobals(miniGlobals, formatAny(extensions))}
+#{formatMiniGlobals(miniGlobals, formatAny(extensionFormatter))}
 
 #{plots.map(formatPlotData).join("\n")}"""
 
@@ -417,7 +417,7 @@ formatDrawingData = ([patchSize, drawing]) ->
 # (Array[String], Array[String], Array[String], Array[String], Array[String], Array[ExtensionPorter]) => (ExportWorldData) => String
 worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleBuiltins, linkBuiltins, extensionPorters) -> (worldData) ->
 
-  extensionsFormatter = ExtensionsHandler.makeCsvFormatter(extensionPorters)
+  extensionFormatter = ExtensionsHandler.makeFormatter(extensionPorters)
 
   { metadata, randomState, globals, patches, turtles, links, plotManager, drawingDataMaybe, output, extensions } = worldData
 
@@ -426,7 +426,7 @@ worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleB
   # one patch (`patch 0 0`), so we take the first patch and its varnames. --JAB (12/16/17)
   allPatchesOwnsNames = Object.keys(patches[0].patchesOwns)
 
-  formatAnyValue = formatAny(extensionsFormatter)
+  formatAnyValue = formatAny(extensionFormatter)
 
   patchesStr = formatAgents(patches,  schemafyPatch(formatAnyValue),  patchBuiltins, allPatchesOwnsNames, formatAnyValue)
   turtlesStr = formatAgents(turtles, schemafyTurtle(formatAnyValue), turtleBuiltins, allTurtlesOwnsNames, formatAnyValue)
@@ -439,7 +439,7 @@ worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleB
 
   drawingStr = pipeline(mapMaybe(formatDrawingData), fold(-> "")(id))(drawingDataMaybe)
 
-  extensionsCSV = extensionsFormatter.formatExtensionObjects(extensions, formatAny(extensionsFormatter, isOuterValue = false))
+  extensionsCSV = extensionFormatter.format(extensions, formatAny(extensionFormatter, isOuterValue = false))
 
   """#{formatMetadata(metadata)}
 

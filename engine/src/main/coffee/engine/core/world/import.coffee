@@ -31,10 +31,9 @@ ExtensionsHandler = require('./extensionshandler')
 # , () => PatchSet
 # , () => Breed
 # , World
+# , ExtensionsImporter
 # ) => (Any) => Any
-reifyExported = (getTurtle, getPatch, getLink, getAllPatches, getBreed, world, extensionPorters, extensionObjects) ->
-
-  extensions = ExtensionsHandler.makeStateImporter(extensionPorters, extensionObjects)
+reifyExported = (getTurtle, getPatch, getLink, getAllPatches, getBreed, world, extensionImporter) ->
 
   helper = (x) ->
     type = NLType(x)
@@ -73,8 +72,8 @@ reifyExported = (getTurtle, getPatch, getLink, getAllPatches, getBreed, world, e
       fn.isReporter = true
       fn.nlogoBody  = x.source
       fn
-    else if extensions.canHandle(x)
-      extensions.importState(x, helper)
+    else if extensionImporter.canHandle(x)
+      extensionImporter.importObject(x, helper)
     else
       throw new Error("Unknown item for reification: #{JSON.stringify(x)}")
 
@@ -103,8 +102,9 @@ module.exports.importWorld = (
     , output
     , extensions
     }
-  , extensionPorters
   ) ->
+
+    extensionImporter = ExtensionsHandler.makeImporter(@extensionPorters, extensions)
 
     reify =
       reifyExported(
@@ -114,8 +114,7 @@ module.exports.importWorld = (
       , @patches.bind(this)
       , @breedManager.get.bind(@breedManager)
       , this
-      , @extensionPorters
-      , extensions
+      , extensionImporter
       )
 
     @clearAll()

@@ -7,14 +7,7 @@
 StrictMath      = require('shim/strictmath')
 vec             = require('vectorious')
 
-# Matrix => String
-dumpMatrix = (matrix) ->
-  inner = matrix.toArray().map((row) -> "[ #{row.join(" ")} ]").join("")
-  "[ #{inner} ]"
-
-# Any => Boolean
-isMatrix = (x) ->
-  x instanceof vec
+SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensionporter')
 
 notImplementedException = (prim) ->
   throw new Error("Extension exception: #{prim} has not been implemented.")
@@ -56,21 +49,37 @@ checkNestedList = (list) ->
 
   return list
 
+# Any => Boolean
+isMatrix = (x) ->
+  x instanceof vec
+
+dumpMatrix = (matrix) ->
+  " #{formatMatrix(matrix)}"
+
+exportMatrix = (matrix) ->
+  matrix
+
+# Matrix => String
+formatExpMatrix = (exportedObj) ->
+  formatMatrix(exportedObj.data)
+
+formatMatrix = (matrix) ->
+  inner = matrix.toArray().map((row) -> "[ #{row.join(" ")} ]").join("")
+  "[ #{inner} ]"
+
+readMatrix = (x, parseAny) ->
+  parseable = x.replaceAll("\[ ", "[").replaceAll(" \]", "]").replaceAll("][", "] [")
+  list = parseAny(parseable)
+  vec.array(list)
+
+importMatrix = (exportedObj) ->
+  exportedObj.data
+
+extensionName = "matrix"
+
 module.exports = {
 
-  porter: {
-    extensionName: "matrix"
-    canHandle:     isMatrix
-    dump:          (x, _) -> " #{dumpMatrix(x)}"
-    exportState:   (x, _) -> x
-    formatCsv:     (x, _) -> dumpMatrix(x)
-    importState:   (x, _) -> x
-    readCsv: (x, parseAny) ->
-      parseable = x.replaceAll("\[ ", "[").replaceAll(" \]", "]").replaceAll("][", "] [")
-      list = parseAny(parseable)
-      vec.array(list)
-
-  }
+  porter: new SingleObjectExtensionPorter(extensionName, isMatrix, dumpMatrix, exportMatrix, formatExpMatrix, readMatrix, importMatrix)
 
   init: (workspace) ->
 
@@ -427,7 +436,7 @@ module.exports = {
       [getRow(coefficients, 0), stats]
 
     {
-      name: "matrix"
+      name: extensionName
     , prims: {
         "MAKE-CONSTANT":              makeConstant
       , "MAKE-IDENTITY":              makeIdentity

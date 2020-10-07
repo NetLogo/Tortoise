@@ -1,41 +1,34 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensionporter')
+
 # (Any) => Boolean
 isArray = (x) ->
   x.type is "ext_array"
 
+dumpArray = (extObj, dumpValue) ->
+  extObj.items.map( (item) -> dumpValue(item, true) ).join(' ')
+
+exportArray = (extObj, exportValue) ->
+  extObj.items.map( (item) -> exportValue(item) )
+
+formatArray = (exportedObj, formatAny) ->
+  exportedObj.data.map( (item) -> formatAny(item) ).join(' ')
+
+readArray = (text, parseAny) ->
+  parseAny("[#{text}]")
+
+importArray = (exportedObj, reify) ->
+  {
+    items: exportedObj.data.map( (i) -> reify(i) )
+    type:  "ext_array"
+  }
+
+extensionName = "array"
+
 module.exports = {
 
-  porter: {
-
-    extensionName: "array"
-
-    canHandle: isArray
-
-    dump: (x, dumpValue) ->
-      x.items.map( (item) => dumpValue(item, true) ).join(' ')
-
-    exportState: (x, exportValue) ->
-      {
-        items: x.items.map( (i) -> exportValue(i) )
-        type:  "ext_array"
-      }
-
-    formatCsv: (x, formatAny) ->
-      x.items.map( (item) => formatAny(item) ).join(' ')
-
-    importState: (x, reify) ->
-      x.items = x.items.map( (i) -> reify(i) )
-      x
-
-    readCsv: (x, parseAny) ->
-      items = parseAny("[#{x}]")
-      {
-        items,
-        type: "ext_array"
-      }
-
-  }
+  porter: new SingleObjectExtensionPorter(extensionName, isArray, dumpArray, exportArray, formatArray, readArray, importArray)
 
   init: (workspace) ->
 
@@ -87,7 +80,7 @@ module.exports = {
       "Extension exception: #{index} is not a valid index into an array of length #{length(extArray)}"
 
     {
-      name: "array"
+      name: extensionName
     , prims: {
         "FROM-LIST": fromList
       ,   "TO-LIST": toList

@@ -2,6 +2,8 @@
 
 NLType = require('../engine/core/typechecker')
 
+SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensionporter')
+
 # (Any) => Boolean
 isTable = (x) ->
   x instanceof Map
@@ -47,45 +49,43 @@ checkInput = ({table, key}) ->
         "#{workspace.dump(key, true)} is not a valid table key " +
         "(a table key may only be a number, a string, true or false, or a list whose items are valid keys)")
 
+extensionName = "table"
+
+dumpTable = (x, dumpValue) ->
+  "[#{Array.from(x).map( (item) => dumpValue(item, true) ).join(' ')}]"
+
+exportTable = (x, exportValue) ->
+  map = new Map()
+  Array.from(x.keys()).forEach( (key) ->
+    value = x.get(key)
+    map.set(key, exportValue(value))
+    return
+  )
+  map
+
+formatTable = (exportedObj, formatAny) ->
+  values = Array.from(exportedObj.data.keys()).map( (key) ->
+    "[\"\"#{key}\"\" #{formatAny(exportedObj.data.get(key))}]"
+  )
+  "[#{values.join(' ')}]"
+
+readTable = (x, parseAny) ->
+  list = parseAny(x)
+  new Map(list)
+
+# (ExportedExtensionObject, (Any) => Any)) => Table
+importTable = (exportedObj, reify) ->
+  map = new Map()
+  Array.from(exportedObj.data.keys()).forEach( (key) ->
+    value = exportedObj.data.get(key)
+    map.set(key, reify(value))
+    return
+  )
+  map
+
 module.exports = {
 
-  porter: {
-
-    extensionName: "table"
-
-    canHandle: isTable
-
-    dump: (x, dumpValue) ->
-      "[#{Array.from(x).map( (item) => dumpValue(item, true) ).join(' ')}]"
-
-    exportState: (x, exportValue) ->
-      map = new Map()
-      Array.from(x.keys()).forEach( (key) ->
-        value = x.get(key)
-        map.set(key, exportValue(value))
-        return
-      )
-      map
-
-    formatCsv: (x, formatAny) ->
-      values = Array.from(x.keys()).map( (key) ->
-        "[\"\"#{key}\"\" #{formatAny(x.get(key))}]"
-      )
-      "[#{values.join(' ')}]"
-
-    importState: (x, reify) ->
-      Array.from(x.keys()).forEach( (key) ->
-        value = x.get(key)
-        x.set(key, reify(value))
-        return
-      )
-      x
-
-    readCsv: (x, parseAny) ->
-      list = parseAny(x)
-      new Map(list)
-
-  }
+  porter: new SingleObjectExtensionPorter(extensionName, isTable, dumpTable, exportTable, formatTable, readTable, importTable)
 
   init: (workspace) ->
 
@@ -224,7 +224,7 @@ module.exports = {
       group
 
     {
-      name: "table"
+      name: extensionName
     , prims: {
                  "CLEAR": clear
       ,         "COUNTS": counts

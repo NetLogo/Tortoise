@@ -7,7 +7,6 @@ import
     core.{
       AgentKind
     , CompilerException
-    , ExtensionManager
     , FrontEndInterface
     , Model
     , ProcedureDefinition
@@ -55,7 +54,7 @@ class Compiler {
   private val prims:    Prims    = new Prims    { lazy val handlers = self.handlers }
   private val handlers: Handlers = new Handlers { lazy val prims    = self.prims }
 
-  val extensionManager: ExtensionManager = new NLWExtensionManager()
+  val extensionManager: NLWExtensionManager = new NLWExtensionManager()
 
   val frontEnd: FrontEndInterface = FrontEnd
 
@@ -67,7 +66,13 @@ class Compiler {
     val cesError          = (ces: NonEmptyList[CompilerException]) =>
       s"""modelConfig.dialog.notify("Error(s) in interface global init: ${ces.map(_.getMessage).list.toList.mkString(", ")}")"""
     val globalCommands    = (v: ValidationNel[CompilerException, String]) => v.fold(cesError, identity)
-    val init              = new RuntimeInit(result.program, result.widgets, model, compilerFlags.onTickCallback).init
+    val init              = new RuntimeInit(
+      result.program
+    , result.widgets
+    , model
+    , extensionManager.importedExtensions.toSet
+    , compilerFlags.onTickCallback
+    ).init
     val plotConfig        = PlotCompiler.formatPlots(result.widgets)
     val procedures        = ProcedureCompiler.formatProcedures(result.compiledProcedures)
     val interfaceGlobalJs = result.interfaceGlobalCommands.map(globalCommands).mkString("\n")
