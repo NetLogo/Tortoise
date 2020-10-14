@@ -68,11 +68,11 @@ module.exports = {
     submitInput = (share) ->
       if tortugaSession = getTortugaSession()
           tortugaSession.MessageQueue.Enqueue(
-            { Type: "Dialog", Action: "Submit-Input", Share: Share }
+            { Type: "Dialog", Action: "Submit-Input", Share: share }
           )
-      else if Share
+      else if share
         workspace.printPrims.print("Submit the user input and share it with other users")
-      elses
+      else
         workspace.printPrims.print("Submit the user input and keep it locally")
       return
 
