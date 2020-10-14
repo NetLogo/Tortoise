@@ -32,9 +32,7 @@ module.exports = {
             { Type: "Dialog", Action: "Minimize", Target: name }
           )
         else
-          tortugaSession.MessageQueue.Enqueue(
-            { Type: "Error", Message: "Dialog #{name} is not defined in the tutorial" }
-          )
+          throw new Error("Dialog #{name} is not defined in the tutorial")
       else
         workspace.printPrims.print("Make dialog #{name} minimized")
       return
@@ -47,9 +45,7 @@ module.exports = {
             { Type: "Dialog", Action: "Hide", Target: name }
           )
         else
-          tortugaSession.MessageQueue.Enqueue(
-            { Type: "Error", Message: "Dialog #{name} is not defined in the tutorial" }
-          )
+          throw new Error("Dialog #{name} is not defined in the tutorial")
       else
         workspace.printPrims.print("Hide the active dialog #{name}")
       return
@@ -57,9 +53,9 @@ module.exports = {
     # (String) => Unit
     backDialog = (name) ->
       if tortugaSession = getTortugaSession()
-          tortugaSession.MessageQueue.Enqueue(
-            { Type: "Dialog", Action: "Back" }
-          )
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Dialog", Action: "Back" }
+        )
       else
         workspace.printPrims.print("Hide the active dialog #{name} and show the first minimized dialog")
       return
@@ -67,9 +63,9 @@ module.exports = {
     # (Boolean) => Unit
     submitInput = (share) ->
       if tortugaSession = getTortugaSession()
-          tortugaSession.MessageQueue.Enqueue(
-            { Type: "Dialog", Action: "Submit-Input", Share: share }
-          )
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Dialog", Action: "Submit-Input", Share: share }
+        )
       else if share
         workspace.printPrims.print("Submit the user input and share it with other users")
       else
@@ -99,9 +95,7 @@ module.exports = {
           section = tortugaSession.Tutorial.Sections[sectionName]
           tortugaSession.ActivateSection(section)
         else
-          tortugaSession.MessageQueue.Enqueue(
-            { Type: "Error", Message: "Section #{sectionName} is not defined in the tutorial" }
-          )
+          throw new Error("Section #{sectionName} is not defined in the tutorial")
       else
         workspace.printPrims.print("Activate section #{sectionName}")
       return
@@ -113,13 +107,11 @@ module.exports = {
           section = tortugaSession.Tutorial.Sections[sectionName]
           tortugaSession.DeactivateSection(section)
         else
-          tortugaSession.MessageQueue.Enqueue(
-            { Type: "Error", Message: "Section #{sectionName} is not defined in the tutorial" }
-          )
+          throw new Error("Section #{sectionName} is not defined in the tutorial")
       else
         workspace.printPrims.print("Deactivate section #{sectionName}")
       return
-      
+
     # (String) -> Unit
     go = (sectionName) ->
       if tortugaSession = getTortugaSession()
@@ -127,9 +119,7 @@ module.exports = {
           section = tortugaSession.Tutorial.Sections[sectionName]
           tortugaSession.GoSection(section)
         else
-          tortugaSession.MessageQueue.Enqueue(
-            { Type: "Error", Message: "Section #{sectionName} is not defined in the tutorial" }
-          )
+          throw new Error("Section #{sectionName} is not defined in the tutorial")
       else
         workspace.printPrims.print("Go to section #{sectionName}")
       return
@@ -141,7 +131,7 @@ module.exports = {
       else
         workspace.printPrims.print("Visit the next available section")
       return
-    
+
     # () -> Unit
     back = () ->
       if tortugaSession = getTortugaSession()
