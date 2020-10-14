@@ -395,6 +395,10 @@ plotDataToCSV = ({ metadata, miniGlobals, plot }, extensionPorters) ->
 
 #{formatPlotData(plot)}"""
 
+# (ExportedPlot) => String
+rawPlotToCSV = (plot) ->
+  """#{formatPlotData(plot)}"""
+
 # (ExportAllPlotsData) => String
 allPlotsDataToCSV = ({ metadata, miniGlobals, plots }, extensionPorters) ->
   extensionFormatter = ExtensionsHandler.makeFormatter(extensionPorters)
@@ -464,4 +468,4 @@ worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleB
 #{formatPlain('EXTENSIONS')}
 #{onNextLineIfNotEmpty(extensionsCSV)}\n\n"""
 
-module.exports = { allPlotsDataToCSV, plotDataToCSV, worldDataToCSV }
+module.exports = { allPlotsDataToCSV, plotDataToCSV, rawPlotToCSV, worldDataToCSV }

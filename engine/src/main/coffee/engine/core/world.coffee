@@ -12,13 +12,13 @@ NLMath          = require('util/nlmath')
 { pipeline }        = require('brazier/function')
 { values }          = require('brazier/object')
 
-{ Observer                                         } = require('./observer')
-{ linkBuiltins, patchBuiltins, turtleBuiltins      } = require('./structure/builtins')
-{ allPlotsDataToCSV, plotDataToCSV, worldDataToCSV } = require('serialize/exportcsv')
-{ TopologyInterrupt                                } = require('util/exception')
+{ Observer                                                       } = require('./observer')
+{ linkBuiltins, patchBuiltins, turtleBuiltins                    } = require('./structure/builtins')
+{ allPlotsDataToCSV, plotDataToCSV, rawPlotToCSV, worldDataToCSV } = require('serialize/exportcsv')
+{ TopologyInterrupt                                              } = require('util/exception')
 
-{ exportWorld, exportPlot, exportAllPlots } = require('./world/export')
-{ importWorld                             } = require('./world/import')
+{ exportWorld, exportPlot, exportRawPlot, exportAllPlots } = require('./world/export')
+{ importWorld                                            } = require('./world/import')
 
 module.exports =
   class World
@@ -226,6 +226,10 @@ module.exports =
     # (String) => String
     exportPlotCSV: (name) ->
       plotDataToCSV(exportPlot.call(this, name), @extensionPorters)
+
+    # (String) => String
+    exportRawPlotCSV: (name) ->
+      rawPlotToCSV(exportRawPlot.call(this, name), @extensionPorters)
 
     # () => String
     exportCSV: ->

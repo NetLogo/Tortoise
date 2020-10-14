@@ -145,8 +145,8 @@ exportAgent = (clazz, builtInsMappings, labelVarName, extensions) -> (agent) ->
 
   new clazz(builtInsValues..., extras)
 
-# (Plot, ExtensionExports) => ExportedPlot
-exportPlot = (plot, extensions) ->
+# (Plot) => ExportedPlot
+exportPlot = (plot) ->
 
   exportPen = (pen) ->
 
@@ -174,6 +174,12 @@ exportPlot = (plot, extensions) ->
   yMin                 = plot.yMin
 
   new ExportedPlot(currentPenNameOrNull, isAutoplotting, isLegendOpen, name, pens, xMax, xMin, yMax, yMin)
+
+# (String) => ExportedPlot
+exportRawPlot = (plotName) ->
+  desiredPlotMaybe  = find((x) -> x.name is plotName)(@_plotManager.getPlots())
+  exporter          = (plot) -> exportPlot(plot)
+  plot              = fold(-> throw new Error("no such plot: \"#{plotName}\""))(exporter)(desiredPlotMaybe)
 
 # (ExtensionExports) => ExportedPlotManager
 exportPlotManager = (extensions) ->
@@ -221,21 +227,20 @@ module.exports.exportAllPlots = ->
 
   metadata          = exportMetadata.call(this)
   extensionExporter = ExtensionsHandler.makeExporter(@extensionPorters)
-  miniGlobals       = exportMiniGlobals.call(this, extensionExport)
+  miniGlobals       = exportMiniGlobals.call(this, extensionExporter)
   plots             = @_plotManager.getPlots().map(exportPlot)
 
   new ExportAllPlotsData(metadata, miniGlobals, plots)
 
+# (String) => ExportedPlot
+module.exports.exportRawPlot = exportRawPlot
+
 # (String) => ExportPlotData
 module.exports.exportPlot = (plotName) ->
-
-  desiredPlotMaybe = find((x) -> x.name is plotName)(@_plotManager.getPlots())
-
   metadata          = exportMetadata.call(this)
   extensionExporter = ExtensionsHandler.makeExporter(@extensionPorters)
-  miniGlobals       = exportMiniGlobals.call(this, extensionExport)
-  exporter          = (plot) -> exportPlot(plot, extensionExport)
-  plot              = fold(-> throw new Error("no such plot: \"#{plotName}\""))(exporter)(desiredPlotMaybe)
+  miniGlobals       = exportMiniGlobals.call(this, extensionExporter)
+  plot              = exportRawPlot.call(this, plotName)
 
   new ExportPlotData(metadata, miniGlobals, plot)
 

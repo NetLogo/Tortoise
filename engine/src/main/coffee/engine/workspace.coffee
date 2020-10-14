@@ -123,6 +123,7 @@ module.exports =
                                              , (-> world.exportCSV())
                                              , (-> world.exportAllPlotsCSV())
                                              , ((plot) -> world.exportPlotCSV(plot))
+                                             , ((plot) -> world.exportRawPlotCSV(plot))
                                              , ((path) -> world.importDrawing(path))
                                              , importPatchColors
                                              , importWorldFromCSV

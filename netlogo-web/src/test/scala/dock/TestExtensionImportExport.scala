@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.nlw
 package dock
 
-import org.nlogo.core.{ Model, View, Output }
+import org.nlogo.core.{ Model, Output, View }
 
 class TestExtensionImportExport extends DockingSuite {
 
