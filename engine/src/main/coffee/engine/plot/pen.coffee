@@ -130,10 +130,11 @@ module.exports.Pen = class Pen
     @_ops = genOps(this)
     @reset()
 
-  # (Number) => Unit
+  # (Number) => Number
   addValue: (y) ->
-    @_addPoint(@_state.nextX(), y)
-    return
+    nextX = @_state.nextX()
+    @_addPoint(nextX, y)
+    nextX
 
   # (Number, Number) => Unit
   addXY: (x, y) ->
