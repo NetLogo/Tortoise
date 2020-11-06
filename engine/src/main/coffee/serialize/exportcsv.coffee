@@ -397,7 +397,7 @@ plotDataToCSV = ({ metadata, miniGlobals, plot }, extensionPorters) ->
 
 # (ExportedPlot) => String
 rawPlotToCSV = (plot) ->
-  """#{formatPlotData(plot)}"""
+  """#{formatPlotData(plot)}\n"""
 
 # (ExportAllPlotsData) => String
 allPlotsDataToCSV = ({ metadata, miniGlobals, plots }, extensionPorters) ->

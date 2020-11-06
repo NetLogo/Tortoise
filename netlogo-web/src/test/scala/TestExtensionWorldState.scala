@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.nlw
 
 import
-  org.nlogo.core.{ Model, Pen, Plot, View }
+  org.nlogo.core.{ Model, View }
 
 import
   org.nlogo.tortoise.compiler.CompiledModel
@@ -122,46 +122,6 @@ class TestExtensionWorldState extends SimpleSuite {
     val nlm33 = s"""{{nlmap:  ["gold" ${arr33}] ["silver" 100] ["bronze" false]}}"""
     assert(arr33 == evalReporter("(word arr)"))
     assert(nlm33 == evalReporter("(word nlm)"))
-  }
-
-  // This should really be a docking test comparing the ExportThe extension desktop version versus the web version,
-  // but the desktop version didn't export plots correctly with headless NetLogo before this fix:
-  // https://github.com/NetLogo/NetLogo/commit/62a331fe932b9d52d9d4247221f3e1896f8c5f08
-  // and that fix cannot be made live through the extensions manager before the next NetLogo release due to API changes,
-  // so it cannot be easily used here, either. As such this is a non-docked, hardcoded test for now, but this should
-  // be swapped after the next NetLogo release.
-
-  // Also, this is really a test of ExportThe, it doesn't have much to do with extensions, but leaving it here as I
-  // found the test case while working on extension objects.
-
-  // -Jeremy B October 2020
-
-  test("table export with plot works") { fixture =>
-    val arrayModel = Model(
-      code = "extensions [table export-the] globals [x y z]"
-    , widgets = List(
-        View.square(1)
-      , Plot(display = Some("plot1"), pens = List(Pen(display = "pen1"), Pen(display = "pen2")))
-      )
-    )
-    val compiledModel = CompiledModel.fromModel(arrayModel, compiler) valueOr
-      ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
-    fixture.eval(compiledModel.compiledCode)
-
-    evalModel("set x table:make", compiledModel.compileRawCommand)
-    evalModel("set y export-the:plot \"plot1\"", compiledModel.compileRawCommand)
-    val expectedPlotExport =
-"\"\"\"" + """plot1""" + "\"\"\"" + """
-"x min","x max","y min","y max","autoplot?","current pen","legend open?","number of pens"
-"0","0","0","0","true",""" + "\"\"\"" + """pen1""" + "\"\"\"" + ""","false","2"
-
-"pen name","pen down?","mode","interval","color","x"
-""" + "\"\"\"" + """pen1""" + "\"\"\"" + ""","true","0","1","0","0"
-""" + "\"\"\"" + """pen2""" + "\"\"\"" + ""","true","0","1","0","0"
-
-""" + "\"\"\"" + """pen1""" + "\"\"\"" + """,,,,""" + "\"\"\"" + """pen2""" + "\"\"\"" + """
-"x","y","color","pen down?","x","y","color","pen down?""""
-    assert(expectedPlotExport == engine.eval("world.observer.getGlobal('y')"))
   }
 
   private def evalCommand(netlogo: String): AnyRef =
