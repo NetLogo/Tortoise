@@ -79,6 +79,11 @@
       "actionName": "back",
       "argTypes": [ ],
       "returnType": "unit"
+    }, {
+      "name": "in-tutorial?",
+      "actionName": "in-tutorial?",
+      "argTypes": [ ],
+      "returnType": "boolean"
     }
   ]
 }

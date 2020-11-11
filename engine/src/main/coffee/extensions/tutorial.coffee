@@ -140,6 +140,14 @@ module.exports = {
         workspace.printPrims.print("Visit the last available section")
       return
 
+    # () -> Boolean
+    inTutorial = () ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.GetVariable("tutorial?") is true
+      else
+        workspace.printPrims.print("Get whether the tutorial is activated")
+        return
+
     {
       name: "tutorial"
     , prims: {
@@ -155,6 +163,7 @@ module.exports = {
       ,      "DEACTIVATE": deactivate
       ,         "FORWARD": forward
       ,            "BACK": back
+      ,    "IN-TUTORIAL?": inTutorial
       }
     }
 }
