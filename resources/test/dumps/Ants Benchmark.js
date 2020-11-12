@@ -47,8 +47,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -77,7 +79,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      workspace.rng.setSeed(337);
+      PrimChecks.math.randomSeed(337);
       workspace.timer.reset();
       procedures["SETUP"]();
       for (let _index_332_338 = 0, _repeatcount_332_338 = StrictMath.floor(800); _index_332_338 < _repeatcount_332_338; _index_332_338++){
@@ -97,7 +99,7 @@ var procedures = (function() {
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
       world.turtleManager.createOrderedTurtles(world.observer.getGlobal("ants"), "").ask(function() {
         SelfManager.self().setVariable("size", 2);
-        SelfManager.self().right(Prims.randomFloat(360));
+        SelfManager.self().right(RandomPrims.randomFloat(360));
         SelfManager.self().setVariable("color", 15);
         SelfManager.self().setVariable("carrying-food?", false);
       }, true);
@@ -151,7 +153,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("food-source-number", 3);
       }
       if (Prims.gt(SelfManager.self().getPatchVariable("food-source-number"), 0)) {
-        SelfManager.self().setPatchVariable("food", (1 + Prims.randomLong(2)));
+        SelfManager.self().setPatchVariable("food", (1 + RandomPrims.randomLong(2)));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -193,7 +195,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["GO-TURTLES"](); }, true);
-      world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100), false)
+      world.topology.diffuse("chemical", PrimChecks.math.div(world.observer.getGlobal("diffusion-rate"), 100), false)
       Errors.askNobodyCheck(world.patches()).ask(function() { procedures["GO-PATCHES"](); }, true);
       world.ticker.tick();
       procedures["DO-PLOTTING"]();
@@ -227,7 +229,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setPatchVariable("chemical", Prims.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
+      SelfManager.self().setPatchVariable("chemical", PrimChecks.math.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
       procedures["UPDATE-DISPLAY"]();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -338,7 +340,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right((Prims.randomLong(40) - Prims.randomLong(40)));
+      SelfManager.self().right((RandomPrims.randomLong(40) - RandomPrims.randomLong(40)));
       if (!SelfManager.self().canMove(1)) {
         SelfManager.self().right(180);
       }

@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -56,13 +58,13 @@ var procedures = (function() {
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density"))) {
+        if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("density"))) {
           SelfManager.self().setPatchVariable("pcolor", 45);
         }
       }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
         SelfManager.self().setVariable("color", 9.9);
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("next-task", Tasks.commandTask(function() { procedures["SEARCH-FOR-CHIP"](); }, "[ -> search-for-chip ]"));
         SelfManager.self().setVariable("size", 5);
       }, true);
@@ -114,8 +116,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.randomLong(50));
-      SelfManager.self().right(-(Prims.randomLong(50)));
+      SelfManager.self().right(RandomPrims.randomLong(50));
+      SelfManager.self().right(-(RandomPrims.randomLong(50)));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

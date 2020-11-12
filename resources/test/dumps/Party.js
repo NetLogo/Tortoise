@@ -88,8 +88,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -156,7 +158,7 @@ var procedures = (function() {
         return Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
       }); letVars['same'] = same;
       let opposite = (total - same); letVars['opposite'] = opposite;
-      SelfManager.self().setVariable("happy?", Prims.lte(Prims.div(opposite, total), Prims.div(world.observer.getGlobal("tolerance"), 100)));
+      SelfManager.self().setVariable("happy?", Prims.lte(PrimChecks.math.div(opposite, total), PrimChecks.math.div(world.observer.getGlobal("tolerance"), 100)));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -200,9 +202,9 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let groupInterval = NLMath.floor(Prims.div(world.topology.width, world.observer.getGlobal("num-groups"))); letVars['groupInterval'] = groupInterval;
+      let groupInterval = NLMath.floor(PrimChecks.math.div(world.topology.width, world.observer.getGlobal("num-groups"))); letVars['groupInterval'] = groupInterval;
       Errors.reportInContextCheck(reporterContext);
-      return (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(Prims.div( -(SelfManager.self().getPatchVariable("pxcor")), groupInterval)), world.observer.getGlobal("num-groups")));
+      return (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(PrimChecks.math.div( -(SelfManager.self().getPatchVariable("pxcor")), groupInterval)), world.observer.getGlobal("num-groups")));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

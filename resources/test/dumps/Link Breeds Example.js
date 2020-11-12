@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -61,7 +63,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(ListPrims.nOf(5, world.turtles())).ask(function() {
         LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS").ask(function() {
           SelfManager.self().setVariable("color", 105);
-          SelfManager.self().setVariable("weight", Prims.randomLong(10));
+          SelfManager.self().setVariable("weight", RandomPrims.randomLong(10));
           SelfManager.self().setVariable("label", SelfManager.self().getVariable("weight"));
         }, true);
       }, true);

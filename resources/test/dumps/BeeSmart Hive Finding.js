@@ -103,8 +103,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -172,7 +174,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.turtleManager.createTurtles(100, "SCOUTS").ask(function() {
-        SelfManager.self().fd(Prims.randomFloat(4));
+        SelfManager.self().fd(RandomPrims.randomFloat(4));
         SelfManager.self().setVariable("my-home", SelfManager.self().getPatchHere());
         SelfManager.self().setVariable("shape", "bee");
         SelfManager.self().setVariable("color", 5);
@@ -187,7 +189,7 @@ var procedures = (function() {
       }, true);
       Errors.askNobodyCheck(ListPrims.nOf(world.observer.getGlobal("initial-percentage"), world.turtleManager.turtlesOfBreed("SCOUTS"))).ask(function() {
         SelfManager.self().setVariable("initial-scout?", true);
-        SelfManager.self().setVariable("bee-timer", Prims.randomLong(100));
+        SelfManager.self().setVariable("bee-timer", RandomPrims.randomLong(100));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -238,7 +240,7 @@ var procedures = (function() {
             if (Prims.gt(SelfPrims._optimalCountOther(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)), 0)) {
               let observed = ListPrims.oneOf(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)); letVars['observed'] = observed;
               if (Prims.equality(observed.projectionBy(function() { return SelfManager.self().getVariable("next-task"); }), world.observer.getGlobal("dance-task"))) {
-                if (Prims.lt(Prims.random((Prims.div(1, observed.projectionBy(function() { return SelfManager.self().getVariable("interest"); })) * 1000)), 1)) {
+                if (Prims.lt(RandomPrims.random((PrimChecks.math.div(1, observed.projectionBy(function() { return SelfManager.self().getVariable("interest"); })) * 1000)), 1)) {
                   SelfManager.self().setVariable("target", observed.projectionBy(function() { return SelfManager.self().getVariable("target"); }));
                   SelfManager.self().setVariable("color", 9.9);
                   SelfManager.self().setVariable("next-task", world.observer.getGlobal("re-visit-task"));
@@ -282,13 +284,13 @@ var procedures = (function() {
               SelfManager.self().setVariable("bee-timer", 100);
             }
             else {
-              SelfManager.self().right((Prims.randomLong(60) - Prims.randomLong(60)));
+              SelfManager.self().right((RandomPrims.randomLong(60) - RandomPrims.randomLong(60)));
               procedures["PROCEED"]();
               SelfManager.self().setVariable("bee-timer", (SelfManager.self().getVariable("bee-timer") - 1));
             }
           }
           else {
-            SelfManager.self().right((Prims.randomLong(60) - Prims.randomLong(60)));
+            SelfManager.self().right((RandomPrims.randomLong(60) - RandomPrims.randomLong(60)));
             procedures["PROCEED"]();
           }
           SelfManager.self().setVariable("bee-timer", (SelfManager.self().getVariable("bee-timer") - 1));
@@ -326,7 +328,7 @@ var procedures = (function() {
             SelfManager.self().setVariable("on-site?", false);
             SelfManager.self().setVariable("piping?", true);
           }
-          if (Prims.equality(Prims.randomLong(3), 0)) {
+          if (Prims.equality(RandomPrims.randomLong(3), 0)) {
             SelfManager.self().hideTurtle(true);;
           }
           else {
@@ -393,14 +395,14 @@ var procedures = (function() {
           SelfManager.self().setVariable("piping?", true);
         }
         else {
-          if ((Prims.gt(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + Prims.randomLong(5))))) && Prims.gt(SelfManager.self().getVariable("interest"), 0))) {
+          if ((Prims.gt(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + RandomPrims.randomLong(5))))) && Prims.gt(SelfManager.self().getVariable("interest"), 0))) {
             SelfManager.self().setVariable("next-task", world.observer.getGlobal("re-visit-task"));
             SelfManager.self().setVariable("task-string", "revisiting");
             SelfManager.self().penManager.raisePen();
-            SelfManager.self().setVariable("interest", (SelfManager.self().getVariable("interest") - (15 + Prims.randomLong(5))));
+            SelfManager.self().setVariable("interest", (SelfManager.self().getVariable("interest") - (15 + RandomPrims.randomLong(5))));
             SelfManager.self().setVariable("bee-timer", 25);
           }
-          if ((Prims.gt(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + Prims.randomLong(5))))) && Prims.lte(SelfManager.self().getVariable("interest"), 0))) {
+          if ((Prims.gt(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + RandomPrims.randomLong(5))))) && Prims.lte(SelfManager.self().getVariable("interest"), 0))) {
             SelfManager.self().setVariable("next-task", world.observer.getGlobal("watch-dance-task"));
             SelfManager.self().setVariable("task-string", "watching-dance");
             SelfManager.self().setVariable("target", Nobody);
@@ -409,11 +411,11 @@ var procedures = (function() {
             SelfManager.self().setVariable("color", 5);
             SelfManager.self().setVariable("bee-timer", 50);
           }
-          if (Prims.lte(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + Prims.randomLong(5)))))) {
-            if ((Prims.lte(SelfManager.self().getVariable("interest"), 50) && Prims.lt(Prims.randomLong(100), 43))) {
+          if (Prims.lte(SelfManager.self().getVariable("bee-timer"), (SelfManager.self().getVariable("interest") - ((SelfManager.self().getVariable("trips") - 1) * (15 + RandomPrims.randomLong(5)))))) {
+            if ((Prims.lte(SelfManager.self().getVariable("interest"), 50) && Prims.lt(RandomPrims.randomLong(100), 43))) {
               SelfManager.self().setVariable("next-task", world.observer.getGlobal("re-visit-task"));
               SelfManager.self().setVariable("task-string", "revisiting");
-              SelfManager.self().setVariable("interest", (SelfManager.self().getVariable("interest") - (15 + Prims.randomLong(5))));
+              SelfManager.self().setVariable("interest", (SelfManager.self().getVariable("interest") - (15 + RandomPrims.randomLong(5))));
               SelfManager.self().setVariable("bee-timer", 10);
             }
             else {
@@ -545,15 +547,15 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let numOfTurns = (Prims.div(1, SelfManager.self().getVariable("interest")) * 2600); letVars['numOfTurns'] = numOfTurns;
-      let anglePerTurn = Prims.div(180, numOfTurns); letVars['anglePerTurn'] = anglePerTurn;
-      let semicircle = Prims.div(((0.5 * SelfManager.self().getVariable("dist-to-hive")) * 3.141592653589793), 5); letVars['semicircle'] = semicircle;
+      let numOfTurns = (PrimChecks.math.div(1, SelfManager.self().getVariable("interest")) * 2600); letVars['numOfTurns'] = numOfTurns;
+      let anglePerTurn = PrimChecks.math.div(180, numOfTurns); letVars['anglePerTurn'] = anglePerTurn;
+      let semicircle = PrimChecks.math.div(((0.5 * SelfManager.self().getVariable("dist-to-hive")) * 3.141592653589793), 5); letVars['semicircle'] = semicircle;
       if (Prims.equality(SelfManager.self().getVariable("circle-switch"), 1)) {
         SelfManager.self().face(SelfManager.self().getVariable("target"));
         SelfManager.self().right(-(90));
         for (let _index_17080_17086 = 0, _repeatcount_17080_17086 = StrictMath.floor(numOfTurns); _index_17080_17086 < _repeatcount_17080_17086; _index_17080_17086++){
           SelfManager.self().right(-(anglePerTurn));
-          SelfManager.self().fd((Prims.div(semicircle, 180) * anglePerTurn));
+          SelfManager.self().fd((PrimChecks.math.div(semicircle, 180) * anglePerTurn));
         }
       }
       if (Prims.equality(SelfManager.self().getVariable("circle-switch"), -1)) {
@@ -561,7 +563,7 @@ var procedures = (function() {
         SelfManager.self().right(90);
         for (let _index_17233_17239 = 0, _repeatcount_17233_17239 = StrictMath.floor(numOfTurns); _index_17233_17239 < _repeatcount_17233_17239; _index_17233_17239++){
           SelfManager.self().right(anglePerTurn);
-          SelfManager.self().fd((Prims.div(semicircle, 180) * anglePerTurn));
+          SelfManager.self().fd((PrimChecks.math.div(semicircle, 180) * anglePerTurn));
         }
       }
       SelfManager.self().setVariable("circle-switch", (SelfManager.self().getVariable("circle-switch") * -1));
@@ -582,7 +584,7 @@ var procedures = (function() {
       let waggleSwitch = 1; letVars['waggleSwitch'] = waggleSwitch;
       SelfManager.self().right(-(60));
       SelfManager.self()._optimalFdLessThan1(0.4);
-      for (let _index_17897_17903 = 0, _repeatcount_17897_17903 = StrictMath.floor(Prims.div((SelfManager.self().getVariable("dist-to-hive") - 2), 2)); _index_17897_17903 < _repeatcount_17897_17903; _index_17897_17903++){
+      for (let _index_17897_17903 = 0, _repeatcount_17897_17903 = StrictMath.floor(PrimChecks.math.div((SelfManager.self().getVariable("dist-to-hive") - 2), 2)); _index_17897_17903 < _repeatcount_17897_17903; _index_17897_17903++){
         if (Prims.equality(waggleSwitch, 1)) {
           SelfManager.self().right(120);
           SelfManager.self()._optimalFdLessThan1(0.8);
@@ -611,7 +613,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right((Prims.randomLong(20) - Prims.randomLong(20)));
+      SelfManager.self().right((RandomPrims.randomLong(20) - RandomPrims.randomLong(20)));
       if (!SelfManager.self().canMove(1)) {
         SelfManager.self().right(180);
       }
@@ -626,8 +628,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right((Prims.randomLong(60) - Prims.randomLong(60)));
-      SelfManager.self().fd(Prims.randomFloat(0.1));
+      SelfManager.self().right((RandomPrims.randomLong(60) - RandomPrims.randomLong(60)));
+      SelfManager.self().fd(RandomPrims.randomFloat(0.1));
       if (Prims.gt(SelfManager.self().distanceXY(0, 0), 4)) {
         SelfManager.self().faceXY(0, 0);
         SelfManager.self()._optimalFdOne();

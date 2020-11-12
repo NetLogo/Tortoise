@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -70,7 +72,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), Prims.div( -(world.observer.getGlobal("sample-space")), 2)) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.observer.getGlobal("sample-space"), 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("max-y-histogram")))) {
+        if (((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div( -(world.observer.getGlobal("sample-space")), 2)) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div(world.observer.getGlobal("sample-space"), 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("max-y-histogram")))) {
           SelfManager.self().setPatchVariable("pcolor", 45);
         }
         else {
@@ -93,7 +95,7 @@ var procedures = (function() {
         SelfManager.self().sprout(1, "COLUMN-COUNTERS").ask(function() {
           SelfManager.self().hideTurtle(true);;
           SelfManager.self().setVariable("heading", 0);
-          SelfManager.self().setVariable("my-column", NLMath.floor(((SelfManager.self().getPatchVariable("pxcor") + Prims.div(world.observer.getGlobal("sample-space"), 2)) + 1)));
+          SelfManager.self().setVariable("my-column", NLMath.floor(((SelfManager.self().getPatchVariable("pxcor") + PrimChecks.math.div(world.observer.getGlobal("sample-space"), 2)) + 1)));
           SelfManager.self().setVariable("my-column-patches", world.patches().agentFilter(function() {
             return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }));
           }));
@@ -137,7 +139,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("color", 0);
           SelfManager.self().setVariable("heading", 180);
           SelfManager.self().setVariable("size", 12);
-          SelfManager.self().setVariable("label", (1 + Prims.random(world.observer.getGlobal("sample-space"))));
+          SelfManager.self().setVariable("label", (1 + RandomPrims.random(world.observer.getGlobal("sample-space"))));
           world.observer.setGlobal("the-messenger", SelfManager.self());
         }, true);
       }, true);
@@ -196,7 +198,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS")).ask(function() {
-        if (Prims.lte(SelfManager.self().getVariable("my-column"), Prims.div((world.observer.getGlobal("red-green") * world.observer.getGlobal("sample-space")), 100))) {
+        if (Prims.lte(SelfManager.self().getVariable("my-column"), PrimChecks.math.div((world.observer.getGlobal("red-green") * world.observer.getGlobal("sample-space")), 100))) {
           Errors.askNobodyCheck(SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
             return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
           })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
@@ -218,7 +220,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return NLMath.precision(Prims.div((100 * world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); })), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2);
+      return NLMath.precision(PrimChecks.math.div((100 * world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); })), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -231,7 +233,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return NLMath.precision(Prims.div((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2);
+      return NLMath.precision(PrimChecks.math.div((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -105,7 +107,7 @@ var procedures = (function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("color", 25);
           SelfManager.self().setVariable("start-patch", SelfManager.self().getPatchHere());
-          SelfManager.self().setVariable("heading", (Prims.randomFloat(90) + 90));
+          SelfManager.self().setVariable("heading", (RandomPrims.randomFloat(90) + 90));
         }, true);
       }, true);
       procedures["PLOT-SCORES"]();
@@ -215,7 +217,7 @@ var procedures = (function() {
         }
       }, true);
       Errors.askNobodyCheck(world.observer.getGlobal("histogram-area")).ask(function() {
-        if (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("kick-line") - Prims.div((SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }) * (world.observer.getGlobal("kick-line") - world.topology.minPxcor)), world.observer.getGlobal("current-max"))))) {
+        if (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("kick-line") - PrimChecks.math.div((SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }) * (world.observer.getGlobal("kick-line") - world.topology.minPxcor)), world.observer.getGlobal("current-max"))))) {
           if (Prims.equality(SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }), world.observer.getGlobal("current-max"))) {
             SelfManager.self().setPatchVariable("pcolor", 45);
           }

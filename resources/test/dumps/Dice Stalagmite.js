@@ -88,8 +88,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -107,7 +109,7 @@ var procedures = (function() {
       world.observer.setGlobal("single-outcomes", []);
       world.observer.setGlobal("pair-outcomes", []);
       Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pxcor"), 4); })).ask(function() {
-        SelfManager.self().setPatchVariable("column", NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("pxcor") - 1), 2)));
+        SelfManager.self().setPatchVariable("column", NLMath.floor(PrimChecks.math.div((SelfManager.self().getPatchVariable("pxcor") - 1), 2)));
       }, true);
       Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pxcor"), -4); })).ask(function() {
         SelfManager.self().setPatchVariable("column", ((SelfManager.self().getPatchVariable("pxcor") - world.topology.minPxcor) + 1));
@@ -164,7 +166,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.observer.getGlobal("generators")).ask(function() {
         SelfManager.self().sprout(1, "PAIRED-DICE").ask(function() {
           SelfManager.self().setVariable("color", 9.9);
-          SelfManager.self().setVariable("die-value", (1 + Prims.randomLong(6)));
+          SelfManager.self().setVariable("die-value", (1 + RandomPrims.randomLong(6)));
           SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("die ") + workspace.dump(SelfManager.self().getVariable("die-value"))));
           SelfManager.self().setVariable("heading", 90);
         }, true);

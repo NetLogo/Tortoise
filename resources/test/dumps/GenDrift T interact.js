@@ -186,8 +186,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -204,8 +206,8 @@ var procedures = (function() {
       world.turtleManager.clearTurtles();
       plotManager.clearAllPlots();
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-        SelfManager.self().setVariable("color", ListPrims.item(Prims.random(world.observer.getGlobal("colors")), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setVariable("color", ListPrims.item(RandomPrims.random(world.observer.getGlobal("colors")), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         procedures["MOVE-OFF-WALL"]();
       }, true);
       world.ticker.reset();
@@ -223,13 +225,13 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().right((Prims.randomLong(50) - Prims.randomLong(50)));
+        SelfManager.self().right((RandomPrims.randomLong(50) - RandomPrims.randomLong(50)));
         procedures["MEET"]();
         if (Prims.equality(SelfManager.self().patchAhead(0.5).projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 0)) {
           SelfManager.self()._optimalFdLessThan1(0.5);
         }
         else {
-          SelfManager.self().right(Prims.randomLong(360));
+          SelfManager.self().right(RandomPrims.randomLong(360));
         }
       }, true);
       procedures["FIND-TOP-SPECIES"]();
@@ -266,7 +268,7 @@ var procedures = (function() {
           winningAmount = howMany; letVars['winningAmount'] = winningAmount;
         }
       }, "[ c -> let count turtles with [ color = c ] if how-many > winning-amount [ set winning-amount how-many ] ]"), ColorModel.BASE_COLORS); if(reporterContext && _foreach_1075_1082 !== undefined) { return _foreach_1075_1082; }
-      world.observer.setGlobal("max-percent", Prims.div((100 * winningAmount), world.turtles().size()));
+      world.observer.setGlobal("max-percent", PrimChecks.math.div((100 * winningAmount), world.turtles().size()));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

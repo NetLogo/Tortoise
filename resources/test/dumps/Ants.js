@@ -83,8 +83,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -213,9 +215,9 @@ var procedures = (function() {
           return Errors.stopInCommandCheck(e)
         }
       }, true);
-      world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100), false)
+      world.topology.diffuse("chemical", PrimChecks.math.div(world.observer.getGlobal("diffusion-rate"), 100), false)
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("chemical", Prims.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
+        SelfManager.self().setPatchVariable("chemical", PrimChecks.math.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
         procedures["RECOLOR-PATCH"]();
       }, true);
       world.ticker.tick();
@@ -308,8 +310,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.randomLong(40));
-      SelfManager.self().right(-(Prims.randomLong(40)));
+      SelfManager.self().right(RandomPrims.randomLong(40));
+      SelfManager.self().right(-(RandomPrims.randomLong(40)));
       if (!SelfManager.self().canMove(1)) {
         SelfManager.self().right(180);
       }

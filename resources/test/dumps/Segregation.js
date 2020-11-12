@@ -76,8 +76,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -94,7 +96,7 @@ var procedures = (function() {
       world.clearAll();
       Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", 9.9);
-        if (Prims.lt(Prims.randomLong(100), world.observer.getGlobal("density"))) {
+        if (Prims.lt(RandomPrims.randomLong(100), world.observer.getGlobal("density"))) {
           SelfManager.self().sprout(1, "TURTLES").ask(function() {
             SelfManager.self().setVariable("color", ListPrims.oneOf([105, 27]));
             SelfManager.self().setVariable("size", 1);
@@ -142,8 +144,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.randomFloat(360));
-      SelfManager.self().fd(Prims.randomFloat(10));
+      SelfManager.self().right(RandomPrims.randomFloat(360));
+      SelfManager.self().fd(RandomPrims.randomFloat(10));
       if (SelfPrims._optimalAnyOther(SelfManager.self().turtlesHere())) {
         procedures["FIND-NEW-SPOT"]();
       }
@@ -166,7 +168,7 @@ var procedures = (function() {
           return !Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
         }));
         SelfManager.self().setVariable("total-nearby", (SelfManager.self().getVariable("similar-nearby") + SelfManager.self().getVariable("other-nearby")));
-        SelfManager.self().setVariable("happy?", Prims.gte(SelfManager.self().getVariable("similar-nearby"), Prims.div((world.observer.getGlobal("%-similar-wanted") * SelfManager.self().getVariable("total-nearby")), 100)));
+        SelfManager.self().setVariable("happy?", Prims.gte(SelfManager.self().getVariable("similar-nearby"), PrimChecks.math.div((world.observer.getGlobal("%-similar-wanted") * SelfManager.self().getVariable("total-nearby")), 100)));
         if (Prims.equality(world.observer.getGlobal("visualization"), "old")) {
           SelfManager.self().setVariable("shape", "default");
           SelfManager.self().setVariable("size", 1.3);
@@ -192,8 +194,8 @@ var procedures = (function() {
       var letVars = { };
       let similarNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("similar-nearby"); })); letVars['similarNeighbors'] = similarNeighbors;
       let totalNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("total-nearby"); })); letVars['totalNeighbors'] = totalNeighbors;
-      world.observer.setGlobal("percent-similar", (Prims.div(similarNeighbors, totalNeighbors) * 100));
-      world.observer.setGlobal("percent-unhappy", (Prims.div(world.turtles()._optimalCountWith(function() { return !SelfManager.self().getVariable("happy?"); }), world.turtles().size()) * 100));
+      world.observer.setGlobal("percent-similar", (PrimChecks.math.div(similarNeighbors, totalNeighbors) * 100));
+      world.observer.setGlobal("percent-unhappy", (PrimChecks.math.div(world.turtles()._optimalCountWith(function() { return !SelfManager.self().getVariable("happy?"); }), world.turtles().size()) * 100));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -59,7 +61,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 105);
         SelfManager.self().setVariable("size", 2);
       }, true);
-      LayoutManager.layoutCircle(world.turtles(), (Prims.div(world.topology.width, 2) - 2));
+      LayoutManager.layoutCircle(world.turtles(), (PrimChecks.math.div(world.topology.width, 2) - 2));
       world.ticker.reset();
     } catch (e) {
       return Errors.stopInCommandCheck(e)

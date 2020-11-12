@@ -57,8 +57,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -74,7 +76,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("heat", Prims.randomLong(212));
+        SelfManager.self().setPatchVariable("heat", RandomPrims.randomLong(212));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("heat"), 0, 212));
       }, true);
       world.ticker.reset();

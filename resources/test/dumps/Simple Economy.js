@@ -90,8 +90,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -111,7 +113,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("shape", "circle");
         SelfManager.self().setVariable("color", 55);
         SelfManager.self().setVariable("size", 2);
-        SelfManager.self().setXY(SelfManager.self().getVariable("wealth"), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(SelfManager.self().getVariable("wealth"), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
       }, true);
       world.ticker.reset();
     } catch (e) {

@@ -70,8 +70,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -126,7 +128,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-monarchs"), "MONARCHS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-viceroys"), "VICEROYS").ask(function() { SelfManager.self().setVariable("color", 105); }, true);
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -166,7 +168,7 @@ var procedures = (function() {
       else {
         SelfManager.self().setVariable("shape", "bird 1");
       }
-      SelfManager.self().setVariable("heading", (180 + Prims.randomLong(180)));
+      SelfManager.self().setVariable("heading", (180 + RandomPrims.randomLong(180)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -178,8 +180,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.randomLong(100));
-      SelfManager.self().right(-(Prims.randomLong(100)));
+      SelfManager.self().right(RandomPrims.randomLong(100));
+      SelfManager.self().right(-(RandomPrims.randomLong(100)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -267,12 +269,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
-        if (Prims.lt(Prims.random(world.turtleManager.turtlesOfBreed("MONARCHS").size()), (world.observer.getGlobal("carrying-capacity-monarchs") - world.turtleManager.turtlesOfBreed("MONARCHS").size()))) {
+        if (Prims.lt(RandomPrims.random(world.turtleManager.turtlesOfBreed("MONARCHS").size()), (world.observer.getGlobal("carrying-capacity-monarchs") - world.turtleManager.turtlesOfBreed("MONARCHS").size()))) {
           procedures["HATCH-BUTTERFLY"]();
         }
       }
       else {
-        if (Prims.lt(Prims.random(world.turtleManager.turtlesOfBreed("VICEROYS").size()), (world.observer.getGlobal("carrying-capacity-viceroys") - world.turtleManager.turtlesOfBreed("VICEROYS").size()))) {
+        if (Prims.lt(RandomPrims.random(world.turtleManager.turtlesOfBreed("VICEROYS").size()), (world.observer.getGlobal("carrying-capacity-viceroys") - world.turtleManager.turtlesOfBreed("VICEROYS").size()))) {
           procedures["HATCH-BUTTERFLY"]();
         }
       }
@@ -286,10 +288,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("reproduction-chance"))) {
+      if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("reproduction-chance"))) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self()._optimalFdOne();
-          if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation-rate"))) {
+          if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("mutation-rate"))) {
             SelfManager.self().setVariable("color", ListPrims.oneOf(ListPrims.sublist(ColorModel.BASE_COLORS, 1, 10)));
           }
         }, true);

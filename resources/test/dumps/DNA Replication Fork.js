@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -146,7 +148,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("nucleoside-tri-") + workspace.dump(SelfManager.self().getVariable("value"))));
         SelfManager.self().setVariable("color", world.observer.getGlobal("nucleoside-color"));
         procedures["ATTACH-NUCLEO-TAG"](0,0);
-        SelfManager.self().setXY(Prims.randomPatchCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomPatchCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomInRange(world.topology.minPycor, world.topology.maxPycor));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -159,12 +161,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {
-        SelfManager.self().setVariable("heading", Prims.random(((180 - Prims.randomLong(20)) + Prims.randomLong(20))));
-        SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) + 3), (world.topology.maxPycor - 1));
+        SelfManager.self().setVariable("heading", RandomPrims.random(((180 - RandomPrims.randomLong(20)) + RandomPrims.randomLong(20))));
+        SelfManager.self().setXY((PrimChecks.math.div((world.topology.maxPxcor - world.topology.minPxcor), 2) + 3), (world.topology.maxPycor - 1));
       }, true);
       world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {
-        SelfManager.self().setVariable("heading", ((90 - Prims.randomLong(20)) + Prims.randomLong(20)));
-        SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) - 5), (world.topology.maxPycor - 1));
+        SelfManager.self().setVariable("heading", ((90 - RandomPrims.randomLong(20)) + RandomPrims.randomLong(20)));
+        SelfManager.self().setXY((PrimChecks.math.div((world.topology.maxPxcor - world.topology.minPxcor), 2) - 5), (world.topology.maxPycor - 1));
       }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("POLYMERASES")).ask(function() {
         procedures["ATTACH-ENZYME-TAG"](150,0.85,"polymerase");
@@ -188,7 +190,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("size", 3.2);
         SelfManager.self().setVariable("heading", 90);
         procedures["ATTACH-ENZYME-TAG"](150,0.85,"helicase");
-        SelfManager.self().setXY(Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2), (world.topology.maxPycor - 1));
+        SelfManager.self().setXY(PrimChecks.math.div((world.topology.maxPxcor - world.topology.minPxcor), 2), (world.topology.maxPycor - 1));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -205,7 +207,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("locked?", false);
         SelfManager.self().setVariable("color", world.observer.getGlobal("topoisomerase-color-0"));
         SelfManager.self().setVariable("size", 1.5);
-        SelfManager.self().setVariable("heading", ((-90 + Prims.randomFloat(10)) - Prims.randomFloat(10)));
+        SelfManager.self().setVariable("heading", ((-90 + RandomPrims.randomFloat(10)) - RandomPrims.randomFloat(10)));
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TOPOISOMERASES-GEARS"));
           SelfManager.self().setVariable("shape", "topoisomerase-gears");
@@ -216,7 +218,7 @@ var procedures = (function() {
           }, true);
         }, true);
         procedures["ATTACH-ENZYME-TAG"](150,0.85,"topoisomerase");
-        SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) - 3), (world.topology.maxPycor - 1));
+        SelfManager.self().setXY((PrimChecks.math.div((world.topology.maxPxcor - world.topology.minPxcor), 2) - 3), (world.topology.maxPycor - 1));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -527,7 +529,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() {
         return (procedures["NEXT-NUCLEOTIDE-UNZIPPED-THE-SAME?"]() && Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0));
       })).ask(function() {
-        let fractionalSeparation = Prims.div(SelfManager.self().getVariable("unzipped-stage"), 2); letVars['fractionalSeparation'] = fractionalSeparation;
+        let fractionalSeparation = PrimChecks.math.div(SelfManager.self().getVariable("unzipped-stage"), 2); letVars['fractionalSeparation'] = fractionalSeparation;
         if (Prims.equality(SelfManager.self().getVariable("unzipped-stage"), 3)) {
           Errors.askNobodyCheck(LinkPrims.myLinks("OLD-STAIRS")).ask(function() { SelfManager.self().die(); }, true);
           Errors.askNobodyCheck(LinkPrims.myOutLinks("BACKBONES")).ask(function() { SelfManager.self().die(); }, true);
@@ -724,7 +726,7 @@ var procedures = (function() {
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PHOSPHATES"));
         SelfManager.self().setVariable("shape", "phosphate-pair");
-        SelfManager.self().setVariable("heading", Prims.randomLong(360));
+        SelfManager.self().setVariable("heading", RandomPrims.randomLong(360));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -867,7 +869,7 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let r = Prims.randomLong(4); letVars['r'] = r;
+      let r = RandomPrims.randomLong(4); letVars['r'] = r;
       let letterToReport = ""; letVars['letterToReport'] = letterToReport;
       if (Prims.equality(r, 0)) {
         letterToReport = "A"; letVars['letterToReport'] = letterToReport;
@@ -1105,7 +1107,7 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let duplicationRate = NLMath.precision(Prims.div((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand")), world.observer.getGlobal("final-time")), 4); letVars['duplicationRate'] = duplicationRate;
+      let duplicationRate = NLMath.precision(PrimChecks.math.div((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand")), world.observer.getGlobal("final-time")), 4); letVars['duplicationRate'] = duplicationRate;
       Errors.reportInContextCheck(reporterContext);
       return (workspace.dump('') + workspace.dump("You had ") + workspace.dump((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand"))) + workspace.dump(" correct replications and ") + workspace.dump((world.observer.getGlobal("total-substitution-mutations-top-strand") + world.observer.getGlobal("total-substitution-mutations-bottom-strand"))) + workspace.dump(" substitutions and ") + workspace.dump((world.observer.getGlobal("total-deletion-mutations-top-strand") + world.observer.getGlobal("total-deletion-mutations-bottom-strand"))) + workspace.dump("  deletions.") + workspace.dump(" That replication process took you ") + workspace.dump(world.observer.getGlobal("final-time")) + workspace.dump(" seconds.  This was a rate of ") + workspace.dump(duplicationRate) + workspace.dump(" correct nucleotides duplicated per second."));
       Errors.missingReport();

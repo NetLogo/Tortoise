@@ -69,8 +69,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -86,9 +88,9 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("shape", "butterfly");
-        SelfManager.self().setVariable("clock", Prims.random(NLMath.round(world.observer.getGlobal("cycle-length"))));
+        SelfManager.self().setVariable("clock", RandomPrims.random(NLMath.round(world.observer.getGlobal("cycle-length"))));
         SelfManager.self().setVariable("threshold", world.observer.getGlobal("flash-length"));
         if (Prims.equality(world.observer.getGlobal("strategy"), "delay")) {
           SelfManager.self().setVariable("reset-level", SelfManager.self().getVariable("threshold"));
@@ -154,7 +156,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right((Prims.randomFloat(90) - Prims.randomFloat(90)));
+      SelfManager.self().right((RandomPrims.randomFloat(90) - RandomPrims.randomFloat(90)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)

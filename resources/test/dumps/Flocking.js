@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -55,9 +57,9 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
-        SelfManager.self().setVariable("color", ((45 - 2) + Prims.randomLong(7)));
+        SelfManager.self().setVariable("color", ((45 - 2) + RandomPrims.randomLong(7)));
         SelfManager.self().setVariable("size", 1.5);
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("flockmates", new TurtleSet([], world));
       }, true);
       world.ticker.reset();
@@ -160,7 +162,7 @@ var procedures = (function() {
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return NLMath.atan(xComponent, yComponent);
+        return PrimChecks.math.atan(xComponent, yComponent);
       }
       Errors.missingReport();
     } catch (e) {
@@ -192,7 +194,7 @@ var procedures = (function() {
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return NLMath.atan(xComponent, yComponent);
+        return PrimChecks.math.atan(xComponent, yComponent);
       }
       Errors.missingReport();
     } catch (e) {

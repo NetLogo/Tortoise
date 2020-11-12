@@ -346,8 +346,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -370,7 +372,7 @@ var procedures = (function() {
       world.observer.setGlobal("num-fish-born", 0);
       world.observer.setGlobal("num-fish-in-tank", 0);
       world.observer.setGlobal("size-of-karyotype-background-for-cells", 5.2);
-      world.observer.setGlobal("initial-#-females", NLMath.floor((Prims.div(world.observer.getGlobal("initial-females"), 100) * world.observer.getGlobal("carrying-capacity"))));
+      world.observer.setGlobal("initial-#-females", NLMath.floor((PrimChecks.math.div(world.observer.getGlobal("initial-females"), 100) * world.observer.getGlobal("carrying-capacity"))));
       world.observer.setGlobal("initial-#-males", (world.observer.getGlobal("carrying-capacity") - world.observer.getGlobal("initial-#-females")));
       world.observer.setGlobal("green-dorsal-fin-color", [90, 255, 90, 255]);
       world.observer.setGlobal("no-green-dorsal-fin-color", [176, 196, 222, 255]);
@@ -440,13 +442,13 @@ var procedures = (function() {
       var letVars = { };
       let numBigAlleles = 0; letVars['numBigAlleles'] = numBigAlleles;
       let initialNumberFish = world.observer.getGlobal("carrying-capacity"); letVars['initialNumberFish'] = initialNumberFish;
-      numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-b") * 2) * initialNumberFish), 100)); letVars['numBigAlleles'] = numBigAlleles;
+      numBigAlleles = NLMath.round(PrimChecks.math.div(((world.observer.getGlobal("initial-alleles-big-b") * 2) * initialNumberFish), 100)); letVars['numBigAlleles'] = numBigAlleles;
       procedures["MAKE-INITIAL-ALLELES-FOR-GENE"](1,"B","b",numBigAlleles);
-      numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-t") * 2) * initialNumberFish), 100)); letVars['numBigAlleles'] = numBigAlleles;
+      numBigAlleles = NLMath.round(PrimChecks.math.div(((world.observer.getGlobal("initial-alleles-big-t") * 2) * initialNumberFish), 100)); letVars['numBigAlleles'] = numBigAlleles;
       procedures["MAKE-INITIAL-ALLELES-FOR-GENE"](2,"T","t",numBigAlleles);
-      numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-f") * 2) * initialNumberFish), 100)); letVars['numBigAlleles'] = numBigAlleles;
+      numBigAlleles = NLMath.round(PrimChecks.math.div(((world.observer.getGlobal("initial-alleles-big-f") * 2) * initialNumberFish), 100)); letVars['numBigAlleles'] = numBigAlleles;
       procedures["MAKE-INITIAL-ALLELES-FOR-GENE"](3,"F","f",numBigAlleles);
-      numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-g") * 2) * initialNumberFish), 100)); letVars['numBigAlleles'] = numBigAlleles;
+      numBigAlleles = NLMath.round(PrimChecks.math.div(((world.observer.getGlobal("initial-alleles-big-g") * 2) * initialNumberFish), 100)); letVars['numBigAlleles'] = numBigAlleles;
       procedures["MAKE-INITIAL-ALLELES-FOR-GENE"](4,"G","g",numBigAlleles);
       procedures["MAKE-INITIAL-ALLELES-FOR-GENE"](5,"Y","X",world.observer.getGlobal("initial-#-males"));
     } catch (e) {
@@ -884,8 +886,8 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FISH")).ask(function() {
         SelfManager.self().setVariable("heading", SelfManager.self().getVariable("bearing"));
-        SelfManager.self().right(Prims.randomFloat(70));
-        SelfManager.self().right(-(Prims.randomFloat(70)));
+        SelfManager.self().right(RandomPrims.randomFloat(70));
+        SelfManager.self().right(-(RandomPrims.randomFloat(70)));
         SelfManager.self().setVariable("bearing", SelfManager.self().getVariable("heading"));
         SelfManager.self().fd(world.observer.getGlobal("fish-forward-step"));
         SelfManager.self().setVariable("heading", 0);
@@ -924,7 +926,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("heading", SelfManager.self().towards(nearestWaterPatch));
           SelfManager.self().fd((world.observer.getGlobal("fish-forward-step") * 2));
           SelfManager.self().setVariable("heading", 0);
-          SelfManager.self().setVariable("bearing", Prims.randomFloat(360));
+          SelfManager.self().setVariable("bearing", RandomPrims.randomFloat(360));
         }
         if (SelfManager.self().getPatchVariable("divider-here?")) {
           SelfManager.self().moveTo(nearestWaterPatch);
@@ -944,7 +946,7 @@ var procedures = (function() {
       let colorList = []; letVars['colorList'] = colorList;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FISH-BONES")).ask(function() {
         SelfManager.self().setVariable("countdown", (SelfManager.self().getVariable("countdown") - 1));
-        boneTransparency = Prims.div((SelfManager.self().getVariable("countdown") * 255), 50); letVars['boneTransparency'] = boneTransparency;
+        boneTransparency = PrimChecks.math.div((SelfManager.self().getVariable("countdown") * 255), 50); letVars['boneTransparency'] = boneTransparency;
         colorList = ListPrims.lput(boneTransparency, [255, 255, 255]); letVars['colorList'] = colorList;
         SelfManager.self().setVariable("color", colorList);
         if (Prims.lte(SelfManager.self().getVariable("countdown"), 0)) {
@@ -1169,7 +1171,7 @@ var procedures = (function() {
       let thisFishBody = Nobody; letVars['thisFishBody'] = thisFishBody;
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FISH"));
-        SelfManager.self().setVariable("bearing", Prims.randomFloat(360));
+        SelfManager.self().setVariable("bearing", RandomPrims.randomFloat(360));
         SelfManager.self().setVariable("heading", 0);
         SelfManager.self().setVariable("size", 1);
         thisFishBody = SelfManager.self(); letVars['thisFishBody'] = thisFishBody;
@@ -1474,7 +1476,7 @@ var procedures = (function() {
       if (!dividersToTheLeft.isEmpty()) {
         thisRegionLeftSide = ListPrims.max(dividersToTheLeft.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); })); letVars['thisRegionLeftSide'] = thisRegionLeftSide;
       }
-      let tankCapacityOfThisRegion = Prims.div(((thisRegionRightSide - thisRegionLeftSide) * world.observer.getGlobal("carrying-capacity")), 25); letVars['tankCapacityOfThisRegion'] = tankCapacityOfThisRegion;
+      let tankCapacityOfThisRegion = PrimChecks.math.div(((thisRegionRightSide - thisRegionLeftSide) * world.observer.getGlobal("carrying-capacity")), 25); letVars['tankCapacityOfThisRegion'] = tankCapacityOfThisRegion;
       Errors.reportInContextCheck(reporterContext);
       return tankCapacityOfThisRegion;
       Errors.missingReport();

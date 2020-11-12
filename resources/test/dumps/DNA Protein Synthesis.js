@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -281,7 +283,7 @@ var procedures = (function() {
         let endOfGene_p = false; letVars['endOfGene_p'] = endOfGene_p;
         let tripletCounter = 0; letVars['tripletCounter'] = tripletCounter;
         let newCode = SelfManager.self().getVariable("code"); letVars['newCode'] = newCode;
-        for (let _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(NLMath.floor(Prims.div(ListPrims.length(SelfManager.self().getVariable("code")), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++){
+        for (let _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(NLMath.floor(PrimChecks.math.div(ListPrims.length(SelfManager.self().getVariable("code")), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++){
           let thisTriplet = (workspace.dump('') + workspace.dump(ListPrims.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + workspace.dump(ListPrims.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + workspace.dump(ListPrims.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))); letVars['thisTriplet'] = thisTriplet;
           if ((((Prims.equality(thisTriplet, "TAG") || Prims.equality(thisTriplet, "TGA")) || Prims.equality(thisTriplet, "TAA")) && !endOfGene_p)) {
             SelfManager.self().setVariable("end-position", (tripletCounter * 3));
@@ -393,7 +395,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
         return (Prims.equality(SelfManager.self().getVariable("cap-type"), "start") && Prims.equality(SelfManager.self().getVariable("strand"), strandType));
       })).ask(function() {
-        let numberOfTripletsInList = NLMath.floor(Prims.div(ListPrims.length(SelfManager.self().getVariable("code")), 3)); letVars['numberOfTripletsInList'] = numberOfTripletsInList;
+        let numberOfTripletsInList = NLMath.floor(PrimChecks.math.div(ListPrims.length(SelfManager.self().getVariable("code")), 3)); letVars['numberOfTripletsInList'] = numberOfTripletsInList;
         let thisTriplet = ""; letVars['thisTriplet'] = thisTriplet;
         let tripletCounter = 0; letVars['tripletCounter'] = tripletCounter;
         for (let _index_13127_13133 = 0, _repeatcount_13127_13133 = StrictMath.floor(numberOfTripletsInList); _index_13127_13133 < _repeatcount_13127_13133; _index_13127_13133++){
@@ -891,7 +893,7 @@ var procedures = (function() {
       world.observer.setGlobal("duplicate-strand-gene-counter", 0);
       let cleanDuplicateDnaString = world.observer.getGlobal("original-dna-string"); letVars['cleanDuplicateDnaString'] = cleanDuplicateDnaString;
       let mutatingCopyOfDnaString = world.observer.getGlobal("original-dna-string"); letVars['mutatingCopyOfDnaString'] = mutatingCopyOfDnaString;
-      let targetLoci = Prims.random((ListPrims.length(mutatingCopyOfDnaString) - world.observer.getGlobal("#-nucleotides-affected"))); letVars['targetLoci'] = targetLoci;
+      let targetLoci = RandomPrims.random((ListPrims.length(mutatingCopyOfDnaString) - world.observer.getGlobal("#-nucleotides-affected"))); letVars['targetLoci'] = targetLoci;
       let dnaAtTarget = ListPrims.item(targetLoci, mutatingCopyOfDnaString); letVars['dnaAtTarget'] = dnaAtTarget;
       let dnaBeforeTarget = ListPrims.substring(mutatingCopyOfDnaString, 0, targetLoci); letVars['dnaBeforeTarget'] = dnaBeforeTarget;
       let lociCounter = 0; letVars['lociCounter'] = lociCounter;
@@ -976,7 +978,7 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let r = Prims.randomLong(4); letVars['r'] = r;
+      let r = RandomPrims.randomLong(4); letVars['r'] = r;
       let letterToReport = ""; letVars['letterToReport'] = letterToReport;
       if (Prims.equality(r, 0)) {
         letterToReport = "A"; letVars['letterToReport'] = letterToReport;

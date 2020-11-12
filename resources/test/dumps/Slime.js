@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -57,7 +59,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
         SelfManager.self().setVariable("color", 15);
         SelfManager.self().setVariable("size", 2);
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
       }, true);
       Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("chemical", 0); }, true);
       world.ticker.reset();
@@ -75,7 +77,7 @@ var procedures = (function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
           procedures["TURN-TOWARD-CHEMICAL"]();
         }
-        SelfManager.self().right(((Prims.randomFloat(world.observer.getGlobal("wiggle-angle")) - Prims.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
+        SelfManager.self().right(((RandomPrims.randomFloat(world.observer.getGlobal("wiggle-angle")) - RandomPrims.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
         SelfManager.self()._optimalFdOne();
         SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + 2));
       }, true);

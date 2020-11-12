@@ -123,8 +123,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -234,7 +236,7 @@ var procedures = (function() {
       }); letVars['openPatches'] = openPatches;
       openPatch = ListPrims.oneOf(openPatches); letVars['openPatch'] = openPatch;
       SelfManager.self().moveTo(openPatch);
-      SelfManager.self().setVariable("heading", Prims.randomFloat(360));
+      SelfManager.self().setVariable("heading", RandomPrims.randomFloat(360));
       SelfManager.self().setVariable("energy", world.observer.getGlobal("initial-gas-temperature"));
       SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
     } catch (e) {
@@ -308,7 +310,7 @@ var procedures = (function() {
         if (Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4)) {
           SelfManager.self().die();
         }
-        SelfManager.self().setVariable("color", ListPrims.lput((255 - Prims.div((255 * (world.ticker.tickCount() - SelfManager.self().getVariable("birthday"))), 0.4)), [20, 20, 20]));
+        SelfManager.self().setVariable("color", ListPrims.lput((255 - PrimChecks.math.div((255 * (world.ticker.tickCount() - SelfManager.self().getVariable("birthday"))), 0.4)), [20, 20, 20]));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -328,12 +330,12 @@ var procedures = (function() {
       }
       if (Prims.equality(NLMath.abs(newPx), world.observer.getGlobal("box-edge"))) {
         SelfManager.self().setVariable("heading",  -(SelfManager.self().getVariable("heading")));
-        SelfManager.self().setVariable("momentum-instant", Prims.div(NLMath.abs((((NLMath.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface")));
+        SelfManager.self().setVariable("momentum-instant", PrimChecks.math.div(NLMath.abs((((NLMath.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface")));
         SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + SelfManager.self().getVariable("momentum-instant")));
       }
       if (Prims.equality(NLMath.abs(newPy), world.observer.getGlobal("box-edge"))) {
         SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
-        SelfManager.self().setVariable("momentum-instant", Prims.div(NLMath.abs((((NLMath.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface")));
+        SelfManager.self().setVariable("momentum-instant", PrimChecks.math.div(NLMath.abs((((NLMath.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface")));
         SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + SelfManager.self().getVariable("momentum-instant")));
       }
       if (world.observer.getGlobal("show-wall-hits?")) {
@@ -425,7 +427,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (world.turtleManager.turtlesOfBreed("GAS-MOLECULES")._optimalAnyWith(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {
-        world.observer.setGlobal("tick-advance-amount", ListPrims.min(ListPrims.list(Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
+        world.observer.setGlobal("tick-advance-amount", ListPrims.min(ListPrims.list(PrimChecks.math.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
       }
       else {
         world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
@@ -478,7 +480,7 @@ var procedures = (function() {
             SelfManager.self().setVariable("molecule-type", "water");
             SelfManager.self().setVariable("mass", 10);
             let totalEnergyProducts = (totalEnergyAllReactants + world.observer.getGlobal("bond-energy-released")); letVars['totalEnergyProducts'] = totalEnergyProducts;
-            SelfManager.self().setVariable("energy", Prims.div(totalEnergyProducts, 2));
+            SelfManager.self().setVariable("energy", PrimChecks.math.div(totalEnergyProducts, 2));
             SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
           }, true);
           SelfManager.self().die();
@@ -519,24 +521,24 @@ var procedures = (function() {
       let mass2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("mass"); }); letVars['mass2'] = mass2;
       let speed2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("speed"); }); letVars['speed2'] = speed2;
       let heading2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("heading"); }); letVars['heading2'] = heading2;
-      let theta = Prims.randomFloat(360); letVars['theta'] = theta;
+      let theta = RandomPrims.randomFloat(360); letVars['theta'] = theta;
       let v1t = (SelfManager.self().getVariable("speed") * NLMath.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
       let v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
       let v2t = (speed2 * NLMath.cos((theta - heading2))); letVars['v2t'] = v2t;
       let v2l = (speed2 * NLMath.sin((theta - heading2))); letVars['v2l'] = v2l;
-      let vcm = Prims.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2)); letVars['vcm'] = vcm;
+      let vcm = PrimChecks.math.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2)); letVars['vcm'] = vcm;
       v1t = ((2 * vcm) - v1t); letVars['v1t'] = v1t;
       v2t = ((2 * vcm) - v2t); letVars['v2t'] = v2t;
-      SelfManager.self().setVariable("speed", NLMath.sqrt((NLMath.pow(v1t, 2) + NLMath.pow(v1l, 2))));
-      SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * NLMath.pow(SelfManager.self().getVariable("speed"), 2)));
+      SelfManager.self().setVariable("speed", PrimChecks.math.sqrt((PrimChecks.math.pow(v1t, 2) + PrimChecks.math.pow(v1l, 2))));
+      SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * PrimChecks.math.pow(SelfManager.self().getVariable("speed"), 2)));
       if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
-        SelfManager.self().setVariable("heading", (theta - NLMath.atan(v1l, v1t)));
+        SelfManager.self().setVariable("heading", (theta - PrimChecks.math.atan(v1l, v1t)));
       }
       Errors.askNobodyCheck(otherGasMolecules).ask(function() {
-        SelfManager.self().setVariable("speed", NLMath.sqrt((NLMath.pow(v2t, 2) + NLMath.pow(v2l, 2))));
-        SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * NLMath.pow(SelfManager.self().getVariable("speed"), 2)));
+        SelfManager.self().setVariable("speed", PrimChecks.math.sqrt((PrimChecks.math.pow(v2t, 2) + PrimChecks.math.pow(v2l, 2))));
+        SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * PrimChecks.math.pow(SelfManager.self().getVariable("speed"), 2)));
         if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-          SelfManager.self().setVariable("heading", (theta - NLMath.atan(v2l, v2t)));
+          SelfManager.self().setVariable("heading", (theta - PrimChecks.math.atan(v2l, v2t)));
         }
       }, true);
     } catch (e) {
@@ -550,7 +552,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return NLMath.sqrt(Prims.div((2 * SelfManager.self().getVariable("energy")), SelfManager.self().getVariable("mass")));
+      return PrimChecks.math.sqrt(PrimChecks.math.div((2 * SelfManager.self().getVariable("energy")), SelfManager.self().getVariable("mass")));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

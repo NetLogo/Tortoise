@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -66,7 +68,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      workspace.rng.setSeed(4378);
+      PrimChecks.math.randomSeed(4378);
       procedures["SETUP-RANDOM"]();
       workspace.timer.reset();
       for (let _index_415_421 = 0, _repeatcount_415_421 = StrictMath.floor((10 * world.topology.height)); _index_415_421 < _repeatcount_415_421; _index_415_421++){
@@ -121,7 +123,7 @@ var procedures = (function() {
       var letVars = { };
       procedures["SETUP-GENERAL"]();
       Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() {
-        SelfManager.self().setPatchVariable("on?", Prims.lt(Prims.randomLong(100), world.observer.getGlobal("density")));
+        SelfManager.self().setPatchVariable("on?", Prims.lt(RandomPrims.randomLong(100), world.observer.getGlobal("density")));
         procedures["COLOR-PATCH"]();
       }, true);
       world.ticker.reset();
@@ -222,7 +224,7 @@ var procedures = (function() {
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return procedures["BINDIGIT"](Prims.div(NLMath.floor(number), 2),(powerOfTwo - 1));
+        return procedures["BINDIGIT"](PrimChecks.math.div(NLMath.floor(number), 2),(powerOfTwo - 1));
       }
       Errors.missingReport();
     } catch (e) {
@@ -314,7 +316,7 @@ var procedures = (function() {
       let rules = procedures["LIST-RULES"](); letVars['rules'] = rules;
       Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 5)); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
       Errors.askNobodyCheck(world.patches().agentFilter(function() {
-        return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(NLMath.mod((SelfManager.self().getPatchVariable("pxcor") + 1), NLMath.floor(Prims.div(world.topology.width, 8))), 0));
+        return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(NLMath.mod((SelfManager.self().getPatchVariable("pxcor") + 1), NLMath.floor(PrimChecks.math.div(world.topology.width, 8))), 0));
       })).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("heading", 270);

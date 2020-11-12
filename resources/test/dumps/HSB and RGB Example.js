@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -87,7 +89,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return ListPrims.list((Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.topology.width, 2))) ? -1 : 1), (Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pycor"), Prims.div(world.topology.width, 2))) ? -1 : 1));
+      return ListPrims.list((Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1), (Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

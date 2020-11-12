@@ -88,8 +88,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -136,7 +138,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("size", 1);
           SelfManager.self().setVariable("variation", thisVariation);
           procedures["MAKE-FLAGELLA"]();
-          SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+          SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         }, true);
       }, "[ this-variation -> create-bacteria initial-bacteria-per-variation [ set label-color black set size 1 set variation this-variation make-flagella setxy random-xcor random-ycor ] ]"), [1, 2, 3, 4, 5, 6]); if(reporterContext && _foreach_1880_1887 !== undefined) { return _foreach_1880_1887; }
       procedures["VISUALIZE-BACTERIA"]();
@@ -239,7 +241,7 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BACTERIA")).ask(function() {
         if (world.observer.getGlobal("wiggle?")) {
-          SelfManager.self().right((Prims.randomFloat(25) - Prims.randomFloat(25)));
+          SelfManager.self().right((RandomPrims.randomFloat(25) - RandomPrims.randomFloat(25)));
         }
         SelfManager.self().fd((SelfManager.self().getVariable("variation") * world.observer.getGlobal("speed-scalar")));
         let predatorsInFrontOfMe = SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("PREDATORS"), 2, 120); letVars['predatorsInFrontOfMe'] = predatorsInFrontOfMe;
@@ -307,7 +309,7 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       let prey = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PREDATORS")).projectionBy(function() {
-        return SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("BACTERIA"), Prims.div(SelfManager.self().getVariable("size"), 2));
+        return SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("BACTERIA"), PrimChecks.math.div(SelfManager.self().getVariable("size"), 2));
       }); letVars['prey'] = prey;
       if (!!prey.isEmpty()) {
         throw new Exception.StopInterrupt;
@@ -315,7 +317,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(ListPrims.oneOf(prey)).ask(function() { procedures["DEATH"](); }, true);
       Errors.askNobodyCheck(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BACTERIA"))).ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().right(Prims.randomLong(360));
+          SelfManager.self().right(RandomPrims.randomLong(360));
           procedures["MAKE-FLAGELLA"]();
         }, true);
       }, true);

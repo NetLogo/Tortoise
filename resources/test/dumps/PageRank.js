@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -73,11 +75,11 @@ var procedures = (function() {
       }
       Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
-        SelfManager.self().setVariable("rank", Prims.div(1, world.turtleManager.turtlesOfBreed("PAGES").size()));
+        SelfManager.self().setVariable("rank", PrimChecks.math.div(1, world.turtleManager.turtlesOfBreed("PAGES").size()));
       }, true);
       procedures["UPDATE-GLOBALS"]();
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("label-color", 0);
         procedures["UPDATE-PAGE-APPEARANCE"]();
       }, true);
@@ -182,7 +184,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(ListPrims.item(k, nodeList)).ask(function() {
         var _foreach_2544_2551 = Tasks.forEach(Tasks.commandTask(function(neighbor) {
           Errors.procedureArgumentsCheck(1, arguments.length);
-          if (Prims.equality(Prims.randomLong(2), 0)) {
+          if (Prims.equality(RandomPrims.randomLong(2), 0)) {
             LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
           }
           else {
@@ -199,7 +201,7 @@ var procedures = (function() {
             let neighbor = ListPrims.oneOf(tempNeighborList); letVars['neighbor'] = neighbor;
             tempNeighborList = ListPrims.remove(neighbor, tempNeighborList); letVars['tempNeighborList'] = tempNeighborList;
             neighborChoiceList = ListPrims.fput(neighbor, neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
-            if (Prims.equality(Prims.randomLong(2), 0)) {
+            if (Prims.equality(RandomPrims.randomLong(2), 0)) {
               LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
             }
             else {
@@ -219,7 +221,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, Prims.div(20, NLMath.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
+      LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, PrimChecks.math.div(20, PrimChecks.math.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -241,20 +243,20 @@ var procedures = (function() {
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() { SelfManager.self().setVariable("new-rank", 0); }, true);
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
           if (!LinkPrims.outLinkNeighbors("LINKS").isEmpty()) {
-            let rankIncrement = Prims.div(SelfManager.self().getVariable("rank"), LinkPrims.outLinkNeighbors("LINKS").size()); letVars['rankIncrement'] = rankIncrement;
+            let rankIncrement = PrimChecks.math.div(SelfManager.self().getVariable("rank"), LinkPrims.outLinkNeighbors("LINKS").size()); letVars['rankIncrement'] = rankIncrement;
             Errors.askNobodyCheck(LinkPrims.outLinkNeighbors("LINKS")).ask(function() {
               SelfManager.self().setVariable("new-rank", (SelfManager.self().getVariable("new-rank") + rankIncrement));
             }, true);
           }
           else {
-            let rankIncrement = Prims.div(SelfManager.self().getVariable("rank"), world.turtleManager.turtlesOfBreed("PAGES").size()); letVars['rankIncrement'] = rankIncrement;
+            let rankIncrement = PrimChecks.math.div(SelfManager.self().getVariable("rank"), world.turtleManager.turtlesOfBreed("PAGES").size()); letVars['rankIncrement'] = rankIncrement;
             Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
               SelfManager.self().setVariable("new-rank", (SelfManager.self().getVariable("new-rank") + rankIncrement));
             }, true);
           }
         }, true);
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
-          SelfManager.self().setVariable("rank", (Prims.div((1 - world.observer.getGlobal("damping-factor")), world.turtleManager.turtlesOfBreed("PAGES").size()) + (world.observer.getGlobal("damping-factor") * SelfManager.self().getVariable("new-rank"))));
+          SelfManager.self().setVariable("rank", (PrimChecks.math.div((1 - world.observer.getGlobal("damping-factor")), world.turtleManager.turtlesOfBreed("PAGES").size()) + (world.observer.getGlobal("damping-factor") * SelfManager.self().getVariable("new-rank"))));
         }, true);
       }
       else {
@@ -279,7 +281,7 @@ var procedures = (function() {
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SURFERS")).ask(function() {
           let oldPage = SelfManager.self().getVariable("current-page"); letVars['oldPage'] = oldPage;
           Errors.askNobodyCheck(SelfManager.self().getVariable("current-page")).ask(function() { SelfManager.self().setVariable("visits", (SelfManager.self().getVariable("visits") + 1)); }, true);
-          if ((Prims.lte(Prims.randomFloat(1), world.observer.getGlobal("damping-factor")) && !SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.myOutLinks("LINKS"); }).isEmpty())) {
+          if ((Prims.lte(RandomPrims.randomFloat(1), world.observer.getGlobal("damping-factor")) && !SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.myOutLinks("LINKS"); }).isEmpty())) {
             SelfManager.self().setVariable("current-page", ListPrims.oneOf(SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.outLinkNeighbors("LINKS"); })));
           }
           else {
@@ -305,7 +307,7 @@ var procedures = (function() {
         }, true);
         let totalVisits = ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("visits"); })); letVars['totalVisits'] = totalVisits;
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
-          SelfManager.self().setVariable("rank", Prims.div(SelfManager.self().getVariable("visits"), totalVisits));
+          SelfManager.self().setVariable("rank", PrimChecks.math.div(SelfManager.self().getVariable("visits"), totalVisits));
         }, true);
       }
       procedures["UPDATE-GLOBALS"]();
@@ -345,7 +347,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("size", (0.2 + (4 * NLMath.sqrt(Prims.div(SelfManager.self().getVariable("rank"), world.observer.getGlobal("total-rank"))))));
+      SelfManager.self().setVariable("size", (0.2 + (4 * PrimChecks.math.sqrt(PrimChecks.math.div(SelfManager.self().getVariable("rank"), world.observer.getGlobal("total-rank"))))));
       if (world.observer.getGlobal("show-page-ranks?")) {
         SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(NLMath.precision(SelfManager.self().getVariable("rank"), 3)) + workspace.dump("     ")));
       }

@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -61,16 +63,16 @@ var procedures = (function() {
       }, true);
       world.turtleManager.createTurtles(5, "PLANETS").ask(function() {
         SelfManager.self().setVariable("size", 2);
-        SelfManager.self().setVariable("color", (105 + Prims.randomLong(3)));
-        SelfManager.self().fd((6 + Prims.randomFloat(12)));
+        SelfManager.self().setVariable("color", (105 + RandomPrims.randomLong(3)));
+        SelfManager.self().fd((6 + RandomPrims.randomFloat(12)));
         LinkPrims.createLinkFrom(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SUNS")), "LINKS").ask(function() {
           SelfManager.self().tie();
           SelfManager.self().setVariable('hidden?', true)
         }, true);
         SelfManager.self().hatch(2, "MOONS").ask(function() {
           SelfManager.self().setVariable("size", 0.5);
-          SelfManager.self().setVariable("color", (5 + Prims.randomLong(3)));
-          SelfManager.self().fd((1 + Prims.randomFloat(3)));
+          SelfManager.self().setVariable("color", (5 + RandomPrims.randomLong(3)));
+          SelfManager.self().fd((1 + RandomPrims.randomFloat(3)));
           LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS").ask(function() {
             SelfManager.self().tie();
             SelfManager.self().setVariable('hidden?', true)

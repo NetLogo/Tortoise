@@ -70,8 +70,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -104,9 +106,9 @@ var procedures = (function() {
       var letVars = { };
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "cow")
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-cows"), "").ask(function() {
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("energy", (world.observer.getGlobal("metabolism") * 4));
-        if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("cooperative-probability"))) {
+        if (Prims.lt(RandomPrims.randomFloat(1), world.observer.getGlobal("cooperative-probability"))) {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"));
           SelfManager.self().setVariable("color", (15 - 1.5));
         }
@@ -160,12 +162,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.gte(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
-        if (Prims.gte(world.observer.getGlobal("high-growth-chance"), Prims.randomFloat(100))) {
+        if (Prims.gte(world.observer.getGlobal("high-growth-chance"), RandomPrims.randomFloat(100))) {
           SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") + 1));
         }
       }
       else {
-        if (Prims.gte(world.observer.getGlobal("low-growth-chance"), Prims.randomFloat(100))) {
+        if (Prims.gte(world.observer.getGlobal("low-growth-chance"), RandomPrims.randomFloat(100))) {
           SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") + 1));
         }
       }
@@ -193,7 +195,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.randomLong(360));
+      SelfManager.self().right(RandomPrims.randomLong(360));
       SelfManager.self().fd(world.observer.getGlobal("stride-length"));
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("metabolism")));
       if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {

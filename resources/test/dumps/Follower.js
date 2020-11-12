@@ -108,8 +108,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -126,7 +128,7 @@ var procedures = (function() {
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
         SelfManager.self().setVariable("color", 125);
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("leader", Nobody);
         SelfManager.self().setVariable("follower", Nobody);
       }, true);
@@ -159,12 +161,12 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let xd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius")))); letVars['xd'] = xd;
-      let yd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius")))); letVars['yd'] = yd;
-      if (Prims.equality(Prims.randomLong(2), 0)) {
+      let xd = (world.observer.getGlobal("near-radius") + RandomPrims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius")))); letVars['xd'] = xd;
+      let yd = (world.observer.getGlobal("near-radius") + RandomPrims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius")))); letVars['yd'] = yd;
+      if (Prims.equality(RandomPrims.randomLong(2), 0)) {
         xd =  -(xd); letVars['xd'] = xd;
       }
-      if (Prims.equality(Prims.randomLong(2), 0)) {
+      if (Prims.equality(RandomPrims.randomLong(2), 0)) {
         yd =  -(yd); letVars['yd'] = yd;
       }
       let candidate = SelfManager.self().turtlesAt(xd, yd)._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("follower"), Nobody); }); letVars['candidate'] = candidate;
@@ -200,7 +202,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(SelfManager.self().getVariable("leader"), Nobody)) {
-        SelfManager.self().right((Prims.randomFloat(world.observer.getGlobal("waver")) - Prims.randomFloat(world.observer.getGlobal("waver"))));
+        SelfManager.self().right((RandomPrims.randomFloat(world.observer.getGlobal("waver")) - RandomPrims.randomFloat(world.observer.getGlobal("waver"))));
       }
       else {
         SelfManager.self().face(SelfManager.self().getVariable("leader"));

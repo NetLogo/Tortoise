@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -79,7 +81,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
+        if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
           SelfManager.self().setPatchVariable("pcolor", 9.9);
         }
         else {
@@ -133,7 +135,7 @@ var procedures = (function() {
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
       return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
-        return Prims.gte(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(xRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(yRadius, 2))));
+        return Prims.gte(1, (PrimChecks.math.div(PrimChecks.math.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(xRadius, 2)) + PrimChecks.math.div(PrimChecks.math.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(yRadius, 2))));
       });
       Errors.missingReport();
     } catch (e) {
@@ -148,7 +150,7 @@ var procedures = (function() {
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
       return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
-        return (Prims.gte(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(outxRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(outyRadius, 2)))) && Prims.lt(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(inxRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(inyRadius, 2)))));
+        return (Prims.gte(1, (PrimChecks.math.div(PrimChecks.math.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(outxRadius, 2)) + PrimChecks.math.div(PrimChecks.math.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(outyRadius, 2)))) && Prims.lt(1, (PrimChecks.math.div(PrimChecks.math.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(inxRadius, 2)) + PrimChecks.math.div(PrimChecks.math.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(inyRadius, 2)))));
       });
       Errors.missingReport();
     } catch (e) {

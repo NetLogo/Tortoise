@@ -83,8 +83,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -133,9 +135,9 @@ var procedures = (function() {
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")
       world.turtleManager.createTurtles(world.observer.getGlobal("number-of-cars"), "").ask(function() {
         SelfManager.self().setVariable("color", 105);
-        SelfManager.self().setVariable("xcor", Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor));
+        SelfManager.self().setVariable("xcor", RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor));
         SelfManager.self().setVariable("heading", 90);
-        SelfManager.self().setVariable("speed", (0.1 + Prims.randomFloat(0.9)));
+        SelfManager.self().setVariable("speed", (0.1 + RandomPrims.randomFloat(0.9)));
         SelfManager.self().setVariable("speed-limit", 1);
         SelfManager.self().setVariable("speed-min", 0);
         procedures["SEPARATE-CARS"]();

@@ -83,8 +83,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -114,8 +116,8 @@ var procedures = (function() {
       let swapEvent = 0; letVars['swapEvent'] = swapEvent;
       let reproduceEvent = 1; letVars['reproduceEvent'] = reproduceEvent;
       let selectEvent = 2; letVars['selectEvent'] = selectEvent;
-      let repetitions = Prims.div(world.patches().size(), 3); letVars['repetitions'] = repetitions;
-      let events = ListPrims.shuffle(ListPrims.sentence(Tasks.nValues(Prims.randomPoisson((repetitions * procedures["SWAP-RATE"]())), Tasks.reporterTask(function() { return swapEvent; }, "[ swap-event ]")), Tasks.nValues(Prims.randomPoisson((repetitions * procedures["REPRODUCE-RATE"]())), Tasks.reporterTask(function() { return reproduceEvent; }, "[ reproduce-event ]")), Tasks.nValues(Prims.randomPoisson((repetitions * procedures["SELECT-RATE"]())), Tasks.reporterTask(function() { return selectEvent; }, "[ select-event ]")))); letVars['events'] = events;
+      let repetitions = PrimChecks.math.div(world.patches().size(), 3); letVars['repetitions'] = repetitions;
+      let events = ListPrims.shuffle(ListPrims.sentence(Tasks.nValues(RandomPrims.randomPoisson((repetitions * procedures["SWAP-RATE"]())), Tasks.reporterTask(function() { return swapEvent; }, "[ swap-event ]")), Tasks.nValues(RandomPrims.randomPoisson((repetitions * procedures["REPRODUCE-RATE"]())), Tasks.reporterTask(function() { return reproduceEvent; }, "[ reproduce-event ]")), Tasks.nValues(RandomPrims.randomPoisson((repetitions * procedures["SELECT-RATE"]())), Tasks.reporterTask(function() { return selectEvent; }, "[ select-event ]")))); letVars['events'] = events;
       var _foreach_1684_1691 = Tasks.forEach(Tasks.commandTask(function(_event_) {
         Errors.procedureArgumentsCheck(1, arguments.length);
         Errors.askNobodyCheck(ListPrims.oneOf(world.patches())).ask(function() {
@@ -207,7 +209,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return NLMath.pow(10, exponent);
+      return PrimChecks.math.pow(10, exponent);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -259,7 +261,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return Prims.div((100 * rate), ((procedures["SWAP-RATE"]() + procedures["REPRODUCE-RATE"]()) + procedures["SELECT-RATE"]()));
+      return PrimChecks.math.div((100 * rate), ((procedures["SWAP-RATE"]() + procedures["REPRODUCE-RATE"]()) + procedures["SELECT-RATE"]()));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

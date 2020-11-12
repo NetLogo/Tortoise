@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -58,10 +60,10 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.patches()).ask(function() {
         if (world.observer.getGlobal("bumpy?")) {
           if (world.observer.getGlobal("hill?")) {
-            SelfManager.self().setPatchVariable("elevation", (((-100 * Prims.div(SelfManager.self().distanceXY(0, 0), world.topology.maxPxcor)) + 100) + Prims.randomLong(100)));
+            SelfManager.self().setPatchVariable("elevation", (((-100 * PrimChecks.math.div(SelfManager.self().distanceXY(0, 0), world.topology.maxPxcor)) + 100) + RandomPrims.randomLong(100)));
           }
           else {
-            SelfManager.self().setPatchVariable("elevation", Prims.randomLong(125));
+            SelfManager.self().setPatchVariable("elevation", RandomPrims.randomLong(125));
           }
         }
         else {
@@ -134,7 +136,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() {
-        if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("rainfall"))) {
+        if (Prims.lt(RandomPrims.randomFloat(1), world.observer.getGlobal("rainfall"))) {
           SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + 1));
         }
       }, true);

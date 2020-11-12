@@ -57,8 +57,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -73,7 +75,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      Errors.askNobodyCheck(ListPrims.nOf(Prims.div(world.patches().size(), 2), world.patches())).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
+      Errors.askNobodyCheck(ListPrims.nOf(PrimChecks.math.div(world.patches().size(), 2), world.patches())).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
       Errors.askNobodyCheck(world.patches()).ask(function() { procedures["UPDATE-VISUAL"](); }, true);
       world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
       world.observer.setGlobal("temperature", 1);
@@ -91,7 +93,7 @@ var procedures = (function() {
       for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++){
         Errors.askNobodyCheck(ListPrims.oneOf(world.patches())).ask(function() { procedures["TRY-SWAP"](); }, true);
       }
-      world.observer.setGlobal("temperature", (world.observer.getGlobal("temperature") * (1 - Prims.div(world.observer.getGlobal("cooling-rate"), 100))));
+      world.observer.setGlobal("temperature", (world.observer.getGlobal("temperature") * (1 - PrimChecks.math.div(world.observer.getGlobal("cooling-rate"), 100))));
       world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
       world.ticker.tick();
     } catch (e) {
@@ -116,7 +118,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return ((Prims.lt(newEnergy, oldEnergy) || (world.observer.getGlobal("accept-equal-changes?") && Prims.equality(newEnergy, oldEnergy))) || Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("temperature")));
+      return ((Prims.lt(newEnergy, oldEnergy) || (world.observer.getGlobal("accept-equal-changes?") && Prims.equality(newEnergy, oldEnergy))) || Prims.lt(RandomPrims.randomFloat(1), world.observer.getGlobal("temperature")));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -170,16 +172,16 @@ var procedures = (function() {
       var letVars = { };
       let unhappiness = 0; letVars['unhappiness'] = unhappiness;
       Errors.askNobodyCheck(SelfManager.self()._optimalPatchNorth()).ask(function() {
-        unhappiness = (unhappiness + NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
+        unhappiness = (unhappiness + PrimChecks.math.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
       Errors.askNobodyCheck(SelfManager.self()._optimalPatchSouth()).ask(function() {
-        unhappiness = (unhappiness + NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
+        unhappiness = (unhappiness + PrimChecks.math.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
       Errors.askNobodyCheck(SelfManager.self()._optimalPatchEast()).ask(function() {
-        unhappiness = ((unhappiness + 1) - NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
+        unhappiness = ((unhappiness + 1) - PrimChecks.math.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
       Errors.askNobodyCheck(SelfManager.self()._optimalPatchWest()).ask(function() {
-        unhappiness = ((unhappiness + 1) - NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
+        unhappiness = ((unhappiness + 1) - PrimChecks.math.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
       Errors.reportInContextCheck(reporterContext);
       return unhappiness;

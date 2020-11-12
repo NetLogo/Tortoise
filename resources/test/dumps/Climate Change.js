@@ -57,8 +57,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -146,19 +148,19 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let skyHeight = (world.observer.getGlobal("sky-top") - world.observer.getGlobal("earth-top")); letVars['skyHeight'] = skyHeight;
-      let y = ((world.observer.getGlobal("earth-top") + Prims.randomFloat((skyHeight - 4))) + 2); letVars['y'] = y;
-      let speed = (Prims.randomFloat(0.1) + 0.01); letVars['speed'] = speed;
-      let x = Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor); letVars['x'] = x;
+      let y = ((world.observer.getGlobal("earth-top") + RandomPrims.randomFloat((skyHeight - 4))) + 2); letVars['y'] = y;
+      let speed = (RandomPrims.randomFloat(0.1) + 0.01); letVars['speed'] = speed;
+      let x = RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor); letVars['x'] = x;
       let id = 0; letVars['id'] = id;
       if (!world.turtleManager.turtlesOfBreed("CLOUDS").isEmpty()) {
         id = (ListPrims.max(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() { return SelfManager.self().getVariable("cloud-id"); })) + 1); letVars['id'] = id;
       }
-      world.turtleManager.createTurtles((3 + Prims.randomLong(20)), "CLOUDS").ask(function() {
+      world.turtleManager.createTurtles((3 + RandomPrims.randomLong(20)), "CLOUDS").ask(function() {
         SelfManager.self().setVariable("cloud-speed", speed);
         SelfManager.self().setVariable("cloud-id", id);
-        SelfManager.self().setXY(((x + Prims.randomLong(9)) - 4), (((y + 2.5) + Prims.randomFloat(2)) - Prims.randomFloat(2)));
+        SelfManager.self().setXY(((x + RandomPrims.randomLong(9)) - 4), (((y + 2.5) + RandomPrims.randomFloat(2)) - RandomPrims.randomFloat(2)));
         SelfManager.self().setVariable("color", 9.9);
-        SelfManager.self().setVariable("size", (2 + Prims.randomLong(2)));
+        SelfManager.self().setVariable("size", (2 + RandomPrims.randomLong(2)));
         SelfManager.self().setVariable("heading", 90);
       }, true);
     } catch (e) {
@@ -204,11 +206,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.gt((10 * world.observer.getGlobal("sun-brightness")), Prims.randomLong(50))) {
+      if (Prims.gt((10 * world.observer.getGlobal("sun-brightness")), RandomPrims.randomLong(50))) {
         world.turtleManager.createTurtles(1, "RAYS").ask(function() {
           SelfManager.self().setVariable("heading", 160);
           SelfManager.self().setVariable("color", 45);
-          SelfManager.self().setXY((Prims.randomLong(10) + world.topology.minPxcor), world.topology.maxPycor);
+          SelfManager.self().setXY((RandomPrims.randomLong(10) + world.topology.minPxcor), world.topology.maxPycor);
         }, true);
       }
     } catch (e) {
@@ -233,12 +235,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("RAYS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top")); })).ask(function() {
-        if (Prims.gt((100 * world.observer.getGlobal("albedo")), Prims.randomLong(100))) {
+        if (Prims.gt((100 * world.observer.getGlobal("albedo")), RandomPrims.randomLong(100))) {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
         }
         else {
-          SelfManager.self().right((Prims.randomLong(45) - Prims.randomLong(45)));
-          SelfManager.self().setVariable("color", ((15 - 2) + Prims.randomLong(4)));
+          SelfManager.self().right((RandomPrims.randomLong(45) - RandomPrims.randomLong(45)));
+          SelfManager.self().setVariable("color", ((15 - 2) + RandomPrims.randomLong(4)));
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
         }
       }, true);
@@ -254,7 +256,7 @@ var procedures = (function() {
       var letVars = { };
       world.observer.setGlobal("temperature", ((0.99 * world.observer.getGlobal("temperature")) + (0.01 * (12 + (0.1 * world.turtleManager.turtlesOfBreed("HEATS").size())))));
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("HEATS")).ask(function() {
-        let dist = (0.5 * Prims.randomFloat(1)); letVars['dist'] = dist;
+        let dist = (0.5 * RandomPrims.randomFloat(1)); letVars['dist'] = dist;
         if (SelfManager.self().canMove(dist)) {
           SelfManager.self().fd(dist);
         }
@@ -262,13 +264,13 @@ var procedures = (function() {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
         }
         if (Prims.gte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top"))) {
-          if (((Prims.gt(world.observer.getGlobal("temperature"), (20 + Prims.randomLong(40))) && Prims.gt(SelfManager.self().getVariable("xcor"), 0)) && Prims.lt(SelfManager.self().getVariable("xcor"), (world.topology.maxPxcor - 8)))) {
+          if (((Prims.gt(world.observer.getGlobal("temperature"), (20 + RandomPrims.randomLong(40))) && Prims.gt(SelfManager.self().getVariable("xcor"), 0)) && Prims.lt(SelfManager.self().getVariable("xcor"), (world.topology.maxPxcor - 8)))) {
             SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("IRS"));
             SelfManager.self().setVariable("heading", 20);
             SelfManager.self().setVariable("color", 125);
           }
           else {
-            SelfManager.self().setVariable("heading", (100 + Prims.randomLong(160)));
+            SelfManager.self().setVariable("heading", (100 + RandomPrims.randomLong(160)));
           }
         }
       }, true);
@@ -289,9 +291,9 @@ var procedures = (function() {
         SelfManager.self()._optimalFdLessThan1(0.3);
         if (Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top"))) {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
-          SelfManager.self().right(Prims.randomLong(45));
-          SelfManager.self().right(-(Prims.randomLong(45)));
-          SelfManager.self().setVariable("color", ((15 - 2) + Prims.randomLong(4)));
+          SelfManager.self().right(RandomPrims.randomLong(45));
+          SelfManager.self().right(-(RandomPrims.randomLong(45)));
+          SelfManager.self().setVariable("color", ((15 - 2) + RandomPrims.randomLong(4)));
         }
         if (!SelfManager.self().breedHere("CO2S").isEmpty()) {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
@@ -310,7 +312,7 @@ var procedures = (function() {
       let skyHeight = (world.observer.getGlobal("sky-top") - world.observer.getGlobal("earth-top")); letVars['skyHeight'] = skyHeight;
       world.turtleManager.createTurtles(25, "CO2S").ask(function() {
         SelfManager.self().setVariable("color", 55);
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), (world.observer.getGlobal("earth-top") + Prims.randomFloat(skyHeight)));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), (world.observer.getGlobal("earth-top") + RandomPrims.randomFloat(skyHeight)));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -338,8 +340,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CO2S")).ask(function() {
-        SelfManager.self().right((Prims.randomLong(51) - 25));
-        let dist = (0.05 + Prims.randomFloat(0.1)); letVars['dist'] = dist;
+        SelfManager.self().right((RandomPrims.randomLong(51) - 25));
+        let dist = (0.05 + RandomPrims.randomFloat(0.1)); letVars['dist'] = dist;
         if (SelfManager.self().patchAhead(dist).projectionBy(function() { return !ColorModel.areRelatedByShade(105, SelfManager.self().getPatchVariable("pcolor")); })) {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
         }

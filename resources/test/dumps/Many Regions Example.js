@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -114,8 +116,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let currentRegion = SelfManager.self().getPatchVariable("region"); letVars['currentRegion'] = currentRegion;
-      SelfManager.self().right(Prims.randomLong(30));
-      SelfManager.self().right(-(Prims.randomLong(30)));
+      SelfManager.self().right(RandomPrims.randomLong(30));
+      SelfManager.self().right(-(RandomPrims.randomLong(30)));
       SelfManager.self()._optimalFdLessThan1(0.25);
       procedures["KEEP-IN-REGION"](currentRegion);
     } catch (e) {
@@ -170,7 +172,7 @@ var procedures = (function() {
       Errors.reportInContextCheck(reporterContext);
       return Tasks.nValues((numRegions + 1), Tasks.reporterTask(function(n) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        return world.getPatchAt((world.topology.minPxcor + (n * Prims.div((world.topology.maxPxcor - world.topology.minPxcor), numRegions))), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
+        return world.getPatchAt((world.topology.minPxcor + (n * PrimChecks.math.div((world.topology.maxPxcor - world.topology.minPxcor), numRegions))), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
       }, "[ n -> [ pxcor ] of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]"));
       Errors.missingReport();
     } catch (e) {
@@ -190,7 +192,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", (5 - 3));
         SelfManager.self().penManager.lowerPen();
         SelfManager.self().fd(world.topology.height);
-        SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") + Prims.div(1, world.patchSize)));
+        SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") + PrimChecks.math.div(1, world.patchSize)));
         SelfManager.self().right(180);
         SelfManager.self().setVariable("color", (5 + 3));
         SelfManager.self().fd(world.topology.height);

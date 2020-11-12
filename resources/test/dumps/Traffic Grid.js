@@ -119,8 +119,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -164,8 +166,8 @@ var procedures = (function() {
       world.observer.setGlobal("current-light", Nobody);
       world.observer.setGlobal("phase", 0);
       world.observer.setGlobal("num-cars-stopped", 0);
-      world.observer.setGlobal("grid-x-inc", Prims.div(world.topology.width, world.observer.getGlobal("grid-size-x")));
-      world.observer.setGlobal("grid-y-inc", Prims.div(world.topology.height, world.observer.getGlobal("grid-size-y")));
+      world.observer.setGlobal("grid-x-inc", PrimChecks.math.div(world.topology.width, world.observer.getGlobal("grid-size-x")));
+      world.observer.setGlobal("grid-y-inc", PrimChecks.math.div(world.topology.height, world.observer.getGlobal("grid-size-y")));
       world.observer.setGlobal("acceleration", 0.099);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -209,8 +211,8 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("green-light-up?", true);
         SelfManager.self().setPatchVariable("my-phase", 0);
         SelfManager.self().setPatchVariable("auto?", true);
-        SelfManager.self().setPatchVariable("my-row", NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("pycor") + world.topology.maxPycor), world.observer.getGlobal("grid-y-inc"))));
-        SelfManager.self().setPatchVariable("my-column", NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), world.observer.getGlobal("grid-x-inc"))));
+        SelfManager.self().setPatchVariable("my-row", NLMath.floor(PrimChecks.math.div((SelfManager.self().getPatchVariable("pycor") + world.topology.maxPycor), world.observer.getGlobal("grid-y-inc"))));
+        SelfManager.self().setPatchVariable("my-column", NLMath.floor(PrimChecks.math.div((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), world.observer.getGlobal("grid-x-inc"))));
         procedures["SET-SIGNAL-COLORS"]();
       }, true);
     } catch (e) {
@@ -227,7 +229,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("wait-time", 0);
       procedures["PUT-ON-EMPTY-ROAD"]();
       if (SelfManager.self().getPatchVariable("intersection?")) {
-        if (Prims.equality(Prims.randomLong(2), 0)) {
+        if (Prims.equality(RandomPrims.randomLong(2), 0)) {
           SelfManager.self().setVariable("up-car?", true);
         }
         else {
@@ -368,7 +370,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.observer.getGlobal("intersections").agentFilter(function() {
-        return (SelfManager.self().getPatchVariable("auto?") && Prims.equality(world.observer.getGlobal("phase"), NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("my-phase") * world.observer.getGlobal("ticks-per-cycle")), 100))));
+        return (SelfManager.self().getPatchVariable("auto?") && Prims.equality(world.observer.getGlobal("phase"), NLMath.floor(PrimChecks.math.div((SelfManager.self().getPatchVariable("my-phase") * world.observer.getGlobal("ticks-per-cycle")), 100))));
       })).ask(function() {
         SelfManager.self().setPatchVariable("green-light-up?", !SelfManager.self().getPatchVariable("green-light-up?"));
         procedures["SET-SIGNAL-COLORS"]();
@@ -485,7 +487,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(SelfManager.self().getVariable("speed"), Prims.div(world.observer.getGlobal("speed-limit"), 2))) {
+      if (Prims.lt(SelfManager.self().getVariable("speed"), PrimChecks.math.div(world.observer.getGlobal("speed-limit"), 2))) {
         SelfManager.self().setVariable("color", 105);
       }
       else {
