@@ -175,7 +175,7 @@ module.exports = {
 
     colorNumber = RGBMap[componentsToKey(red, green, blue)] ? @_estimateColorNumber(red, green, blue)
 
-    NLMath.validateNumber(colorNumber)
+    colorNumber
 
   # (Number) => ColorNumber
   nthColor: (n) ->

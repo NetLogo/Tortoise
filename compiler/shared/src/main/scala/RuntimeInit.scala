@@ -51,6 +51,8 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
     workspaceDeclare("UserDialogPrims"),
     workspaceDeclare("Updater"),
     workspaceDeclare("world"),
+    workspaceDeclare("PrimChecks"),
+    workspaceDeclare("RandomPrims"),
 
     JsRequire("Exception",      "util/exception"),
     JsRequire("Errors",         "util/errors"),

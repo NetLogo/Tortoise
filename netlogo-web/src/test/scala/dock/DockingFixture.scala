@@ -198,7 +198,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
     } else if(!exceptionOccurredInHeadless && exceptionOccurredInJS) {
       throw new TestFailedException("Exception occurred in JS but not headless: " + actualOutput, 7)
     } else if(exceptionOccurredInHeadless && exceptionOccurredInJS) {
-      if(headlessException != actualOutput)
+      if (!errorMessagesMatch(headlessException.asInstanceOf[String], actualOutput))
         throw new TestFailedException(s"""Exception in JS was "$actualOutput" but exception in headless was "$headlessException" """, 7)
     } else {
       assertResult(expectedOutput)(evalJS("world._getOutput()").asInstanceOf[String].replaceAllLiterally("\\n", "\n"))
@@ -216,6 +216,14 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
 
     }
 
+  }
+
+  def errorMessagesMatch(expected: String, actual: String) = {
+    // NetLogo desktop prepends "Runtime error: " to some errors that happen at runtime, but not all.  I do not think
+    // that information is particularly important, I think it's obvious when an error happens while the model is
+    // running.  If it turns out other people really care about it, we can work to recreate the logic that desktop
+    // uses to prepend the extra text. -Jeremy B November 2020
+    expected == actual || (expected.startsWith("Runtime error: ") && expected.substring(15) == actual)
   }
 
   override def runCommand(command: Command, mode: TestMode) = {

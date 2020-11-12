@@ -118,7 +118,7 @@ module.exports =
           middleNum
         else
           subMiddleNum = nums[middleIndex - 1]
-          NLMath.validateNumber((middleNum + subMiddleNum) / 2)
+          (middleNum + subMiddleNum) / 2
       else
         throw new Error("Can't find the median of a list with no numbers: #{@_dump(xs)}.")
 
@@ -417,7 +417,7 @@ module.exports =
         mean       = @sum(nums) / nums.length
         squareDiff = foldl((acc, x) -> acc + StrictMath.pow(x - mean, 2))(0)(nums)
         stdDev     = StrictMath.sqrt(squareDiff / (nums.length - 1))
-        NLMath.validateNumber(stdDev)
+        stdDev
       else
         throw new Error("Can't find the standard deviation of a list without at least two numbers: #{@_dump(xs)}")
 

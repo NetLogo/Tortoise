@@ -10,6 +10,8 @@ JSType = require('util/typechecker')
 
 ExtensionsHandler = require('../engine/core/world/extensionshandler')
 
+formatFloat = require('util/formatfloat')
+
 { BreedReference
 , ExportedColorNum
 , ExportedCommandLambda
@@ -49,18 +51,8 @@ formatBoolean = (bool) ->
   formatPlain(bool)
 
 # (Number) => String
-formatNumberInner = (num) ->
-  maxNetLogoInt = 9007199254740992
-  base = # These negative exponent numbers are when Java will switch to scientific notation --JAB (12/25/17)
-    if num > maxNetLogoInt or num < -maxNetLogoInt or (0 < num < 1e-3) or (0 > num > -1e-3)
-      num.toExponential()
-    else
-      num.toString()
-  base.replace(/e\+?/, 'E') # Java stringifies scientific notation with 'E' and 'E-', while JS uses 'e+' and 'e-'. --JAB (12/25/17)
-
-# (Number) => String
 formatNumber = (num) ->
-  formatPlain(formatNumberInner(num))
+  formatPlain(formatFloat(num))
 
 # (BreedReference) => String
 formatBreedRef = ({ breedName }) ->
@@ -108,9 +100,9 @@ formatColor = (color) ->
   if color instanceof ExportedColorNum
     formatNumber(color.value)
   else if color instanceof ExportedRGB
-    formatPlain(formatList([color.r, color.g, color.b], formatNumberInner))
+    formatPlain(formatList([color.r, color.g, color.b], formatFloat))
   else if color instanceof ExportedRGBA
-    formatPlain(formatList([color.r, color.g, color.b, color.a], formatNumberInner))
+    formatPlain(formatList([color.r, color.g, color.b, color.a], formatFloat))
   else
     throw new Error("Unknown color: #{JSON.stringify(color)}")
 
@@ -127,7 +119,7 @@ formatAny = (extensionFormatter, isOuterValue = true) -> (any) ->
     else if type.isBoolean()
       x
     else if type.isNumber()
-      formatNumberInner(x)
+      formatFloat(x)
     else if type.isString()
       formatStringInner(x)
     else if x instanceof BreedReference
@@ -411,7 +403,7 @@ allPlotsDataToCSV = ({ metadata, miniGlobals, plots }, extensionPorters) ->
 # ((Number, String)) => String
 formatDrawingData = ([patchSize, drawing]) ->
 
-  formatted    = formatNumberInner(patchSize)
+  formatted    = formatFloat(patchSize)
   patchSizeStr = if Number.isInteger(patchSize) then "#{formatted}.0" else formatted
 
   """

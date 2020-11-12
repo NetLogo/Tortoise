@@ -100,7 +100,7 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
   private def expectRuntimeError(res: => Any, msg: String): Unit = {
     try {
       res
-      fail("no RuntimeError occurred")
+      fail(s"no RuntimeError occurred (expected '$msg')")
     }
     catch {
       case ex: PolyglotException =>

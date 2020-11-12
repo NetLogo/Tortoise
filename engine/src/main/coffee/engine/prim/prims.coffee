@@ -10,9 +10,7 @@ TurtleSet        = require('../core/turtleset')
 NLType           = require('../core/typechecker')
 StrictMath       = require('shim/strictmath')
 Exception        = require('util/exception')
-NLMath           = require('util/nlmath')
 Timer            = require('util/timer')
-Gamma            = require('./gamma')
 { flatMap, flattenDeep, isEmpty, map } = require('brazierjs/array')
 
 { MersenneTwisterFast }                          = require('shim/engine-scala')
@@ -59,13 +57,6 @@ module.exports =
 
       turtles = flatMap((p) -> p.breedHereArray(breedName))(patches)
       new TurtleSet(turtles, @_world)
-
-    # (Number, Number) => Number
-    div: (a, b) ->
-      if b isnt 0
-        a / b
-      else
-        throw new Error("Division by zero.")
 
     booleanCheck: (b, primName) ->
       type = NLType(b)
@@ -215,63 +206,6 @@ module.exports =
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs...) ->
       @_createAgentSet(inputs, Patch, PatchSet)
-
-    # (Number) => Number
-    random: (n) ->
-      truncated =
-        if n >= 0
-          StrictMath.ceil(n)
-        else
-          StrictMath.floor(n)
-      if truncated is 0
-        0
-      else if truncated > 0
-        @_rng.nextLong(truncated)
-      else
-        -@_rng.nextLong(-truncated)
-
-    # This is for `_randomconst`, `n` must also be >0. -Jeremy B September 2020
-    # (Long) => Long
-    randomLong: (n) ->
-      @_rng.nextLong(n)
-
-    # (Number, Number) => Number
-    randomCoord: (min, max) ->
-      min - 0.5 + @_rng.nextDouble() * (max - min + 1)
-
-    # (Number) => Number
-    randomFloat: (n) ->
-      n * @_rng.nextDouble()
-
-    # (Number, Number) => Number
-    randomNormal: (mean, stdDev) ->
-      if stdDev >= 0
-        NLMath.validateNumber(mean + stdDev * @_rng.nextGaussian())
-      else
-        throw new Error("random-normal's second input can't be negative.")
-
-    # (Number) => Number
-    randomExponential: (mean) ->
-      NLMath.validateNumber(-mean * StrictMath.log(@_rng.nextDouble()))
-
-    # (Number, Number) => Number
-    randomPatchCoord: (min, max) ->
-      min + @_rng.nextInt(max - min + 1)
-
-    # (Number) => Number
-    randomPoisson: (mean) ->
-      q   = 0
-      sum = -StrictMath.log(1 - @_rng.nextDouble())
-      while sum <= mean
-        q   += 1
-        sum -= StrictMath.log(1 - @_rng.nextDouble())
-      q
-
-    # (Number, Number) => Number
-    randomGamma: (alpha, lambda) ->
-      if alpha <= 0 or lambda <= 0
-        throw new Error("Both Inputs to RANDOM-GAMMA must be positive.")
-      Gamma(@_rng, alpha, lambda)
 
     # (Number) => Array[Number]
     rangeUnary: (upperBound) ->
