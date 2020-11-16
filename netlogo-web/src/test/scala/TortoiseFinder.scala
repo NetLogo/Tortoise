@@ -156,7 +156,6 @@ private[tortoise] object Freebies {
     "Links::LinkCreationTypeChecking_2D",
     "Lists::RemoveBug997FirstArgMustBeStringIfSecondArgIsString",
     "Lists::FilterTypeError",
-    "Math::CatchNumbersOutsideDoubleRangeOfIntegers",
     "MoveTo::MoveTo_2D",
     "Patch::SetVariableRuntime_2D",
     "RGB::PatchesRGBColor_2D",
@@ -173,7 +172,7 @@ private[tortoise] object Freebies {
     "TypeChecking::AgentClassChecking1",
     "TypeChecking::AgentClassChecking3a",
     "TypeChecking::AgentClassChecking3b"
-    )
+  )
 
   private val lameCommandStr = "This test is LAME!"
   private val lameCommandNames = Seq(

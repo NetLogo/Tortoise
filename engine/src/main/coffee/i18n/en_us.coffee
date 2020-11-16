@@ -34,6 +34,9 @@ bundle = {
   , '_ is not in the allowable range for random seeds (-2147483648 to 2147483647)': (n) ->
       "#{n} is not in the allowable range for random seeds (-2147483648 to 2147483647)"
 
+  , '_ is too large to be represented exactly as an integer in NetLogo': (n) ->
+    "#{n} is too large to be represented exactly as an integer in NetLogo"
+
 }
 
 module.exports = bundle

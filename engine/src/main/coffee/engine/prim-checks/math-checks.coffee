@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ validateNumber } = require('./common-checks')
+{ validateLong, validateNumber } = require('./common-checks')
 
 NLMath      = require('util/nlmath')
 formatFloat = require('util/formatfloat')
@@ -9,6 +9,7 @@ class MathChecks
 
   constructor: (@_i18nBundle, @randomPrims) ->
     @validateNumber = validateNumber(@_i18nBundle)
+    @validateLong   = validateLong(@_i18nBundle)
 
   acos: (d) ->
     @validateNumber(NLMath.acos(d))
@@ -32,6 +33,10 @@ class MathChecks
   exp: (p) ->
     @validateNumber(NLMath.exp(p))
 
+  # (Number) => Number
+  int: (n) ->
+    StrictMath.trunc(@validateLong(n))
+
   # (Number) =>
   ln: (n) ->
     if n <= 0
@@ -49,6 +54,9 @@ class MathChecks
   # (Number, Number) => Number
   pow: (b, p) ->
     @validateNumber(NLMath.pow(b, p))
+
+  random: (n) ->
+    @randomPrims.random(@validateLong(n))
 
   # (Number) => Number
   randomExponential: (mean) ->
