@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-JSType = require('util/typechecker')
+JSType = require('util/jstype')
 
 { flatMap, isEmpty, map, maxBy, toObject, unique } = require('brazierjs/array')
 { id, pipeline, tee }                              = require('brazierjs/function')

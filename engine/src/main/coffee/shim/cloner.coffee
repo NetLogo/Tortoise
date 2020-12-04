@@ -2,7 +2,7 @@
 
 { foldl } = require('brazierjs/array')
 
-JSType = require('util/typechecker')
+JSType = require('util/jstype')
 
 # [T] @ (T) => T
 cloneFunc = # Stored into a variable for the sake of recursion --JAB (4/29/14)

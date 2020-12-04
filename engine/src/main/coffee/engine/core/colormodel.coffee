@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 NLMath     = require('util/nlmath')
-JSType     = require('util/typechecker')
+JSType     = require('util/jstype')
 StrictMath = require('shim/strictmath')
 
 { foldl, map }  = require('brazierjs/array')

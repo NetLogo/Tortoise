@@ -13,7 +13,7 @@ Patch            = require('./patch')
 PatchSet         = require('./patchset')
 Turtle           = require('./turtle')
 TurtleSet        = require('./turtleset')
-JSType           = require('util/typechecker')
+JSType           = require('util/jstype')
 
 NLType.prototype.isAgent          =             -> @isTurtle() or @isPatch() or @isLink()
 NLType.prototype.isAgentSet       =             -> @_x instanceof AbstractAgentSet

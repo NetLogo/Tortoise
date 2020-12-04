@@ -2,7 +2,7 @@
 
 AbstractAgentSet     = require('./abstractagentset')
 DeadSkippingIterator = require('./structure/deadskippingiterator')
-JSType               = require('util/typechecker')
+JSType               = require('util/jstype')
 
 module.exports =
   class LinkSet extends AbstractAgentSet
