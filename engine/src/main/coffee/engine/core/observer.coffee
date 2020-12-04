@@ -7,7 +7,7 @@ Follow  = {}
 Watch   = {}
 
 agentToInt      = require('./agenttoint')
-NLType          = require('./typechecker')
+{ checks }      = require('./typechecker')
 VariableManager = require('./structure/variablemanager')
 
 { difference, forEach } = require('brazierjs/array')
@@ -151,9 +151,8 @@ module.exports.Observer = class Observer
 
     # (Agent) => Unit
     watch: (agent) ->
-      type = NLType(agent)
       @_perspective = Watch
-      @_targetAgent = if type.isTurtle() or type.isPatch() then agent else Nobody
+      @_targetAgent = if checks.isTurtle(agent) or checks.isPatch(agent) then agent else Nobody
       @_updatePerspective()
       return
 

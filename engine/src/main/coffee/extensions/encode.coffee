@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ checks } = require('../engine/core/typechecker')
+
 { all, map }   = require('brazier/array')
 { pipeline }   = require('brazier/function')
 { rangeUntil } = require('brazier/number')
@@ -11,7 +13,7 @@ module.exports = {
     # [T] @ (Array[Number], String) => ((Array[Number]) => T) => T
     _reportFromBytes = (bytes, primName) -> (f) ->
 
-      isLegit = (x) -> (new workspace.typechecker(x)).isNumber() and (x >= -128) and (x <= 127)
+      isLegit = (x) -> checks.isNumber(x) and (x >= -128) and (x <= 127)
 
       if all(isLegit)(bytes)
         f(bytes)

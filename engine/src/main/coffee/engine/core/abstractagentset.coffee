@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 projectionSort = require('./projectionsort')
-NLType         = require('./typechecker')
+{ checks }     = require('./typechecker')
 Iterator       = require('util/iterator')
 Shufflerator   = require('util/shufflerator')
 stableSort     = require('util/stablesort')
@@ -182,7 +182,7 @@ module.exports =
       groupByValue =
         (acc, agent) ->
           result = ask(agent)
-          if NLType(result).isNumber()
+          if checks.isNumber(result)
             entry = acc[result]
             if entry?
               entry.push(agent)
@@ -233,7 +233,7 @@ module.exports =
           if result is currentBest
             currentWinners.push(agent)
             [currentBest, currentWinners]
-          else if NLType(result).isNumber() and findIsBetter(result, currentBest)
+          else if checks.isNumber(result) and findIsBetter(result, currentBest)
             [result, [agent]]
           else
             [currentBest, currentWinners]

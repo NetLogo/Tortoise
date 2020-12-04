@@ -44,7 +44,7 @@ ExtensionsHandler = require('./extensionshandler')
 { id, tee }                             = require('brazierjs/function')
 { fold, maybe, None }                   = require('brazierjs/maybe')
 
-NLType = require('../typechecker')
+{ checks } = require('../typechecker')
 
 # Yo!  This file expects that basically all of its functions will be called in the context
 # of the `World` object.  That is, they should be called within methods on `World`, using
@@ -52,9 +52,9 @@ NLType = require('../typechecker')
 
 # (String|(Number, Number, Number)|(Number, Number, Number, Number)) => ExportedColor
 exportColor = (color) ->
-  if NLType(color).isNumber()
+  if checks.isNumber(color)
     new ExportedColorNum(color)
-  else if NLType(color).isList()
+  else if checks.isList(color)
     [r, g, b, a] = color
     if a?
       new ExportedRGBA(r, g, b, a)
@@ -83,14 +83,13 @@ exportLinkReference = (link) ->
 
 # (Agent) => AgentReference
 exportAgentReference = (agent) ->
-  type = NLType(agent)
-  if type.isNobody() or agent.isDead()
+  if checks.isNobody(agent) or agent.isDead()
     NobodyReference
-  else if type.isLink()
+  else if checks.isLink(agent)
     exportLinkReference(agent)
-  else if type.isPatch()
+  else if checks.isPatch(agent)
     exportPatchReference(agent)
-  else if type.isTurtle()
+  else if checks.isTurtle(agent)
     exportTurtleReference(agent)
   else
     throw new Error("Cannot make agent reference out of: #{JSON.stringify(agent)}")
@@ -99,22 +98,21 @@ exportAgentReference = (agent) ->
 exportWildcardVar = (agent, extensionExporter) -> (varName) ->
 
   exportWildcardValue = (value) ->
-    type = NLType(value)
-    if type.isAgent() or type.isNobody()
+    if checks.isAgent(value) or checks.isNobody(value)
       exportAgentReference(value)
     else if value.getSpecialName?()?
       new BreedReference(value.getSpecialName().toLowerCase())
-    else if type.isLinkSet()
+    else if checks.isLinkSet(value)
       new ExportedLinkSet(value.toArray().map(exportLinkReference))
-    else if type.isPatchSet()
+    else if checks.isPatchSet(value)
       new ExportedPatchSet(value.toArray().map(exportPatchReference))
-    else if type.isTurtleSet()
+    else if checks.isTurtleSet(value)
       new ExportedTurtleSet(value.toArray().map(exportTurtleReference))
-    else if type.isCommandLambda()
+    else if checks.isCommandLambda(value)
       new ExportedCommandLambda(value.nlogoBody)
-    else if type.isReporterLambda()
+    else if checks.isReporterLambda(value)
       new ExportedReporterLambda(value.nlogoBody)
-    else if type.isList()
+    else if checks.isList(value)
       value.map(exportWildcardValue)
     else if extensionExporter.canHandle(value)
       extensionExporter.exportObject(value, exportWildcardValue)

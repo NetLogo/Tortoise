@@ -13,7 +13,6 @@ importPColors = require('./prim/importpcolors')
 LayoutManager = require('./prim/layoutmanager')
 LinkPrims     = require('./prim/linkprims')
 ListPrims     = require('./prim/listprims')
-NLType        = require('./core/typechecker')
 PlotManager   = require('./plot/plotmanager')
 Prims         = require('./prim/prims')
 RandomPrims   = require('./prim/randomprims')
@@ -68,7 +67,6 @@ module.exports =
 
     dump        = Dump(extensionPorters)
     rng         = new RNG
-    typechecker = NLType
     outputStore = ""
 
     selfManager  = new SelfManager
@@ -159,7 +157,6 @@ module.exports =
       rng
       selfPrims
       timer
-      typechecker
       updater
       userDialogPrims
       world

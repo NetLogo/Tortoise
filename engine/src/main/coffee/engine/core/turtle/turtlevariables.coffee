@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 ColorModel = require('engine/core/colormodel')
-NLType     = require('../typechecker')
+{ checks } = require('engine/core/typechecker')
 StrictMath = require('shim/strictmath')
 NLMath     = require('util/nlmath')
 
@@ -73,12 +73,10 @@ setBreedShape = (shape) ->
 # (AbstractAgentSet|Breed|String) => Unit
 setBreed = (breed) ->
 
-  type = NLType(breed)
-
   trueBreed =
-    if type.isString()
+    if checks.isString(breed)
       @world.breedManager.get(breed)
-    else if type.isAgentSet()
+    else if checks.isAgentSet(breed)
       specialName = breed.getSpecialName()
       if specialName? and not @world.breedManager.get(specialName).isLinky()
         @world.breedManager.get(specialName)

@@ -3,7 +3,10 @@
 { pipeline    } = require('brazierjs/function')
 { fold        } = require('brazierjs/maybe')
 { rangeUntil  } = require('brazierjs/number')
+
 { floor }       = require('util/nlmath')
+{ checks }      = require('../engine/core/typechecker')
+
 StrictMath      = require('shim/strictmath')
 vec             = require('vectorious')
 
@@ -299,13 +302,13 @@ module.exports = {
       (m1, m2, rest...) ->
         [m1, m2, rest...].reduce(
           (left, right) ->
-            if workspace.typechecker(left).isNumber()
-              if workspace.typechecker(right).isNumber()
+            if checks.isNumber(left)
+              if checks.isNumber(right)
                 scalarOp(left, right)
               else
                 mixedOp(right, left)
             else
-              if workspace.typechecker(right).isNumber()
+              if checks.isNumber(right)
                 mixedOp(left, right)
               else
                 matrixOp(left, right)
@@ -327,7 +330,7 @@ module.exports = {
     minus = (m1, m2, rest...) ->
       operands          = [m1, m2, rest...]
       [rows, cols]      = pipeline(find(isMatrix), fold(-> throw new Error("One or more (-) operands must be a matrix..."))((x) -> x.shape))(operands)
-      broadcastIfNumber = (x) -> if workspace.typechecker(x).isNumber() then makeConstant(rows, cols, x) else x
+      broadcastIfNumber = (x) -> if checks.isNumber(x) then makeConstant(rows, cols, x) else x
       operands.reduce((left, right) -> vec.subtract(broadcastIfNumber(left), broadcastIfNumber(right)))
 
     # Matrix => Matrix

@@ -4,7 +4,7 @@ AbstractAgentSet = require('../core/abstractagentset')
 Link             = require('../core/link')
 Patch            = require('../core/patch')
 Turtle           = require('../core/turtle')
-NLType           = require('../core/typechecker')
+{ checks }       = require('../core/typechecker')
 StrictMath       = require('shim/strictmath')
 Comparator       = require('util/comparator')
 Exception        = require('util/exception')
@@ -48,17 +48,17 @@ module.exports =
       if n < 0
         throw new Error("#{n} isn't greater than or equal to zero.")
       else if n > xs.length
-        typeName = if NLType(xs).isList() then "list" else if NLType(xs).isString() then "string" else "unknown"
+        typeName = if checks.isList(xs) then "list" else if checks.isString(xs) then "string" else "unknown"
         throw new Error("Can't find element #{n} of the #{typeName} #{@_dump(xs)}, which is only of length #{xs.length}.")
       else
-        if NLType(xs).isString()
-          if NLType(x).isString()
+        if checks.isString(xs)
+          if checks.isString(x)
             chars = xs.split('')
             chars.splice(n, 0, x)
             chars.join('')
           else
             throw new Error("INSERT-ITEM expected input to be a string but got the #{typeof(x)} #{@_dump(x)} instead.")
-        else if NLType(xs).isList()
+        else if checks.isList(xs)
           clone = xs[..]
           clone.splice(n, 0, x)
           clone
@@ -89,7 +89,7 @@ module.exports =
 
     # (Array[Any]) => Number
     max: (xs) ->
-      nums = xs.filter((n) -> NLType(n).isNumber())
+      nums = xs.filter((n) -> checks.isNumber(n))
 
       if nums.length < 1
         throw new Error("Can't find the maximum of a list with no numbers: #{@_dump(xs)}")
@@ -98,7 +98,7 @@ module.exports =
 
     # (Array[Any]) => Number
     mean: (xs) ->
-      nums = xs.filter( (x) -> NLType(x).isNumber() )
+      nums = xs.filter( (x) -> checks.isNumber(x) )
 
       if nums.length is 0
         throw new Error("Can't find the mean of a list with no numbers: #{@_dump(xs)}.")
@@ -108,7 +108,7 @@ module.exports =
 
     # (Array[Any]) => Number
     median: (xs) ->
-      nums   = pipeline(filter((x) -> NLType(x).isNumber()), sortBy(id))(xs)
+      nums   = pipeline(filter((x) -> checks.isNumber(x)), sortBy(id))(xs)
       length = nums.length
 
       if length isnt 0
@@ -124,17 +124,16 @@ module.exports =
 
     # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Boolean
     member: (x, xs) ->
-      type = NLType(xs)
-      if type.isList()
+      if checks.isList(xs)
         exists((y) => @_equality(x, y))(xs)
-      else if type.isString()
+      else if checks.isString(xs)
         xs.indexOf(x) isnt -1
       else # agentset
         xs.exists((a) -> x is a)
 
     # (Array[Any]) => Number
     min: (xs) ->
-      nums = xs.filter((n) -> NLType(n).isNumber())
+      nums = xs.filter((n) -> checks.isNumber(n))
 
       if nums.length < 1
         throw new Error("Can't find the minimum of a list with no numbers: #{@_dump(xs)}")
@@ -171,12 +170,11 @@ module.exports =
 
     # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
     nOf: (n, agentsOrList) ->
-      type = NLType(agentsOrList)
-      if type.isList()
+      if checks.isList(agentsOrList)
         if (agentsOrList.length < n)
           throw new Error("Requested #{n} random items from a list of length #{agentsOrList.length}.")
         @_nOfArray(n, agentsOrList)
-      else if type.isAgentSet()
+      else if checks.isAgentSet(agentsOrList)
         items    = agentsOrList.iterator().toArray()
         if (items.length < n)
           throw new Error("Requested #{n} random agents from a set of only #{items.length} agents.")
@@ -187,13 +185,12 @@ module.exports =
 
     # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
     upToNOf: (n, agentsOrList) ->
-      type = NLType(agentsOrList)
-      if type.isList()
+      if checks.isList(agentsOrList)
         if n >= agentsOrList.length
           agentsOrList
         else
           @_nOfArray(n, agentsOrList)
-      else if type.isAgentSet()
+      else if checks.isAgentSet(agentsOrList)
         if n >= agentsOrList.size()
           agentsOrList
         else
@@ -205,9 +202,7 @@ module.exports =
 
     # [Item] @ (ListOrSet[Item]) => Item
     oneOf: (agentsOrList) ->
-      type = NLType(agentsOrList)
-
-      if type.isAgentSet()
+      if checks.isAgentSet(agentsOrList)
         agentsOrList.randomAgent()
       else
         if agentsOrList.length is 0
@@ -217,10 +212,8 @@ module.exports =
 
     # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Number|Boolean
     position: (x, xs) ->
-      type = NLType(xs)
-
       index =
-        if type.isList()
+        if checks.isList(xs)
           pipeline(findIndex((y) => @_equality(x, y)), fold(-> -1)(id))(xs)
         else
           xs.indexOf(x)
@@ -232,8 +225,7 @@ module.exports =
 
     # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Container
     remove: (x, xs) ->
-      type = NLType(xs)
-      if type.isList()
+      if checks.isList(xs)
         filter((y) => not @_equality(x, y))(xs)
       else
         xs.replace(new RegExp(x, "g"), "")
@@ -260,8 +252,7 @@ module.exports =
 
     # [Item, Container <: (Array[Item]|String)] @ (Number, Container) => Container
     removeItem: (n, xs) ->
-      type = NLType(xs)
-      if type.isList()
+      if checks.isList(xs)
         temp = xs[..]
         temp.splice(n, 1) # Cryptic, but effective --JAB (5/26/14)
         temp
@@ -272,8 +263,7 @@ module.exports =
 
     # [Item, Container <: (Array[Item]|String)] @ (Number, Container, Item) => Container
     replaceItem: (n, xs, x) ->
-      type = NLType(xs)
-      if type.isList()
+      if checks.isList(xs)
         temp = xs[..]
         temp.splice(n, 1, x)
         temp
@@ -284,10 +274,9 @@ module.exports =
 
     # [T] @ (Array[T]|String) => Array[T]|String
     reverse: (xs) ->
-      type = NLType(xs)
-      if type.isList()
+      if checks.isList(xs)
         xs[..].reverse()
-      else if type.isString()
+      else if checks.isString(xs)
         xs.split("").reverse().join("")
       else
         throw new Error("can only reverse lists and strings")
@@ -296,7 +285,7 @@ module.exports =
     sentence: (xs...) ->
       f =
         (acc, x) ->
-          if NLType(x).isList()
+          if checks.isList(x)
             acc.concat(x)
           else
             acc.push(x)
@@ -323,8 +312,7 @@ module.exports =
 
     # [T] @ (ListOrSet[T]) => ListOrSet[T]
     sort: (xs) ->
-      type = NLType(xs)
-      if type.isList()
+      if checks.isList(xs)
 
         # data SortableType =
         Number = {}
@@ -336,11 +324,11 @@ module.exports =
           (acc, x) ->
 
             xType =
-              if NLType(x).isNumber()
+              if checks.isNumber(x)
                 Number
-              else if NLType(x).isString()
+              else if checks.isString(x)
                 String
-              else if ((x instanceof Turtle) or (x instanceof Patch) or (x instanceof Link)) and (x.id isnt -1)
+              else if checks.isAgent(x) and (x.id isnt -1)
                 Agent
               else
                 None
@@ -373,18 +361,17 @@ module.exports =
           when Agent  then stableSort(filteredItems)((x, y) -> x.compare(y).toInt)
           else             throw new Error("We don't know how to sort your kind here!")
 
-      else if type.isAgentSet()
+      else if checks.isAgentSet(xs)
         xs.sort()
       else
         throw new Error("can only sort lists and agentsets")
 
     # ((T, T) => Boolean, ListOrSet[T]) => Array[T]
     sortBy: (task, xs) ->
-      type = NLType(xs)
-      arr  =
-        if type.isList()
+      arr =
+        if checks.isList(xs)
           xs
-        else if type.isAgentSet()
+        else if checks.isAgentSet(xs)
           xs.shufflerator().toArray()
         else
           throw new Error("can only sort lists and agentsets")
@@ -412,7 +399,7 @@ module.exports =
 
     # (Array[Any]) => Number
     standardDeviation: (xs) ->
-      nums = xs.filter((x) -> NLType(x).isNumber())
+      nums = xs.filter((x) -> checks.isNumber(x))
       if nums.length > 1
         mean       = @sum(nums) / nums.length
         squareDiff = foldl((acc, x) -> acc + StrictMath.pow(x - mean, 2))(0)(nums)
@@ -431,12 +418,12 @@ module.exports =
 
     # (Array[Any]) => Number
     sum: (xs) ->
-      nums = xs.filter((n) -> NLType(n).isNumber())
+      nums = xs.filter((n) -> checks.isNumber(n))
       nums.reduce(((a, b) -> a + b), 0)
 
     # [T] @ (Array[T]) => Number
     variance: (xs) ->
-      numbers = filter((x) -> NLType(x).isNumber())(xs)
+      numbers = filter((x) -> checks.isNumber(x))(xs)
       count   = numbers.length
 
       if count < 2

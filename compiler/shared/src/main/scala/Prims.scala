@@ -110,7 +110,7 @@ trait ReporterPrims extends PrimUtils {
       case SimplePrims.SimpleReporter(op) => op
       case SimplePrims.InfixReporter(op)  => s"(${arg(0)} $op ${arg(1)})"
       case SimplePrims.NormalReporter(op) => s"$op($commaArgs)"
-      case SimplePrims.TypeCheck(check)   => s"NLType(${arg(0)}).$check"
+      case SimplePrims.TypeCheck(check)   => s"NLType.checks.$check${arg(0)})"
       case VariableReporter(op)           => op
       case p: prim._const                 => handlers.literal(p.value)
       case lv: prim._letvariable          => handlers.ident(lv.let.name)

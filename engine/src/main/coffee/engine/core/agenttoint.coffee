@@ -1,15 +1,14 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-NLType = require('./typechecker')
+{ checks } = require('./typechecker')
 
 module.exports =
   (agent) ->
-    type = NLType(agent)
-    if type.isTurtle()
+    if checks.isTurtle(agent)
       1
-    else if type.isPatch()
+    else if checks.isPatch(agent)
       2
-    else if type.isLink()
+    else if checks.isLink(agent)
       3
     else
       0

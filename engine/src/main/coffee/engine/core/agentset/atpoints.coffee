@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-NLType = require('../typechecker')
+{ checks } = require('../typechecker')
 
 { filter, flatMap, map, unique } = require('brazierjs/array')
 { pipeline }                     = require('brazierjs/function')
@@ -11,7 +11,7 @@ NLType = require('../typechecker')
 genPatchGrabber = (self, worldPatchAt) ->
   if self is 0
     worldPatchAt
-  else if NLType(self).isTurtle() or NLType(self).isPatch()
+  else if checks.isTurtle(self) or checks.isPatch(self)
     self.patchAt
   else
     (-> Nobody)
@@ -20,7 +20,7 @@ genPatchGrabber = (self, worldPatchAt) ->
 getPatchesAtPoints = (dump, patchAt, points) ->
   f =
     (point) ->
-      if NLType(point).isList() and point.length is 2 and NLType(point[0]).isNumber() and NLType(point[1]).isNumber()
+      if checks.isList(point) and point.length is 2 and checks.isNumber(point[0]) and checks.isNumber(point[1])
         patchAt(point...)
       else
         throw new Error("Invalid list of points: #{dump(points)}")
@@ -38,12 +38,12 @@ module.exports =
     patches = getPatchesAtPoints(dump, patchAt, points)
 
     newAgents =
-      if NLType(this).isPatchSet()
+      if checks.isPatchSet(this)
         if breedName is "patches"
           patches
         else
           filterContaining(patches)
-      else if NLType(this).isTurtleSet()
+      else if checks.isTurtleSet(this)
         turtlesOnPatches = pipeline(flatMap((p) -> p.turtlesHere().toArray()), unique)(patches)
         if breedName is "turtles"
           turtlesOnPatches

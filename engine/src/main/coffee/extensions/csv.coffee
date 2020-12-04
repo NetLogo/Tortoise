@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ checks } = require('../engine/core/typechecker')
+
 parse = require('csv-parse/lib/sync')
 
 boolNames = ["false", "true"]
@@ -85,8 +87,7 @@ module.exports = {
 
     # (Any | List[Any], String) => String
     guardedToRow = (maybeRow, delimiter) ->
-      maybeRowType = new NLType(maybeRow)
-      if (not maybeRowType.isList())
+      if (not checks.isList(maybeRow))
         throw new Error("Extension exception: Expected a list of lists, but #{workspace.dump(maybeRow)} was one of the elements.")
 
       toRow(maybeRow, delimiter)
