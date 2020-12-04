@@ -139,7 +139,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("color", 0);
           SelfManager.self().setVariable("heading", 180);
           SelfManager.self().setVariable("size", 12);
-          SelfManager.self().setVariable("label", (1 + RandomPrims.random(world.observer.getGlobal("sample-space"))));
+          SelfManager.self().setVariable("label", (1 + PrimChecks.math.random(world.observer.getGlobal("sample-space"))));
           world.observer.setGlobal("the-messenger", SelfManager.self());
         }, true);
       }, true);

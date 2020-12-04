@@ -193,7 +193,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("pcolor", ((RandomPrims.random(world.observer.getGlobal("colors")) * 10) + 5));
+        SelfManager.self().setPatchVariable("pcolor", ((PrimChecks.math.random(world.observer.getGlobal("colors")) * 10) + 5));
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 75)) {
           SelfManager.self().setPatchVariable("pcolor", 125);
         }

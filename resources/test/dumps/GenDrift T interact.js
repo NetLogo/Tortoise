@@ -206,7 +206,7 @@ var procedures = (function() {
       world.turtleManager.clearTurtles();
       plotManager.clearAllPlots();
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-        SelfManager.self().setVariable("color", ListPrims.item(RandomPrims.random(world.observer.getGlobal("colors")), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
+        SelfManager.self().setVariable("color", ListPrims.item(PrimChecks.math.random(world.observer.getGlobal("colors")), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         procedures["MOVE-OFF-WALL"]();
       }, true);

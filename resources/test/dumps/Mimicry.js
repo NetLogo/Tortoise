@@ -269,12 +269,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
-        if (Prims.lt(RandomPrims.random(world.turtleManager.turtlesOfBreed("MONARCHS").size()), (world.observer.getGlobal("carrying-capacity-monarchs") - world.turtleManager.turtlesOfBreed("MONARCHS").size()))) {
+        if (Prims.lt(PrimChecks.math.random(world.turtleManager.turtlesOfBreed("MONARCHS").size()), (world.observer.getGlobal("carrying-capacity-monarchs") - world.turtleManager.turtlesOfBreed("MONARCHS").size()))) {
           procedures["HATCH-BUTTERFLY"]();
         }
       }
       else {
-        if (Prims.lt(RandomPrims.random(world.turtleManager.turtlesOfBreed("VICEROYS").size()), (world.observer.getGlobal("carrying-capacity-viceroys") - world.turtleManager.turtlesOfBreed("VICEROYS").size()))) {
+        if (Prims.lt(PrimChecks.math.random(world.turtleManager.turtlesOfBreed("VICEROYS").size()), (world.observer.getGlobal("carrying-capacity-viceroys") - world.turtleManager.turtlesOfBreed("VICEROYS").size()))) {
           procedures["HATCH-BUTTERFLY"]();
         }
       }

@@ -294,8 +294,8 @@ var procedures = (function() {
       let whom = Nobody; letVars['whom'] = whom;
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("color", 45);
-        SelfManager.self().setVariable("xcor", (RandomPrims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
-        SelfManager.self().setVariable("ycor", (RandomPrims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
+        SelfManager.self().setVariable("xcor", (PrimChecks.math.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
+        SelfManager.self().setVariable("ycor", (PrimChecks.math.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
         whom = SelfManager.self(); letVars['whom'] = whom;
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5)) {
           SelfManager.self().die();

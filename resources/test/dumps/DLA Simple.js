@@ -74,8 +74,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().right(RandomPrims.random(world.observer.getGlobal("wiggle-angle")));
-        SelfManager.self().right(-(RandomPrims.random(world.observer.getGlobal("wiggle-angle"))));
+        SelfManager.self().right(PrimChecks.math.random(world.observer.getGlobal("wiggle-angle")));
+        SelfManager.self().right(-(PrimChecks.math.random(world.observer.getGlobal("wiggle-angle"))));
         SelfManager.self()._optimalFdOne();
         if (SelfManager.self().getNeighbors()._optimalAnyWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); })) {
           SelfManager.self().setPatchVariable("pcolor", 55);

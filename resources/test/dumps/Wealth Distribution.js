@@ -270,7 +270,7 @@ var procedures = (function() {
         SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
         SelfManager.self().setVariable("size", 1.5);
         procedures["SET-INITIAL-TURTLE-VARS"]();
-        SelfManager.self().setVariable("age", RandomPrims.random(SelfManager.self().getVariable("life-expectancy")));
+        SelfManager.self().setVariable("age", PrimChecks.math.random(SelfManager.self().getVariable("life-expectancy")));
       }, true);
       procedures["RECOLOR-TURTLES"]();
     } catch (e) {
@@ -285,10 +285,10 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("age", 0);
       SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
-      SelfManager.self().setVariable("life-expectancy", (world.observer.getGlobal("life-expectancy-min") + RandomPrims.random(((world.observer.getGlobal("life-expectancy-max") - world.observer.getGlobal("life-expectancy-min")) + 1))));
-      SelfManager.self().setVariable("metabolism", (1 + RandomPrims.random(world.observer.getGlobal("metabolism-max"))));
+      SelfManager.self().setVariable("life-expectancy", (world.observer.getGlobal("life-expectancy-min") + PrimChecks.math.random(((world.observer.getGlobal("life-expectancy-max") - world.observer.getGlobal("life-expectancy-min")) + 1))));
+      SelfManager.self().setVariable("metabolism", (1 + PrimChecks.math.random(world.observer.getGlobal("metabolism-max"))));
       SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("metabolism") + RandomPrims.randomLong(50)));
-      SelfManager.self().setVariable("vision", (1 + RandomPrims.random(world.observer.getGlobal("max-vision"))));
+      SelfManager.self().setVariable("vision", (1 + PrimChecks.math.random(world.observer.getGlobal("max-vision"))));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

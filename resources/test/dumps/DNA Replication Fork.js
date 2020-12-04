@@ -161,7 +161,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {
-        SelfManager.self().setVariable("heading", RandomPrims.random(((180 - RandomPrims.randomLong(20)) + RandomPrims.randomLong(20))));
+        SelfManager.self().setVariable("heading", PrimChecks.math.random(((180 - RandomPrims.randomLong(20)) + RandomPrims.randomLong(20))));
         SelfManager.self().setXY((PrimChecks.math.div((world.topology.maxPxcor - world.topology.minPxcor), 2) + 3), (world.topology.maxPycor - 1));
       }, true);
       world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {

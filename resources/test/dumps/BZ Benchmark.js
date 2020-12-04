@@ -75,7 +75,7 @@ var procedures = (function() {
       world.clearAll();
       world.ticker.reset();
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("state", RandomPrims.random((world.observer.getGlobal("n") + 1)));
+        SelfManager.self().setPatchVariable("state", PrimChecks.math.random((world.observer.getGlobal("n") + 1)));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
       }, true);
     } catch (e) {
@@ -113,11 +113,11 @@ var procedures = (function() {
         }); letVars['a'] = a;
         let b = SelfManager.self().getNeighbors()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")); }); letVars['b'] = b;
         if (Prims.equality(SelfManager.self().getPatchVariable("state"), 0)) {
-          SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(PrimChecks.math.div(a, world.observer.getGlobal("k1"))) + NLMath.toInt(PrimChecks.math.div(b, world.observer.getGlobal("k2")))));
+          SelfManager.self().setPatchVariable("new-state", (PrimChecks.math.int(PrimChecks.math.div(a, world.observer.getGlobal("k1"))) + PrimChecks.math.int(PrimChecks.math.div(b, world.observer.getGlobal("k2")))));
         }
         else {
           let s = (SelfManager.self().getPatchVariable("state") + SelfManager.self()._optimalNSum("state")); letVars['s'] = s;
-          SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(PrimChecks.math.div(s, ((a + b) + 1))) + world.observer.getGlobal("g")));
+          SelfManager.self().setPatchVariable("new-state", (PrimChecks.math.int(PrimChecks.math.div(s, ((a + b) + 1))) + world.observer.getGlobal("g")));
         }
         if (Prims.gt(SelfManager.self().getPatchVariable("new-state"), world.observer.getGlobal("n"))) {
           SelfManager.self().setPatchVariable("new-state", world.observer.getGlobal("n"));

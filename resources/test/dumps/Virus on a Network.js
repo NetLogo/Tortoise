@@ -122,7 +122,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
         SelfManager.self().setXY((RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor) * 0.95), (RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor) * 0.95));
         procedures["BECOME-SUSCEPTIBLE"]();
-        SelfManager.self().setVariable("virus-check-timer", RandomPrims.random(world.observer.getGlobal("virus-check-frequency")));
+        SelfManager.self().setVariable("virus-check-timer", PrimChecks.math.random(world.observer.getGlobal("virus-check-frequency")));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)

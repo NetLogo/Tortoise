@@ -131,7 +131,7 @@ var procedures = (function() {
       var letVars = { };
       world.turtleManager.createTurtles(world.observer.getGlobal("number-people"), "").ask(function() {
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-        SelfManager.self().setVariable("age", RandomPrims.random(world.observer.getGlobal("lifespan")));
+        SelfManager.self().setVariable("age", PrimChecks.math.random(world.observer.getGlobal("lifespan")));
         SelfManager.self().setVariable("sick-time", 0);
         SelfManager.self().setVariable("remaining-immunity", 0);
         SelfManager.self().setVariable("size", 1.5);

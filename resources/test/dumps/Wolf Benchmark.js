@@ -86,7 +86,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
       if (world.observer.getGlobal("grass?")) {
         Errors.askNobodyCheck(world.patches()).ask(function() {
-          SelfManager.self().setPatchVariable("countdown", RandomPrims.random(world.observer.getGlobal("grass-delay")));
+          SelfManager.self().setPatchVariable("countdown", PrimChecks.math.random(world.observer.getGlobal("grass-delay")));
           if (Prims.equality(RandomPrims.randomLong(2), 0)) {
             SelfManager.self().setPatchVariable("pcolor", 35);
           }
@@ -97,14 +97,14 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 9.9);
         SelfManager.self().setVariable("energy", RandomPrims.randomFloat((2 * world.observer.getGlobal("sheep-metabolism"))));
         SelfManager.self().setVariable("shape", "sheep");
-        SelfManager.self().setXY(RandomPrims.random(world.topology.width), RandomPrims.random(world.topology.height));
+        SelfManager.self().setXY(PrimChecks.math.random(world.topology.width), PrimChecks.math.random(world.topology.height));
       }, true);
       world.turtleManager.createOrderedTurtles(world.observer.getGlobal("init-wolves"), "WOLVES");
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("WOLVES")).ask(function() {
         SelfManager.self().setVariable("color", 0);
         SelfManager.self().setVariable("energy", RandomPrims.randomFloat((2 * world.observer.getGlobal("wolf-metabolism"))));
         SelfManager.self().setVariable("shape", "wolf");
-        SelfManager.self().setXY(RandomPrims.random(world.topology.width), RandomPrims.random(world.topology.height));
+        SelfManager.self().setXY(PrimChecks.math.random(world.topology.width), PrimChecks.math.random(world.topology.height));
       }, true);
       if (world.observer.getGlobal("plot?")) {
         procedures["GRAPH"]();

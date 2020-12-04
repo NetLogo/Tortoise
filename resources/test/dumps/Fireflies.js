@@ -90,7 +90,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("shape", "butterfly");
-        SelfManager.self().setVariable("clock", RandomPrims.random(NLMath.round(world.observer.getGlobal("cycle-length"))));
+        SelfManager.self().setVariable("clock", PrimChecks.math.random(NLMath.round(world.observer.getGlobal("cycle-length"))));
         SelfManager.self().setVariable("threshold", world.observer.getGlobal("flash-length"));
         if (Prims.equality(world.observer.getGlobal("strategy"), "delay")) {
           SelfManager.self().setVariable("reset-level", SelfManager.self().getVariable("threshold"));

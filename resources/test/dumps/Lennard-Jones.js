@@ -125,7 +125,7 @@ var procedures = (function() {
       SelfManager.self().setXY((SelfManager.self().getVariable("xcor") + deltaX), (SelfManager.self().getVariable("ycor") + deltaY));
       let vNew = procedures["CALC-V"](); letVars['vNew'] = vNew;
       let deltaV = (vNew - vOld); letVars['deltaV'] = deltaV;
-      if ((Prims.lt(vNew, vOld) || Prims.lt(RandomPrims.randomFloat(1), NLMath.exp(PrimChecks.math.div( -(deltaV), world.observer.getGlobal("temperature")))))) {
+      if ((Prims.lt(vNew, vOld) || Prims.lt(RandomPrims.randomFloat(1), PrimChecks.math.exp(PrimChecks.math.div( -(deltaV), world.observer.getGlobal("temperature")))))) {
         world.observer.setGlobal("total-successful-moves", (world.observer.getGlobal("total-successful-moves") + 1));
         world.observer.setGlobal("current-successful-moves", (world.observer.getGlobal("current-successful-moves") + 1));
         world.observer.setGlobal("v-total", (world.observer.getGlobal("v-total") + deltaV));

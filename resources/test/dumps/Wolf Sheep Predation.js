@@ -116,7 +116,7 @@ var procedures = (function() {
             SelfManager.self().setPatchVariable("countdown", world.observer.getGlobal("grass-regrowth-time"));
           }
           else {
-            SelfManager.self().setPatchVariable("countdown", RandomPrims.random(world.observer.getGlobal("grass-regrowth-time")));
+            SelfManager.self().setPatchVariable("countdown", PrimChecks.math.random(world.observer.getGlobal("grass-regrowth-time")));
           }
         }, true);
       }
@@ -128,14 +128,14 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 9.9);
         SelfManager.self().setVariable("size", 1.5);
         SelfManager.self().setVariable("label-color", (105 - 2));
-        SelfManager.self().setVariable("energy", RandomPrims.random((2 * world.observer.getGlobal("sheep-gain-from-food"))));
+        SelfManager.self().setVariable("energy", PrimChecks.math.random((2 * world.observer.getGlobal("sheep-gain-from-food"))));
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
       }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-wolves"), "WOLVES").ask(function() {
         SelfManager.self().setVariable("shape", "wolf");
         SelfManager.self().setVariable("color", 0);
         SelfManager.self().setVariable("size", 2);
-        SelfManager.self().setVariable("energy", RandomPrims.random((2 * world.observer.getGlobal("wolf-gain-from-food"))));
+        SelfManager.self().setVariable("energy", PrimChecks.math.random((2 * world.observer.getGlobal("wolf-gain-from-food"))));
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
       }, true);
       procedures["DISPLAY-LABELS"]();

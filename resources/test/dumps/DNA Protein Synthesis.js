@@ -893,7 +893,7 @@ var procedures = (function() {
       world.observer.setGlobal("duplicate-strand-gene-counter", 0);
       let cleanDuplicateDnaString = world.observer.getGlobal("original-dna-string"); letVars['cleanDuplicateDnaString'] = cleanDuplicateDnaString;
       let mutatingCopyOfDnaString = world.observer.getGlobal("original-dna-string"); letVars['mutatingCopyOfDnaString'] = mutatingCopyOfDnaString;
-      let targetLoci = RandomPrims.random((ListPrims.length(mutatingCopyOfDnaString) - world.observer.getGlobal("#-nucleotides-affected"))); letVars['targetLoci'] = targetLoci;
+      let targetLoci = PrimChecks.math.random((ListPrims.length(mutatingCopyOfDnaString) - world.observer.getGlobal("#-nucleotides-affected"))); letVars['targetLoci'] = targetLoci;
       let dnaAtTarget = ListPrims.item(targetLoci, mutatingCopyOfDnaString); letVars['dnaAtTarget'] = dnaAtTarget;
       let dnaBeforeTarget = ListPrims.substring(mutatingCopyOfDnaString, 0, targetLoci); letVars['dnaBeforeTarget'] = dnaBeforeTarget;
       let lociCounter = 0; letVars['lociCounter'] = lociCounter;

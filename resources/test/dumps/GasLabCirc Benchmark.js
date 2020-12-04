@@ -109,7 +109,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (NLType(world.observer.getGlobal("colliding-particle-2")).isValidTurtle()) {
+      if (NLType.checks.isValidTurtle(world.observer.getGlobal("colliding-particle-2"))) {
         world.observer.setGlobal("colliding-particles", world.observer.getGlobal("colliding-particles").filter(Tasks.reporterTask(function(collision) {
           Errors.procedureArgumentsCheck(1, arguments.length);
           return (((!Prims.equality(ListPrims.item(1, collision), world.observer.getGlobal("colliding-particle-1")) && !Prims.equality(ListPrims.item(2, collision), world.observer.getGlobal("colliding-particle-1"))) && !Prims.equality(ListPrims.item(1, collision), world.observer.getGlobal("colliding-particle-2"))) && !Prims.equality(ListPrims.item(2, collision), world.observer.getGlobal("colliding-particle-2")));

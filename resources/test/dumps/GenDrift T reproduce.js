@@ -205,7 +205,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-        SelfManager.self().setVariable("color", (5 + (RandomPrims.random(world.observer.getGlobal("colors")) * 10)));
+        SelfManager.self().setVariable("color", (5 + (PrimChecks.math.random(world.observer.getGlobal("colors")) * 10)));
         if (Prims.equality(SelfManager.self().getVariable("color"), 75)) {
           SelfManager.self().setVariable("color", 125);
         }
@@ -258,7 +258,7 @@ var procedures = (function() {
       var letVars = { };
       let totalTurtles = world.turtles().size(); letVars['totalTurtles'] = totalTurtles;
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        if (Prims.gt(RandomPrims.random(totalTurtles), world.observer.getGlobal("number"))) {
+        if (Prims.gt(PrimChecks.math.random(totalTurtles), world.observer.getGlobal("number"))) {
           SelfManager.self().die();
         }
       }, true);

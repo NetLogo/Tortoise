@@ -240,7 +240,7 @@ var procedures = (function() {
             if (Prims.gt(SelfPrims._optimalCountOther(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)), 0)) {
               let observed = ListPrims.oneOf(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)); letVars['observed'] = observed;
               if (Prims.equality(observed.projectionBy(function() { return SelfManager.self().getVariable("next-task"); }), world.observer.getGlobal("dance-task"))) {
-                if (Prims.lt(RandomPrims.random((PrimChecks.math.div(1, observed.projectionBy(function() { return SelfManager.self().getVariable("interest"); })) * 1000)), 1)) {
+                if (Prims.lt(PrimChecks.math.random((PrimChecks.math.div(1, observed.projectionBy(function() { return SelfManager.self().getVariable("interest"); })) * 1000)), 1)) {
                   SelfManager.self().setVariable("target", observed.projectionBy(function() { return SelfManager.self().getVariable("target"); }));
                   SelfManager.self().setVariable("color", 9.9);
                   SelfManager.self().setVariable("next-task", world.observer.getGlobal("re-visit-task"));

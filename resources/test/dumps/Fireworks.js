@@ -90,7 +90,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearDrawing();
-      world.turtleManager.createTurtles((RandomPrims.random(world.observer.getGlobal("max-fireworks")) + 1), "ROCKETS").ask(function() {
+      world.turtleManager.createTurtles((PrimChecks.math.random(world.observer.getGlobal("max-fireworks")) + 1), "ROCKETS").ask(function() {
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), world.topology.minPycor);
         SelfManager.self().setVariable("x-vel", (RandomPrims.randomFloat((2 * world.observer.getGlobal("initial-x-vel"))) - world.observer.getGlobal("initial-x-vel")));
         SelfManager.self().setVariable("y-vel", (RandomPrims.randomFloat(world.observer.getGlobal("initial-y-vel")) + (world.observer.getGlobal("initial-y-vel") * 2)));

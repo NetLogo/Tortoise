@@ -82,7 +82,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      let halfedge = NLMath.toInt(PrimChecks.math.div(world.observer.getGlobal("edge"), 2)); letVars['halfedge'] = halfedge;
+      let halfedge = PrimChecks.math.int(PrimChecks.math.div(world.observer.getGlobal("edge"), 2)); letVars['halfedge'] = halfedge;
       Errors.askNobodyCheck(world.patches()).ask(function() {
         if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"),  -(halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -(halfedge))) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
           SelfManager.self().setPatchVariable("pcolor", 105);

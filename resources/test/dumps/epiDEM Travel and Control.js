@@ -207,7 +207,7 @@ var procedures = (function() {
         if (Prims.lt(RandomPrims.randomFloat(100), 5)) {
           SelfManager.self().setVariable("infected?", true);
           SelfManager.self().setVariable("susceptible?", false);
-          SelfManager.self().setVariable("infection-length", RandomPrims.random(SelfManager.self().getVariable("recovery-time")));
+          SelfManager.self().setVariable("infection-length", PrimChecks.math.random(SelfManager.self().getVariable("recovery-time")));
         }
         if ((!SelfManager.self().getVariable("infected?") && Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("inoculation-chance")))) {
           SelfManager.self().setVariable("inoculated?", true);

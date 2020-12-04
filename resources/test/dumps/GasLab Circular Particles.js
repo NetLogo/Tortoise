@@ -369,7 +369,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (NLType(world.observer.getGlobal("particle2")).isValidTurtle()) {
+      if (NLType.checks.isValidTurtle(world.observer.getGlobal("particle2"))) {
         world.observer.setGlobal("collisions", world.observer.getGlobal("collisions").filter(Tasks.reporterTask(function(theCollision) {
           Errors.procedureArgumentsCheck(1, arguments.length);
           return (((!Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle1")) && !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle1"))) && !Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle2"))) && !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle2")));
@@ -517,7 +517,7 @@ var procedures = (function() {
       if (Prims.equality(world.observer.getGlobal("particle1"), Nobody)) {
         throw new Exception.StopInterrupt;
       }
-      if (NLType(world.observer.getGlobal("particle2")).isString()) {
+      if (NLType.checks.isString(world.observer.getGlobal("particle2"))) {
         if ((Prims.equality(world.observer.getGlobal("particle2"), "left wall") || Prims.equality(world.observer.getGlobal("particle2"), "right wall"))) {
           Errors.askNobodyCheck(world.observer.getGlobal("particle1")).ask(function() { SelfManager.self().setVariable("heading",  -(SelfManager.self().getVariable("heading"))); }, true);
           throw new Exception.StopInterrupt;

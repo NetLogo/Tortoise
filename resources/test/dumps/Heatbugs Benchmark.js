@@ -78,8 +78,8 @@ var procedures = (function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("color", 65);
           SelfManager.self().setVariable("size", 1.75);
-          SelfManager.self().setVariable("ideal-temp", (world.observer.getGlobal("min-ideal-temp") + RandomPrims.random(NLMath.abs((world.observer.getGlobal("max-ideal-temp") - world.observer.getGlobal("min-ideal-temp"))))));
-          SelfManager.self().setVariable("output-heat", (world.observer.getGlobal("min-output-heat") + RandomPrims.random(NLMath.abs((world.observer.getGlobal("max-output-heat") - world.observer.getGlobal("min-output-heat"))))));
+          SelfManager.self().setVariable("ideal-temp", (world.observer.getGlobal("min-ideal-temp") + PrimChecks.math.random(NLMath.abs((world.observer.getGlobal("max-ideal-temp") - world.observer.getGlobal("min-ideal-temp"))))));
+          SelfManager.self().setVariable("output-heat", (world.observer.getGlobal("min-output-heat") + PrimChecks.math.random(NLMath.abs((world.observer.getGlobal("max-output-heat") - world.observer.getGlobal("min-output-heat"))))));
           SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
         }, true);
       }, true);

@@ -260,7 +260,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setPatchVariable("metal", NLMath.precision(PrimChecks.math.div(100, (1 + NLMath.exp((world.observer.getGlobal("frontier-sharpness") * (PrimChecks.math.div((world.topology.maxPxcor + world.topology.minPxcor), 2) - SelfManager.self().getPatchVariable("pxcor")))))), 0));
+      SelfManager.self().setPatchVariable("metal", NLMath.precision(PrimChecks.math.div(100, (1 + PrimChecks.math.exp((world.observer.getGlobal("frontier-sharpness") * (PrimChecks.math.div((world.topology.maxPxcor + world.topology.minPxcor), 2) - SelfManager.self().getPatchVariable("pxcor")))))), 0));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
