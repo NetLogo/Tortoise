@@ -95,7 +95,6 @@ private[tortoise] object Freebies {
 
   private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
   private val incErrorDetectReporterNames = Seq(
-    "Lists::Lput5",
     "Lists::ListFirst1",
     "Lists::ListReplaceIt2",
     "Lists::ReduceEmpty",

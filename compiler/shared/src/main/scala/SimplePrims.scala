@@ -104,7 +104,7 @@ object SimplePrims {
         case _: prim.etc._item              => "ListPrims.item"
         case _: prim.etc._last              => "ListPrims.last"
         case _: prim.etc._length            => "ListPrims.length"
-        case _: prim.etc._lput              => "ListPrims.lput"
+        case _: prim.etc._lput              => "PrimChecks.list.lput"
         case _: prim.etc._max               => "ListPrims.max"
         case _: prim.etc._mean              => "ListPrims.mean"
         case _: prim.etc._median            => "PrimChecks.list.median"

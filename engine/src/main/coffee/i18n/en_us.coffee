@@ -37,6 +37,9 @@ bundle = {
   , '_ is too large to be represented exactly as an integer in NetLogo': (n) ->
     "#{n} is too large to be represented exactly as an integer in NetLogo"
 
+  , '_ expected input to be _ but got _ instead.': (prim, expectedType, actualType) ->
+    "#{prim} expected input to be #{expectedType} but got #{actualType} instead."
+
 }
 
 module.exports = bundle

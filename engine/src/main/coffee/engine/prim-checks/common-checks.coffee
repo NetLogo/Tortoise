@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-StrictMath  = require('shim/strictmath')
-formatFloat = require('util/formatfloat')
+StrictMath            = require('shim/strictmath')
+formatFloat           = require('util/formatfloat')
+{ checks, getTypeOf } = require('engine/core/typechecker')
 
 # (I18nBundle) => (Number) => Number
 validateLong = (bundle) -> (value) ->
@@ -20,7 +21,33 @@ validateNumber = (bundle) -> (result) ->
 
   result
 
+listTypeNames = (types) ->
+  names    = types.map( (type) -> type.niceName() )
+  nameList = names.join(" or ")
+  if ['A', 'E', 'I', 'O', 'U'].includes(nameList.charAt(0).toUpperCase())
+    "an #{nameList}"
+  else
+    "a #{nameList}"
+
+# (I18nBundle, (Any) => String) => (String, Array[NLType]) => (Any) => Any
+validateType = (bundle, dumper) -> (prim, expectedTypes...) ->
+  expectedText = listTypeNames(expectedTypes)
+
+  (value) ->
+    if (not expectedTypes.some( (type) -> type.isOfType(value) ))
+      valueText = if checks.isNobody(value)
+        "nobody"
+      else
+        valueType = getTypeOf(value)
+        "the #{valueType.niceName()} #{dumper(value)}"
+
+      message = bundle.get("_ expected input to be _ but got _ instead.", prim, expectedText, valueText)
+      throw new Error(message)
+
+    value
+
 module.exports = {
   validateLong
   validateNumber
+  validateType
 }
