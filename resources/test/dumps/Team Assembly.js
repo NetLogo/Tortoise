@@ -325,7 +325,7 @@ var procedures = (function() {
         if (Prims.gt(world.observer.getGlobal("component-size"), world.observer.getGlobal("giant-component-size"))) {
           world.observer.setGlobal("giant-component-size", world.observer.getGlobal("component-size"));
         }
-        world.observer.setGlobal("components", ListPrims.lput(world.observer.getGlobal("component-size"), world.observer.getGlobal("components")));
+        world.observer.setGlobal("components", PrimChecks.list.lput(world.observer.getGlobal("component-size"), world.observer.getGlobal("components")));
       };
     } catch (e) {
       return Errors.stopInCommandCheck(e)

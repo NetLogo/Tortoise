@@ -224,11 +224,11 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.setGlobal("pressure", (15 * ListPrims.sum(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
-      world.observer.setGlobal("pressure-history", ListPrims.lput(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-history")));
-      world.observer.setGlobal("zero-pressure-count", ListPrims.length(world.observer.getGlobal("pressure-history").filter(Tasks.reporterTask(function(p) {
+      world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-history")));
+      world.observer.setGlobal("zero-pressure-count", PrimChecks.list.length(PrimChecks.list.filter(Tasks.reporterTask(function(p) {
         Errors.procedureArgumentsCheck(1, arguments.length);
         return Prims.equality(p, 0);
-      }, "[ [p] -> p = 0 ]"))));
+      }, "[ [p] -> p = 0 ]"), world.observer.getGlobal("pressure-history"))));
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -496,7 +496,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       plotManager.setCurrentPlot("Pressure vs. Time");
-      if (Prims.gt(ListPrims.length(world.observer.getGlobal("pressure-history")), 0)) {
+      if (Prims.gt(PrimChecks.list.length(world.observer.getGlobal("pressure-history")), 0)) {
         plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(procedures["LAST-N"](3,world.observer.getGlobal("pressure-history"))));
       }
       plotManager.setCurrentPlot("Speed Counts");
@@ -565,13 +565,13 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if (Prims.gte(n, ListPrims.length(theList))) {
+      if (Prims.gte(n, PrimChecks.list.length(theList))) {
         Errors.reportInContextCheck(reporterContext);
         return theList;
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return procedures["LAST-N"](n,ListPrims.butFirst(theList));
+        return procedures["LAST-N"](n,PrimChecks.list.butFirst('BUTFIRST')(theList));
       }
       Errors.missingReport();
     } catch (e) {

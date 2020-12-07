@@ -339,7 +339,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("label", "");
         }
         if (ListPrims.member(world.observer.getGlobal("visualize-variation"), ["flagella and color", "as color only"])) {
-          SelfManager.self().setVariable("color", ListPrims.item((SelfManager.self().getVariable("variation") - 1), [115, 105, 55, 35, 25, 15]));
+          SelfManager.self().setVariable("color", PrimChecks.list.item((SelfManager.self().getVariable("variation") - 1), [115, 105, 55, 35, 25, 15]));
         }
         else {
           SelfManager.self().setVariable("color", world.observer.getGlobal("bacteria-default-color"));
@@ -360,7 +360,7 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS")).ask(function() {
         SelfManager.self().setVariable("countdown", (SelfManager.self().getVariable("countdown") - 1));
-        SelfManager.self().setVariable("color", ListPrims.lput((SelfManager.self().getVariable("countdown") * 4), [0, 100, 0]));
+        SelfManager.self().setVariable("color", PrimChecks.list.lput((SelfManager.self().getVariable("countdown") * 4), [0, 100, 0]));
         if (Prims.lte(SelfManager.self().getVariable("countdown"), 0)) {
           SelfManager.self().die();
         }

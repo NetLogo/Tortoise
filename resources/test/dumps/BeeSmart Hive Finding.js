@@ -152,15 +152,15 @@ var procedures = (function() {
       let i = 0; letVars['i'] = i;
       for (let _index_3202_3208 = 0, _repeatcount_3202_3208 = StrictMath.floor(world.turtleManager.turtlesOfBreed("SITES").size()); _index_3202_3208 < _repeatcount_3202_3208; _index_3202_3208++){
         Errors.askNobodyCheck(world.turtleManager.getTurtleOfBreed("SITES", i)).ask(function() {
-          SelfManager.self().setVariable("quality", ListPrims.item(i, world.observer.getGlobal("quality-list")));
+          SelfManager.self().setVariable("quality", PrimChecks.list.item(i, world.observer.getGlobal("quality-list")));
           SelfManager.self().setVariable("label", SelfManager.self().getVariable("quality"));
         }, true);
         plotManager.setCurrentPlot("on-site");
         plotManager.createTemporaryPen((workspace.dump('') + workspace.dump("site") + workspace.dump(i)));
-        plotManager.setPenColor(ListPrims.item(i, world.observer.getGlobal("color-list")));
+        plotManager.setPenColor(PrimChecks.list.item(i, world.observer.getGlobal("color-list")));
         plotManager.setCurrentPlot("committed");
         plotManager.createTemporaryPen((workspace.dump('') + workspace.dump("target") + workspace.dump(i)));
-        plotManager.setPenColor(ListPrims.item(i, world.observer.getGlobal("color-list")));
+        plotManager.setPenColor(PrimChecks.list.item(i, world.observer.getGlobal("color-list")));
         i = (i + 1); letVars['i'] = i;
       }
     } catch (e) {
@@ -275,7 +275,7 @@ var procedures = (function() {
               SelfManager.self().setVariable("target", tempTarget);
               Errors.askNobodyCheck(SelfManager.self().getVariable("target")).ask(function() {
                 SelfManager.self().setVariable("discovered?", true);
-                SelfManager.self().setVariable("color", ListPrims.item(SelfManager.self().getVariable("who"), world.observer.getGlobal("color-list")));
+                SelfManager.self().setVariable("color", PrimChecks.list.item(SelfManager.self().getVariable("who"), world.observer.getGlobal("color-list")));
               }, true);
               SelfManager.self().setVariable("interest", SelfManager.self().getVariable("target").projectionBy(function() { return SelfManager.self().getVariable("quality"); }));
               SelfManager.self().setVariable("color", SelfManager.self().getVariable("target").projectionBy(function() { return SelfManager.self().getVariable("color"); }));
@@ -514,7 +514,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if ((world.turtleManager.turtlesOfBreed("SCOUTS").agentAll(function() { return SelfManager.self().getVariable("on-site?"); }) && Prims.equality(ListPrims.length(ListPrims.removeDuplicates(world.turtleManager.turtlesOfBreed("SCOUTS").projectionBy(function() { return SelfManager.self().getVariable("target"); }))), 1))) {
+      if ((world.turtleManager.turtlesOfBreed("SCOUTS").agentAll(function() { return SelfManager.self().getVariable("on-site?"); }) && Prims.equality(PrimChecks.list.length(ListPrims.removeDuplicates(world.turtleManager.turtlesOfBreed("SCOUTS").projectionBy(function() { return SelfManager.self().getVariable("target"); }))), 1))) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SCOUTS")).ask(function() {

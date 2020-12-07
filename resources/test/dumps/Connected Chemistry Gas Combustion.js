@@ -310,7 +310,7 @@ var procedures = (function() {
         if (Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4)) {
           SelfManager.self().die();
         }
-        SelfManager.self().setVariable("color", ListPrims.lput((255 - PrimChecks.math.div((255 * (world.ticker.tickCount() - SelfManager.self().getVariable("birthday"))), 0.4)), [20, 20, 20]));
+        SelfManager.self().setVariable("color", PrimChecks.list.lput((255 - PrimChecks.math.div((255 * (world.ticker.tickCount() - SelfManager.self().getVariable("birthday"))), 0.4)), [20, 20, 20]));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -414,7 +414,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.setGlobal("pressure", (100 * ListPrims.sum(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
-      world.observer.setGlobal("pressure-history", ListPrims.lput(world.observer.getGlobal("pressure"), ListPrims.butFirst(world.observer.getGlobal("pressure-history"))));
+      world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.list.butFirst('BUT-FIRST')(world.observer.getGlobal("pressure-history"))));
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("GAS-MOLECULES")).ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)

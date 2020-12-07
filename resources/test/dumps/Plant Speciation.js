@@ -566,7 +566,7 @@ var procedures = (function() {
         wsum = (wsum + weight); letVars['wsum'] = wsum;
         if (Prims.gt(wsum, wret)) {
           Errors.reportInContextCheck(reporterContext);
-          return ListPrims.item(ret, options);
+          return PrimChecks.list.item(ret, options);
         }
         ret = (ret + 1); letVars['ret'] = ret;
       }, "[ weight -> set wsum wsum + weight if wsum > wret [ report item ret options ] set ret ret + 1 ]"), weights); if(reporterContext && _foreach_11674_11681 !== undefined) { return _foreach_11674_11681; }

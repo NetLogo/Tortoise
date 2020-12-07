@@ -180,8 +180,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let nodeList = ListPrims.sort(nodeset); letVars['nodeList'] = nodeList;
-      let neighborChoiceList = ListPrims.sublist(nodeList, 0, k); letVars['neighborChoiceList'] = neighborChoiceList;
-      Errors.askNobodyCheck(ListPrims.item(k, nodeList)).ask(function() {
+      let neighborChoiceList = PrimChecks.list.sublist(nodeList, 0, k); letVars['neighborChoiceList'] = neighborChoiceList;
+      Errors.askNobodyCheck(PrimChecks.list.item(k, nodeList)).ask(function() {
         var _foreach_2544_2551 = Tasks.forEach(Tasks.commandTask(function(neighbor) {
           Errors.procedureArgumentsCheck(1, arguments.length);
           if (Prims.equality(RandomPrims.randomLong(2), 0)) {
@@ -199,7 +199,7 @@ var procedures = (function() {
           let tempNeighborList = neighborChoiceList; letVars['tempNeighborList'] = tempNeighborList;
           for (let _index_3056_3062 = 0, _repeatcount_3056_3062 = StrictMath.floor(k); _index_3056_3062 < _repeatcount_3056_3062; _index_3056_3062++){
             let neighbor = ListPrims.oneOf(tempNeighborList); letVars['neighbor'] = neighbor;
-            tempNeighborList = ListPrims.remove(neighbor, tempNeighborList); letVars['tempNeighborList'] = tempNeighborList;
+            tempNeighborList = PrimChecks.list.remove(neighbor, tempNeighborList); letVars['tempNeighborList'] = tempNeighborList;
             neighborChoiceList = ListPrims.fput(neighbor, neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
             if (Prims.equality(RandomPrims.randomLong(2), 0)) {
               LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
@@ -210,7 +210,7 @@ var procedures = (function() {
           }
           neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() { return SelfManager.self(); }, "[ self ]")), neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
         }, true);
-      }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]"), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList))); if(reporterContext && _foreach_2894_2901 !== undefined) { return _foreach_2894_2901; }
+      }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]"), PrimChecks.list.sublist(nodeList, (k + 1), PrimChecks.list.length(nodeList))); if(reporterContext && _foreach_2894_2901 !== undefined) { return _foreach_2894_2901; }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

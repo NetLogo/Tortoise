@@ -87,7 +87,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().hideTurtle(false);;
       SelfManager.self().setVariable("eligible?", false);
-      world.observer.setGlobal("eligibles", ListPrims.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
+      world.observer.setGlobal("eligibles", PrimChecks.list.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
       Errors.askNobodyCheck(SelfManager.self().getVariable("hex-neighbors")).ask(function() {
         SelfManager.self().setVariable("live-neighbor-count", (SelfManager.self().getVariable("live-neighbor-count") + 1));
         if (Prims.equality(SelfManager.self().getVariable("live-neighbor-count"), 6)) {
@@ -108,7 +108,7 @@ var procedures = (function() {
       if (SelfManager.self().getVariable("eligible?")) {
         if (!ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))) {
           SelfManager.self().setVariable("eligible?", false);
-          world.observer.setGlobal("eligibles", ListPrims.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
+          world.observer.setGlobal("eligibles", PrimChecks.list.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
         }
       }
       else {
@@ -129,22 +129,22 @@ var procedures = (function() {
       var letVars = { };
       world.observer.setGlobal("switches", []);
       if (world.observer.getGlobal("one-neighbor?")) {
-        world.observer.setGlobal("switches", ListPrims.lput(1, world.observer.getGlobal("switches")));
+        world.observer.setGlobal("switches", PrimChecks.list.lput(1, world.observer.getGlobal("switches")));
       }
       if (world.observer.getGlobal("two-neighbors?")) {
-        world.observer.setGlobal("switches", ListPrims.lput(2, world.observer.getGlobal("switches")));
+        world.observer.setGlobal("switches", PrimChecks.list.lput(2, world.observer.getGlobal("switches")));
       }
       if (world.observer.getGlobal("three-neighbors?")) {
-        world.observer.setGlobal("switches", ListPrims.lput(3, world.observer.getGlobal("switches")));
+        world.observer.setGlobal("switches", PrimChecks.list.lput(3, world.observer.getGlobal("switches")));
       }
       if (world.observer.getGlobal("four-neighbors?")) {
-        world.observer.setGlobal("switches", ListPrims.lput(4, world.observer.getGlobal("switches")));
+        world.observer.setGlobal("switches", PrimChecks.list.lput(4, world.observer.getGlobal("switches")));
       }
       if (world.observer.getGlobal("five-neighbors?")) {
-        world.observer.setGlobal("switches", ListPrims.lput(5, world.observer.getGlobal("switches")));
+        world.observer.setGlobal("switches", PrimChecks.list.lput(5, world.observer.getGlobal("switches")));
       }
       if (world.observer.getGlobal("six-neighbors?")) {
-        world.observer.setGlobal("switches", ListPrims.lput(6, world.observer.getGlobal("switches")));
+        world.observer.setGlobal("switches", PrimChecks.list.lput(6, world.observer.getGlobal("switches")));
       }
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CELLS")).ask(function() {
         SelfManager.self().setVariable("eligible?", (SelfManager.self().getVariable("hidden?") && ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))));

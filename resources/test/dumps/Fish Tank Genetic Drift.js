@@ -947,7 +947,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FISH-BONES")).ask(function() {
         SelfManager.self().setVariable("countdown", (SelfManager.self().getVariable("countdown") - 1));
         boneTransparency = PrimChecks.math.div((SelfManager.self().getVariable("countdown") * 255), 50); letVars['boneTransparency'] = boneTransparency;
-        colorList = ListPrims.lput(boneTransparency, [255, 255, 255]); letVars['colorList'] = colorList;
+        colorList = PrimChecks.list.lput(boneTransparency, [255, 255, 255]); letVars['colorList'] = colorList;
         SelfManager.self().setVariable("color", colorList);
         if (Prims.lte(SelfManager.self().getVariable("countdown"), 0)) {
           SelfManager.self().die();

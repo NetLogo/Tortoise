@@ -218,7 +218,7 @@ var procedures = (function() {
       var letVars = { };
       var _foreach_3161_3168 = Tasks.forEach(Tasks.commandTask(function(i) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        if (Prims.equality(ListPrims.item(0, i), c)) {
+        if (Prims.equality(PrimChecks.list.item(0, i), c)) {
           Errors.reportInContextCheck(reporterContext);
           return true;
         }
@@ -236,10 +236,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.gte(ListPrims.length(SelfManager.self().getVariable("memory")), world.observer.getGlobal("memory-size"))) {
-        SelfManager.self().setVariable("memory", ListPrims.butFirst(SelfManager.self().getVariable("memory")));
+      if (Prims.gte(PrimChecks.list.length(SelfManager.self().getVariable("memory")), world.observer.getGlobal("memory-size"))) {
+        SelfManager.self().setVariable("memory", PrimChecks.list.butFirst('BUT-FIRST')(SelfManager.self().getVariable("memory")));
       }
-      SelfManager.self().setVariable("memory", ListPrims.lput(ListPrims.list(c, 0), SelfManager.self().getVariable("memory")));
+      SelfManager.self().setVariable("memory", PrimChecks.list.lput(ListPrims.list(c, 0), SelfManager.self().getVariable("memory")));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -252,12 +252,12 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("memory", Tasks.map(Tasks.reporterTask(function(i) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        return ListPrims.list(ListPrims.item(0, i), (1 + ListPrims.item(1, i)));
+        return ListPrims.list(PrimChecks.list.item(0, i), (1 + PrimChecks.list.item(1, i)));
       }, "[ i -> list item 0 i 1 + item 1 i ]"), SelfManager.self().getVariable("memory")));
-      SelfManager.self().setVariable("memory", SelfManager.self().getVariable("memory").filter(Tasks.reporterTask(function(i) {
+      SelfManager.self().setVariable("memory", PrimChecks.list.filter(Tasks.reporterTask(function(i) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        return Prims.lte(ListPrims.item(1, i), world.observer.getGlobal("memory-duration"));
-      }, "[ i -> item 1 i <= memory-duration ]")));
+        return Prims.lte(PrimChecks.list.item(1, i), world.observer.getGlobal("memory-duration"));
+      }, "[ i -> item 1 i <= memory-duration ]"), SelfManager.self().getVariable("memory")));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -292,7 +292,7 @@ var procedures = (function() {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self()._optimalFdOne();
           if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("mutation-rate"))) {
-            SelfManager.self().setVariable("color", ListPrims.oneOf(ListPrims.sublist(ColorModel.BASE_COLORS, 1, 10)));
+            SelfManager.self().setVariable("color", ListPrims.oneOf(PrimChecks.list.sublist(ColorModel.BASE_COLORS, 1, 10)));
           }
         }, true);
       }

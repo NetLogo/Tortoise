@@ -998,7 +998,7 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if (Prims.equality(procedures["COMPLEMENTARY-BASE"](nucleotide1.projectionBy(function() { return SelfManager.self().getVariable("value"); })), ListPrims.item(0, nucleotide2.projectionBy(function() { return SelfManager.self().getVariable("value"); })))) {
+      if (Prims.equality(procedures["COMPLEMENTARY-BASE"](nucleotide1.projectionBy(function() { return SelfManager.self().getVariable("value"); })), PrimChecks.list.item(0, nucleotide2.projectionBy(function() { return SelfManager.self().getVariable("value"); })))) {
         Errors.reportInContextCheck(reporterContext);
         return true;
       }
@@ -1122,7 +1122,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return (Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : (workspace.dump('') + workspace.dump(world.observer.getGlobal("current-instruction")) + workspace.dump(" / ") + workspace.dump(ListPrims.length(procedures["INSTRUCTIONS"]()))));
+      return (Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : (workspace.dump('') + workspace.dump(world.observer.getGlobal("current-instruction")) + workspace.dump(" / ") + workspace.dump(PrimChecks.list.length(procedures["INSTRUCTIONS"]()))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -1156,13 +1156,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if ((Prims.gte(i, 1) && Prims.lte(i, ListPrims.length(procedures["INSTRUCTIONS"]())))) {
+      if ((Prims.gte(i, 1) && Prims.lte(i, PrimChecks.list.length(procedures["INSTRUCTIONS"]())))) {
         world.observer.setGlobal("current-instruction", i);
         OutputPrims.clear();
         var _foreach_35144_35151 = Tasks.forEach(Tasks.commandTask(function(_0) {
           Errors.procedureArgumentsCheck(1, arguments.length);
           OutputPrims.print(_0);
-        }, "output-print"), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]())); if(reporterContext && _foreach_35144_35151 !== undefined) { return _foreach_35144_35151; }
+        }, "output-print"), PrimChecks.list.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]())); if(reporterContext && _foreach_35144_35151 !== undefined) { return _foreach_35144_35151; }
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)

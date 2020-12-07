@@ -154,7 +154,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.lte(SelfManager.self().getPatchVariable("n"), 3)) {
-        SelfManager.self().setPatchVariable("pcolor", ListPrims.item(SelfManager.self().getPatchVariable("n"), [83, 54, 45, 25]));
+        SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.item(SelfManager.self().getPatchVariable("n"), [83, 54, 45, 25]));
       }
       else {
         SelfManager.self().setPatchVariable("pcolor", 15);

@@ -570,13 +570,13 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if (Prims.gte(n, ListPrims.length(theList))) {
+      if (Prims.gte(n, PrimChecks.list.length(theList))) {
         Errors.reportInContextCheck(reporterContext);
         return theList;
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return procedures["LAST-N"](n,ListPrims.butFirst(theList));
+        return procedures["LAST-N"](n,PrimChecks.list.butFirst('BUTFIRST')(theList));
       }
       Errors.missingReport();
     } catch (e) {

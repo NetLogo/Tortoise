@@ -447,8 +447,8 @@ var procedures = (function() {
       world.observer.setGlobal("gini-index-reserve", 0);
       world.observer.setGlobal("lorenz-points", []);
       for (let _index_6031_6037 = 0, _repeatcount_6031_6037 = StrictMath.floor(world.observer.getGlobal("num-people")); _index_6031_6037 < _repeatcount_6031_6037; _index_6031_6037++){
-        wealthSumSoFar = (wealthSumSoFar + ListPrims.item(index, sortedWealths)); letVars['wealthSumSoFar'] = wealthSumSoFar;
-        world.observer.setGlobal("lorenz-points", ListPrims.lput((PrimChecks.math.div(wealthSumSoFar, totalWealth) * 100), world.observer.getGlobal("lorenz-points")));
+        wealthSumSoFar = (wealthSumSoFar + PrimChecks.list.item(index, sortedWealths)); letVars['wealthSumSoFar'] = wealthSumSoFar;
+        world.observer.setGlobal("lorenz-points", PrimChecks.list.lput((PrimChecks.math.div(wealthSumSoFar, totalWealth) * 100), world.observer.getGlobal("lorenz-points")));
         index = (index + 1); letVars['index'] = index;
         world.observer.setGlobal("gini-index-reserve", ((world.observer.getGlobal("gini-index-reserve") + PrimChecks.math.div(index, world.observer.getGlobal("num-people"))) - PrimChecks.math.div(wealthSumSoFar, totalWealth)));
       }

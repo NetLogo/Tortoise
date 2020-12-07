@@ -370,18 +370,18 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (NLType.checks.isValidTurtle(world.observer.getGlobal("particle2"))) {
-        world.observer.setGlobal("collisions", world.observer.getGlobal("collisions").filter(Tasks.reporterTask(function(theCollision) {
+        world.observer.setGlobal("collisions", PrimChecks.list.filter(Tasks.reporterTask(function(theCollision) {
           Errors.procedureArgumentsCheck(1, arguments.length);
-          return (((!Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle1")) && !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle1"))) && !Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle2"))) && !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle2")));
-        }, "[ the-collision -> item 1 the-collision != particle1 and item 2 the-collision != particle1 and item 1 the-collision != particle2 and item 2 the-collision != particle2 ]")));
+          return (((!Prims.equality(PrimChecks.list.item(1, theCollision), world.observer.getGlobal("particle1")) && !Prims.equality(PrimChecks.list.item(2, theCollision), world.observer.getGlobal("particle1"))) && !Prims.equality(PrimChecks.list.item(1, theCollision), world.observer.getGlobal("particle2"))) && !Prims.equality(PrimChecks.list.item(2, theCollision), world.observer.getGlobal("particle2")));
+        }, "[ the-collision -> item 1 the-collision != particle1 and item 2 the-collision != particle1 and item 1 the-collision != particle2 and item 2 the-collision != particle2 ]"), world.observer.getGlobal("collisions")));
         Errors.askNobodyCheck(world.observer.getGlobal("particle2")).ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
         Errors.askNobodyCheck(world.observer.getGlobal("particle2")).ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
       }
       else {
-        world.observer.setGlobal("collisions", world.observer.getGlobal("collisions").filter(Tasks.reporterTask(function(theCollision) {
+        world.observer.setGlobal("collisions", PrimChecks.list.filter(Tasks.reporterTask(function(theCollision) {
           Errors.procedureArgumentsCheck(1, arguments.length);
-          return (!Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle1")) && !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle1")));
-        }, "[ the-collision -> item 1 the-collision != particle1 and item 2 the-collision != particle1 ]")));
+          return (!Prims.equality(PrimChecks.list.item(1, theCollision), world.observer.getGlobal("particle1")) && !Prims.equality(PrimChecks.list.item(2, theCollision), world.observer.getGlobal("particle1")));
+        }, "[ the-collision -> item 1 the-collision != particle1 and item 2 the-collision != particle1 ]"), world.observer.getGlobal("collisions")));
       }
       if (!Prims.equality(world.observer.getGlobal("particle1"), Nobody)) {
         Errors.askNobodyCheck(world.observer.getGlobal("particle1")).ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
@@ -389,10 +389,10 @@ var procedures = (function() {
       if (!Prims.equality(world.observer.getGlobal("particle1"), Nobody)) {
         Errors.askNobodyCheck(world.observer.getGlobal("particle1")).ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
       }
-      world.observer.setGlobal("collisions", world.observer.getGlobal("collisions").filter(Tasks.reporterTask(function(theCollision) {
+      world.observer.setGlobal("collisions", PrimChecks.list.filter(Tasks.reporterTask(function(theCollision) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        return (!Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle1")) || !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle2")));
-      }, "[ the-collision -> item 1 the-collision != particle1 or item 2 the-collision != particle2 ]")));
+        return (!Prims.equality(PrimChecks.list.item(1, theCollision), world.observer.getGlobal("particle1")) || !Prims.equality(PrimChecks.list.item(2, theCollision), world.observer.getGlobal("particle2")));
+      }, "[ the-collision -> item 1 the-collision != particle1 or item 2 the-collision != particle2 ]"), world.observer.getGlobal("collisions")));
       world.observer.setGlobal("particle1", Nobody);
       world.observer.setGlobal("particle2", Nobody);
     } catch (e) {
@@ -487,14 +487,14 @@ var procedures = (function() {
       if (Prims.equality(world.observer.getGlobal("collisions"), [])) {
         throw new Exception.StopInterrupt;
       }
-      let winner = ListPrims.first(world.observer.getGlobal("collisions")); letVars['winner'] = winner;
+      let winner = PrimChecks.list.first(world.observer.getGlobal("collisions")); letVars['winner'] = winner;
       var _foreach_13599_13606 = Tasks.forEach(Tasks.commandTask(function(theCollision) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        if (Prims.lt(ListPrims.first(theCollision), ListPrims.first(winner))) {
+        if (Prims.lt(PrimChecks.list.first(theCollision), PrimChecks.list.first(winner))) {
           winner = theCollision; letVars['winner'] = winner;
         }
       }, "[ the-collision -> if first the-collision < first winner [ set winner the-collision ] ]"), world.observer.getGlobal("collisions")); if(reporterContext && _foreach_13599_13606 !== undefined) { return _foreach_13599_13606; }
-      let dt = ListPrims.item(0, winner); letVars['dt'] = dt;
+      let dt = PrimChecks.list.item(0, winner); letVars['dt'] = dt;
       world.observer.setGlobal("tick-delta", (dt - world.ticker.tickCount()));
       if (Prims.gt(world.observer.getGlobal("tick-delta"), 1)) {
         world.observer.setGlobal("tick-delta", 1);
@@ -502,8 +502,8 @@ var procedures = (function() {
         world.observer.setGlobal("particle2", Nobody);
         throw new Exception.StopInterrupt;
       }
-      world.observer.setGlobal("particle1", ListPrims.item(1, winner));
-      world.observer.setGlobal("particle2", ListPrims.item(2, winner));
+      world.observer.setGlobal("particle1", PrimChecks.list.item(1, winner));
+      world.observer.setGlobal("particle2", PrimChecks.list.item(2, winner));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

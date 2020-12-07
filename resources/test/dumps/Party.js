@@ -263,7 +263,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return Prims.equality(ListPrims.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() { return SelfManager.self().getVariable("color"); }))), 1);
+      return Prims.equality(PrimChecks.list.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() { return SelfManager.self().getVariable("color"); }))), 1);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

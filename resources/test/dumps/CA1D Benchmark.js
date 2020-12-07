@@ -147,7 +147,7 @@ var procedures = (function() {
       }, "[ [p] -> [ on? ] of p ]"), ListPrims.sort(world._optimalPatchRow(world.observer.getGlobal("row")))); letVars['on_pList'] = on_pList;
       procedures["SETUP-GENERAL"]();
       Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() {
-        SelfManager.self().setPatchVariable("on?", ListPrims.item((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), on_pList));
+        SelfManager.self().setPatchVariable("on?", PrimChecks.list.item((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), on_pList));
         procedures["COLOR-PATCH"]();
       }, true);
       world.observer.setGlobal("gone?", true);
@@ -321,16 +321,16 @@ var procedures = (function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("heading", 270);
           SelfManager.self().fd(18);
-          procedures["PRINT-BLOCK"](ListPrims.item(0, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
+          procedures["PRINT-BLOCK"](PrimChecks.list.item(0, PrimChecks.list.item(SelfManager.self().getVariable("who"), rules)));
           SelfManager.self().fd(2);
-          procedures["PRINT-BLOCK"](ListPrims.item(1, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
+          procedures["PRINT-BLOCK"](PrimChecks.list.item(1, PrimChecks.list.item(SelfManager.self().getVariable("who"), rules)));
           SelfManager.self().fd(2);
-          procedures["PRINT-BLOCK"](ListPrims.item(2, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
+          procedures["PRINT-BLOCK"](PrimChecks.list.item(2, PrimChecks.list.item(SelfManager.self().getVariable("who"), rules)));
           SelfManager.self().fd(-(2));
           SelfManager.self().setVariable("heading", 180);
           SelfManager.self().fd(2);
           SelfManager.self().setVariable("heading", 90);
-          procedures["PRINT-BLOCK"](ListPrims.item(3, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
+          procedures["PRINT-BLOCK"](PrimChecks.list.item(3, PrimChecks.list.item(SelfManager.self().getVariable("who"), rules)));
           SelfManager.self().die();
         }, true);
       }, true);
@@ -368,14 +368,14 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       let rules = []; letVars['rules'] = rules;
-      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooo"), [false, false, false]), rules); letVars['rules'] = rules;
-      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooi"), [false, false, true]), rules); letVars['rules'] = rules;
-      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("oio"), [false, true, false]), rules); letVars['rules'] = rules;
-      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("oii"), [false, true, true]), rules); letVars['rules'] = rules;
-      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ioo"), [true, false, false]), rules); letVars['rules'] = rules;
-      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ioi"), [true, false, true]), rules); letVars['rules'] = rules;
-      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iio"), [true, true, false]), rules); letVars['rules'] = rules;
-      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iii"), [true, true, true]), rules); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ooo"), [false, false, false]), rules); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ooi"), [false, false, true]), rules); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("oio"), [false, true, false]), rules); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("oii"), [false, true, true]), rules); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ioo"), [true, false, false]), rules); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ioi"), [true, false, true]), rules); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("iio"), [true, true, false]), rules); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("iii"), [true, true, true]), rules); letVars['rules'] = rules;
       Errors.reportInContextCheck(reporterContext);
       return rules;
       Errors.missingReport();
