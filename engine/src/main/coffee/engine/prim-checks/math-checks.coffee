@@ -7,10 +7,12 @@ class MathChecks
 
   constructor: (@validator, @randomPrims) ->
 
+  # (Number) => Number
   acos: (d) ->
     @validator.commonArgChecks.number("ACOS", arguments)
     @validator.checkNumber(NLMath.acos(d))
 
+  # (Number) => Number
   asin: (d) ->
     @validator.commonArgChecks.number("ASIN", arguments)
     @validator.checkNumber(NLMath.asin(d))

@@ -26,6 +26,7 @@ class Validator
       wildcard_stringOrList:        @checkArgTypes(wildcard, stringOrList)
     }
 
+  # (Boolean, String, Array[Any]) => Unit
   check: (condition, messageKey, messageValues...) ->
     if condition
       message = @bundle.get(messageKey, messageValues...)
@@ -42,6 +43,7 @@ class Validator
     @check(result is Infinity, 'math operation produced a number too large for NetLogo')
     result
 
+  # (Array[NLType]) => String
   listTypeNames: (types) ->
     names    = types.map( (type) -> type.niceName() )
     nameList = names.join(" or ")
@@ -50,6 +52,7 @@ class Validator
     else
       "a #{nameList}"
 
+  # (String, Any, String) => String
   typeError: (prim, value, expectedText) ->
     valueType = getTypeOf(value)
     valueText = if valueType is types.Nobody
@@ -61,6 +64,7 @@ class Validator
 
     @bundle.get("_ expected input to be _ but got _ instead.", prim, expectedText, valueText)
 
+  # (String, Boolean, Any, Array[NLType]) => Unit
   checkTypeError: (prim, condition, value, expectedTypes...) ->
     if condition
       expectedText = @listTypeNames(expectedTypes)
@@ -68,6 +72,7 @@ class Validator
 
     return
 
+  # (Array[Array[NLType]]) => (String, Array[Any]) => Unit
   checkArgTypes: (argTypes...) -> (prim, args) =>
     if args.length isnt argTypes.length
       throw new Error("Given a different number of argument types versus argument values to check.")
@@ -78,6 +83,7 @@ class Validator
 
     return
 
+  # (String, Array[NLType]) => (Any) => Unit
   checkValueType: (prim, types...) -> (value) =>
     if not types.some( (type) -> type.isOfType(value) )
       throw new Error(@typeError(prim, value, @listTypeNames(types)))
