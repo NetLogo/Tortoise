@@ -1,12 +1,30 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-StrictMath            = require('shim/strictmath')
-formatFloat           = require('util/formatfloat')
-{ checks, getTypeOf } = require('engine/core/typechecker')
+StrictMath                   = require('shim/strictmath')
+formatFloat                  = require('util/formatfloat')
+{ checks, getTypeOf, types } = require('engine/core/typechecker')
 
 class Validator
 
   constructor: (@bundle, @dumper) ->
+    list         = [types.List]
+    number       = [types.Number]
+    reporter     = [types.ReporterLambda]
+    stringOrList = [types.String, types.List]
+    wildcard     = [types.Wildcard]
+
+    @commonArgChecks = {
+      list:                         @checkArgTypes(list)
+      list_number_number:           @checkArgTypes(list, number, number)
+      number:                       @checkArgTypes(number)
+      number_number:                @checkArgTypes(number, number)
+      number_stringOrList:          @checkArgTypes(number, stringOrList)
+      number_stringOrList_wildcard: @checkArgTypes(number, stringOrList, wildcard)
+      reporter_list:                @checkArgTypes(reporter, list)
+      stringOrList:                 @checkArgTypes(stringOrList)
+      wildcard_list:                @checkArgTypes(wildcard, list)
+      wildcard_stringOrList:        @checkArgTypes(wildcard, stringOrList)
+    }
 
   check: (condition, messageKey, messageValues...) ->
     if condition
@@ -33,10 +51,12 @@ class Validator
       "a #{nameList}"
 
   typeError: (prim, value, expectedText) ->
-    valueText = if checks.isNobody(value)
+    valueType = getTypeOf(value)
+    valueText = if valueType is types.Nobody
       "nobody"
+    else if valueType is types.Wildcard
+      "any value"
     else
-      valueType = getTypeOf(value)
       "the #{valueType.niceName()} #{@dumper(value)}"
 
     @bundle.get("_ expected input to be _ but got _ instead.", prim, expectedText, valueText)
@@ -48,14 +68,20 @@ class Validator
 
     return
 
-  #  (String, Array[NLType]) => (Any) => Any
-  makeTypeCheck: (prim, expectedTypes...) ->
-    expectedText = @listTypeNames(expectedTypes)
+  checkArgTypes: (argTypes...) -> (prim, args) =>
+    if args.length isnt argTypes.length
+      throw new Error("Given a different number of argument types versus argument values to check.")
 
-    (value) =>
-      if (not expectedTypes.some( (type) -> type.isOfType(value) ))
-        throw new Error(@typeError(prim, value, expectedText))
+    for i in [0...args.length]
+      if not argTypes[i].some( (type) -> type.isOfType(args[i]) )
+        throw new Error(@typeError(prim, args[i], @listTypeNames(argTypes[i])))
 
-      value
+    return
+
+  checkValueType: (prim, types...) -> (value) =>
+    if not types.some( (type) -> type.isOfType(value) )
+      throw new Error(@typeError(prim, value, @listTypeNames(types)))
+
+    value
 
 module.exports = Validator
