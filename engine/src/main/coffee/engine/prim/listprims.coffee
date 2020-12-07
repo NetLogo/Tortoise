@@ -35,6 +35,9 @@ module.exports =
     empty: (xs) ->
       isEmpty(xs)
 
+    filter: (f, xs) ->
+      xs.filter(f)
+
     # [Item] @ (Array[Item]) => Item
     first: (xs) ->
       xs[0]
@@ -222,6 +225,9 @@ module.exports =
         index
       else
         false
+
+    reduce: (f, xs) ->
+      xs.reduce(f)
 
     # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Container
     remove: (x, xs) ->
