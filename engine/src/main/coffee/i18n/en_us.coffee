@@ -43,8 +43,8 @@ bundle = {
   , 'List is empty.': () ->
       "List is empty."
 
-  , 'Can_t find element _ of the list _, which is only of length _.': (n, list, length) ->
-      "Can't find element #{n} of the list #{list}, which is only of length #{length}."
+  , 'Can_t find element _ of the _ _, which is only of length _.': (n, type, list, length) ->
+      "Can't find element #{n} of the #{type} #{list}, which is only of length #{length}."
 
   , 'The list argument to reduce must not be empty.': () ->
       "The list argument to reduce must not be empty."
@@ -58,8 +58,8 @@ bundle = {
   , '_ is less than _.': (endIndex, startIndex) ->
       "#{endIndex} is less than #{startIndex}."
 
-  , '_ got an empty list as input.': (prim) ->
-      "#{prim} got an empty list as input."
+  , '_ got an empty _ as input.': (prim, type) ->
+      "#{prim} got an empty #{type} as input."
 
   , '_ isn_t greater than or equal to zero.': (index) ->
       "#{index} isn't greater than or equal to zero."

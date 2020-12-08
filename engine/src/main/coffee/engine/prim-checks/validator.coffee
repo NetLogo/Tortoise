@@ -27,20 +27,23 @@ class Validator
     }
 
   # (Boolean, String, Array[Any]) => Unit
-  check: (condition, messageKey, messageValues...) ->
-    if condition
-      message = @bundle.get(messageKey, messageValues...)
-      throw new Error(message)
+  error: (messageKey, messageValues...) ->
+    message = @bundle.get(messageKey, messageValues.map( (val) -> if typeof(val) is "function" then val() else val )...)
+    throw new Error(message)
 
   # (Number) => Number
   checkLong: (value) ->
-    @check(value > 9007199254740992 or value < -9007199254740992, '_ is too large to be represented exactly as an integer in NetLogo', formatFloat(value))
+    if value > 9007199254740992 or value < -9007199254740992
+      @error('_ is too large to be represented exactly as an integer in NetLogo', formatFloat(value))
     value
 
   # (Number) => Number
   checkNumber: (result) ->
-    @check(Number.isNaN(result), 'math operation produced a non-number')
-    @check(result is Infinity, 'math operation produced a number too large for NetLogo')
+    if Number.isNaN(result)
+      @error('math operation produced a non-number')
+    if result is Infinity
+      @error('math operation produced a number too large for NetLogo')
+
     result
 
   # (Array[NLType]) => String

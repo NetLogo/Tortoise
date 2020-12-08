@@ -95,8 +95,8 @@ object SimplePrims {
         case _: prim._patchat                        => "SelfManager.self().patchAt"
 
         // ListPrims
-        case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.displayName}')"
-        case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.displayName}')"
+        case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}')"
+        case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.token.text}')"
         case _: prim.etc._empty             => "ListPrims.empty"
         case _: prim.etc._filter            => "PrimChecks.list.filter"
         case _: prim.etc._first             => "PrimChecks.list.first"

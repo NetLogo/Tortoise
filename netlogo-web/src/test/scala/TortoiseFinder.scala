@@ -98,11 +98,6 @@ private[tortoise] object Freebies {
     "Lists::SortBy5",
     "RunResult::RunResult4",
     "RunResult::RunResult5",
-    "Strings::StrButFirst2",
-    "Strings::StrButLast2",
-    "Strings::StrRemoveItem4",
-    "Strings::StrRemoveItem5",
-    "Strings::StrRemoveItem6"
   )
   private val incErrorDetectCommandNames = Seq(
     "Agentsets::Agentsets3",

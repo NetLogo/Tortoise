@@ -20,13 +20,16 @@ class MathChecks
   # (Number, Number) => Number
   atan: (d1, d2) ->
     @validator.commonArgChecks.number_number("ATAN", arguments)
-    @validator.check(d1 is 0 and d2 is 0, 'atan is undefined when both inputs are zero.')
+    if d1 is 0 and d2 is 0
+      @validator.error('atan is undefined when both inputs are zero.')
+
     NLMath.atan(d1, d2)
 
   # (Number, Number) => Number
   div: (n, d) ->
     @validator.commonArgChecks.number_number("/", arguments)
-    @validator.check(d is 0, 'Division by zero.')
+    if d is 0
+      @validator.error('Division by zero.')
     n / d
 
   # (Number) => Number
@@ -42,14 +45,19 @@ class MathChecks
   # (Number) => Number
   ln: (n) ->
     @validator.commonArgChecks.number("LN", arguments)
-    @validator.check(n <= 0, 'Can_t take logarithm of _.', n)
+    if n <= 0
+      @validator.error('Can_t take logarithm of _.', n)
+
     NLMath.ln(n)
 
   # (Number, Number) => Number
   log: (n, b) ->
     @validator.commonArgChecks.number_number("LOG", arguments)
-    @validator.check(n <= 0, 'Can_t take logarithm of _.', n)
-    @validator.check(b <= 0, '_ isn_t a valid base for a logarithm.', b)
+    if n <= 0
+      @validator.error('Can_t take logarithm of _.', n)
+    if b <= 0
+      @validator.error('_ isn_t a valid base for a logarithm.', b)
+
     NLMath.log(n, b)
 
   # (Number, Number) => Number
@@ -70,26 +78,34 @@ class MathChecks
   # (Number, Number) => Number
   randomGamma: (alpha, lambda) ->
     @validator.commonArgChecks.number_number("RANDOM-GAMMA", arguments)
-    @validator.check(alpha <= 0 or lambda <= 0, 'Both Inputs to RANDOM-GAMMA must be positive.')
+    if alpha <= 0 or lambda <= 0
+      @validator.error('Both Inputs to RANDOM-GAMMA must be positive.')
+
     @randomPrims.randomGamma(alpha, lambda)
 
   # (Number, Number) => Number
   randomNormal: (mean, stdDev) ->
     @validator.commonArgChecks.number_number("RANDOM-NORMAL", arguments)
-    @validator.check(stdDev < 0, 'random-normal_s second input can_t be negative.')
+    if stdDev < 0
+      @validator.error('random-normal_s second input can_t be negative.')
+
     @validator.checkNumber(@randomPrims.randomNormal(mean, stdDev))
 
   # (Number) => Unit
   randomSeed: (seed) ->
     @validator.commonArgChecks.number("RANDOM-SEED", arguments)
-    @validator.check(seed < -2147483648 or seed > 2147483647, '_ is not in the allowable range for random seeds (-2147483648 to 2147483647)', formatFloat(seed))
+    if seed < -2147483648 or seed > 2147483647
+      @validator.error('_ is not in the allowable range for random seeds (-2147483648 to 2147483647)', formatFloat(seed))
+
     @randomPrims.randomSeed(seed)
     return
 
   # (Number) => Number
   sqrt: (n) ->
     @validator.commonArgChecks.number("SQRT", arguments)
-    @validator.check(n < 0, 'The square root of _ is an imaginary number.', n)
+    if n < 0
+      @validator.error('The square root of _ is an imaginary number.', n)
+
     NLMath.sqrt(n)
 
 module.exports = MathChecks
