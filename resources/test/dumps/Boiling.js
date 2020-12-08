@@ -92,7 +92,7 @@ var procedures = (function() {
       var letVars = { };
       world.topology.diffuse("heat", 1, false)
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("heat", NLMath.mod((SelfManager.self().getPatchVariable("heat") + 5), 212));
+        SelfManager.self().setPatchVariable("heat", PrimChecks.math.mod((SelfManager.self().getPatchVariable("heat") + 5), 212));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("heat"), 0, 212));
       }, true);
       world.ticker.tick();

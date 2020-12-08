@@ -144,8 +144,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(RandomPrims.randomFloat(360));
-      SelfManager.self().fd(RandomPrims.randomFloat(10));
+      SelfManager.self().right(PrimChecks.math.randomFloat(360));
+      SelfManager.self().fd(PrimChecks.math.randomFloat(10));
       if (SelfPrims._optimalAnyOther(SelfManager.self().turtlesHere())) {
         procedures["FIND-NEW-SPOT"]();
       }

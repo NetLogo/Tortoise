@@ -155,7 +155,7 @@ var procedures = (function() {
         }
         SelfManager.self().setVariable("infected?", Prims.lt(SelfManager.self().getVariable("who"), (world.observer.getGlobal("initial-people") * 0.025)));
         if (SelfManager.self().getVariable("infected?")) {
-          SelfManager.self().setVariable("infection-length", RandomPrims.randomFloat(world.observer.getGlobal("symptoms-show")));
+          SelfManager.self().setVariable("infection-length", PrimChecks.math.randomFloat(world.observer.getGlobal("symptoms-show")));
         }
         procedures["ASSIGN-COMMITMENT"]();
         procedures["ASSIGN-COUPLING-TENDENCY"]();
@@ -240,7 +240,7 @@ var procedures = (function() {
       var letVars = { };
       let result = 0; letVars['result'] = result;
       for (let _index_3704_3710 = 0, _repeatcount_3704_3710 = StrictMath.floor(40); _index_3704_3710 < _repeatcount_3704_3710; _index_3704_3710++){
-        result = (result + RandomPrims.randomFloat(center)); letVars['result'] = result;
+        result = (result + PrimChecks.math.randomFloat(center)); letVars['result'] = result;
       }
       Errors.reportInContextCheck(reporterContext);
       return PrimChecks.math.div(result, 20);
@@ -273,7 +273,7 @@ var procedures = (function() {
         }
       }, true);
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        if (((!SelfManager.self().getVariable("coupled?") && Prims.equality(SelfManager.self().getVariable("shape"), "person righty")) && Prims.lt(RandomPrims.randomFloat(10), SelfManager.self().getVariable("coupling-tendency")))) {
+        if (((!SelfManager.self().getVariable("coupled?") && Prims.equality(SelfManager.self().getVariable("shape"), "person righty")) && Prims.lt(PrimChecks.math.randomFloat(10), SelfManager.self().getVariable("coupling-tendency")))) {
           procedures["COUPLE"]();
         }
       }, true);
@@ -318,7 +318,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(RandomPrims.randomFloat(360));
+      SelfManager.self().right(PrimChecks.math.randomFloat(360));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -334,7 +334,7 @@ var procedures = (function() {
         return (!SelfManager.self().getVariable("coupled?") && Prims.equality(SelfManager.self().getVariable("shape"), "person lefty"));
       }); letVars['potentialPartner'] = potentialPartner;
       if (!Prims.equality(potentialPartner, Nobody)) {
-        if (Prims.lt(RandomPrims.randomFloat(10), potentialPartner.projectionBy(function() { return SelfManager.self().getVariable("coupling-tendency"); }))) {
+        if (Prims.lt(PrimChecks.math.randomFloat(10), potentialPartner.projectionBy(function() { return SelfManager.self().getVariable("coupling-tendency"); }))) {
           SelfManager.self().setVariable("partner", potentialPartner);
           SelfManager.self().setVariable("coupled?", true);
           Errors.askNobodyCheck(SelfManager.self().getVariable("partner")).ask(function() { SelfManager.self().setVariable("coupled?", true); }, true);
@@ -378,8 +378,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (((SelfManager.self().getVariable("coupled?") && SelfManager.self().getVariable("infected?")) && !SelfManager.self().getVariable("known?"))) {
-        if ((Prims.gt(RandomPrims.randomFloat(10), SelfManager.self().getVariable("condom-use")) || Prims.gt(RandomPrims.randomFloat(10), SelfManager.self().getVariable("partner").projectionBy(function() { return SelfManager.self().getVariable("condom-use"); })))) {
-          if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("infection-chance"))) {
+        if ((Prims.gt(PrimChecks.math.randomFloat(10), SelfManager.self().getVariable("condom-use")) || Prims.gt(PrimChecks.math.randomFloat(10), SelfManager.self().getVariable("partner").projectionBy(function() { return SelfManager.self().getVariable("condom-use"); })))) {
+          if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("infection-chance"))) {
             Errors.askNobodyCheck(SelfManager.self().getVariable("partner")).ask(function() { SelfManager.self().setVariable("infected?", true); }, true);
           }
         }
@@ -394,13 +394,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(RandomPrims.randomFloat(52), SelfManager.self().getVariable("test-frequency"))) {
+      if (Prims.lt(PrimChecks.math.randomFloat(52), SelfManager.self().getVariable("test-frequency"))) {
         if (SelfManager.self().getVariable("infected?")) {
           SelfManager.self().setVariable("known?", true);
         }
       }
       if (Prims.gt(SelfManager.self().getVariable("infection-length"), world.observer.getGlobal("symptoms-show"))) {
-        if (Prims.lt(RandomPrims.randomFloat(100), 5)) {
+        if (Prims.lt(PrimChecks.math.randomFloat(100), 5)) {
           SelfManager.self().setVariable("known?", true);
         }
       }

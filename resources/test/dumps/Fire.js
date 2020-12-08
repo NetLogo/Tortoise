@@ -57,7 +57,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "square")
-      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("density")); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("density")); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
       Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); })).ask(function() { procedures["IGNITE"](); }, true);
       world.observer.setGlobal("initial-trees", world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }));
       world.observer.setGlobal("burned-trees", 0);

@@ -241,7 +241,7 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BACTERIA")).ask(function() {
         if (world.observer.getGlobal("wiggle?")) {
-          SelfManager.self().right((RandomPrims.randomFloat(25) - RandomPrims.randomFloat(25)));
+          SelfManager.self().right((PrimChecks.math.randomFloat(25) - PrimChecks.math.randomFloat(25)));
         }
         SelfManager.self().fd((SelfManager.self().getVariable("variation") * world.observer.getGlobal("speed-scalar")));
         let predatorsInFrontOfMe = SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("PREDATORS"), 2, 120); letVars['predatorsInFrontOfMe'] = predatorsInFrontOfMe;
@@ -292,7 +292,7 @@ var procedures = (function() {
       var letVars = { };
       let flagellaSwing = 15; letVars['flagellaSwing'] = flagellaSwing;
       let flagellaSpeed = 60; letVars['flagellaSpeed'] = flagellaSpeed;
-      let newSwing = (flagellaSwing * NLMath.sin((flagellaSpeed * world.ticker.tickCount()))); letVars['newSwing'] = newSwing;
+      let newSwing = (flagellaSwing * PrimChecks.math.sin((flagellaSpeed * world.ticker.tickCount()))); letVars['newSwing'] = newSwing;
       let myBacteria = PrimChecks.list.oneOf(LinkPrims.inLinkNeighbors("LINKS")); letVars['myBacteria'] = myBacteria;
       SelfManager.self().setVariable("heading", (myBacteria.projectionBy(function() { return SelfManager.self().getVariable("heading"); }) + newSwing));
     } catch (e) {

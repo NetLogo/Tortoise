@@ -189,10 +189,10 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("pcolor", (35 + 3));
       }, true);
       world.observer.setGlobal("roads", world.patches().agentFilter(function() {
-        return (Prims.equality(NLMath.floor(NLMath.mod(((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor) - NLMath.floor((world.observer.getGlobal("grid-x-inc") - 1))), world.observer.getGlobal("grid-x-inc"))), 0) || Prims.equality(NLMath.floor(NLMath.mod((SelfManager.self().getPatchVariable("pycor") + world.topology.maxPycor), world.observer.getGlobal("grid-y-inc"))), 0));
+        return (Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor) - PrimChecks.math.floor((world.observer.getGlobal("grid-x-inc") - 1))), world.observer.getGlobal("grid-x-inc"))), 0) || Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod((SelfManager.self().getPatchVariable("pycor") + world.topology.maxPycor), world.observer.getGlobal("grid-y-inc"))), 0));
       }));
       world.observer.setGlobal("intersections", world.observer.getGlobal("roads").agentFilter(function() {
-        return (Prims.equality(NLMath.floor(NLMath.mod(((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor) - NLMath.floor((world.observer.getGlobal("grid-x-inc") - 1))), world.observer.getGlobal("grid-x-inc"))), 0) && Prims.equality(NLMath.floor(NLMath.mod((SelfManager.self().getPatchVariable("pycor") + world.topology.maxPycor), world.observer.getGlobal("grid-y-inc"))), 0));
+        return (Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor) - PrimChecks.math.floor((world.observer.getGlobal("grid-x-inc") - 1))), world.observer.getGlobal("grid-x-inc"))), 0) && Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod((SelfManager.self().getPatchVariable("pycor") + world.topology.maxPycor), world.observer.getGlobal("grid-y-inc"))), 0));
       }));
       Errors.askNobodyCheck(world.observer.getGlobal("roads")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       procedures["SETUP-INTERSECTIONS"]();
@@ -211,8 +211,8 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("green-light-up?", true);
         SelfManager.self().setPatchVariable("my-phase", 0);
         SelfManager.self().setPatchVariable("auto?", true);
-        SelfManager.self().setPatchVariable("my-row", NLMath.floor(PrimChecks.math.div((SelfManager.self().getPatchVariable("pycor") + world.topology.maxPycor), world.observer.getGlobal("grid-y-inc"))));
-        SelfManager.self().setPatchVariable("my-column", NLMath.floor(PrimChecks.math.div((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), world.observer.getGlobal("grid-x-inc"))));
+        SelfManager.self().setPatchVariable("my-row", PrimChecks.math.floor(PrimChecks.math.div((SelfManager.self().getPatchVariable("pycor") + world.topology.maxPycor), world.observer.getGlobal("grid-y-inc"))));
+        SelfManager.self().setPatchVariable("my-column", PrimChecks.math.floor(PrimChecks.math.div((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), world.observer.getGlobal("grid-x-inc"))));
         procedures["SET-SIGNAL-COLORS"]();
       }, true);
     } catch (e) {
@@ -237,7 +237,7 @@ var procedures = (function() {
         }
       }
       else {
-        if (Prims.equality(NLMath.floor(NLMath.mod(((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor) - NLMath.floor((world.observer.getGlobal("grid-x-inc") - 1))), world.observer.getGlobal("grid-x-inc"))), 0)) {
+        if (Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor) - PrimChecks.math.floor((world.observer.getGlobal("grid-x-inc") - 1))), world.observer.getGlobal("grid-x-inc"))), 0)) {
           SelfManager.self().setVariable("up-car?", true);
         }
         else {
@@ -370,7 +370,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.observer.getGlobal("intersections").agentFilter(function() {
-        return (SelfManager.self().getPatchVariable("auto?") && Prims.equality(world.observer.getGlobal("phase"), NLMath.floor(PrimChecks.math.div((SelfManager.self().getPatchVariable("my-phase") * world.observer.getGlobal("ticks-per-cycle")), 100))));
+        return (SelfManager.self().getPatchVariable("auto?") && Prims.equality(world.observer.getGlobal("phase"), PrimChecks.math.floor(PrimChecks.math.div((SelfManager.self().getPatchVariable("my-phase") * world.observer.getGlobal("ticks-per-cycle")), 100))));
       })).ask(function() {
         SelfManager.self().setPatchVariable("green-light-up?", !SelfManager.self().getPatchVariable("green-light-up?"));
         procedures["SET-SIGNAL-COLORS"]();
@@ -535,7 +535,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.setGlobal("phase", (world.observer.getGlobal("phase") + 1));
-      if (Prims.equality(NLMath.mod(world.observer.getGlobal("phase"), world.observer.getGlobal("ticks-per-cycle")), 0)) {
+      if (Prims.equality(PrimChecks.math.mod(world.observer.getGlobal("phase"), world.observer.getGlobal("ticks-per-cycle")), 0)) {
         world.observer.setGlobal("phase", 0);
       }
     } catch (e) {

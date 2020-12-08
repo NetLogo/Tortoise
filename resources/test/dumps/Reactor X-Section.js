@@ -103,8 +103,8 @@ var procedures = (function() {
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       procedures["SETUP-GLOBALS"]();
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("x", NLMath.abs(SelfManager.self().getPatchVariable("pxcor")));
-        SelfManager.self().setPatchVariable("y", NLMath.abs(SelfManager.self().getPatchVariable("pycor")));
+        SelfManager.self().setPatchVariable("x", PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")));
+        SelfManager.self().setPatchVariable("y", PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")));
         SelfManager.self().setPatchVariable("rod?", false);
         procedures["BUILD-REACTOR"]();
         procedures["SETUP-NUCLEAR-FUEL"]();
@@ -178,7 +178,7 @@ var procedures = (function() {
       if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 2) && !Prims.equality(world.observer.getGlobal("reactor-size"), 30)) && !Prims.equality(world.observer.getGlobal("reactor-size"), 60))) {
         rodX = (rodX + 1); letVars['rodX'] = rodX;
       }
-      if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 3) && !Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
+      if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 3) && !Prims.equality(PrimChecks.math.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
         world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
         rodX = (rodX - 1); letVars['rodX'] = rodX;
       }
@@ -190,7 +190,7 @@ var procedures = (function() {
           rodX = (rodX + 2); letVars['rodX'] = rodX;
         }
       }
-      if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 6) && Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
+      if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 6) && Prims.equality(PrimChecks.math.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
         world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
         if (Prims.equality(world.observer.getGlobal("reactor-size"), 80)) {
           rodX = (rodX - 2); letVars['rodX'] = rodX;

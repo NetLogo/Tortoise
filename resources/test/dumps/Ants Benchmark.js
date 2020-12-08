@@ -99,7 +99,7 @@ var procedures = (function() {
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
       world.turtleManager.createOrderedTurtles(world.observer.getGlobal("ants"), "").ask(function() {
         SelfManager.self().setVariable("size", 2);
-        SelfManager.self().right(RandomPrims.randomFloat(360));
+        SelfManager.self().right(PrimChecks.math.randomFloat(360));
         SelfManager.self().setVariable("color", 15);
         SelfManager.self().setVariable("carrying-food?", false);
       }, true);

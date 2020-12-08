@@ -202,9 +202,9 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let groupInterval = NLMath.floor(PrimChecks.math.div(world.topology.width, world.observer.getGlobal("num-groups"))); letVars['groupInterval'] = groupInterval;
+      let groupInterval = PrimChecks.math.floor(PrimChecks.math.div(world.topology.width, world.observer.getGlobal("num-groups"))); letVars['groupInterval'] = groupInterval;
       Errors.reportInContextCheck(reporterContext);
-      return (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(PrimChecks.math.div( -(SelfManager.self().getPatchVariable("pxcor")), groupInterval)), world.observer.getGlobal("num-groups")));
+      return (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(PrimChecks.math.floor(PrimChecks.math.div( -(SelfManager.self().getPatchVariable("pxcor")), groupInterval)), world.observer.getGlobal("num-groups")));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -263,7 +263,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return Prims.equality(PrimChecks.list.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() { return SelfManager.self().getVariable("color"); }))), 1);
+      return Prims.equality(PrimChecks.list.length(PrimChecks.list.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() { return SelfManager.self().getVariable("color"); }))), 1);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

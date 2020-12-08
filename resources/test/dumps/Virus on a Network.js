@@ -220,7 +220,7 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); })).ask(function() {
         Errors.askNobodyCheck(LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("resistant?"); })).ask(function() {
-          if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("virus-spread-chance"))) {
+          if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("virus-spread-chance"))) {
             procedures["BECOME-INFECTED"]();
           }
         }, true);

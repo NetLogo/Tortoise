@@ -186,8 +186,8 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let xComponent = PrimChecks.list.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['xComponent'] = xComponent;
-      let yComponent = PrimChecks.list.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['yComponent'] = yComponent;
+      let xComponent = PrimChecks.list.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return PrimChecks.math.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['xComponent'] = xComponent;
+      let yComponent = PrimChecks.list.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return PrimChecks.math.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['yComponent'] = yComponent;
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
         Errors.reportInContextCheck(reporterContext);
         return SelfManager.self().getVariable("heading");
@@ -207,7 +207,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["TURN-AT-MOST"](NLMath.subtractHeadings(newHeading, SelfManager.self().getVariable("heading")),maxTurn);
+      procedures["TURN-AT-MOST"](PrimChecks.math.subtractHeadings(newHeading, SelfManager.self().getVariable("heading")),maxTurn);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -218,7 +218,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["TURN-AT-MOST"](NLMath.subtractHeadings(SelfManager.self().getVariable("heading"), newHeading),maxTurn);
+      procedures["TURN-AT-MOST"](PrimChecks.math.subtractHeadings(SelfManager.self().getVariable("heading"), newHeading),maxTurn);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -229,7 +229,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.gt(NLMath.abs(turn), maxTurn)) {
+      if (Prims.gt(PrimChecks.math.abs(turn), maxTurn)) {
         if (Prims.gt(turn, 0)) {
           SelfManager.self().right(maxTurn);
         }

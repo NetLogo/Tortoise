@@ -200,7 +200,7 @@ var procedures = (function() {
           for (let _index_3056_3062 = 0, _repeatcount_3056_3062 = StrictMath.floor(k); _index_3056_3062 < _repeatcount_3056_3062; _index_3056_3062++){
             let neighbor = PrimChecks.list.oneOf(tempNeighborList); letVars['neighbor'] = neighbor;
             tempNeighborList = PrimChecks.list.remove(neighbor, tempNeighborList); letVars['tempNeighborList'] = tempNeighborList;
-            neighborChoiceList = ListPrims.fput(neighbor, neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
+            neighborChoiceList = PrimChecks.list.fput(neighbor, neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
             if (Prims.equality(RandomPrims.randomLong(2), 0)) {
               LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
             }
@@ -281,7 +281,7 @@ var procedures = (function() {
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SURFERS")).ask(function() {
           let oldPage = SelfManager.self().getVariable("current-page"); letVars['oldPage'] = oldPage;
           Errors.askNobodyCheck(SelfManager.self().getVariable("current-page")).ask(function() { SelfManager.self().setVariable("visits", (SelfManager.self().getVariable("visits") + 1)); }, true);
-          if ((Prims.lte(RandomPrims.randomFloat(1), world.observer.getGlobal("damping-factor")) && !SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.myOutLinks("LINKS"); }).isEmpty())) {
+          if ((Prims.lte(PrimChecks.math.randomFloat(1), world.observer.getGlobal("damping-factor")) && !SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.myOutLinks("LINKS"); }).isEmpty())) {
             SelfManager.self().setVariable("current-page", PrimChecks.list.oneOf(SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.outLinkNeighbors("LINKS"); })));
           }
           else {
@@ -349,7 +349,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("size", (0.2 + (4 * PrimChecks.math.sqrt(PrimChecks.math.div(SelfManager.self().getVariable("rank"), world.observer.getGlobal("total-rank"))))));
       if (world.observer.getGlobal("show-page-ranks?")) {
-        SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(NLMath.precision(SelfManager.self().getVariable("rank"), 3)) + workspace.dump("     ")));
+        SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(PrimChecks.math.precision(SelfManager.self().getVariable("rank"), 3)) + workspace.dump("     ")));
       }
       else {
         SelfManager.self().setVariable("label", "");

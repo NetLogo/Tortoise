@@ -140,7 +140,7 @@ var procedures = (function() {
       world.observer.setGlobal("color-list", [97.9, 94.5, 57.5, 63.8, 17.6, 14.9, 27.5, 25.1, 117.9, 114.4]);
       world.observer.setGlobal("quality-list", [100, 75, 50, 1, 54, 48, 40, 32, 24, 16]);
       Errors.askNobodyCheck(PrimChecks.list.nOf(world.observer.getGlobal("hive-number"), world.patches().agentFilter(function() {
-        return ((Prims.gt(SelfManager.self().distanceXY(0, 0), 16) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - 2))) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - 2)));
+        return ((Prims.gt(SelfManager.self().distanceXY(0, 0), 16) && Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - 2))) && Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - 2)));
       }))).ask(function() {
         SelfManager.self().sprout(1, "SITES").ask(function() {
           SelfManager.self().setVariable("shape", "box");
@@ -174,7 +174,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.turtleManager.createTurtles(100, "SCOUTS").ask(function() {
-        SelfManager.self().fd(RandomPrims.randomFloat(4));
+        SelfManager.self().fd(PrimChecks.math.randomFloat(4));
         SelfManager.self().setVariable("my-home", SelfManager.self().getPatchHere());
         SelfManager.self().setVariable("shape", "bee");
         SelfManager.self().setVariable("color", 5);
@@ -514,7 +514,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if ((world.turtleManager.turtlesOfBreed("SCOUTS").agentAll(function() { return SelfManager.self().getVariable("on-site?"); }) && Prims.equality(PrimChecks.list.length(ListPrims.removeDuplicates(world.turtleManager.turtlesOfBreed("SCOUTS").projectionBy(function() { return SelfManager.self().getVariable("target"); }))), 1))) {
+      if ((world.turtleManager.turtlesOfBreed("SCOUTS").agentAll(function() { return SelfManager.self().getVariable("on-site?"); }) && Prims.equality(PrimChecks.list.length(PrimChecks.list.removeDuplicates(world.turtleManager.turtlesOfBreed("SCOUTS").projectionBy(function() { return SelfManager.self().getVariable("target"); }))), 1))) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SCOUTS")).ask(function() {
@@ -629,7 +629,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       SelfManager.self().right((RandomPrims.randomLong(60) - RandomPrims.randomLong(60)));
-      SelfManager.self().fd(RandomPrims.randomFloat(0.1));
+      SelfManager.self().fd(PrimChecks.math.randomFloat(0.1));
       if (Prims.gt(SelfManager.self().distanceXY(0, 0), 4)) {
         SelfManager.self().faceXY(0, 0);
         SelfManager.self()._optimalFdOne();

@@ -155,10 +155,10 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
-          if (Prims.lt(RandomPrims.randomFloat(1000), world.observer.getGlobal("weeds-grow-rate"))) {
+          if (Prims.lt(PrimChecks.math.randomFloat(1000), world.observer.getGlobal("weeds-grow-rate"))) {
             SelfManager.self().setPatchVariable("pcolor", 115);
           }
-          if (Prims.lt(RandomPrims.randomFloat(1000), world.observer.getGlobal("grass-grow-rate"))) {
+          if (Prims.lt(PrimChecks.math.randomFloat(1000), world.observer.getGlobal("grass-grow-rate"))) {
             SelfManager.self().setPatchVariable("pcolor", 55);
           }
         }

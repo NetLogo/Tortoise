@@ -215,10 +215,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("sheep-reproduce"))) {
+      if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("sheep-reproduce"))) {
         SelfManager.self().setVariable("energy", PrimChecks.math.div(SelfManager.self().getVariable("energy"), 2));
         SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().right(RandomPrims.randomFloat(360));
+          SelfManager.self().right(PrimChecks.math.randomFloat(360));
           SelfManager.self()._optimalFdOne();
         }, true);
       }
@@ -232,10 +232,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("wolf-reproduce"))) {
+      if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("wolf-reproduce"))) {
         SelfManager.self().setVariable("energy", PrimChecks.math.div(SelfManager.self().getVariable("energy"), 2));
         SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().right(RandomPrims.randomFloat(360));
+          SelfManager.self().right(PrimChecks.math.randomFloat(360));
           SelfManager.self()._optimalFdOne();
         }, true);
       }
@@ -317,9 +317,13 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() { SelfManager.self().setVariable("label", ""); }, true);
       if (world.observer.getGlobal("show-energy?")) {
-        Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("WOLVES")).ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);
+        Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("WOLVES")).ask(function() {
+          SelfManager.self().setVariable("label", PrimChecks.math.round(SelfManager.self().getVariable("energy")));
+        }, true);
         if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
-          Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SHEEP")).ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);
+          Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SHEEP")).ask(function() {
+            SelfManager.self().setVariable("label", PrimChecks.math.round(SelfManager.self().getVariable("energy")));
+          }, true);
         }
       }
     } catch (e) {

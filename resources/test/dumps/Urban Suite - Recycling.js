@@ -168,7 +168,9 @@ var procedures = (function() {
         }
       }, true);
       if (world.observer.getGlobal("show-energy?")) {
-        Errors.askNobodyCheck(world.turtles()).ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);
+        Errors.askNobodyCheck(world.turtles()).ask(function() {
+          SelfManager.self().setVariable("label", PrimChecks.math.round(SelfManager.self().getVariable("energy")));
+        }, true);
       }
       else {
         Errors.askNobodyCheck(world.turtles()).ask(function() { SelfManager.self().setVariable("label", ""); }, true);

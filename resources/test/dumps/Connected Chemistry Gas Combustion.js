@@ -165,7 +165,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches().agentFilter(function() {
-        return ((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))) || (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))));
+        return ((Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))) || (Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))));
       })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -232,11 +232,11 @@ var procedures = (function() {
       let openPatches = Nobody; letVars['openPatches'] = openPatches;
       let openPatch = Nobody; letVars['openPatch'] = openPatch;
       openPatches = world.patches().agentFilter(function() {
-        return (Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box"))));
+        return (Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box"))));
       }); letVars['openPatches'] = openPatches;
       openPatch = PrimChecks.list.oneOf(openPatches); letVars['openPatch'] = openPatch;
       SelfManager.self().moveTo(openPatch);
-      SelfManager.self().setVariable("heading", RandomPrims.randomFloat(360));
+      SelfManager.self().setVariable("heading", PrimChecks.math.randomFloat(360));
       SelfManager.self().setVariable("energy", world.observer.getGlobal("initial-gas-temperature"));
       SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
     } catch (e) {
@@ -325,17 +325,17 @@ var procedures = (function() {
       let newPatch = SelfManager.self().patchAhead(1); letVars['newPatch'] = newPatch;
       let newPx = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }); letVars['newPx'] = newPx;
       let newPy = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }); letVars['newPy'] = newPy;
-      if ((!Prims.equality(NLMath.abs(newPx), world.observer.getGlobal("box-edge")) && !Prims.equality(NLMath.abs(newPy), world.observer.getGlobal("box-edge")))) {
+      if ((!Prims.equality(PrimChecks.math.abs(newPx), world.observer.getGlobal("box-edge")) && !Prims.equality(PrimChecks.math.abs(newPy), world.observer.getGlobal("box-edge")))) {
         throw new Exception.StopInterrupt;
       }
-      if (Prims.equality(NLMath.abs(newPx), world.observer.getGlobal("box-edge"))) {
+      if (Prims.equality(PrimChecks.math.abs(newPx), world.observer.getGlobal("box-edge"))) {
         SelfManager.self().setVariable("heading",  -(SelfManager.self().getVariable("heading")));
-        SelfManager.self().setVariable("momentum-instant", PrimChecks.math.div(NLMath.abs((((NLMath.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface")));
+        SelfManager.self().setVariable("momentum-instant", PrimChecks.math.div(PrimChecks.math.abs((((PrimChecks.math.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface")));
         SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + SelfManager.self().getVariable("momentum-instant")));
       }
-      if (Prims.equality(NLMath.abs(newPy), world.observer.getGlobal("box-edge"))) {
+      if (Prims.equality(PrimChecks.math.abs(newPy), world.observer.getGlobal("box-edge"))) {
         SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
-        SelfManager.self().setVariable("momentum-instant", PrimChecks.math.div(NLMath.abs((((NLMath.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface")));
+        SelfManager.self().setVariable("momentum-instant", PrimChecks.math.div(PrimChecks.math.abs((((PrimChecks.math.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface")));
         SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + SelfManager.self().getVariable("momentum-instant")));
       }
       if (world.observer.getGlobal("show-wall-hits?")) {
@@ -427,7 +427,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (world.turtleManager.turtlesOfBreed("GAS-MOLECULES")._optimalAnyWith(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {
-        world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, NLMath.ceil(PrimChecks.list.max(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
+        world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
       }
       else {
         world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
@@ -521,11 +521,11 @@ var procedures = (function() {
       let mass2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("mass"); }); letVars['mass2'] = mass2;
       let speed2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("speed"); }); letVars['speed2'] = speed2;
       let heading2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("heading"); }); letVars['heading2'] = heading2;
-      let theta = RandomPrims.randomFloat(360); letVars['theta'] = theta;
-      let v1t = (SelfManager.self().getVariable("speed") * NLMath.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
-      let v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
-      let v2t = (speed2 * NLMath.cos((theta - heading2))); letVars['v2t'] = v2t;
-      let v2l = (speed2 * NLMath.sin((theta - heading2))); letVars['v2l'] = v2l;
+      let theta = PrimChecks.math.randomFloat(360); letVars['theta'] = theta;
+      let v1t = (SelfManager.self().getVariable("speed") * PrimChecks.math.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
+      let v1l = (SelfManager.self().getVariable("speed") * PrimChecks.math.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
+      let v2t = (speed2 * PrimChecks.math.cos((theta - heading2))); letVars['v2t'] = v2t;
+      let v2l = (speed2 * PrimChecks.math.sin((theta - heading2))); letVars['v2l'] = v2l;
       let vcm = PrimChecks.math.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2)); letVars['vcm'] = vcm;
       v1t = ((2 * vcm) - v1t); letVars['v1t'] = v1t;
       v2t = ((2 * vcm) - v2t); letVars['v2t'] = v2t;

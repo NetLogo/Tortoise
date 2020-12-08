@@ -255,10 +255,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("carotene", RandomPrims.randomLong(100));
         procedures["CHANGE-COLOR"]();
         SelfManager.self().setVariable("attachedness", (100 + RandomPrims.randomLong(50)));
-        SelfManager.self().fd(PrimChecks.math.sqrt(RandomPrims.randomFloat(100)));
+        SelfManager.self().fd(PrimChecks.math.sqrt(PrimChecks.math.randomFloat(100)));
       }, true);
       Errors.askNobodyCheck(world.patches().agentFilter(function() {
-        return (((((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), 5)) || Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (SelfManager.self().getPatchVariable("pycor") + 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), 4)) || Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (SelfManager.self().getPatchVariable("pycor") + 8))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), 3));
+        return (((((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), 5)) || Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (SelfManager.self().getPatchVariable("pycor") + 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), 4)) || Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (SelfManager.self().getPatchVariable("pycor") + 8))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), 3));
       })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 35); }, true);
       world.turtleManager.createTurtles(1, "SUNS").ask(function() {
         SelfManager.self().setXY((world.topology.maxPxcor - 2), (world.topology.maxPycor - 3));
@@ -354,13 +354,13 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("rain-intensity"), "RAINDROPS").ask(function() {
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), world.topology.maxPycor);
         SelfManager.self().setVariable("heading", 180);
-        SelfManager.self().fd((0.5 - RandomPrims.randomFloat(1)));
+        SelfManager.self().fd((0.5 - PrimChecks.math.randomFloat(1)));
         SelfManager.self().setVariable("size", 0.3);
         SelfManager.self().setVariable("color", 5);
         SelfManager.self().setVariable("location", "falling");
         SelfManager.self().setVariable("amount-of-water", 10);
       }, true);
-      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("RAINDROPS")).ask(function() { SelfManager.self().fd(RandomPrims.randomFloat(2)); }, true);
+      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("RAINDROPS")).ask(function() { SelfManager.self().fd(PrimChecks.math.randomFloat(2)); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -493,9 +493,9 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       if (Prims.gt(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("bottom-line"))) {
-        let targetXcor = ((SelfManager.self().getVariable("xcor") + RandomPrims.randomFloat(world.observer.getGlobal("wind-factor"))) - RandomPrims.randomFloat(world.observer.getGlobal("wind-factor"))); letVars['targetXcor'] = targetXcor;
+        let targetXcor = ((SelfManager.self().getVariable("xcor") + PrimChecks.math.randomFloat(world.observer.getGlobal("wind-factor"))) - PrimChecks.math.randomFloat(world.observer.getGlobal("wind-factor"))); letVars['targetXcor'] = targetXcor;
         SelfManager.self().faceXY(targetXcor, world.observer.getGlobal("bottom-line"));
-        SelfManager.self().fd(RandomPrims.randomFloat((0.7 * PrimChecks.list.max(ListPrims.list(world.observer.getGlobal("wind-factor"), 0.5)))));
+        SelfManager.self().fd(PrimChecks.math.randomFloat((0.7 * PrimChecks.list.max(ListPrims.list(world.observer.getGlobal("wind-factor"), 0.5)))));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -516,7 +516,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", ColorModel.scaleColor(55, SelfManager.self().getVariable("chlorophyll"), 150, -50));
       }
       else {
-        if (Prims.lt(NLMath.abs((SelfManager.self().getVariable("anthocyanin") - SelfManager.self().getVariable("carotene"))), 10)) {
+        if (Prims.lt(PrimChecks.math.abs((SelfManager.self().getVariable("anthocyanin") - SelfManager.self().getVariable("carotene"))), 10)) {
           SelfManager.self().setVariable("color", ColorModel.scaleColor(25, SelfManager.self().getVariable("carotene"), 150, -50));
         }
         if (Prims.gt(SelfManager.self().getVariable("anthocyanin"), (SelfManager.self().getVariable("carotene") + 10))) {

@@ -175,8 +175,8 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().sprout(1, "TURTLES").ask(function() {
         SelfManager.self().setVariable("color", procedures["RANDOM-COLOR"]());
-        SelfManager.self().setVariable("cooperate-with-same?", Prims.lt(RandomPrims.randomFloat(1), world.observer.getGlobal("immigrant-chance-cooperate-with-same")));
-        SelfManager.self().setVariable("cooperate-with-different?", Prims.lt(RandomPrims.randomFloat(1), world.observer.getGlobal("immigrant-chance-cooperate-with-different")));
+        SelfManager.self().setVariable("cooperate-with-same?", Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("immigrant-chance-cooperate-with-same")));
+        SelfManager.self().setVariable("cooperate-with-different?", Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("immigrant-chance-cooperate-with-different")));
         procedures["UPDATE-SHAPE"]();
       }, true);
     } catch (e) {
@@ -291,7 +291,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(RandomPrims.randomFloat(1), SelfManager.self().getVariable("ptr"))) {
+      if (Prims.lt(PrimChecks.math.randomFloat(1), SelfManager.self().getVariable("ptr"))) {
         let destination = SelfManager.self().getNeighbors4()._optimalOneOfWith(function() { return !!SelfManager.self().turtlesHere().isEmpty(); }); letVars['destination'] = destination;
         if (!Prims.equality(destination, Nobody)) {
           SelfManager.self().hatch(1, "").ask(function() {
@@ -310,16 +310,16 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(RandomPrims.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
+      if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
         let oldColor = SelfManager.self().getVariable("color"); letVars['oldColor'] = oldColor;
         while (Prims.equality(SelfManager.self().getVariable("color"), oldColor)) {
           SelfManager.self().setVariable("color", procedures["RANDOM-COLOR"]());
         }
       }
-      if (Prims.lt(RandomPrims.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
+      if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
         SelfManager.self().setVariable("cooperate-with-same?", !SelfManager.self().getVariable("cooperate-with-same?"));
       }
-      if (Prims.lt(RandomPrims.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
+      if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
         SelfManager.self().setVariable("cooperate-with-different?", !SelfManager.self().getVariable("cooperate-with-different?"));
       }
       procedures["UPDATE-SHAPE"]();
@@ -334,7 +334,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        if (Prims.lt(RandomPrims.randomFloat(1), world.observer.getGlobal("death-rate"))) {
+        if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("death-rate"))) {
           SelfManager.self().die();
         }
       }, true);

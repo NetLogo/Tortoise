@@ -225,7 +225,7 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
         SelfManager.self().setPatchVariable("max-grain-here", 0);
-        if (Prims.lte(RandomPrims.randomFloat(100), world.observer.getGlobal("percent-best-land"))) {
+        if (Prims.lte(PrimChecks.math.randomFloat(100), world.observer.getGlobal("percent-best-land"))) {
           SelfManager.self().setPatchVariable("max-grain-here", world.observer.getGlobal("max-grain"));
           SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
         }
@@ -240,7 +240,7 @@ var procedures = (function() {
         world.topology.diffuse("grain-here", 0.25, false)
       }
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("grain-here", NLMath.floor(SelfManager.self().getPatchVariable("grain-here")));
+        SelfManager.self().setPatchVariable("grain-here", PrimChecks.math.floor(SelfManager.self().getPatchVariable("grain-here")));
         SelfManager.self().setPatchVariable("max-grain-here", SelfManager.self().getPatchVariable("grain-here"));
         procedures["RECOLOR-PATCH"]();
       }, true);
@@ -327,7 +327,7 @@ var procedures = (function() {
       procedures["HARVEST"]();
       Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["MOVE-EAT-AGE-DIE"](); }, true);
       procedures["RECOLOR-TURTLES"]();
-      if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("grain-growth-interval")), 0)) {
+      if (Prims.equality(PrimChecks.math.mod(world.ticker.tickCount(), world.observer.getGlobal("grain-growth-interval")), 0)) {
         Errors.askNobodyCheck(world.patches()).ask(function() { procedures["GROW-GRAIN"](); }, true);
       }
       procedures["UPDATE-LORENZ-AND-GINI"]();
@@ -408,7 +408,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().setVariable("wealth", NLMath.floor((SelfManager.self().getVariable("wealth") + PrimChecks.math.div(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().turtlesHere().size()))));
+        SelfManager.self().setVariable("wealth", PrimChecks.math.floor((SelfManager.self().getVariable("wealth") + PrimChecks.math.div(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().turtlesHere().size()))));
       }, true);
       Errors.askNobodyCheck(world.turtles()).ask(function() {
         SelfManager.self().setPatchVariable("grain-here", 0);

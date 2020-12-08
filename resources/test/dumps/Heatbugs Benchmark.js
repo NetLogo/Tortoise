@@ -78,9 +78,9 @@ var procedures = (function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("color", 65);
           SelfManager.self().setVariable("size", 1.75);
-          SelfManager.self().setVariable("ideal-temp", (world.observer.getGlobal("min-ideal-temp") + PrimChecks.math.random(NLMath.abs((world.observer.getGlobal("max-ideal-temp") - world.observer.getGlobal("min-ideal-temp"))))));
-          SelfManager.self().setVariable("output-heat", (world.observer.getGlobal("min-output-heat") + PrimChecks.math.random(NLMath.abs((world.observer.getGlobal("max-output-heat") - world.observer.getGlobal("min-output-heat"))))));
-          SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
+          SelfManager.self().setVariable("ideal-temp", (world.observer.getGlobal("min-ideal-temp") + PrimChecks.math.random(PrimChecks.math.abs((world.observer.getGlobal("max-ideal-temp") - world.observer.getGlobal("min-ideal-temp"))))));
+          SelfManager.self().setVariable("output-heat", (world.observer.getGlobal("min-output-heat") + PrimChecks.math.random(PrimChecks.math.abs((world.observer.getGlobal("max-output-heat") - world.observer.getGlobal("min-output-heat"))))));
+          SelfManager.self().setVariable("unhappiness", PrimChecks.math.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
         }, true);
       }, true);
     } catch (e) {
@@ -124,7 +124,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
+      SelfManager.self().setVariable("unhappiness", PrimChecks.math.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
       if (Prims.equality(SelfManager.self().getVariable("unhappiness"), 0)) {
         SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));
       }

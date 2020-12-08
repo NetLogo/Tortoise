@@ -169,7 +169,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.getPatchAt(PrimChecks.math.div( -(world.topology.maxPxcor), 2), 0)).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       Errors.askNobodyCheck(world.getPatchAt(PrimChecks.math.div(world.topology.maxPxcor, 2), 0)).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.observer.setGlobal("border", world.patches().agentFilter(function() {
-        return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), 0));
+        return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), 0));
       }));
       Errors.askNobodyCheck(world.observer.getGlobal("border")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
     } catch (e) {
@@ -204,12 +204,12 @@ var procedures = (function() {
           SelfManager.self().setVariable("shape", "circle");
         }
         SelfManager.self().setVariable("size", 0.5);
-        if (Prims.lt(RandomPrims.randomFloat(100), 5)) {
+        if (Prims.lt(PrimChecks.math.randomFloat(100), 5)) {
           SelfManager.self().setVariable("infected?", true);
           SelfManager.self().setVariable("susceptible?", false);
           SelfManager.self().setVariable("infection-length", PrimChecks.math.random(SelfManager.self().getVariable("recovery-time")));
         }
-        if ((!SelfManager.self().getVariable("infected?") && Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("inoculation-chance")))) {
+        if ((!SelfManager.self().getVariable("infected?") && Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("inoculation-chance")))) {
           SelfManager.self().setVariable("inoculated?", true);
           SelfManager.self().setVariable("susceptible?", false);
         }
@@ -399,7 +399,7 @@ var procedures = (function() {
       }
       if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
         if (Prims.gt(SelfManager.self().getVariable("xcor"),  -(0.5))) {
-          world.observer.setGlobal("angle", RandomPrims.randomFloat(180));
+          world.observer.setGlobal("angle", PrimChecks.math.randomFloat(180));
           let newPatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), -1); letVars['newPatch'] = newPatch;
           if (!Prims.equality(newPatch, Nobody)) {
             SelfManager.self().moveTo(newPatch);
@@ -407,10 +407,10 @@ var procedures = (function() {
         }
         else {
           if (Prims.lt(SelfManager.self().getVariable("xcor"), (world.topology.minPxcor + 0.5))) {
-            world.observer.setGlobal("angle", RandomPrims.randomFloat(180));
+            world.observer.setGlobal("angle", PrimChecks.math.randomFloat(180));
           }
           else {
-            world.observer.setGlobal("angle", RandomPrims.randomFloat(360));
+            world.observer.setGlobal("angle", PrimChecks.math.randomFloat(360));
           }
           SelfManager.self().right(world.observer.getGlobal("angle"));
           if (SelfManager.self().getVariable("ambulance?")) {
@@ -423,7 +423,7 @@ var procedures = (function() {
       }
       else {
         if (Prims.lt(SelfManager.self().getVariable("xcor"), 1)) {
-          world.observer.setGlobal("angle", RandomPrims.randomFloat(180));
+          world.observer.setGlobal("angle", PrimChecks.math.randomFloat(180));
           let newPatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), 1); letVars['newPatch'] = newPatch;
           if (!Prims.equality(newPatch, Nobody)) {
             SelfManager.self().moveTo(newPatch);
@@ -431,10 +431,10 @@ var procedures = (function() {
         }
         else {
           if (Prims.gt(SelfManager.self().getVariable("xcor"), (world.topology.maxPxcor - 1))) {
-            world.observer.setGlobal("angle", RandomPrims.randomFloat(180));
+            world.observer.setGlobal("angle", PrimChecks.math.randomFloat(180));
           }
           else {
-            world.observer.setGlobal("angle", RandomPrims.randomFloat(360));
+            world.observer.setGlobal("angle", PrimChecks.math.randomFloat(360));
           }
           SelfManager.self().right(-(world.observer.getGlobal("angle")));
           if (SelfManager.self().getVariable("ambulance?")) {
@@ -470,7 +470,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("infection-length", (SelfManager.self().getVariable("infection-length") + 1));
       if (!SelfManager.self().getVariable("hospitalized?")) {
         if (Prims.gt(SelfManager.self().getVariable("infection-length"), SelfManager.self().getVariable("recovery-time"))) {
-          if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("recovery-chance"))) {
+          if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("recovery-chance"))) {
             SelfManager.self().setVariable("infected?", false);
             SelfManager.self().setVariable("cured?", true);
             SelfManager.self().setVariable("nb-recovered", (SelfManager.self().getVariable("nb-recovered") + 1));

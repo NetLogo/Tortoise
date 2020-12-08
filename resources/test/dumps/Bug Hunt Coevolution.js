@@ -221,7 +221,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let worstBird = Nobody; letVars['worstBird'] = worstBird;
-      if (((Prims.equality(NLMath.mod(world.observer.getGlobal("total-caught"), world.observer.getGlobal("reproduce-birds-after-eating")), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && !world.turtleManager.turtlesOfBreed("BIRDS").isEmpty())) {
+      if (((Prims.equality(PrimChecks.math.mod(world.observer.getGlobal("total-caught"), world.observer.getGlobal("reproduce-birds-after-eating")), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && !world.turtleManager.turtlesOfBreed("BIRDS").isEmpty())) {
         worstBird = world.turtleManager.turtlesOfBreed("BIRDS").minOneOf(function() { return SelfManager.self().getVariable("eaten"); }); letVars['worstBird'] = worstBird;
         Errors.askNobodyCheck(worstBird).ask(function() {
           Errors.askNobodyCheck(LinkPrims.outLinkNeighbors("LINKS")).ask(function() {
@@ -324,8 +324,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (world.observer.getGlobal("wiggle?")) {
-        SelfManager.self().right(PrimChecks.math.div((RandomPrims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
-        SelfManager.self().right(-(PrimChecks.math.div((RandomPrims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor"))));
+        SelfManager.self().right(PrimChecks.math.div((PrimChecks.math.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
+        SelfManager.self().right(-(PrimChecks.math.div((PrimChecks.math.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor"))));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -451,7 +451,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("BUGS"))).ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
           procedures["MUTATE-OFFSPRING-BUG"]();
-          SelfManager.self().setVariable("heading", RandomPrims.randomFloat(360));
+          SelfManager.self().setVariable("heading", PrimChecks.math.randomFloat(360));
           procedures["ATTACH-VISION-CONE"]();
         }, true);
       }, true);
@@ -472,7 +472,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("eaten", birdEnergySplit);
           SelfManager.self().hatch(1, "").ask(function() {
             procedures["MUTATE-OFFSPRING-BIRD"]();
-            SelfManager.self().setVariable("heading", RandomPrims.randomFloat(360));
+            SelfManager.self().setVariable("heading", PrimChecks.math.randomFloat(360));
             procedures["ATTACH-VISION-CONE"]();
           }, true);
         }, true);
@@ -488,10 +488,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + RandomPrims.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
+        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + PrimChecks.math.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
       }
       else {
-        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") - RandomPrims.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
+        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") - PrimChecks.math.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
       }
       if (Prims.gt(SelfManager.self().getVariable("vision"), world.observer.getGlobal("max-vision"))) {
         SelfManager.self().setVariable("vision", world.observer.getGlobal("max-vision"));
@@ -500,10 +500,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("vision", 0);
       }
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + RandomPrims.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
+        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + PrimChecks.math.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
       }
       else {
-        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") - RandomPrims.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
+        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") - PrimChecks.math.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
       }
       if (Prims.gt(SelfManager.self().getVariable("speed"), world.observer.getGlobal("max-speed"))) {
         SelfManager.self().setVariable("speed", world.observer.getGlobal("max-speed"));
@@ -522,10 +522,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + RandomPrims.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
+        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + PrimChecks.math.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
       }
       else {
-        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") - RandomPrims.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
+        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") - PrimChecks.math.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
       }
       if (Prims.gt(SelfManager.self().getVariable("vision"), world.observer.getGlobal("max-vision"))) {
         SelfManager.self().setVariable("vision", world.observer.getGlobal("max-vision"));
@@ -534,10 +534,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("vision", 0);
       }
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + RandomPrims.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
+        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + PrimChecks.math.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
       }
       else {
-        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") - RandomPrims.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
+        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") - PrimChecks.math.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
       }
       if (Prims.gt(SelfManager.self().getVariable("speed"), world.observer.getGlobal("max-speed"))) {
         SelfManager.self().setVariable("speed", world.observer.getGlobal("max-speed"));
@@ -603,28 +603,28 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 6)) {
+      if (Prims.equality(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 6)) {
         SelfManager.self().setVariable("color", 15);
       }
-      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 5)) {
+      if (Prims.equality(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 5)) {
         SelfManager.self().setVariable("color", 25);
       }
-      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 4)) {
+      if (Prims.equality(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 4)) {
         SelfManager.self().setVariable("color", (45 - 1));
       }
-      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 3)) {
+      if (Prims.equality(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 3)) {
         SelfManager.self().setVariable("color", 55);
       }
-      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 2)) {
+      if (Prims.equality(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 2)) {
         SelfManager.self().setVariable("color", 105);
       }
-      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 1)) {
+      if (Prims.equality(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 1)) {
         SelfManager.self().setVariable("color", 115);
       }
-      if (Prims.gte(NLMath.floor(SelfManager.self().getVariable("speed")), 7)) {
+      if (Prims.gte(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 7)) {
         SelfManager.self().setVariable("color", (5 - 2));
       }
-      if (Prims.lt(NLMath.floor(SelfManager.self().getVariable("speed")), 1)) {
+      if (Prims.lt(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 1)) {
         SelfManager.self().setVariable("color", (5 + 2));
       }
     } catch (e) {
@@ -637,7 +637,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 1)) {
+      if (Prims.equality(PrimChecks.math.mod(world.ticker.tickCount(), 100), 1)) {
         plotManager.setCurrentPlot("Avg. Vision vs. Time");
         plotManager.setCurrentPen("bugs");
         if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {

@@ -81,7 +81,7 @@ var procedures = (function() {
       world.observer.setGlobal("box-edge", (world.topology.maxPxcor - 1));
       procedures["MAKE-BOX"]();
       procedures["MAKE-PARTICLES"]();
-      world.observer.setGlobal("tick-length", PrimChecks.math.div(1, NLMath.ceil(PrimChecks.list.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))));
+      world.observer.setGlobal("tick-length", PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))));
       world.observer.setGlobal("original-tick-length", world.observer.getGlobal("tick-length"));
       world.observer.setGlobal("colliding-particle-1", Nobody);
       world.observer.setGlobal("colliding-particle-2", Nobody);
@@ -152,7 +152,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return NLMath.sin(headingAngle);
+      return PrimChecks.math.sin(headingAngle);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -165,7 +165,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return NLMath.cos(headingAngle);
+      return PrimChecks.math.cos(headingAngle);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -200,7 +200,7 @@ var procedures = (function() {
         }
         if (Prims.gt(timeToCollision, 0)) {
           let collidingPair = ListPrims.list((timeToCollision + world.ticker.tickCount()), SelfManager.self(), SelfManager.myself()); letVars['collidingPair'] = collidingPair;
-          world.observer.setGlobal("colliding-particles", ListPrims.fput(collidingPair, world.observer.getGlobal("colliding-particles")));
+          world.observer.setGlobal("colliding-particles", PrimChecks.list.fput(collidingPair, world.observer.getGlobal("colliding-particles")));
         }
       }, true);
     } catch (e) {
@@ -278,7 +278,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let collidingPair = ListPrims.list((timeToCollision + world.ticker.tickCount()), SelfManager.self(), wall); letVars['collidingPair'] = collidingPair;
-      world.observer.setGlobal("colliding-particles", ListPrims.fput(collidingPair, world.observer.getGlobal("colliding-particles")));
+      world.observer.setGlobal("colliding-particles", PrimChecks.list.fput(collidingPair, world.observer.getGlobal("colliding-particles")));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -353,10 +353,10 @@ var procedures = (function() {
       let speed2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("speed"); }); letVars['speed2'] = speed2;
       let heading2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("heading"); }); letVars['heading2'] = heading2;
       let theta = SelfManager.self().towards(otherParticle); letVars['theta'] = theta;
-      let v1t = (SelfManager.self().getVariable("speed") * NLMath.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
-      let v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
-      let v2t = (speed2 * NLMath.cos((theta - heading2))); letVars['v2t'] = v2t;
-      let v2l = (speed2 * NLMath.sin((theta - heading2))); letVars['v2l'] = v2l;
+      let v1t = (SelfManager.self().getVariable("speed") * PrimChecks.math.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
+      let v1l = (SelfManager.self().getVariable("speed") * PrimChecks.math.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
+      let v2t = (speed2 * PrimChecks.math.cos((theta - heading2))); letVars['v2t'] = v2t;
+      let v2l = (speed2 * PrimChecks.math.sin((theta - heading2))); letVars['v2l'] = v2l;
       let vcm = PrimChecks.math.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2)); letVars['vcm'] = vcm;
       v1t = ((2 * vcm) - v1t); letVars['v1t'] = v1t;
       v2t = ((2 * vcm) - v2t); letVars['v2t'] = v2t;
@@ -450,7 +450,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches().agentFilter(function() {
-        return ((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge"))) || (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge"))));
+        return ((Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge"))) || (Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge"))));
       })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -464,10 +464,10 @@ var procedures = (function() {
       var letVars = { };
       world.turtleManager.createOrderedTurtles(world.observer.getGlobal("number"), "PARTICLES").ask(function() {
         SelfManager.self().setVariable("speed", 1);
-        SelfManager.self().setVariable("size", (world.observer.getGlobal("smallest-particle-size") + RandomPrims.randomFloat((world.observer.getGlobal("largest-particle-size") - world.observer.getGlobal("smallest-particle-size")))));
+        SelfManager.self().setVariable("size", (world.observer.getGlobal("smallest-particle-size") + PrimChecks.math.randomFloat((world.observer.getGlobal("largest-particle-size") - world.observer.getGlobal("smallest-particle-size")))));
         SelfManager.self().setVariable("mass", (SelfManager.self().getVariable("size") * SelfManager.self().getVariable("size")));
         procedures["RECOLOR"]();
-        SelfManager.self().setVariable("heading", RandomPrims.randomFloat(360));
+        SelfManager.self().setVariable("heading", PrimChecks.math.randomFloat(360));
       }, true);
       procedures["ARRANGE"](world.turtleManager.turtlesOfBreed("PARTICLES"));
     } catch (e) {
@@ -510,7 +510,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setXY((PrimChecks.list.oneOf([1, -1]) * RandomPrims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - PrimChecks.math.div(SelfManager.self().getVariable("size"), 2)))), (PrimChecks.list.oneOf([1, -1]) * RandomPrims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - PrimChecks.math.div(SelfManager.self().getVariable("size"), 2)))));
+      SelfManager.self().setXY((PrimChecks.list.oneOf([1, -1]) * PrimChecks.math.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - PrimChecks.math.div(SelfManager.self().getVariable("size"), 2)))), (PrimChecks.list.oneOf([1, -1]) * PrimChecks.math.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - PrimChecks.math.div(SelfManager.self().getVariable("size"), 2)))));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

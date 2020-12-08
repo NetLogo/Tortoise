@@ -175,7 +175,7 @@ var procedures = (function() {
       }
       let oldClock = world.ticker.tickCount(); letVars['oldClock'] = oldClock;
       world.ticker.tickAdvance(world.observer.getGlobal("tick-length"));
-      if (Prims.gt(NLMath.floor(world.ticker.tickCount()), NLMath.floor((world.ticker.tickCount() - world.observer.getGlobal("tick-length"))))) {
+      if (Prims.gt(PrimChecks.math.floor(world.ticker.tickCount()), PrimChecks.math.floor((world.ticker.tickCount() - world.observer.getGlobal("tick-length"))))) {
         if (!world.turtleManager.turtlesOfBreed("PARTICLES").isEmpty()) {
           world.observer.setGlobal("wall-hits-per-particle", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("wall-hits"); })));
         }
@@ -208,7 +208,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (world.turtleManager.turtlesOfBreed("PARTICLES")._optimalAnyWith(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {
-        world.observer.setGlobal("tick-length", PrimChecks.math.div(1, NLMath.ceil(PrimChecks.list.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))));
+        world.observer.setGlobal("tick-length", PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))));
       }
       else {
         world.observer.setGlobal("tick-length", 1);
@@ -249,18 +249,18 @@ var procedures = (function() {
       if (!ColorModel.areRelatedByShade(45, newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }))) {
         throw new Exception.StopInterrupt;
       }
-      if ((!Prims.equality(NLMath.abs(newPx), world.observer.getGlobal("box-edge")) && !Prims.equality(NLMath.abs(newPy), world.observer.getGlobal("box-edge")))) {
+      if ((!Prims.equality(PrimChecks.math.abs(newPx), world.observer.getGlobal("box-edge")) && !Prims.equality(PrimChecks.math.abs(newPy), world.observer.getGlobal("box-edge")))) {
         throw new Exception.StopInterrupt;
       }
-      if (Prims.equality(NLMath.abs(newPx), world.observer.getGlobal("box-edge"))) {
+      if (Prims.equality(PrimChecks.math.abs(newPx), world.observer.getGlobal("box-edge"))) {
         SelfManager.self().setVariable("heading",  -(SelfManager.self().getVariable("heading")));
         SelfManager.self().setVariable("wall-hits", (SelfManager.self().getVariable("wall-hits") + 1));
-        SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + PrimChecks.math.div(NLMath.abs((((NLMath.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface"))));
+        SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + PrimChecks.math.div(PrimChecks.math.abs((((PrimChecks.math.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface"))));
       }
-      if (Prims.equality(NLMath.abs(newPy), world.observer.getGlobal("box-edge"))) {
+      if (Prims.equality(PrimChecks.math.abs(newPy), world.observer.getGlobal("box-edge"))) {
         SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
         SelfManager.self().setVariable("wall-hits", (SelfManager.self().getVariable("wall-hits") + 1));
-        SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + PrimChecks.math.div(NLMath.abs((((NLMath.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface"))));
+        SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + PrimChecks.math.div(PrimChecks.math.abs((((PrimChecks.math.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface"))));
       }
       Errors.askNobodyCheck(world.getPatchAt(newPx, newPy)).ask(function() {
         SelfManager.self().sprout(1, "FLASHES").ask(function() {
@@ -317,11 +317,11 @@ var procedures = (function() {
       let mass2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("mass"); }); letVars['mass2'] = mass2;
       let speed2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("speed"); }); letVars['speed2'] = speed2;
       let heading2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("heading"); }); letVars['heading2'] = heading2;
-      let theta = RandomPrims.randomFloat(360); letVars['theta'] = theta;
-      let v1t = (SelfManager.self().getVariable("speed") * NLMath.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
-      let v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
-      let v2t = (speed2 * NLMath.cos((theta - heading2))); letVars['v2t'] = v2t;
-      let v2l = (speed2 * NLMath.sin((theta - heading2))); letVars['v2l'] = v2l;
+      let theta = PrimChecks.math.randomFloat(360); letVars['theta'] = theta;
+      let v1t = (SelfManager.self().getVariable("speed") * PrimChecks.math.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
+      let v1l = (SelfManager.self().getVariable("speed") * PrimChecks.math.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
+      let v2t = (speed2 * PrimChecks.math.cos((theta - heading2))); letVars['v2t'] = v2t;
+      let v2l = (speed2 * PrimChecks.math.sin((theta - heading2))); letVars['v2l'] = v2l;
       let vcm = PrimChecks.math.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2)); letVars['vcm'] = vcm;
       v1t = ((2 * vcm) - v1t); letVars['v1t'] = v1t;
       v2t = ((2 * vcm) - v2t); letVars['v2t'] = v2t;
@@ -376,7 +376,7 @@ var procedures = (function() {
       if (!tracePatches.isEmpty()) {
         Errors.askNobodyCheck(tracePatches).ask(function() {
           SelfManager.self().setPatchVariable("pcolor", (SelfManager.self().getPatchVariable("pcolor") - 0.4));
-          if ((!world.observer.getGlobal("trace?") || Prims.equality(NLMath.round(SelfManager.self().getPatchVariable("pcolor")), 0))) {
+          if ((!world.observer.getGlobal("trace?") || Prims.equality(PrimChecks.math.round(SelfManager.self().getPatchVariable("pcolor")), 0))) {
             SelfManager.self().setPatchVariable("pcolor", 0);
           }
         }, true);
@@ -395,7 +395,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches().agentFilter(function() {
-        return ((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge"))) || (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge"))));
+        return ((Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge"))) || (Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge"))));
       })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -439,8 +439,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setXY(((1 - world.observer.getGlobal("box-edge")) + RandomPrims.randomFloat(((2 * world.observer.getGlobal("box-edge")) - 2))), ((1 - world.observer.getGlobal("box-edge")) + RandomPrims.randomFloat(((2 * world.observer.getGlobal("box-edge")) - 2))));
-      SelfManager.self().setVariable("heading", RandomPrims.randomFloat(360));
+      SelfManager.self().setXY(((1 - world.observer.getGlobal("box-edge")) + PrimChecks.math.randomFloat(((2 * world.observer.getGlobal("box-edge")) - 2))), ((1 - world.observer.getGlobal("box-edge")) + PrimChecks.math.randomFloat(((2 * world.observer.getGlobal("box-edge")) - 2))));
+      SelfManager.self().setVariable("heading", PrimChecks.math.randomFloat(360));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -452,7 +452,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       plotManager.setCurrentPlot("Speed Counts");
-      plotManager.setYRange(0, NLMath.ceil(PrimChecks.math.div(world.observer.getGlobal("number-of-particles"), 6)));
+      plotManager.setYRange(0, PrimChecks.math.ceil(PrimChecks.math.div(world.observer.getGlobal("number-of-particles"), 6)));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -465,7 +465,7 @@ var procedures = (function() {
       var letVars = { };
       plotManager.setCurrentPlot("Speed Histogram");
       plotManager.setXRange(0, (world.observer.getGlobal("init-particle-speed") * 2));
-      plotManager.setYRange(0, NLMath.ceil(PrimChecks.math.div(world.observer.getGlobal("number-of-particles"), 6)));
+      plotManager.setYRange(0, PrimChecks.math.ceil(PrimChecks.math.div(world.observer.getGlobal("number-of-particles"), 6)));
       plotManager.setCurrentPen("medium");
       plotManager.setHistogramBarCount(40);
       plotManager.setCurrentPen("slow");
@@ -476,7 +476,7 @@ var procedures = (function() {
       procedures["DRAW-VERT-LINE"](world.observer.getGlobal("init-avg-speed"));
       plotManager.setCurrentPlot("Energy Histogram");
       plotManager.setXRange(0, (((0.5 * (world.observer.getGlobal("init-particle-speed") * 2)) * (world.observer.getGlobal("init-particle-speed") * 2)) * world.observer.getGlobal("particle-mass")));
-      plotManager.setYRange(0, NLMath.ceil(PrimChecks.math.div(world.observer.getGlobal("number-of-particles"), 6)));
+      plotManager.setYRange(0, PrimChecks.math.ceil(PrimChecks.math.div(world.observer.getGlobal("number-of-particles"), 6)));
       plotManager.setCurrentPen("medium");
       plotManager.setHistogramBarCount(40);
       plotManager.setCurrentPen("slow");

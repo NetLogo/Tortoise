@@ -77,7 +77,7 @@ var procedures = (function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
           procedures["TURN-TOWARD-CHEMICAL"]();
         }
-        SelfManager.self().right(((RandomPrims.randomFloat(world.observer.getGlobal("wiggle-angle")) - RandomPrims.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
+        SelfManager.self().right(((PrimChecks.math.randomFloat(world.observer.getGlobal("wiggle-angle")) - PrimChecks.math.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
         SelfManager.self()._optimalFdOne();
         SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + 2));
       }, true);

@@ -103,7 +103,7 @@ var procedures = (function() {
       for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++){
         Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtles())).ask(function() { procedures["ATTEMPT-MOVE"](); }, true);
       }
-      if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("num-atoms")), 1)) {
+      if (Prims.equality(PrimChecks.math.mod(world.ticker.tickCount(), world.observer.getGlobal("num-atoms")), 1)) {
         procedures["TUNE-ACCEPTANCE-RATE"]();
       }
       world.ticker.tick();
@@ -120,12 +120,12 @@ var procedures = (function() {
       world.observer.setGlobal("total-move-attempts", (world.observer.getGlobal("total-move-attempts") + 1));
       world.observer.setGlobal("current-move-attempts", (world.observer.getGlobal("current-move-attempts") + 1));
       let vOld = procedures["CALC-V"](); letVars['vOld'] = vOld;
-      let deltaX = ((RandomPrims.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist")); letVars['deltaX'] = deltaX;
-      let deltaY = ((RandomPrims.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist")); letVars['deltaY'] = deltaY;
+      let deltaX = ((PrimChecks.math.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist")); letVars['deltaX'] = deltaX;
+      let deltaY = ((PrimChecks.math.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist")); letVars['deltaY'] = deltaY;
       SelfManager.self().setXY((SelfManager.self().getVariable("xcor") + deltaX), (SelfManager.self().getVariable("ycor") + deltaY));
       let vNew = procedures["CALC-V"](); letVars['vNew'] = vNew;
       let deltaV = (vNew - vOld); letVars['deltaV'] = deltaV;
-      if ((Prims.lt(vNew, vOld) || Prims.lt(RandomPrims.randomFloat(1), PrimChecks.math.exp(PrimChecks.math.div( -(deltaV), world.observer.getGlobal("temperature")))))) {
+      if ((Prims.lt(vNew, vOld) || Prims.lt(PrimChecks.math.randomFloat(1), PrimChecks.math.exp(PrimChecks.math.div( -(deltaV), world.observer.getGlobal("temperature")))))) {
         world.observer.setGlobal("total-successful-moves", (world.observer.getGlobal("total-successful-moves") + 1));
         world.observer.setGlobal("current-successful-moves", (world.observer.getGlobal("current-successful-moves") + 1));
         world.observer.setGlobal("v-total", (world.observer.getGlobal("v-total") + deltaV));
@@ -234,7 +234,7 @@ var procedures = (function() {
         Errors.askNobodyCheck(world.turtles()).ask(function() {
           if (Prims.gt(xpos, PrimChecks.math.div((l * rowDist), 2))) {
             rNum = (rNum + 1); letVars['rNum'] = rNum;
-            xpos = (PrimChecks.math.div(( -(l) * rowDist), 2) + PrimChecks.math.div((NLMath.mod(rNum, 2) * rowDist), 2)); letVars['xpos'] = xpos;
+            xpos = (PrimChecks.math.div(( -(l) * rowDist), 2) + PrimChecks.math.div((PrimChecks.math.mod(rNum, 2) * rowDist), 2)); letVars['xpos'] = xpos;
             ypos = (ypos + rowDist); letVars['ypos'] = ypos;
           }
           SelfManager.self().setXY(xpos, ypos);

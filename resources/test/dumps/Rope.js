@@ -81,10 +81,10 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); })).ask(function() {
         if (Prims.gt(world.ticker.tickCount(), 100)) {
-          SelfManager.self().setVariable("ypos", (world.observer.getGlobal("amplitude") * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
+          SelfManager.self().setVariable("ypos", (world.observer.getGlobal("amplitude") * PrimChecks.math.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
         }
         else {
-          SelfManager.self().setVariable("ypos", ((PrimChecks.math.div(world.ticker.tickCount(), 100) * world.observer.getGlobal("amplitude")) * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
+          SelfManager.self().setVariable("ypos", ((PrimChecks.math.div(world.ticker.tickCount(), 100) * world.observer.getGlobal("amplitude")) * PrimChecks.math.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
         }
         if (!Prims.equality(SelfManager.self().patchAt(0, (SelfManager.self().getVariable("ypos") - SelfManager.self().getVariable("ycor"))), Nobody)) {
           SelfManager.self().setVariable("ycor", SelfManager.self().getVariable("ypos"));

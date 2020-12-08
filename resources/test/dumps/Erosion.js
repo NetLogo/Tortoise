@@ -136,7 +136,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() {
-        if (Prims.lt(RandomPrims.randomFloat(1), world.observer.getGlobal("rainfall"))) {
+        if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("rainfall"))) {
           SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + 1));
         }
       }, true);

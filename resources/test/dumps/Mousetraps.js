@@ -137,8 +137,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(RandomPrims.randomFloat(360));
-      SelfManager.self().fd(RandomPrims.randomFloat(world.observer.getGlobal("max-distance")));
+      SelfManager.self().right(PrimChecks.math.randomFloat(360));
+      SelfManager.self().fd(PrimChecks.math.randomFloat(world.observer.getGlobal("max-distance")));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

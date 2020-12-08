@@ -281,7 +281,7 @@ var procedures = (function() {
       var letVars = { };
       if (MousePrims.isDown()) {
         Errors.askNobodyCheck(world.patches().agentFilter(function() {
-          return (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.topology.maxPycor) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), NLMath.round(MousePrims.getY())));
+          return (Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.topology.maxPycor) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.round(MousePrims.getY())));
         })).ask(function() {
           SelfManager.self().setPatchVariable("pcolor", 9.9);
           Errors.askNobodyCheck(SelfManager.self().turtlesHere()).ask(function() { procedures["MOVE-OFF-WALL"](); }, true);
@@ -300,7 +300,7 @@ var procedures = (function() {
       var letVars = { };
       if (MousePrims.isDown()) {
         Errors.askNobodyCheck(world.patches().agentFilter(function() {
-          return Prims.equality(SelfManager.self().getPatchVariable("pycor"), NLMath.round(MousePrims.getY()));
+          return Prims.equality(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.round(MousePrims.getY()));
         })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
         notImplemented('display', undefined)();
       }

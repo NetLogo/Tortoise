@@ -95,7 +95,7 @@ var procedures = (function() {
         SelfManager.self().sprout(1, "COLUMN-COUNTERS").ask(function() {
           SelfManager.self().hideTurtle(true);;
           SelfManager.self().setVariable("heading", 0);
-          SelfManager.self().setVariable("my-column", NLMath.floor(((SelfManager.self().getPatchVariable("pxcor") + PrimChecks.math.div(world.observer.getGlobal("sample-space"), 2)) + 1)));
+          SelfManager.self().setVariable("my-column", PrimChecks.math.floor(((SelfManager.self().getPatchVariable("pxcor") + PrimChecks.math.div(world.observer.getGlobal("sample-space"), 2)) + 1)));
           SelfManager.self().setVariable("my-column-patches", world.patches().agentFilter(function() {
             return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }));
           }));
@@ -220,7 +220,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return NLMath.precision(PrimChecks.math.div((100 * world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); })), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2);
+      return PrimChecks.math.precision(PrimChecks.math.div((100 * world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); })), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -233,7 +233,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return NLMath.precision(PrimChecks.math.div((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2);
+      return PrimChecks.math.precision(PrimChecks.math.div((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

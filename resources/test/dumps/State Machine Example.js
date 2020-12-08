@@ -58,7 +58,7 @@ var procedures = (function() {
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("density"))) {
+        if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("density"))) {
           SelfManager.self().setPatchVariable("pcolor", 45);
         }
       }, true);

@@ -81,7 +81,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
+        if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("initial-density"))) {
           SelfManager.self().setPatchVariable("pcolor", 9.9);
         }
         else {

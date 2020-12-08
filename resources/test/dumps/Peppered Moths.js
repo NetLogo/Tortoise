@@ -245,15 +245,15 @@ var procedures = (function() {
       var letVars = { };
       if ((Prims.equality(SelfManager.self().getVariable("age"), 2) || Prims.equality(SelfManager.self().getVariable("age"), 3))) {
         SelfManager.self().hatch(2, "").ask(function() {
-          if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("mutation"))) {
+          if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("mutation"))) {
             if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-              SelfManager.self().setVariable("color", NLMath.round((SelfManager.self().getVariable("color") + PrimChecks.math.div(RandomPrims.randomFloat(world.observer.getGlobal("mutation")), 12.5))));
+              SelfManager.self().setVariable("color", PrimChecks.math.round((SelfManager.self().getVariable("color") + PrimChecks.math.div(PrimChecks.math.randomFloat(world.observer.getGlobal("mutation")), 12.5))));
               if (Prims.gte(SelfManager.self().getVariable("color"), 9)) {
                 SelfManager.self().setVariable("color", 9);
               }
             }
             else {
-              SelfManager.self().setVariable("color", NLMath.round((SelfManager.self().getVariable("color") - PrimChecks.math.div(RandomPrims.randomFloat(world.observer.getGlobal("mutation")), 12.5))));
+              SelfManager.self().setVariable("color", PrimChecks.math.round((SelfManager.self().getVariable("color") - PrimChecks.math.div(PrimChecks.math.randomFloat(world.observer.getGlobal("mutation")), 12.5))));
               if ((Prims.lte(SelfManager.self().getVariable("color"), 1) || Prims.gte(SelfManager.self().getVariable("color"), 130))) {
                 SelfManager.self().setVariable("color", 1);
               }
@@ -261,7 +261,7 @@ var procedures = (function() {
           }
           procedures["MOTHS-PICK-SHAPE"]();
           SelfManager.self().setVariable("age", 0);
-          SelfManager.self().right(RandomPrims.randomFloat(360));
+          SelfManager.self().right(PrimChecks.math.randomFloat(360));
           SelfManager.self()._optimalFdOne();
         }, true);
       }
@@ -275,7 +275,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(RandomPrims.randomFloat(1000), ((world.observer.getGlobal("selection") * NLMath.abs((procedures["ENV-COLOR"]() - SelfManager.self().getVariable("color")))) + 200))) {
+      if (Prims.lt(PrimChecks.math.randomFloat(1000), ((world.observer.getGlobal("selection") * PrimChecks.math.abs((procedures["ENV-COLOR"]() - SelfManager.self().getVariable("color")))) + 200))) {
         SelfManager.self().die();
       }
     } catch (e) {

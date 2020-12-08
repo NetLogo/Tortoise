@@ -220,11 +220,11 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.equality(powerOfTwo, 0)) {
         Errors.reportInContextCheck(reporterContext);
-        return NLMath.mod(NLMath.floor(number), 2);
+        return PrimChecks.math.mod(PrimChecks.math.floor(number), 2);
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return procedures["BINDIGIT"](PrimChecks.math.div(NLMath.floor(number), 2),(powerOfTwo - 1));
+        return procedures["BINDIGIT"](PrimChecks.math.div(PrimChecks.math.floor(number), 2),(powerOfTwo - 1));
       }
       Errors.missingReport();
     } catch (e) {
@@ -316,7 +316,7 @@ var procedures = (function() {
       let rules = procedures["LIST-RULES"](); letVars['rules'] = rules;
       Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 5)); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
       Errors.askNobodyCheck(world.patches().agentFilter(function() {
-        return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(NLMath.mod((SelfManager.self().getPatchVariable("pxcor") + 1), NLMath.floor(PrimChecks.math.div(world.topology.width, 8))), 0));
+        return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(PrimChecks.math.mod((SelfManager.self().getPatchVariable("pxcor") + 1), PrimChecks.math.floor(PrimChecks.math.div(world.topology.width, 8))), 0));
       })).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("heading", 270);

@@ -70,7 +70,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (ListPrims.empty(world.observer.getGlobal("eligibles"))) {
+      if (PrimChecks.list.empty(world.observer.getGlobal("eligibles"))) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(PrimChecks.list.oneOf(world.observer.getGlobal("eligibles"))).ask(function() { procedures["BECOME-ALIVE"](); }, true);
@@ -114,7 +114,7 @@ var procedures = (function() {
       else {
         if ((SelfManager.self().getVariable("hidden?") && PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches")))) {
           SelfManager.self().setVariable("eligible?", true);
-          world.observer.setGlobal("eligibles", ListPrims.fput(SelfManager.self(), world.observer.getGlobal("eligibles")));
+          world.observer.setGlobal("eligibles", PrimChecks.list.fput(SelfManager.self(), world.observer.getGlobal("eligibles")));
         }
       }
     } catch (e) {
@@ -166,13 +166,13 @@ var procedures = (function() {
           SelfManager.self().hideTurtle(true);;
           SelfManager.self().setVariable("color", 25);
           SelfManager.self().setVariable("eligible?", false);
-          if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
+          if (Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
             SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.5));
           }
         }, true);
       }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CELLS")).ask(function() {
-        if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
+        if (Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
           SelfManager.self().setVariable("hex-neighbors", Prims.breedOn("CELLS", world.patches().atPoints([[0, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]])));
         }
         else {

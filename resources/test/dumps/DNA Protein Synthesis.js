@@ -283,7 +283,7 @@ var procedures = (function() {
         let endOfGene_p = false; letVars['endOfGene_p'] = endOfGene_p;
         let tripletCounter = 0; letVars['tripletCounter'] = tripletCounter;
         let newCode = SelfManager.self().getVariable("code"); letVars['newCode'] = newCode;
-        for (let _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(NLMath.floor(PrimChecks.math.div(PrimChecks.list.length(SelfManager.self().getVariable("code")), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++){
+        for (let _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.list.length(SelfManager.self().getVariable("code")), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++){
           let thisTriplet = (workspace.dump('') + workspace.dump(PrimChecks.list.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + workspace.dump(PrimChecks.list.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + workspace.dump(PrimChecks.list.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))); letVars['thisTriplet'] = thisTriplet;
           if ((((Prims.equality(thisTriplet, "TAG") || Prims.equality(thisTriplet, "TGA")) || Prims.equality(thisTriplet, "TAA")) && !endOfGene_p)) {
             SelfManager.self().setVariable("end-position", (tripletCounter * 3));
@@ -395,7 +395,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
         return (Prims.equality(SelfManager.self().getVariable("cap-type"), "start") && Prims.equality(SelfManager.self().getVariable("strand"), strandType));
       })).ask(function() {
-        let numberOfTripletsInList = NLMath.floor(PrimChecks.math.div(PrimChecks.list.length(SelfManager.self().getVariable("code")), 3)); letVars['numberOfTripletsInList'] = numberOfTripletsInList;
+        let numberOfTripletsInList = PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.list.length(SelfManager.self().getVariable("code")), 3)); letVars['numberOfTripletsInList'] = numberOfTripletsInList;
         let thisTriplet = ""; letVars['thisTriplet'] = thisTriplet;
         let tripletCounter = 0; letVars['tripletCounter'] = tripletCounter;
         for (let _index_13127_13133 = 0, _repeatcount_13127_13133 = StrictMath.floor(numberOfTripletsInList); _index_13127_13133 < _repeatcount_13127_13133; _index_13127_13133++){

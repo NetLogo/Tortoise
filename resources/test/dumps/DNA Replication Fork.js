@@ -207,7 +207,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("locked?", false);
         SelfManager.self().setVariable("color", world.observer.getGlobal("topoisomerase-color-0"));
         SelfManager.self().setVariable("size", 1.5);
-        SelfManager.self().setVariable("heading", ((-90 + RandomPrims.randomFloat(10)) - RandomPrims.randomFloat(10)));
+        SelfManager.self().setVariable("heading", ((-90 + PrimChecks.math.randomFloat(10)) - PrimChecks.math.randomFloat(10)));
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TOPOISOMERASES-GEARS"));
           SelfManager.self().setVariable("shape", "topoisomerase-gears");
@@ -1107,7 +1107,7 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let duplicationRate = NLMath.precision(PrimChecks.math.div((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand")), world.observer.getGlobal("final-time")), 4); letVars['duplicationRate'] = duplicationRate;
+      let duplicationRate = PrimChecks.math.precision(PrimChecks.math.div((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand")), world.observer.getGlobal("final-time")), 4); letVars['duplicationRate'] = duplicationRate;
       Errors.reportInContextCheck(reporterContext);
       return (workspace.dump('') + workspace.dump("You had ") + workspace.dump((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand"))) + workspace.dump(" correct replications and ") + workspace.dump((world.observer.getGlobal("total-substitution-mutations-top-strand") + world.observer.getGlobal("total-substitution-mutations-bottom-strand"))) + workspace.dump(" substitutions and ") + workspace.dump((world.observer.getGlobal("total-deletion-mutations-top-strand") + world.observer.getGlobal("total-deletion-mutations-bottom-strand"))) + workspace.dump("  deletions.") + workspace.dump(" That replication process took you ") + workspace.dump(world.observer.getGlobal("final-time")) + workspace.dump(" seconds.  This was a rate of ") + workspace.dump(duplicationRate) + workspace.dump(" correct nucleotides duplicated per second."));
       Errors.missingReport();

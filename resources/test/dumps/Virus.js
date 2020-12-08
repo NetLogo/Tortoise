@@ -290,7 +290,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(SelfManager.self().turtlesHere()._optimalOtherWith(function() { return (!SelfManager.self().getVariable("sick?") && !procedures["IMMUNE?"]()); })).ask(function() {
-        if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("infectiousness"))) {
+        if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("infectiousness"))) {
           procedures["GET-SICK"]();
         }
       }, true);
@@ -305,7 +305,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.gt(SelfManager.self().getVariable("sick-time"), world.observer.getGlobal("duration"))) {
-        if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("chance-recover"))) {
+        if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("chance-recover"))) {
           procedures["BECOME-IMMUNE"]();
         }
         else {
@@ -322,7 +322,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if ((Prims.lt(world.turtles().size(), world.observer.getGlobal("carrying-capacity")) && Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("chance-reproduce")))) {
+      if ((Prims.lt(world.turtles().size(), world.observer.getGlobal("carrying-capacity")) && Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("chance-reproduce")))) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("age", 1);
           SelfManager.self().right(-(45));

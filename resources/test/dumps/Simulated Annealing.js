@@ -118,7 +118,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return ((Prims.lt(newEnergy, oldEnergy) || (world.observer.getGlobal("accept-equal-changes?") && Prims.equality(newEnergy, oldEnergy))) || Prims.lt(RandomPrims.randomFloat(1), world.observer.getGlobal("temperature")));
+      return ((Prims.lt(newEnergy, oldEnergy) || (world.observer.getGlobal("accept-equal-changes?") && Prims.equality(newEnergy, oldEnergy))) || Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("temperature")));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

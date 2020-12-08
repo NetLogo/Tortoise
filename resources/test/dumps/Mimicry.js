@@ -288,10 +288,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("reproduction-chance"))) {
+      if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("reproduction-chance"))) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self()._optimalFdOne();
-          if (Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("mutation-rate"))) {
+          if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("mutation-rate"))) {
             SelfManager.self().setVariable("color", PrimChecks.list.oneOf(PrimChecks.list.sublist(ColorModel.BASE_COLORS, 1, 10)));
           }
         }, true);

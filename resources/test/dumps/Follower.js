@@ -202,7 +202,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(SelfManager.self().getVariable("leader"), Nobody)) {
-        SelfManager.self().right((RandomPrims.randomFloat(world.observer.getGlobal("waver")) - RandomPrims.randomFloat(world.observer.getGlobal("waver"))));
+        SelfManager.self().right((PrimChecks.math.randomFloat(world.observer.getGlobal("waver")) - PrimChecks.math.randomFloat(world.observer.getGlobal("waver"))));
       }
       else {
         SelfManager.self().face(SelfManager.self().getVariable("leader"));

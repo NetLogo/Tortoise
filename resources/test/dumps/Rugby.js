@@ -107,7 +107,7 @@ var procedures = (function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("color", 25);
           SelfManager.self().setVariable("start-patch", SelfManager.self().getPatchHere());
-          SelfManager.self().setVariable("heading", (RandomPrims.randomFloat(90) + 90));
+          SelfManager.self().setVariable("heading", (PrimChecks.math.randomFloat(90) + 90));
         }, true);
       }, true);
       procedures["PLOT-SCORES"]();
@@ -260,7 +260,7 @@ var procedures = (function() {
         return (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.lt(SelfManager.self().getPatchVariable("pcolor"), 10));
       })).ask(function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("goal-angle"), 270)) {
-          SelfManager.self().setPatchVariable("pcolor", ((360 - NLMath.mod(SelfManager.self().getPatchVariable("goal-angle"), 10)) * 0.8));
+          SelfManager.self().setPatchVariable("pcolor", ((360 - PrimChecks.math.mod(SelfManager.self().getPatchVariable("goal-angle"), 10)) * 0.8));
         }
       }, true);
     } catch (e) {
@@ -275,7 +275,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setPatchVariable("left-angle", SelfManager.self().towardsXY((world.observer.getGlobal("goal-pos") - 0.5), (world.topology.minPycor + 0.5)));
       SelfManager.self().setPatchVariable("right-angle", SelfManager.self().towardsXY(((world.observer.getGlobal("goal-pos") + world.observer.getGlobal("goal-size")) - 0.5), (world.topology.minPycor + 0.5)));
-      SelfManager.self().setPatchVariable("goal-angle", NLMath.mod((SelfManager.self().getPatchVariable("right-angle") - SelfManager.self().getPatchVariable("left-angle")), 360));
+      SelfManager.self().setPatchVariable("goal-angle", PrimChecks.math.mod((SelfManager.self().getPatchVariable("right-angle") - SelfManager.self().getPatchVariable("left-angle")), 360));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

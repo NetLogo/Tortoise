@@ -219,12 +219,12 @@ var procedures = (function() {
       var letVars = { };
       let newTeamMember = Nobody; letVars['newTeamMember'] = newTeamMember;
       for (let _index_2105_2111 = 0, _repeatcount_2105_2111 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_2105_2111 < _repeatcount_2105_2111; _index_2105_2111++){
-        if (Prims.gte(RandomPrims.randomFloat(100), world.observer.getGlobal("p"))) {
+        if (Prims.gte(PrimChecks.math.randomFloat(100), world.observer.getGlobal("p"))) {
           procedures["MAKE-NEWCOMER"]();
           newTeamMember = world.observer.getGlobal("newcomer"); letVars['newTeamMember'] = newTeamMember;
         }
         else {
-          if ((Prims.lt(RandomPrims.randomFloat(100), world.observer.getGlobal("q")) && world.turtles()._optimalAnyWith(function() {
+          if ((Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("q")) && world.turtles()._optimalAnyWith(function() {
             return (SelfManager.self().getVariable("in-team?") && !LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("in-team?"); }).isEmpty());
           }))) {
             newTeamMember = world.turtles()._optimalOneOfWith(function() {

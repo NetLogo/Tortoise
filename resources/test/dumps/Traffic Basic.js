@@ -137,7 +137,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 105);
         SelfManager.self().setVariable("xcor", RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor));
         SelfManager.self().setVariable("heading", 90);
-        SelfManager.self().setVariable("speed", (0.1 + RandomPrims.randomFloat(0.9)));
+        SelfManager.self().setVariable("speed", (0.1 + PrimChecks.math.randomFloat(0.9)));
         SelfManager.self().setVariable("speed-limit", 1);
         SelfManager.self().setVariable("speed-min", 0);
         procedures["SEPARATE-CARS"]();

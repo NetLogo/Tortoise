@@ -92,12 +92,12 @@ var procedures = (function() {
       world.clearDrawing();
       world.turtleManager.createTurtles((PrimChecks.math.random(world.observer.getGlobal("max-fireworks")) + 1), "ROCKETS").ask(function() {
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), world.topology.minPycor);
-        SelfManager.self().setVariable("x-vel", (RandomPrims.randomFloat((2 * world.observer.getGlobal("initial-x-vel"))) - world.observer.getGlobal("initial-x-vel")));
-        SelfManager.self().setVariable("y-vel", (RandomPrims.randomFloat(world.observer.getGlobal("initial-y-vel")) + (world.observer.getGlobal("initial-y-vel") * 2)));
+        SelfManager.self().setVariable("x-vel", (PrimChecks.math.randomFloat((2 * world.observer.getGlobal("initial-x-vel"))) - world.observer.getGlobal("initial-x-vel")));
+        SelfManager.self().setVariable("y-vel", (PrimChecks.math.randomFloat(world.observer.getGlobal("initial-y-vel")) + (world.observer.getGlobal("initial-y-vel") * 2)));
         SelfManager.self().setVariable("col", PrimChecks.list.oneOf(ColorModel.BASE_COLORS));
         SelfManager.self().setVariable("color", (SelfManager.self().getVariable("col") + 2));
         SelfManager.self().setVariable("size", 2);
-        SelfManager.self().setVariable("terminal-y-vel", RandomPrims.randomFloat(4));
+        SelfManager.self().setVariable("terminal-y-vel", PrimChecks.math.randomFloat(4));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -139,8 +139,8 @@ var procedures = (function() {
         SelfManager.self().setVariable("dim", 0);
         SelfManager.self().right(RandomPrims.randomLong(360));
         SelfManager.self().setVariable("size", 1);
-        SelfManager.self().setVariable("x-vel", ((((SelfManager.self().getVariable("x-vel") * 0.5) + SelfManager.self().dx()) + RandomPrims.randomFloat(2)) - 1));
-        SelfManager.self().setVariable("y-vel", ((((SelfManager.self().getVariable("y-vel") * 0.3) + SelfManager.self().dy()) + RandomPrims.randomFloat(2)) - 1));
+        SelfManager.self().setVariable("x-vel", ((((SelfManager.self().getVariable("x-vel") * 0.5) + SelfManager.self().dx()) + PrimChecks.math.randomFloat(2)) - 1));
+        SelfManager.self().setVariable("y-vel", ((((SelfManager.self().getVariable("y-vel") * 0.3) + SelfManager.self().dy()) + PrimChecks.math.randomFloat(2)) - 1));
         if (world.observer.getGlobal("trails?")) {
           SelfManager.self().penManager.lowerPen();
         }
