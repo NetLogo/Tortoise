@@ -64,6 +64,18 @@ bundle = {
   , '_ isn_t greater than or equal to zero.': (index) ->
       "#{index} isn't greater than or equal to zero."
 
+  , 'Can_t find the _ of a list with no numbers: __': (aspect, list, punc) ->
+      "Can't find the #{aspect} of a list with no numbers: #{list}#{punc}"
+
+  , 'Requested _ random items from a list of length _.': (count, length) ->
+      "Requested #{count} random items from a list of length #{length}."
+
+  , 'Requested _ random agents from a set of only _ agents.': (count, size) ->
+      "Requested #{count} random agents from a set of only #{size} agents."
+
+  , 'Can_t find the _ of a list without at least two numbers: __': (aspect, list, punc) ->
+      "Can't find the #{aspect} of a list without at least two numbers: #{list}#{punc}"
+
 }
 
 module.exports = bundle

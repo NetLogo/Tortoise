@@ -20,6 +20,7 @@ PrimChecks    = require('./prim-checks/checker')
 RNG           = require('util/rng')
 SelfManager   = require('./core/structure/selfmanager')
 SelfPrims     = require('./prim/selfprims')
+StringPrims   = require('./prim/stringprims')
 Timer         = require('util/timer')
 Updater       = require('./updater')
 World         = require('./core/world')
@@ -96,6 +97,7 @@ module.exports =
     selfPrims   = new SelfPrims(selfManager.self)
     linkPrims   = new LinkPrims(world)
     listPrims   = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
+    stringPrims = new StringPrims()
 
     inspectionPrims = new InspectionPrims(inspectionConfig)
     mousePrims      = new MousePrims(mouseConfig)
@@ -104,7 +106,7 @@ module.exports =
     userDialogPrims = new UserDialogPrims(dialogConfig)
 
     i18nBundle = new I18nBundle()
-    primChecks = new PrimChecks(i18nBundle, dump, listPrims, randomPrims)
+    primChecks = new PrimChecks(i18nBundle, dump, listPrims, randomPrims, stringPrims)
 
     importWorldFromCSV = (csvText) ->
 

@@ -6,9 +6,9 @@ MathChecks = require('./math-checks')
 
 class Checker
 
-  constructor: (i18nBundle, dumper, listPrims, randomPrims) ->
+  constructor: (i18nBundle, dumper, listPrims, randomPrims, stringPrims) ->
     validator = new Validator(i18nBundle, dumper)
-    @list     = new ListChecks(validator, dumper, listPrims)
+    @list     = new ListChecks(validator, dumper, listPrims, stringPrims)
     @math     = new MathChecks(validator, randomPrims)
 
 module.exports = Checker

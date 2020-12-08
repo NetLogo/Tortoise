@@ -7,23 +7,31 @@ formatFloat                  = require('util/formatfloat')
 class Validator
 
   constructor: (@bundle, @dumper) ->
-    list         = [types.List]
-    number       = [types.Number]
-    reporter     = [types.ReporterLambda]
-    stringOrList = [types.String, types.List]
-    wildcard     = [types.Wildcard]
+    agentSetOrList         = [types.AgentSet, types.List]
+    list                   = [types.List]
+    number                 = [types.Number]
+    reporter               = [types.ReporterLambda]
+    string                 = [types.String]
+    stringOrList           = [types.String, types.List]
+    stringOrListOrAgentSet = [types.String, types.List, types.AgentSet]
+    wildcard               = [types.Wildcard]
 
     @commonArgChecks = {
-      list:                         @checkArgTypes(list)
-      list_number_number:           @checkArgTypes(list, number, number)
-      number:                       @checkArgTypes(number)
-      number_number:                @checkArgTypes(number, number)
-      number_stringOrList:          @checkArgTypes(number, stringOrList)
-      number_stringOrList_wildcard: @checkArgTypes(number, stringOrList, wildcard)
-      reporter_list:                @checkArgTypes(reporter, list)
-      stringOrList:                 @checkArgTypes(stringOrList)
-      wildcard_list:                @checkArgTypes(wildcard, list)
-      wildcard_stringOrList:        @checkArgTypes(wildcard, stringOrList)
+      agentSetOrList:                  @checkArgTypes(agentSetOrList)
+      list:                            @checkArgTypes(list)
+      list_number_number:              @checkArgTypes(list, number, number)
+      number:                          @checkArgTypes(number)
+      number_agentSetOrList:           @checkArgTypes(number, agentSetOrList)
+      number_number:                   @checkArgTypes(number, number)
+      number_stringOrList:             @checkArgTypes(number, stringOrList)
+      number_stringOrList_wildcard:    @checkArgTypes(number, stringOrList, wildcard)
+      reporter_agentSetOrList:         @checkArgTypes(reporter, agentSetOrList)
+      reporter_list:                   @checkArgTypes(reporter, list)
+      stringOrList:                    @checkArgTypes(stringOrList)
+      string_number_number:            @checkArgTypes(string, number, number)
+      wildcard_list:                   @checkArgTypes(wildcard, list)
+      wildcard_stringOrList:           @checkArgTypes(wildcard, stringOrList)
+      wildcard_stringOrListOrAgentSet: @checkArgTypes(wildcard, stringOrListOrAgentSet)
     }
 
   # (Boolean, String, Array[Any]) => Unit

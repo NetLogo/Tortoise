@@ -208,7 +208,7 @@ object BrowserCompilerTest extends TestSuite {
         "(3 / apples + (bananas 9001 3) > 0) or oranges" ->
           """(Prims.gt((PrimChecks.math.div(3, world.observer.getGlobal(\"apples\")) + procedures[\"BANANAS\"](9001,3)), 0) || world.observer.getGlobal(\"oranges\"))""",
         "sum [xcor] of turtles" ->
-          """ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable(\"xcor\"); }))"""
+          """PrimChecks.list.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable(\"xcor\"); }))"""
       )
       compiler.fromModel(compReq)
 
