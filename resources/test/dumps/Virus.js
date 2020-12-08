@@ -137,7 +137,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("size", 1.5);
         procedures["GET-HEALTHY"]();
       }, true);
-      Errors.askNobodyCheck(ListPrims.nOf(10, world.turtles())).ask(function() { procedures["GET-SICK"](); }, true);
+      Errors.askNobodyCheck(PrimChecks.list.nOf(10, world.turtles())).ask(function() { procedures["GET-SICK"](); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

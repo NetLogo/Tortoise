@@ -486,7 +486,7 @@ var procedures = (function() {
       var letVars = { };
       let woundNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return !SelfManager.self().getVariable("unwound?"); }); letVars['woundNucleotides'] = woundNucleotides;
       if (!woundNucleotides.isEmpty()) {
-        let maxWoundPlace = ListPrims.max(woundNucleotides.projectionBy(function() { return SelfManager.self().getVariable("place"); })); letVars['maxWoundPlace'] = maxWoundPlace;
+        let maxWoundPlace = PrimChecks.list.max(woundNucleotides.projectionBy(function() { return SelfManager.self().getVariable("place"); })); letVars['maxWoundPlace'] = maxWoundPlace;
         Errors.askNobodyCheck(woundNucleotides.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("place"), maxWoundPlace); })).ask(function() {
           SelfManager.self().right(-(world.observer.getGlobal("wind-angle")));
           SelfManager.self().setVariable("unwound?", true);
@@ -508,7 +508,7 @@ var procedures = (function() {
         return ((SelfManager.self().getVariable("unwound?") && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-bottom")) && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-top"));
       }); letVars['unwoundNucleotides'] = unwoundNucleotides;
       if (!unwoundNucleotides.isEmpty()) {
-        let minUnwoundPlace = ListPrims.min(unwoundNucleotides.projectionBy(function() { return SelfManager.self().getVariable("place"); })); letVars['minUnwoundPlace'] = minUnwoundPlace;
+        let minUnwoundPlace = PrimChecks.list.min(unwoundNucleotides.projectionBy(function() { return SelfManager.self().getVariable("place"); })); letVars['minUnwoundPlace'] = minUnwoundPlace;
         Errors.askNobodyCheck(unwoundNucleotides.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("place"), minUnwoundPlace); })).ask(function() {
           SelfManager.self().right(world.observer.getGlobal("wind-angle"));
           SelfManager.self().setVariable("unwound?", false);
@@ -634,7 +634,7 @@ var procedures = (function() {
         procedures["MAKE-A-NUCLEOSIDE"]();
       }
       if (Prims.gt(world.turtleManager.turtlesOfBreed("NUCLEOSIDES").size(), world.observer.getGlobal("free-nucleosides"))) {
-        Errors.askNobodyCheck(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"))).ask(function() {
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"))).ask(function() {
           Errors.askNobodyCheck(LinkPrims.linkNeighbors("TAGLINES")).ask(function() { SelfManager.self().die(); }, true);
           SelfManager.self().die();
         }, true);
@@ -748,7 +748,7 @@ var procedures = (function() {
             return Prims.lt(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("lock-radius"));
           }); letVars['targetPrimasesReadyToGearToTopoisomerase'] = targetPrimasesReadyToGearToTopoisomerase;
           if (!targetPrimasesReadyToGearToTopoisomerase.isEmpty()) {
-            let targetPrimaseReadyToGearToTopoisomerase = ListPrims.oneOf(targetPrimasesReadyToGearToTopoisomerase); letVars['targetPrimaseReadyToGearToTopoisomerase'] = targetPrimaseReadyToGearToTopoisomerase;
+            let targetPrimaseReadyToGearToTopoisomerase = PrimChecks.list.oneOf(targetPrimasesReadyToGearToTopoisomerase); letVars['targetPrimaseReadyToGearToTopoisomerase'] = targetPrimaseReadyToGearToTopoisomerase;
             SelfManager.self().setVariable("locked?", true);
             if (!MousePrims.isDown()) {
               procedures["UNWIND-DNA"]();
@@ -1018,7 +1018,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       let originalNucleotide = SelfManager.self(); letVars['originalNucleotide'] = originalNucleotide;
-      let thisStair = ListPrims.oneOf(LinkPrims.myLinks("NEW-STAIRS")); letVars['thisStair'] = thisStair;
+      let thisStair = PrimChecks.list.oneOf(LinkPrims.myLinks("NEW-STAIRS")); letVars['thisStair'] = thisStair;
       let thisPairedNucleotide = Nobody; letVars['thisPairedNucleotide'] = thisPairedNucleotide;
       let overwrite_p = false; letVars['overwrite_p'] = overwrite_p;
       Errors.askNobodyCheck(thisStair).ask(function() {

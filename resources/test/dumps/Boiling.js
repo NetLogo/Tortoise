@@ -107,7 +107,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return ListPrims.mean(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("heat"); }));
+      return PrimChecks.list.mean(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("heat"); }));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

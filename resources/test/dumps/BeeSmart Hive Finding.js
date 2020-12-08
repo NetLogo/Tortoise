@@ -139,7 +139,7 @@ var procedures = (function() {
       var letVars = { };
       world.observer.setGlobal("color-list", [97.9, 94.5, 57.5, 63.8, 17.6, 14.9, 27.5, 25.1, 117.9, 114.4]);
       world.observer.setGlobal("quality-list", [100, 75, 50, 1, 54, 48, 40, 32, 24, 16]);
-      Errors.askNobodyCheck(ListPrims.nOf(world.observer.getGlobal("hive-number"), world.patches().agentFilter(function() {
+      Errors.askNobodyCheck(PrimChecks.list.nOf(world.observer.getGlobal("hive-number"), world.patches().agentFilter(function() {
         return ((Prims.gt(SelfManager.self().distanceXY(0, 0), 16) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - 2))) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - 2)));
       }))).ask(function() {
         SelfManager.self().sprout(1, "SITES").ask(function() {
@@ -187,7 +187,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("next-task", world.observer.getGlobal("watch-dance-task"));
         SelfManager.self().setVariable("task-string", "watching-dance");
       }, true);
-      Errors.askNobodyCheck(ListPrims.nOf(world.observer.getGlobal("initial-percentage"), world.turtleManager.turtlesOfBreed("SCOUTS"))).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.list.nOf(world.observer.getGlobal("initial-percentage"), world.turtleManager.turtlesOfBreed("SCOUTS"))).ask(function() {
         SelfManager.self().setVariable("initial-scout?", true);
         SelfManager.self().setVariable("bee-timer", RandomPrims.randomLong(100));
       }, true);
@@ -238,7 +238,7 @@ var procedures = (function() {
         if (!SelfManager.self().getVariable("initial-scout?")) {
           if (Prims.lt(SelfManager.self().getVariable("bee-timer"), 0)) {
             if (Prims.gt(SelfPrims._optimalCountOther(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)), 0)) {
-              let observed = ListPrims.oneOf(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)); letVars['observed'] = observed;
+              let observed = PrimChecks.list.oneOf(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)); letVars['observed'] = observed;
               if (Prims.equality(observed.projectionBy(function() { return SelfManager.self().getVariable("next-task"); }), world.observer.getGlobal("dance-task"))) {
                 if (Prims.lt(PrimChecks.math.random((PrimChecks.math.div(1, observed.projectionBy(function() { return SelfManager.self().getVariable("interest"); })) * 1000)), 1)) {
                   SelfManager.self().setVariable("target", observed.projectionBy(function() { return SelfManager.self().getVariable("target"); }));
@@ -270,7 +270,7 @@ var procedures = (function() {
         }
         else {
           if (SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SITES"), 3)._optimalCheckCount(0, (a, b) => a > b)) {
-            let tempTarget = ListPrims.oneOf(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SITES"), 3)); letVars['tempTarget'] = tempTarget;
+            let tempTarget = PrimChecks.list.oneOf(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SITES"), 3)); letVars['tempTarget'] = tempTarget;
             if (!tempTarget.projectionBy(function() { return SelfManager.self().getVariable("discovered?"); })) {
               SelfManager.self().setVariable("target", tempTarget);
               Errors.askNobodyCheck(SelfManager.self().getVariable("target")).ask(function() {

@@ -75,9 +75,9 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      Errors.askNobodyCheck(ListPrims.nOf(PrimChecks.math.div(world.patches().size(), 2), world.patches())).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
+      Errors.askNobodyCheck(PrimChecks.list.nOf(PrimChecks.math.div(world.patches().size(), 2), world.patches())).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
       Errors.askNobodyCheck(world.patches()).ask(function() { procedures["UPDATE-VISUAL"](); }, true);
-      world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
+      world.observer.setGlobal("global-energy", PrimChecks.list.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
       world.observer.setGlobal("temperature", 1);
       world.ticker.reset();
     } catch (e) {
@@ -91,10 +91,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++){
-        Errors.askNobodyCheck(ListPrims.oneOf(world.patches())).ask(function() { procedures["TRY-SWAP"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.patches())).ask(function() { procedures["TRY-SWAP"](); }, true);
       }
       world.observer.setGlobal("temperature", (world.observer.getGlobal("temperature") * (1 - PrimChecks.math.div(world.observer.getGlobal("cooling-rate"), 100))));
-      world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
+      world.observer.setGlobal("global-energy", PrimChecks.list.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
       world.ticker.tick();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -130,14 +130,14 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let p2 = ListPrims.oneOf(SelfManager.self().inRadius(world.patches(), world.observer.getGlobal("swap-radius"))); letVars['p2'] = p2;
+      let p2 = PrimChecks.list.oneOf(SelfManager.self().inRadius(world.patches(), world.observer.getGlobal("swap-radius"))); letVars['p2'] = p2;
       if (Prims.equality(SelfManager.self().getPatchVariable("brightness"), p2.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); }))) {
         throw new Exception.StopInterrupt;
       }
       let affectedPatches = Prims.patchSet(SelfManager.self(), p2, SelfManager.self().getNeighbors4(), p2.projectionBy(function() { return SelfManager.self().getNeighbors4(); })); letVars['affectedPatches'] = affectedPatches;
-      let oldEnergy = ListPrims.sum(affectedPatches.projectionBy(function() { return procedures["FIND-ENERGY"](); })); letVars['oldEnergy'] = oldEnergy;
+      let oldEnergy = PrimChecks.list.sum(affectedPatches.projectionBy(function() { return procedures["FIND-ENERGY"](); })); letVars['oldEnergy'] = oldEnergy;
       procedures["SWAP-VALUES"](SelfManager.self(),p2);
-      let newEnergy = ListPrims.sum(affectedPatches.projectionBy(function() { return procedures["FIND-ENERGY"](); })); letVars['newEnergy'] = newEnergy;
+      let newEnergy = PrimChecks.list.sum(affectedPatches.projectionBy(function() { return procedures["FIND-ENERGY"](); })); letVars['newEnergy'] = newEnergy;
       if (procedures["ACCEPT-CHANGE?"](oldEnergy,newEnergy)) {
         procedures["UPDATE-VISUAL"]();
         Errors.askNobodyCheck(p2).ask(function() { procedures["UPDATE-VISUAL"](); }, true);

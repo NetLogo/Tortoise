@@ -209,11 +209,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(ListPrims.variance(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); })), 0)) {
+      if (Prims.equality(PrimChecks.list.variance(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); })), 0)) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("pcolor", ListPrims.oneOf(SelfManager.self().getNeighbors()).projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }));
+        SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.oneOf(SelfManager.self().getNeighbors()).projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }));
       }, true);
       world.ticker.tick();
     } catch (e) {

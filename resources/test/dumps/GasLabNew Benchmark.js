@@ -148,8 +148,8 @@ var procedures = (function() {
       world.observer.setGlobal("medium", world.turtleManager.turtlesOfBreed("PARTICLES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }));
       world.observer.setGlobal("slow", world.turtleManager.turtlesOfBreed("PARTICLES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }));
       world.observer.setGlobal("fast", world.turtleManager.turtlesOfBreed("PARTICLES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }));
-      world.observer.setGlobal("avg-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
-      world.observer.setGlobal("avg-energy", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
+      world.observer.setGlobal("avg-speed", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
+      world.observer.setGlobal("avg-energy", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -177,7 +177,7 @@ var procedures = (function() {
       world.ticker.tickAdvance(world.observer.getGlobal("tick-length"));
       if (Prims.gt(NLMath.floor(world.ticker.tickCount()), NLMath.floor((world.ticker.tickCount() - world.observer.getGlobal("tick-length"))))) {
         if (!world.turtleManager.turtlesOfBreed("PARTICLES").isEmpty()) {
-          world.observer.setGlobal("wall-hits-per-particle", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("wall-hits"); })));
+          world.observer.setGlobal("wall-hits-per-particle", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("wall-hits"); })));
         }
         else {
           world.observer.setGlobal("wall-hits-per-particle", 0);
@@ -208,7 +208,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (world.turtleManager.turtlesOfBreed("PARTICLES")._optimalAnyWith(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {
-        world.observer.setGlobal("tick-length", PrimChecks.math.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))));
+        world.observer.setGlobal("tick-length", PrimChecks.math.div(1, NLMath.ceil(PrimChecks.list.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))));
       }
       else {
         world.observer.setGlobal("tick-length", 1);
@@ -223,7 +223,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("pressure", (15 * ListPrims.sum(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
+      world.observer.setGlobal("pressure", (15 * PrimChecks.list.sum(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
       world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-history")));
       world.observer.setGlobal("zero-pressure-count", PrimChecks.list.length(PrimChecks.list.filter(Tasks.reporterTask(function(p) {
         Errors.procedureArgumentsCheck(1, arguments.length);
@@ -295,7 +295,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(SelfPrims._optimalCountOther(SelfManager.self().breedHere("PARTICLES")), 1)) {
-        let candidate = ListPrims.oneOf(SelfManager.self().breedHere("PARTICLES")._optimalOtherWith(function() {
+        let candidate = PrimChecks.list.oneOf(SelfManager.self().breedHere("PARTICLES")._optimalOtherWith(function() {
           return (Prims.lt(SelfManager.self().getVariable("who"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("who"); })) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
         })); letVars['candidate'] = candidate;
         if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
@@ -497,7 +497,7 @@ var procedures = (function() {
       var letVars = { };
       plotManager.setCurrentPlot("Pressure vs. Time");
       if (Prims.gt(PrimChecks.list.length(world.observer.getGlobal("pressure-history")), 0)) {
-        plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(procedures["LAST-N"](3,world.observer.getGlobal("pressure-history"))));
+        plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.mean(procedures["LAST-N"](3,world.observer.getGlobal("pressure-history"))));
       }
       plotManager.setCurrentPlot("Speed Counts");
       plotManager.setCurrentPen("fast");
@@ -571,7 +571,7 @@ var procedures = (function() {
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return procedures["LAST-N"](n,PrimChecks.list.butFirst('BUTFIRST')(theList));
+        return procedures["LAST-N"](n,PrimChecks.list.butFirst('butfirst')(theList));
       }
       Errors.missingReport();
     } catch (e) {

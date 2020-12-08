@@ -190,7 +190,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return ListPrims.oneOf([15, 105, 45, 55]);
+      return PrimChecks.list.oneOf([15, 105, 45, 55]);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -237,8 +237,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let emptyPatches = world.patches().agentFilter(function() { return !!SelfManager.self().turtlesHere().isEmpty(); }); letVars['emptyPatches'] = emptyPatches;
-      let howMany = ListPrims.min(ListPrims.list(world.observer.getGlobal("immigrants-per-day"), emptyPatches.size())); letVars['howMany'] = howMany;
-      Errors.askNobodyCheck(ListPrims.nOf(howMany, emptyPatches)).ask(function() { procedures["CREATE-TURTLE"](); }, true);
+      let howMany = PrimChecks.list.min(ListPrims.list(world.observer.getGlobal("immigrants-per-day"), emptyPatches.size())); letVars['howMany'] = howMany;
+      Errors.askNobodyCheck(PrimChecks.list.nOf(howMany, emptyPatches)).ask(function() { procedures["CREATE-TURTLE"](); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -396,7 +396,7 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.gt(PrimChecks.list.length(theList), 100)) {
         Errors.reportInContextCheck(reporterContext);
-        return PrimChecks.list.butFirst('BUTFIRST')(theList);
+        return PrimChecks.list.butFirst('butfirst')(theList);
       }
       else {
         Errors.reportInContextCheck(reporterContext);
@@ -414,7 +414,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("meetown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
+      return PrimChecks.math.div(world.observer.getGlobal("meetown"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -427,7 +427,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("meetown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
+      return PrimChecks.math.div(world.observer.getGlobal("meetown-agg"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -440,7 +440,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("coopown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown"))));
+      return PrimChecks.math.div(world.observer.getGlobal("coopown"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetown"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -453,7 +453,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("coopown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg"))));
+      return PrimChecks.math.div(world.observer.getGlobal("coopown-agg"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -466,7 +466,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("defother"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother"))));
+      return PrimChecks.math.div(world.observer.getGlobal("defother"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetother"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -479,7 +479,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("defother-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg"))));
+      return PrimChecks.math.div(world.observer.getGlobal("defother-agg"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -492,7 +492,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div((world.observer.getGlobal("defother") + world.observer.getGlobal("coopown")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
+      return PrimChecks.math.div((world.observer.getGlobal("defother") + world.observer.getGlobal("coopown")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -505,7 +505,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div((world.observer.getGlobal("defother-agg") + world.observer.getGlobal("coopown-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
+      return PrimChecks.math.div((world.observer.getGlobal("defother-agg") + world.observer.getGlobal("coopown-agg")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -518,7 +518,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
+      return PrimChecks.math.div((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -531,7 +531,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div((world.observer.getGlobal("coopown-agg") + world.observer.getGlobal("coopother-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
+      return PrimChecks.math.div((world.observer.getGlobal("coopown-agg") + world.observer.getGlobal("coopother-agg")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -544,7 +544,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(ListPrims.sum(world.observer.getGlobal("last100cc")), ListPrims.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100cc")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100cc")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100cc")))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -557,7 +557,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(ListPrims.sum(world.observer.getGlobal("last100cd")), ListPrims.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100cd")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100cd")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100cd")))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -570,7 +570,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(ListPrims.sum(world.observer.getGlobal("last100dc")), ListPrims.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100dc")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100dc")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100dc")))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -583,7 +583,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(ListPrims.sum(world.observer.getGlobal("last100dd")), ListPrims.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100dd")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100dd")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100dd")))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -596,7 +596,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(procedures["CC-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
+      return PrimChecks.math.div(procedures["CC-COUNT"](), PrimChecks.list.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -609,7 +609,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(procedures["CD-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
+      return PrimChecks.math.div(procedures["CD-COUNT"](), PrimChecks.list.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -622,7 +622,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(procedures["DC-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
+      return PrimChecks.math.div(procedures["DC-COUNT"](), PrimChecks.list.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -635,7 +635,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(procedures["DD-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
+      return PrimChecks.math.div(procedures["DD-COUNT"](), PrimChecks.list.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -648,7 +648,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(ListPrims.sum(world.observer.getGlobal("last100coopown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetown")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100coopown")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(world.observer.getGlobal("last100meetown")))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -661,7 +661,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(ListPrims.sum(world.observer.getGlobal("last100defother")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetother")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100defother")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(world.observer.getGlobal("last100meetother")))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -674,7 +674,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div((ListPrims.sum(world.observer.getGlobal("last100defother")) + ListPrims.sum(world.observer.getGlobal("last100coopown"))), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet")))));
+      return PrimChecks.math.div((PrimChecks.list.sum(world.observer.getGlobal("last100defother")) + PrimChecks.list.sum(world.observer.getGlobal("last100coopown"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(world.observer.getGlobal("last100meet")))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -687,7 +687,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(ListPrims.sum(world.observer.getGlobal("last100meetown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100meetown")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(world.observer.getGlobal("last100meet")))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -700,7 +700,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(ListPrims.sum(world.observer.getGlobal("last100coop")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100coop")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(world.observer.getGlobal("last100meet")))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

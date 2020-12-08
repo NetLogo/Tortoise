@@ -290,7 +290,7 @@ var procedures = (function() {
             procedures["POSITION-RANDOMLY"]();
           }
         }, true);
-      }, "[ the-particle -> ask the-particle [ position-randomly while [ overlapping? ] [ position-randomly ] ] ]"), ListPrims.sortBy(Tasks.reporterTask(function(a, b) {
+      }, "[ the-particle -> ask the-particle [ position-randomly while [ overlapping? ] [ position-randomly ] ] ]"), PrimChecks.list.sortBy(Tasks.reporterTask(function(a, b) {
         Errors.procedureArgumentsCheck(2, arguments.length);
         return Prims.gt(a.projectionBy(function() { return SelfManager.self().getVariable("size"); }), b.projectionBy(function() { return SelfManager.self().getVariable("size"); }));
       }, "[ [a b] -> [ size ] of a > [ size ] of b ]"), world.turtleManager.turtlesOfBreed("PARTICLES"))); if(reporterContext && _foreach_1856_1863 !== undefined) { return _foreach_1856_1863; }
@@ -319,7 +319,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setXY((ListPrims.oneOf([1, -1]) * RandomPrims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - PrimChecks.math.div(SelfManager.self().getVariable("size"), 2)))), (ListPrims.oneOf([1, -1]) * RandomPrims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - PrimChecks.math.div(SelfManager.self().getVariable("size"), 2)))));
+      SelfManager.self().setXY((PrimChecks.list.oneOf([1, -1]) * RandomPrims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - PrimChecks.math.div(SelfManager.self().getVariable("size"), 2)))), (PrimChecks.list.oneOf([1, -1]) * RandomPrims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - PrimChecks.math.div(SelfManager.self().getVariable("size"), 2)))));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -357,8 +357,8 @@ var procedures = (function() {
       world.observer.setGlobal("percent-medium", (PrimChecks.math.div(world.observer.getGlobal("medium"), world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
       world.observer.setGlobal("percent-slow", (PrimChecks.math.div(world.observer.getGlobal("slow"), world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
       world.observer.setGlobal("percent-fast", (PrimChecks.math.div(world.observer.getGlobal("fast"), world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
-      world.observer.setGlobal("avg-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
-      world.observer.setGlobal("avg-energy", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
+      world.observer.setGlobal("avg-speed", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
+      world.observer.setGlobal("avg-energy", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -644,7 +644,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("mass"); }));
+      return PrimChecks.list.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("mass"); }));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

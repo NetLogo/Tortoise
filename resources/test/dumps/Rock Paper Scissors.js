@@ -101,7 +101,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", ListPrims.oneOf([15, 55, 105, 0])); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.oneOf([15, 55, 105, 0])); }, true);
       world.ticker.reset();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -120,8 +120,8 @@ var procedures = (function() {
       let events = ListPrims.shuffle(ListPrims.sentence(Tasks.nValues(RandomPrims.randomPoisson((repetitions * procedures["SWAP-RATE"]())), Tasks.reporterTask(function() { return swapEvent; }, "[ swap-event ]")), Tasks.nValues(RandomPrims.randomPoisson((repetitions * procedures["REPRODUCE-RATE"]())), Tasks.reporterTask(function() { return reproduceEvent; }, "[ reproduce-event ]")), Tasks.nValues(RandomPrims.randomPoisson((repetitions * procedures["SELECT-RATE"]())), Tasks.reporterTask(function() { return selectEvent; }, "[ select-event ]")))); letVars['events'] = events;
       var _foreach_1684_1691 = Tasks.forEach(Tasks.commandTask(function(_event_) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        Errors.askNobodyCheck(ListPrims.oneOf(world.patches())).ask(function() {
-          let target = ListPrims.oneOf(SelfManager.self().getNeighbors4()); letVars['target'] = target;
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.patches())).ask(function() {
+          let target = PrimChecks.list.oneOf(SelfManager.self().getNeighbors4()); letVars['target'] = target;
           if (Prims.equality(_event_, swapEvent)) {
             procedures["SWAP"](target);
           }

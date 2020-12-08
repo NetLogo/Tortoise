@@ -111,7 +111,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
         procedures["CHOOSE-SEX"]();
         SelfManager.self().setVariable("size", 3);
-        SelfManager.self().setVariable("my-group-site", ListPrims.oneOf(world.observer.getGlobal("group-sites")));
+        SelfManager.self().setVariable("my-group-site", PrimChecks.list.oneOf(world.observer.getGlobal("group-sites")));
         SelfManager.self().moveTo(SelfManager.self().getVariable("my-group-site"));
       }, true);
       Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["UPDATE-HAPPINESS"](); }, true);
@@ -170,7 +170,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (!SelfManager.self().getVariable("happy?")) {
-        SelfManager.self().setVariable("heading", ListPrims.oneOf([90, 270]));
+        SelfManager.self().setVariable("heading", PrimChecks.list.oneOf([90, 270]));
         SelfManager.self()._optimalFdOne();
       }
     } catch (e) {
@@ -185,7 +185,7 @@ var procedures = (function() {
       var letVars = { };
       notImplemented('display', undefined)();
       let malcontents = world.turtles().agentFilter(function() {
-        return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
+        return !PrimChecks.list.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
       }); letVars['malcontents'] = malcontents;
       if (!!malcontents.isEmpty()) {
         throw new Exception.StopInterrupt;
@@ -286,7 +286,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("color", ListPrims.oneOf([135, 105]));
+      SelfManager.self().setVariable("color", PrimChecks.list.oneOf([135, 105]));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

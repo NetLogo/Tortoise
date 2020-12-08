@@ -142,11 +142,11 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
-        Errors.askNobodyCheck(ListPrims.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS"))).ask(function() {
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS"))).ask(function() {
           SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
           SelfManager.self().setVariable('hidden?', true)
         }, true);
-        Errors.askNobodyCheck(ListPrims.oneOf(world.linkManager.linksOfBreed("INACTIVE-LINKS"))).ask(function() {
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.linkManager.linksOfBreed("INACTIVE-LINKS"))).ask(function() {
           SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("ACTIVE-LINKS"));
           SelfManager.self().setVariable('hidden?', false)
         }, true);
@@ -161,11 +161,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("total-val", ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
-      world.observer.setGlobal("max-val", ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
+      world.observer.setGlobal("total-val", PrimChecks.list.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
+      world.observer.setGlobal("max-val", PrimChecks.list.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
       if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
-        world.observer.setGlobal("max-flow", ListPrims.max(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
-        world.observer.setGlobal("mean-flow", ListPrims.mean(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
+        world.observer.setGlobal("max-flow", PrimChecks.list.max(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
+        world.observer.setGlobal("mean-flow", PrimChecks.list.mean(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)

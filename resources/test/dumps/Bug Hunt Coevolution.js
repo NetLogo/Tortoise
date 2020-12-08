@@ -197,15 +197,15 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
-        world.observer.setGlobal("avg-bug-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
-        world.observer.setGlobal("avg-bug-vision", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
+        world.observer.setGlobal("avg-bug-speed", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
+        world.observer.setGlobal("avg-bug-vision", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
       }
       else {
         world.observer.setGlobal("avg-bug-speed", 0);
       }
       if (!world.turtleManager.turtlesOfBreed("BIRDS").isEmpty()) {
-        world.observer.setGlobal("avg-bird-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
-        world.observer.setGlobal("avg-bird-vision", ListPrims.mean(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
+        world.observer.setGlobal("avg-bird-speed", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
+        world.observer.setGlobal("avg-bird-vision", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
       }
       else {
         world.observer.setGlobal("avg-bird-speed", 0);
@@ -251,7 +251,7 @@ var procedures = (function() {
         if (!SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120).isEmpty()) {
           candidatePredators = SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120); letVars['candidatePredators'] = candidatePredators;
           if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "any") && !candidatePredators.isEmpty())) {
-            predator = ListPrims.oneOf(candidatePredators); letVars['predator'] = predator;
+            predator = PrimChecks.list.oneOf(candidatePredators); letVars['predator'] = predator;
           }
           if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "nearest") && !candidatePredators.isEmpty())) {
             predator = candidatePredators.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['predator'] = predator;
@@ -364,7 +364,7 @@ var procedures = (function() {
         localBugs = Prims.breedOn("BUGS", world.getPatchAt(snapMouseXcor, snapMouseYcor)); letVars['localBugs'] = localBugs;
         if (!localBugs.isEmpty()) {
           world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
-          Errors.askNobodyCheck(ListPrims.oneOf(localBugs)).ask(function() {
+          Errors.askNobodyCheck(PrimChecks.list.oneOf(localBugs)).ask(function() {
             speedOfCaught = SelfManager.self().getVariable("speed"); letVars['speedOfCaught'] = speedOfCaught;
             if (Prims.equality(speedOfCaught, 1)) {
               world.observer.setGlobal("total-speed-6-caught", (world.observer.getGlobal("total-speed-6-caught") + 1));
@@ -408,7 +408,7 @@ var procedures = (function() {
         if (!SelfManager.self().breedHere("BUGS").isEmpty()) {
           world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
           SelfManager.self().setVariable("eaten", (SelfManager.self().getVariable("eaten") + 1));
-          Errors.askNobodyCheck(ListPrims.oneOf(SelfManager.self().breedHere("BUGS"))).ask(function() {
+          Errors.askNobodyCheck(PrimChecks.list.oneOf(SelfManager.self().breedHere("BUGS"))).ask(function() {
             speedOfCaught = SelfManager.self().getVariable("speed"); letVars['speedOfCaught'] = speedOfCaught;
             if (Prims.equality(speedOfCaught, 1)) {
               world.observer.setGlobal("total-speed-6-caught", (world.observer.getGlobal("total-speed-6-caught") + 1));
@@ -448,7 +448,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BUGS"))).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("BUGS"))).ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
           procedures["MUTATE-OFFSPRING-BUG"]();
           SelfManager.self().setVariable("heading", RandomPrims.randomFloat(360));
@@ -467,7 +467,7 @@ var procedures = (function() {
       var letVars = { };
       let birdEnergySplit = 0; letVars['birdEnergySplit'] = birdEnergySplit;
       if (world.turtleManager.turtlesOfBreed("BIRDS")._optimalCheckCount(0, (a, b) => a > b)) {
-        Errors.askNobodyCheck(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BIRDS"))).ask(function() {
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("BIRDS"))).ask(function() {
           birdEnergySplit = PrimChecks.math.div(SelfManager.self().getVariable("eaten"), 2); letVars['birdEnergySplit'] = birdEnergySplit;
           SelfManager.self().setVariable("eaten", birdEnergySplit);
           SelfManager.self().hatch(1, "").ask(function() {
@@ -573,7 +573,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let parentVision = ListPrims.oneOf(LinkPrims.inLinkNeighbors("LINKS")).projectionBy(function() { return SelfManager.self().getVariable("vision"); }); letVars['parentVision'] = parentVision;
+      let parentVision = PrimChecks.list.oneOf(LinkPrims.inLinkNeighbors("LINKS")).projectionBy(function() { return SelfManager.self().getVariable("vision"); }); letVars['parentVision'] = parentVision;
       if (world.observer.getGlobal("show-vision-cone?")) {
         SelfManager.self().setVariable("hidden?", false);
         SelfManager.self().setVariable("size", (2 * parentVision));

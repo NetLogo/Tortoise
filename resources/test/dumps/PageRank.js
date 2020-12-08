@@ -179,7 +179,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let nodeList = ListPrims.sort(nodeset); letVars['nodeList'] = nodeList;
+      let nodeList = PrimChecks.list.sort(nodeset); letVars['nodeList'] = nodeList;
       let neighborChoiceList = PrimChecks.list.sublist(nodeList, 0, k); letVars['neighborChoiceList'] = neighborChoiceList;
       Errors.askNobodyCheck(PrimChecks.list.item(k, nodeList)).ask(function() {
         var _foreach_2544_2551 = Tasks.forEach(Tasks.commandTask(function(neighbor) {
@@ -198,7 +198,7 @@ var procedures = (function() {
         Errors.askNobodyCheck(node).ask(function() {
           let tempNeighborList = neighborChoiceList; letVars['tempNeighborList'] = tempNeighborList;
           for (let _index_3056_3062 = 0, _repeatcount_3056_3062 = StrictMath.floor(k); _index_3056_3062 < _repeatcount_3056_3062; _index_3056_3062++){
-            let neighbor = ListPrims.oneOf(tempNeighborList); letVars['neighbor'] = neighbor;
+            let neighbor = PrimChecks.list.oneOf(tempNeighborList); letVars['neighbor'] = neighbor;
             tempNeighborList = PrimChecks.list.remove(neighbor, tempNeighborList); letVars['tempNeighborList'] = tempNeighborList;
             neighborChoiceList = ListPrims.fput(neighbor, neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
             if (Prims.equality(RandomPrims.randomLong(2), 0)) {
@@ -262,7 +262,7 @@ var procedures = (function() {
       else {
         if (Prims.lt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal("number-of-surfers"))) {
           world.turtleManager.createTurtles((world.observer.getGlobal("number-of-surfers") - world.turtleManager.turtlesOfBreed("SURFERS").size()), "SURFERS").ask(function() {
-            SelfManager.self().setVariable("current-page", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
+            SelfManager.self().setVariable("current-page", PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
             if (world.observer.getGlobal("watch-surfers?")) {
               procedures["MOVE-SURFER"]();
             }
@@ -272,7 +272,7 @@ var procedures = (function() {
           }, true);
         }
         if (Prims.gt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal("number-of-surfers"))) {
-          Errors.askNobodyCheck(ListPrims.nOf((world.turtleManager.turtlesOfBreed("SURFERS").size() - world.observer.getGlobal("number-of-surfers")), world.turtleManager.turtlesOfBreed("SURFERS"))).ask(function() { SelfManager.self().die(); }, true);
+          Errors.askNobodyCheck(PrimChecks.list.nOf((world.turtleManager.turtlesOfBreed("SURFERS").size() - world.observer.getGlobal("number-of-surfers")), world.turtleManager.turtlesOfBreed("SURFERS"))).ask(function() { SelfManager.self().die(); }, true);
         }
         Errors.askNobodyCheck(world.links()).ask(function() {
           SelfManager.self().setVariable("color", 5);
@@ -282,10 +282,10 @@ var procedures = (function() {
           let oldPage = SelfManager.self().getVariable("current-page"); letVars['oldPage'] = oldPage;
           Errors.askNobodyCheck(SelfManager.self().getVariable("current-page")).ask(function() { SelfManager.self().setVariable("visits", (SelfManager.self().getVariable("visits") + 1)); }, true);
           if ((Prims.lte(RandomPrims.randomFloat(1), world.observer.getGlobal("damping-factor")) && !SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.myOutLinks("LINKS"); }).isEmpty())) {
-            SelfManager.self().setVariable("current-page", ListPrims.oneOf(SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.outLinkNeighbors("LINKS"); })));
+            SelfManager.self().setVariable("current-page", PrimChecks.list.oneOf(SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.outLinkNeighbors("LINKS"); })));
           }
           else {
-            SelfManager.self().setVariable("current-page", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
+            SelfManager.self().setVariable("current-page", PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
           }
           if (world.observer.getGlobal("watch-surfers?")) {
             SelfManager.self().hideTurtle(false);;
@@ -305,7 +305,7 @@ var procedures = (function() {
             SelfManager.self().hideTurtle(true);;
           }
         }, true);
-        let totalVisits = ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("visits"); })); letVars['totalVisits'] = totalVisits;
+        let totalVisits = PrimChecks.list.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("visits"); })); letVars['totalVisits'] = totalVisits;
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
           SelfManager.self().setVariable("rank", PrimChecks.math.div(SelfManager.self().getVariable("visits"), totalVisits));
         }, true);
@@ -335,8 +335,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("total-rank", ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
-      world.observer.setGlobal("max-rank", ListPrims.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
+      world.observer.setGlobal("total-rank", PrimChecks.list.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
+      world.observer.setGlobal("max-rank", PrimChecks.list.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

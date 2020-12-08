@@ -186,16 +186,16 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let targetPatch = ListPrims.oneOf(SelfManager.self().getNeighbors()); letVars['targetPatch'] = targetPatch;
+      let targetPatch = PrimChecks.list.oneOf(SelfManager.self().getNeighbors()); letVars['targetPatch'] = targetPatch;
       if (world.observer.getGlobal("agents-seek-resources?")) {
         let candidateMoves = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); }); letVars['candidateMoves'] = candidateMoves;
         if (!candidateMoves.isEmpty()) {
-          targetPatch = ListPrims.oneOf(candidateMoves); letVars['targetPatch'] = targetPatch;
+          targetPatch = PrimChecks.list.oneOf(candidateMoves); letVars['targetPatch'] = targetPatch;
         }
         else {
           candidateMoves = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }); letVars['candidateMoves'] = candidateMoves;
           if (!candidateMoves.isEmpty()) {
-            targetPatch = ListPrims.oneOf(candidateMoves); letVars['targetPatch'] = targetPatch;
+            targetPatch = PrimChecks.list.oneOf(candidateMoves); letVars['targetPatch'] = targetPatch;
           }
         }
       }

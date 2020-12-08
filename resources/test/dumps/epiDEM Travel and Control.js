@@ -572,8 +572,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let newInfected = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-infected"); })); letVars['newInfected'] = newInfected;
-      let newRecovered = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-recovered"); })); letVars['newRecovered'] = newRecovered;
+      let newInfected = PrimChecks.list.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-infected"); })); letVars['newInfected'] = newInfected;
+      let newRecovered = PrimChecks.list.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-recovered"); })); letVars['newRecovered'] = newRecovered;
       world.observer.setGlobal("nb-infected-previous", ((world.turtles()._optimalCountWith(function() { return SelfManager.self().getVariable("infected?"); }) + newRecovered) - newInfected));
       let susceptibleT = ((world.observer.getGlobal("initial-people") - world.turtles()._optimalCountWith(function() { return SelfManager.self().getVariable("infected?"); })) - world.turtles()._optimalCountWith(function() { return SelfManager.self().getVariable("cured?"); })); letVars['susceptibleT'] = susceptibleT;
       let s0 = world.turtles()._optimalCountWith(function() { return SelfManager.self().getVariable("susceptible?"); }); letVars['s0'] = s0;

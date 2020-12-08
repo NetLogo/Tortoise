@@ -94,7 +94,7 @@ var procedures = (function() {
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), world.topology.minPycor);
         SelfManager.self().setVariable("x-vel", (RandomPrims.randomFloat((2 * world.observer.getGlobal("initial-x-vel"))) - world.observer.getGlobal("initial-x-vel")));
         SelfManager.self().setVariable("y-vel", (RandomPrims.randomFloat(world.observer.getGlobal("initial-y-vel")) + (world.observer.getGlobal("initial-y-vel") * 2)));
-        SelfManager.self().setVariable("col", ListPrims.oneOf(ColorModel.BASE_COLORS));
+        SelfManager.self().setVariable("col", PrimChecks.list.oneOf(ColorModel.BASE_COLORS));
         SelfManager.self().setVariable("color", (SelfManager.self().getVariable("col") + 2));
         SelfManager.self().setVariable("size", 2);
         SelfManager.self().setVariable("terminal-y-vel", RandomPrims.randomFloat(4));

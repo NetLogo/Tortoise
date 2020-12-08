@@ -221,7 +221,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("color"); })), 0)) {
+      if (Prims.equality(PrimChecks.list.variance(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("color"); })), 0)) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtles()).ask(function() {
@@ -246,7 +246,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let candidate = ListPrims.oneOf(SelfManager.self().turtlesAt(1, 0)); letVars['candidate'] = candidate;
+      let candidate = PrimChecks.list.oneOf(SelfManager.self().turtlesAt(1, 0)); letVars['candidate'] = candidate;
       if (!Prims.equality(candidate, Nobody)) {
         SelfManager.self().setVariable("color", candidate.projectionBy(function() { return SelfManager.self().getVariable("color"); }));
       }
@@ -326,7 +326,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       while (!Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
-        SelfManager.self().moveTo(ListPrims.oneOf(SelfManager.self().getNeighbors()));
+        SelfManager.self().moveTo(PrimChecks.list.oneOf(SelfManager.self().getNeighbors()));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)

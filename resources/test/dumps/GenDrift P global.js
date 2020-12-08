@@ -210,7 +210,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("pcolor", ListPrims.oneOf(world.patches()).projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }));
+        SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.oneOf(world.patches()).projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }));
       }, true);
       world.ticker.tick();
     } catch (e) {

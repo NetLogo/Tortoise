@@ -73,7 +73,7 @@ var procedures = (function() {
       if (ListPrims.empty(world.observer.getGlobal("eligibles"))) {
         throw new Exception.StopInterrupt;
       }
-      Errors.askNobodyCheck(ListPrims.oneOf(world.observer.getGlobal("eligibles"))).ask(function() { procedures["BECOME-ALIVE"](); }, true);
+      Errors.askNobodyCheck(PrimChecks.list.oneOf(world.observer.getGlobal("eligibles"))).ask(function() { procedures["BECOME-ALIVE"](); }, true);
       world.ticker.tick();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -106,13 +106,13 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (SelfManager.self().getVariable("eligible?")) {
-        if (!ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))) {
+        if (!PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))) {
           SelfManager.self().setVariable("eligible?", false);
           world.observer.setGlobal("eligibles", PrimChecks.list.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
         }
       }
       else {
-        if ((SelfManager.self().getVariable("hidden?") && ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches")))) {
+        if ((SelfManager.self().getVariable("hidden?") && PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches")))) {
           SelfManager.self().setVariable("eligible?", true);
           world.observer.setGlobal("eligibles", ListPrims.fput(SelfManager.self(), world.observer.getGlobal("eligibles")));
         }
@@ -147,7 +147,7 @@ var procedures = (function() {
         world.observer.setGlobal("switches", PrimChecks.list.lput(6, world.observer.getGlobal("switches")));
       }
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CELLS")).ask(function() {
-        SelfManager.self().setVariable("eligible?", (SelfManager.self().getVariable("hidden?") && ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))));
+        SelfManager.self().setVariable("eligible?", (SelfManager.self().getVariable("hidden?") && PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))));
       }, true);
       world.observer.setGlobal("eligibles", world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() { return SelfManager.self().getVariable("eligible?"); }).projectionBy(function() { return SelfManager.self(); }));
     } catch (e) {

@@ -245,12 +245,12 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let maxColumn = ListPrims.max(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
+      let maxColumn = PrimChecks.list.max(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
         return SelfManager.self().getVariable("my-column-patches")._optimalCountWith(function() {
           return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
         });
       })); letVars['maxColumn'] = maxColumn;
-      let minColumn = ListPrims.min(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
+      let minColumn = PrimChecks.list.min(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
         return SelfManager.self().getVariable("my-column-patches")._optimalCountWith(function() {
           return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
         });

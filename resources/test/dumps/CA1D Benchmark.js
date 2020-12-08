@@ -144,7 +144,7 @@ var procedures = (function() {
       on_pList = Tasks.map(Tasks.reporterTask(function(p) {
         Errors.procedureArgumentsCheck(1, arguments.length);
         return p.projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
-      }, "[ [p] -> [ on? ] of p ]"), ListPrims.sort(world._optimalPatchRow(world.observer.getGlobal("row")))); letVars['on_pList'] = on_pList;
+      }, "[ [p] -> [ on? ] of p ]"), PrimChecks.list.sort(world._optimalPatchRow(world.observer.getGlobal("row")))); letVars['on_pList'] = on_pList;
       procedures["SETUP-GENERAL"]();
       Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() {
         SelfManager.self().setPatchVariable("on?", PrimChecks.list.item((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), on_pList));

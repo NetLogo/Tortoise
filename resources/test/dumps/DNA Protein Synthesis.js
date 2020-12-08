@@ -274,7 +274,7 @@ var procedures = (function() {
             }
             SelfManager.self().setVariable("start-position", itemPosition);
             SelfManager.self().setVariable("end-position", PrimChecks.list.length(world.observer.getGlobal("original-dna-string")));
-            SelfManager.self().setVariable("code", (workspace.dump('') + workspace.dump(triplet) + workspace.dump(ListPrims.substring(dnaString, (itemPosition + 1), PrimChecks.list.length(dnaString)))));
+            SelfManager.self().setVariable("code", (workspace.dump('') + workspace.dump(triplet) + workspace.dump(PrimChecks.list.substring(dnaString, (itemPosition + 1), PrimChecks.list.length(dnaString)))));
           }, true);
         }
         itemPosition = (itemPosition + 1); letVars['itemPosition'] = itemPosition;
@@ -287,7 +287,7 @@ var procedures = (function() {
           let thisTriplet = (workspace.dump('') + workspace.dump(PrimChecks.list.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + workspace.dump(PrimChecks.list.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + workspace.dump(PrimChecks.list.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))); letVars['thisTriplet'] = thisTriplet;
           if ((((Prims.equality(thisTriplet, "TAG") || Prims.equality(thisTriplet, "TGA")) || Prims.equality(thisTriplet, "TAA")) && !endOfGene_p)) {
             SelfManager.self().setVariable("end-position", (tripletCounter * 3));
-            newCode = ListPrims.substring(SelfManager.self().getVariable("code"), 0, SelfManager.self().getVariable("end-position")); letVars['newCode'] = newCode;
+            newCode = PrimChecks.list.substring(SelfManager.self().getVariable("code"), 0, SelfManager.self().getVariable("end-position")); letVars['newCode'] = newCode;
             endOfGene_p = true; letVars['endOfGene_p'] = endOfGene_p;
           }
           tripletCounter = (tripletCounter + 1); letVars['tripletCounter'] = tripletCounter;
@@ -895,9 +895,9 @@ var procedures = (function() {
       let mutatingCopyOfDnaString = world.observer.getGlobal("original-dna-string"); letVars['mutatingCopyOfDnaString'] = mutatingCopyOfDnaString;
       let targetLoci = PrimChecks.math.random((PrimChecks.list.length(mutatingCopyOfDnaString) - world.observer.getGlobal("#-nucleotides-affected"))); letVars['targetLoci'] = targetLoci;
       let dnaAtTarget = PrimChecks.list.item(targetLoci, mutatingCopyOfDnaString); letVars['dnaAtTarget'] = dnaAtTarget;
-      let dnaBeforeTarget = ListPrims.substring(mutatingCopyOfDnaString, 0, targetLoci); letVars['dnaBeforeTarget'] = dnaBeforeTarget;
+      let dnaBeforeTarget = PrimChecks.list.substring(mutatingCopyOfDnaString, 0, targetLoci); letVars['dnaBeforeTarget'] = dnaBeforeTarget;
       let lociCounter = 0; letVars['lociCounter'] = lociCounter;
-      let dnaAtAndAfterTarget = ListPrims.substring(mutatingCopyOfDnaString, targetLoci, PrimChecks.list.length(mutatingCopyOfDnaString)); letVars['dnaAtAndAfterTarget'] = dnaAtAndAfterTarget;
+      let dnaAtAndAfterTarget = PrimChecks.list.substring(mutatingCopyOfDnaString, targetLoci, PrimChecks.list.length(mutatingCopyOfDnaString)); letVars['dnaAtAndAfterTarget'] = dnaAtAndAfterTarget;
       if (Prims.equality(world.observer.getGlobal("mutation-type"), "deletion")) {
         for (let _index_24050_24056 = 0, _repeatcount_24050_24056 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24050_24056 < _repeatcount_24050_24056; _index_24050_24056++){
           mutatingCopyOfDnaString = PrimChecks.list.removeItem(targetLoci, mutatingCopyOfDnaString); letVars['mutatingCopyOfDnaString'] = mutatingCopyOfDnaString;
@@ -1099,7 +1099,7 @@ var procedures = (function() {
         nextItem = (nextItem + 1); letVars['nextItem'] = nextItem;
       }
       if (Prims.gt(PrimChecks.list.length(dnaString), 64)) {
-        newString = ListPrims.substring(newString, 0, 64); letVars['newString'] = newString;
+        newString = PrimChecks.list.substring(newString, 0, 64); letVars['newString'] = newString;
       }
       Errors.reportInContextCheck(reporterContext);
       return newString;

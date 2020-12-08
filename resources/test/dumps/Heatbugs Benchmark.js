@@ -74,7 +74,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.ticker.reset();
-      Errors.askNobodyCheck(ListPrims.nOf(world.observer.getGlobal("bug-count"), world.patches())).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.list.nOf(world.observer.getGlobal("bug-count"), world.patches())).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("color", 65);
           SelfManager.self().setVariable("size", 1.75);
@@ -171,7 +171,7 @@ var procedures = (function() {
       }
       while (Prims.lte(tries, 9)) {
         tries = (tries + 1); letVars['tries'] = tries;
-        target = ListPrims.oneOf(SelfManager.self().getNeighbors());
+        target = PrimChecks.list.oneOf(SelfManager.self().getNeighbors());
         if (!!Prims.turtlesOn(target).isEmpty()) {
           SelfManager.self().moveTo(target);
           throw new Exception.StopInterrupt;

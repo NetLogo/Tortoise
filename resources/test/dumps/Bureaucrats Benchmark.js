@@ -122,7 +122,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let activePatches = Prims.patchSet(ListPrims.oneOf(world.patches())); letVars['activePatches'] = activePatches;
+      let activePatches = Prims.patchSet(PrimChecks.list.oneOf(world.patches())); letVars['activePatches'] = activePatches;
       Errors.askNobodyCheck(activePatches).ask(function() {
         SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + 1));
         world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));

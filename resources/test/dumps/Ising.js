@@ -100,7 +100,7 @@ var procedures = (function() {
         }
         procedures["RECOLOR"]();
       }, true);
-      world.observer.setGlobal("sum-of-spins", ListPrims.sum(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
+      world.observer.setGlobal("sum-of-spins", PrimChecks.list.sum(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
       world.ticker.reset();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -113,7 +113,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       for (let _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++){
-        Errors.askNobodyCheck(ListPrims.oneOf(world.patches())).ask(function() { procedures["UPDATE"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.patches())).ask(function() { procedures["UPDATE"](); }, true);
       }
       world.ticker.tickAdvance(1000);
       plotManager.updatePlots();

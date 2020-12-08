@@ -267,7 +267,7 @@ var procedures = (function() {
       var letVars = { };
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
       world.turtleManager.createTurtles(world.observer.getGlobal("num-people"), "").ask(function() {
-        SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
+        SelfManager.self().moveTo(PrimChecks.list.oneOf(world.patches()));
         SelfManager.self().setVariable("size", 1.5);
         procedures["SET-INITIAL-TURTLE-VARS"]();
         SelfManager.self().setVariable("age", PrimChecks.math.random(SelfManager.self().getVariable("life-expectancy")));
@@ -284,7 +284,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       SelfManager.self().setVariable("age", 0);
-      SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
+      SelfManager.self().face(PrimChecks.list.oneOf(SelfManager.self().getNeighbors4()));
       SelfManager.self().setVariable("life-expectancy", (world.observer.getGlobal("life-expectancy-min") + PrimChecks.math.random(((world.observer.getGlobal("life-expectancy-max") - world.observer.getGlobal("life-expectancy-min")) + 1))));
       SelfManager.self().setVariable("metabolism", (1 + PrimChecks.math.random(world.observer.getGlobal("metabolism-max"))));
       SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("metabolism") + RandomPrims.randomLong(50)));
@@ -299,7 +299,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let maxWealth = ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); })); letVars['maxWealth'] = maxWealth;
+      let maxWealth = PrimChecks.list.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); })); letVars['maxWealth'] = maxWealth;
       Errors.askNobodyCheck(world.turtles()).ask(function() {
         if (Prims.lte(SelfManager.self().getVariable("wealth"), PrimChecks.math.div(maxWealth, 3))) {
           SelfManager.self().setVariable("color", 15);
@@ -440,8 +440,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let sortedWealths = ListPrims.sort(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); })); letVars['sortedWealths'] = sortedWealths;
-      let totalWealth = ListPrims.sum(sortedWealths); letVars['totalWealth'] = totalWealth;
+      let sortedWealths = PrimChecks.list.sort(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); })); letVars['sortedWealths'] = sortedWealths;
+      let totalWealth = PrimChecks.list.sum(sortedWealths); letVars['totalWealth'] = totalWealth;
       let wealthSumSoFar = 0; letVars['wealthSumSoFar'] = wealthSumSoFar;
       let index = 0; letVars['index'] = index;
       world.observer.setGlobal("gini-index-reserve", 0);

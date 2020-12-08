@@ -111,7 +111,7 @@ var procedures = (function() {
       }
       if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
         Errors.askNobodyCheck(world.patches()).ask(function() {
-          SelfManager.self().setPatchVariable("pcolor", ListPrims.oneOf([55, 35]));
+          SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.oneOf([55, 35]));
           if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
             SelfManager.self().setPatchVariable("countdown", world.observer.getGlobal("grass-regrowth-time"));
           }
@@ -249,7 +249,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let prey = ListPrims.oneOf(SelfManager.self().breedHere("SHEEP")); letVars['prey'] = prey;
+      let prey = PrimChecks.list.oneOf(SelfManager.self().breedHere("SHEEP")); letVars['prey'] = prey;
       if (!Prims.equality(prey, Nobody)) {
         Errors.askNobodyCheck(prey).ask(function() { SelfManager.self().die(); }, true);
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("wolf-gain-from-food")));

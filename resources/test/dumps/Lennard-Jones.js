@@ -101,7 +101,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++){
-        Errors.askNobodyCheck(ListPrims.oneOf(world.turtles())).ask(function() { procedures["ATTEMPT-MOVE"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtles())).ask(function() { procedures["ATTEMPT-MOVE"](); }, true);
       }
       if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("num-atoms")), 1)) {
         procedures["TUNE-ACCEPTANCE-RATE"]();
@@ -144,7 +144,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(ListPrims.sum(world.turtles().projectionBy(function() { return procedures["CALC-V"](); })), 2);
+      return PrimChecks.math.div(PrimChecks.list.sum(world.turtles().projectionBy(function() { return procedures["CALC-V"](); })), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

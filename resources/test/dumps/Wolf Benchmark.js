@@ -215,7 +215,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("prey", ListPrims.oneOf(SelfManager.self().breedHere("SHEEP")));
+      SelfManager.self().setVariable("prey", PrimChecks.list.oneOf(SelfManager.self().breedHere("SHEEP")));
       if (!Prims.equality(SelfManager.self().getVariable("prey"), Nobody)) {
         Errors.askNobodyCheck(SelfManager.self().getVariable("prey")).ask(function() { SelfManager.self().setVariable("energy", -1); }, true);
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("wolf-metabolism")));

@@ -99,7 +99,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(9.9, SelfManager.self().getPatchVariable("elevation"), -250, 100));
       }
       else {
-        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(105, ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), 75)), 100, -10));
+        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(105, PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), 75)), 100, -10));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -164,11 +164,11 @@ var procedures = (function() {
       let target = SelfManager.self().getNeighbors().minOneOf(function() {
         return (SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water"));
       }); letVars['target'] = target;
-      let amount = ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("elevation"); })) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
+      let amount = PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("elevation"); })) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
       if (Prims.gt(amount, 0)) {
         let erosion = (amount * (1 - world.observer.getGlobal("soil-hardness"))); letVars['erosion'] = erosion;
         SelfManager.self().setPatchVariable("elevation", (SelfManager.self().getPatchVariable("elevation") - erosion));
-        amount = ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("elevation"); })) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
+        amount = PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("elevation"); })) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
         SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") - amount));
         Errors.askNobodyCheck(target).ask(function() {
           SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + amount));

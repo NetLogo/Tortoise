@@ -89,7 +89,7 @@ var procedures = (function() {
         Errors.procedureArgumentsCheck(1, arguments.length);
         let regionPatches = world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("region"), regionNumber); }); letVars['regionPatches'] = regionPatches;
         world.turtleManager.createTurtles(world.observer.getGlobal("number-of-turtles-per-region"), "").ask(function() {
-          SelfManager.self().moveTo(ListPrims.oneOf(regionPatches));
+          SelfManager.self().moveTo(PrimChecks.list.oneOf(regionPatches));
           SelfManager.self().setVariable("color", (SelfManager.self().getPatchVariable("pcolor") + 3));
         }, true);
       }, "[ region-number -> let patches with [ region = region-number ] create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]"), Prims.rangeBinary(1, (PrimChecks.list.length(world.observer.getGlobal("region-boundaries")) + 1))); if(reporterContext && _foreach_1146_1153 !== undefined) { return _foreach_1146_1153; }
@@ -157,7 +157,7 @@ var procedures = (function() {
       return Tasks.map(Tasks.reporterTask(function(d1, d2) {
         Errors.procedureArgumentsCheck(2, arguments.length);
         return ListPrims.list((d1 + 1), (d2 - 1));
-      }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]"), PrimChecks.list.butLast('BUT-LAST')(divisions), PrimChecks.list.butFirst('BUT-FIRST')(divisions));
+      }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]"), PrimChecks.list.butLast('but-last')(divisions), PrimChecks.list.butFirst('but-first')(divisions));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

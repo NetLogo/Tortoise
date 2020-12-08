@@ -105,7 +105,7 @@ var procedures = (function() {
       world.clearAll();
       procedures["SETUP-NODES"]();
       procedures["SETUP-SPATIALLY-CLUSTERED-NETWORK"]();
-      Errors.askNobodyCheck(ListPrims.nOf(world.observer.getGlobal("initial-outbreak-size"), world.turtles())).ask(function() { procedures["BECOME-INFECTED"](); }, true);
+      Errors.askNobodyCheck(PrimChecks.list.nOf(world.observer.getGlobal("initial-outbreak-size"), world.turtles())).ask(function() { procedures["BECOME-INFECTED"](); }, true);
       Errors.askNobodyCheck(world.links()).ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
       world.ticker.reset();
     } catch (e) {
@@ -136,7 +136,7 @@ var procedures = (function() {
       var letVars = { };
       let numLinks = PrimChecks.math.div((world.observer.getGlobal("average-node-degree") * world.observer.getGlobal("number-of-nodes")), 2); letVars['numLinks'] = numLinks;
       while (Prims.lt(world.links().size(), numLinks)) {
-        Errors.askNobodyCheck(ListPrims.oneOf(world.turtles())).ask(function() {
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtles())).ask(function() {
           let choice = world.turtles()._optimalOtherWith(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); }).minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['choice'] = choice;
           if (!Prims.equality(choice, Nobody)) {
             LinkPrims.createLinkWith(choice, "LINKS").ask(function() {}, false);

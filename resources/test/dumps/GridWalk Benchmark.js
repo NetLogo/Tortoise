@@ -75,8 +75,8 @@ var procedures = (function() {
       world.clearAll();
       world.ticker.reset();
       world.turtleManager.createOrderedTurtles(1000, "").ask(function() {
-        SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
-        SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
+        SelfManager.self().moveTo(PrimChecks.list.oneOf(world.patches()));
+        SelfManager.self().face(PrimChecks.list.oneOf(SelfManager.self().getNeighbors4()));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -89,7 +89,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
+        SelfManager.self().face(PrimChecks.list.oneOf(SelfManager.self().getNeighbors4()));
         SelfManager.self()._optimalFdOne();
       }, true);
       world.ticker.tick();
