@@ -8,6 +8,11 @@ class MathChecks
   constructor: (@validator, @randomPrims) ->
 
   # (Number) => Number
+  abs: (d) ->
+    @validator.commonArgChecks.number("ABS", arguments)
+    NLMath.abs(d)
+
+  # (Number) => Number
   acos: (d) ->
     @validator.commonArgChecks.number("ACOS", arguments)
     @validator.checkNumber(NLMath.acos(d))
@@ -25,6 +30,16 @@ class MathChecks
 
     NLMath.atan(d1, d2)
 
+  # (Number) => Number
+  ceil: (d) ->
+    @validator.commonArgChecks.number("CEIL", arguments)
+    NLMath.ceil(d)
+
+  # (Number) => Number
+  cos: (d) ->
+    @validator.commonArgChecks.number("COS", arguments)
+    NLMath.cos(d)
+
   # (Number, Number) => Number
   div: (n, d) ->
     @validator.commonArgChecks.number_number("/", arguments)
@@ -36,6 +51,11 @@ class MathChecks
   exp: (p) ->
     @validator.commonArgChecks.number("EXP", arguments)
     @validator.checkNumber(NLMath.exp(p))
+
+  # (Number) => Number
+  floor: (d) ->
+    @validator.commonArgChecks.number("FLOOR", arguments)
+    NLMath.floor(d)
 
   # (Number) => Number
   int: (n) ->
@@ -61,9 +81,19 @@ class MathChecks
     NLMath.log(n, b)
 
   # (Number, Number) => Number
+  mod: (p, q) ->
+    @validator.commonArgChecks.number_number("MOD", arguments)
+    NLMath.mod(p, q)
+
+  # (Number, Number) => Number
   pow: (b, p) ->
     @validator.commonArgChecks.number_number("POW", arguments)
     @validator.checkNumber(NLMath.pow(b, p))
+
+  # (Number, Number) => Number
+  precision: (n, places) ->
+    @validator.commonArgChecks.number_number("PRECISION", arguments)
+    NLMath.precision(n, places)
 
   # (Number) => Number
   random: (n) ->
@@ -74,6 +104,11 @@ class MathChecks
   randomExponential: (mean) ->
     @validator.commonArgChecks.number("RANDOM-EXPONENTIAL", arguments)
     @validator.checkNumber(@randomPrims.randomExponential(mean))
+
+  # (Number) => Number
+  randomFloat: (n) ->
+    @validator.commonArgChecks.number("RANDOM-FLOAT", arguments)
+    @randomPrims.randomFloat(n)
 
   # (Number, Number) => Number
   randomGamma: (alpha, lambda) ->
@@ -91,6 +126,11 @@ class MathChecks
 
     @validator.checkNumber(@randomPrims.randomNormal(mean, stdDev))
 
+  # (Number) => Number
+  randomPoisson: (mean) ->
+    @validator.commonArgChecks.number("RANDOM-POISSON", arguments)
+    @randomPrims.randomPoisson(mean)
+
   # (Number) => Unit
   randomSeed: (seed) ->
     @validator.commonArgChecks.number("RANDOM-SEED", arguments)
@@ -101,11 +141,31 @@ class MathChecks
     return
 
   # (Number) => Number
+  round: (n) ->
+    @validator.commonArgChecks.number("ROUND", arguments)
+    NLMath.round(n)
+
+  # (Number) => Number
+  sin: (d) ->
+    @validator.commonArgChecks.number("SIN", arguments)
+    NLMath.sin(d)
+
+  # (Number) => Number
   sqrt: (n) ->
     @validator.commonArgChecks.number("SQRT", arguments)
     if n < 0
       @validator.error('The square root of _ is an imaginary number.', n)
 
     NLMath.sqrt(n)
+
+  # (Number, Number) => Number
+  subtractHeadings: (h1, h2) ->
+    @validator.commonArgChecks.number_number("TAN", arguments)
+    NLMath.subtractHeadings(h1, h2)
+
+  # (Number) => Number
+  tan: (d) ->
+    @validator.commonArgChecks.number("TAN", arguments)
+    NLMath.tan(d)
 
 module.exports = MathChecks

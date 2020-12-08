@@ -34,6 +34,11 @@ class ListChecks
 
     @listPrims.butLast(listOrString)
 
+  # (Array[Any] | String) => Boolean
+  empty: (listOrString) ->
+    @validator.commonArgChecks.stringOrList("EMPTY", arguments)
+    @listPrims.empty(listOrString)
+
   # ((T) => Boolean, Array[T]) => Array[T]
   filter: (f, list) ->
     @validator.commonArgChecks.reporter_list("FILTER", arguments)
@@ -51,6 +56,11 @@ class ListChecks
       @validator.error('List is empty.')
 
     @listPrims.first(listOrString)
+
+  # (Any, Array[Any]) => Array[Any]
+  fput: (item, list) ->
+    @validator.commonArgChecks.wildcard_list("FPUT", arguments)
+    @listPrims.fput(item, list)
 
   # (Number, Array[Any] | String, Any) => Array[Any] | String
   insertItem: (index, listOrString, item) ->
@@ -135,6 +145,11 @@ class ListChecks
 
     @validator.checkNumber(@listPrims.min(nums))
 
+  # (Array[Any]) => Array[Any]
+  modes: (list) ->
+    @validator.commonArgChecks.list("MODES", arguments)
+    @listPrims.modes(list)
+
   # (Number, Array[Any] | AbstractAgentSet) => Array[Any] | AbstractAgentSet
   nOf: (count, agentSetOrList) ->
     @validator.commonArgChecks.number_agentSetOrList("N-OF", arguments)
@@ -182,6 +197,11 @@ class ListChecks
     else # list
       @listPrims.remove(item, listOrString)
 
+  # (Array[Any]) => Array[Any]
+  removeDuplicates: (list) ->
+    @validator.commonArgChecks.list("REMOVE-DUPLICATES", arguments)
+    @listPrims.removeDuplicates(list)
+
   # (Number, Array[Any] | String) => Array[Any] | String
   removeItem: (index, listOrString) ->
     @validator.commonArgChecks.number_stringOrList("REMOVE-ITEM", arguments)
@@ -210,6 +230,11 @@ class ListChecks
       @stringPrims.reverse(listOrString)
     else # list
       @listPrims.reverse(listOrString)
+
+  # (Array[Any]) => Array[Any]
+  shuffle: (list) ->
+    @validator.commonArgChecks.list("SHUFFLE", arguments)
+    @listPrims.shuffle(list)
 
   # (Array[Any] | AbstractAgentSet) => Array[Any]
   sort: (agentSetOrList) ->
