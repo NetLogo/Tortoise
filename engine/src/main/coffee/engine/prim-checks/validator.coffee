@@ -7,6 +7,9 @@ formatFloat                  = require('util/formatfloat')
 class Validator
 
   constructor: (@bundle, @dumper) ->
+    # These arrays of types and the common checks below are pre-computed so that all prims
+    # can share them without making loads of extra array instances and extra functions.
+    # -Jeremy B December
     agentSetOrList         = [types.AgentSet, types.List]
     list                   = [types.List]
     number                 = [types.Number]
@@ -17,21 +20,21 @@ class Validator
     wildcard               = [types.Wildcard]
 
     @commonArgChecks = {
-      agentSetOrList:                  @checkArgTypes(agentSetOrList)
-      list:                            @checkArgTypes(list)
-      list_number_number:              @checkArgTypes(list, number, number)
-      number:                          @checkArgTypes(number)
-      number_agentSetOrList:           @checkArgTypes(number, agentSetOrList)
-      number_number:                   @checkArgTypes(number, number)
-      number_stringOrList:             @checkArgTypes(number, stringOrList)
-      number_stringOrList_wildcard:    @checkArgTypes(number, stringOrList, wildcard)
-      reporter_agentSetOrList:         @checkArgTypes(reporter, agentSetOrList)
-      reporter_list:                   @checkArgTypes(reporter, list)
-      stringOrList:                    @checkArgTypes(stringOrList)
-      string_number_number:            @checkArgTypes(string, number, number)
-      wildcard_list:                   @checkArgTypes(wildcard, list)
-      wildcard_stringOrList:           @checkArgTypes(wildcard, stringOrList)
-      wildcard_stringOrListOrAgentSet: @checkArgTypes(wildcard, stringOrListOrAgentSet)
+      agentSetOrList:                  @makeArgTypeCheck(agentSetOrList)
+      list:                            @makeArgTypeCheck(list)
+      list_number_number:              @makeArgTypeCheck(list, number, number)
+      number:                          @makeArgTypeCheck(number)
+      number_agentSetOrList:           @makeArgTypeCheck(number, agentSetOrList)
+      number_number:                   @makeArgTypeCheck(number, number)
+      number_stringOrList:             @makeArgTypeCheck(number, stringOrList)
+      number_stringOrList_wildcard:    @makeArgTypeCheck(number, stringOrList, wildcard)
+      reporter_agentSetOrList:         @makeArgTypeCheck(reporter, agentSetOrList)
+      reporter_list:                   @makeArgTypeCheck(reporter, list)
+      stringOrList:                    @makeArgTypeCheck(stringOrList)
+      string_number_number:            @makeArgTypeCheck(string, number, number)
+      wildcard_list:                   @makeArgTypeCheck(wildcard, list)
+      wildcard_stringOrList:           @makeArgTypeCheck(wildcard, stringOrList)
+      wildcard_stringOrListOrAgentSet: @makeArgTypeCheck(wildcard, stringOrListOrAgentSet)
     }
 
   # (Boolean, String, Array[Any]) => Unit
@@ -84,19 +87,30 @@ class Validator
     return
 
   # (Array[Array[NLType]]) => (String, Array[Any]) => Unit
-  checkArgTypes: (argTypes...) -> (prim, args) =>
-    if args.length isnt argTypes.length
-      throw new Error("Given a different number of argument types versus argument values to check.")
-
+  makeArgTypeCheck: (argTypes...) -> (prim, args) =>
+    # We could use `zip()` or `foreach()` or whatever here, but I don't want to use anything that would
+    # generate extra closures as this code will get called a whole lot.  So we'll leave it ugly but
+    # hopefully "optimized" -Jeremy B December 2020
     for i in [0...args.length]
-      if not argTypes[i].some( (type) -> type.isOfType(args[i]) )
+      # And we could use `some()` here, but that also could generate transient closure objects. -Jeremy B December 2020
+      match = false
+      for j in [0...argTypes[i].length]
+        if argTypes[i][j].isOfType(args[i])
+          match = true
+
+      if not match
         throw new Error(@typeError(prim, args[i], @listTypeNames(argTypes[i])))
 
     return
 
   # (String, Array[NLType]) => (Any) => Unit
-  checkValueType: (prim, types...) -> (value) =>
-    if not types.some( (type) -> type.isOfType(value) )
+  makeValueTypeCheck: (prim, types...) -> (value) =>
+    match = false
+    for j in [0...types.length]
+      if types[j].isOfType(value)
+        match = true
+
+    if not match
       throw new Error(@typeError(prim, value, @listTypeNames(types)))
 
     value
