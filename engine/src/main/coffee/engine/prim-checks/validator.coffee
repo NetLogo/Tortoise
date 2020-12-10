@@ -66,8 +66,8 @@ class Validator
     else
       "a #{nameList}"
 
-  # (String, Any, String) => String
-  typeError: (prim, value, expectedText) ->
+  # (String, Any, Array[NLType]) => String
+  typeError: (prim, value, expectedTypes) ->
     valueType = getTypeOf(value)
     valueText = if valueType is types.Nobody
       "nobody"
@@ -76,12 +76,13 @@ class Validator
     else
       "the #{valueType.niceName()} #{@dumper(value)}"
 
+    expectedText = @listTypeNames(expectedTypes)
+
     @bundle.get("_ expected input to be _ but got _ instead.", prim, expectedText, valueText)
 
   # (String, Any, Array[NLType]) => Unit
   throwTypeError: (prim, value, expectedTypes...) ->
-    expectedText = @listTypeNames(expectedTypes)
-    throw new Error(@typeError(prim, value, expectedText))
+    throw new Error(@typeError(prim, value, expectedTypes))
     return
 
   # (Array[Array[NLType]]) => (String, Array[Any]) => Unit
@@ -97,7 +98,7 @@ class Validator
           match = true
 
       if not match
-        throw new Error(@typeError(prim, args[i], @listTypeNames(argTypes[i])))
+        @throwTypeError(prim, args[i], argTypes[i]...)
 
     return
 
@@ -109,7 +110,7 @@ class Validator
         match = true
 
     if not match
-      throw new Error(@typeError(prim, value, @listTypeNames(types)))
+      @throwTypeError(prim, value, types...)
 
     value
 
