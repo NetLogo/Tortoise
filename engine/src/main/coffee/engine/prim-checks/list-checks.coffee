@@ -68,7 +68,9 @@ class ListChecks
     @indexBoundsChecks(index, listOrString, inclusive = false)
 
     if checks.isString(listOrString)
-      @validator.checkTypeError("INSERT-ITEM", not checks.isString(item), item, types.String)
+      if not checks.isString(item)
+        @validator.throwTypeError("INSERT-ITEM", item, types.String)
+
       @stringPrims.insertItem(index, listOrString, item)
     else
       @listPrims.insertItem(index, listOrString, item)
@@ -192,7 +194,9 @@ class ListChecks
     @validator.commonArgChecks.wildcard_stringOrList("REMOVE", arguments)
 
     if checks.isString(listOrString)
-      @validator.checkTypeError("REMOVE", not checks.isString(item), item, types.String)
+      if not checks.isString(item)
+        @validator.throwTypeError("REMOVE", item, types.String)
+
       @stringPrims.remove(item, listOrString)
     else # list
       @listPrims.remove(item, listOrString)
@@ -218,7 +222,9 @@ class ListChecks
     @indexBoundsChecks(index, listOrString)
 
     if checks.isString(listOrString)
-      @validator.checkTypeError("REPLACE-ITEM", not checks.isString(item), item, types.String)
+      if not checks.isString(item)
+        @validator.throwTypeError("REPLACE-ITEM", item, types.String)
+
       @stringPrims.replaceItem(index, listOrString, item)
     else # list
       @listPrims.replaceItem(index, listOrString, item)

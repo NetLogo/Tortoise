@@ -78,12 +78,10 @@ class Validator
 
     @bundle.get("_ expected input to be _ but got _ instead.", prim, expectedText, valueText)
 
-  # (String, Boolean, Any, Array[NLType]) => Unit
-  checkTypeError: (prim, condition, value, expectedTypes...) ->
-    if condition
-      expectedText = @listTypeNames(expectedTypes)
-      throw new Error(@typeError(prim, value, expectedText))
-
+  # (String, Any, Array[NLType]) => Unit
+  throwTypeError: (prim, value, expectedTypes...) ->
+    expectedText = @listTypeNames(expectedTypes)
+    throw new Error(@typeError(prim, value, expectedText))
     return
 
   # (Array[Array[NLType]]) => (String, Array[Any]) => Unit
