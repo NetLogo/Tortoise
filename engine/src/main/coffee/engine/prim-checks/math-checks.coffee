@@ -160,7 +160,7 @@ class MathChecks
 
   # (Number, Number) => Number
   subtractHeadings: (h1, h2) ->
-    @validator.commonArgChecks.number_number("TAN", arguments)
+    @validator.commonArgChecks.number_number("SUBTRACT-HEADINGS", arguments)
     NLMath.subtractHeadings(h1, h2)
 
   # (Number) => Number
