@@ -42,10 +42,9 @@ class ListChecks
   # ((T) => Boolean, Array[T]) => Array[T]
   filter: (f, list) ->
     @validator.commonArgChecks.reporter_list("FILTER", arguments)
-    fTypeCheck = @validator.makeValueTypeCheck("FILTER", types.Boolean)
-    checkedF = (item) ->
+    checkedF = (item) =>
       result = f(item)
-      fTypeCheck(result)
+      @validator.commonValueChecks.boolean("FILTER", result)
 
     @listPrims.filter(checkedF, list)
 
@@ -253,11 +252,9 @@ class ListChecks
   # ((Any, Any) => Boolean, Array[Any] | AbstractAgentSet) => Array[Any]
   sortBy: (f, agentSetOrList) ->
     @validator.commonArgChecks.reporter_agentSetOrList("SORT-BY", arguments)
-
-    fTypeCheck = @validator.makeValueTypeCheck("SORT-BY", types.Boolean)
-    checkedF = (a, b) ->
+    checkedF = (a, b) =>
       result = f(a, b)
-      fTypeCheck(result)
+      @validator.commonValueChecks.boolean("SORT-BY", result)
 
     if checks.isList(agentSetOrList)
       @listPrims.sortByList(checkedF, agentSetOrList)

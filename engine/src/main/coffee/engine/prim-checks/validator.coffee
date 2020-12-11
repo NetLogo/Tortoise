@@ -11,6 +11,7 @@ class Validator
     # can share them without making loads of extra array instances and extra functions.
     # -Jeremy B December
     agentSetOrList         = [types.AgentSet, types.List]
+    boolean                = [types.Boolean]
     list                   = [types.List]
     number                 = [types.Number]
     reporter               = [types.ReporterLambda]
@@ -35,6 +36,10 @@ class Validator
       wildcard_list:                   @makeArgTypeCheck(wildcard, list)
       wildcard_stringOrList:           @makeArgTypeCheck(wildcard, stringOrList)
       wildcard_stringOrListOrAgentSet: @makeArgTypeCheck(wildcard, stringOrListOrAgentSet)
+    }
+
+    @commonValueChecks = {
+      boolean: @makeValueTypeCheck(boolean...)
     }
 
   # (Boolean, String, Array[Any]) => Unit
@@ -103,7 +108,7 @@ class Validator
     return
 
   # (String, Array[NLType]) => (Any) => Unit
-  makeValueTypeCheck: (prim, types...) -> (value) =>
+  makeValueTypeCheck: (types...) -> (prim, value) =>
     match = false
     for j in [0...types.length]
       if types[j].isOfType(value)
