@@ -59,7 +59,10 @@ isFunction       = (x) -> typeof(x) is "function"
 isCommandLambda  = (x) -> isFunction(x) and not x.isReporter
 isReporterLambda = (x) -> isFunction(x) and x.isReporter
 
-isBoolean = (x) -> typeof(x) is "boolean"
+# Micro-benchmarks showed this to be mildly faster than `typeof(x) is "boolean"`.
+# This is used in tight loops with `filter` and `sort`, so even a 2.5% increase is
+# worth it.  -Jeremy B December 2020
+isBoolean = (x) -> x is true or x is false
 isList    = (x) -> Array.isArray(x)
 isNumber  = (x) -> typeof(x) is "number"
 isString  = (x) -> typeof(x) is "string"
