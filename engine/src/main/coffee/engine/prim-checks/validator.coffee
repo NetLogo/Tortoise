@@ -96,19 +96,17 @@ class Validator
     # generate extra closures as this code will get called a whole lot.  So we'll leave it ugly but
     # hopefully "optimized" -Jeremy B December 2020
     for i in [0...args.length]
-      # And we could use `some()` here, but that also could generate transient closure objects. -Jeremy B December 2020
-      match = false
-      for j in [0...argTypes[i].length]
-        if argTypes[i][j].isOfType(args[i])
-          match = true
-
-      if not match
-        @throwTypeError(prim, args[i], argTypes[i]...)
+      @checkValueTypes(prim, argTypes[i], args[i])
 
     return
 
-  # (String, Array[NLType]) => (Any) => Unit
+  # (Array[NLType]) => (Any) => Any
   makeValueTypeCheck: (types...) -> (prim, value) =>
+    @checkValueTypes(prim, types, value)
+
+  # (String, Array[NLType], Any) => Any
+  checkValueTypes: (prim, types, value) ->
+    # And we could use `some()` here, but that also could generate transient closure objects. -Jeremy B December 2020
     match = false
     for j in [0...types.length]
       if types[j].isOfType(value)
