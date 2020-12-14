@@ -100,7 +100,7 @@ class Validator
 
     return
 
-  # (Array[NLType]) => (Any) => Any
+  # (Array[NLType]) => (String, Any) => Any
   makeValueTypeCheck: (types...) -> (prim, value) =>
     @checkValueTypes(prim, types, value)
 
