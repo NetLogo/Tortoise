@@ -25,7 +25,7 @@ pipeline {
     stage('LintAndStyle') {
       steps {
         sh "./sbt.sh netLogoWeb/scalastyle compilerCore/scalastyle compilerJVM/scalastyle compilerJS/scalastyle macrosCore/scalastyle"
-        sh "cd engine; yarn install; grunt coffeelint"
+        sh "cd engine; yarn install; yarn run prebuild:prod"
       }
     }
 

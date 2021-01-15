@@ -96,4 +96,8 @@ glob(globPath, (err, files) => {
       files.length + ' file' + (files.length === 1 ? '' : 's') + ' lint free.'
     );
   }
+
+  if (errorCount) {
+    process.exit(1);
+  }
 });
