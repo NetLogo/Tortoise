@@ -157,7 +157,8 @@ lazy val netLogoWeb: Project = (project in file("netlogo-web")).
     }.taskValue,
     resourceGenerators in Compile += Def.task {
       (build in Compile in engine).value
-      val sourceFile = (classDirectory in Compile in engine).value / "js" / "tortoise" / "shim" / "engine-scala.js"
+      val sourceFile = 
+      (baseDirectory in root).value / "engine" / "src" / "main" / "coffee" / "shim" / "engine-scala.js"
       val destFile   = (classDirectory in Compile).value / "engine-scala.js"
       IO.copyFile(sourceFile, destFile)
       val engineSource = (classDirectory in Compile in engine).value / "js" / "tortoise-engine.js"
@@ -175,9 +176,7 @@ lazy val netLogoWeb: Project = (project in file("netlogo-web")).
 
 lazy val build = taskKey[Unit]("Does a full build of the engine Javascript artifact.")
 
-// I want grunt to depend on our custom build task.  This is the easiest way I've found
-// to get that to happen while keeping it's definition in a separate node.sbt file.
-lazy val grunt = taskKey[Unit]("Runs `grunt` from within SBT")
+lazy val yarnBuild = taskKey[Unit]("Runs `yarn run build` from within SBT")
 
 lazy val engine: Project =
   (project in file("engine")).
@@ -188,7 +187,9 @@ lazy val engine: Project =
     libraryDependencies += "org.nlogo" % "parser-js" % parserJsDependencyVersion cross ScalaJSCrossVersion.binary,
     build := {
       val engineFile  = (artifactPath in fullOptJS in Compile).value
-      val destFile    = (classDirectory in Compile).value / "js" / "tortoise" / "shim" / "engine-scala.js"
+      val destFile    = 
+      (baseDirectory in root).value / "engine" / "src" / "main" / "coffee" / "shim" / "engine-scala.js"
+
       IO.copyFile(engineFile, destFile)
       val oldContents = IO.read(destFile)
       val newContents =
@@ -203,5 +204,5 @@ lazy val engine: Project =
       IO.write(destFile, newContents)
     },
     build := build.dependsOn(fullOptJS in Compile).value,
-    build := grunt.dependsOn(build).value
+    build := yarnBuild.dependsOn(build).value
   )

@@ -4,9 +4,7 @@ import Process._
 import Keys._
 
 // If you get an error like this: 'java.io.IOException: Cannot run program "yarn": error=2, No such file or directory',
-// install Yarn (see https://yarnpkg.com/en/docs/install), and then install the Grunt command line tools
-// (`sudo yarn install -g grunt-cli`).  Ensure that NodeJS is runnable by typing `node`, or Grunt will fail.  If
-// Node isn't there, try something like `sudo ln -s /usr/bin/nodejs /usr/local/bin/node` and then try again. --JAB (7/21/14) (10/18/16)
+// install Yarn (see https://yarnpkg.com/en/docs/install) --JAB (7/21/14) (10/18/16) --Ruoshui (01/15/21)
 
 lazy val yarn = inputKey[Unit]("Runs Yarn commands from within SBT")
 
@@ -26,26 +24,19 @@ yarnInstall := {
 
 watchSources += packageJson.value
 
-lazy val grunt = taskKey[Unit]("Runs `grunt` from within SBT")
+lazy val yarnBuild = taskKey[Unit]("Runs `yarn run build` from within SBT")
 
-grunt := {
+
+yarnBuild := {
   val targetJS = (classDirectory in Compile).value / "js" / "tortoise-engine.js"
   val log = streams.value.log
-  installGrunt.value
   if (allJSSources.value exists (_.newerThan(targetJS)))
-    Process("grunt", baseDirectory.value).!(log)
+    Process(Seq("yarn", "run", "build:prod"), baseDirectory.value).!(log)
 }
 
-grunt := (grunt.dependsOn(yarnInstall)).value
+yarnBuild := (yarnBuild.dependsOn(yarnInstall)).value
 
 watchSources ++= allJSSources.value
-
-lazy val installGrunt = Def.task[Unit] {
-  val versionStr = Try(Process(Seq("grunt", "--version")).!!).toOption getOrElse "Grunt's not there"
-  val log = streams.value.log
-  if (!versionStr.contains("grunt-cli"))
-    Process(Seq("yarn", "global", "add", "grunt-cli"), baseDirectory.value).!(log)
-}
 
 lazy val packageJson = Def.task[File] {
   baseDirectory.value / "package.json"
@@ -75,7 +66,7 @@ lazy val scalaJSSources = Def.task[Seq[File]] {
   (baseDirectory.value / "src" / "main" / "scala").listFiles.filter(_.isFile)
 }
 
-lazy val gruntSources = Def.task[Seq[File]] {
+lazy val jsSources = Def.task[Seq[File]] {
   listFilesRecursively((classDirectory in Compile).value / "js")
 }
 
