@@ -5,8 +5,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build:prod": "webpack --config webpack.config.js --mode production",
-    "prebuild:prod": "node linter.js",
+    "build:prod": "node linter.js && webpack --config webpack.config.js --mode production",
     "build": "webpack --progress --config webpack.config.js"
   },
   "dependencies": {
@@ -18,7 +17,7 @@
     "stream-browserify": "^3.0.0",
     "tone": "14.7.39",
     "util": "^0.12.3",
-    "vectorious": "^6.0.2"
+    "vectorious": "^6.0.0-beta.11"
   },
   "devDependencies": {
     "coffee-loader": "^2.0.0",
