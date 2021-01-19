@@ -6,12 +6,12 @@
   the other things you might want ought to get initialized by Webpack here. --JAB (5/7/14) --Ruoshui (1/13/21)
 */
 
-import './agentmodel';
-import './engine/workspace';
-import './engine/prim/prims';
-import './engine/prim/tasks';
-import './extensions/all';
-import './util/notimplemented';
+import "./agentmodel";
+import "./engine/workspace";
+import "./engine/prim/prims";
+import "./engine/prim/tasks";
+import "./extensions/all";
+import "./util/notimplemented";
 
 // $ rg tortoise_require . > req.txt
 
@@ -48,32 +48,45 @@ import './util/notimplemented';
 
 //
 // $ perl -pe "s/.*(tortoise_require\(\'.*?\'\)).*/\1/" req.txt | sort | uniq | perl -pe 's/tortoise_require\(\'"'"'(.*?)\'"'"'\).*/import "expose-loader?exposes[]=tortoise.\1\!.\/\1"/'
-import 'expose-loader?exposes[]=tortoise.agentmodel!./agentmodel';
-import 'expose-loader?exposes[]=tortoise.agentmodel!./agentmodel';
-import 'expose-loader?exposes[]=tortoise.brazier/maybe!brazier/maybe';
-import 'expose-loader?exposes[]=tortoise.engine/core/colormodel!./engine/core/colormodel';
-import 'expose-loader?exposes[]=tortoise.engine/core/link!./engine/core/link';
-import 'expose-loader?exposes[]=tortoise.engine/core/linkset!./engine/core/linkset';
-import 'expose-loader?exposes[]=tortoise.engine/core/patchset!./engine/core/patchset';
-import 'expose-loader?exposes[]=tortoise.engine/core/turtle!./engine/core/turtle';
-import 'expose-loader?exposes[]=tortoise.engine/core/turtleset!./engine/core/turtleset';
-import 'expose-loader?exposes[]=tortoise.engine/core/typechecker!./engine/core/typechecker';
-import 'expose-loader?exposes[]=tortoise.engine/plot/pen!./engine/plot/pen';
-import 'expose-loader?exposes[]=tortoise.engine/plot/plot!./engine/plot/plot';
-import 'expose-loader?exposes[]=tortoise.engine/plot/plotops!./engine/plot/plotops';
-import 'expose-loader?exposes[]=tortoise.engine/prim/tasks!./engine/prim/tasks';
-import 'expose-loader?exposes[]=tortoise.engine/workspace!./engine/workspace';
-import 'expose-loader?exposes[]=tortoise.extensions/all!./extensions/all';
-import 'expose-loader?exposes[]=tortoise.meta!./meta';
-import 'expose-loader?exposes[]=tortoise.shim/engine-scala!./shim/engine-scala';
-import 'expose-loader?exposes[]=tortoise.shim/random!./shim/random';
-import 'expose-loader?exposes[]=tortoise.shim/strictmath!./shim/strictmath';
-import 'expose-loader?exposes[]=tortoise.util/errors!./util/errors';
-import 'expose-loader?exposes[]=tortoise.util/exception!./util/exception';
-import 'expose-loader?exposes[]=tortoise.util/nlmath!./util/nlmath';
-import 'expose-loader?exposes[]=tortoise.util/notimplemented!./util/notimplemented';
+import "expose-loader?exposes[]=tortoise.agentmodel!./agentmodel";
+import "expose-loader?exposes[]=tortoise.agentmodel!./agentmodel";
+import "expose-loader?exposes[]=tortoise.brazier/maybe!brazier/maybe";
+import "expose-loader?exposes[]=tortoise.engine/core/colormodel!./engine/core/colormodel";
+import "expose-loader?exposes[]=tortoise.engine/core/link!./engine/core/link";
+import "expose-loader?exposes[]=tortoise.engine/core/linkset!./engine/core/linkset";
+import "expose-loader?exposes[]=tortoise.engine/core/patchset!./engine/core/patchset";
+import "expose-loader?exposes[]=tortoise.engine/core/turtle!./engine/core/turtle";
+import "expose-loader?exposes[]=tortoise.engine/core/turtleset!./engine/core/turtleset";
+import "expose-loader?exposes[]=tortoise.engine/core/typechecker!./engine/core/typechecker";
+import "expose-loader?exposes[]=tortoise.engine/plot/pen!./engine/plot/pen";
+import "expose-loader?exposes[]=tortoise.engine/plot/plot!./engine/plot/plot";
+import "expose-loader?exposes[]=tortoise.engine/plot/plotops!./engine/plot/plotops";
+import "expose-loader?exposes[]=tortoise.engine/prim/tasks!./engine/prim/tasks";
+import "expose-loader?exposes[]=tortoise.engine/workspace!./engine/workspace";
+import "expose-loader?exposes[]=tortoise.extensions/all!./extensions/all";
+import "expose-loader?exposes[]=tortoise.meta!./meta";
+import "expose-loader?exposes[]=tortoise.shim/engine-scala!./shim/engine-scala";
+import "expose-loader?exposes[]=tortoise.shim/random!./shim/random";
+import "expose-loader?exposes[]=tortoise.shim/strictmath!./shim/strictmath";
+import "expose-loader?exposes[]=tortoise.util/errors!./util/errors";
+import "expose-loader?exposes[]=tortoise.util/exception!./util/exception";
+import "expose-loader?exposes[]=tortoise.util/nlmath!./util/nlmath";
+import "expose-loader?exposes[]=tortoise.util/notimplemented!./util/notimplemented";
 
 // Things on globalThis needs to be copied somewhere else so they don't get overwritten during/before testing.
 const tortoise_mods = { ...globalThis.tortoise };
 
-globalThis.tortoise_require = (mod) => tortoise_mods[mod];
+// Arrow function is succinct, but it looks like GraalJS doesn't support it!
+/*
+  TestMersenneTwister:
+[info]  *** ABORTED ***
+[info]   org.graalvm.polyglot.PolyglotException: TypeError: (mod) => tortoise_mods[mod] is not a constructor
+[info]   at <js>.:program(Unnamed:1)
+[info]   at org.graalvm.sdk/org.graalvm.polyglot.Context.eval(Context.java:373)
+[info]   at org.nlogo.tortoise.nlw.jsengine.GraalJS.evalRaw(GraalJS.scala:46)
+[info]   at org.nlogo.tortoise.nlw.jsengine.GraalJS.eval(GraalJS.scala:51)
+[info]   at org.nlogo.tortoise.nlw.TestLogger$$anon$1.eval(TestLogger.scala:31)
+*/
+globalThis.tortoise_require = function (mod) {
+  return tortoise_mods[mod];
+};
