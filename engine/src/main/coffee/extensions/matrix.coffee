@@ -55,7 +55,7 @@ checkNestedList = (list) ->
 # Any => Boolean
 isMatrix = (x) ->
   # not sure about this before, but in vectorious 6.0.2, default export (vec) isn't callable. Gotta do `vec.matrix` --Ruoshui (01/16/2021)
-  x instanceof vec.NDArray
+  x instanceof vec
   # x instanceof vec
 
 dumpMatrix = (matrix) ->
@@ -74,7 +74,6 @@ formatMatrix = (matrix) ->
 
 readMatrix = (x, parseAny) ->
   parseable = x.replaceAll("\[ ", "[").replaceAll(" \]", "]").replaceAll("][", "] [")
-  # parseable = x.replace(/\[ /g, "[").replace(/ \]/g, "]").replace(/\]\[/g, "] [")
   list = parseAny(parseable)
   vec.array(list)
 
