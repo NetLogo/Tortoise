@@ -42,6 +42,18 @@
       "actionName": "recompile-nt",
       "argTypes": [],
       "returnType": "unit"
+    }, {
+      "name": "clear-commands",
+      "actionName": "clear-commands",
+      "argTypes": [],
+      "returnType": "unit"
+    }, {
+      "name": "execute-command",
+      "actionName": "execute-command",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
     }
   ]
 }

@@ -80,6 +80,13 @@
       "argTypes": [ ],
       "returnType": "unit"
     }, {
+      "name": "survey",
+      "actionName": "survey",
+      "argTypes": [ 
+        "string" 
+      ],
+      "returnType": "unit"
+    }, {
       "name": "in-tutorial?",
       "actionName": "in-tutorial?",
       "argTypes": [ ],

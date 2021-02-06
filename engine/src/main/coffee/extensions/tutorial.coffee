@@ -140,6 +140,14 @@ module.exports = {
         workspace.printPrims.print("Visit the last available section")
       return
 
+    # (String) -> Unit
+    survey = (triggerName) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue({ Type: "Tutorial", Action: "Survey", Value: triggerName })
+      else
+        workspace.printPrims.print("Go to section #{sectionName}")
+
+      return
     # () -> Boolean
     inTutorial = () ->
       if tortugaSession = getTortugaSession()
@@ -163,6 +171,7 @@ module.exports = {
       ,      "DEACTIVATE": deactivate
       ,         "FORWARD": forward
       ,            "BACK": back
+      ,          "SURVEY": survey
       ,    "IN-TUTORIAL?": inTutorial
       }
     }

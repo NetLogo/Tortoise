@@ -54,7 +54,7 @@ module.exports = {
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Control", Action: "Recompile" })
       else
-        workspace.printPrims.print("Control Recompile")
+        workspace.printPrims.print("Recompile Code")
       return
 
     # () => Unit
@@ -62,7 +62,23 @@ module.exports = {
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Control", Action: "Recompile-NT" })
       else
-        workspace.printPrims.print("Control Recompile-NT")
+        workspace.printPrims.print("Recompile NetTango")
+      return
+
+    # () => Unit
+    clearCommands = () ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue({ Type: "CommandCenter", Action: "Clear" })
+      else
+        workspace.printPrims.print("Clear Command Center")
+      return
+
+    # (String) => Unit
+    executeCommand = (Command) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue({ Type: "CommandCenter", Action: "Execute", Value: Command })
+      else
+        workspace.printPrims.print("Execute a command: " + Command)
       return
 
     {
@@ -73,6 +89,8 @@ module.exports = {
       ,         "SHOW": show
       ,         "HIDE": hide
       ,    "SET-SPEED": setSpeed
+    ,"EXECUTE-COMMAND": executeCommand
+     ,"CLEAR-COMMANDS": clearCommands
       ,    "RECOMPILE": recompile
       , "RECOMPILE-NT": recompileNT
       }
