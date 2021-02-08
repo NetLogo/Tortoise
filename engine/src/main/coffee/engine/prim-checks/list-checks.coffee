@@ -295,7 +295,7 @@ class ListChecks
     @listPrims.sum(nums)
 
   # (Number, Array[Any] | AbstractAgentSet) => Array[Any] | AbstractAgentSet
-  upToNOf: (count, agentsOrList) ->
+  upToNOf: (count, agentSetOrList) ->
     @validator.commonArgChecks.number_agentSetOrList("N-OF", arguments)
     if checks.isList(agentSetOrList)
       @listPrims.upToNOfList(count, agentSetOrList)
