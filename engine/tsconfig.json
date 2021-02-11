@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    // "outDir": "./dist/",
+    "noImplicitAny": true,
+    "module": "esnext",
+    "lib": ["ESNext.String"],
+    "moduleResolution": "node",
+    // "target": "es6",
+    // "jsx": "react",
+    // "allowJs": true
+    "types": ["node"],
+    "allowSyntheticDefaultImports": true
+  }
+}

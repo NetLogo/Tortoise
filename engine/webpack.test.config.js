@@ -7,7 +7,7 @@ module.exports = {
     errorDetails: true,
     modules: true,
   },
-  devtool: "inline-cheap-module-source-map",
+  // devtool: 'inline-cheap-module-source-map',
   // No devtool by omitting the field will use the eval devtool, which causes error on GraalVM. It's a known bug.
   // devtool: false,
   resolve: {
@@ -18,24 +18,18 @@ module.exports = {
     },
     exportsFields: ["exports"],
     modules: [path.resolve(__dirname, "src/main/coffee"), "node_modules"],
-    extensions: [
-      ".js",
-      ".coffee", // put ts before coffee to test wasm
-      ".ts",
-      ".wasm",
-      ".json",
-    ],
+    extensions: [".ts", ".js", ".wasm", ".coffee", ".json"],
     fallback: {
       stream: require.resolve("stream-browserify"),
       util: require.resolve("util/"),
     },
   },
-  entry: path.resolve(__dirname, "src/main/coffee/wasm-bootstrap.js"),
+  entry: path.resolve(__dirname, "test/test.js"),
   output: {
-    path: path.resolve(__dirname, "dist"),
+    // path: path.resolve(__dirname, 'dist'),
     // filename: 'bootstrap.js',
-    // path: path.resolve(__dirname, "target/classes/js"),
-    filename: "tortoise-engine.js",
+    path: path.resolve(__dirname, "target/test/"),
+    filename: "[name].js",
     pathinfo: true,
   },
   devServer: {

@@ -65,13 +65,16 @@ import "expose-loader?exposes[]=tortoise.engine/prim/tasks!./engine/prim/tasks";
 import "expose-loader?exposes[]=tortoise.engine/workspace!./engine/workspace";
 import "expose-loader?exposes[]=tortoise.extensions/all!./extensions/all";
 import "expose-loader?exposes[]=tortoise.meta!./meta";
-import "expose-loader?exposes[]=tortoise.shim/engine-scala!./shim/engine-scala";
+// import "expose-loader?exposes[]=tortoise.shim/engine-scala!./shim/engine-scala";
 import "expose-loader?exposes[]=tortoise.shim/random!./shim/random";
 import "expose-loader?exposes[]=tortoise.shim/strictmath!./shim/strictmath";
 import "expose-loader?exposes[]=tortoise.util/errors!./util/errors";
 import "expose-loader?exposes[]=tortoise.util/exception!./util/exception";
 import "expose-loader?exposes[]=tortoise.util/nlmath!./util/nlmath";
 import "expose-loader?exposes[]=tortoise.util/notimplemented!./util/notimplemented";
+import "expose-loader?exposes[]=netlogoRs!../rust/pkg/netlogo_rs";
+// modified for ES export interop
+// import "expose-loader?exposes[]=tortoise.shim/random|random!./shim/random";
 
 // Things on globalThis needs to be copied somewhere else so they don't get overwritten during/before testing.
 const tortoise_mods = { ...globalThis.tortoise };
@@ -90,3 +93,5 @@ const tortoise_mods = { ...globalThis.tortoise };
 globalThis.tortoise_require = function (mod) {
   return tortoise_mods[mod];
 };
+
+export default tortoise_require;
