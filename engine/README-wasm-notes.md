@@ -6,9 +6,9 @@ Current progress:
 - [x] Implement RNG in Rust
 - [x] DockingFixture framework ready to rock and roll
     - [x] Fix Optimizations to mirror exact behavior in DockingFixture.scala
-- [] Fix RNG implementation in Rust (needs to first pass `random.test.ts`) (some reference in the Rust src files)
-- [] Use fast-check to mirror behavior in TestRandom.scala (prop testing)
-- [] Port color model to Rust
+- [ ] Fix RNG implementation in Rust (needs to first pass `random.test.ts`) (some reference in the Rust src files)
+- [ ] Use fast-check to mirror behavior in TestRandom.scala (prop testing)
+- [ ] Port color model to Rust
 
 
 This uses Rust and compiles it to wasm, and bundles everything together with `webpack`.
