@@ -5,11 +5,11 @@ Current progress:
 - [x] Move all js bundling to Webpack (only webpack really supports wasm right now)
 - [x] Implement RNG in Rust
 - [x] DockingFixture framework ready to rock and roll
-    - [x] Fix Optimizations to mirror exact behavior in DockingFixture.scala
+  - [x] Fix Optimizations to mirror exact behavior in DockingFixture.scala
 - [ ] Fix RNG implementation in Rust (needs to first pass `random.test.ts`) (some reference in the Rust src files)
 - [ ] Use fast-check to mirror behavior in TestRandom.scala (prop testing)
 - [ ] Port color model to Rust
-
+- [ ] Investigate rest of the engine
 
 This uses Rust and compiles it to wasm, and bundles everything together with `webpack`.
 
@@ -20,6 +20,46 @@ Currently, RNG module still has incompatible internal state.
 `plot.rs` module and `colormodel.rs` are work in progress, and they don't compile yet. Only `rng.rs` works right now, but the internal RNG state is still incompatible.
 
 Currently the default setup will not include wasm in the final build. They only include original coffeescript files. To change this behavior, put `.ts` above `.coffee` in `resolve.extensions` of webpack.config.js.
+
+# Compiling
+
+To compile Rust code to wasm, make sure you have these installed:
+
+- rustc
+- cargo
+- wasm-pack
+
+In `src/main/rust`, run
+
+```
+wasm-pack build
+```
+
+Alternatively, in root folder (here it's `engine`), run
+
+```
+yarn run wasm:webpack
+```
+
+And then bundle wasm with the rest of the engine with:
+
+```
+yarn run build
+```
+
+To bundle for production:
+
+```
+yarn run build:prod
+```
+
+This will turn off progressbar (so it doesn't interfere in CI build), minify JS bundle, and fail if linter check doesn't pass. (I believe we should just use a formatter, and format every time on commit, so we don't have this issue.)
+
+For now, testing requires you to bundle the engine first.
+
+There's a `yarn run wasm:node` target in `package.json`. Use that if you want to directly import wasm into a mocha test. I've set up a test that way before but then removed it because the docking test was more important.
+
+If you only want to test the wasm engine, write the test directly in Rust either as unit tests on a module or as (integration) tests that will be compiled by wasm-bindgen.
 
 # Testing
 
@@ -66,8 +106,6 @@ In addition, jars from the NetLogoWeb and Netlogo-headless-test are needed. They
 
 What I did was to use `sbt-assebmly` on the scala project, and assembled CompilerJVM. And then I downloaded netlogoheadless from bintry. Put them in `jars/`. Make sure `fixture.ts` is using the correct filenames for jars.
 
-
-
 ### More about test files
 
 `engine.ts` exports the engine that runs NetLogo Web code during testing, with an interface similar to `GraalJS.scala`.
@@ -75,8 +113,5 @@ What I did was to use `sbt-assebmly` on the scala project, and assembled Compile
 `fixture.ts` exports the `DockingFixture`.
 
 `java.js` is setup for making experimenting in the nodejs repl more convenient.
-
-
-
 
 2021-02-10 Ruoshui
