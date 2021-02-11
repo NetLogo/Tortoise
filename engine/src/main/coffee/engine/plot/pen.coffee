@@ -195,7 +195,13 @@ module.exports.Pen = class Pen
 
     points.forEach(
       ({ color, isPenDown: isPointVisible, x, y }) =>
-        @_points.push(new PlotPoint(x, y, (if isPointVisible then Down else Up), color))
+        penMode = if isPointVisible
+          @lower()
+          Down
+        else
+          @raise()
+          Up
+        @_points.push(new PlotPoint(x, y, penMode, color))
         @_ops.addPoint(x, y)
         return
     )
