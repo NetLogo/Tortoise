@@ -10,6 +10,7 @@ class Validator
     # These arrays of types and the common checks below are pre-computed so that all prims
     # can share them without making loads of extra array instances and extra functions.
     # -Jeremy B December
+    agentSet               = [types.AgentSet]
     agentSetOrList         = [types.AgentSet, types.List]
     boolean                = [types.Boolean]
     list                   = [types.List]
@@ -21,6 +22,7 @@ class Validator
     wildcard               = [types.Wildcard]
 
     @commonArgChecks = {
+      agentSet:                        @makeArgTypeCheck(agentSet)
       agentSetOrList:                  @makeArgTypeCheck(agentSetOrList)
       list:                            @makeArgTypeCheck(list)
       list_number_number:              @makeArgTypeCheck(list, number, number)
@@ -91,14 +93,16 @@ class Validator
     return
 
   # (Array[Array[NLType]]) => (String, Array[Any]) => Unit
-  makeArgTypeCheck: (argTypes...) -> (prim, args) =>
-    # We could use `zip()` or `foreach()` or whatever here, but I don't want to use anything that would
-    # generate extra closures as this code will get called a whole lot.  So we'll leave it ugly but
-    # hopefully "optimized" -Jeremy B December 2020
-    for i in [0...args.length]
-      @checkValueTypes(prim, argTypes[i], args[i])
+  makeArgTypeCheck: (argTypes...) ->
+    (prim, args, argLimit = null) =>
+      argLimit = if argLimit is null then args.length else Math.min(args.length, argLimit)
+      # We could use `zip()` or `foreach()` or whatever here, but I don't want to use anything that would
+      # generate extra closures as this code will get called a whole lot.  So we'll leave it ugly but
+      # hopefully "optimized" -Jeremy B December 2020
+      for i in [0...argLimit]
+        @checkValueTypes(prim, argTypes[i], args[i])
 
-    return
+      return
 
   # (Array[NLType]) => (String, Any) => Any
   makeValueTypeCheck: (types...) -> (prim, value) =>

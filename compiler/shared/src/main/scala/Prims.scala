@@ -131,9 +131,7 @@ trait ReporterPrims extends PrimUtils {
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
 
       // Agentset filtering
-      case _: prim._with =>
-        val agents = arg(0)
-        s"$agents.agentFilter(${handlers.fun(r.args(1), true)})"
+      case _: prim._with => s"PrimChecks.agentset.with(${arg(0)}, ${handlers.fun(r.args(1), true)})"
       case _: prim.etc._maxnof =>
         val agents = arg(1)
         s"$agents.maxNOf(${arg(0)}, ${handlers.fun(r.args(2), true)})"

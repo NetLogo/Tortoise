@@ -229,5 +229,4 @@ Object.assign(types, {
   LinkSet:   new LinkSetType()
 
   Wildcard: new WildcardType()
-
 })
