@@ -47,7 +47,7 @@ module.exports =
     atPoints: (points) ->
       getSelf    =        => @_world.selfManager.self()
       getPatchAt = (x, y) => @_world.getPatchAt(x, y)
-      require('./agentset/atpoints')(@_world.dump, getSelf, getPatchAt).call(this, points)
+      require('./agentset/atpoints')(getSelf, getPatchAt).call(this, points)
 
     # (T) => Boolean
     contains: (item) ->
@@ -96,13 +96,6 @@ module.exports =
 
     # (Number, () => Number) => AbstractAgentSet[T]
     maxNOf: (n, f) ->
-
-      if n > @size()
-        throw new Error("Requested #{n} random agents from a set of only #{@size()} agents.")
-
-      if n < 0
-        throw new Error("First input to MAX-N-OF can't be negative.")
-
       @_findBestNOf(n, f, (x, y) -> if x is y then 0 else if x > y then -1 else 1)
 
     # (() => Number) => T
@@ -111,13 +104,6 @@ module.exports =
 
     # (Number, () => Number) => AbstractAgentSet[T]
     minNOf: (n, f) ->
-
-      if n > @size()
-        throw new Error("Requested #{n} random agents from a set of only #{@size()} agents.")
-
-      if n < 0
-        throw new Error("First input to MIN-N-OF can't be negative.")
-
       @_findBestNOf(n, f, (x, y) -> if x is y then 0 else if x < y then -1 else 1)
 
     # (() => Number) => T

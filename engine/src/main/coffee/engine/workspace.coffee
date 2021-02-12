@@ -77,7 +77,6 @@ module.exports =
     updater      = new Updater(dump)
     workspace    = new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager)
 
-    # The world is only given `dump` for stupid `atpoints` in `AbstractAgentSet`... --JAB (8/24/17)
     world = new World(
       workspace
     , worldConfig
@@ -85,7 +84,6 @@ module.exports =
     , (-> outputConfig.clear(); outputStore = "")
     , (-> outputStore)
     , ((text) -> outputStore = text)
-    , dump
     , extensionPorters
     , worldArgs...
     )

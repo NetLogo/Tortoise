@@ -122,43 +122,25 @@ trait ReporterPrims extends PrimUtils {
       // Blarg
       case _: prim._unaryminus         => s" -(${arg(0)})" // The space is important, because these can be nested --JAB (6/12/14)
       case _: prim._not                => s"!${arg(0)}"
-      case _: prim._count              => s"${arg(0)}.size()"
-      case _: prim._any                => s"!${arg(0)}.isEmpty()"
       case _: prim._word               => ("''" +: args).map(arg => s"workspace.dump($arg)").mkString("(", " + ", ")")
-      case _: prim._of                 => generateOf(r)
       case _: prim.etc._ifelsevalue    => generateIfElseValue(r.args)
       case _: prim.etc._nvalues        => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
 
       // Agentset filtering
-      case _: prim._with => s"PrimChecks.agentset.with(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._maxnof =>
-        val agents = arg(1)
-        s"$agents.maxNOf(${arg(0)}, ${handlers.fun(r.args(2), true)})"
-      case _: prim.etc._maxoneof =>
-        val agents = arg(0)
-        s"$agents.maxOneOf(${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._minnof =>
-        val agents = arg(1)
-        s"$agents.minNOf(${arg(0)}, ${handlers.fun(r.args(2), true)})"
-      case _: prim.etc._minoneof =>
-        val agents = arg(0)
-        s"$agents.minOneOf(${handlers.fun(r.args(1), true)})"
-      case o: prim.etc._all =>
-        val agents = arg(0)
-        s"$agents.agentAll(${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._withmax =>
-        val agents = arg(0)
-        s"$agents.maxesBy(${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._withmin =>
-        val agents = arg(0)
-        s"$agents.minsBy(${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._atpoints =>
-        val agents = arg(0)
-        s"$agents.atPoints(${arg(1)})"
-      case _: prim.etc._sorton =>
-        val agents = arg(1)
-        s"$agents.sortOn(${handlers.fun(r.args(0), true)})"
+      case _: prim._any          => s"PrimChecks.agentset.any(${arg(0)})"
+      case _: prim.etc._all      => s"PrimChecks.agentset.all(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._atpoints => s"PrimChecks.agentset.atPoints(${arg(0)}, ${arg(1)})"
+      case _: prim._count        => s"PrimChecks.agentset.count(${arg(0)})"
+      case _: prim.etc._maxnof   => s"PrimChecks.agentset.maxNOf(${arg(1)}, ${arg(0)}, ${handlers.fun(r.args(2), true)})"
+      case _: prim.etc._maxoneof => s"PrimChecks.agentset.maxOneOf(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._minnof   => s"PrimChecks.agentset.minNOf(${arg(1)}, ${arg(0)}, ${handlers.fun(r.args(2), true)})"
+      case _: prim.etc._minoneof => s"PrimChecks.agentset.minOneOf(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim._of           => s"PrimChecks.agentset.of(${arg(1)}, ${handlers.fun(r.args(0), isReporter = true)})"
+      case _: prim.etc._sorton   => s"PrimChecks.agentset.sortOn(${arg(1)}, ${handlers.fun(r.args(0), true)})"
+      case _: prim._with         => s"PrimChecks.agentset.with(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._withmax  => s"PrimChecks.agentset.withMax(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._withmin  => s"PrimChecks.agentset.withMin(${arg(0)}, ${handlers.fun(r.args(1), true)})"
 
       case ns: Optimizer._nsum => generateOptimalNSum(r, ns.varName)
       case ns: Optimizer._nsum4 => generateOptimalNSum4(r, ns.varName)
@@ -209,7 +191,6 @@ trait ReporterPrims extends PrimUtils {
       case b: prim.etc._breedat           => s"SelfManager.self().breedAt(${jsString(b.breedName)}, ${arg(0)}, ${arg(1)})"
       case b: prim.etc._breedhere         => s"SelfManager.self().breedHere(${jsString(b.breedName)})"
       case b: prim.etc._breedon           => s"Prims.breedOn(${jsString(b.breedName)}, ${arg(0)})"
-
 
       // Link finding
       case p: prim.etc._inlinkfrom       => s"LinkPrims.inLinkFrom(${jsString(fixBN(p.breedName))}, ${arg(0)})"
@@ -267,13 +248,6 @@ trait ReporterPrims extends PrimUtils {
       handlers.reporter(args(0))
     else
       s"(Prims.ifElseValueBooleanCheck(${handlers.reporter(args(0))}) ? ${handlers.reporter(args(1))} : ${generateIfElseValue(args.drop(2))})"
-  }
-
-  def generateOf(r: ReporterApp)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val agents = handlers.reporter(r.args(1))
-    val func   = handlers.fun(r.args(0), isReporter = true)
-    s"$agents.projectionBy($func)"
   }
 
   def generateOptimalNSum(r: ReporterApp, varName: String): String = {

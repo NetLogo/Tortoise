@@ -10,6 +10,7 @@ class Validator
     # These arrays of types and the common checks below are pre-computed so that all prims
     # can share them without making loads of extra array instances and extra functions.
     # -Jeremy B December
+    agentOrAgentSet        = [types.Agent, types.AgentSet]
     agentSet               = [types.AgentSet]
     agentSetOrList         = [types.AgentSet, types.List]
     boolean                = [types.Boolean]
@@ -22,8 +23,11 @@ class Validator
     wildcard               = [types.Wildcard]
 
     @commonArgChecks = {
+      agentOrAgentSet:                 @makeArgTypeCheck(agentOrAgentSet)
       agentSet:                        @makeArgTypeCheck(agentSet)
       agentSetOrList:                  @makeArgTypeCheck(agentSetOrList)
+      agentSet_list:                   @makeArgTypeCheck(agentSet, list)
+      agentSet_number:                 @makeArgTypeCheck(agentSet, number)
       list:                            @makeArgTypeCheck(list)
       list_number_number:              @makeArgTypeCheck(list, number, number)
       number:                          @makeArgTypeCheck(number)

@@ -17,25 +17,20 @@ genPatchGrabber = (self, worldPatchAt) ->
     (-> Nobody)
 
 # ((Any) => String, (Number, Number) => Patch, Array[(Number, Number)]) => Array[Patch]
-getPatchesAtPoints = (dump, patchAt, points) ->
-  f =
-    (point) ->
-      if checks.isList(point) and point.length is 2 and checks.isNumber(point[0]) and checks.isNumber(point[1])
-        patchAt(point...)
-      else
-        throw new Error("Invalid list of points: #{dump(points)}")
+getPatchesAtPoints = (patchAt, points) ->
+  f = (point) -> patchAt(point...)
   pipeline(map(f), filter((x) -> x isnt Nobody))(points)
 
 # ((Any) => String, () => Agent, (Number, Number) => Patch) => (Array[Any]) => AbstractAgentSet[T]
 module.exports =
-  (dump, getSelf, getPatchAt) -> (points) ->
+  (getSelf, getPatchAt) -> (points) ->
 
     filterContaining = filter((x) => @contains(x))
 
     breedName = @getSpecialName()
 
     patchAt = genPatchGrabber(getSelf(), getPatchAt)
-    patches = getPatchesAtPoints(dump, patchAt, points)
+    patches = getPatchesAtPoints(patchAt, points)
 
     newAgents =
       if checks.isPatchSet(this)

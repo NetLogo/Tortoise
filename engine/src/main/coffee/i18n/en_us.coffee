@@ -76,6 +76,14 @@ bundle = {
   , 'Can_t find the _ of a list without at least two numbers: __': (aspect, list, punc) ->
       "Can't find the #{aspect} of a list without at least two numbers: #{list}#{punc}"
 
+  , 'Invalid list of points: _': (points) ->
+      "Invalid list of points: #{points}"
+
+  , 'Requested _ random agents from a set of only _ agents.': (n, size) ->
+      "Requested #{n} random agents from a set of only #{size} agents."
+
+  , 'First input to _ can_t be negative.': (prim) ->
+      "First input to #{prim} can't be negative."
 }
 
 module.exports = bundle
