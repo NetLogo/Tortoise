@@ -84,6 +84,9 @@ bundle = {
 
   , 'First input to _ can_t be negative.': (prim) ->
       "First input to #{prim} can't be negative."
+
+  , '_ expected a true/false value from _, but got _ instead.': (prim, item, value) ->
+    "#{prim} expected a true/false value from #{item}, but got #{value} instead."
 }
 
 module.exports = bundle

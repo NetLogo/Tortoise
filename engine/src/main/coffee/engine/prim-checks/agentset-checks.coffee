@@ -1,33 +1,47 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ types } = require('engine/core/typechecker')
+{ checks } = require('engine/core/typechecker')
 
 class AgentSetChecks
 
-  constructor: (@validator, @dumper) ->
+  # `getSelf()` is necessary because the predicates used for `with` and its optimized relatives
+  # do not actually take in the agents they check, they assume the `selfManager` on the world
+  # will be kept up-to-date for them.  As such this was the best way I could find to get
+  # the proper agent to use when those predicates return incorrect values.
+  # -Jeremy B February 2021
+
+  constructor: (@validator, @dumper, @getSelf) ->
 
   # (Any) => Boolean
   @isPoint: (point) ->
-    point.length is 2 and types.Number.isOfType(point[0]) and types.Number.isOfType(point[1])
+    point.length is 2 and checks.isNumber(point[0]) and checks.isNumber(point[1])
 
   # (Any) => Boolean
   @isListOfPoints: (points) ->
-    points.every( (point) -> types.List.isOfType(point) and AgentSetChecks.isPoint(point) )
+    points.every( (point) -> checks.isList(point) and AgentSetChecks.isPoint(point) )
+
+  # (() => Boolean) => (T) => Boolean
+  makeCheckedFForWith: (f) ->
+    () =>
+      result = f()
+      if not checks.isBoolean(result)
+        @validator.error('_ expected a true/false value from _, but got _ instead.', "WITH", @getSelf(), @dumper(result))
+      result
 
   # (AgentSet[T]) => Boolean
   any: (agentset) ->
     @validator.commonArgChecks.agentSet("ANY", arguments)
     not agentset.isEmpty()
 
-  # (AgentSet[T], (T) => Boolean) => Boolean
+  # (AgentSet[T], () => Boolean) => Boolean
   anyOtherWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalAnyOtherWith(f)
+    agentset._optimalAnyOtherWith(@makeCheckedFForWith(f))
 
-  # (AgentSet[T], (T) => Boolean) => Boolean
+  # (AgentSet[T], () => Boolean) => Boolean
   anyWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalAnyWith(f)
+    agentset._optimalAnyWith(@makeCheckedFForWith(f))
 
   # (AgentSet[T], (T) => Boolean) => Boolean
   all: (agentset, f) ->
@@ -47,15 +61,15 @@ class AgentSetChecks
     @validator.commonArgChecks.agentSet("COUNT", arguments)
     agentset.size()
 
-  # (AgentSet[T], (T) => Boolean) => Number
+  # (AgentSet[T], () => Boolean) => Number
   countOtherWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalCountOtherWith(f)
+    agentset._optimalCountOtherWith(@makeCheckedFForWith(f))
 
-  # (AgentSet[T], (T) => Boolean) => Number
+  # (AgentSet[T], () => Boolean) => Number
   countWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalCountWith(f)
+    agentset._optimalCountWith(@makeCheckedFForWith(f))
 
   # (AgentSet[T], Number, (T) => Number) => AgentSet[T]
   maxNOf: (agentset, n, f) ->
@@ -92,20 +106,20 @@ class AgentSetChecks
     @validator.commonArgChecks.agentOrAgentSet("OF", arguments)
     agentOrAgentset.projectionBy(f)
 
-  # (AgentSet[T], (T) => Boolean) => T
+  # (AgentSet[T], () => Boolean) => T
   oneOfWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalOneOfWith(f)
+    agentset._optimalOneOfWith(@makeCheckedFForWith(f))
 
   # (AgentSet[T], Number, (Number, Number) => Boolean) => Boolean
   optimizeCount: (agentset, n, operator) ->
     @validator.commonArgChecks.agentSet("COUNT", arguments)
     agentset._optimalCheckCount(n, operator)
 
-  # (AgentSet[T], (T) => Boolean) => AgentSet[T]
+  # (AgentSet[T], () => Boolean) => AgentSet[T]
   otherWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalOtherWith(f)
+    agentset._optimalOtherWith(@makeCheckedFForWith(f))
 
   # (AgentSet[T], () => Number) => AgentSet[T]
   sortOn: (agentset, f) ->
@@ -115,7 +129,7 @@ class AgentSetChecks
   # (AgentSet[T], () => Boolean) => AgentSet[T]
   with: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset.agentFilter(f)
+    agentset.agentFilter(@makeCheckedFForWith(f))
 
   # (AgentSet[T], () => Number) => AgentSet[T]
   withMax: (agentset, f) ->

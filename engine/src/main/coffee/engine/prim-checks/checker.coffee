@@ -7,9 +7,9 @@ MathChecks     = require('./math-checks')
 
 class Checker
 
-  constructor: (i18nBundle, dumper, listPrims, randomPrims, stringPrims) ->
+  constructor: (i18nBundle, dumper, listPrims, randomPrims, stringPrims, getSelf) ->
     validator = new Validator(i18nBundle, dumper)
-    @agentset = new AgentSetChecks(validator, dumper)
+    @agentset = new AgentSetChecks(validator, dumper, getSelf)
     @list     = new ListChecks(validator, dumper, listPrims, stringPrims)
     @math     = new MathChecks(validator, randomPrims)
 

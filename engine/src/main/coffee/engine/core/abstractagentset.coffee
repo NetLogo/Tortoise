@@ -21,7 +21,7 @@ module.exports =
 
     # (() => Boolean) => AbstractAgentSet[T]
     agentFilter: (f) ->
-      @filter(Iterator.withBoolCheck(@_world.selfManager.askAgent(f)))
+      @filter(@_world.selfManager.askAgent(f))
 
     # (() => Boolean) => Boolean
     agentAll: (f) ->
@@ -242,19 +242,12 @@ module.exports =
     # (() => Boolean) => AgentSet
     _optimalOtherWith: (f) ->
       self = @_world.selfManager.self()
-      filterer =
-        (x) ->
-          if x isnt self
-            Iterator.boolOrError(x, x.projectionBy(f))
-          else
-            false
+      filterer = (x) -> x isnt self and x.projectionBy(f)
       @copyWithNewAgents(@_unsafeIterator().filter(filterer))
 
     # (() => Boolean) => Agent
     _optimalOneOfWith: (f) ->
-      finder =
-        (x) ->
-          y = Iterator.boolOrError(x, x.projectionBy(f))
+      finder = (x) -> x.projectionBy(f)
       @shufflerator().find(finder, Nobody)
 
     # (() => Boolean) => Boolean
@@ -264,19 +257,18 @@ module.exports =
     # (() => Boolean) => Boolean
     _optimalAnyOtherWith: (f) ->
       self = @_world.selfManager.self()
-      checker = (x) -> x isnt self and Iterator.boolOrError(x, x.projectionBy(f))
+      checker = (x) -> x isnt self and x.projectionBy(f)
       @exists(checker)
 
     # (() => Boolean) => Number
     _optimalCountOtherWith: (f) ->
       self = @_world.selfManager.self()
-      filterer = (x) -> x isnt self and Iterator.boolOrError(x, x.projectionBy(f))
+      filterer = (x) -> x isnt self and x.projectionBy(f)
       @_unsafeIterator().filter(filterer).length
 
     # (() => Boolean) => Number
     _optimalCountWith: (f) ->
-      self = @_world.selfManager.self()
-      filterer = (x) -> Iterator.boolOrError(x, x.projectionBy(f))
+      filterer = (x) -> x.projectionBy(f)
       @_unsafeIterator().filter(filterer).length
 
     # (Number, (Number, Number) => Boolean) => Boolean

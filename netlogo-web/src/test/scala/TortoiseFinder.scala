@@ -102,15 +102,6 @@ private[tortoise] object Freebies {
   private val incErrorDetectCommandNames = Seq(
     "Agentsets::Agentsets3",
     "Agentsets::Agentsets4_2D",
-    // The Iterator.withBoolCheck() adds a very rudimentary type check which
-    // addresses some Agentsets::OtherWithOptsShowCorrectErrorName failures.
-    // But in core/headless they use differing agent sets for arrays and trees.
-    // This causes the Agentsets::OtherWithOptsShowCorrectErrorName test
-    // to fail for being "out of order".  Not much we can do about that, short
-    // of implementing an agent set tree in Tortoise.  Just noting it here for
-    // reference if someone tries tracking down those differences.
-    // -JMB July 2017.
-    "Agentsets::OtherWithOptsShowCorrectErrorName",
     "AgentsetBuilding::TurtleSet_2D",
     "AgentsetBuilding::PatchSet2_2D",
     "AgentsetBuilding::LinkSet_2D",
