@@ -142,36 +142,16 @@ trait ReporterPrims extends PrimUtils {
       case _: prim.etc._withmax  => s"PrimChecks.agentset.withMax(${arg(0)}, ${handlers.fun(r.args(1), true)})"
       case _: prim.etc._withmin  => s"PrimChecks.agentset.withMin(${arg(0)}, ${handlers.fun(r.args(1), true)})"
 
+      case _: Optimizer._countotherwith => s"PrimChecks.agentset.countOtherWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: Optimizer._countwith      => s"PrimChecks.agentset.countWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: Optimizer._otherwith      => s"PrimChecks.agentset.otherWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: Optimizer._anyotherwith   => s"PrimChecks.agentset.anyOtherWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: Optimizer._oneofwith      => s"PrimChecks.agentset.oneOfWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: Optimizer._anywith        => s"PrimChecks.agentset.anyWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case o: Optimizer._optimizecount  => s"PrimChecks.agentset.optimizeCount(${arg(0)}, ${o.checkValue}, ${o.operator})"
+
       case ns: Optimizer._nsum => generateOptimalNSum(r, ns.varName)
       case ns: Optimizer._nsum4 => generateOptimalNSum4(r, ns.varName)
-
-      case _: Optimizer._countotherwith =>
-        val agents = arg(0)
-        s"$agents._optimalCountOtherWith(${handlers.fun(r.args(1), true)})"
-
-      case _: Optimizer._countwith =>
-        val agents = arg(0)
-        s"$agents._optimalCountWith(${handlers.fun(r.args(1), true)})"
-
-      case _: Optimizer._otherwith =>
-        val agents = arg(0)
-        s"$agents._optimalOtherWith(${handlers.fun(r.args(1), true)})"
-
-      case _: Optimizer._anyotherwith =>
-        val agents = arg(0)
-        s"$agents._optimalAnyOtherWith(${handlers.fun(r.args(1), true)})"
-
-      case _: Optimizer._oneofwith =>
-        val agents = arg(0)
-        s"$agents._optimalOneOfWith(${handlers.fun(r.args(1), true)})"
-
-      case _: Optimizer._anywith =>
-        val agents = arg(0)
-        s"$agents._optimalAnyWith(${handlers.fun(r.args(1), true)})"
-
-      case o: Optimizer._optimizecount =>
-        val agents = arg(0)
-        s"$agents._optimalCheckCount(${o.checkValue}, ${o.operator})"
 
       case _: Optimizer._patchhereinternal => "SelfManager.self()._optimalPatchHereInternal()"
       case _: Optimizer._patchnorth        => "SelfManager.self()._optimalPatchNorth()"

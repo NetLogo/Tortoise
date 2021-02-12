@@ -20,6 +20,16 @@ class AgentSetChecks
     not agentset.isEmpty()
 
   # (AgentSet[T], (T) => Boolean) => Boolean
+  anyOtherWith: (agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", arguments)
+    agentset._optimalAnyOtherWith(f)
+
+  # (AgentSet[T], (T) => Boolean) => Boolean
+  anyWith: (agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", arguments)
+    agentset._optimalAnyWith(f)
+
+  # (AgentSet[T], (T) => Boolean) => Boolean
   all: (agentset, f) ->
     @validator.commonArgChecks.agentSet("ALL", arguments)
     agentset.agentAll(f)
@@ -36,6 +46,16 @@ class AgentSetChecks
   count: (agentset) ->
     @validator.commonArgChecks.agentSet("COUNT", arguments)
     agentset.size()
+
+  # (AgentSet[T], (T) => Boolean) => Number
+  countOtherWith: (agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", arguments)
+    agentset._optimalCountOtherWith(f)
+
+  # (AgentSet[T], (T) => Boolean) => Number
+  countWith: (agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", arguments)
+    agentset._optimalCountWith(f)
 
   # (AgentSet[T], Number, (T) => Number) => AgentSet[T]
   maxNOf: (agentset, n, f) ->
@@ -71,6 +91,21 @@ class AgentSetChecks
   of: (agentOrAgentset, f) ->
     @validator.commonArgChecks.agentOrAgentSet("OF", arguments)
     agentOrAgentset.projectionBy(f)
+
+  # (AgentSet[T], (T) => Boolean) => T
+  oneOfWith: (agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", arguments)
+    agentset._optimalOneOfWith(f)
+
+  # (AgentSet[T], Number, (Number, Number) => Boolean) => Boolean
+  optimizeCount: (agentset, n, operator) ->
+    @validator.commonArgChecks.agentSet("COUNT", arguments)
+    agentset._optimalCheckCount(n, operator)
+
+  # (AgentSet[T], (T) => Boolean) => AgentSet[T]
+  otherWith: (agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", arguments)
+    agentset._optimalOtherWith(f)
 
   # (AgentSet[T], () => Number) => AgentSet[T]
   sortOn: (agentset, f) ->
