@@ -98,12 +98,11 @@ class Validator
 
   # (Array[Array[NLType]]) => (String, Array[Any]) => Unit
   makeArgTypeCheck: (argTypes...) ->
-    (prim, args, argLimit = null) =>
-      argLimit = if argLimit is null then args.length else Math.min(args.length, argLimit)
+    (prim, args) =>
       # We could use `zip()` or `foreach()` or whatever here, but I don't want to use anything that would
       # generate extra closures as this code will get called a whole lot.  So we'll leave it ugly but
       # hopefully "optimized" -Jeremy B December 2020
-      for i in [0...argLimit]
+      for i in [0...argTypes.length]
         @checkValueTypes(prim, argTypes[i], args[i])
 
       return

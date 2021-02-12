@@ -21,7 +21,7 @@ class AgentSetChecks
 
   # (AgentSet[T], (T) => Boolean) => Boolean
   all: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("ALL", arguments, 1)
+    @validator.commonArgChecks.agentSet("ALL", arguments)
     agentset.agentAll(f)
 
   # (AgentSet[T], Array[Array[Number]]) => AgentSet
@@ -39,7 +39,7 @@ class AgentSetChecks
 
   # (AgentSet[T], Number, (T) => Number) => AgentSet[T]
   maxNOf: (agentset, n, f) ->
-    @validator.commonArgChecks.agentSet_number("MAX-N-OF", arguments, 1)
+    @validator.commonArgChecks.agentSet_number("MAX-N-OF", arguments)
     if n > agentset.size()
       @validator.error('Requested _ random agents from a set of only _ agents.', n, agentset.size())
     if n < 0
@@ -49,12 +49,12 @@ class AgentSetChecks
 
   # (AgentSet[T], (T) => Number) => AgentSet
   maxOneOf: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("MAX-ONE-OF", arguments, 1)
+    @validator.commonArgChecks.agentSet("MAX-ONE-OF", arguments)
     agentset.maxOneOf(f)
 
   # (AgentSet[T], Number, (T) => Number) => AgentSet[T]
   minNOf: (agentset, n, f) ->
-    @validator.commonArgChecks.agentSet_number("MIN-N-OF", arguments, 1)
+    @validator.commonArgChecks.agentSet_number("MIN-N-OF", arguments)
     if n > agentset.size()
       @validator.error('Requested _ random agents from a set of only _ agents.', n, agentset.size())
     if n < 0
@@ -64,32 +64,32 @@ class AgentSetChecks
 
   # (AgentSet[T], (T) => Number) => AgentSet
   minOneOf: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("MIN-ONE-OF", arguments, 1)
+    @validator.commonArgChecks.agentSet("MIN-ONE-OF", arguments)
     agentset.minOneOf(f)
 
   # (T | AgentSet[T], (T) => U) => U | List[U]
   of: (agentOrAgentset, f) ->
-    @validator.commonArgChecks.agentOrAgentSet("OF", arguments, 1)
+    @validator.commonArgChecks.agentOrAgentSet("OF", arguments)
     agentOrAgentset.projectionBy(f)
 
   # (AgentSet[T], () => Number) => AgentSet[T]
   sortOn: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("SORT-ON", arguments, 1)
+    @validator.commonArgChecks.agentSet("SORT-ON", arguments)
     agentset.sortOn(f)
 
   # (AgentSet[T], () => Boolean) => AgentSet[T]
   with: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH", arguments, 1)
+    @validator.commonArgChecks.agentSet("WITH", arguments)
     agentset.agentFilter(f)
 
   # (AgentSet[T], () => Number) => AgentSet[T]
   withMax: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH-MAX", arguments, 1)
+    @validator.commonArgChecks.agentSet("WITH-MAX", arguments)
     agentset.maxesBy(f)
 
   # (AgentSet[T], () => Number) => AgentSet[T]
   withMin: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH-MIN", arguments, 1)
+    @validator.commonArgChecks.agentSet("WITH-MIN", arguments)
     agentset.minsBy(f)
 
 module.exports = AgentSetChecks
