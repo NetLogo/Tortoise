@@ -81,7 +81,7 @@ var procedures = (function() {
       world.observer.setGlobal("box-edge", (world.topology.maxPxcor - 1));
       procedures["MAKE-BOX"]();
       procedures["MAKE-PARTICLES"]();
-      world.observer.setGlobal("tick-length", PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))));
+      world.observer.setGlobal("tick-length", PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("speed"); })))));
       world.observer.setGlobal("original-tick-length", world.observer.getGlobal("tick-length"));
       world.observer.setGlobal("colliding-particle-1", Nobody);
       world.observer.setGlobal("colliding-particle-2", Nobody);
@@ -189,7 +189,7 @@ var procedures = (function() {
         let ySpeed = (SelfManager.self().getVariable("speed") * procedures["CONVERT-HEADING-Y"](SelfManager.self().getVariable("heading"))); letVars['ySpeed'] = ySpeed;
         let dvx = (xSpeed - myXSpeed); letVars['dvx'] = dvx;
         let dvy = (ySpeed - myYSpeed); letVars['dvy'] = dvy;
-        let sumR = (PrimChecks.math.div(myParticleSize, 2) + PrimChecks.math.div(SelfManager.self().projectionBy(function() { return SelfManager.self().getVariable("size"); }), 2)); letVars['sumR'] = sumR;
+        let sumR = (PrimChecks.math.div(myParticleSize, 2) + PrimChecks.math.div(PrimChecks.agentset.of(SelfManager.self(), function() { return SelfManager.self().getVariable("size"); }), 2)); letVars['sumR'] = sumR;
         let pSquared = (((dpx * dpx) + (dpy * dpy)) - PrimChecks.math.pow(sumR, 2)); letVars['pSquared'] = pSquared;
         let pv = (2 * ((dpx * dvx) + (dpy * dvy))); letVars['pv'] = pv;
         let vSquared = ((dvx * dvx) + (dvy * dvy)); letVars['vSquared'] = vSquared;
@@ -349,9 +349,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let mass2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("mass"); }); letVars['mass2'] = mass2;
-      let speed2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("speed"); }); letVars['speed2'] = speed2;
-      let heading2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("heading"); }); letVars['heading2'] = heading2;
+      let mass2 = PrimChecks.agentset.of(otherParticle, function() { return SelfManager.self().getVariable("mass"); }); letVars['mass2'] = mass2;
+      let speed2 = PrimChecks.agentset.of(otherParticle, function() { return SelfManager.self().getVariable("speed"); }); letVars['speed2'] = speed2;
+      let heading2 = PrimChecks.agentset.of(otherParticle, function() { return SelfManager.self().getVariable("heading"); }); letVars['heading2'] = heading2;
       let theta = SelfManager.self().towards(otherParticle); letVars['theta'] = theta;
       let v1t = (SelfManager.self().getVariable("speed") * PrimChecks.math.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
       let v1l = (SelfManager.self().getVariable("speed") * PrimChecks.math.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
@@ -449,7 +449,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(world.patches().agentFilter(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
         return ((Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge"))) || (Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge"))));
       })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
     } catch (e) {
@@ -480,11 +480,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!!particleSet.isEmpty()) {
+      if (!PrimChecks.agentset.any(particleSet)) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(particleSet).ask(function() { procedures["RANDOM-POSITION"](); }, true);
-      procedures["ARRANGE"](particleSet.agentFilter(function() { return procedures["OVERLAPPING?"](); }));
+      procedures["ARRANGE"](PrimChecks.agentset.with(particleSet, function() { return procedures["OVERLAPPING?"](); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -496,8 +496,8 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), PrimChecks.math.div((SelfManager.self().getVariable("size") + world.observer.getGlobal("largest-particle-size")), 2))._optimalAnyOtherWith(function() {
-        return Prims.lt(SelfManager.self().distance(SelfManager.myself()), PrimChecks.math.div((SelfManager.self().getVariable("size") + SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("size"); })), 2));
+      return PrimChecks.agentset.anyOtherWith(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), PrimChecks.math.div((SelfManager.self().getVariable("size") + world.observer.getGlobal("largest-particle-size")), 2)), function() {
+        return Prims.lt(SelfManager.self().distance(SelfManager.myself()), PrimChecks.math.div((SelfManager.self().getVariable("size") + PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("size"); })), 2));
       });
       Errors.missingReport();
     } catch (e) {

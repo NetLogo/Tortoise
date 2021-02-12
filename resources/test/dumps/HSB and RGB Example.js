@@ -76,7 +76,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return world.patches().agentFilter(function() { return Prims.equality(procedures["PATCH-QUADRANT"](), ListPrims.list(x, y)); });
+      return PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(procedures["PATCH-QUADRANT"](), ListPrims.list(x, y)); });
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

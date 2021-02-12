@@ -77,12 +77,12 @@ var procedures = (function() {
           world.topology.diffuse("elevation", 0.5, false)
         }
       }
-      Errors.askNobodyCheck(world.patches().agentFilter(function() { return SelfManager.self().getNeighbors()._optimalCheckCount(8, (a, b) => a !== b); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return PrimChecks.agentset.optimizeCount(SelfManager.self().getNeighbors(), 8, (a, b) => a !== b); })).ask(function() {
         SelfManager.self().setPatchVariable("drain?", true);
         SelfManager.self().setPatchVariable("elevation", -10000000);
       }, true);
-      world.observer.setGlobal("drains", world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable("drain?"); }));
-      world.observer.setGlobal("land", world.patches().agentFilter(function() { return !SelfManager.self().getPatchVariable("drain?"); }));
+      world.observer.setGlobal("drains", PrimChecks.agentset.with(world.patches(), function() { return SelfManager.self().getPatchVariable("drain?"); }));
+      world.observer.setGlobal("land", PrimChecks.agentset.with(world.patches(), function() { return !SelfManager.self().getPatchVariable("drain?"); }));
       Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() { procedures["RECOLOR"](); }, true);
       world.ticker.reset();
     } catch (e) {
@@ -161,14 +161,14 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let target = SelfManager.self().getNeighbors().minOneOf(function() {
+      let target = PrimChecks.agentset.minOneOf(SelfManager.self().getNeighbors(), function() {
         return (SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water"));
       }); letVars['target'] = target;
-      let amount = PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("elevation"); })) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
+      let amount = PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("elevation"); })) - PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
       if (Prims.gt(amount, 0)) {
         let erosion = (amount * (1 - world.observer.getGlobal("soil-hardness"))); letVars['erosion'] = erosion;
         SelfManager.self().setPatchVariable("elevation", (SelfManager.self().getPatchVariable("elevation") - erosion));
-        amount = PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("elevation"); })) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
+        amount = PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("elevation"); })) - PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
         SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") - amount));
         Errors.askNobodyCheck(target).ask(function() {
           SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + amount));

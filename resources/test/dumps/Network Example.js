@@ -73,13 +73,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!!world.turtles().isEmpty()) {
+      if (!PrimChecks.agentset.any(world.turtles())) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtles())).ask(function() {
         LinkPrims.createLinkWith(PrimChecks.list.oneOf(SelfPrims.other(world.turtles())), "LINKS").ask(function() {}, false);
       }, true);
-      while (Prims.gt(world.links().size(), world.observer.getGlobal("number-of-links"))) {
+      while (Prims.gt(PrimChecks.agentset.count(world.links()), world.observer.getGlobal("number-of-links"))) {
         Errors.askNobodyCheck(PrimChecks.list.oneOf(world.links())).ask(function() { SelfManager.self().die(); }, true);
       }
       world.ticker.tick();

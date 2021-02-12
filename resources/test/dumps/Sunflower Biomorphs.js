@@ -98,8 +98,8 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SPAWNERS")).ask(function() {
         SelfManager.self().hatch(1, "PETALS").ask(function() {
           SelfManager.self().setVariable("parent", SelfManager.myself());
-          SelfManager.self().setVariable("color", ((10 * PrimChecks.math.mod(world.ticker.tickCount(), (SelfManager.self().getVariable("parent").projectionBy(function() { return SelfManager.self().getVariable("num-colors"); }) + 1))) + 15));
-          SelfManager.self().right(((world.ticker.tickCount() * SelfManager.self().getVariable("parent").projectionBy(function() { return SelfManager.self().getVariable("turn-increment"); })) * 360));
+          SelfManager.self().setVariable("color", ((10 * PrimChecks.math.mod(world.ticker.tickCount(), (PrimChecks.agentset.of(SelfManager.self().getVariable("parent"), function() { return SelfManager.self().getVariable("num-colors"); }) + 1))) + 15));
+          SelfManager.self().right(((world.ticker.tickCount() * PrimChecks.agentset.of(SelfManager.self().getVariable("parent"), function() { return SelfManager.self().getVariable("turn-increment"); })) * 360));
           SelfManager.self().setVariable("size", 0);
           SelfManager.self().hideTurtle(false);;
         }, true);
@@ -107,10 +107,10 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PETALS")).ask(function() {
         SelfManager.self().fd(SelfManager.self().getVariable("step-size"));
         SelfManager.self().setVariable("size", (SelfManager.self().getVariable("size-modifier") * PrimChecks.math.sqrt(SelfManager.self().distance(SelfManager.self().getVariable("parent")))));
-        if (Prims.gt(PrimChecks.math.abs((SelfManager.self().getVariable("xcor") - SelfManager.self().getVariable("parent").projectionBy(function() { return SelfManager.self().getVariable("xcor"); }))), PrimChecks.math.div(world.topology.maxPxcor, (world.observer.getGlobal("columns") * 1.5)))) {
+        if (Prims.gt(PrimChecks.math.abs((SelfManager.self().getVariable("xcor") - PrimChecks.agentset.of(SelfManager.self().getVariable("parent"), function() { return SelfManager.self().getVariable("xcor"); }))), PrimChecks.math.div(world.topology.maxPxcor, (world.observer.getGlobal("columns") * 1.5)))) {
           SelfManager.self().die();
         }
-        if (Prims.gt(PrimChecks.math.abs((SelfManager.self().getVariable("ycor") - SelfManager.self().getVariable("parent").projectionBy(function() { return SelfManager.self().getVariable("ycor"); }))), PrimChecks.math.div(world.topology.maxPycor, (world.observer.getGlobal("rows") * 1.5)))) {
+        if (Prims.gt(PrimChecks.math.abs((SelfManager.self().getVariable("ycor") - PrimChecks.agentset.of(SelfManager.self().getVariable("parent"), function() { return SelfManager.self().getVariable("ycor"); }))), PrimChecks.math.div(world.topology.maxPycor, (world.observer.getGlobal("rows") * 1.5)))) {
           SelfManager.self().die();
         }
       }, true);
@@ -133,10 +133,10 @@ var procedures = (function() {
         if (world.observer.getGlobal("controlled-mutation?")) {
           world.observer.setGlobal("mutation", PrimChecks.math.div((SelfManager.self().getVariable("who") * 1), (world.observer.getGlobal("rows") * world.observer.getGlobal("columns"))));
         }
-        SelfManager.self().setVariable("num-colors", ((PrimChecks.list.oneOf(ListPrims.list(parent1, parent2)).projectionBy(function() { return SelfManager.self().getVariable("num-colors"); }) + PrimChecks.math.mod(PrimChecks.math.int(PrimChecks.math.randomNormal(0, (world.observer.getGlobal("mutation") * 10))), 15)) + 1));
-        SelfManager.self().setVariable("step-size", (PrimChecks.list.oneOf(ListPrims.list(parent1, parent2)).projectionBy(function() { return SelfManager.self().getVariable("step-size"); }) + PrimChecks.math.randomNormal(0, PrimChecks.math.div(world.observer.getGlobal("mutation"), 5))));
-        SelfManager.self().setVariable("turn-increment", (PrimChecks.list.oneOf(ListPrims.list(parent1, parent2)).projectionBy(function() { return SelfManager.self().getVariable("turn-increment"); }) + PrimChecks.math.randomNormal(0, PrimChecks.math.div(world.observer.getGlobal("mutation"), 20))));
-        SelfManager.self().setVariable("size-modifier", (PrimChecks.list.oneOf(ListPrims.list(parent1, parent2)).projectionBy(function() { return SelfManager.self().getVariable("size-modifier"); }) + PrimChecks.math.randomNormal(0, world.observer.getGlobal("mutation"))));
+        SelfManager.self().setVariable("num-colors", ((PrimChecks.agentset.of(PrimChecks.list.oneOf(ListPrims.list(parent1, parent2)), function() { return SelfManager.self().getVariable("num-colors"); }) + PrimChecks.math.mod(PrimChecks.math.int(PrimChecks.math.randomNormal(0, (world.observer.getGlobal("mutation") * 10))), 15)) + 1));
+        SelfManager.self().setVariable("step-size", (PrimChecks.agentset.of(PrimChecks.list.oneOf(ListPrims.list(parent1, parent2)), function() { return SelfManager.self().getVariable("step-size"); }) + PrimChecks.math.randomNormal(0, PrimChecks.math.div(world.observer.getGlobal("mutation"), 5))));
+        SelfManager.self().setVariable("turn-increment", (PrimChecks.agentset.of(PrimChecks.list.oneOf(ListPrims.list(parent1, parent2)), function() { return SelfManager.self().getVariable("turn-increment"); }) + PrimChecks.math.randomNormal(0, PrimChecks.math.div(world.observer.getGlobal("mutation"), 20))));
+        SelfManager.self().setVariable("size-modifier", (PrimChecks.agentset.of(PrimChecks.list.oneOf(ListPrims.list(parent1, parent2)), function() { return SelfManager.self().getVariable("size-modifier"); }) + PrimChecks.math.randomNormal(0, world.observer.getGlobal("mutation"))));
         if (Prims.gt(SelfManager.self().getVariable("size-modifier"), 1.5)) {
           SelfManager.self().setVariable("size-modifier", 1.5);
         }
@@ -156,10 +156,10 @@ var procedures = (function() {
         if (world.observer.getGlobal("controlled-mutation?")) {
           world.observer.setGlobal("mutation", PrimChecks.math.div((SelfManager.self().getVariable("who") * 1), (world.observer.getGlobal("rows") * world.observer.getGlobal("columns"))));
         }
-        SelfManager.self().setVariable("num-colors", (PrimChecks.math.mod((parent1.projectionBy(function() { return SelfManager.self().getVariable("num-colors"); }) + PrimChecks.math.int(PrimChecks.math.randomNormal(0, (world.observer.getGlobal("mutation") * 10)))), 15) + 1));
-        SelfManager.self().setVariable("step-size", (parent1.projectionBy(function() { return SelfManager.self().getVariable("step-size"); }) + PrimChecks.math.randomNormal(0, PrimChecks.math.div(world.observer.getGlobal("mutation"), 5))));
-        SelfManager.self().setVariable("turn-increment", (parent1.projectionBy(function() { return SelfManager.self().getVariable("turn-increment"); }) + PrimChecks.math.randomNormal(0, PrimChecks.math.div(world.observer.getGlobal("mutation"), 20))));
-        SelfManager.self().setVariable("size-modifier", (parent1.projectionBy(function() { return SelfManager.self().getVariable("size-modifier"); }) + PrimChecks.math.randomNormal(0, world.observer.getGlobal("mutation"))));
+        SelfManager.self().setVariable("num-colors", (PrimChecks.math.mod((PrimChecks.agentset.of(parent1, function() { return SelfManager.self().getVariable("num-colors"); }) + PrimChecks.math.int(PrimChecks.math.randomNormal(0, (world.observer.getGlobal("mutation") * 10)))), 15) + 1));
+        SelfManager.self().setVariable("step-size", (PrimChecks.agentset.of(parent1, function() { return SelfManager.self().getVariable("step-size"); }) + PrimChecks.math.randomNormal(0, PrimChecks.math.div(world.observer.getGlobal("mutation"), 5))));
+        SelfManager.self().setVariable("turn-increment", (PrimChecks.agentset.of(parent1, function() { return SelfManager.self().getVariable("turn-increment"); }) + PrimChecks.math.randomNormal(0, PrimChecks.math.div(world.observer.getGlobal("mutation"), 20))));
+        SelfManager.self().setVariable("size-modifier", (PrimChecks.agentset.of(parent1, function() { return SelfManager.self().getVariable("size-modifier"); }) + PrimChecks.math.randomNormal(0, world.observer.getGlobal("mutation"))));
         if (Prims.gt(SelfManager.self().getVariable("size-modifier"), 1.5)) {
           SelfManager.self().setVariable("size-modifier", 1.5);
         }
@@ -174,7 +174,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let newParent = world.turtleManager.turtlesOfBreed("SPAWNERS").minOneOf(function() { return SelfManager.self().distanceXY(MousePrims.getX(), MousePrims.getY()); }); letVars['newParent'] = newParent;
+      let newParent = PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return SelfManager.self().distanceXY(MousePrims.getX(), MousePrims.getY()); }); letVars['newParent'] = newParent;
       if (world.observer.getGlobal("asexual?")) {
         procedures["REPOPULATE-FROM-ONE"](newParent);
       }
@@ -187,7 +187,7 @@ var procedures = (function() {
         else {
           world.observer.setGlobal("first-parent", newParent);
           Errors.askNobodyCheck(world.patches()).ask(function() {
-            if (PrimChecks.list.member(newParent, world.turtleManager.turtlesOfBreed("SPAWNERS").minsBy(function() { return SelfManager.self().distance(SelfManager.myself()); }))) {
+            if (PrimChecks.list.member(newParent, PrimChecks.agentset.withMin(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return SelfManager.self().distance(SelfManager.myself()); }))) {
               SelfManager.self().setPatchVariable("pcolor", (5 - 3));
             }
           }, true);

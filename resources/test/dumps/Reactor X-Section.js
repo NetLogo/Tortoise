@@ -200,7 +200,7 @@ var procedures = (function() {
         }
       }
       for (let _index_1937_1943 = 0, _repeatcount_1937_1943 = StrictMath.floor(world.observer.getGlobal("n-rods")); _index_1937_1943 < _repeatcount_1937_1943; _index_1937_1943++){
-        Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), rodX); })).ask(function() { SelfManager.self().setPatchVariable("rod?", true); }, true);
+        Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), rodX); })).ask(function() { SelfManager.self().setPatchVariable("rod?", true); }, true);
         rodX = ((rodX + world.observer.getGlobal("rod-spacing")) + 1); letVars['rodX'] = rodX;
       }
       Errors.askNobodyCheck(world.patches()).ask(function() { procedures["BUILD-REACTOR"](); }, true);
@@ -215,7 +215,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!!world.turtles().isEmpty()) {
+      if (!PrimChecks.agentset.any(world.turtles())) {
         throw new Exception.StopInterrupt;
       }
       if (Prims.gte(world.observer.getGlobal("power-change"), 0)) {
@@ -245,7 +245,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!!world.turtles().isEmpty()) {
+      if (!PrimChecks.agentset.any(world.turtles())) {
         throw new Exception.StopInterrupt;
       }
       if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
@@ -314,7 +314,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable("rod?"); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return SelfManager.self().getPatchVariable("rod?"); })).ask(function() {
         if (Prims.gte(SelfManager.self().getPatchVariable("pycor"), (world.observer.getGlobal("r") - world.observer.getGlobal("rod-length")))) {
           SelfManager.self().setPatchVariable("pcolor", 5);
         }
@@ -337,7 +337,7 @@ var procedures = (function() {
         if (world.observer.getGlobal("spend-fuel?")) {
           SelfManager.self().setPatchVariable("pcolor", 35);
         }
-        let gain = PrimChecks.math.div(1, SelfManager.self().turtlesHere().size()); letVars['gain'] = gain;
+        let gain = PrimChecks.math.div(1, PrimChecks.agentset.count(SelfManager.self().turtlesHere())); letVars['gain'] = gain;
         world.observer.setGlobal("power", (world.observer.getGlobal("power") + gain));
         SelfManager.self().hatch(((2 + RandomPrims.randomLong(2)) * gain), "").ask(function() { SelfManager.self().right(RandomPrims.randomLong(360)); }, true);
       }

@@ -78,18 +78,18 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (SelfManager.self().getNeighbors()._optimalCheckCount(8, (a, b) => a !== b)) {
+        if (PrimChecks.agentset.optimizeCount(SelfManager.self().getNeighbors(), 8, (a, b) => a !== b)) {
           SelfManager.self().setPatchVariable("pcolor", 15);
         }
         if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("goal-pos"))) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("goal-pos") + world.observer.getGlobal("goal-size"))))) {
           SelfManager.self().setPatchVariable("pcolor", 55);
         }
       }, true);
-      world.observer.setGlobal("try-line", world.patches().agentFilter(function() {
+      world.observer.setGlobal("try-line", PrimChecks.agentset.with(world.patches(), function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
       }));
       Errors.askNobodyCheck(world.observer.getGlobal("try-line")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
-      world.observer.setGlobal("histogram-area", world.patches().agentFilter(function() {
+      world.observer.setGlobal("histogram-area", PrimChecks.agentset.with(world.patches(), function() {
         return (Prims.lt(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
       }));
     } catch (e) {
@@ -121,12 +121,12 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      while (!world.turtles().isEmpty()) {
+      while (PrimChecks.agentset.any(world.turtles())) {
         Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["MOVE"](); }, true);
         notImplemented('display', undefined)();
       }
-      world.observer.setGlobal("kicks", (world.observer.getGlobal("kicks") + world.observer.getGlobal("try-line").size()));
-      world.observer.setGlobal("goals", PrimChecks.list.sum(world.observer.getGlobal("try-line").projectionBy(function() { return SelfManager.self().getPatchVariable("score"); })));
+      world.observer.setGlobal("kicks", (world.observer.getGlobal("kicks") + PrimChecks.agentset.count(world.observer.getGlobal("try-line"))));
+      world.observer.setGlobal("goals", PrimChecks.list.sum(PrimChecks.agentset.of(world.observer.getGlobal("try-line"), function() { return SelfManager.self().getPatchVariable("score"); })));
       procedures["SETUP-BALLS"]();
       world.ticker.tick();
     } catch (e) {
@@ -154,10 +154,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(thePatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 15)) {
+      if (Prims.equality(PrimChecks.agentset.of(thePatch, function() { return SelfManager.self().getPatchVariable("pcolor"); }), 15)) {
         SelfManager.self().die();
       }
-      if (Prims.equality(thePatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 55)) {
+      if (Prims.equality(PrimChecks.agentset.of(thePatch, function() { return SelfManager.self().getPatchVariable("pcolor"); }), 55)) {
         Errors.askNobodyCheck(SelfManager.self().getVariable("start-patch")).ask(function() { SelfManager.self().setPatchVariable("score", (SelfManager.self().getPatchVariable("score") + 1)); }, true);
         SelfManager.self().die();
       }
@@ -200,7 +200,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("current-max", PrimChecks.list.max(world.observer.getGlobal("try-line").projectionBy(function() { return SelfManager.self().getPatchVariable("score"); })));
+      world.observer.setGlobal("current-max", PrimChecks.list.max(PrimChecks.agentset.of(world.observer.getGlobal("try-line"), function() { return SelfManager.self().getPatchVariable("score"); })));
       if (Prims.equality(world.observer.getGlobal("current-max"), 0)) {
         Errors.askNobodyCheck(world.observer.getGlobal("histogram-area")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
         throw new Exception.StopInterrupt;
@@ -217,8 +217,8 @@ var procedures = (function() {
         }
       }, true);
       Errors.askNobodyCheck(world.observer.getGlobal("histogram-area")).ask(function() {
-        if (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("kick-line") - PrimChecks.math.div((SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }) * (world.observer.getGlobal("kick-line") - world.topology.minPxcor)), world.observer.getGlobal("current-max"))))) {
-          if (Prims.equality(SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }), world.observer.getGlobal("current-max"))) {
+        if (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("kick-line") - PrimChecks.math.div((PrimChecks.agentset.of(SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0), function() { return SelfManager.self().getPatchVariable("score"); }) * (world.observer.getGlobal("kick-line") - world.topology.minPxcor)), world.observer.getGlobal("current-max"))))) {
+          if (Prims.equality(PrimChecks.agentset.of(SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0), function() { return SelfManager.self().getPatchVariable("score"); }), world.observer.getGlobal("current-max"))) {
             SelfManager.self().setPatchVariable("pcolor", 45);
           }
           else {
@@ -239,13 +239,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor); })).ask(function() { procedures["CALC-GOAL-ANGLE"](); }, true);
-      let winningPatch = world.observer.getGlobal("try-line").minOneOf(function() { return SelfManager.self().getPatchVariable("goal-angle"); }); letVars['winningPatch'] = winningPatch;
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor); })).ask(function() { procedures["CALC-GOAL-ANGLE"](); }, true);
+      let winningPatch = PrimChecks.agentset.minOneOf(world.observer.getGlobal("try-line"), function() { return SelfManager.self().getPatchVariable("goal-angle"); }); letVars['winningPatch'] = winningPatch;
       Errors.askNobodyCheck(winningPatch).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", 125);
         Errors.askNobodyCheck(SelfManager.self().patchAt(2, 0)).ask(function() { SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("pycor")); }, true);
       }, true);
-      world.observer.setGlobal("analytic", winningPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
+      world.observer.setGlobal("analytic", PrimChecks.agentset.of(winningPatch, function() { return SelfManager.self().getPatchVariable("pycor"); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -256,7 +256,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(world.patches().agentFilter(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
         return (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.lt(SelfManager.self().getPatchVariable("pcolor"), 10));
       })).ask(function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("goal-angle"), 270)) {
