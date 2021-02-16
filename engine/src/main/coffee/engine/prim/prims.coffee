@@ -154,7 +154,7 @@ module.exports =
       @gt(a, b) or @equality(a, b)
 
     # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
-    linkSet: (inputs...) ->
+    linkSet: (inputs) ->
       @_createAgentSet(inputs, Link, LinkSet)
 
     # (Any, Any) => Boolean
@@ -197,7 +197,7 @@ module.exports =
       StrictMath.floor(nanos)
 
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
-    patchSet: (inputs...) ->
+    patchSet: (inputs) ->
       @_createAgentSet(inputs, Patch, PatchSet)
 
     # (Number) => Array[Number]
@@ -243,7 +243,7 @@ module.exports =
       return
 
     # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
-    turtleSet: (inputs...) ->
+    turtleSet: (inputs) ->
       @_createAgentSet(inputs, Turtle, TurtleSet)
 
     # (PatchSet|TurtleSet|Patch|Turtle) => TurtleSet

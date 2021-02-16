@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ checks } = require('engine/core/typechecker')
+{ checks, types } = require('engine/core/typechecker')
 
 class AgentSetChecks
 
@@ -10,7 +10,7 @@ class AgentSetChecks
   # the proper agent to use when those predicates return incorrect values.
   # -Jeremy B February 2021
 
-  constructor: (@validator, @dumper, @getSelf) ->
+  constructor: (@validator, @dumper, @prims, @getSelf) ->
 
   # (Any) => Boolean
   @isPoint: (point) ->
@@ -27,6 +27,33 @@ class AgentSetChecks
       if not checks.isBoolean(result)
         @validator.error('_ expected a true/false value from _, but got _ instead.', "WITH", @getSelf(), @dumper(result))
       result
+
+  # I think it's a little strange that there are three different error messages for the `*-set` agentset creation prims having bad arguments,
+  # but at the moment it doesn't seem worth changing desktop to unify them.  -Jeremy B February 2021
+
+  # (PatchType | TurtleType | LinkType, PatchSetType | TurtleSetType | LinkSetType, Array[Any]) => Unit
+  setCreationListCheck: (agentType, agentSetType, list) ->
+    list.forEach( (value) =>
+      if checks.isList(value)
+        @setCreationListCheck(agentType, agentSetType, value)
+
+      else if not agentType.isOfType(value) and not agentSetType.isOfType(value) and not checks.isNobody(value)
+        if checks.isAgentSet(value)
+          @validator.error('List inputs to _-SET must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.', agentType.niceName().toUpperCase(), agentType.niceName(), @dumper(list), @dumper(value))
+        else
+          @validator.error('List inputs to _-SET must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.', agentType.niceName().toUpperCase(), agentType.niceName(), @dumper(list), @dumper(value))
+
+    )
+
+  # (PatchType | TurtleType | LinkType, PatchSetType | TurtleSetType | LinkSetType, Array[Any]) => Unit
+  setCreationArgsCheck: (agentType, agentSetType, values) ->
+    values.forEach( (value) =>
+      if checks.isList(value)
+        @setCreationListCheck(agentType, agentSetType, value)
+
+      else if not agentType.isOfType(value) and not agentSetType.isOfType(value) and not checks.isNobody(value)
+        @validator.error('_-SET expected input to be a _ agentset or _ but got _ instead.', agentType.niceName().toUpperCase(), agentType.niceName(), @validator.valueToString(value))
+    )
 
   # (AgentSet[T]) => Boolean
   any: (agentset) ->
@@ -70,6 +97,11 @@ class AgentSetChecks
   countWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
     agentset._optimalCountWith(@makeCheckedFForWith(f))
+
+  # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
+  linkSet: (values...) ->
+    @setCreationArgsCheck(types.Link, types.LinkSet, values)
+    @prims.linkSet(values)
 
   # (AgentSet[T], Number, (T) => Number) => AgentSet[T]
   maxNOf: (agentset, n, f) ->
@@ -121,10 +153,20 @@ class AgentSetChecks
     @validator.commonArgChecks.agentSet("WITH", arguments)
     agentset._optimalOtherWith(@makeCheckedFForWith(f))
 
+  # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
+  patchSet: (values...) ->
+    @setCreationArgsCheck(types.Patch, types.PatchSet, values)
+    @prims.patchSet(values)
+
   # (AgentSet[T], () => Number) => AgentSet[T]
   sortOn: (agentset, f) ->
     @validator.commonArgChecks.agentSet("SORT-ON", arguments)
     agentset.sortOn(f)
+
+  # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
+  turtleSet: (values...) ->
+    @setCreationArgsCheck(types.Turtle, types.TurtleSet, values)
+    @prims.turtleSet(values)
 
   # (AgentSet[T], () => Boolean) => AgentSet[T]
   with: (agentset, f) ->

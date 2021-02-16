@@ -104,7 +104,7 @@ module.exports =
     userDialogPrims = new UserDialogPrims(dialogConfig)
 
     i18nBundle = new I18nBundle()
-    primChecks = new PrimChecks(i18nBundle, dump, listPrims, randomPrims, stringPrims, selfManager.self)
+    primChecks = new PrimChecks(i18nBundle, dump, prims, listPrims, randomPrims, stringPrims, selfManager.self)
 
     importWorldFromCSV = (csvText) ->
 

@@ -101,10 +101,6 @@ private[tortoise] object Freebies {
   )
   private val incErrorDetectCommandNames = Seq(
     "Agentsets::Agentsets3",
-    "Agentsets::Agentsets4_2D",
-    "AgentsetBuilding::TurtleSet_2D",
-    "AgentsetBuilding::PatchSet2_2D",
-    "AgentsetBuilding::LinkSet_2D",
     "AnyAll::All5_2D",
     "Ask::AskAllTurtles",
     "Ask::AskAllPatches",

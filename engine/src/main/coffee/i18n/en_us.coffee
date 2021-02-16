@@ -87,6 +87,15 @@ bundle = {
 
   , '_ expected a true/false value from _, but got _ instead.': (prim, item, value) ->
     "#{prim} expected a true/false value from #{item}, but got #{value} instead."
+
+  , '_-SET expected input to be a _ agentset or _ but got _ instead.': (prim, agentType, value) ->
+    "#{prim}-SET expected input to be a #{agentType} agentset or #{agentType} but got #{value} instead."
+
+  , 'List inputs to _-SET must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.': (prim, agentType, list, value) ->
+    "List inputs to #{prim}-SET must only contain #{agentType}, #{agentType} agentset, or list elements.  The list #{list} contained #{value} which is NOT a #{agentType} or #{agentType} agentset."
+
+  , 'List inputs to _-SET must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.': (prim, agentType, list, value) ->
+    "List inputs to #{prim}-SET must only contain #{agentType}, #{agentType} agentset, or list elements.  The list #{list} contained a different type agentset: #{value}."
 }
 
 module.exports = bundle

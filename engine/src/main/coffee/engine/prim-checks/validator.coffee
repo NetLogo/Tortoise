@@ -77,18 +77,20 @@ class Validator
     else
       "a #{nameList}"
 
-  # (String, Any, Array[NLType]) => String
-  typeError: (prim, value, expectedTypes) ->
+  # (Any) => String
+  valueToString: (value) ->
     valueType = getTypeOf(value)
-    valueText = if valueType is types.Nobody
-      "nobody"
+    if valueType is types.Nobody
+      "NOBODY"
     else if valueType is types.Wildcard
       "any value"
     else
       "the #{valueType.niceName()} #{@dumper(value)}"
 
+  # (String, Any, Array[NLType]) => String
+  typeError: (prim, value, expectedTypes) ->
+    valueText = @valueToString(value)
     expectedText = @listTypeNames(expectedTypes)
-
     @bundle.get("_ expected input to be _ but got _ instead.", prim, expectedText, valueText)
 
   # (String, Any, Array[NLType]) => Unit
