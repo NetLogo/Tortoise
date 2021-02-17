@@ -12,7 +12,8 @@ class Validator
     # -Jeremy B December 2020
     agentOrAgentSet                    = [types.Agent, types.AgentSet]
     agentSet                           = [types.AgentSet]
-    agentSetOrList                     = [types.AgentSet, types.List]
+    # Order of these is for `_sort` error message.  -Jeremy B February 2021
+    agentSetOrList                     = [types.List, types.AgentSet]
     boolean                            = [types.Boolean]
     list                               = [types.List]
     number                             = [types.Number]
