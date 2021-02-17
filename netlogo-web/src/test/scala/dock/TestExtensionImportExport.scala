@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.nlw
 package dock
 
-import org.nlogo.core.{ Model, View, Output }
+import org.nlogo.core.{ Model, Output, Pen, Plot, View }
 
 class TestExtensionImportExport extends DockingSuite {
 
@@ -178,6 +178,24 @@ class TestExtensionImportExport extends DockingSuite {
     testCommand("set x 0")
     testCommand("import-a:world y")
     compare("x")
+  }
+
+  test("table export with plot works") { implicit fixture => import fixture._
+    val plotModel = Model(
+      code = "extensions [table export-the] globals [x y z]"
+    , widgets = List(
+        View.square(1)
+      , Plot(display = Some("plot1"), pens = List(Pen(display = "pen1"), Pen(display = "pen2")))
+      )
+    )
+    openModel(plotModel, shouldAutoInstallLibs = true)
+
+    compare("export-the:plot \"plot1\"")
+
+    testCommand("set x table:make")
+    testCommand("set y export-the:plot \"plot1\"")
+
+    compare("y")
   }
 
 }

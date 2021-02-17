@@ -174,8 +174,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -191,7 +193,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("pcolor", ((Prims.random(world.observer.getGlobal("colors")) * 10) + 5));
+        SelfManager.self().setPatchVariable("pcolor", ((PrimChecks.math.random(world.observer.getGlobal("colors")) * 10) + 5));
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 75)) {
           SelfManager.self().setPatchVariable("pcolor", 125);
         }
@@ -208,7 +210,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("pcolor", ListPrims.oneOf(world.patches()).projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }));
+        SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.oneOf(world.patches()).projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }));
       }, true);
       world.ticker.tick();
     } catch (e) {

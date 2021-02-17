@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -53,7 +55,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      workspace.rng.setSeed(362);
+      PrimChecks.math.randomSeed(362);
       procedures["SETUP"]();
       workspace.timer.reset();
       for (let _index_216_222 = 0, _repeatcount_216_222 = StrictMath.floor(1000); _index_216_222 < _repeatcount_216_222; _index_216_222++){
@@ -72,13 +74,13 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.ticker.reset();
-      Errors.askNobodyCheck(ListPrims.nOf(world.observer.getGlobal("bug-count"), world.patches())).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.list.nOf(world.observer.getGlobal("bug-count"), world.patches())).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("color", 65);
           SelfManager.self().setVariable("size", 1.75);
-          SelfManager.self().setVariable("ideal-temp", (world.observer.getGlobal("min-ideal-temp") + Prims.random(NLMath.abs((world.observer.getGlobal("max-ideal-temp") - world.observer.getGlobal("min-ideal-temp"))))));
-          SelfManager.self().setVariable("output-heat", (world.observer.getGlobal("min-output-heat") + Prims.random(NLMath.abs((world.observer.getGlobal("max-output-heat") - world.observer.getGlobal("min-output-heat"))))));
-          SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
+          SelfManager.self().setVariable("ideal-temp", (world.observer.getGlobal("min-ideal-temp") + PrimChecks.math.random(PrimChecks.math.abs((world.observer.getGlobal("max-ideal-temp") - world.observer.getGlobal("min-ideal-temp"))))));
+          SelfManager.self().setVariable("output-heat", (world.observer.getGlobal("min-output-heat") + PrimChecks.math.random(PrimChecks.math.abs((world.observer.getGlobal("max-output-heat") - world.observer.getGlobal("min-output-heat"))))));
+          SelfManager.self().setVariable("unhappiness", PrimChecks.math.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
         }, true);
       }, true);
     } catch (e) {
@@ -122,13 +124,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
+      SelfManager.self().setVariable("unhappiness", PrimChecks.math.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
       if (Prims.equality(SelfManager.self().getVariable("unhappiness"), 0)) {
         SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));
       }
       else {
         let target = procedures["FIND-TARGET"](); letVars['target'] = target;
-        if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), Prims.randomLong(100)))) {
+        if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), RandomPrims.randomLong(100)))) {
           procedures["BUG-MOVE"](target);
         }
         SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));
@@ -169,7 +171,7 @@ var procedures = (function() {
       }
       while (Prims.lte(tries, 9)) {
         tries = (tries + 1); letVars['tries'] = tries;
-        target = ListPrims.oneOf(SelfManager.self().getNeighbors());
+        target = PrimChecks.list.oneOf(SelfManager.self().getNeighbors());
         if (!!Prims.turtlesOn(target).isEmpty()) {
           SelfManager.self().moveTo(target);
           throw new Exception.StopInterrupt;

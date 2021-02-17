@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -58,16 +60,16 @@ var procedures = (function() {
         SelfManager.self().fd(5);
         SelfManager.self().setVariable("color", 5);
       }, true);
-      Errors.askNobodyCheck(ListPrims.nOf(5, world.turtles())).ask(function() {
-        LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS").ask(function() {
+      Errors.askNobodyCheck(PrimChecks.list.nOf(5, world.turtles())).ask(function() {
+        LinkPrims.createLinkWith(PrimChecks.list.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS").ask(function() {
           SelfManager.self().setVariable("color", 105);
-          SelfManager.self().setVariable("weight", Prims.randomLong(10));
+          SelfManager.self().setVariable("weight", RandomPrims.randomLong(10));
           SelfManager.self().setVariable("label", SelfManager.self().getVariable("weight"));
         }, true);
       }, true);
       BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getSpecialName(), "curved link")
-      Errors.askNobodyCheck(ListPrims.nOf(5, world.turtles())).ask(function() {
-        LinkPrims.createLinkTo(ListPrims.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
+      Errors.askNobodyCheck(PrimChecks.list.nOf(5, world.turtles())).ask(function() {
+        LinkPrims.createLinkTo(PrimChecks.list.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
       }, true);
       world.ticker.reset();
     } catch (e) {

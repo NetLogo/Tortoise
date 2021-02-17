@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 NLMath = require('util/nlmath')
-NLType = require('../core/typechecker')
+{ checks } = require('../core/typechecker')
 
 { contains, filter, flatMap, foldl, forEach, map, maxBy, unique, zip } = require('brazierjs/array')
 { id, pipeline }                                                       = require('brazierjs/function')
@@ -63,7 +63,7 @@ module.exports =
     # (TurtleSet, Number) => Unit
     layoutCircle: (agentsOrList, radius) ->
 
-      turtles = if NLType(agentsOrList).isList() then agentsOrList else agentsOrList.shufflerator().toArray()
+      turtles = if checks.isList(agentsOrList) then agentsOrList else agentsOrList.shufflerator().toArray()
       n       = turtles.length
       midx    = @_world.topology.minPxcor + NLMath.floor(@_world.topology.width / 2)
       midy    = @_world.topology.minPycor + NLMath.floor(@_world.topology.height / 2)

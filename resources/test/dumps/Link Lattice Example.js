@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -74,7 +76,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtles()).ask(function() {
         LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS").ask(function() {}, false);
         LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS").ask(function() {}, false);
-        if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
+        if (Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
           LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), "LINKS").ask(function() {}, false);
           LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), "LINKS").ask(function() {}, false);
           SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.5));

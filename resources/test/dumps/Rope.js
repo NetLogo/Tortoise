@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -79,10 +81,10 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); })).ask(function() {
         if (Prims.gt(world.ticker.tickCount(), 100)) {
-          SelfManager.self().setVariable("ypos", (world.observer.getGlobal("amplitude") * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
+          SelfManager.self().setVariable("ypos", (world.observer.getGlobal("amplitude") * PrimChecks.math.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
         }
         else {
-          SelfManager.self().setVariable("ypos", ((Prims.div(world.ticker.tickCount(), 100) * world.observer.getGlobal("amplitude")) * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
+          SelfManager.self().setVariable("ypos", ((PrimChecks.math.div(world.ticker.tickCount(), 100) * world.observer.getGlobal("amplitude")) * PrimChecks.math.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
         }
         if (!Prims.equality(SelfManager.self().patchAt(0, (SelfManager.self().getVariable("ypos") - SelfManager.self().getVariable("ycor"))), Nobody)) {
           SelfManager.self().setVariable("ycor", SelfManager.self().getVariable("ypos"));
@@ -94,7 +96,7 @@ var procedures = (function() {
       }, true);
       Errors.askNobodyCheck(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); })).ask(function() {
         SelfManager.self().setVariable("yvel", (SelfManager.self().getVariable("yvel") + ((world.turtleManager.getTurtle((SelfManager.self().getVariable("who") - 1)).projectionBy(function() { return SelfManager.self().getVariable("ypos"); }) - SelfManager.self().getVariable("ypos")) + (world.turtleManager.getTurtle((SelfManager.self().getVariable("who") + 1)).projectionBy(function() { return SelfManager.self().getVariable("ypos"); }) - SelfManager.self().getVariable("ypos")))));
-        SelfManager.self().setVariable("yvel", (Prims.div((1000 - world.observer.getGlobal("friction")), 1000) * SelfManager.self().getVariable("yvel")));
+        SelfManager.self().setVariable("yvel", (PrimChecks.math.div((1000 - world.observer.getGlobal("friction")), 1000) * SelfManager.self().getVariable("yvel")));
       }, true);
       Errors.askNobodyCheck(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); })).ask(function() {
         SelfManager.self().setVariable("ypos", (SelfManager.self().getVariable("ypos") + SelfManager.self().getVariable("yvel")));

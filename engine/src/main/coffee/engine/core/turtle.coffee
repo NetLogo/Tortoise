@@ -4,7 +4,7 @@ AbstractAgentSet  = require('./abstractagentset')
 ColorModel        = require('engine/core/colormodel')
 TurtleLinkManager = require('./turtlelinkmanager')
 TurtleSet         = require('./turtleset')
-NLType            = require('./typechecker')
+{ checks }        = require('./typechecker')
 VariableManager   = require('./structure/variablemanager')
 makePenLines      = require('./turtle/makepenlines')
 Comparator        = require('util/comparator')
@@ -387,7 +387,7 @@ module.exports =
 
     # (Any) => Comparator
     compare: (x) ->
-      if NLType(x).isTurtle()
+      if checks.isTurtle(x)
         Comparator.numericCompare(@id, x.id)
       else
         Comparator.NOT_EQUALS

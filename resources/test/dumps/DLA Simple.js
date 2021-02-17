@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -58,7 +60,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("num-particles"), "").ask(function() {
         SelfManager.self().setVariable("color", 15);
         SelfManager.self().setVariable("size", 1.5);
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
       }, true);
       world.ticker.reset();
     } catch (e) {
@@ -72,8 +74,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().right(Prims.random(world.observer.getGlobal("wiggle-angle")));
-        SelfManager.self().right(-(Prims.random(world.observer.getGlobal("wiggle-angle"))));
+        SelfManager.self().right(PrimChecks.math.random(world.observer.getGlobal("wiggle-angle")));
+        SelfManager.self().right(-(PrimChecks.math.random(world.observer.getGlobal("wiggle-angle"))));
         SelfManager.self()._optimalFdOne();
         if (SelfManager.self().getNeighbors()._optimalAnyWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); })) {
           SelfManager.self().setPatchVariable("pcolor", 55);

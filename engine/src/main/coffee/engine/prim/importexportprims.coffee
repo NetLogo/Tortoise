@@ -15,10 +15,10 @@ module.exports.Prims =
   class ImportExportPrims
     # (ImportExportConfig, () => String, () => String, (String) => String, (String) => Unit, (Boolean) => (String) => Unit, (String) => Unit) => ImportExportPrims
     constructor: ({ exportFile: @exportFile, exportBlob: @exportBlob, getNlogo: @exportNlogoRaw, getOutput: @exportOutputRaw, getViewBase64: @exportViewRaw, getViewBlob: @exportViewBlob, importFile }
-                  , @exportWorldRaw, @exportAllPlotsRaw, @exportPlotRaw, @importDrawingRaw, @importPColorsRaw, @importWorldRaw) ->
+                  , @exportWorldRaw, @exportAllPlotsRaw, @exportPlotRaw, @exportPlotNoHeadersRaw, @importDrawingRaw, @importPColorsRaw, @importWorldRaw) ->
       @exportAllPlots   = (filename)       => @exportFile(@exportAllPlotsRaw())(filename)
       @exportOutput     = (filename)       => @exportFile(@exportOutputRaw()  )(filename)
-      @exportPlot       = (plot, filename) => @exportFile(@exportPlotRaw(plot))(filename)
+      @exportPlot       = (plot, filename) => @exportFile(@exportPlotRaw(plot)   )(filename)
       @exportView       = (filename)       => @exportViewBlob((blob) => @exportBlob(blob)(filename))
       @exportWorld      = (filename)       => @exportFile(@exportWorldRaw()   )(filename)
       @importDrawing    = (filename)       => importFile(filename)(@importDrawingRaw)

@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-NLType     = require('./typechecker')
+{ checks } = require('./typechecker')
 Comparator = require('util/comparator')
 stableSort = require('util/stablesort')
 
@@ -34,13 +34,12 @@ module.exports =
           value = agent.projectionBy(f)
           pair  = [agent, value]
 
-          type = NLType(value)
           key  =
-            if type.isNumber()
+            if checks.isNumber(value)
               NumberKey
-            else if type.isString()
+            else if checks.isString(value)
               StringKey
-            else if type.isAgent()
+            else if checks.isAgent(value)
               AgentKey
             else
               OtherKey

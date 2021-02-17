@@ -186,8 +186,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -203,11 +205,11 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-        SelfManager.self().setVariable("color", (5 + (Prims.random(world.observer.getGlobal("colors")) * 10)));
+        SelfManager.self().setVariable("color", (5 + (PrimChecks.math.random(world.observer.getGlobal("colors")) * 10)));
         if (Prims.equality(SelfManager.self().getVariable("color"), 75)) {
           SelfManager.self().setVariable("color", 125);
         }
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
       }, true);
       world.ticker.reset();
     } catch (e) {
@@ -220,12 +222,12 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("color"); })), 0)) {
+      if (Prims.equality(PrimChecks.list.variance(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("color"); })), 0)) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().right(Prims.randomLong(50));
-        SelfManager.self().right(-(Prims.randomLong(50)));
+        SelfManager.self().right(RandomPrims.randomLong(50));
+        SelfManager.self().right(-(RandomPrims.randomLong(50)));
         SelfManager.self()._optimalFdOne();
       }, true);
       procedures["BIRTH"]();
@@ -242,7 +244,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().hatch(Prims.randomLong(5), "").ask(function() { SelfManager.self()._optimalFdOne(); }, true);
+        SelfManager.self().hatch(RandomPrims.randomLong(5), "").ask(function() { SelfManager.self()._optimalFdOne(); }, true);
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -256,7 +258,7 @@ var procedures = (function() {
       var letVars = { };
       let totalTurtles = world.turtles().size(); letVars['totalTurtles'] = totalTurtles;
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal("number"))) {
+        if (Prims.gt(PrimChecks.math.random(totalTurtles), world.observer.getGlobal("number"))) {
           SelfManager.self().die();
         }
       }, true);

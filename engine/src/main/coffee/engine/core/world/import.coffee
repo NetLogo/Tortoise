@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ checks } = require('../typechecker')
+
 LinkSet   = require('../linkset')
 PatchSet  = require('../patchset')
 TurtleSet = require('../turtleset')
@@ -36,10 +38,9 @@ ExtensionsHandler = require('./extensionshandler')
 reifyExported = (getTurtle, getPatch, getLink, getAllPatches, getBreed, world, extensionImporter) ->
 
   helper = (x) ->
-    type = NLType(x)
-    if type.isList()
+    if checks.isList(x)
       x.map(helper)
-    else if type.isBoolean() or type.isNumber() or type.isString()
+    else if checks.isBoolean(x) or checks.isNumber(x) or checks.isString(x)
       x
     else if x is NobodyReference
       Nobody

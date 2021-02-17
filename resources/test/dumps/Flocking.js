@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -55,9 +57,9 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
-        SelfManager.self().setVariable("color", ((45 - 2) + Prims.randomLong(7)));
+        SelfManager.self().setVariable("color", ((45 - 2) + RandomPrims.randomLong(7)));
         SelfManager.self().setVariable("size", 1.5);
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("flockmates", new TurtleSet([], world));
       }, true);
       world.ticker.reset();
@@ -152,15 +154,15 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let xComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dx(); })); letVars['xComponent'] = xComponent;
-      let yComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dy(); })); letVars['yComponent'] = yComponent;
+      let xComponent = PrimChecks.list.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dx(); })); letVars['xComponent'] = xComponent;
+      let yComponent = PrimChecks.list.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dy(); })); letVars['yComponent'] = yComponent;
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
         Errors.reportInContextCheck(reporterContext);
         return SelfManager.self().getVariable("heading");
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return NLMath.atan(xComponent, yComponent);
+        return PrimChecks.math.atan(xComponent, yComponent);
       }
       Errors.missingReport();
     } catch (e) {
@@ -184,15 +186,15 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let xComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['xComponent'] = xComponent;
-      let yComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['yComponent'] = yComponent;
+      let xComponent = PrimChecks.list.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return PrimChecks.math.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['xComponent'] = xComponent;
+      let yComponent = PrimChecks.list.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return PrimChecks.math.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['yComponent'] = yComponent;
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
         Errors.reportInContextCheck(reporterContext);
         return SelfManager.self().getVariable("heading");
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return NLMath.atan(xComponent, yComponent);
+        return PrimChecks.math.atan(xComponent, yComponent);
       }
       Errors.missingReport();
     } catch (e) {
@@ -205,7 +207,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["TURN-AT-MOST"](NLMath.subtractHeadings(newHeading, SelfManager.self().getVariable("heading")),maxTurn);
+      procedures["TURN-AT-MOST"](PrimChecks.math.subtractHeadings(newHeading, SelfManager.self().getVariable("heading")),maxTurn);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -216,7 +218,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["TURN-AT-MOST"](NLMath.subtractHeadings(SelfManager.self().getVariable("heading"), newHeading),maxTurn);
+      procedures["TURN-AT-MOST"](PrimChecks.math.subtractHeadings(SelfManager.self().getVariable("heading"), newHeading),maxTurn);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -227,7 +229,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.gt(NLMath.abs(turn), maxTurn)) {
+      if (Prims.gt(PrimChecks.math.abs(turn), maxTurn)) {
         if (Prims.gt(turn, 0)) {
           SelfManager.self().right(maxTurn);
         }

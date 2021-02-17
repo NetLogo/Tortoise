@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ checks, getTypeOf } = require('../core/typechecker')
+
 class TypeSet
 
   # (Boolean, Boolean, Boolean, Boolean) => TypeSet
@@ -54,26 +56,13 @@ module.exports =
     _getSelfSafe: (typeSet) ->
       { link: allowsL, patch: allowsP, turtle: allowsT } = typeSet
       self = @_getSelf()
-      type = NLType(self)
-      if (type.isTurtle() and allowsT) or (type.isPatch() and allowsP) or (type.isLink() and allowsL)
+      if (checks.isTurtle(self) and allowsT) or (checks.isPatch(self) and allowsP) or (checks.isLink(self) and allowsL)
         self
       else
-        typeStr  = @_nlTypeToString(type)
-        part1    = "this code can't be run by #{typeStr}"
+        part1    = "this code can't be run by a #{getTypeOf(self).niceName()}"
         agentStr = @_typeSetToAgentString(typeSet)
         part2    = if agentStr.length isnt 0 then ", only #{agentStr}" else ""
         throw new Error(part1 + part2)
-
-    # (NLType) => String
-    _nlTypeToString: (nlType) ->
-      if nlType.isTurtle()
-        "a turtle"
-      else if nlType.isPatch()
-        "a patch"
-      else if nlType.isLink()
-        "a link"
-      else
-        ""
 
     # (TypeSet) => String
     _typeSetToAgentString: (typeSet) ->

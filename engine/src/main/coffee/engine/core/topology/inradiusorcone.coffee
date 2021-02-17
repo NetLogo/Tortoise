@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-NLMath = require('util/nlmath')
-NLType = require('../typechecker')
+NLMath     = require('util/nlmath')
+{ checks } = require('../typechecker')
 
 # This `in-radius` code looks pretty weird, huh?  That is for a few reasons:
 
@@ -565,11 +565,8 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
   wrapCountInX = findWrapCount(@_wrapInX, @width)
   wrapCountInY = findWrapCount(@_wrapInY, @height)
 
-  isPatchSet  = NLType(agents).isPatchSet()
-  isTurtleSet = NLType(agents).isTurtleSet()
-
   results = []
-  checkAgentsHere = if isPatchSet
+  checkAgentsHere = if checks.isPatchSet(agents)
     isInTargetSet = makeTargetChecker(agents, "patches")
     isInCone      = patchIsGood(wrapCountInX, wrapCountInY)
     (pxcor, pycor) ->
@@ -578,7 +575,7 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
         results.push(patch)
       return
 
-  else if isTurtleSet
+  else if checks.isTurtleSet(agents)
     isInTargetSet = makeTargetChecker(agents, "turtles")
     isInCone      = turtleIsGood(wrapCountInX, wrapCountInY)
     (pxcor, pycor) ->

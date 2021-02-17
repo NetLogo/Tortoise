@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -56,7 +58,7 @@ var procedures = (function() {
       world.clearAll();
       Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), "").ask(function() {
-        SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
+        SelfManager.self().face(PrimChecks.list.oneOf(SelfManager.self().getNeighbors4()));
         SelfManager.self().setVariable("color", 15);
         SelfManager.self().setVariable("size", 6);
       }, true);
@@ -77,7 +79,7 @@ var procedures = (function() {
           SelfManager.self()._optimalFdOne();
           procedures["TURN"]();
         }, true);
-      }, "[ t -> ask t [ fd 1 turn ] ]"), ListPrims.sort(world.turtles())); if(reporterContext && _foreach_405_412 !== undefined) { return _foreach_405_412; }
+      }, "[ t -> ask t [ fd 1 turn ] ]"), PrimChecks.list.sort(world.turtles())); if(reporterContext && _foreach_405_412 !== undefined) { return _foreach_405_412; }
       world.ticker.tick();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -95,7 +97,7 @@ var procedures = (function() {
           procedures["TURN"]();
           SelfManager.self().fd(-(1));
         }, true);
-      }, "[ t -> ask t [ turn bk 1 ] ]"), ListPrims.reverse(ListPrims.sort(world.turtles()))); if(reporterContext && _foreach_505_512 !== undefined) { return _foreach_505_512; }
+      }, "[ t -> ask t [ turn bk 1 ] ]"), PrimChecks.list.reverse(PrimChecks.list.sort(world.turtles()))); if(reporterContext && _foreach_505_512 !== undefined) { return _foreach_505_512; }
       world.ticker.tick();
     } catch (e) {
       return Errors.stopInCommandCheck(e)

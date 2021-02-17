@@ -73,8 +73,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -90,7 +92,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (Prims.lt(Prims.randomLong(100), world.observer.getGlobal("probability-of-spin-up"))) {
+        if (Prims.lt(RandomPrims.randomLong(100), world.observer.getGlobal("probability-of-spin-up"))) {
           SelfManager.self().setPatchVariable("spin", 1);
         }
         else {
@@ -98,7 +100,7 @@ var procedures = (function() {
         }
         procedures["RECOLOR"]();
       }, true);
-      world.observer.setGlobal("sum-of-spins", ListPrims.sum(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
+      world.observer.setGlobal("sum-of-spins", PrimChecks.list.sum(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
       world.ticker.reset();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -111,7 +113,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       for (let _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++){
-        Errors.askNobodyCheck(ListPrims.oneOf(world.patches())).ask(function() { procedures["UPDATE"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.patches())).ask(function() { procedures["UPDATE"](); }, true);
       }
       world.ticker.tickAdvance(1000);
       plotManager.updatePlots();
@@ -126,7 +128,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let ediff = ((2 * SelfManager.self().getPatchVariable("spin")) * SelfManager.self()._optimalNSum4("spin")); letVars['ediff'] = ediff;
-      if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -(ediff), world.observer.getGlobal("temperature"))))))) {
+      if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(PrimChecks.math.randomFloat(1), PrimChecks.math.exp(PrimChecks.math.div( -(ediff), world.observer.getGlobal("temperature"))))))) {
         SelfManager.self().setPatchVariable("spin",  -(SelfManager.self().getPatchVariable("spin")));
         world.observer.setGlobal("sum-of-spins", (world.observer.getGlobal("sum-of-spins") + (2 * SelfManager.self().getPatchVariable("spin"))));
         procedures["RECOLOR"]();
@@ -158,7 +160,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return Prims.div(world.observer.getGlobal("sum-of-spins"), world.patches().size());
+      return PrimChecks.math.div(world.observer.getGlobal("sum-of-spins"), world.patches().size());
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

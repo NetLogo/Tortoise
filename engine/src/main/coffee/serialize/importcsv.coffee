@@ -2,7 +2,7 @@
 
 parse = require('csv-parse/lib/sync')
 
-JSType = require('util/typechecker')
+JSType = require('util/jstype')
 
 { parseAgentRefMaybe, parseAny, parseBool, parseBreed, parseString, parseTurtleRefMaybe } = require('./readexportedvalue')
 

@@ -69,8 +69,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -139,8 +141,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().fd((Prims.div((3.141592653589793 * r), 180) * Prims.div(world.observer.getGlobal("speed"), 50)));
-      SelfManager.self().right(Prims.div(world.observer.getGlobal("speed"), 50));
+      SelfManager.self().fd((PrimChecks.math.div((3.141592653589793 * r), 180) * PrimChecks.math.div(world.observer.getGlobal("speed"), 50)));
+      SelfManager.self().right(PrimChecks.math.div(world.observer.getGlobal("speed"), 50));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

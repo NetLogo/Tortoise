@@ -14,7 +14,7 @@ module.exports = {
 
     # (String) => String
     exportPlot = (plotName) ->
-      workspace.importExportPrims.exportPlotRaw(plotName)
+      workspace.importExportPrims.exportPlotNoHeadersRaw(plotName)
 
     # () => String
     exportView = ->

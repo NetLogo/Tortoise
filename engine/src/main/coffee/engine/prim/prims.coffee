@@ -1,18 +1,17 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-AbstractAgentSet = require('../core/abstractagentset')
-Link             = require('../core/link')
-LinkSet          = require('../core/linkset')
-Patch            = require('../core/patch')
-PatchSet         = require('../core/patchset')
-Turtle           = require('../core/turtle')
-TurtleSet        = require('../core/turtleset')
-NLType           = require('../core/typechecker')
-StrictMath       = require('shim/strictmath')
-Exception        = require('util/exception')
-NLMath           = require('util/nlmath')
-Timer            = require('util/timer')
-Gamma            = require('./gamma')
+AbstractAgentSet      = require('../core/abstractagentset')
+Link                  = require('../core/link')
+LinkSet               = require('../core/linkset')
+Patch                 = require('../core/patch')
+PatchSet              = require('../core/patchset')
+Turtle                = require('../core/turtle')
+TurtleSet             = require('../core/turtleset')
+{ checks, getTypeOf } = require('../core/typechecker')
+StrictMath            = require('shim/strictmath')
+Exception             = require('util/exception')
+Timer                 = require('util/timer')
+
 { flatMap, flattenDeep, isEmpty, map } = require('brazierjs/array')
 
 { MersenneTwisterFast }                          = require('shim/engine-scala')
@@ -44,15 +43,14 @@ module.exports =
 
     # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
     breedOn: (breedName, x) ->
-      type = NLType(x)
       patches =
-        if type.isPatch()
+        if checks.isPatch(x)
           [x]
-        else if type.isTurtle()
+        else if checks.isTurtle(x)
           [x.getPatchHere()]
-        else if type.isPatchSet()
+        else if checks.isPatchSet(x)
           x.toArray()
-        else if type.isTurtleSet()
+        else if checks.isTurtleSet(x)
           map((t) -> t.getPatchHere())(x.iterator().toArray())
         else
           throw new Error("`breed-on` unsupported for class '#{typeof(x)}'")
@@ -60,19 +58,11 @@ module.exports =
       turtles = flatMap((p) -> p.breedHereArray(breedName))(patches)
       new TurtleSet(turtles, @_world)
 
-    # (Number, Number) => Number
-    div: (a, b) ->
-      if b isnt 0
-        a / b
-      else
-        throw new Error("Division by zero.")
-
     booleanCheck: (b, primName) ->
-      type = NLType(b)
-      if type.isBoolean()
+      if checks.isBoolean(b)
         b
       else
-        throw new Error("#{primName} expected input to be a TRUE/FALSE but got the #{type.niceName()} #{@_dumper(b)} instead.")
+        throw new Error("#{primName} expected input to be a TRUE/FALSE but got the #{getTypeOf(b).niceName()} #{@_dumper(b)} instead.")
 
     ifElseValueBooleanCheck: (b) ->
       @booleanCheck(b, "IFELSE-VALUE")
@@ -83,16 +73,14 @@ module.exports =
     # (Any, Any) => Boolean
     equality: (a, b) ->
       if a? and b?
-        typeA = NLType(a)
-        typeB = NLType(b)
         (a is b) or # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
-          typeA.isBreedSet(b.getSpecialName?()) or
-          typeB.isBreedSet(a.getSpecialName?()) or
-          (a is Nobody and b.isDead?()) or
-          (b is Nobody and a.isDead?()) or
-          ((typeA.isTurtle() or (typeA.isLink() and b isnt Nobody)) and a.compare(b) is EQ) or
-          (typeA.isList() and typeB.isList() and a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))) or
-          (typeA.isAgentSet() and typeB.isAgentSet() and a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and (
+          checks.isBreedSet(b.getSpecialName?(), a) or
+          checks.isBreedSet(a.getSpecialName?(), b) or
+          (checks.isNobody(a) and b.isDead?()) or
+          (checks.isNobody(b) and a.isDead?()) or
+          ((checks.isTurtle(a) or (checks.isLink(a) and not checks.isNobody(b))) and a.compare(b) is EQ) or
+          (checks.isList(a) and checks.isList(b) and a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))) or
+          (checks.isAgentSet(a) and checks.isAgentSet(b) and a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and (
             subsumes = (xs, ys) =>
               for x, index in xs
                 if not @equality(ys[index], x)
@@ -154,9 +142,7 @@ module.exports =
 
     # (Any, Any) => Boolean
     gt: (a, b) ->
-      typeA = NLType(a)
-      typeB = NLType(b)
-      if (typeA.isString() and typeB.isString()) or (typeA.isNumber() and typeB.isNumber())
+      if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
         a > b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is GT
@@ -173,9 +159,7 @@ module.exports =
 
     # (Any, Any) => Boolean
     lt: (a, b) ->
-      typeA = NLType(a)
-      typeB = NLType(b)
-      if (typeA.isString() and typeB.isString()) or (typeA.isNumber() and typeB.isNumber())
+      if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
         a < b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is LT
@@ -216,63 +200,6 @@ module.exports =
     patchSet: (inputs...) ->
       @_createAgentSet(inputs, Patch, PatchSet)
 
-    # (Number) => Number
-    random: (n) ->
-      truncated =
-        if n >= 0
-          StrictMath.ceil(n)
-        else
-          StrictMath.floor(n)
-      if truncated is 0
-        0
-      else if truncated > 0
-        @_rng.nextLong(truncated)
-      else
-        -@_rng.nextLong(-truncated)
-
-    # This is for `_randomconst`, `n` must also be >0. -Jeremy B September 2020
-    # (Long) => Long
-    randomLong: (n) ->
-      @_rng.nextLong(n)
-
-    # (Number, Number) => Number
-    randomCoord: (min, max) ->
-      min - 0.5 + @_rng.nextDouble() * (max - min + 1)
-
-    # (Number) => Number
-    randomFloat: (n) ->
-      n * @_rng.nextDouble()
-
-    # (Number, Number) => Number
-    randomNormal: (mean, stdDev) ->
-      if stdDev >= 0
-        NLMath.validateNumber(mean + stdDev * @_rng.nextGaussian())
-      else
-        throw new Error("random-normal's second input can't be negative.")
-
-    # (Number) => Number
-    randomExponential: (mean) ->
-      NLMath.validateNumber(-mean * StrictMath.log(@_rng.nextDouble()))
-
-    # (Number, Number) => Number
-    randomPatchCoord: (min, max) ->
-      min + @_rng.nextInt(max - min + 1)
-
-    # (Number) => Number
-    randomPoisson: (mean) ->
-      q   = 0
-      sum = -StrictMath.log(1 - @_rng.nextDouble())
-      while sum <= mean
-        q   += 1
-        sum -= StrictMath.log(1 - @_rng.nextDouble())
-      q
-
-    # (Number, Number) => Number
-    randomGamma: (alpha, lambda) ->
-      if alpha <= 0 or lambda <= 0
-        throw new Error("Both Inputs to RANDOM-GAMMA must be positive.")
-      Gamma(@_rng, alpha, lambda)
-
     # (Number) => Array[Number]
     rangeUnary: (upperBound) ->
       range(0, upperBound, 1)
@@ -295,7 +222,7 @@ module.exports =
     # (Boolean, JsObject, Array[Any]) => Unit|Any
     runCode: (isRunResult, procVars, args...) ->
       f = args[0]
-      if NLType(f).isString()
+      if checks.isString(f)
         if args.length is 1
           @_evalPrims.runCode(f, isRunResult, procVars)
         else
@@ -321,8 +248,7 @@ module.exports =
 
     # (PatchSet|TurtleSet|Patch|Turtle) => TurtleSet
     turtlesOn: (agentsOrAgent) ->
-      type = NLType(agentsOrAgent)
-      if type.isAgentSet()
+      if checks.isAgentSet(agentsOrAgent)
         turtles = flatMap((agent) -> agent.turtlesHere().toArray())(agentsOrAgent.iterator().toArray())
         new TurtleSet(turtles, @_world)
       else
@@ -366,7 +292,7 @@ module.exports =
       getNeighbors(patch).forEach(
         (neighbor) ->
           value = neighbor.getPatchVariable(varName)
-          if NLType(value).isNumber()
+          if checks.isNumber(value)
             if findIsBetter(value, winningValue)
               winningValue = value
               winners      = [neighbor]
@@ -423,7 +349,7 @@ module.exports =
         buildItems =
           (inputs) =>
             for input in inputs
-              if NLType(input).isList()
+              if checks.isList(input)
                 buildItems(input)
               else if input instanceof tClass
                 addT(input)

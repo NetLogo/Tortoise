@@ -95,8 +95,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -141,11 +143,11 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), "").ask(function() {
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("known?", false);
         SelfManager.self().setVariable("coupled?", false);
         SelfManager.self().setVariable("partner", Nobody);
-        if (Prims.equality(Prims.randomLong(2), 0)) {
+        if (Prims.equality(RandomPrims.randomLong(2), 0)) {
           SelfManager.self().setVariable("shape", "person righty");
         }
         else {
@@ -153,7 +155,7 @@ var procedures = (function() {
         }
         SelfManager.self().setVariable("infected?", Prims.lt(SelfManager.self().getVariable("who"), (world.observer.getGlobal("initial-people") * 0.025)));
         if (SelfManager.self().getVariable("infected?")) {
-          SelfManager.self().setVariable("infection-length", Prims.randomFloat(world.observer.getGlobal("symptoms-show")));
+          SelfManager.self().setVariable("infection-length", PrimChecks.math.randomFloat(world.observer.getGlobal("symptoms-show")));
         }
         procedures["ASSIGN-COMMITMENT"]();
         procedures["ASSIGN-COUPLING-TENDENCY"]();
@@ -238,10 +240,10 @@ var procedures = (function() {
       var letVars = { };
       let result = 0; letVars['result'] = result;
       for (let _index_3704_3710 = 0, _repeatcount_3704_3710 = StrictMath.floor(40); _index_3704_3710 < _repeatcount_3704_3710; _index_3704_3710++){
-        result = (result + Prims.randomFloat(center)); letVars['result'] = result;
+        result = (result + PrimChecks.math.randomFloat(center)); letVars['result'] = result;
       }
       Errors.reportInContextCheck(reporterContext);
-      return Prims.div(result, 20);
+      return PrimChecks.math.div(result, 20);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -271,7 +273,7 @@ var procedures = (function() {
         }
       }, true);
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        if (((!SelfManager.self().getVariable("coupled?") && Prims.equality(SelfManager.self().getVariable("shape"), "person righty")) && Prims.lt(Prims.randomFloat(10), SelfManager.self().getVariable("coupling-tendency")))) {
+        if (((!SelfManager.self().getVariable("coupled?") && Prims.equality(SelfManager.self().getVariable("shape"), "person righty")) && Prims.lt(PrimChecks.math.randomFloat(10), SelfManager.self().getVariable("coupling-tendency")))) {
           procedures["COUPLE"]();
         }
       }, true);
@@ -316,7 +318,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.randomFloat(360));
+      SelfManager.self().right(PrimChecks.math.randomFloat(360));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -332,7 +334,7 @@ var procedures = (function() {
         return (!SelfManager.self().getVariable("coupled?") && Prims.equality(SelfManager.self().getVariable("shape"), "person lefty"));
       }); letVars['potentialPartner'] = potentialPartner;
       if (!Prims.equality(potentialPartner, Nobody)) {
-        if (Prims.lt(Prims.randomFloat(10), potentialPartner.projectionBy(function() { return SelfManager.self().getVariable("coupling-tendency"); }))) {
+        if (Prims.lt(PrimChecks.math.randomFloat(10), potentialPartner.projectionBy(function() { return SelfManager.self().getVariable("coupling-tendency"); }))) {
           SelfManager.self().setVariable("partner", potentialPartner);
           SelfManager.self().setVariable("coupled?", true);
           Errors.askNobodyCheck(SelfManager.self().getVariable("partner")).ask(function() { SelfManager.self().setVariable("coupled?", true); }, true);
@@ -376,8 +378,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (((SelfManager.self().getVariable("coupled?") && SelfManager.self().getVariable("infected?")) && !SelfManager.self().getVariable("known?"))) {
-        if ((Prims.gt(Prims.randomFloat(10), SelfManager.self().getVariable("condom-use")) || Prims.gt(Prims.randomFloat(10), SelfManager.self().getVariable("partner").projectionBy(function() { return SelfManager.self().getVariable("condom-use"); })))) {
-          if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("infection-chance"))) {
+        if ((Prims.gt(PrimChecks.math.randomFloat(10), SelfManager.self().getVariable("condom-use")) || Prims.gt(PrimChecks.math.randomFloat(10), SelfManager.self().getVariable("partner").projectionBy(function() { return SelfManager.self().getVariable("condom-use"); })))) {
+          if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("infection-chance"))) {
             Errors.askNobodyCheck(SelfManager.self().getVariable("partner")).ask(function() { SelfManager.self().setVariable("infected?", true); }, true);
           }
         }
@@ -392,13 +394,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(Prims.randomFloat(52), SelfManager.self().getVariable("test-frequency"))) {
+      if (Prims.lt(PrimChecks.math.randomFloat(52), SelfManager.self().getVariable("test-frequency"))) {
         if (SelfManager.self().getVariable("infected?")) {
           SelfManager.self().setVariable("known?", true);
         }
       }
       if (Prims.gt(SelfManager.self().getVariable("infection-length"), world.observer.getGlobal("symptoms-show"))) {
-        if (Prims.lt(Prims.randomFloat(100), 5)) {
+        if (Prims.lt(PrimChecks.math.randomFloat(100), 5)) {
           SelfManager.self().setVariable("known?", true);
         }
       }
@@ -414,7 +416,7 @@ var procedures = (function() {
       var letVars = { };
       if (!world.turtles().isEmpty()) {
         Errors.reportInContextCheck(reporterContext);
-        return (Prims.div(world.turtles()._optimalCountWith(function() { return SelfManager.self().getVariable("infected?"); }), world.turtles().size()) * 100);
+        return (PrimChecks.math.div(world.turtles()._optimalCountWith(function() { return SelfManager.self().getVariable("infected?"); }), world.turtles().size()) * 100);
       }
       else {
         Errors.reportInContextCheck(reporterContext);

@@ -50,7 +50,7 @@ private[tortoise] trait RequestSharedImplicits {
 
 object ExportRequest extends RequestSharedImplicits {
   val read = Jsonify.reader[JsObject, ExportRequest]
-  final val NlogoFileVersion = "NetLogo 6.1.0"
+  final val NlogoFileVersion = "NetLogo 6.2.0"
 }
 
 case class CompilationRequest(

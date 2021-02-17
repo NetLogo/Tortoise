@@ -123,7 +123,7 @@ object Model {
       repetitions = 20
     ),
     Model(
-      path = "models/Sample Models/Chemistry & Physics/Heat/Boiling.nlogo",
+      path = "models/Sample Models/Chemistry & Physics/Boiling.nlogo",
       dimensions = Some((-15, 15, -15, 15)),
       repetitions = 5
     ),
@@ -329,7 +329,7 @@ object Model {
       repetitions = 20
     ),
     Model(
-      path = "models/Sample Models/Biology/Evolution/Cooperation.nlogo",
+      path = "models/Curricular Models/BEAGLE Evolution/EACH/Cooperation.nlogo",
       repetitions = 20
     ),
     Model(
@@ -472,7 +472,7 @@ object Model {
       repetitions = 80
     ),
     Model(
-      path = "models/Sample Models/Chemistry & Physics/Lennard-Jones.nlogo",
+      path = "models/Sample Models/Chemistry & Physics/Materials Science/Lennard-Jones.nlogo",
       repetitions = 40
     ),
     Model(

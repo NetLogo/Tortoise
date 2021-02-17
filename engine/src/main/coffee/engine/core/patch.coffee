@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 TurtleSet       = require('./turtleset')
+{ checks }      = require('./typechecker')
 VariableManager = require('./structure/variablemanager')
 Comparator      = require('util/comparator')
 
@@ -177,7 +178,7 @@ module.exports =
     _neighborSum: (nbs, varName) ->
       f = (acc, neighbor) ->
         x = neighbor.getVariable(varName)
-        if NLType(x).isNumber()
+        if checks.isNumber(x)
           acc + x
         else
           throw new Exception("noSumOfListWithNonNumbers, #{x}")

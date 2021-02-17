@@ -82,8 +82,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -101,8 +103,8 @@ var procedures = (function() {
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       procedures["SETUP-GLOBALS"]();
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("x", NLMath.abs(SelfManager.self().getPatchVariable("pxcor")));
-        SelfManager.self().setPatchVariable("y", NLMath.abs(SelfManager.self().getPatchVariable("pycor")));
+        SelfManager.self().setPatchVariable("x", PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")));
+        SelfManager.self().setPatchVariable("y", PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")));
         SelfManager.self().setPatchVariable("rod?", false);
         procedures["BUILD-REACTOR"]();
         procedures["SETUP-NUCLEAR-FUEL"]();
@@ -124,9 +126,9 @@ var procedures = (function() {
       world.observer.setGlobal("old-power-2", 0);
       world.observer.setGlobal("old-power-3", 0);
       world.observer.setGlobal("old-power-4", 0);
-      world.observer.setGlobal("r", Prims.div(world.observer.getGlobal("reactor-size"), 2));
+      world.observer.setGlobal("r", PrimChecks.math.div(world.observer.getGlobal("reactor-size"), 2));
       world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
-      world.observer.setGlobal("n-rods", (Prims.div(world.observer.getGlobal("reactor-size"), (world.observer.getGlobal("rod-spacing") + 1)) - 1));
+      world.observer.setGlobal("n-rods", (PrimChecks.math.div(world.observer.getGlobal("reactor-size"), (world.observer.getGlobal("rod-spacing") + 1)) - 1));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -176,7 +178,7 @@ var procedures = (function() {
       if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 2) && !Prims.equality(world.observer.getGlobal("reactor-size"), 30)) && !Prims.equality(world.observer.getGlobal("reactor-size"), 60))) {
         rodX = (rodX + 1); letVars['rodX'] = rodX;
       }
-      if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 3) && !Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
+      if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 3) && !Prims.equality(PrimChecks.math.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
         world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
         rodX = (rodX - 1); letVars['rodX'] = rodX;
       }
@@ -188,7 +190,7 @@ var procedures = (function() {
           rodX = (rodX + 2); letVars['rodX'] = rodX;
         }
       }
-      if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 6) && Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
+      if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 6) && Prims.equality(PrimChecks.math.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
         world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
         if (Prims.equality(world.observer.getGlobal("reactor-size"), 80)) {
           rodX = (rodX - 2); letVars['rodX'] = rodX;
@@ -272,7 +274,7 @@ var procedures = (function() {
           procedures["FISSION"]();
         }
       }, true);
-      world.observer.setGlobal("average-power", Prims.div(((((world.observer.getGlobal("power") + world.observer.getGlobal("old-power")) + world.observer.getGlobal("old-power-2")) + world.observer.getGlobal("old-power-3")) + world.observer.getGlobal("old-power-4")), 5));
+      world.observer.setGlobal("average-power", PrimChecks.math.div(((((world.observer.getGlobal("power") + world.observer.getGlobal("old-power")) + world.observer.getGlobal("old-power-2")) + world.observer.getGlobal("old-power-3")) + world.observer.getGlobal("old-power-4")), 5));
       world.observer.setGlobal("power-change", (world.observer.getGlobal("power") - world.observer.getGlobal("old-power")));
       world.observer.setGlobal("old-power-4", world.observer.getGlobal("old-power-3"));
       world.observer.setGlobal("old-power-3", world.observer.getGlobal("old-power-2"));
@@ -292,8 +294,8 @@ var procedures = (function() {
       let whom = Nobody; letVars['whom'] = whom;
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("color", 45);
-        SelfManager.self().setVariable("xcor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
-        SelfManager.self().setVariable("ycor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
+        SelfManager.self().setVariable("xcor", (PrimChecks.math.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
+        SelfManager.self().setVariable("ycor", (PrimChecks.math.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
         whom = SelfManager.self(); letVars['whom'] = whom;
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5)) {
           SelfManager.self().die();
@@ -330,14 +332,14 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right(Prims.randomLong(360));
+      SelfManager.self().right(RandomPrims.randomLong(360));
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
         if (world.observer.getGlobal("spend-fuel?")) {
           SelfManager.self().setPatchVariable("pcolor", 35);
         }
-        let gain = Prims.div(1, SelfManager.self().turtlesHere().size()); letVars['gain'] = gain;
+        let gain = PrimChecks.math.div(1, SelfManager.self().turtlesHere().size()); letVars['gain'] = gain;
         world.observer.setGlobal("power", (world.observer.getGlobal("power") + gain));
-        SelfManager.self().hatch(((2 + Prims.randomLong(2)) * gain), "").ask(function() { SelfManager.self().right(Prims.randomLong(360)); }, true);
+        SelfManager.self().hatch(((2 + RandomPrims.randomLong(2)) * gain), "").ask(function() { SelfManager.self().right(RandomPrims.randomLong(360)); }, true);
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)

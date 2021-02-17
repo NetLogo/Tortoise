@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -53,7 +55,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      workspace.rng.setSeed(362);
+      PrimChecks.math.randomSeed(362);
       procedures["SETUP"]();
       workspace.timer.reset();
       for (let _index_73_79 = 0, _repeatcount_73_79 = StrictMath.floor(20000); _index_73_79 < _repeatcount_73_79; _index_73_79++){
@@ -73,8 +75,8 @@ var procedures = (function() {
       world.clearAll();
       world.ticker.reset();
       world.turtleManager.createOrderedTurtles(1000, "").ask(function() {
-        SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
-        SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
+        SelfManager.self().moveTo(PrimChecks.list.oneOf(world.patches()));
+        SelfManager.self().face(PrimChecks.list.oneOf(SelfManager.self().getNeighbors4()));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -87,7 +89,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
+        SelfManager.self().face(PrimChecks.list.oneOf(SelfManager.self().getNeighbors4()));
         SelfManager.self()._optimalFdOne();
       }, true);
       world.ticker.tick();

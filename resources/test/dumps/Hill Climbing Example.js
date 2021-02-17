@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -54,11 +56,11 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      Errors.askNobodyCheck(ListPrims.nOf(100, world.patches())).ask(function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true);
+      Errors.askNobodyCheck(PrimChecks.list.nOf(100, world.patches())).ask(function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true);
       for (let _index_296_302 = 0, _repeatcount_296_302 = StrictMath.floor(20); _index_296_302 < _repeatcount_296_302; _index_296_302++){
         world.topology.diffuse("pcolor", 1, false)
       }
-      Errors.askNobodyCheck(ListPrims.nOf(800, world.patches())).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.list.nOf(800, world.patches())).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("peak?", false);
           SelfManager.self().setVariable("color", 15);

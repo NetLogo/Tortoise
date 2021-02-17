@@ -105,12 +105,18 @@ module.exports = class Plot
 
   # (Number, Number) => Unit
   plotPoint: (x, y) ->
-    @_withPen((pen) => pen.addXY(x, y); @_verifySize(pen))
+    @_withPen( (pen) =>
+      pen.addXY(x, y)
+      @_verifySize(x, y)
+    )
     return
 
   # (Number) => Unit
   plotValue: (value) ->
-    @_withPen((pen) => pen.addValue(value); @_verifySize(pen))
+    @_withPen( (pen) =>
+      x = pen.addValue(value)
+      @_verifySize(x, value)
+    )
     return
 
   # () => Unit
@@ -231,44 +237,41 @@ module.exports = class Plot
     @_resize()
     return
 
-  # (Pen) => Unit
-  _verifySize: (pen) ->
+  # (Number, Number) => Unit
+  _verifySize: (x, y) ->
 
-    if pen.bounds()?
+    bumpMin = ([newMin, currentMin], currentMax) ->
+      if newMin < currentMin
+        range         = currentMax - newMin
+        expandedRange = range * 1.2
+        newValue      = currentMax - expandedRange
+        StrictMath.floor(newValue)
+      else
+        currentMin
 
-      bounds        = pen.bounds()
-      currentBounds = [@xMin, @xMax, @yMin, @yMax]
-      [minXs, maxXs, minYs, maxYs] = zip(bounds)(currentBounds)
+    bumpMax = ([newMax, currentMax], currentMin) ->
+      if newMax > currentMax
+        range         = newMax - currentMin
+        expandedRange = range * 1.2
+        newValue      = currentMin + expandedRange
+        StrictMath.ceil(newValue)
+      else
+        currentMax
 
-      bumpMin = ([newMin, currentMin], currentMax) ->
-        if newMin < currentMin
-          range         = currentMax - newMin
-          expandedRange = range * 1.2
-          newValue      = currentMax - expandedRange
-          StrictMath.floor(newValue)
-        else
-          currentMin
+    newXMin = bumpMin([x, @xMin], @xMax)
+    newXMax = bumpMax([x, @xMax], @xMin)
+    newYMin = bumpMin([y, @yMin], @yMax)
+    newYMax = bumpMax([y, @yMax], @yMin)
 
-      bumpMax = ([newMax, currentMax], currentMin) ->
-        if newMax > currentMax
-          range         = newMax - currentMin
-          expandedRange = range * 1.2
-          newValue      = currentMin + expandedRange
-          StrictMath.ceil(newValue)
-        else
-          currentMax
-
-      [newXMin, newXMax, newYMin, newYMax] = [bumpMin(minXs, @xMax), bumpMax(maxXs, @xMin), bumpMin(minYs, @yMax), bumpMax(maxYs, @yMin)]
-
-      # If bounds extended, we must resize, regardless of whether or not autoplotting is enabled, because some
-      # libraries force autoscaling, but we only _expand_ the boundaries when autoplotting. --JAB (10/10/14)
-      if newXMin isnt @xMin or newXMax isnt @xMax or newYMin isnt @yMin or newYMax isnt @yMax
-        if @isAutoplotting
-          @xMin = newXMin
-          @xMax = newXMax
-          @yMin = newYMin
-          @yMax = newYMax
-        @_resize()
+    # If bounds extended, we must resize, regardless of whether or not autoplotting is enabled, because some
+    # libraries force autoscaling, but we only _expand_ the boundaries when autoplotting. --JAB (10/10/14)
+    if newXMin isnt @xMin or newXMax isnt @xMax or newYMin isnt @yMin or newYMax isnt @yMax
+      if @isAutoplotting
+        @xMin = newXMin
+        @xMax = newXMax
+        @yMin = newYMin
+        @yMax = newYMax
+      @_resize()
 
     return
 

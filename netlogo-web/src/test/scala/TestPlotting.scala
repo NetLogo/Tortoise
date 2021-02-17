@@ -409,6 +409,102 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
+  testPlotting("auto scale works with plot and plotxy") { (engine) =>
+
+    implicit val e = engine
+
+    setPlot(Plots.Gini.name)
+    enableAutoplotting()
+
+    for (n <- 0 to (Plots.Gini.xmax + 10)) {
+      plot(n)
+    }
+
+    assertAxisRangeIs(0, 62)(e, X)
+    assertAxisRangeIs(0, 63)(e, Y)
+
+    plotxy(Plots.Gini.xmax + 20, Plots.Gini.xmax + 20)
+
+    assertAxisRangeIs(0, 84)(e, X)
+    assertAxisRangeIs(0, 84)(e, Y)
+
+    setAxisRange(10, 80)(e, X)
+
+    assertAxisRangeIs(10, 80)(e, X)
+    assertAxisRangeIs(0, 84)(e, Y)
+
+    plot(1)
+
+    assertAxisRangeIs(10, 80)(e, X)
+    assertAxisRangeIs(0, 84)(e, Y)
+
+    plotxy(81, 10)
+
+    assertAxisRangeIs(10, 96)(e, X)
+    assertAxisRangeIs(0, 84)(e, Y)
+
+    plotxy(-1, -1)
+
+    assertAxisRangeIs(-21, 96)(e, X)
+    assertAxisRangeIs(-18, 84)(e, Y)
+
+    disableAutoplotting()
+
+    plotxy(-24, -10)
+
+    assertAxisRangeIs(-21, 96)(e, X)
+    assertAxisRangeIs(-18, 84)(e, Y)
+
+    plotxy(101, 120)
+
+    assertAxisRangeIs(-21, 96)(e, X)
+    assertAxisRangeIs(-18, 84)(e, Y)
+
+    plot(150)
+
+    assertAxisRangeIs(-21, 96)(e, X)
+    assertAxisRangeIs(-18, 84)(e, Y)
+
+    ()
+  }
+
+  testPlotting("auto scale works with histogram") { (engine) =>
+
+    implicit val e = engine
+
+    setPlot(Plots.ClassHistogram.name)
+    enableAutoplotting()
+
+    // the interval is 1 so this would make buckets past the max x range
+    // and should not auto-scale because it's a histogram -Jeremy B Octover 2020
+    histogram( (0 to 100).map( n => (n % 10).toDouble ): _* )
+
+    assertAxisRangeIs(0, 3)(e, X)
+    assertAxisRangeIs(0, 250)(e, Y)
+
+    // make it easier to overflow Y -Jeremy B Octover 2020
+    setAxisRange(0, 10)(e, Y)
+    histogram( (0 to 100).map( n => (n % 3).toDouble ): _* )
+
+    assertAxisRangeIs(0, 3)(e, X)
+    assertAxisRangeIs(0, 34)(e, Y)
+
+    disableAutoplotting()
+
+    setAxisRange(0, 10)(e, Y)
+    histogram( (0 to 100).map( n => (n % 3).toDouble ): _* )
+
+    assertAxisRangeIs(0, 3)(e, X)
+    assertAxisRangeIs(0, 10)(e, Y)
+
+    histogram( (0 to 100).map( n => (n % 10).toDouble ): _* )
+
+    assertAxisRangeIs(0, 3)(e, X)
+    assertAxisRangeIs(0, 10)(e, Y)
+
+    ()
+  }
+
 }
 
 trait PlottingHelpers {
@@ -557,8 +653,8 @@ trait PlottingHelpers {
   protected def assertYs(ys: Int*)                    (implicit e: GraalJS): Unit = { assertXYs(ys.zipWithIndex map (_.swap): _*)                                                                     ; () }
 
   protected def assertAxisRangeIs(min: Double, max: Double)(implicit e: GraalJS, axis: Axis): Unit = {
-    assertResult(Double.box(min))(evalNLReporter(s"plot-${axis.toAxisStr}-min"))
-    assertResult(Double.box(max))(evalNLReporter(s"plot-${axis.toAxisStr}-max"))
+    assertResult(Double.box(min), s"(${axis.toAxisStr} axis min check)")(evalNLReporter(s"plot-${axis.toAxisStr}-min"))
+    assertResult(Double.box(max), s"(${axis.toAxisStr} axis max check)")(evalNLReporter(s"plot-${axis.toAxisStr}-max"))
     ()
   }
 

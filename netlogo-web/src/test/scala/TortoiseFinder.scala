@@ -95,40 +95,9 @@ private[tortoise] object Freebies {
 
   private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
   private val incErrorDetectReporterNames = Seq(
-    "Lists::Lput5",
-    "Lists::ListFirst1",
-    "Lists::ListReplaceIt2",
-    "Lists::ReduceEmpty",
-    "Lists::ListItem1",
-    "Lists::ListItem2",
-    "Lists::ListLast1",
-    "Lists::ListLength3",
-    "Lists::ListRemoveItem4",
-    "Lists::ListRemoveItem5",
-    "Lists::ListRemoveItem6",
-    "Lists::ListReplItem2",
-    "Lists::ListReplItem3",
-    "Lists::ListButFirst3",
-    "Lists::ListButLast3",
-    "Lists::ListSubList6",
-    "Lists::ListSubList8",
-    "Lists::ListSubList9",
-    "Lists::ListSubList12",
     "Lists::SortBy5",
-    "Numbers::Sqrt1",
-    "Numbers::Sqrt4",
-    "Numbers::Atan4",
-    "Numbers::Exponentiation3",
-    "Numbers::Exponentiation8",
-    "Numbers::Log5",
-    "Numbers::Log6",
     "RunResult::RunResult4",
     "RunResult::RunResult5",
-    "Strings::StrButFirst2",
-    "Strings::StrButLast2",
-    "Strings::StrRemoveItem4",
-    "Strings::StrRemoveItem5",
-    "Strings::StrRemoveItem6"
   )
   private val incErrorDetectCommandNames = Seq(
     "Agentsets::Agentsets3",
@@ -161,9 +130,6 @@ private[tortoise] object Freebies {
     "Links::LinksNotAllowed",
     "Links::LinkNotAllowed_2D",
     "Links::LinkCreationTypeChecking_2D",
-    "Lists::RemoveBug997FirstArgMustBeStringIfSecondArgIsString",
-    "Lists::FilterTypeError",
-    "Math::CatchNumbersOutsideDoubleRangeOfIntegers",
     "MoveTo::MoveTo_2D",
     "Patch::SetVariableRuntime_2D",
     "RGB::PatchesRGBColor_2D",
@@ -171,7 +137,6 @@ private[tortoise] object Freebies {
     "RGB::LinksRGBColor",
     "Random::RandomNOfWithLists",
     "Random::OneOfWithAgentSets",
-    "Random::RejectBadSeeds",
     "Sort::SortByBadReporter",
     "Sort::SortingTypeErrors",
     "Sort::sort-on-rejects-mixed-types",
@@ -181,7 +146,7 @@ private[tortoise] object Freebies {
     "TypeChecking::AgentClassChecking1",
     "TypeChecking::AgentClassChecking3a",
     "TypeChecking::AgentClassChecking3b"
-    )
+  )
 
   private val lameCommandStr = "This test is LAME!"
   private val lameCommandNames = Seq(

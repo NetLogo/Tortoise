@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -105,7 +107,7 @@ var procedures = (function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("color", 25);
           SelfManager.self().setVariable("start-patch", SelfManager.self().getPatchHere());
-          SelfManager.self().setVariable("heading", (Prims.randomFloat(90) + 90));
+          SelfManager.self().setVariable("heading", (PrimChecks.math.randomFloat(90) + 90));
         }, true);
       }, true);
       procedures["PLOT-SCORES"]();
@@ -124,7 +126,7 @@ var procedures = (function() {
         notImplemented('display', undefined)();
       }
       world.observer.setGlobal("kicks", (world.observer.getGlobal("kicks") + world.observer.getGlobal("try-line").size()));
-      world.observer.setGlobal("goals", ListPrims.sum(world.observer.getGlobal("try-line").projectionBy(function() { return SelfManager.self().getPatchVariable("score"); })));
+      world.observer.setGlobal("goals", PrimChecks.list.sum(world.observer.getGlobal("try-line").projectionBy(function() { return SelfManager.self().getPatchVariable("score"); })));
       procedures["SETUP-BALLS"]();
       world.ticker.tick();
     } catch (e) {
@@ -198,7 +200,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("current-max", ListPrims.max(world.observer.getGlobal("try-line").projectionBy(function() { return SelfManager.self().getPatchVariable("score"); })));
+      world.observer.setGlobal("current-max", PrimChecks.list.max(world.observer.getGlobal("try-line").projectionBy(function() { return SelfManager.self().getPatchVariable("score"); })));
       if (Prims.equality(world.observer.getGlobal("current-max"), 0)) {
         Errors.askNobodyCheck(world.observer.getGlobal("histogram-area")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
         throw new Exception.StopInterrupt;
@@ -215,7 +217,7 @@ var procedures = (function() {
         }
       }, true);
       Errors.askNobodyCheck(world.observer.getGlobal("histogram-area")).ask(function() {
-        if (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("kick-line") - Prims.div((SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }) * (world.observer.getGlobal("kick-line") - world.topology.minPxcor)), world.observer.getGlobal("current-max"))))) {
+        if (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("kick-line") - PrimChecks.math.div((SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }) * (world.observer.getGlobal("kick-line") - world.topology.minPxcor)), world.observer.getGlobal("current-max"))))) {
           if (Prims.equality(SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }), world.observer.getGlobal("current-max"))) {
             SelfManager.self().setPatchVariable("pcolor", 45);
           }
@@ -258,7 +260,7 @@ var procedures = (function() {
         return (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.lt(SelfManager.self().getPatchVariable("pcolor"), 10));
       })).ask(function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("goal-angle"), 270)) {
-          SelfManager.self().setPatchVariable("pcolor", ((360 - NLMath.mod(SelfManager.self().getPatchVariable("goal-angle"), 10)) * 0.8));
+          SelfManager.self().setPatchVariable("pcolor", ((360 - PrimChecks.math.mod(SelfManager.self().getPatchVariable("goal-angle"), 10)) * 0.8));
         }
       }, true);
     } catch (e) {
@@ -273,7 +275,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setPatchVariable("left-angle", SelfManager.self().towardsXY((world.observer.getGlobal("goal-pos") - 0.5), (world.topology.minPycor + 0.5)));
       SelfManager.self().setPatchVariable("right-angle", SelfManager.self().towardsXY(((world.observer.getGlobal("goal-pos") + world.observer.getGlobal("goal-size")) - 0.5), (world.topology.minPycor + 0.5)));
-      SelfManager.self().setPatchVariable("goal-angle", NLMath.mod((SelfManager.self().getPatchVariable("right-angle") - SelfManager.self().getPatchVariable("left-angle")), 360));
+      SelfManager.self().setPatchVariable("goal-angle", PrimChecks.math.mod((SelfManager.self().getPatchVariable("right-angle") - SelfManager.self().getPatchVariable("left-angle")), 360));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

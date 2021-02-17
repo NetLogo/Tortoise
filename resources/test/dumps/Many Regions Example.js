@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -87,10 +89,10 @@ var procedures = (function() {
         Errors.procedureArgumentsCheck(1, arguments.length);
         let regionPatches = world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("region"), regionNumber); }); letVars['regionPatches'] = regionPatches;
         world.turtleManager.createTurtles(world.observer.getGlobal("number-of-turtles-per-region"), "").ask(function() {
-          SelfManager.self().moveTo(ListPrims.oneOf(regionPatches));
+          SelfManager.self().moveTo(PrimChecks.list.oneOf(regionPatches));
           SelfManager.self().setVariable("color", (SelfManager.self().getPatchVariable("pcolor") + 3));
         }, true);
-      }, "[ region-number -> let patches with [ region = region-number ] create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]"), Prims.rangeBinary(1, (ListPrims.length(world.observer.getGlobal("region-boundaries")) + 1))); if(reporterContext && _foreach_1146_1153 !== undefined) { return _foreach_1146_1153; }
+      }, "[ region-number -> let patches with [ region = region-number ] create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]"), Prims.rangeBinary(1, (PrimChecks.list.length(world.observer.getGlobal("region-boundaries")) + 1))); if(reporterContext && _foreach_1146_1153 !== undefined) { return _foreach_1146_1153; }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -114,8 +116,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let currentRegion = SelfManager.self().getPatchVariable("region"); letVars['currentRegion'] = currentRegion;
-      SelfManager.self().right(Prims.randomLong(30));
-      SelfManager.self().right(-(Prims.randomLong(30)));
+      SelfManager.self().right(RandomPrims.randomLong(30));
+      SelfManager.self().right(-(RandomPrims.randomLong(30)));
       SelfManager.self()._optimalFdLessThan1(0.25);
       procedures["KEEP-IN-REGION"](currentRegion);
     } catch (e) {
@@ -137,7 +139,7 @@ var procedures = (function() {
       var _foreach_2401_2408 = Tasks.forEach(Tasks.commandTask(function(boundaries, regionNumber) {
         Errors.procedureArgumentsCheck(2, arguments.length);
         Errors.askNobodyCheck(world.patches().agentFilter(function() {
-          return (Prims.gte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.first(boundaries)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.last(boundaries)));
+          return (Prims.gte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.list.first(boundaries)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.list.last(boundaries)));
         })).ask(function() { SelfManager.self().setPatchVariable("region", regionNumber); }, true);
       }, "[ [boundaries region-number] -> ask patches with [ pxcor >= first boundaries and pxcor <= last boundaries ] [ set region region-number ] ]"), world.observer.getGlobal("region-boundaries"), regionNumbers); if(reporterContext && _foreach_2401_2408 !== undefined) { return _foreach_2401_2408; }
     } catch (e) {
@@ -155,7 +157,7 @@ var procedures = (function() {
       return Tasks.map(Tasks.reporterTask(function(d1, d2) {
         Errors.procedureArgumentsCheck(2, arguments.length);
         return ListPrims.list((d1 + 1), (d2 - 1));
-      }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]"), ListPrims.butLast(divisions), ListPrims.butFirst(divisions));
+      }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]"), PrimChecks.list.butLast('but-last')(divisions), PrimChecks.list.butFirst('but-first')(divisions));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -170,7 +172,7 @@ var procedures = (function() {
       Errors.reportInContextCheck(reporterContext);
       return Tasks.nValues((numRegions + 1), Tasks.reporterTask(function(n) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        return world.getPatchAt((world.topology.minPxcor + (n * Prims.div((world.topology.maxPxcor - world.topology.minPxcor), numRegions))), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
+        return world.getPatchAt((world.topology.minPxcor + (n * PrimChecks.math.div((world.topology.maxPxcor - world.topology.minPxcor), numRegions))), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
       }, "[ n -> [ pxcor ] of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]"));
       Errors.missingReport();
     } catch (e) {
@@ -190,7 +192,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", (5 - 3));
         SelfManager.self().penManager.lowerPen();
         SelfManager.self().fd(world.topology.height);
-        SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") + Prims.div(1, world.patchSize)));
+        SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") + PrimChecks.math.div(1, world.patchSize)));
         SelfManager.self().right(180);
         SelfManager.self().setVariable("color", (5 + 3));
         SelfManager.self().fd(world.topology.height);
@@ -207,8 +209,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (!Prims.equality(SelfManager.self().getPatchVariable("region"), whichRegion)) {
-        let regionMinPxcor = ListPrims.first(ListPrims.item((whichRegion - 1), world.observer.getGlobal("region-boundaries"))); letVars['regionMinPxcor'] = regionMinPxcor;
-        let regionMaxPxcor = ListPrims.last(ListPrims.item((whichRegion - 1), world.observer.getGlobal("region-boundaries"))); letVars['regionMaxPxcor'] = regionMaxPxcor;
+        let regionMinPxcor = PrimChecks.list.first(PrimChecks.list.item((whichRegion - 1), world.observer.getGlobal("region-boundaries"))); letVars['regionMinPxcor'] = regionMinPxcor;
+        let regionMaxPxcor = PrimChecks.list.last(PrimChecks.list.item((whichRegion - 1), world.observer.getGlobal("region-boundaries"))); letVars['regionMaxPxcor'] = regionMaxPxcor;
         let regionWidth = ((regionMaxPxcor - regionMinPxcor) + 1); letVars['regionWidth'] = regionWidth;
         if (Prims.lt(SelfManager.self().getVariable("xcor"), regionMinPxcor)) {
           SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") + regionWidth));

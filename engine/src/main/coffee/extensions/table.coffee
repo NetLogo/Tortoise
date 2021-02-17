@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-NLType = require('../engine/core/typechecker')
+{ checks } = require('../engine/core/typechecker')
 
 SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensionporter')
 
@@ -26,9 +26,8 @@ equals = (a, b) ->
 
 # (Any) => Boolean
 isValidKey = (x) ->
-  type = NLType(x)
-  if not type.isList()
-    return type.isString() or type.isNumber() or type.isBoolean()
+  if not checks.isList(x)
+    return checks.isString(x) or checks.isNumber(x) or checks.isBoolean(x)
   else
     x.every((item) -> isValidKey(item))
 

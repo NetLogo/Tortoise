@@ -3,7 +3,6 @@
 StrictMath = require('../shim/strictmath')
 Exception  = require('./exception')
 
-# The compiler should favor calling into this object over `StrictMath`, because this is where error messages are implemented --JAB (3/5/15)
 module.exports = {
 
   # (Number) => Number
@@ -12,17 +11,15 @@ module.exports = {
 
   # (Number) => Number
   acos: (radians) ->
-    @validateNumber(StrictMath.toDegrees(StrictMath.acos(radians)))
+    StrictMath.toDegrees(StrictMath.acos(radians))
 
   # (Number) => Number
   asin: (radians) ->
-    @validateNumber(StrictMath.toDegrees(StrictMath.asin(radians)))
+    StrictMath.toDegrees(StrictMath.asin(radians))
 
   # (Number, Number) => Number
   atan: (d1, d2) ->
-    if d1 is 0 and d2 is 0
-      throw new Error("Runtime error: atan is undefined when both inputs are zero.")
-    else if d1 is 0
+    if d1 is 0
       if d2 > 0 then 0 else 180
     else if d2 is 0
       if d1 > 0 then 90 else 270
@@ -132,14 +129,5 @@ module.exports = {
 
   trunc: (n) ->
     StrictMath.trunc(n)
-
-  # (Number) => Number
-  validateNumber: (x) ->
-    if not isFinite(x)
-      throw new Error("math operation produced a non-number")
-    else if isNaN(x)
-      throw new Error("math operation produced a number too large for NetLogo")
-    else
-      x
 
 }

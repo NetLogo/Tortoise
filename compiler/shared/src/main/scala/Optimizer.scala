@@ -459,7 +459,10 @@ object Optimizer {
   object RandomConstTransformer extends AstTransformer {
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
       ra match {
-        case ReporterApp(_: _random, Seq(ReporterApp(_const(value: java.lang.Double), _, _)), _) if value > 0 && value == value.toLong =>
+        case ReporterApp(_: _random, Seq(ReporterApp(_const(value: java.lang.Double), _, _)), _)
+          if   value > 0
+            && value == value.toLong
+            && value <= 9007199254740992L =>
           ra.copy(reporter = new _randomconst)
         case _ => super.visitReporterApp(ra)
       }

@@ -8,16 +8,19 @@ BreedManager  = require('./core/breedmanager')
 Dump          = require('./dump')
 EvalPrims     = require('./prim/evalprims')
 Hasher        = require('./hasher')
+I18nBundle    = require('i18n/i18n-bundle')
 importPColors = require('./prim/importpcolors')
 LayoutManager = require('./prim/layoutmanager')
 LinkPrims     = require('./prim/linkprims')
 ListPrims     = require('./prim/listprims')
-NLType        = require('./core/typechecker')
 PlotManager   = require('./plot/plotmanager')
 Prims         = require('./prim/prims')
+RandomPrims   = require('./prim/randomprims')
+PrimChecks    = require('./prim-checks/checker')
 RNG           = require('util/rng')
 SelfManager   = require('./core/structure/selfmanager')
 SelfPrims     = require('./prim/selfprims')
+StringPrims   = require('./prim/stringprims')
 Timer         = require('util/timer')
 Updater       = require('./updater')
 World         = require('./core/world')
@@ -65,7 +68,6 @@ module.exports =
 
     dump        = Dump(extensionPorters)
     rng         = new RNG
-    typechecker = NLType
     outputStore = ""
 
     selfManager  = new SelfManager
@@ -89,17 +91,22 @@ module.exports =
     )
     layoutManager = new LayoutManager(world, rng.nextDouble)
 
-    evalPrims = new EvalPrims(code, widgets)
-    prims     = new Prims(dump, Hasher, rng, world, evalPrims)
-    selfPrims = new SelfPrims(selfManager.self)
-    linkPrims = new LinkPrims(world)
-    listPrims = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
+    evalPrims   = new EvalPrims(code, widgets)
+    prims       = new Prims(dump, Hasher, rng, world, evalPrims)
+    randomPrims = new RandomPrims(rng)
+    selfPrims   = new SelfPrims(selfManager.self)
+    linkPrims   = new LinkPrims(world)
+    listPrims   = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
+    stringPrims = new StringPrims()
 
     inspectionPrims = new InspectionPrims(inspectionConfig)
     mousePrims      = new MousePrims(mouseConfig)
     outputPrims     = new OutputPrims(outputConfig, ((x) -> outputStore += x), (-> outputStore = ""), dump)
     printPrims      = new PrintPrims(printConfig, dump)
     userDialogPrims = new UserDialogPrims(dialogConfig)
+
+    i18nBundle = new I18nBundle()
+    primChecks = new PrimChecks(i18nBundle, dump, listPrims, randomPrims, stringPrims)
 
     importWorldFromCSV = (csvText) ->
 
@@ -123,6 +130,7 @@ module.exports =
                                              , (-> world.exportCSV())
                                              , (-> world.exportAllPlotsCSV())
                                              , ((plot) -> world.exportPlotCSV(plot))
+                                             , ((plot) -> world.exportRawPlotCSV(plot))
                                              , ((path) -> world.importDrawing(path))
                                              , importPatchColors
                                              , importWorldFromCSV
@@ -145,11 +153,12 @@ module.exports =
       plotManager
       evalPrims
       prims
+      randomPrims
+      primChecks
       printPrims
       rng
       selfPrims
       timer
-      typechecker
       updater
       userDialogPrims
       world

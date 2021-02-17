@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -80,7 +82,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      let halfedge = NLMath.toInt(Prims.div(world.observer.getGlobal("edge"), 2)); letVars['halfedge'] = halfedge;
+      let halfedge = PrimChecks.math.int(PrimChecks.math.div(world.observer.getGlobal("edge"), 2)); letVars['halfedge'] = halfedge;
       Errors.askNobodyCheck(world.patches()).ask(function() {
         if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"),  -(halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -(halfedge))) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
           SelfManager.self().setPatchVariable("pcolor", 105);

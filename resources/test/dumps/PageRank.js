@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -73,11 +75,11 @@ var procedures = (function() {
       }
       Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
-        SelfManager.self().setVariable("rank", Prims.div(1, world.turtleManager.turtlesOfBreed("PAGES").size()));
+        SelfManager.self().setVariable("rank", PrimChecks.math.div(1, world.turtleManager.turtlesOfBreed("PAGES").size()));
       }, true);
       procedures["UPDATE-GLOBALS"]();
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("label-color", 0);
         procedures["UPDATE-PAGE-APPEARANCE"]();
       }, true);
@@ -177,12 +179,12 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let nodeList = ListPrims.sort(nodeset); letVars['nodeList'] = nodeList;
-      let neighborChoiceList = ListPrims.sublist(nodeList, 0, k); letVars['neighborChoiceList'] = neighborChoiceList;
-      Errors.askNobodyCheck(ListPrims.item(k, nodeList)).ask(function() {
+      let nodeList = PrimChecks.list.sort(nodeset); letVars['nodeList'] = nodeList;
+      let neighborChoiceList = PrimChecks.list.sublist(nodeList, 0, k); letVars['neighborChoiceList'] = neighborChoiceList;
+      Errors.askNobodyCheck(PrimChecks.list.item(k, nodeList)).ask(function() {
         var _foreach_2544_2551 = Tasks.forEach(Tasks.commandTask(function(neighbor) {
           Errors.procedureArgumentsCheck(1, arguments.length);
-          if (Prims.equality(Prims.randomLong(2), 0)) {
+          if (Prims.equality(RandomPrims.randomLong(2), 0)) {
             LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
           }
           else {
@@ -196,10 +198,10 @@ var procedures = (function() {
         Errors.askNobodyCheck(node).ask(function() {
           let tempNeighborList = neighborChoiceList; letVars['tempNeighborList'] = tempNeighborList;
           for (let _index_3056_3062 = 0, _repeatcount_3056_3062 = StrictMath.floor(k); _index_3056_3062 < _repeatcount_3056_3062; _index_3056_3062++){
-            let neighbor = ListPrims.oneOf(tempNeighborList); letVars['neighbor'] = neighbor;
-            tempNeighborList = ListPrims.remove(neighbor, tempNeighborList); letVars['tempNeighborList'] = tempNeighborList;
-            neighborChoiceList = ListPrims.fput(neighbor, neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
-            if (Prims.equality(Prims.randomLong(2), 0)) {
+            let neighbor = PrimChecks.list.oneOf(tempNeighborList); letVars['neighbor'] = neighbor;
+            tempNeighborList = PrimChecks.list.remove(neighbor, tempNeighborList); letVars['tempNeighborList'] = tempNeighborList;
+            neighborChoiceList = PrimChecks.list.fput(neighbor, neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
+            if (Prims.equality(RandomPrims.randomLong(2), 0)) {
               LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
             }
             else {
@@ -208,7 +210,7 @@ var procedures = (function() {
           }
           neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() { return SelfManager.self(); }, "[ self ]")), neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
         }, true);
-      }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]"), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList))); if(reporterContext && _foreach_2894_2901 !== undefined) { return _foreach_2894_2901; }
+      }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]"), PrimChecks.list.sublist(nodeList, (k + 1), PrimChecks.list.length(nodeList))); if(reporterContext && _foreach_2894_2901 !== undefined) { return _foreach_2894_2901; }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -219,7 +221,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, Prims.div(20, NLMath.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
+      LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, PrimChecks.math.div(20, PrimChecks.math.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -241,26 +243,26 @@ var procedures = (function() {
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() { SelfManager.self().setVariable("new-rank", 0); }, true);
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
           if (!LinkPrims.outLinkNeighbors("LINKS").isEmpty()) {
-            let rankIncrement = Prims.div(SelfManager.self().getVariable("rank"), LinkPrims.outLinkNeighbors("LINKS").size()); letVars['rankIncrement'] = rankIncrement;
+            let rankIncrement = PrimChecks.math.div(SelfManager.self().getVariable("rank"), LinkPrims.outLinkNeighbors("LINKS").size()); letVars['rankIncrement'] = rankIncrement;
             Errors.askNobodyCheck(LinkPrims.outLinkNeighbors("LINKS")).ask(function() {
               SelfManager.self().setVariable("new-rank", (SelfManager.self().getVariable("new-rank") + rankIncrement));
             }, true);
           }
           else {
-            let rankIncrement = Prims.div(SelfManager.self().getVariable("rank"), world.turtleManager.turtlesOfBreed("PAGES").size()); letVars['rankIncrement'] = rankIncrement;
+            let rankIncrement = PrimChecks.math.div(SelfManager.self().getVariable("rank"), world.turtleManager.turtlesOfBreed("PAGES").size()); letVars['rankIncrement'] = rankIncrement;
             Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
               SelfManager.self().setVariable("new-rank", (SelfManager.self().getVariable("new-rank") + rankIncrement));
             }, true);
           }
         }, true);
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
-          SelfManager.self().setVariable("rank", (Prims.div((1 - world.observer.getGlobal("damping-factor")), world.turtleManager.turtlesOfBreed("PAGES").size()) + (world.observer.getGlobal("damping-factor") * SelfManager.self().getVariable("new-rank"))));
+          SelfManager.self().setVariable("rank", (PrimChecks.math.div((1 - world.observer.getGlobal("damping-factor")), world.turtleManager.turtlesOfBreed("PAGES").size()) + (world.observer.getGlobal("damping-factor") * SelfManager.self().getVariable("new-rank"))));
         }, true);
       }
       else {
         if (Prims.lt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal("number-of-surfers"))) {
           world.turtleManager.createTurtles((world.observer.getGlobal("number-of-surfers") - world.turtleManager.turtlesOfBreed("SURFERS").size()), "SURFERS").ask(function() {
-            SelfManager.self().setVariable("current-page", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
+            SelfManager.self().setVariable("current-page", PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
             if (world.observer.getGlobal("watch-surfers?")) {
               procedures["MOVE-SURFER"]();
             }
@@ -270,7 +272,7 @@ var procedures = (function() {
           }, true);
         }
         if (Prims.gt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal("number-of-surfers"))) {
-          Errors.askNobodyCheck(ListPrims.nOf((world.turtleManager.turtlesOfBreed("SURFERS").size() - world.observer.getGlobal("number-of-surfers")), world.turtleManager.turtlesOfBreed("SURFERS"))).ask(function() { SelfManager.self().die(); }, true);
+          Errors.askNobodyCheck(PrimChecks.list.nOf((world.turtleManager.turtlesOfBreed("SURFERS").size() - world.observer.getGlobal("number-of-surfers")), world.turtleManager.turtlesOfBreed("SURFERS"))).ask(function() { SelfManager.self().die(); }, true);
         }
         Errors.askNobodyCheck(world.links()).ask(function() {
           SelfManager.self().setVariable("color", 5);
@@ -279,11 +281,11 @@ var procedures = (function() {
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SURFERS")).ask(function() {
           let oldPage = SelfManager.self().getVariable("current-page"); letVars['oldPage'] = oldPage;
           Errors.askNobodyCheck(SelfManager.self().getVariable("current-page")).ask(function() { SelfManager.self().setVariable("visits", (SelfManager.self().getVariable("visits") + 1)); }, true);
-          if ((Prims.lte(Prims.randomFloat(1), world.observer.getGlobal("damping-factor")) && !SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.myOutLinks("LINKS"); }).isEmpty())) {
-            SelfManager.self().setVariable("current-page", ListPrims.oneOf(SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.outLinkNeighbors("LINKS"); })));
+          if ((Prims.lte(PrimChecks.math.randomFloat(1), world.observer.getGlobal("damping-factor")) && !SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.myOutLinks("LINKS"); }).isEmpty())) {
+            SelfManager.self().setVariable("current-page", PrimChecks.list.oneOf(SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.outLinkNeighbors("LINKS"); })));
           }
           else {
-            SelfManager.self().setVariable("current-page", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
+            SelfManager.self().setVariable("current-page", PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
           }
           if (world.observer.getGlobal("watch-surfers?")) {
             SelfManager.self().hideTurtle(false);;
@@ -303,9 +305,9 @@ var procedures = (function() {
             SelfManager.self().hideTurtle(true);;
           }
         }, true);
-        let totalVisits = ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("visits"); })); letVars['totalVisits'] = totalVisits;
+        let totalVisits = PrimChecks.list.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("visits"); })); letVars['totalVisits'] = totalVisits;
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
-          SelfManager.self().setVariable("rank", Prims.div(SelfManager.self().getVariable("visits"), totalVisits));
+          SelfManager.self().setVariable("rank", PrimChecks.math.div(SelfManager.self().getVariable("visits"), totalVisits));
         }, true);
       }
       procedures["UPDATE-GLOBALS"]();
@@ -333,8 +335,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("total-rank", ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
-      world.observer.setGlobal("max-rank", ListPrims.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
+      world.observer.setGlobal("total-rank", PrimChecks.list.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
+      world.observer.setGlobal("max-rank", PrimChecks.list.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -345,9 +347,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("size", (0.2 + (4 * NLMath.sqrt(Prims.div(SelfManager.self().getVariable("rank"), world.observer.getGlobal("total-rank"))))));
+      SelfManager.self().setVariable("size", (0.2 + (4 * PrimChecks.math.sqrt(PrimChecks.math.div(SelfManager.self().getVariable("rank"), world.observer.getGlobal("total-rank"))))));
       if (world.observer.getGlobal("show-page-ranks?")) {
-        SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(NLMath.precision(SelfManager.self().getVariable("rank"), 3)) + workspace.dump("     ")));
+        SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(PrimChecks.math.precision(SelfManager.self().getVariable("rank"), 3)) + workspace.dump("     ")));
       }
       else {
         SelfManager.self().setVariable("label", "");

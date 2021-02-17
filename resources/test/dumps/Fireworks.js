@@ -38,8 +38,10 @@ var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
 var MousePrims = workspace.mousePrims;
 var OutputPrims = workspace.outputPrims;
+var PrimChecks = workspace.primChecks;
 var Prims = workspace.prims;
 var PrintPrims = workspace.printPrims;
+var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
@@ -88,14 +90,14 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearDrawing();
-      world.turtleManager.createTurtles((Prims.random(world.observer.getGlobal("max-fireworks")) + 1), "ROCKETS").ask(function() {
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), world.topology.minPycor);
-        SelfManager.self().setVariable("x-vel", (Prims.randomFloat((2 * world.observer.getGlobal("initial-x-vel"))) - world.observer.getGlobal("initial-x-vel")));
-        SelfManager.self().setVariable("y-vel", (Prims.randomFloat(world.observer.getGlobal("initial-y-vel")) + (world.observer.getGlobal("initial-y-vel") * 2)));
-        SelfManager.self().setVariable("col", ListPrims.oneOf(ColorModel.BASE_COLORS));
+      world.turtleManager.createTurtles((PrimChecks.math.random(world.observer.getGlobal("max-fireworks")) + 1), "ROCKETS").ask(function() {
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), world.topology.minPycor);
+        SelfManager.self().setVariable("x-vel", (PrimChecks.math.randomFloat((2 * world.observer.getGlobal("initial-x-vel"))) - world.observer.getGlobal("initial-x-vel")));
+        SelfManager.self().setVariable("y-vel", (PrimChecks.math.randomFloat(world.observer.getGlobal("initial-y-vel")) + (world.observer.getGlobal("initial-y-vel") * 2)));
+        SelfManager.self().setVariable("col", PrimChecks.list.oneOf(ColorModel.BASE_COLORS));
         SelfManager.self().setVariable("color", (SelfManager.self().getVariable("col") + 2));
         SelfManager.self().setVariable("size", 2);
-        SelfManager.self().setVariable("terminal-y-vel", Prims.randomFloat(4));
+        SelfManager.self().setVariable("terminal-y-vel", PrimChecks.math.randomFloat(4));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -107,13 +109,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("y-vel", (SelfManager.self().getVariable("y-vel") - Prims.div(world.observer.getGlobal("gravity"), 5)));
-      SelfManager.self().setVariable("heading", NLMath.atan(SelfManager.self().getVariable("x-vel"), SelfManager.self().getVariable("y-vel")));
-      let moveAmount = NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2))); letVars['moveAmount'] = moveAmount;
+      SelfManager.self().setVariable("y-vel", (SelfManager.self().getVariable("y-vel") - PrimChecks.math.div(world.observer.getGlobal("gravity"), 5)));
+      SelfManager.self().setVariable("heading", PrimChecks.math.atan(SelfManager.self().getVariable("x-vel"), SelfManager.self().getVariable("y-vel")));
+      let moveAmount = PrimChecks.math.sqrt((PrimChecks.math.pow(SelfManager.self().getVariable("x-vel"), 2) + PrimChecks.math.pow(SelfManager.self().getVariable("y-vel"), 2))); letVars['moveAmount'] = moveAmount;
       if (!SelfManager.self().canMove(moveAmount)) {
         SelfManager.self().die();
       }
-      SelfManager.self().fd(NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2))));
+      SelfManager.self().fd(PrimChecks.math.sqrt((PrimChecks.math.pow(SelfManager.self().getVariable("x-vel"), 2) + PrimChecks.math.pow(SelfManager.self().getVariable("y-vel"), 2))));
       if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("ROCKETS"))) {
         if (Prims.lt(SelfManager.self().getVariable("y-vel"), SelfManager.self().getVariable("terminal-y-vel"))) {
           procedures["EXPLODE"]();
@@ -135,10 +137,10 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().hatch(world.observer.getGlobal("fragments"), "FRAGS").ask(function() {
         SelfManager.self().setVariable("dim", 0);
-        SelfManager.self().right(Prims.randomLong(360));
+        SelfManager.self().right(RandomPrims.randomLong(360));
         SelfManager.self().setVariable("size", 1);
-        SelfManager.self().setVariable("x-vel", ((((SelfManager.self().getVariable("x-vel") * 0.5) + SelfManager.self().dx()) + Prims.randomFloat(2)) - 1));
-        SelfManager.self().setVariable("y-vel", ((((SelfManager.self().getVariable("y-vel") * 0.3) + SelfManager.self().dy()) + Prims.randomFloat(2)) - 1));
+        SelfManager.self().setVariable("x-vel", ((((SelfManager.self().getVariable("x-vel") * 0.5) + SelfManager.self().dx()) + PrimChecks.math.randomFloat(2)) - 1));
+        SelfManager.self().setVariable("y-vel", ((((SelfManager.self().getVariable("y-vel") * 0.3) + SelfManager.self().dy()) + PrimChecks.math.randomFloat(2)) - 1));
         if (world.observer.getGlobal("trails?")) {
           SelfManager.self().penManager.lowerPen();
         }
@@ -156,7 +158,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("dim", (SelfManager.self().getVariable("dim") - Prims.div(world.observer.getGlobal("fade-amount"), 10)));
+      SelfManager.self().setVariable("dim", (SelfManager.self().getVariable("dim") - PrimChecks.math.div(world.observer.getGlobal("fade-amount"), 10)));
       SelfManager.self().setVariable("color", ColorModel.scaleColor(SelfManager.self().getVariable("col"), SelfManager.self().getVariable("dim"), -5, 0.5));
       if (Prims.lt(SelfManager.self().getVariable("color"), (SelfManager.self().getVariable("col") - 3.5))) {
         SelfManager.self().die();
