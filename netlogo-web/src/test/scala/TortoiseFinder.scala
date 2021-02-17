@@ -100,7 +100,6 @@ private[tortoise] object Freebies {
     "RunResult::RunResult5",
   )
   private val incErrorDetectCommandNames = Seq(
-    "Agentsets::Agentsets3",
     "Ask::AskAllTurtles",
     "Ask::AskAllPatches",
     "Breeds::SetBreedToNonBreed",

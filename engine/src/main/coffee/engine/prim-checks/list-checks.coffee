@@ -154,13 +154,19 @@ class ListChecks
   # (Number, Array[Any] | AbstractAgentSet) => Array[Any] | AbstractAgentSet
   nOf: (count, agentSetOrList) ->
     @validator.commonArgChecks.number_agentSetOrList("N-OF", arguments)
+    if count < 0
+      @validator.error('First input to _ can_t be negative.', "N-OF")
+
     if checks.isList(agentSetOrList)
       if (agentSetOrList.length < count)
         @validator.error('Requested _ random items from a list of length _.', count, agentSetOrList.length)
+
       @listPrims.nOfList(count, agentSetOrList)
+
     else # agentset
       if (agentSetOrList.size() < count)
         @validator.error('Requested _ random agents from a set of only _ agents.', count, agentSetOrList.size())
+
       @listPrims.nOfAgentSet(count, agentSetOrList)
 
   # (AbstractAgentSet | Array[Any]) => Agent | Any
@@ -297,8 +303,12 @@ class ListChecks
   # (Number, Array[Any] | AbstractAgentSet) => Array[Any] | AbstractAgentSet
   upToNOf: (count, agentSetOrList) ->
     @validator.commonArgChecks.number_agentSetOrList("N-OF", arguments)
+    if count < 0
+      @validator.error('First input to _ can_t be negative.', "UP-TO-N-OF")
+
     if checks.isList(agentSetOrList)
       @listPrims.upToNOfList(count, agentSetOrList)
+
     else # agentset
       @listPrims.upToNOfAgentSet(count, agentSetOrList)
 
