@@ -126,7 +126,6 @@ private[tortoise] object Freebies {
     "Sort::SortingTypeErrors",
     "Sort::sort-on-rejects-mixed-types",
     "Turtles::Turtles1a",
-    "TurtlesOn::TurtlesOn1_2D",
     "TypeChecking::AgentClassChecking1",
     "TypeChecking::AgentClassChecking3a",
     "TypeChecking::AgentClassChecking3b"

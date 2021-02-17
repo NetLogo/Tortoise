@@ -83,6 +83,17 @@ class AgentSetChecks
 
     agentset.atPoints(coords)
 
+  breedOn: (breedName, target) ->
+    @validator.commonArgChecks.string_patchOrTurtleOrPatchSetOrTurtleSet("#{breedName}-ON", arguments)
+    if checks.isPatch(target)
+      @prims.breedOnPatch(breedName, target)
+    else if checks.isTurtle(target)
+      @prims.breedOnTurtle(breedName, target)
+    else if checks.isPatchSet(target)
+      @prims.breedOnPatchSet(breedName, target)
+    else if checks.isTurtleSet(target)
+      @prims.breedOnTurtleSet(breedName, target)
+
   # (AgentSet[T]) => Number
   count: (agentset) ->
     @validator.commonArgChecks.agentSet("COUNT", arguments)
@@ -162,6 +173,13 @@ class AgentSetChecks
   sortOn: (agentset, f) ->
     @validator.commonArgChecks.agentSet("SORT-ON", arguments)
     agentset.sortOn(f)
+
+  turtlesOn: (agentOrAgentset) ->
+    @validator.commonArgChecks.agentOrAgentSet("TURTLES-ON", arguments)
+    if checks.isAgentSet(agentOrAgentset)
+      @prims.turtlesOnAgentSet(agentOrAgentset)
+    else
+      @prims.turtlesOnAgent(agentOrAgentset)
 
   # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
   turtleSet: (values...) ->
