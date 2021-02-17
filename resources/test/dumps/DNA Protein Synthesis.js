@@ -179,7 +179,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let dna = Prims.turtleSet(world.turtleManager.turtlesOfBreed("GENES"), world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")); letVars['dna'] = dna;
+      let dna = PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("GENES"), world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")); letVars['dna'] = dna;
       Errors.askNobodyCheck(PrimChecks.agentset.with(dna, function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); })).ask(function() {
         if (Prims.equality(strandType, "original")) {
           SelfManager.self().setVariable("ycor", world.observer.getGlobal("original-dna-ycor"));
@@ -509,7 +509,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(Prims.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"))).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"))).ask(function() {
         Errors.askNobodyCheck(LinkPrims.linkNeighbors("TAGLINES")).ask(function() { SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("show-genes?")); }, true);
         SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("show-genes?"));
       }, true);
@@ -523,7 +523,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.with(Prims.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")), function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")), function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); })).ask(function() {
         Errors.askNobodyCheck(LinkPrims.linkNeighbors("TAGLINES")).ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
         SelfManager.self().setVariable("hidden?", true);
       }, true);
@@ -537,7 +537,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.with(Prims.turtleSet(world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES")), function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES")), function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); })).ask(function() {
         Errors.askNobodyCheck(LinkPrims.linkNeighbors("TAGLINES")).ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
         SelfManager.self().setVariable("hidden?", true);
       }, true);
@@ -551,7 +551,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.with(Prims.turtleSet(world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")), function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")), function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); })).ask(function() {
         Errors.askNobodyCheck(LinkPrims.linkNeighbors("TAGLINES")).ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
         SelfManager.self().setVariable("hidden?", true);
       }, true);
@@ -926,7 +926,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let turtlesToRemove = Prims.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("GENES"), world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES")); letVars['turtlesToRemove'] = turtlesToRemove;
+      let turtlesToRemove = PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("GENES"), world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES")); letVars['turtlesToRemove'] = turtlesToRemove;
       Errors.askNobodyCheck(PrimChecks.agentset.with(turtlesToRemove, function() { return Prims.equality(SelfManager.self().getVariable("strand"), "duplicate"); })).ask(function() {
         Errors.askNobodyCheck(LinkPrims.linkNeighbors("TAGLINES")).ask(function() { SelfManager.self().die(); }, true);
         SelfManager.self().die();

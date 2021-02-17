@@ -599,7 +599,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let allMolecules = Prims.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), world.turtleManager.turtlesOfBreed("PHOSPHATES"), world.turtleManager.turtlesOfBreed("POLYMERASES"), world.turtleManager.turtlesOfBreed("HELICASES"), world.turtleManager.turtlesOfBreed("TOPOISOMERASES")); letVars['allMolecules'] = allMolecules;
+      let allMolecules = PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), world.turtleManager.turtlesOfBreed("PHOSPHATES"), world.turtleManager.turtlesOfBreed("POLYMERASES"), world.turtleManager.turtlesOfBreed("HELICASES"), world.turtleManager.turtlesOfBreed("TOPOISOMERASES")); letVars['allMolecules'] = allMolecules;
       Errors.askNobodyCheck(allMolecules).ask(function() {
         if (!procedures["BEING-DRAGGED-BY-CURSOR?"]()) {
           SelfManager.self().fd(world.observer.getGlobal("molecule-step"));
@@ -828,7 +828,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("MOUSE-CURSORS")).ask(function() {
         SelfManager.self().setXY(pMouseXcor, pMouseYcor);
         SelfManager.self().setVariable("hidden?", true);
-        let allMoveableMolecules = Prims.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), world.turtleManager.turtlesOfBreed("POLYMERASES"), world.turtleManager.turtlesOfBreed("HELICASES"), world.turtleManager.turtlesOfBreed("TOPOISOMERASES")); letVars['allMoveableMolecules'] = allMoveableMolecules;
+        let allMoveableMolecules = PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), world.turtleManager.turtlesOfBreed("POLYMERASES"), world.turtleManager.turtlesOfBreed("HELICASES"), world.turtleManager.turtlesOfBreed("TOPOISOMERASES")); letVars['allMoveableMolecules'] = allMoveableMolecules;
         let draggableMolecules = PrimChecks.agentset.with(allMoveableMolecules, function() {
           return (!procedures["BEING-DRAGGED-BY-CURSOR?"]() && Prims.lte(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("mouse-drag-radius")));
         }); letVars['draggableMolecules'] = draggableMolecules;

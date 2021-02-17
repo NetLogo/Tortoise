@@ -161,10 +161,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().setVariable("similar-nearby", PrimChecks.agentset.countWith(Prims.turtlesOn(SelfManager.self().getNeighbors()), function() {
+        SelfManager.self().setVariable("similar-nearby", PrimChecks.agentset.countWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), function() {
           return Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
         }));
-        SelfManager.self().setVariable("other-nearby", PrimChecks.agentset.countWith(Prims.turtlesOn(SelfManager.self().getNeighbors()), function() {
+        SelfManager.self().setVariable("other-nearby", PrimChecks.agentset.countWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), function() {
           return !Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
         }));
         SelfManager.self().setVariable("total-nearby", (SelfManager.self().getVariable("similar-nearby") + SelfManager.self().getVariable("other-nearby")));

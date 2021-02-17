@@ -134,7 +134,7 @@ var procedures = (function() {
       if (Prims.equality(SelfManager.self().getPatchVariable("brightness"), PrimChecks.agentset.of(p2, function() { return SelfManager.self().getPatchVariable("brightness"); }))) {
         throw new Exception.StopInterrupt;
       }
-      let affectedPatches = Prims.patchSet(SelfManager.self(), p2, SelfManager.self().getNeighbors4(), PrimChecks.agentset.of(p2, function() { return SelfManager.self().getNeighbors4(); })); letVars['affectedPatches'] = affectedPatches;
+      let affectedPatches = PrimChecks.agentset.patchSet(SelfManager.self(), p2, SelfManager.self().getNeighbors4(), PrimChecks.agentset.of(p2, function() { return SelfManager.self().getNeighbors4(); })); letVars['affectedPatches'] = affectedPatches;
       let oldEnergy = PrimChecks.list.sum(PrimChecks.agentset.of(affectedPatches, function() { return procedures["FIND-ENERGY"](); })); letVars['oldEnergy'] = oldEnergy;
       procedures["SWAP-VALUES"](SelfManager.self(),p2);
       let newEnergy = PrimChecks.list.sum(PrimChecks.agentset.of(affectedPatches, function() { return procedures["FIND-ENERGY"](); })); letVars['newEnergy'] = newEnergy;

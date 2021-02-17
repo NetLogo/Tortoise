@@ -86,7 +86,7 @@ var procedures = (function() {
       }, true);
       Errors.askNobodyCheck(world.turtles()).ask(function() {
         SelfManager.self().setVariable("val", 1);
-        let neighborNodes = Prims.turtleSet(PrimChecks.agentset.of(SelfManager.self().getNeighbors4(), function() { return SelfManager.self().turtlesHere(); })); letVars['neighborNodes'] = neighborNodes;
+        let neighborNodes = PrimChecks.agentset.turtleSet(PrimChecks.agentset.of(SelfManager.self().getNeighbors4(), function() { return SelfManager.self().turtlesHere(); })); letVars['neighborNodes'] = neighborNodes;
         LinkPrims.createLinksTo(neighborNodes, "ACTIVE-LINKS").ask(function() {
           SelfManager.self().setVariable("current-flow", 0);
           if (Prims.gt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("link-chance"))) {

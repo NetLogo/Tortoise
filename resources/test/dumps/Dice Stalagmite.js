@@ -138,7 +138,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if ((world.observer.getGlobal("stop-at-top?") && PrimChecks.agentset.any(Prims.turtlesOn(world.observer.getGlobal("top-row"))))) {
+      if ((world.observer.getGlobal("stop-at-top?") && PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(world.observer.getGlobal("top-row"))))) {
         UserDialogPrims.confirm("The top has been reached. Turn STOP-AT-TOP? off to keep going.");
         throw new Exception.StopInterrupt;
       }
@@ -253,7 +253,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       SelfManager.self().setVariable("heading", 180);
-      if ((Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && !PrimChecks.agentset.any(Prims.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1))))) {
+      if ((Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && !PrimChecks.agentset.any(PrimChecks.agentset.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1))))) {
         SelfManager.self()._optimalFdOne();
       }
       else {

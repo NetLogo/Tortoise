@@ -307,8 +307,8 @@ var procedures = (function() {
         if (animate_p) {
           notImplemented('display', undefined)();
         }
-        avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches); letVars['avalanchePatches'] = avalanchePatches;
-        activePatches = Prims.patchSet(PrimChecks.agentset.of(overloadedPatches, function() { return SelfManager.self().getNeighbors4(); })); letVars['activePatches'] = activePatches;
+        avalanchePatches = PrimChecks.agentset.patchSet(avalanchePatches, overloadedPatches); letVars['avalanchePatches'] = avalanchePatches;
+        activePatches = PrimChecks.agentset.patchSet(PrimChecks.agentset.of(overloadedPatches, function() { return SelfManager.self().getNeighbors4(); })); letVars['activePatches'] = activePatches;
       }
       Errors.reportInContextCheck(reporterContext);
       return ListPrims.list(avalanchePatches, iters);

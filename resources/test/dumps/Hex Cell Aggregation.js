@@ -58,7 +58,7 @@ var procedures = (function() {
       world.clearAll();
       procedures["SETUP-GRID"]();
       procedures["READ-SWITCHES"]();
-      Errors.askNobodyCheck(Prims.breedOn("CELLS", world.getPatchAt(0, 0))).ask(function() { procedures["BECOME-ALIVE"](); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.breedOn("CELLS", world.getPatchAt(0, 0))).ask(function() { procedures["BECOME-ALIVE"](); }, true);
       world.ticker.reset();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -173,10 +173,10 @@ var procedures = (function() {
       }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CELLS")).ask(function() {
         if (Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
-          SelfManager.self().setVariable("hex-neighbors", Prims.breedOn("CELLS", PrimChecks.agentset.atPoints(world.patches(), [[0, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]])));
+          SelfManager.self().setVariable("hex-neighbors", PrimChecks.agentset.breedOn("CELLS", PrimChecks.agentset.atPoints(world.patches(), [[0, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]])));
         }
         else {
-          SelfManager.self().setVariable("hex-neighbors", Prims.breedOn("CELLS", PrimChecks.agentset.atPoints(world.patches(), [[0, 1], [1, 1], [1, 0], [0, -1], [-1, 0], [-1, 1]])));
+          SelfManager.self().setVariable("hex-neighbors", PrimChecks.agentset.breedOn("CELLS", PrimChecks.agentset.atPoints(world.patches(), [[0, 1], [1, 1], [1, 0], [0, -1], [-1, 0], [-1, 1]])));
         }
       }, true);
     } catch (e) {

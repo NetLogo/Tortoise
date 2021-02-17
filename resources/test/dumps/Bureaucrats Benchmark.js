@@ -122,7 +122,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let activePatches = Prims.patchSet(PrimChecks.list.oneOf(world.patches())); letVars['activePatches'] = activePatches;
+      let activePatches = PrimChecks.agentset.patchSet(PrimChecks.list.oneOf(world.patches())); letVars['activePatches'] = activePatches;
       Errors.askNobodyCheck(activePatches).ask(function() {
         SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + 1));
         world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
@@ -140,7 +140,7 @@ var procedures = (function() {
             procedures["COLORIZE"]();
           }, true);
         }, true);
-        activePatches = Prims.patchSet(PrimChecks.agentset.of(overloadedPatches, function() { return SelfManager.self().getNeighbors4(); })); letVars['activePatches'] = activePatches;
+        activePatches = PrimChecks.agentset.patchSet(PrimChecks.agentset.of(overloadedPatches, function() { return SelfManager.self().getNeighbors4(); })); letVars['activePatches'] = activePatches;
       }
       world.ticker.tick();
     } catch (e) {

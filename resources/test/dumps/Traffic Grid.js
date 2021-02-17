@@ -260,7 +260,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().moveTo(PrimChecks.agentset.oneOfWith(world.observer.getGlobal("roads"), function() { return !PrimChecks.agentset.any(Prims.turtlesOn(SelfManager.self())); }));
+      SelfManager.self().moveTo(PrimChecks.agentset.oneOfWith(world.observer.getGlobal("roads"), function() { return !PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(SelfManager.self())); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

@@ -169,7 +169,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        let carAhead = PrimChecks.list.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1))); letVars['carAhead'] = carAhead;
+        let carAhead = PrimChecks.list.oneOf(PrimChecks.agentset.turtlesOn(SelfManager.self().patchAhead(1))); letVars['carAhead'] = carAhead;
         if (!Prims.equality(carAhead, Nobody)) {
           procedures["SLOW-DOWN-CAR"](carAhead);
         }

@@ -134,7 +134,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let erasing_p = PrimChecks.agentset.any(Prims.breedOn("CELLS", world.getPatchAt(MousePrims.getX(), MousePrims.getY()))); letVars['erasing_p'] = erasing_p;
+      let erasing_p = PrimChecks.agentset.any(PrimChecks.agentset.breedOn("CELLS", world.getPatchAt(MousePrims.getX(), MousePrims.getY()))); letVars['erasing_p'] = erasing_p;
       while (MousePrims.isDown()) {
         Errors.askNobodyCheck(world.getPatchAt(MousePrims.getX(), MousePrims.getY())).ask(function() {
           if (erasing_p) {
@@ -186,7 +186,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(SelfManager.self().breedHere("BABIES")).ask(function() { SelfManager.self().die(); }, true);
-      let n = PrimChecks.agentset.count(Prims.breedOn("CELLS", SelfManager.self().getNeighbors())); letVars['n'] = n;
+      let n = PrimChecks.agentset.count(PrimChecks.agentset.breedOn("CELLS", SelfManager.self().getNeighbors())); letVars['n'] = n;
       if (PrimChecks.agentset.any(SelfManager.self().breedHere("CELLS"))) {
         if ((Prims.equality(n, 2) || Prims.equality(n, 3))) {
           Errors.askNobodyCheck(SelfManager.self().breedHere("CELLS")).ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);

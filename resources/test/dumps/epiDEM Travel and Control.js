@@ -321,7 +321,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        LinkPrims.createLinksWith(Prims.turtlesOn(SelfManager.self().getNeighbors()), "LINKS").ask(function() {}, false);
+        LinkPrims.createLinksWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), "LINKS").ask(function() {}, false);
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -360,7 +360,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtles()).ask(function() {
         if (SelfManager.self().getVariable("ambulance?")) {
           procedures["MOVE"]();
-          Errors.askNobodyCheck(Prims.turtlesOn(SelfManager.self().getNeighbors())).ask(function() {
+          Errors.askNobodyCheck(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors())).ask(function() {
             if ((Prims.equality(SelfManager.self().getVariable("ambulance?"), false) && Prims.equality(SelfManager.self().getVariable("infected?"), true))) {
               procedures["HOSPITALIZE"]();
             }
@@ -543,7 +543,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let caller = SelfManager.self(); letVars['caller'] = caller;
-      let nearbyUninfected = PrimChecks.agentset.with(Prims.turtlesOn(SelfManager.self().getNeighbors()), function() {
+      let nearbyUninfected = PrimChecks.agentset.with(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), function() {
         return ((!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("cured?")) && !SelfManager.self().getVariable("inoculated?"));
       }); letVars['nearbyUninfected'] = nearbyUninfected;
       if (!Prims.equality(nearbyUninfected, Nobody)) {

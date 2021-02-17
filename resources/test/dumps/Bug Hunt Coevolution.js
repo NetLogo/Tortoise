@@ -245,7 +245,7 @@ var procedures = (function() {
       let targetHeading = 0; letVars['targetHeading'] = targetHeading;
       let candidatePredators = Nobody; letVars['candidatePredators'] = candidatePredators;
       let predator = Nobody; letVars['predator'] = predator;
-      let allPredators = Prims.turtleSet(world.turtleManager.turtlesOfBreed("BIRDS"), world.turtleManager.turtlesOfBreed("PLAYERS")); letVars['allPredators'] = allPredators;
+      let allPredators = PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("BIRDS"), world.turtleManager.turtlesOfBreed("PLAYERS")); letVars['allPredators'] = allPredators;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BUGS")).ask(function() {
         SelfManager.self().fd((SelfManager.self().getVariable("speed") * world.observer.getGlobal("speed-factor")));
         if (PrimChecks.agentset.any(SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120))) {
@@ -361,7 +361,7 @@ var procedures = (function() {
       let snapMouseXcor = MousePrims.getX(); letVars['snapMouseXcor'] = snapMouseXcor;
       let snapMouseYcor = MousePrims.getY(); letVars['snapMouseYcor'] = snapMouseYcor;
       if ((MousePrims.isDown() && MousePrims.isInside())) {
-        localBugs = Prims.breedOn("BUGS", world.getPatchAt(snapMouseXcor, snapMouseYcor)); letVars['localBugs'] = localBugs;
+        localBugs = PrimChecks.agentset.breedOn("BUGS", world.getPatchAt(snapMouseXcor, snapMouseYcor)); letVars['localBugs'] = localBugs;
         if (PrimChecks.agentset.any(localBugs)) {
           world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
           Errors.askNobodyCheck(PrimChecks.list.oneOf(localBugs)).ask(function() {

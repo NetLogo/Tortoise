@@ -249,7 +249,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(Prims.turtlesOn(SelfManager.self().getNeighbors4())).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors4())).ask(function() {
         world.observer.setGlobal("meet", (world.observer.getGlobal("meet") + 1));
         world.observer.setGlobal("meet-agg", (world.observer.getGlobal("meet-agg") + 1));
         if (Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }))) {
