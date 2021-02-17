@@ -123,7 +123,6 @@ private[tortoise] object Freebies {
     "Random::RandomNOfWithLists",
     "Random::OneOfWithAgentSets",
     "Sort::SortByBadReporter",
-    "Sort::sort-on-rejects-mixed-types",
     "Turtles::Turtles1a",
     "TypeChecking::AgentClassChecking1",
     "TypeChecking::AgentClassChecking3a",

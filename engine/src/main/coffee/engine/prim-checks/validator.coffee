@@ -72,14 +72,17 @@ class Validator
 
     result
 
+  addIndefiniteArticle: (text) ->
+    if ['A', 'E', 'I', 'O', 'U'].includes(text.charAt(0).toUpperCase())
+      "an #{text}"
+    else
+      "a #{text}"
+
   # (Array[NLType]) => String
   listTypeNames: (types) ->
     names    = types.map( (type) -> type.niceName() )
     nameList = names.join(" or ")
-    if ['A', 'E', 'I', 'O', 'U'].includes(nameList.charAt(0).toUpperCase())
-      "an #{nameList}"
-    else
-      "a #{nameList}"
+    @addIndefiniteArticle(nameList)
 
   # (Any) => String
   valueToString: (value) ->

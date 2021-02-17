@@ -96,6 +96,9 @@ bundle = {
 
   , 'List inputs to _-SET must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.': (prim, agentType, list, value) ->
     "List inputs to #{prim}-SET must only contain #{agentType}, #{agentType} agentset, or list elements.  The list #{list} contained a different type agentset: #{value}."
+
+  , 'SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _': (type1, type2) ->
+    "SORT-ON works on numbers, strings, or agents of the same type, but not on #{type1} and #{type2}"
 }
 
 module.exports = bundle

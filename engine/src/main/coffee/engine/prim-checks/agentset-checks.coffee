@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ checks, types } = require('engine/core/typechecker')
+{ checks, getTypeOf, types } = require('engine/core/typechecker')
 
 class AgentSetChecks
 
@@ -169,10 +169,31 @@ class AgentSetChecks
     @setCreationArgsCheck(types.Patch, types.PatchSet, values)
     @prims.patchSet(values)
 
-  # (AgentSet[T], () => Number) => AgentSet[T]
+  sortOnTypes: [types.Number, types.String, types.Turtle, types.Patch, types.Link]
+
+  # (AgentSet[T], () => Number | String | Agent) => AgentSet[T]
   sortOn: (agentset, f) ->
     @validator.commonArgChecks.agentSet("SORT-ON", arguments)
-    agentset.sortOn(f)
+
+    firstType    = null
+    badFirstType = false
+    checkedF = () =>
+      result = f()
+      if firstType is null
+        firstType = getTypeOf(result)
+        # Desktp doesn't immediately fail when a bad type is seen, it waits for the second value. -Jeremy B February 2021
+        if not @sortOnTypes.includes(firstType)
+          badFirstType = true
+      else
+        otherType = getTypeOf(result)
+        if firstType isnt otherType or badFirstType
+          type1 = @validator.addIndefiniteArticle(otherType.niceName())
+          type2 = @validator.addIndefiniteArticle(firstType.niceName())
+          @validator.error('SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _', type1, type2)
+
+      result
+
+    agentset.sortOn(checkedF)
 
   turtlesOn: (agentOrAgentset) ->
     @validator.commonArgChecks.agentOrAgentSet("TURTLES-ON", arguments)

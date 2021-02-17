@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-projectionSort = require('./projectionsort')
 { checks }     = require('./typechecker')
+Comparator     = require('util/comparator')
 Iterator       = require('util/iterator')
 Shufflerator   = require('util/shufflerator')
 stableSort     = require('util/stablesort')
@@ -149,7 +149,19 @@ module.exports =
 
     # [U] @ ((T) => U) => Array[T]
     sortOn: (f) ->
-      projectionSort(@shufflerator().toArray())(f)
+      if @isEmpty()
+        []
+      else
+        agentValuePairs = @shufflerator().toArray().map( (agent) -> [agent, agent.projectionBy(f)] )
+        # There will be at least one value, as we checked `isEmpty()` above - Jeremy B February 2021
+        sampleValue = agentValuePairs[0][1]
+        sortingFunc = if checks.isNumber(sampleValue)
+          ([[], n1], [[], n2]) -> Comparator.numericCompare(n1, n2).toInt
+        else if checks.isString(sampleValue)
+          ([[], s1], [[], s2]) -> Comparator.stringCompare(s1, s2).toInt
+        else if checks.isAgent(sampleValue)
+          ([[], a1], [[], a2]) -> a1.compare(a2).toInt
+        stableSort(agentValuePairs)(sortingFunc).map( ([a, _]) -> a )
 
     # () => Array[T]
     toArray: ->
