@@ -298,7 +298,7 @@ class ListChecks
   sum: (values) ->
     @validator.commonArgChecks.list("SUM", arguments)
     nums = values.filter(checks.isNumber)
-    @listPrims.sum(nums)
+    @validator.checkNumber(@listPrims.sum(nums))
 
   # (Number, Array[Any] | AbstractAgentSet) => Array[Any] | AbstractAgentSet
   upToNOf: (count, agentSetOrList) ->
