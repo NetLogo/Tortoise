@@ -139,7 +139,10 @@ module.exports =
 
     # (Number, Array[Any]) => Array[Any]
     nOfList: (n, list) ->
-      @_nOfArray(n, list)
+      if n is list.length
+        list
+      else
+        @_nOfArray(n, list)
 
     # (Number, AbstractAgentSet) => AbstractAgentSet
     upToNOfAgentSet: (n, agentSet) ->

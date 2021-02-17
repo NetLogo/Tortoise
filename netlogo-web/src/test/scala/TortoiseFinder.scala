@@ -120,7 +120,6 @@ private[tortoise] object Freebies {
     "RGB::PatchesRGBColor_2D",
     "RGB::TurtlesRGBColor",
     "RGB::LinksRGBColor",
-    "Random::RandomNOfWithLists",
     "Random::OneOfWithAgentSets",
     "Sort::SortByBadReporter",
     "Turtles::Turtles1a",
