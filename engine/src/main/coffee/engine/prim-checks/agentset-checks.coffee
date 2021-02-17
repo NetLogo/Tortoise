@@ -21,11 +21,11 @@ class AgentSetChecks
     points.every( (point) -> checks.isList(point) and AgentSetChecks.isPoint(point) )
 
   # (() => Boolean) => (T) => Boolean
-  makeCheckedFForWith: (f) ->
+  makeCheckedF: (prim, f) ->
     () =>
       result = f()
       if not checks.isBoolean(result)
-        @validator.error('_ expected a true/false value from _, but got _ instead.', "WITH", @getSelf(), @dumper(result))
+        @validator.error('_ expected a true/false value from _, but got _ instead.', prim, @getSelf(), @dumper(result))
       result
 
   # I think it's a little strange that there are three different error messages for the `*-set` agentset creation prims having bad arguments,
@@ -57,23 +57,23 @@ class AgentSetChecks
 
   # (AgentSet[T]) => Boolean
   any: (agentset) ->
-    @validator.commonArgChecks.agentSet("ANY", arguments)
+    @validator.commonArgChecks.agentSet("ANY?", arguments)
     not agentset.isEmpty()
 
   # (AgentSet[T], () => Boolean) => Boolean
   anyOtherWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalAnyOtherWith(@makeCheckedFForWith(f))
+    agentset._optimalAnyOtherWith(@makeCheckedF("WITH", f))
 
   # (AgentSet[T], () => Boolean) => Boolean
   anyWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalAnyWith(@makeCheckedFForWith(f))
+    agentset._optimalAnyWith(@makeCheckedF("WITH", f))
 
   # (AgentSet[T], (T) => Boolean) => Boolean
   all: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("ALL", arguments)
-    agentset.agentAll(f)
+    @validator.commonArgChecks.agentSet("ALL?", arguments)
+    agentset.agentAll(@makeCheckedF("ALL?", f))
 
   # (AgentSet[T], Array[Array[Number]]) => AgentSet
   atPoints: (agentset, coords) ->
@@ -91,12 +91,12 @@ class AgentSetChecks
   # (AgentSet[T], () => Boolean) => Number
   countOtherWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalCountOtherWith(@makeCheckedFForWith(f))
+    agentset._optimalCountOtherWith(@makeCheckedF("WITH", f))
 
   # (AgentSet[T], () => Boolean) => Number
   countWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalCountWith(@makeCheckedFForWith(f))
+    agentset._optimalCountWith(@makeCheckedF("WITH", f))
 
   # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
   linkSet: (values...) ->
@@ -141,7 +141,7 @@ class AgentSetChecks
   # (AgentSet[T], () => Boolean) => T
   oneOfWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalOneOfWith(@makeCheckedFForWith(f))
+    agentset._optimalOneOfWith(@makeCheckedF("WITH", f))
 
   # (AgentSet[T], Number, (Number, Number) => Boolean) => Boolean
   optimizeCount: (agentset, n, operator) ->
@@ -151,7 +151,7 @@ class AgentSetChecks
   # (AgentSet[T], () => Boolean) => AgentSet[T]
   otherWith: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalOtherWith(@makeCheckedFForWith(f))
+    agentset._optimalOtherWith(@makeCheckedF("WITH", f))
 
   # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
   patchSet: (values...) ->
@@ -171,7 +171,7 @@ class AgentSetChecks
   # (AgentSet[T], () => Boolean) => AgentSet[T]
   with: (agentset, f) ->
     @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset.agentFilter(@makeCheckedFForWith(f))
+    agentset.agentFilter(@makeCheckedF("WITH", f))
 
   # (AgentSet[T], () => Number) => AgentSet[T]
   withMax: (agentset, f) ->
