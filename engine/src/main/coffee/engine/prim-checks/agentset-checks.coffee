@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 { checks, getTypeOf, types } = require('engine/core/typechecker')
+Comparator                   = require('util/comparator')
 
 class AgentSetChecks
 
@@ -169,31 +170,38 @@ class AgentSetChecks
     @setCreationArgsCheck(types.Patch, types.PatchSet, values)
     @prims.patchSet(values)
 
-  sortOnTypes: [types.Number, types.String, types.Turtle, types.Patch, types.Link]
-
   # (AgentSet[T], () => Number | String | Agent) => AgentSet[T]
   sortOn: (agentset, f) ->
     @validator.commonArgChecks.agentSet("SORT-ON", arguments)
 
-    firstType    = null
+    compare      = null
     badFirstType = false
-    checkedF = () =>
-      result = f()
-      if firstType is null
-        firstType = getTypeOf(result)
-        # Desktp doesn't immediately fail when a bad type is seen, it waits for the second value. -Jeremy B February 2021
-        if not @sortOnTypes.includes(firstType)
+    sortingFunc = ([[], o1], [[], o2]) =>
+      # Picking out the compare functions is a little more logic than I'd like in this error checking layer.
+      # But it does move some type checks here, which is good, and it's the easiest way to get the error
+      # checks to match up with desktop/headless.  -Jeremy B Fabruary 2021
+      if compare is null
+        compare = if checks.isNumber(o1)
+          (n1, n2) -> Comparator.numericCompare(n1, n2).toInt
+        else if checks.isString(o1)
+          (s1, s2) -> Comparator.stringCompare(s1, s2).toInt
+        else if checks.isAgent(o1)
+          (a1, a2) -> a1.compare(a2).toInt
+        else
           badFirstType = true
-      else
-        otherType = getTypeOf(result)
-        if firstType isnt otherType or badFirstType
-          type1 = @validator.addIndefiniteArticle(otherType.niceName())
-          type2 = @validator.addIndefiniteArticle(firstType.niceName())
-          @validator.error('SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _', type1, type2)
+          null
 
-      result
+      type1 = getTypeOf(o1)
+      type2 = getTypeOf(o2)
+      if type1 isnt type2 or badFirstType
+        name1 = @validator.addIndefiniteArticle(type1.niceName())
+        name2 = @validator.addIndefiniteArticle(type2.niceName())
+        # The order swap of `name1` and `name2` is intentional to get identical errors to desktop. -Jeremy B February 2021
+        @validator.error('SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _', name2, name1)
 
-    agentset.sortOn(checkedF)
+      compare(o1, o2)
+
+    agentset.sortOn(f, sortingFunc)
 
   turtlesOn: (agentOrAgentset) ->
     @validator.commonArgChecks.agentOrAgentSet("TURTLES-ON", arguments)

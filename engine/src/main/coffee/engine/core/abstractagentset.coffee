@@ -1,10 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ checks }     = require('./typechecker')
-Comparator     = require('util/comparator')
-Iterator       = require('util/iterator')
-Shufflerator   = require('util/shufflerator')
-stableSort     = require('util/stablesort')
+{ checks }   = require('./typechecker')
+Iterator     = require('util/iterator')
+Shufflerator = require('util/shufflerator')
+stableSort   = require('util/stablesort')
 
 { foldl, map } = require('brazierjs/array')
 { pipeline   } = require('brazierjs/function')
@@ -147,20 +146,12 @@ module.exports =
       else
         stableSort(@_unsafeIterator().toArray())((x, y) -> x.compare(y).toInt)
 
-    # [U] @ ((T) => U) => Array[T]
-    sortOn: (f) ->
+    # [U] @ ((T) => U, (U, U) => Int) => Array[T]
+    sortOn: (f, sortingFunc) ->
       if @isEmpty()
         []
       else
         agentValuePairs = @shufflerator().toArray().map( (agent) -> [agent, agent.projectionBy(f)] )
-        # There will be at least one value, as we checked `isEmpty()` above - Jeremy B February 2021
-        sampleValue = agentValuePairs[0][1]
-        sortingFunc = if checks.isNumber(sampleValue)
-          ([[], n1], [[], n2]) -> Comparator.numericCompare(n1, n2).toInt
-        else if checks.isString(sampleValue)
-          ([[], s1], [[], s2]) -> Comparator.stringCompare(s1, s2).toInt
-        else if checks.isAgent(sampleValue)
-          ([[], a1], [[], a2]) -> a1.compare(a2).toInt
         stableSort(agentValuePairs)(sortingFunc).map( ([a, _]) -> a )
 
     # () => Array[T]
