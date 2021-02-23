@@ -137,7 +137,6 @@ object SimplePrims {
         case _: prim.etc._linkset           => "PrimChecks.agentset.linkSet"
         case _: prim.etc._patchset          => "PrimChecks.agentset.patchSet"
         case _: prim.etc._turtleset         => "PrimChecks.agentset.turtleSet"
-        case _: prim.etc._turtleson         => "PrimChecks.agentset.turtlesOn"
 
         // Plotting
         case _: prim.etc._autoplot      => "plotManager.isAutoplotting"

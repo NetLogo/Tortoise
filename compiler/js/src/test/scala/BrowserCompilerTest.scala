@@ -205,10 +205,19 @@ object BrowserCompilerTest extends TestSuite {
         "oranges"            -> """world.observer.getGlobal(\"oranges\")""",
         "3 + apples"         -> """(3 + world.observer.getGlobal(\"apples\"))""",
         "3 + (bananas 8 10)" -> """(3 + procedures[\"BANANAS\"](8,10))""",
+
         "(3 / apples + (bananas 9001 3) > 0) or oranges" ->
           """(Prims.gt((PrimChecks.math.div(3, world.observer.getGlobal(\"apples\")) + procedures[\"BANANAS\"](9001,3)), 0) || world.observer.getGlobal(\"oranges\"))""",
+
         "sum [xcor] of turtles" ->
-          """PrimChecks.list.sum(PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable(\"xcor\"); }))"""
+          """PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtles(), function() { return SelfManager.self().getVariable(\"xcor\"); }))""",
+
+        "any? turtles" -> "PrimChecks.agentset.any_unchecked(world.turtles())",
+        "any? apples"  -> "PrimChecks.agentset.any(world.observer.getGlobal(\\\"apples\\\"))",
+        "[color] of turtles" ->
+          "PrimChecks.agentset.of_unchecked(world.turtles(), function() { return SelfManager.self().getVariable(\\\"color\\\"); })",
+        "[color] of apples"  ->
+          "PrimChecks.agentset.of(world.observer.getGlobal(\\\"apples\\\"), function() { return SelfManager.self().getVariable(\\\"color\\\"); })"
       )
       compiler.fromModel(compReq)
 
