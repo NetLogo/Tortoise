@@ -100,7 +100,7 @@ var procedures = (function() {
         }
         procedures["RECOLOR"]();
       }, true);
-      world.observer.setGlobal("sum-of-spins", PrimChecks.list.sum(PrimChecks.agentset.of(world.patches(), function() { return SelfManager.self().getPatchVariable("spin"); })));
+      world.observer.setGlobal("sum-of-spins", PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.patches(), function() { return SelfManager.self().getPatchVariable("spin"); })));
       world.ticker.reset();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -160,7 +160,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("sum-of-spins"), PrimChecks.agentset.count(world.patches()));
+      return PrimChecks.math.div(world.observer.getGlobal("sum-of-spins"), PrimChecks.agentset.count_unchecked(world.patches()));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

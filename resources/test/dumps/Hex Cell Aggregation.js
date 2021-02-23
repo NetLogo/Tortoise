@@ -149,7 +149,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CELLS")).ask(function() {
         SelfManager.self().setVariable("eligible?", (SelfManager.self().getVariable("hidden?") && PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))));
       }, true);
-      world.observer.setGlobal("eligibles", PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("CELLS"), function() { return SelfManager.self().getVariable("eligible?"); }), function() { return SelfManager.self(); }));
+      world.observer.setGlobal("eligibles", PrimChecks.agentset.of_unchecked(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("CELLS"), function() { return SelfManager.self().getVariable("eligible?"); }), function() { return SelfManager.self(); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -173,10 +173,10 @@ var procedures = (function() {
       }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CELLS")).ask(function() {
         if (Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
-          SelfManager.self().setVariable("hex-neighbors", PrimChecks.agentset.breedOn("CELLS", PrimChecks.agentset.atPoints(world.patches(), [[0, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]])));
+          SelfManager.self().setVariable("hex-neighbors", PrimChecks.agentset.breedOn("CELLS", PrimChecks.agentset.atPoints_unchecked(world.patches(), [[0, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]])));
         }
         else {
-          SelfManager.self().setVariable("hex-neighbors", PrimChecks.agentset.breedOn("CELLS", PrimChecks.agentset.atPoints(world.patches(), [[0, 1], [1, 1], [1, 0], [0, -1], [-1, 0], [-1, 1]])));
+          SelfManager.self().setVariable("hex-neighbors", PrimChecks.agentset.breedOn("CELLS", PrimChecks.agentset.atPoints_unchecked(world.patches(), [[0, 1], [1, 1], [1, 0], [0, -1], [-1, 0], [-1, 1]])));
         }
       }, true);
     } catch (e) {

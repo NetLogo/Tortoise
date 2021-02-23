@@ -79,7 +79,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); })).ask(function() {
         if (Prims.gt(world.ticker.tickCount(), 100)) {
           SelfManager.self().setVariable("ypos", (world.observer.getGlobal("amplitude") * PrimChecks.math.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
         }
@@ -94,11 +94,11 @@ var procedures = (function() {
           SelfManager.self().hideTurtle(true);;
         }
       }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); })).ask(function() {
         SelfManager.self().setVariable("yvel", (SelfManager.self().getVariable("yvel") + ((PrimChecks.agentset.of(world.turtleManager.getTurtle((SelfManager.self().getVariable("who") - 1)), function() { return SelfManager.self().getVariable("ypos"); }) - SelfManager.self().getVariable("ypos")) + (PrimChecks.agentset.of(world.turtleManager.getTurtle((SelfManager.self().getVariable("who") + 1)), function() { return SelfManager.self().getVariable("ypos"); }) - SelfManager.self().getVariable("ypos")))));
         SelfManager.self().setVariable("yvel", (PrimChecks.math.div((1000 - world.observer.getGlobal("friction")), 1000) * SelfManager.self().getVariable("yvel")));
       }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); })).ask(function() {
         SelfManager.self().setVariable("ypos", (SelfManager.self().getVariable("ypos") + SelfManager.self().getVariable("yvel")));
         if (!Prims.equality(SelfManager.self().patchAt(0, (SelfManager.self().getVariable("ypos") - SelfManager.self().getVariable("ycor"))), Nobody)) {
           SelfManager.self().setVariable("ycor", SelfManager.self().getVariable("ypos"));

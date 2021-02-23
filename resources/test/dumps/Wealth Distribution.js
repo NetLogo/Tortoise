@@ -231,7 +231,7 @@ var procedures = (function() {
         }
       }, true);
       for (let _index_1278_1284 = 0, _repeatcount_1278_1284 = StrictMath.floor(5); _index_1278_1284 < _repeatcount_1278_1284; _index_1278_1284++){
-        Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return !Prims.equality(SelfManager.self().getPatchVariable("max-grain-here"), 0); })).ask(function() {
+        Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return !Prims.equality(SelfManager.self().getPatchVariable("max-grain-here"), 0); })).ask(function() {
           SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
         }, true);
         world.topology.diffuse("grain-here", 0.25, false)
@@ -298,7 +298,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let maxWealth = PrimChecks.list.max(PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable("wealth"); })); letVars['maxWealth'] = maxWealth;
+      let maxWealth = PrimChecks.list.max(PrimChecks.agentset.of_unchecked(world.turtles(), function() { return SelfManager.self().getVariable("wealth"); })); letVars['maxWealth'] = maxWealth;
       Errors.askNobodyCheck(world.turtles()).ask(function() {
         if (Prims.lte(SelfManager.self().getVariable("wealth"), PrimChecks.math.div(maxWealth, 3))) {
           SelfManager.self().setVariable("color", 15);
@@ -373,7 +373,7 @@ var procedures = (function() {
       let total = 0; letVars['total'] = total;
       let howFar = 1; letVars['howFar'] = howFar;
       for (let _index_3989_3995 = 0, _repeatcount_3989_3995 = StrictMath.floor(SelfManager.self().getVariable("vision")); _index_3989_3995 < _repeatcount_3989_3995; _index_3989_3995++){
-        total = (total + PrimChecks.agentset.of(SelfManager.self().patchAhead(howFar), function() { return SelfManager.self().getPatchVariable("grain-here"); })); letVars['total'] = total;
+        total = (total + PrimChecks.agentset.of_unchecked(SelfManager.self().patchAhead(howFar), function() { return SelfManager.self().getPatchVariable("grain-here"); })); letVars['total'] = total;
         howFar = (howFar + 1); letVars['howFar'] = howFar;
       }
       Errors.reportInContextCheck(reporterContext);
@@ -407,7 +407,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().setVariable("wealth", PrimChecks.math.floor((SelfManager.self().getVariable("wealth") + PrimChecks.math.div(SelfManager.self().getPatchVariable("grain-here"), PrimChecks.agentset.count(SelfManager.self().turtlesHere())))));
+        SelfManager.self().setVariable("wealth", PrimChecks.math.floor((SelfManager.self().getVariable("wealth") + PrimChecks.math.div(SelfManager.self().getPatchVariable("grain-here"), PrimChecks.agentset.count_unchecked(SelfManager.self().turtlesHere())))));
       }, true);
       Errors.askNobodyCheck(world.turtles()).ask(function() {
         SelfManager.self().setPatchVariable("grain-here", 0);
@@ -439,7 +439,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let sortedWealths = PrimChecks.list.sort(PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable("wealth"); })); letVars['sortedWealths'] = sortedWealths;
+      let sortedWealths = PrimChecks.list.sort(PrimChecks.agentset.of_unchecked(world.turtles(), function() { return SelfManager.self().getVariable("wealth"); })); letVars['sortedWealths'] = sortedWealths;
       let totalWealth = PrimChecks.list.sum(sortedWealths); letVars['totalWealth'] = totalWealth;
       let wealthSumSoFar = 0; letVars['wealthSumSoFar'] = wealthSumSoFar;
       let index = 0; letVars['index'] = index;

@@ -168,7 +168,7 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.getPatchAt(PrimChecks.math.div( -(world.topology.maxPxcor), 2), 0)).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       Errors.askNobodyCheck(world.getPatchAt(PrimChecks.math.div(world.topology.maxPxcor, 2), 0)).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-      world.observer.setGlobal("border", PrimChecks.agentset.with(world.patches(), function() {
+      world.observer.setGlobal("border", PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), 0));
       }));
       Errors.askNobodyCheck(world.observer.getGlobal("border")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
@@ -321,7 +321,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        LinkPrims.createLinksWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), "LINKS").ask(function() {}, false);
+        LinkPrims.createLinksWith(PrimChecks.agentset.turtlesOn_unchecked(SelfManager.self().getNeighbors()), "LINKS").ask(function() {}, false);
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -333,7 +333,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (PrimChecks.agentset.all(world.turtles(), function() { return !SelfManager.self().getVariable("infected?"); })) {
+      if (PrimChecks.agentset.all_unchecked(world.turtles(), function() { return !SelfManager.self().getVariable("infected?"); })) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["CLEAR-COUNT"](); }, true);
@@ -360,7 +360,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtles()).ask(function() {
         if (SelfManager.self().getVariable("ambulance?")) {
           procedures["MOVE"]();
-          Errors.askNobodyCheck(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors())).ask(function() {
+          Errors.askNobodyCheck(PrimChecks.agentset.turtlesOn_unchecked(SelfManager.self().getNeighbors())).ask(function() {
             if ((Prims.equality(SelfManager.self().getVariable("ambulance?"), false) && Prims.equality(SelfManager.self().getVariable("infected?"), true))) {
               procedures["HOSPITALIZE"]();
             }
@@ -543,7 +543,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let caller = SelfManager.self(); letVars['caller'] = caller;
-      let nearbyUninfected = PrimChecks.agentset.with(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), function() {
+      let nearbyUninfected = PrimChecks.agentset.with_unchecked(PrimChecks.agentset.turtlesOn_unchecked(SelfManager.self().getNeighbors()), function() {
         return ((!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("cured?")) && !SelfManager.self().getVariable("inoculated?"));
       }); letVars['nearbyUninfected'] = nearbyUninfected;
       if (!Prims.equality(nearbyUninfected, Nobody)) {
@@ -572,8 +572,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let newInfected = PrimChecks.list.sum(PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable("nb-infected"); })); letVars['newInfected'] = newInfected;
-      let newRecovered = PrimChecks.list.sum(PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable("nb-recovered"); })); letVars['newRecovered'] = newRecovered;
+      let newInfected = PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtles(), function() { return SelfManager.self().getVariable("nb-infected"); })); letVars['newInfected'] = newInfected;
+      let newRecovered = PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtles(), function() { return SelfManager.self().getVariable("nb-recovered"); })); letVars['newRecovered'] = newRecovered;
       world.observer.setGlobal("nb-infected-previous", ((PrimChecks.agentset.countWith(world.turtles(), function() { return SelfManager.self().getVariable("infected?"); }) + newRecovered) - newInfected));
       let susceptibleT = ((world.observer.getGlobal("initial-people") - PrimChecks.agentset.countWith(world.turtles(), function() { return SelfManager.self().getVariable("infected?"); })) - PrimChecks.agentset.countWith(world.turtles(), function() { return SelfManager.self().getVariable("cured?"); })); letVars['susceptibleT'] = susceptibleT;
       let s0 = PrimChecks.agentset.countWith(world.turtles(), function() { return SelfManager.self().getVariable("susceptible?"); }); letVars['s0'] = s0;

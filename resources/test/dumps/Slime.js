@@ -97,9 +97,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let ahead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("chemical"); }); letVars['ahead'] = ahead;
-      let myright = PrimChecks.agentset.of(SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return SelfManager.self().getPatchVariable("chemical"); }); letVars['myright'] = myright;
-      let myleft = PrimChecks.agentset.of(SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return SelfManager.self().getPatchVariable("chemical"); }); letVars['myleft'] = myleft;
+      let ahead = PrimChecks.agentset.of_unchecked(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("chemical"); }); letVars['ahead'] = ahead;
+      let myright = PrimChecks.agentset.of_unchecked(SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return SelfManager.self().getPatchVariable("chemical"); }); letVars['myright'] = myright;
+      let myleft = PrimChecks.agentset.of_unchecked(SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return SelfManager.self().getPatchVariable("chemical"); }); letVars['myleft'] = myleft;
       if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
         SelfManager.self().right(world.observer.getGlobal("sniff-angle"));
       }

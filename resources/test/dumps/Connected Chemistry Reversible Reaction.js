@@ -290,10 +290,10 @@ var procedures = (function() {
         procedures["CHECK-FOR-COLLISION"]();
       }, true);
       if (world.observer.getGlobal("forward-react?")) {
-        Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nitrogen"); })).ask(function() { procedures["CHECK-FOR-FORWARD-REACTION"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nitrogen"); })).ask(function() { procedures["CHECK-FOR-FORWARD-REACTION"](); }, true);
       }
       if (world.observer.getGlobal("reverse-react?")) {
-        Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nh3"); })).ask(function() { procedures["CHECK-FOR-REVERSE-REACTION"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nh3"); })).ask(function() { procedures["CHECK-FOR-REVERSE-REACTION"](); }, true);
       }
       procedures["CALCULATE-PRESSURE-AND-TEMPERATURE"]();
       procedures["CALCULATE-TICK-ADVANCE-AMOUNT"]();
@@ -312,7 +312,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {
-        world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
+        world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
       }
       else {
         world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
@@ -347,8 +347,8 @@ var procedures = (function() {
       else {
         world.observer.setGlobal("wall-color", ColorModel.scaleColor(15, world.observer.getGlobal("outside-energy"), -60, (world.observer.getGlobal("max-outside-energy") + 100)));
       }
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return !SelfManager.self().getPatchVariable("insulated?"); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("FLASHES"), function() { return Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4); })).ask(function() { SelfManager.self().die(); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return !SelfManager.self().getPatchVariable("insulated?"); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("FLASHES"), function() { return Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4); })).ask(function() { SelfManager.self().die(); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -359,7 +359,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let hitHydrogen = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
+      let hitHydrogen = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
         return (Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"));
       }); letVars['hitHydrogen'] = hitHydrogen;
       if ((Prims.gte(PrimChecks.agentset.count(hitHydrogen), 3) && Prims.equality(RandomPrims.randomLong(2), 0))) {
@@ -390,7 +390,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let hitNh3 = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
+      let hitNh3 = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
         return ((Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(SelfManager.self().getVariable("molecule-type"), "nh3")) && !Prims.equality(SelfManager.self(), SelfManager.myself()));
       }); letVars['hitNh3'] = hitNh3;
       if ((Prims.gte(PrimChecks.agentset.count(hitNh3), 1) && Prims.equality(RandomPrims.randomLong(2), 0))) {
@@ -464,7 +464,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("pressure", (15 * PrimChecks.list.sum(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("momentum-difference"); }))));
+      world.observer.setGlobal("pressure", (15 * PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("momentum-difference"); }))));
       if (Prims.gt(PrimChecks.list.length(world.observer.getGlobal("pressure-history")), 10)) {
         world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.list.butFirst('but-first')(world.observer.getGlobal("pressure-history"))));
       }
@@ -472,8 +472,8 @@ var procedures = (function() {
         world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-history")));
       }
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
-      if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("PARTICLES"))) {
-        world.observer.setGlobal("temperature", (PrimChecks.list.mean(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("energy"); })) * world.observer.getGlobal("scale-factor-energy-to-temp")));
+      if (PrimChecks.agentset.any_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"))) {
+        world.observer.setGlobal("temperature", (PrimChecks.list.mean(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("energy"); })) * world.observer.getGlobal("scale-factor-energy-to-temp")));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -664,7 +664,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("insulated?", true);
         SelfManager.self().setPatchVariable("wall?", false);
       }, true);
-      world.observer.setGlobal("heatable-walls", PrimChecks.agentset.with(world.patches(), function() {
+      world.observer.setGlobal("heatable-walls", PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return ((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (-1 * world.observer.getGlobal("box-edge-x"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y"))) || ((Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("piston-position"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge-x"))));
       }));
       Errors.askNobodyCheck(world.observer.getGlobal("heatable-walls")).ask(function() {
@@ -672,20 +672,20 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("insulated?", false);
         SelfManager.self().setPatchVariable("wall?", true);
       }, true);
-      world.observer.setGlobal("piston-wall", PrimChecks.agentset.with(world.patches(), function() {
+      world.observer.setGlobal("piston-wall", PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.round(world.observer.getGlobal("piston-position"))) && Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
       }));
       Errors.askNobodyCheck(world.observer.getGlobal("piston-wall")).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("piston-color"));
         SelfManager.self().setPatchVariable("wall?", true);
       }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return ((Prims.gt(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.round(world.observer.getGlobal("piston-position"))) && Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge-x"))) && Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
       })).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", 5);
         SelfManager.self().setPatchVariable("wall?", true);
       }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("box-edge-x")) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
       })).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", 5);
@@ -701,7 +701,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.round(world.observer.getGlobal("piston-position"))) && Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
       })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
     } catch (e) {

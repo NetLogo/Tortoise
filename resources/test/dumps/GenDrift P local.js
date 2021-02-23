@@ -209,7 +209,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(PrimChecks.list.variance(PrimChecks.agentset.of(world.patches(), function() { return SelfManager.self().getPatchVariable("pcolor"); })), 0)) {
+      if (Prims.equality(PrimChecks.list.variance(PrimChecks.agentset.of_unchecked(world.patches(), function() { return SelfManager.self().getPatchVariable("pcolor"); })), 0)) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.patches()).ask(function() {

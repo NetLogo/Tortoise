@@ -153,9 +153,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let total = PrimChecks.agentset.count(SelfManager.self().turtlesHere()); letVars['total'] = total;
+      let total = PrimChecks.agentset.count_unchecked(SelfManager.self().turtlesHere()); letVars['total'] = total;
       let same = PrimChecks.agentset.countWith(SelfManager.self().turtlesHere(), function() {
-        return Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
+        return Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
       }); letVars['same'] = same;
       let opposite = (total - same); letVars['opposite'] = opposite;
       SelfManager.self().setVariable("happy?", Prims.lte(PrimChecks.math.div(opposite, total), PrimChecks.math.div(world.observer.getGlobal("tolerance"), 100)));
@@ -184,7 +184,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       notImplemented('display', undefined)();
-      let malcontents = PrimChecks.agentset.with(world.turtles(), function() {
+      let malcontents = PrimChecks.agentset.with_unchecked(world.turtles(), function() {
         return !PrimChecks.list.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
       }); letVars['malcontents'] = malcontents;
       if (!PrimChecks.agentset.any(malcontents)) {
@@ -263,7 +263,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return Prims.equality(PrimChecks.list.length(PrimChecks.list.removeDuplicates(PrimChecks.agentset.of(SelfManager.self().turtlesHere(), function() { return SelfManager.self().getVariable("color"); }))), 1);
+      return Prims.equality(PrimChecks.list.length(PrimChecks.list.removeDuplicates(PrimChecks.agentset.of_unchecked(SelfManager.self().turtlesHere(), function() { return SelfManager.self().getVariable("color"); }))), 1);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -276,7 +276,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.observer.getGlobal("group-sites")).ask(function() {
-        SelfManager.self().setPatchVariable("plabel", PrimChecks.agentset.count(SelfManager.self().turtlesHere()));
+        SelfManager.self().setPatchVariable("plabel", PrimChecks.agentset.count_unchecked(SelfManager.self().turtlesHere()));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)

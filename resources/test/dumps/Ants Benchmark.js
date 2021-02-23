@@ -297,7 +297,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       procedures["WIGGLE"]();
-      let scentAhead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("chemical"); }); letVars['scentAhead'] = scentAhead;
+      let scentAhead = PrimChecks.agentset.of_unchecked(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("chemical"); }); letVars['scentAhead'] = scentAhead;
       let scentRight = procedures["CHEMICAL-SCENT"](45); letVars['scentRight'] = scentRight;
       let scentLeft = procedures["CHEMICAL-SCENT"](-45); letVars['scentLeft'] = scentLeft;
       if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
@@ -319,7 +319,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       procedures["WIGGLE"]();
-      let scentAhead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("nest-scent"); }); letVars['scentAhead'] = scentAhead;
+      let scentAhead = PrimChecks.agentset.of_unchecked(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("nest-scent"); }); letVars['scentAhead'] = scentAhead;
       let scentRight = procedures["GET-NEST-SCENT"](45); letVars['scentRight'] = scentRight;
       let scentLeft = procedures["GET-NEST-SCENT"](-45); letVars['scentLeft'] = scentLeft;
       if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {

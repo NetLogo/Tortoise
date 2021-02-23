@@ -57,8 +57,8 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "square")
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("density")); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); })).ask(function() { procedures["IGNITE"](); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("density")); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); })).ask(function() { procedures["IGNITE"](); }, true);
       world.observer.setGlobal("initial-trees", PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }));
       world.observer.setGlobal("burned-trees", 0);
       world.ticker.reset();
@@ -72,11 +72,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!PrimChecks.agentset.any(world.turtles())) {
+      if (!PrimChecks.agentset.any_unchecked(world.turtles())) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FIRES")).ask(function() {
-        Errors.askNobodyCheck(PrimChecks.agentset.with(SelfManager.self().getNeighbors4(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); })).ask(function() { procedures["IGNITE"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(SelfManager.self().getNeighbors4(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); })).ask(function() { procedures["IGNITE"](); }, true);
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("EMBERS"));
       }, true);
       procedures["FADE-EMBERS"]();

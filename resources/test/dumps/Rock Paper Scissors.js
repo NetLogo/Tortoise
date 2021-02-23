@@ -116,7 +116,7 @@ var procedures = (function() {
       let swapEvent = 0; letVars['swapEvent'] = swapEvent;
       let reproduceEvent = 1; letVars['reproduceEvent'] = reproduceEvent;
       let selectEvent = 2; letVars['selectEvent'] = selectEvent;
-      let repetitions = PrimChecks.math.div(PrimChecks.agentset.count(world.patches()), 3); letVars['repetitions'] = repetitions;
+      let repetitions = PrimChecks.math.div(PrimChecks.agentset.count_unchecked(world.patches()), 3); letVars['repetitions'] = repetitions;
       let events = PrimChecks.list.shuffle(ListPrims.sentence(Tasks.nValues(PrimChecks.math.randomPoisson((repetitions * procedures["SWAP-RATE"]())), Tasks.reporterTask(function() { return swapEvent; }, "[ swap-event ]")), Tasks.nValues(PrimChecks.math.randomPoisson((repetitions * procedures["REPRODUCE-RATE"]())), Tasks.reporterTask(function() { return reproduceEvent; }, "[ reproduce-event ]")), Tasks.nValues(PrimChecks.math.randomPoisson((repetitions * procedures["SELECT-RATE"]())), Tasks.reporterTask(function() { return selectEvent; }, "[ select-event ]")))); letVars['events'] = events;
       var _foreach_1684_1691 = Tasks.forEach(Tasks.commandTask(function(_event_) {
         Errors.procedureArgumentsCheck(1, arguments.length);
@@ -177,7 +177,7 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.equality(PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("pcolor"); }), 0)) {
         Errors.askNobodyCheck(target).ask(function() {
-          SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
+          SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
         }, true);
       }
       else {

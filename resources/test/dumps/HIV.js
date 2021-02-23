@@ -414,9 +414,9 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if (PrimChecks.agentset.any(world.turtles())) {
+      if (PrimChecks.agentset.any_unchecked(world.turtles())) {
         Errors.reportInContextCheck(reporterContext);
-        return (PrimChecks.math.div(PrimChecks.agentset.countWith(world.turtles(), function() { return SelfManager.self().getVariable("infected?"); }), PrimChecks.agentset.count(world.turtles())) * 100);
+        return (PrimChecks.math.div(PrimChecks.agentset.countWith(world.turtles(), function() { return SelfManager.self().getVariable("infected?"); }), PrimChecks.agentset.count_unchecked(world.turtles())) * 100);
       }
       else {
         Errors.reportInContextCheck(reporterContext);

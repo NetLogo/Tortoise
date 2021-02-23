@@ -77,12 +77,12 @@ var procedures = (function() {
           world.topology.diffuse("elevation", 0.5, false)
         }
       }
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return PrimChecks.agentset.optimizeCount(SelfManager.self().getNeighbors(), 8, (a, b) => a !== b); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return PrimChecks.agentset.optimizeCount(SelfManager.self().getNeighbors(), 8, (a, b) => a !== b); })).ask(function() {
         SelfManager.self().setPatchVariable("drain?", true);
         SelfManager.self().setPatchVariable("elevation", -10000000);
       }, true);
       world.observer.setGlobal("drains", PrimChecks.agentset.with(world.patches(), function() { return SelfManager.self().getPatchVariable("drain?"); }));
-      world.observer.setGlobal("land", PrimChecks.agentset.with(world.patches(), function() { return !SelfManager.self().getPatchVariable("drain?"); }));
+      world.observer.setGlobal("land", PrimChecks.agentset.with_unchecked(world.patches(), function() { return !SelfManager.self().getPatchVariable("drain?"); }));
       Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() { procedures["RECOLOR"](); }, true);
       world.ticker.reset();
     } catch (e) {
@@ -161,7 +161,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let target = PrimChecks.agentset.minOneOf(SelfManager.self().getNeighbors(), function() {
+      let target = PrimChecks.agentset.minOneOf_unchecked(SelfManager.self().getNeighbors(), function() {
         return (SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water"));
       }); letVars['target'] = target;
       let amount = PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("elevation"); })) - PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;

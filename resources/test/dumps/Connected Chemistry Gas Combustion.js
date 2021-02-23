@@ -164,7 +164,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return ((Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))) || (Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))));
       })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
     } catch (e) {
@@ -231,7 +231,7 @@ var procedures = (function() {
       var letVars = { };
       let openPatches = Nobody; letVars['openPatches'] = openPatches;
       let openPatch = Nobody; letVars['openPatch'] = openPatch;
-      openPatches = PrimChecks.agentset.with(world.patches(), function() {
+      openPatches = PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box"))));
       }); letVars['openPatches'] = openPatches;
       openPatch = PrimChecks.list.oneOf(openPatches); letVars['openPatch'] = openPatch;
@@ -262,7 +262,7 @@ var procedures = (function() {
         procedures["MOVE"]();
         procedures["CHECK-FOR-COLLISION"]();
       }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "oxygen"); })).ask(function() { procedures["CHECK-FOR-REACTION"](); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "oxygen"); })).ask(function() { procedures["CHECK-FOR-REACTION"](); }, true);
       procedures["UPDATE-VARIABLES"]();
       procedures["CALCULATE-PRESSURE"]();
       if (Prims.gt(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-limit-container"))) {
@@ -283,9 +283,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"))) {
-        world.observer.setGlobal("avg-speed", PrimChecks.list.mean(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("speed"); })));
-        world.observer.setGlobal("avg-energy", PrimChecks.list.mean(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("energy"); })));
+      if (PrimChecks.agentset.any_unchecked(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"))) {
+        world.observer.setGlobal("avg-speed", PrimChecks.list.mean(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("speed"); })));
+        world.observer.setGlobal("avg-energy", PrimChecks.list.mean(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("energy"); })));
         world.observer.setGlobal("temperature", world.observer.getGlobal("avg-energy"));
       }
       else {
@@ -377,7 +377,7 @@ var procedures = (function() {
         }
         SelfManager.self().fd((world.observer.getGlobal("avg-speed") * world.observer.getGlobal("tick-advance-amount")));
       }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5); })).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("BROKEN-WALLS"));
           SelfManager.self().setVariable("color", 5);
@@ -413,7 +413,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("pressure", (100 * PrimChecks.list.sum(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("momentum-difference"); }))));
+      world.observer.setGlobal("pressure", (100 * PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("momentum-difference"); }))));
       world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.list.butFirst('but-first')(world.observer.getGlobal("pressure-history"))));
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("GAS-MOLECULES")).ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
     } catch (e) {
@@ -427,7 +427,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {
-        world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
+        world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
       }
       else {
         world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
@@ -460,7 +460,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let hitHydrogen = PrimChecks.agentset.with(SelfManager.self().breedHere("GAS-MOLECULES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); }); letVars['hitHydrogen'] = hitHydrogen;
+      let hitHydrogen = PrimChecks.agentset.with_unchecked(SelfManager.self().breedHere("GAS-MOLECULES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); }); letVars['hitHydrogen'] = hitHydrogen;
       let thisInitialOxygenMoleculesEnergy = SelfManager.self().getVariable("energy"); letVars['thisInitialOxygenMoleculesEnergy'] = thisInitialOxygenMoleculesEnergy;
       let totalEnergy = 0; letVars['totalEnergy'] = totalEnergy;
       if (Prims.gte(PrimChecks.agentset.count(hitHydrogen), 2)) {

@@ -148,8 +148,8 @@ var procedures = (function() {
       world.observer.setGlobal("medium", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }));
       world.observer.setGlobal("slow", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }));
       world.observer.setGlobal("fast", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }));
-      world.observer.setGlobal("avg-speed", PrimChecks.list.mean(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("speed"); })));
-      world.observer.setGlobal("avg-energy", PrimChecks.list.mean(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("energy"); })));
+      world.observer.setGlobal("avg-speed", PrimChecks.list.mean(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("speed"); })));
+      world.observer.setGlobal("avg-energy", PrimChecks.list.mean(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("energy"); })));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -176,8 +176,8 @@ var procedures = (function() {
       let oldClock = world.ticker.tickCount(); letVars['oldClock'] = oldClock;
       world.ticker.tickAdvance(world.observer.getGlobal("tick-length"));
       if (Prims.gt(PrimChecks.math.floor(world.ticker.tickCount()), PrimChecks.math.floor((world.ticker.tickCount() - world.observer.getGlobal("tick-length"))))) {
-        if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("PARTICLES"))) {
-          world.observer.setGlobal("wall-hits-per-particle", PrimChecks.list.mean(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("wall-hits"); })));
+        if (PrimChecks.agentset.any_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"))) {
+          world.observer.setGlobal("wall-hits-per-particle", PrimChecks.list.mean(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("wall-hits"); })));
         }
         else {
           world.observer.setGlobal("wall-hits-per-particle", 0);
@@ -192,7 +192,7 @@ var procedures = (function() {
       }
       procedures["CALCULATE-TICK-LENGTH"]();
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CLOCKERS")).ask(function() { SelfManager.self().setVariable("heading", (world.ticker.tickCount() * 360)); }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("FLASHES"), function() { return Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("FLASHES"), function() { return Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4); })).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", 45);
         SelfManager.self().die();
       }, true);
@@ -208,7 +208,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {
-        world.observer.setGlobal("tick-length", PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("speed"); })))));
+        world.observer.setGlobal("tick-length", PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("speed"); })))));
       }
       else {
         world.observer.setGlobal("tick-length", 1);
@@ -223,7 +223,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("pressure", (15 * PrimChecks.list.sum(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("momentum-difference"); }))));
+      world.observer.setGlobal("pressure", (15 * PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("momentum-difference"); }))));
       world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-history")));
       world.observer.setGlobal("zero-pressure-count", PrimChecks.list.length(PrimChecks.list.filter(Tasks.reporterTask(function(p) {
         Errors.procedureArgumentsCheck(1, arguments.length);
@@ -296,7 +296,7 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.equality(SelfPrims._optimalCountOther(SelfManager.self().breedHere("PARTICLES")), 1)) {
         let candidate = PrimChecks.list.oneOf(PrimChecks.agentset.otherWith(SelfManager.self().breedHere("PARTICLES"), function() {
-          return (Prims.lt(SelfManager.self().getVariable("who"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("who"); })) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
+          return (Prims.lt(SelfManager.self().getVariable("who"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getVariable("who"); })) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
         })); letVars['candidate'] = candidate;
         if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(PrimChecks.agentset.of(candidate, function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
           procedures["COLLIDE-WITH"](candidate);
@@ -370,7 +370,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let tracePatches = PrimChecks.agentset.with(world.patches(), function() {
+      let tracePatches = PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (!Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45) && !Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
       }); letVars['tracePatches'] = tracePatches;
       if (PrimChecks.agentset.any(tracePatches)) {
@@ -394,7 +394,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return ((Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge"))) || (Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge"))));
       })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
     } catch (e) {
@@ -523,21 +523,21 @@ var procedures = (function() {
       var letVars = { };
       plotManager.setCurrentPlot("Energy histogram");
       plotManager.setCurrentPen("fast");
-      plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }), function() { return SelfManager.self().getVariable("energy"); }));
+      plotManager.drawHistogramFrom(PrimChecks.agentset.of_unchecked(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }), function() { return SelfManager.self().getVariable("energy"); }));
       plotManager.setCurrentPen("medium");
-      plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }), function() { return SelfManager.self().getVariable("energy"); }));
+      plotManager.drawHistogramFrom(PrimChecks.agentset.of_unchecked(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }), function() { return SelfManager.self().getVariable("energy"); }));
       plotManager.setCurrentPen("slow");
-      plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }), function() { return SelfManager.self().getVariable("energy"); }));
+      plotManager.drawHistogramFrom(PrimChecks.agentset.of_unchecked(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }), function() { return SelfManager.self().getVariable("energy"); }));
       plotManager.setCurrentPen("avg-energy");
       plotManager.resetPen();
       procedures["DRAW-VERT-LINE"](world.observer.getGlobal("avg-energy"));
       plotManager.setCurrentPlot("Speed histogram");
       plotManager.setCurrentPen("fast");
-      plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }), function() { return SelfManager.self().getVariable("speed"); }));
+      plotManager.drawHistogramFrom(PrimChecks.agentset.of_unchecked(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }), function() { return SelfManager.self().getVariable("speed"); }));
       plotManager.setCurrentPen("medium");
-      plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }), function() { return SelfManager.self().getVariable("speed"); }));
+      plotManager.drawHistogramFrom(PrimChecks.agentset.of_unchecked(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }), function() { return SelfManager.self().getVariable("speed"); }));
       plotManager.setCurrentPen("slow");
-      plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }), function() { return SelfManager.self().getVariable("speed"); }));
+      plotManager.drawHistogramFrom(PrimChecks.agentset.of_unchecked(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }), function() { return SelfManager.self().getVariable("speed"); }));
       plotManager.setCurrentPen("avg-speed");
       plotManager.resetPen();
       procedures["DRAW-VERT-LINE"](world.observer.getGlobal("avg-speed"));

@@ -236,7 +236,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let emptyPatches = PrimChecks.agentset.with(world.patches(), function() { return !PrimChecks.agentset.any(SelfManager.self().turtlesHere()); }); letVars['emptyPatches'] = emptyPatches;
+      let emptyPatches = PrimChecks.agentset.with_unchecked(world.patches(), function() { return !PrimChecks.agentset.any_unchecked(SelfManager.self().turtlesHere()); }); letVars['emptyPatches'] = emptyPatches;
       let howMany = PrimChecks.list.min(ListPrims.list(world.observer.getGlobal("immigrants-per-day"), PrimChecks.agentset.count(emptyPatches))); letVars['howMany'] = howMany;
       Errors.askNobodyCheck(PrimChecks.list.nOf(howMany, emptyPatches)).ask(function() { procedures["CREATE-TURTLE"](); }, true);
     } catch (e) {
@@ -249,13 +249,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors4())).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.turtlesOn_unchecked(SelfManager.self().getNeighbors4())).ask(function() {
         world.observer.setGlobal("meet", (world.observer.getGlobal("meet") + 1));
         world.observer.setGlobal("meet-agg", (world.observer.getGlobal("meet-agg") + 1));
-        if (Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }))) {
+        if (Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }))) {
           world.observer.setGlobal("meetown", (world.observer.getGlobal("meetown") + 1));
           world.observer.setGlobal("meetown-agg", (world.observer.getGlobal("meetown-agg") + 1));
-          if (PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("cooperate-with-same?"); })) {
+          if (PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getVariable("cooperate-with-same?"); })) {
             world.observer.setGlobal("coopown", (world.observer.getGlobal("coopown") + 1));
             world.observer.setGlobal("coopown-agg", (world.observer.getGlobal("coopown-agg") + 1));
             Errors.askNobodyCheck(SelfManager.myself()).ask(function() {
@@ -264,10 +264,10 @@ var procedures = (function() {
             SelfManager.self().setVariable("ptr", (SelfManager.self().getVariable("ptr") + world.observer.getGlobal("gain-of-receiving")));
           }
         }
-        if (!Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }))) {
+        if (!Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }))) {
           world.observer.setGlobal("meetother", (world.observer.getGlobal("meetother") + 1));
           world.observer.setGlobal("meetother-agg", (world.observer.getGlobal("meetother-agg") + 1));
-          if (PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("cooperate-with-different?"); })) {
+          if (PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getVariable("cooperate-with-different?"); })) {
             world.observer.setGlobal("coopother", (world.observer.getGlobal("coopother") + 1));
             world.observer.setGlobal("coopother-agg", (world.observer.getGlobal("coopother-agg") + 1));
             Errors.askNobodyCheck(SelfManager.myself()).ask(function() {
@@ -292,7 +292,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.lt(PrimChecks.math.randomFloat(1), SelfManager.self().getVariable("ptr"))) {
-        let destination = PrimChecks.agentset.oneOfWith(SelfManager.self().getNeighbors4(), function() { return !PrimChecks.agentset.any(SelfManager.self().turtlesHere()); }); letVars['destination'] = destination;
+        let destination = PrimChecks.agentset.oneOfWith(SelfManager.self().getNeighbors4(), function() { return !PrimChecks.agentset.any_unchecked(SelfManager.self().turtlesHere()); }); letVars['destination'] = destination;
         if (!Prims.equality(destination, Nobody)) {
           SelfManager.self().hatch(1, "").ask(function() {
             SelfManager.self().moveTo(destination);

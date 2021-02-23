@@ -89,15 +89,15 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45));
       })).ask(function() {
         SelfManager.self().sprout(1, "COLUMN-COUNTERS").ask(function() {
           SelfManager.self().hideTurtle(true);;
           SelfManager.self().setVariable("heading", 0);
           SelfManager.self().setVariable("my-column", PrimChecks.math.floor(((SelfManager.self().getPatchVariable("pxcor") + PrimChecks.math.div(world.observer.getGlobal("sample-space"), 2)) + 1)));
-          SelfManager.self().setVariable("my-column-patches", PrimChecks.agentset.with(world.patches(), function() {
-            return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pxcor"); }));
+          SelfManager.self().setVariable("my-column-patches", PrimChecks.agentset.with_unchecked(world.patches(), function() {
+            return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pxcor"); }));
           }));
         }, true);
       }, true);
@@ -120,7 +120,7 @@ var procedures = (function() {
         procedures["PAINT"]();
       }
       else {
-        Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return !Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
+        Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return !Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
       }
       world.ticker.tick();
     } catch (e) {
@@ -200,12 +200,12 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS")).ask(function() {
         if (Prims.lte(SelfManager.self().getVariable("my-column"), PrimChecks.math.div((world.observer.getGlobal("red-green") * world.observer.getGlobal("sample-space")), 100))) {
           Errors.askNobodyCheck(PrimChecks.agentset.with(SelfManager.self().getVariable("my-column-patches"), function() {
-            return Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pycor"); }));
+            return Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pycor"); }));
           })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
         }
         else {
           Errors.askNobodyCheck(PrimChecks.agentset.with(SelfManager.self().getVariable("my-column-patches"), function() {
-            return Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pycor"); }));
+            return Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pycor"); }));
           })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
         }
       }, true);
@@ -220,7 +220,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.precision(PrimChecks.math.div((100 * PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); })), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("FRAMES"))), 2);
+      return PrimChecks.math.precision(PrimChecks.math.div((100 * PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); })), PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("FRAMES"))), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -233,7 +233,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.precision(PrimChecks.math.div((100 * PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("FRAMES"))), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2);
+      return PrimChecks.math.precision(PrimChecks.math.div((100 * PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("FRAMES"))), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -245,14 +245,14 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let maxColumn = PrimChecks.list.max(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS"), function() {
+      let maxColumn = PrimChecks.list.max(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS"), function() {
         return PrimChecks.agentset.countWith(SelfManager.self().getVariable("my-column-patches"), function() {
-          return Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pycor"); }));
+          return Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pycor"); }));
         });
       })); letVars['maxColumn'] = maxColumn;
-      let minColumn = PrimChecks.list.min(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS"), function() {
+      let minColumn = PrimChecks.list.min(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS"), function() {
         return PrimChecks.agentset.countWith(SelfManager.self().getVariable("my-column-patches"), function() {
-          return Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pycor"); }));
+          return Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pycor"); }));
         });
       })); letVars['minColumn'] = minColumn;
       Errors.reportInContextCheck(reporterContext);

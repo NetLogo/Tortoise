@@ -93,7 +93,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!PrimChecks.agentset.any(world.turtles())) {
+      if (!PrimChecks.agentset.any_unchecked(world.turtles())) {
         throw new Exception.StopInterrupt;
       }
       world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"), false)
@@ -165,14 +165,14 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let tries = 0; letVars['tries'] = tries;
-      if (!PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(target))) {
+      if (!PrimChecks.agentset.any_unchecked(PrimChecks.agentset.turtlesOn(target))) {
         SelfManager.self().moveTo(target);
         throw new Exception.StopInterrupt;
       }
       while (Prims.lte(tries, 9)) {
         tries = (tries + 1); letVars['tries'] = tries;
         target = PrimChecks.list.oneOf(SelfManager.self().getNeighbors());
-        if (!PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(target))) {
+        if (!PrimChecks.agentset.any_unchecked(PrimChecks.agentset.turtlesOn(target))) {
           SelfManager.self().moveTo(target);
           throw new Exception.StopInterrupt;
         }

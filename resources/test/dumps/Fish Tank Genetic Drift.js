@@ -429,7 +429,7 @@ var procedures = (function() {
           SelfManager.self().setPatchVariable("type-of-patch", "air");
         }
       }, true);
-      waterPatches = PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water"); }); letVars['waterPatches'] = waterPatches;
+      waterPatches = PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water"); }); letVars['waterPatches'] = waterPatches;
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -492,7 +492,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let waterPatches = PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water"); }); letVars['waterPatches'] = waterPatches;
+      let waterPatches = PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water"); }); letVars['waterPatches'] = waterPatches;
       let waterPatch = Nobody; letVars['waterPatch'] = waterPatch;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FISH")).ask(function() { SelfManager.self().moveTo(PrimChecks.list.oneOf(waterPatches)); }, true);
     } catch (e) {
@@ -516,7 +516,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("label-color", SelfManager.self().getVariable("color"));
         SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(SelfManager.self().getVariable("value")) + workspace.dump("     ")));
       }, true);
-      Errors.askNobodyCheck(PrimChecks.list.nOf(numBigAlleles, PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("gene"), geneNumber); }))).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.list.nOf(numBigAlleles, PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("gene"), geneNumber); }))).ask(function() {
         SelfManager.self().setVariable("value", allele1);
         SelfManager.self().setVariable("color", [220, 220, 220, 255]);
         SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(SelfManager.self().getVariable("value")) + workspace.dump("     ")));
@@ -647,7 +647,7 @@ var procedures = (function() {
       if (world.observer.getGlobal("auto-replace?")) {
         if (Prims.isThrottleTimeElapsed("autoSelection_0", workspace.selfManager.self(), 0.25)) {
           Prims.resetThrottleTimerFor("autoSelection_0", workspace.selfManager.self());
-          if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("FISH"))) {
+          if (PrimChecks.agentset.any_unchecked(world.turtleManager.turtlesOfBreed("FISH"))) {
             Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("FISH"))).ask(function() {
               if (procedures["BOTH-SEXES-IN-THIS-FISHS-TANK-REGION?"]()) {
                 procedures["REMOVE-THIS-FISH"]();
@@ -704,10 +704,10 @@ var procedures = (function() {
       let femaleGamete = Nobody; letVars['femaleGamete'] = femaleGamete;
       let thisSomaticCell = Nobody; letVars['thisSomaticCell'] = thisSomaticCell;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FISH-ZYGOTES")).ask(function() {
-        maleGamete = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("GAMETE-CELLS"), function() {
+        maleGamete = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("GAMETE-CELLS"), function() {
           return (LinkPrims.isOutLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(SelfManager.self().getVariable("sex"), "male"));
         }); letVars['maleGamete'] = maleGamete;
-        femaleGamete = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("GAMETE-CELLS"), function() {
+        femaleGamete = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("GAMETE-CELLS"), function() {
           return (LinkPrims.isOutLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(SelfManager.self().getVariable("sex"), "female"));
         }); letVars['femaleGamete'] = femaleGamete;
         if ((PrimChecks.agentset.any(maleGamete) && PrimChecks.agentset.any(femaleGamete))) {
@@ -753,7 +753,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let allAlleles = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", thisZygote); }); letVars['allAlleles'] = allAlleles;
+      let allAlleles = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", thisZygote); }); letVars['allAlleles'] = allAlleles;
       var _foreach_14051_14058 = Tasks.forEach(Tasks.commandTask(function(thisGene) {
         Errors.procedureArgumentsCheck(1, arguments.length);
         if (Prims.gt(PrimChecks.agentset.countWith(allAlleles, function() {
@@ -861,7 +861,7 @@ var procedures = (function() {
       }, true);
       var _foreach_16499_16506 = Tasks.forEach(Tasks.commandTask(function(thisGene) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        Errors.askNobodyCheck(PrimChecks.list.nOf(1, PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() {
+        Errors.askNobodyCheck(PrimChecks.list.nOf(1, PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("ALLELES"), function() {
           return (LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(SelfManager.self().getVariable("gene"), thisGene));
         }))).ask(function() {
           SelfManager.self().hatch(1, "").ask(function() {
@@ -903,7 +903,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("FISH"), function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("FISH"), function() {
         return (!Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water") && !Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water-edge"));
       })).ask(function() { procedures["REMOVE-THIS-FISH"](); }, true);
     } catch (e) {
@@ -917,7 +917,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let nearestWaterPatch = Nobody; letVars['nearestWaterPatch'] = nearestWaterPatch;
-      let waterPatches = PrimChecks.agentset.with(world.patches(), function() {
+      let waterPatches = PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water") && !SelfManager.self().getPatchVariable("divider-here?"));
       }); letVars['waterPatches'] = waterPatches;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FISH")).ask(function() {
@@ -1019,7 +1019,7 @@ var procedures = (function() {
         if ((((((mouseWasJustDown_p && !world.observer.getGlobal("mouse-continuous-down?")) && Prims.equality(pTypeOfPatch, "tank-wall")) && Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.minPycor + 1))) && Prims.gt(SelfManager.self().getPatchVariable("pxcor"), (world.topology.minPxcor + 1))) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), (world.topology.maxPxcor - 1)))) {
           SelfManager.self().setPatchVariable("divider-here?", !SelfManager.self().getPatchVariable("divider-here?"));
           let dividerXcor = SelfManager.self().getPatchVariable("pxcor"); letVars['dividerXcor'] = dividerXcor;
-          Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
+          Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() {
             return ((Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water") || Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water-edge")) && Prims.equality(SelfManager.self().getPatchVariable("pxcor"), dividerXcor));
           })).ask(function() {
             SelfManager.self().setPatchVariable("divider-here?", !SelfManager.self().getPatchVariable("divider-here?"));
@@ -1048,7 +1048,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("num-fish-in-tank", PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("FISH")));
+      world.observer.setGlobal("num-fish-in-tank", PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("FISH")));
       world.observer.setGlobal("#-big-b-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "B"); }));
       world.observer.setGlobal("#-small-b-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "b"); }));
       world.observer.setGlobal("#-big-t-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "T"); }));
@@ -1095,7 +1095,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water") || Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water-edge"));
       })).ask(function() {
         if (!SelfManager.self().getPatchVariable("divider-here?")) {
@@ -1105,7 +1105,7 @@ var procedures = (function() {
           SelfManager.self().setPatchVariable("pcolor", (5 - 3.5));
         }
       }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "tank-wall"); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "tank-wall"); })).ask(function() {
         if (!SelfManager.self().getPatchVariable("divider-here?")) {
           SelfManager.self().setPatchVariable("pcolor", (5 - 3));
         }
@@ -1113,7 +1113,7 @@ var procedures = (function() {
           SelfManager.self().setPatchVariable("pcolor", (5 - 4));
         }
       }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "air"); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 3)); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "air"); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 3)); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -1127,26 +1127,26 @@ var procedures = (function() {
       if (world.observer.getGlobal("see-body-cells?")) {
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SOMATIC-CELLS")).ask(function() {
           SelfManager.self().setVariable("hidden?", false);
-          Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); })).ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
+          Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); })).ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
         }, true);
       }
       else {
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SOMATIC-CELLS")).ask(function() {
           SelfManager.self().setVariable("hidden?", true);
-          Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); })).ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
+          Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); })).ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
         }, true);
       }
       if (world.observer.getGlobal("see-sex-cells?")) {
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("GAMETE-CELLS")).ask(function() {
           SelfManager.self().setVariable("hidden?", false);
-          Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); })).ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
+          Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); })).ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
         }, true);
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FISH-ZYGOTES")).ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
       }
       else {
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("GAMETE-CELLS")).ask(function() {
           SelfManager.self().setVariable("hidden?", true);
-          Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); })).ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
+          Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); })).ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
         }, true);
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FISH-ZYGOTES")).ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
       }
@@ -1368,7 +1368,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); });
+      return PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); });
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -1410,10 +1410,10 @@ var procedures = (function() {
       let xcorOfThisTurtle = SelfManager.self().getVariable("xcor"); letVars['xcorOfThisTurtle'] = xcorOfThisTurtle;
       let thisRegionLeftSide = procedures["LEFT-SIDE-OF-WATER-IN-TANK"](); letVars['thisRegionLeftSide'] = thisRegionLeftSide;
       let thisRegionRightSide = procedures["RIGHT-SIDE-OF-WATER-IN-TANK"](); letVars['thisRegionRightSide'] = thisRegionRightSide;
-      let dividersToTheRight = PrimChecks.agentset.with(world.patches(), function() {
+      let dividersToTheRight = PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (SelfManager.self().getPatchVariable("divider-here?") && Prims.gt(SelfManager.self().getPatchVariable("pxcor"), xcorOfThisTurtle));
       }); letVars['dividersToTheRight'] = dividersToTheRight;
-      let dividersToTheLeft = PrimChecks.agentset.with(world.patches(), function() {
+      let dividersToTheLeft = PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (SelfManager.self().getPatchVariable("divider-here?") && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), xcorOfThisTurtle));
       }); letVars['dividersToTheLeft'] = dividersToTheLeft;
       if (PrimChecks.agentset.any(dividersToTheRight)) {
@@ -1422,7 +1422,7 @@ var procedures = (function() {
       if (PrimChecks.agentset.any(dividersToTheLeft)) {
         thisRegionLeftSide = PrimChecks.list.max(PrimChecks.agentset.of(dividersToTheLeft, function() { return SelfManager.self().getPatchVariable("pxcor"); })); letVars['thisRegionLeftSide'] = thisRegionLeftSide;
       }
-      turtlesInThisRegion = PrimChecks.agentset.with(world.turtles(), function() {
+      turtlesInThisRegion = PrimChecks.agentset.with_unchecked(world.turtles(), function() {
         return (Prims.gte(SelfManager.self().getVariable("xcor"), thisRegionLeftSide) && Prims.lte(SelfManager.self().getVariable("xcor"), thisRegionRightSide));
       }); letVars['turtlesInThisRegion'] = turtlesInThisRegion;
       Errors.reportInContextCheck(reporterContext);
@@ -1464,10 +1464,10 @@ var procedures = (function() {
       var letVars = { };
       let thisRegionLeftSide = procedures["LEFT-SIDE-OF-WATER-IN-TANK"](); letVars['thisRegionLeftSide'] = thisRegionLeftSide;
       let thisRegionRightSide = procedures["RIGHT-SIDE-OF-WATER-IN-TANK"](); letVars['thisRegionRightSide'] = thisRegionRightSide;
-      let dividersToTheRight = PrimChecks.agentset.with(world.patches(), function() {
+      let dividersToTheRight = PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (SelfManager.self().getPatchVariable("divider-here?") && Prims.gt(SelfManager.self().getPatchVariable("pxcor"), thisXcor));
       }); letVars['dividersToTheRight'] = dividersToTheRight;
-      let dividersToTheLeft = PrimChecks.agentset.with(world.patches(), function() {
+      let dividersToTheLeft = PrimChecks.agentset.with_unchecked(world.patches(), function() {
         return (SelfManager.self().getPatchVariable("divider-here?") && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), thisXcor));
       }); letVars['dividersToTheLeft'] = dividersToTheLeft;
       if (PrimChecks.agentset.any(dividersToTheRight)) {

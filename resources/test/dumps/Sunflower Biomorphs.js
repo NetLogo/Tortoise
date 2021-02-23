@@ -174,7 +174,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let newParent = PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return SelfManager.self().distanceXY(MousePrims.getX(), MousePrims.getY()); }); letVars['newParent'] = newParent;
+      let newParent = PrimChecks.agentset.minOneOf_unchecked(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return SelfManager.self().distanceXY(MousePrims.getX(), MousePrims.getY()); }); letVars['newParent'] = newParent;
       if (world.observer.getGlobal("asexual?")) {
         procedures["REPOPULATE-FROM-ONE"](newParent);
       }
@@ -187,7 +187,7 @@ var procedures = (function() {
         else {
           world.observer.setGlobal("first-parent", newParent);
           Errors.askNobodyCheck(world.patches()).ask(function() {
-            if (PrimChecks.list.member(newParent, PrimChecks.agentset.withMin(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return SelfManager.self().distance(SelfManager.myself()); }))) {
+            if (PrimChecks.list.member(newParent, PrimChecks.agentset.withMin_unchecked(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return SelfManager.self().distance(SelfManager.myself()); }))) {
               SelfManager.self().setPatchVariable("pcolor", (5 - 3));
             }
           }, true);

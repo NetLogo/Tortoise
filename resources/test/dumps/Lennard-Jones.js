@@ -144,7 +144,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.agentset.of(world.turtles(), function() { return procedures["CALC-V"](); })), 2);
+      return PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtles(), function() { return procedures["CALC-V"](); })), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
