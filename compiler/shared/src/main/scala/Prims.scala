@@ -95,7 +95,9 @@ trait PrimUtils {
 
 object ReporterPrims {
   // The magic number 21 here is for `Syntax.SymbolType` the largest mask value at the moment -Jeremy B February 2021
+  // scalastyle:off magic.number
   private val types: Seq[Int] = Range(1, 21).map( (t) => Math.pow(2, t).asInstanceOf[Int] )
+  // scalastyle:on magic.number
 
   def isSupported(mask: Int, t: Int): Boolean =
     (mask & t) != 0
