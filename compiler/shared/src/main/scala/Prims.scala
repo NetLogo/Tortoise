@@ -140,16 +140,17 @@ trait ReporterPrims extends PrimUtils {
     r.reporter match {
 
       // Basics stuff
-      case SimplePrims.SimpleReporter(op) => op
-      case SimplePrims.InfixReporter(op)  => s"(${arg(0)} $op ${arg(1)})"
-      case SimplePrims.NormalReporter(op) => s"$op($commaArgs)"
-      case SimplePrims.TypeCheck(check)   => s"NLType.checks.$check${arg(0)})"
-      case VariableReporter(op)           => op
-      case p: prim._const                 => handlers.literal(p.value)
-      case lv: prim._letvariable          => handlers.ident(lv.let.name)
-      case pv: prim._procedurevariable    => handlers.ident(pv.name)
-      case lv: prim._lambdavariable       => handlers.ident(lv.name)
-      case call: prim._callreport         =>
+      case SimplePrims.SimpleReporter(op)  => op
+      case SimplePrims.InfixReporter(op)   => s"(${arg(0)} $op ${arg(1)})"
+      case SimplePrims.NormalReporter(op)  => s"$op($commaArgs)"
+      case SimplePrims.CheckedReporter(op) => s"$op$uncheckedCall($commaArgs)"
+      case SimplePrims.TypeCheck(check)    => s"NLType.checks.$check${arg(0)})"
+      case VariableReporter(op)            => op
+      case p: prim._const                  => handlers.literal(p.value)
+      case lv: prim._letvariable           => handlers.ident(lv.let.name)
+      case pv: prim._procedurevariable     => handlers.ident(pv.name)
+      case lv: prim._lambdavariable        => handlers.ident(lv.name)
+      case call: prim._callreport          =>
         s"""procedures["${call.name}"](${args.mkString(",")})"""
 
       // Blarg
@@ -205,6 +206,10 @@ trait ReporterPrims extends PrimUtils {
       case b: prim.etc._breedat           => s"SelfManager.self().breedAt(${jsString(b.breedName)}, ${arg(0)}, ${arg(1)})"
       case b: prim.etc._breedhere         => s"SelfManager.self().breedHere(${jsString(b.breedName)})"
       case b: prim.etc._breedon           => s"PrimChecks.agentset.breedOn$uncheckedCall(${jsString(b.breedName)}, ${arg(0)})"
+
+      // List prims
+      case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst$uncheckedCall('${b.token.text}', ${arg(0)})"
+      case b: prim.etc._butlast           => s"PrimChecks.list.butLast$uncheckedCall('${b.token.text}', ${arg(0)})"
 
       // Link finding
       case p: prim.etc._inlinkfrom       => s"LinkPrims.inLinkFrom(${jsString(fixBN(p.breedName))}, ${arg(0)})"

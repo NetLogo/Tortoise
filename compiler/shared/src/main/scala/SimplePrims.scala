@@ -54,6 +54,46 @@ object SimplePrims {
       }
   }
 
+  object CheckedReporter {
+    def unapply(r: Reporter): Option[String] =
+      PartialFunction.condOpt(r) {
+        // List prims
+        case _: prim.etc._empty             => "PrimChecks.list.empty"
+        case _: prim.etc._filter            => "PrimChecks.list.filter"
+        case _: prim.etc._first             => "PrimChecks.list.first"
+        case _: prim.etc._fput              => "PrimChecks.list.fput"
+        case _: prim.etc._insertitem        => "PrimChecks.list.insertItem"
+        case _: prim.etc._item              => "PrimChecks.list.item"
+        case _: prim.etc._last              => "PrimChecks.list.last"
+        case _: prim.etc._length            => "PrimChecks.list.length"
+        case _: prim.etc._lput              => "PrimChecks.list.lput"
+        case _: prim.etc._max               => "PrimChecks.list.max"
+        case _: prim.etc._mean              => "PrimChecks.list.mean"
+        case _: prim.etc._median            => "PrimChecks.list.median"
+        case _: prim.etc._member            => "PrimChecks.list.member"
+        case _: prim.etc._min               => "PrimChecks.list.min"
+        case _: prim.etc._modes             => "PrimChecks.list.modes"
+        case _: prim.etc._nof               => "PrimChecks.list.nOf"
+        case _: prim.etc._position          => "PrimChecks.list.position"
+        case _: prim.etc._reduce            => "PrimChecks.list.reduce"
+        case _: prim.etc._removeduplicates  => "PrimChecks.list.removeDuplicates"
+        case _: prim.etc._removeitem        => "PrimChecks.list.removeItem"
+        case _: prim.etc._remove            => "PrimChecks.list.remove"
+        case _: prim.etc._replaceitem       => "PrimChecks.list.replaceItem"
+        case _: prim.etc._reverse           => "PrimChecks.list.reverse"
+        case _: prim.etc._shuffle           => "PrimChecks.list.shuffle"
+        case _: prim.etc._sort              => "PrimChecks.list.sort"
+        case _: prim.etc._sortby            => "PrimChecks.list.sortBy"
+        case _: prim.etc._standarddeviation => "PrimChecks.list.standardDeviation"
+        case _: prim.etc._sublist           => "PrimChecks.list.sublist"
+        case _: prim.etc._substring         => "PrimChecks.list.substring"
+        case _: prim.etc._uptonof           => "PrimChecks.list.upToNOf"
+        case _: prim.etc._variance          => "PrimChecks.list.variance"
+        case _: prim._oneof                 => "PrimChecks.list.oneOf"
+        case _: prim._sum                   => "PrimChecks.list.sum"
+      }
+  }
+
   object NormalReporter {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
@@ -95,43 +135,8 @@ object SimplePrims {
         case _: prim._patchat                        => "SelfManager.self().patchAt"
 
         // ListPrims
-        case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}')"
-        case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.token.text}')"
-        case _: prim.etc._empty             => "PrimChecks.list.empty"
-        case _: prim.etc._filter            => "PrimChecks.list.filter"
-        case _: prim.etc._first             => "PrimChecks.list.first"
-        case _: prim.etc._fput              => "PrimChecks.list.fput"
-        case _: prim.etc._insertitem        => "PrimChecks.list.insertItem"
-        case _: prim.etc._item              => "PrimChecks.list.item"
-        case _: prim.etc._last              => "PrimChecks.list.last"
-        case _: prim.etc._length            => "PrimChecks.list.length"
-        case _: prim.etc._lput              => "PrimChecks.list.lput"
-        case _: prim.etc._max               => "PrimChecks.list.max"
-        case _: prim.etc._mean              => "PrimChecks.list.mean"
-        case _: prim.etc._median            => "PrimChecks.list.median"
-        case _: prim.etc._member            => "PrimChecks.list.member"
-        case _: prim.etc._min               => "PrimChecks.list.min"
-        case _: prim.etc._modes             => "PrimChecks.list.modes"
-        case _: prim.etc._nof               => "PrimChecks.list.nOf"
-        case _: prim.etc._position          => "PrimChecks.list.position"
-        case _: prim.etc._reduce            => "PrimChecks.list.reduce"
-        case _: prim.etc._removeduplicates  => "PrimChecks.list.removeDuplicates"
-        case _: prim.etc._removeitem        => "PrimChecks.list.removeItem"
-        case _: prim.etc._remove            => "PrimChecks.list.remove"
-        case _: prim.etc._replaceitem       => "PrimChecks.list.replaceItem"
-        case _: prim.etc._reverse           => "PrimChecks.list.reverse"
-        case _: prim.etc._shuffle           => "PrimChecks.list.shuffle"
-        case _: prim.etc._sort              => "PrimChecks.list.sort"
-        case _: prim.etc._sortby            => "PrimChecks.list.sortBy"
-        case _: prim.etc._standarddeviation => "PrimChecks.list.standardDeviation"
-        case _: prim.etc._sublist           => "PrimChecks.list.sublist"
-        case _: prim.etc._substring         => "PrimChecks.list.substring"
-        case _: prim.etc._uptonof           => "PrimChecks.list.upToNOf"
-        case _: prim.etc._variance          => "PrimChecks.list.variance"
         case _: prim._list                  => "ListPrims.list"
-        case _: prim._oneof                 => "PrimChecks.list.oneOf"
         case _: prim._sentence              => "ListPrims.sentence"
-        case _: prim._sum                   => "PrimChecks.list.sum"
 
         // Agentset
         case _: prim.etc._linkset           => "PrimChecks.agentset.linkSet"

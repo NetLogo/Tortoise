@@ -14,34 +14,44 @@ class ListChecks
       @validator.error('Can_t find element _ of the _ _, which is only of length _.', index, getTypeOf(listOrString).niceName(), @dumper(listOrString), listOrString.length)
     return
 
-  # (String) => (Array | String) => Array | String
-  butFirst: (prim) -> (listOrString) =>
-    @validator.commonArgChecks.stringOrList(prim, arguments)
+  checkNotEmpty: (prim, listOrString) ->
     if listOrString.length is 0
       argType  = getTypeOf(listOrString)
       primName = if argType is types.String then prim else prim.toUpperCase()
       @validator.error('_ got an empty _ as input.', primName, argType.niceName())
 
+  # (String, Array | String) => Array | String
+  butFirst: (prim, listOrString) ->
+    @validator.commonArgChecks.stringOrList(prim, arguments)
+    @butFirst_unchecked(prim, listOrString)
+
+  butFirst_unchecked: (prim, listOrString) ->
+    @checkNotEmpty(prim, listOrString)
     @listPrims.butFirst(listOrString)
 
   # (String) => (Array | String) => Array | String
-  butLast: (prim) -> (listOrString) =>
-    @validator.commonArgChecks.stringOrList(prim, arguments)
-    if listOrString.length is 0
-      argType  = getTypeOf(listOrString)
-      primName = if argType is types.String then prim else prim.toUpperCase()
-      @validator.error('_ got an empty _ as input.', primName, argType.niceName())
+  butLast: (prim, listOrString) ->
+    @validator.commonArgChecks.stringOrList(prim, [listOrString])
+    @butLast_unchecked(prim, listOrString)
 
+  butLast_unchecked: (prim, listOrString) ->
+    @checkNotEmpty(prim, listOrString)
     @listPrims.butLast(listOrString)
 
   # (Array[Any] | String) => Boolean
   empty: (listOrString) ->
     @validator.commonArgChecks.stringOrList("EMPTY", arguments)
+    @empty_unchecked(listOrString)
+
+  empty_unchecked: (listOrString) ->
     @listPrims.empty(listOrString)
 
   # ((T) => Boolean, Array[T]) => Array[T]
   filter: (f, list) ->
     @validator.commonArgChecks.reporter_list("FILTER", arguments)
+    @filter_unchecked(f, list)
+
+  filter_unchecked: (f, list) ->
     checkedF = (item) =>
       result = f(item)
       @validator.commonValueChecks.boolean("FILTER", result)
@@ -51,6 +61,9 @@ class ListChecks
   # (Array[Any] | String) => Any | String
   first: (listOrString) ->
     @validator.commonArgChecks.stringOrList("FIRST", arguments)
+    @first_unchecked(listOrString)
+
+  first_unchecked: (listOrString) ->
     if listOrString.length is 0
       @validator.error('List is empty.')
 
@@ -59,11 +72,17 @@ class ListChecks
   # (Any, Array[Any]) => Array[Any]
   fput: (item, list) ->
     @validator.commonArgChecks.wildcard_list("FPUT", arguments)
+    @fput_unchecked(item, list)
+
+  fput_unchecked: (item, list) ->
     @listPrims.fput(item, list)
 
   # (Number, Array[Any] | String, Any) => Array[Any] | String
   insertItem: (index, listOrString, item) ->
     @validator.commonArgChecks.number_stringOrList_wildcard("INSERT-ITEM", arguments)
+    @insertItem_unchecked(index, listOrString, item)
+
+  insertItem_unchecked: (index, listOrString, item) ->
     @indexBoundsChecks(index, listOrString, inclusive = false)
 
     if checks.isString(listOrString)
@@ -77,6 +96,9 @@ class ListChecks
   # (Number, Array[Any] | String) => Any | String
   item: (index, listOrString) ->
     @validator.commonArgChecks.number_stringOrList("ITEM", arguments)
+    @item_unchecked(index, listOrString)
+
+  item_unchecked: (index, listOrString) ->
     @indexBoundsChecks(index, listOrString)
 
     @listPrims.item(index, listOrString)
@@ -84,6 +106,9 @@ class ListChecks
   # (Array[Any] | String) => Any | String
   last: (listOrString) ->
     @validator.commonArgChecks.stringOrList("LAST", arguments)
+    @last_unchecked(listOrString)
+
+  last_unchecked: (listOrString) ->
     if listOrString.length is 0
       @validator.error('List is empty.')
 
@@ -92,16 +117,25 @@ class ListChecks
   # (Array[Any] | String) => Number
   length: (listOrString) ->
     @validator.commonArgChecks.stringOrList("LENGTH", arguments)
+    @length_unchecked(listOrString)
+
+  length_unchecked: (listOrString) ->
     @listPrims.length(listOrString)
 
   # (Any, Array[Any]) => Array[Any]
   lput: (item, list) ->
     @validator.commonArgChecks.wildcard_list("LPUT", arguments)
+    @lput_unchecked(item, list)
+
+  lput_unchecked: (item, list) ->
     @listPrims.lput(item, list)
 
   # Array[Any] => Number
   max: (values) ->
     @validator.commonArgChecks.list("MAX", arguments)
+    @max_unchecked(values)
+
+  max_unchecked: (values) ->
     nums = values.filter(checks.isNumber)
     if nums.length < 1
       @validator.error('Can_t find the _ of a list with no numbers: __', "maximum", @dumper(values), "")
@@ -111,6 +145,9 @@ class ListChecks
   # Array[Any] => Number
   mean: (values) ->
     @validator.commonArgChecks.list("MEAN", arguments)
+    @mean_unchecked(values)
+
+  mean_unchecked: (values) ->
     nums = values.filter(checks.isNumber)
     if nums.length < 1
       @validator.error('Can_t find the _ of a list with no numbers: __', "mean", @dumper(values), ".")
@@ -120,6 +157,9 @@ class ListChecks
   # Array[Any] => Number
   median: (values) ->
     @validator.commonArgChecks.list("MEDIAN", arguments)
+    @median_unchecked(values)
+
+  median_unchecked: (values) ->
     nums = values.filter(checks.isNumber)
     if nums.length < 1
       @validator.error('Can_t find the _ of a list with no numbers: __', "median", @dumper(values), ".")
@@ -129,6 +169,9 @@ class ListChecks
   # (Any, Array[Any] | AbstractAgentSet | String) => Boolean
   member: (item, items) ->
     @validator.commonArgChecks.wildcard_stringOrListOrAgentSet("MEMBER?", arguments)
+    @member_unchecked(item, items)
+
+  member_unchecked: (item, items) ->
     if checks.isList(items)
       @listPrims.member(item, items)
     else if checks.isString(items)
@@ -139,6 +182,9 @@ class ListChecks
   # (Array[Any]) => Number
   min: (values) ->
     @validator.commonArgChecks.list("MIN", arguments)
+    @min_unchecked(values)
+
+  min_unchecked: (values) ->
     nums = values.filter(checks.isNumber)
 
     if nums.length < 1
@@ -149,11 +195,17 @@ class ListChecks
   # (Array[Any]) => Array[Any]
   modes: (list) ->
     @validator.commonArgChecks.list("MODES", arguments)
+    @modes_unchecked(list)
+
+  modes_unchecked: (list) ->
     @listPrims.modes(list)
 
   # (Number, Array[Any] | AbstractAgentSet) => Array[Any] | AbstractAgentSet
   nOf: (count, agentSetOrList) ->
     @validator.commonArgChecks.number_agentSetOrList("N-OF", arguments)
+    @nOf_unchecked(count, agentSetOrList)
+
+  nOf_unchecked: (count, agentSetOrList) ->
     if count < 0
       @validator.error('First input to _ can_t be negative.', "N-OF")
 
@@ -172,6 +224,9 @@ class ListChecks
   # (AbstractAgentSet | Array[Any]) => Agent | Any
   oneOf: (agentSetOrList) ->
     @validator.commonArgChecks.agentSetOrList("ONE-OF", arguments)
+    @oneOf_unchecked(agentSetOrList)
+
+  oneOf_unchecked: (agentSetOrList) ->
     if checks.isList(agentSetOrList)
       if agentSetOrList.length is 0
         @validator.error('_ got an empty _ as input.', "ONE-OF", types.List.niceName())
@@ -182,6 +237,9 @@ class ListChecks
   # (Any, Array[Any] | String) => Number
   position: (item, listOrString) ->
     @validator.commonArgChecks.wildcard_stringOrList("POSITION", arguments)
+    @position_unchecked(item, listOrString)
+
+  position_unchecked: (item, listOrString) ->
     if checks.isList(listOrString)
       @listPrims.position(item, listOrString)
     else # string
@@ -189,6 +247,9 @@ class ListChecks
 
   reduce: (f, list) ->
     @validator.commonArgChecks.reporter_list("REDUCE", arguments)
+    @reduce_unchecked(f, list)
+
+  reduce_unchecked: (f, list) ->
     if list.length is 0
       @validator.error('The list argument to reduce must not be empty.')
 
@@ -197,7 +258,9 @@ class ListChecks
   # (Any | String, Array[Any] | String) => Array[Any] | String
   remove: (item, listOrString) ->
     @validator.commonArgChecks.wildcard_stringOrList("REMOVE", arguments)
+    @remove_unchecked(item, listOrString)
 
+  remove_unchecked: (item, listOrString) ->
     if checks.isString(listOrString)
       if not checks.isString(item)
         @validator.throwTypeError("REMOVE", item, types.String)
@@ -209,11 +272,17 @@ class ListChecks
   # (Array[Any]) => Array[Any]
   removeDuplicates: (list) ->
     @validator.commonArgChecks.list("REMOVE-DUPLICATES", arguments)
+    @removeDuplicates_unchecked(list)
+
+  removeDuplicates_unchecked: (list) ->
     @listPrims.removeDuplicates(list)
 
   # (Number, Array[Any] | String) => Array[Any] | String
   removeItem: (index, listOrString) ->
     @validator.commonArgChecks.number_stringOrList("REMOVE-ITEM", arguments)
+    @removeItem_unchecked(index, listOrString)
+
+  removeItem_unchecked: (index, listOrString) ->
     @indexBoundsChecks(index, listOrString)
 
     if checks.isString(listOrString)
@@ -224,6 +293,9 @@ class ListChecks
   # (Number, Array[Any] | String, Any | String) => Array[Any] | String
   replaceItem: (index, listOrString, item) ->
     @validator.commonArgChecks.number_stringOrList_wildcard("REPLACE-ITEM", arguments)
+    @replaceItem_unchecked(index, listOrString, item)
+
+  replaceItem_unchecked: (index, listOrString, item) ->
     @indexBoundsChecks(index, listOrString)
 
     if checks.isString(listOrString)
@@ -237,6 +309,9 @@ class ListChecks
   # (Array[Any] | String) => Array[Any] | String
   reverse: (listOrString) ->
     @validator.commonArgChecks.stringOrList("REVERSE", arguments)
+    @reverse_unchecked(listOrString)
+
+  reverse_unchecked: (listOrString) ->
     if checks.isString(listOrString)
       @stringPrims.reverse(listOrString)
     else # list
@@ -245,11 +320,17 @@ class ListChecks
   # (Array[Any]) => Array[Any]
   shuffle: (list) ->
     @validator.commonArgChecks.list("SHUFFLE", arguments)
+    @shuffle_unchecked(list)
+
+  shuffle_unchecked: (list) ->
     @listPrims.shuffle(list)
 
   # (Array[Any] | AbstractAgentSet) => Array[Any]
   sort: (agentSetOrList) ->
     @validator.commonArgChecks.agentSetOrList("SORT", arguments)
+    @sort_unchecked(agentSetOrList)
+
+  sort_unchecked: (agentSetOrList) ->
     if checks.isList(agentSetOrList)
       @listPrims.sort(agentSetOrList)
     else # agentset
@@ -258,6 +339,9 @@ class ListChecks
   # ((Any, Any) => Boolean, Array[Any] | AbstractAgentSet) => Array[Any]
   sortBy: (f, agentSetOrList) ->
     @validator.commonArgChecks.reporter_agentSetOrList("SORT-BY", arguments)
+    @sortBy_unchecked(f, agentSetOrList)
+
+  sortBy_unchecked: (f, agentSetOrList) ->
     checkedF = (a, b) =>
       result = f(a, b)
       @validator.commonValueChecks.boolean("SORT-BY", result)
@@ -270,7 +354,9 @@ class ListChecks
   # Array[Any] => Number
   standardDeviation: (values) ->
     @validator.commonArgChecks.list("STANDARD-DEVIATION", arguments)
+    @standardDeviation_unchecked(values)
 
+  standardDeviation_unchecked: (values) ->
     nums = values.filter(checks.isNumber)
     if nums.length < 2
       @validator.error('Can_t find the _ of a list without at least two numbers: __', "standard deviation", @dumper(values), "")
@@ -280,6 +366,9 @@ class ListChecks
   # (Array[Any], Number, Number) => Array[Any]
   sublist: (list, startIndex, endIndex) ->
     @validator.commonArgChecks.list_number_number("SUBLIST", arguments)
+    @sublist_unchecked(list, startIndex, endIndex)
+
+  sublist_unchecked: (list, startIndex, endIndex) ->
     if startIndex < 0
       @validator.error('_ is less than zero.', startIndex)
     if endIndex > list.length
@@ -292,17 +381,26 @@ class ListChecks
   # (String, Number, Number) => String
   substring: (text, startIndex, endIndex) ->
     @validator.commonArgChecks.string_number_number("SUBSTRING", arguments)
+    @sublist_unchecked(text, startIndex, endIndex)
+
+  substring_unchecked: (text, startIndex, endIndex) ->
     @stringPrims.substring(text, startIndex, endIndex)
 
   # Array[Any] => Number
   sum: (values) ->
     @validator.commonArgChecks.list("SUM", arguments)
+    @sum_unchecked(values)
+
+  sum_unchecked: (values) ->
     nums = values.filter(checks.isNumber)
     @validator.checkNumber(@listPrims.sum(nums))
 
   # (Number, Array[Any] | AbstractAgentSet) => Array[Any] | AbstractAgentSet
   upToNOf: (count, agentSetOrList) ->
     @validator.commonArgChecks.number_agentSetOrList("N-OF", arguments)
+    @upToNOf_unchecked(count, agentSetOrList)
+
+  upToNOf_unchecked: (count, agentSetOrList) ->
     if count < 0
       @validator.error('First input to _ can_t be negative.', "UP-TO-N-OF")
 
@@ -315,7 +413,9 @@ class ListChecks
   # Array[Any] => Number
   variance: (values) ->
     @validator.commonArgChecks.list("VARIANCE", arguments)
+    @variance_unchecked(values)
 
+  variance_unchecked: (values) ->
     nums = values.filter(checks.isNumber)
     if nums.length < 2
       @validator.error('Can_t find the _ of a list without at least two numbers: __', "variance", @dumper(values), ".")
