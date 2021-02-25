@@ -3,8 +3,12 @@
 StrictMath                   = require('shim/strictmath')
 formatFloat                  = require('util/formatfloat')
 { checks, getTypeOf, types } = require('engine/core/typechecker')
+{ getTypesFromSyntax }       = require('engine/prim-checks/syntax')
 
 class Validator
+
+  # Map[Int, Array[NLType]]
+  _cachedRuntimeTypes: new Map()
 
   constructor: (@bundle, @dumper) ->
     # These arrays of types and the common checks below are pre-computed so that all prims
@@ -81,8 +85,8 @@ class Validator
       "a #{text}"
 
   # (Array[NLType]) => String
-  listTypeNames: (types) ->
-    names    = types.map( (type) -> type.niceName() )
+  listTypeNames: (typesToName) ->
+    names    = typesToName.map( (type) -> type.niceName() )
     nameList = names.join(" or ")
     @addIndefiniteArticle(nameList)
 
@@ -119,20 +123,33 @@ class Validator
       return
 
   # (Array[NLType]) => (String, Any) => Any
-  makeValueTypeCheck: (types...) -> (prim, value) =>
-    @checkValueTypes(prim, types, value)
+  makeValueTypeCheck: (allowedTypes...) -> (prim, value) =>
+    @checkValueTypes(prim, allowedTypes, value)
 
   # (String, Array[NLType], Any) => Any
-  checkValueTypes: (prim, types, value) ->
+  checkValueTypes: (prim, allowedTypes, value) ->
     # And we could use `some()` here, but that also could generate transient closure objects. -Jeremy B December 2020
     match = false
-    for j in [0...types.length]
-      if types[j].isOfType(value)
+    for j in [0...allowedTypes.length]
+      if allowedTypes[j].isOfType(value)
         match = true
+        break
 
     if not match
-      @throwTypeError(prim, value, types...)
+      @throwTypeError(prim, value, allowedTypes...)
 
     value
+
+  syntaxTypeToRuntimeTypes: (syntax) ->
+    if @_cachedRuntimeTypes.has(syntax)
+      @_cachedRuntimeTypes.get(syntax)
+    else
+      allowedTypes = getTypesFromSyntax(syntax)
+      @_cachedRuntimeTypes.set(allowedTypes)
+      allowedTypes
+
+  checkArg: (prim, syntax, argValue) ->
+    allowedTypes = @syntaxTypeToRuntimeTypes(syntax)
+    @checkValueTypes(prim, allowedTypes, argValue)
 
 module.exports = Validator

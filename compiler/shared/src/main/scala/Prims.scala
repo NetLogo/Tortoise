@@ -135,6 +135,22 @@ trait ReporterPrims extends PrimUtils {
     def argsSep(sep: String) =
       args.mkString(sep)
 
+    def checkedArgs = {
+      val syntax          = r.instruction.syntax
+      val argAllowedTypes = if (syntax.isInfix) List(syntax.left) ++ syntax.right else syntax.right
+      val argsWithTypes   = argAllowedTypes.zip(r.args)
+
+      val argOps = argsWithTypes.map( { case (allowed: Int, exp: Expression) => {
+        val expOp = handlers.reporter(exp)
+        if (ReporterPrims.allTypesAllowed(allowed, exp.reportedType())) {
+          expOp
+        } else {
+          s"PrimChecks.validator.checkArg('${r.instruction.token.text}', $allowed, $expOp)"
+        }
+      }})
+      argOps.mkString(", ")
+    }
+
     def hasUnchecked =
       ReporterPrims.hasUncheckedArgs(r)
 
@@ -154,6 +170,7 @@ trait ReporterPrims extends PrimUtils {
       case SimplePrims.SimpleReporter(op)  => op
       case SimplePrims.NormalReporter(op)  => s"$op($commaArgs)"
       case SimplePrims.CheckedReporter(op) => s"$op$uncheckedCall($commaArgs)"
+      case SimplePrims.CompilerCheckedReporter(op) => s"$op($checkedArgs)"
       case SimplePrims.TypeCheck(check)    => s"NLType.checks.$check${arg(0)})"
       case VariableReporter(op)            => op
       case p: prim._const                  => handlers.literal(p.value)

@@ -154,10 +154,6 @@ class MathChecks
 
   # (Number, Number) => Number
   plus: (a, b) ->
-    @validator.commonArgChecks.number_number("+", arguments)
-    @plus_unchecked(a, b)
-
-  plus_unchecked: (a, b) ->
     @validator.checkNumber(a + b)
 
   # (Number, Number) => Number

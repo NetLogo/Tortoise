@@ -41,6 +41,15 @@ object SimplePrims {
       }
   }
 
+  object CompilerCheckedReporter {
+    def unapply(r: Reporter): Option[String] =
+      PartialFunction.condOpt(r) {
+
+        case _: prim.etc._plus => "PrimChecks.math.plus"
+
+      }
+  }
+
   object CheckedReporter {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
@@ -102,7 +111,6 @@ object SimplePrims {
         case _: prim.etc._subtractheadings => "PrimChecks.math.subtractHeadings"
         case _: prim.etc._tan              => "PrimChecks.math.tan"
 
-        case _: prim.etc._plus      => "PrimChecks.math.plus"
         case _: prim._minus         => "PrimChecks.math.minus"
         case _: prim.etc._mult      => "PrimChecks.math.mult"
         case _: prim.etc._remainder => "PrimChecks.math.remainder"
