@@ -200,14 +200,14 @@ object BrowserCompilerTest extends TestSuite {
       val compiler = new BrowserCompiler
       val reporters = Map(
         "3"                  -> "3",
-        "3 + 1"              -> "(3 + 1)",
+        "3 + 1"              -> "PrimChecks.math.plus_unchecked(3, 1)",
         "apples"             -> """world.observer.getGlobal(\"apples\")""",
         "oranges"            -> """world.observer.getGlobal(\"oranges\")""",
-        "3 + apples"         -> """(3 + world.observer.getGlobal(\"apples\"))""",
-        "3 + (bananas 8 10)" -> """(3 + procedures[\"BANANAS\"](8,10))""",
+        "3 + apples"         -> """PrimChecks.math.plus(3, world.observer.getGlobal(\"apples\"))""",
+        "3 + (bananas 8 10)" -> """PrimChecks.math.plus(3, procedures[\"BANANAS\"](8,10))""",
 
         "(3 / apples + (bananas 9001 3) > 0) or oranges" ->
-          """(Prims.gt((PrimChecks.math.div(3, world.observer.getGlobal(\"apples\")) + procedures[\"BANANAS\"](9001,3)), 0) || world.observer.getGlobal(\"oranges\"))""",
+          """PrimChecks.math.bool('OR', Prims.gt(PrimChecks.math.plus(PrimChecks.math.div(3, world.observer.getGlobal(\"apples\")), procedures[\"BANANAS\"](9001,3)), 0)) || PrimChecks.math.bool('OR', world.observer.getGlobal(\"oranges\"))""",
 
         "sum [xcor] of turtles" ->
           """PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtles(), function() { return SelfManager.self().getVariable(\"xcor\"); }))""",
