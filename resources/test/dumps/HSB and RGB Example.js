@@ -76,7 +76,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.equality(procedures["PATCH-QUADRANT"](), ListPrims.list(x, y)); });
+      return PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(procedures["PATCH-QUADRANT"](), ListPrims.list(x, y)); });
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -89,7 +89,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return ListPrims.list((Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div_unchecked(world.topology.width, 2))) ? -1 : 1), (Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.div_unchecked(world.topology.width, 2))) ? -1 : 1));
+      return ListPrims.list((Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1), (Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

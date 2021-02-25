@@ -101,7 +101,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.oneOf_unchecked([15, 55, 105, 0])); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.oneOf([15, 55, 105, 0])); }, true);
       world.ticker.reset();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -116,12 +116,12 @@ var procedures = (function() {
       let swapEvent = 0; letVars['swapEvent'] = swapEvent;
       let reproduceEvent = 1; letVars['reproduceEvent'] = reproduceEvent;
       let selectEvent = 2; letVars['selectEvent'] = selectEvent;
-      let repetitions = PrimChecks.math.div_unchecked(PrimChecks.agentset.count_unchecked(world.patches()), 3); letVars['repetitions'] = repetitions;
-      let events = PrimChecks.list.shuffle_unchecked(ListPrims.sentence(Tasks.nValues(PrimChecks.math.randomPoisson_unchecked(PrimChecks.math.mult(repetitions, procedures["SWAP-RATE"]())), Tasks.reporterTask(function() { return swapEvent; }, "[ swap-event ]")), Tasks.nValues(PrimChecks.math.randomPoisson_unchecked(PrimChecks.math.mult(repetitions, procedures["REPRODUCE-RATE"]())), Tasks.reporterTask(function() { return reproduceEvent; }, "[ reproduce-event ]")), Tasks.nValues(PrimChecks.math.randomPoisson_unchecked(PrimChecks.math.mult(repetitions, procedures["SELECT-RATE"]())), Tasks.reporterTask(function() { return selectEvent; }, "[ select-event ]")))); letVars['events'] = events;
+      let repetitions = PrimChecks.math.div(PrimChecks.agentset.count(world.patches()), 3); letVars['repetitions'] = repetitions;
+      let events = PrimChecks.list.shuffle(ListPrims.sentence(Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, procedures["SWAP-RATE"]()))), Tasks.reporterTask(function() { return swapEvent; }, "[ swap-event ]")), Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, procedures["REPRODUCE-RATE"]()))), Tasks.reporterTask(function() { return reproduceEvent; }, "[ reproduce-event ]")), Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, procedures["SELECT-RATE"]()))), Tasks.reporterTask(function() { return selectEvent; }, "[ select-event ]")))); letVars['events'] = events;
       var _foreach_1684_1691 = Tasks.forEach(Tasks.commandTask(function(_event_) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(world.patches())).ask(function() {
-          let target = PrimChecks.list.oneOf_unchecked(SelfManager.self().getNeighbors4()); letVars['target'] = target;
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.patches())).ask(function() {
+          let target = PrimChecks.list.oneOf(SelfManager.self().getNeighbors4()); letVars['target'] = target;
           if (Prims.equality(_event_, swapEvent)) {
             procedures["SWAP"](target);
           }
@@ -145,7 +145,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let oldColor = SelfManager.self().getPatchVariable("pcolor"); letVars['oldColor'] = oldColor;
-      SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("pcolor"); }));
+      SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
       Errors.askNobodyCheck(target).ask(function() { SelfManager.self().setPatchVariable("pcolor", oldColor); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -161,7 +161,7 @@ var procedures = (function() {
         Errors.askNobodyCheck(target).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
       }
       else {
-        if (PrimChecks.agentset.of(target, function() { return procedures["BEAT?"](SelfManager.myself()); })) {
+        if (PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return procedures["BEAT?"](SelfManager.myself()); })) {
           SelfManager.self().setPatchVariable("pcolor", 0);
         }
       }
@@ -175,14 +175,14 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("pcolor"); }), 0)) {
+      if (Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 0)) {
         Errors.askNobodyCheck(target).ask(function() {
-          SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
+          SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
         }, true);
       }
       else {
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
-          SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("pcolor"); }));
+          SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
         }
       }
     } catch (e) {
@@ -196,7 +196,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return (((Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15) && Prims.equality(PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("pcolor"); }), 55)) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55) && Prims.equality(PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("pcolor"); }), 105))) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105) && Prims.equality(PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("pcolor"); }), 15)));
+      return (((Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15) && Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 55)) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55) && Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 105))) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105) && Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 15)));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -209,7 +209,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.pow(10, exponent);
+      return PrimChecks.math.pow(10, PrimChecks.validator.checkArg('^', 1, exponent));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -261,7 +261,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div_unchecked(PrimChecks.math.mult(100, rate), PrimChecks.math.plus(PrimChecks.math.plus(procedures["SWAP-RATE"](), procedures["REPRODUCE-RATE"]()), procedures["SELECT-RATE"]()));
+      return PrimChecks.math.div(PrimChecks.math.mult(100, PrimChecks.validator.checkArg('*', 1, rate)), PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, procedures["SWAP-RATE"]()), PrimChecks.validator.checkArg('+', 1, procedures["REPRODUCE-RATE"]())), PrimChecks.validator.checkArg('+', 1, procedures["SELECT-RATE"]())));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

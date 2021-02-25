@@ -161,12 +161,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {
-        SelfManager.self().setVariable("heading", PrimChecks.math.random_unchecked(PrimChecks.math.plus_unchecked(PrimChecks.math.minus_unchecked(180, RandomPrims.randomLong(20)), RandomPrims.randomLong(20))));
-        SelfManager.self().setXY(PrimChecks.math.plus_unchecked(PrimChecks.math.div_unchecked(PrimChecks.math.minus_unchecked(world.topology.maxPxcor, world.topology.minPxcor), 2), 3), PrimChecks.math.minus_unchecked(world.topology.maxPycor, 1));
+        SelfManager.self().setVariable("heading", PrimChecks.math.random(PrimChecks.math.plus(PrimChecks.math.minus(180, RandomPrims.randomLong(20)), RandomPrims.randomLong(20))));
+        SelfManager.self().setXY(PrimChecks.math.plus(PrimChecks.math.div(PrimChecks.math.minus(world.topology.maxPxcor, world.topology.minPxcor), 2), 3), PrimChecks.math.minus(world.topology.maxPycor, 1));
       }, true);
       world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {
-        SelfManager.self().setVariable("heading", PrimChecks.math.plus_unchecked(PrimChecks.math.minus_unchecked(90, RandomPrims.randomLong(20)), RandomPrims.randomLong(20)));
-        SelfManager.self().setXY(PrimChecks.math.minus_unchecked(PrimChecks.math.div_unchecked(PrimChecks.math.minus_unchecked(world.topology.maxPxcor, world.topology.minPxcor), 2), 5), PrimChecks.math.minus_unchecked(world.topology.maxPycor, 1));
+        SelfManager.self().setVariable("heading", PrimChecks.math.plus(PrimChecks.math.minus(90, RandomPrims.randomLong(20)), RandomPrims.randomLong(20)));
+        SelfManager.self().setXY(PrimChecks.math.minus(PrimChecks.math.div(PrimChecks.math.minus(world.topology.maxPxcor, world.topology.minPxcor), 2), 5), PrimChecks.math.minus(world.topology.maxPycor, 1));
       }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("POLYMERASES")).ask(function() {
         procedures["ATTACH-ENZYME-TAG"](150,0.85,"polymerase");
@@ -190,7 +190,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("size", 3.2);
         SelfManager.self().setVariable("heading", 90);
         procedures["ATTACH-ENZYME-TAG"](150,0.85,"helicase");
-        SelfManager.self().setXY(PrimChecks.math.div_unchecked(PrimChecks.math.minus_unchecked(world.topology.maxPxcor, world.topology.minPxcor), 2), PrimChecks.math.minus_unchecked(world.topology.maxPycor, 1));
+        SelfManager.self().setXY(PrimChecks.math.div(PrimChecks.math.minus(world.topology.maxPxcor, world.topology.minPxcor), 2), PrimChecks.math.minus(world.topology.maxPycor, 1));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -207,7 +207,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("locked?", false);
         SelfManager.self().setVariable("color", world.observer.getGlobal("topoisomerase-color-0"));
         SelfManager.self().setVariable("size", 1.5);
-        SelfManager.self().setVariable("heading", PrimChecks.math.minus_unchecked(PrimChecks.math.plus_unchecked(-90, PrimChecks.math.randomFloat_unchecked(10)), PrimChecks.math.randomFloat_unchecked(10)));
+        SelfManager.self().setVariable("heading", PrimChecks.math.minus(PrimChecks.math.plus(-90, PrimChecks.math.randomFloat(10)), PrimChecks.math.randomFloat(10)));
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TOPOISOMERASES-GEARS"));
           SelfManager.self().setVariable("shape", "topoisomerase-gears");
@@ -218,7 +218,7 @@ var procedures = (function() {
           }, true);
         }, true);
         procedures["ATTACH-ENZYME-TAG"](150,0.85,"topoisomerase");
-        SelfManager.self().setXY(PrimChecks.math.minus_unchecked(PrimChecks.math.div_unchecked(PrimChecks.math.minus_unchecked(world.topology.maxPxcor, world.topology.minPxcor), 2), 3), PrimChecks.math.minus_unchecked(world.topology.maxPycor, 1));
+        SelfManager.self().setXY(PrimChecks.math.minus(PrimChecks.math.div(PrimChecks.math.minus(world.topology.maxPxcor, world.topology.minPxcor), 2), 3), PrimChecks.math.minus(world.topology.maxPycor, 1));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -266,7 +266,7 @@ var procedures = (function() {
       }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CHROMOSOME-BUILDERS")).ask(function() {
         for (let _index_11870_11876 = 0, _repeatcount_11870_11876 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_11870_11876 < _repeatcount_11870_11876; _index_11870_11876++){
-          placeCounter = PrimChecks.math.plus(placeCounter, 1); letVars['placeCounter'] = placeCounter;
+          placeCounter = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, placeCounter), 1); letVars['placeCounter'] = placeCounter;
           SelfManager.self().hatch(1, "").ask(function() {
             SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
             SelfManager.self().setVariable("value", procedures["RANDOM-BASE-LETTER"]());
@@ -367,7 +367,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if ((PrimChecks.math.bool('AND', world.observer.getGlobal("using-time-limit")) && PrimChecks.math.bool('AND', Prims.gt(world.observer.getGlobal("time-remaining"), 0)) || (PrimChecks.math.not(world.observer.getGlobal("using-time-limit")) && PrimChecks.math.not(world.observer.getGlobal("cell-divided?"))))) {
+      if (((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("using-time-limit")) && Prims.gt(world.observer.getGlobal("time-remaining"), 0)) || (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("using-time-limit"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("cell-divided?")))))) {
         procedures["CHECK-TIMER"]();
         procedures["MOVE-FREE-MOLECULES"]();
         procedures["CLEAN-UP-FREE-PHOSPHATES"]();
@@ -382,7 +382,7 @@ var procedures = (function() {
         procedures["VISUALIZE-AGENTS"]();
         world.ticker.tick();
       }
-      if (PrimChecks.math.bool('AND', world.observer.getGlobal("cell-divided?")) && PrimChecks.math.bool('AND', PrimChecks.math.not(world.observer.getGlobal("cell-message-shown?")))) {
+      if ((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("cell-divided?")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("cell-message-shown?"))))) {
         if (Prims.equality(world.observer.getGlobal("final-time"), 0)) {
           world.observer.setGlobal("final-time", workspace.timer.elapsed());
         }
@@ -391,7 +391,7 @@ var procedures = (function() {
         UserDialogPrims.confirm(procedures["USER-MESSAGE-STRING-FOR-MUTATIONS"]());
         world.observer.setGlobal("cell-message-shown?", true);
       }
-      if ((PrimChecks.math.bool('AND', world.observer.getGlobal("using-time-limit")) && PrimChecks.math.bool('AND', Prims.lte(world.observer.getGlobal("time-remaining"), 0)) && PrimChecks.math.not(world.observer.getGlobal("timer-message-shown?")))) {
+      if (((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("using-time-limit")) && Prims.lte(world.observer.getGlobal("time-remaining"), 0)) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("timer-message-shown?"))))) {
         if (Prims.equality(world.observer.getGlobal("final-time"), 0)) {
           world.observer.setGlobal("final-time", world.observer.getGlobal("length-of-simulation"));
         }
@@ -410,12 +410,12 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (PrimChecks.math.not(world.observer.getGlobal("simulation-started?"))) {
+      if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("simulation-started?")))) {
         world.observer.setGlobal("simulation-started?", true);
         workspace.timer.reset();
       }
       if (world.observer.getGlobal("using-time-limit")) {
-        world.observer.setGlobal("time-remaining", PrimChecks.math.minus(world.observer.getGlobal("length-of-simulation"), workspace.timer.elapsed()));
+        world.observer.setGlobal("time-remaining", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("length-of-simulation")), workspace.timer.elapsed()));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -428,10 +428,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("ENZYME-TAGS")).ask(function() {
-        SelfManager.self().setVariable("hidden?", PrimChecks.math.not(world.observer.getGlobal("enzyme-labels?")));
+        SelfManager.self().setVariable("hidden?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("enzyme-labels?"))));
       }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("NUCLEOTIDE-TAGS")).ask(function() {
-        SelfManager.self().setVariable("hidden?", PrimChecks.math.not(world.observer.getGlobal("nucleo-labels?")));
+        SelfManager.self().setVariable("hidden?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("nucleo-labels?"))));
       }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("TOPOISOMERASES")).ask(function() {
         if (SelfManager.self().getVariable("locked?")) {
@@ -488,10 +488,12 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let woundNucleotides = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() { return PrimChecks.math.not(SelfManager.self().getVariable("unwound?")); }); letVars['woundNucleotides'] = woundNucleotides;
-      if (PrimChecks.agentset.any(woundNucleotides)) {
-        let maxWoundPlace = PrimChecks.list.max(PrimChecks.agentset.of(woundNucleotides, function() { return SelfManager.self().getVariable("place"); })); letVars['maxWoundPlace'] = maxWoundPlace;
-        Errors.askNobodyCheck(PrimChecks.agentset.with(woundNucleotides, function() { return Prims.equality(SelfManager.self().getVariable("place"), maxWoundPlace); })).ask(function() {
+      let woundNucleotides = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
+        return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getVariable("unwound?")));
+      }); letVars['woundNucleotides'] = woundNucleotides;
+      if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, woundNucleotides))) {
+        let maxWoundPlace = PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, woundNucleotides), function() { return SelfManager.self().getVariable("place"); }))); letVars['maxWoundPlace'] = maxWoundPlace;
+        Errors.askNobodyCheck(PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, woundNucleotides), function() { return Prims.equality(SelfManager.self().getVariable("place"), maxWoundPlace); })).ask(function() {
           SelfManager.self().right(-(world.observer.getGlobal("wind-angle")));
           SelfManager.self().setVariable("unwound?", true);
           SelfManager.self().setVariable("color", world.observer.getGlobal("unwound-dna-color"));
@@ -508,12 +510,12 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let unwoundNucleotides = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
-        return (PrimChecks.math.bool('AND', SelfManager.self().getVariable("unwound?")) && PrimChecks.math.bool('AND', !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-bottom")) && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-top"));
+      let unwoundNucleotides = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
+        return ((PrimChecks.validator.checkArg('AND', 2, SelfManager.self().getVariable("unwound?")) && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-bottom")) && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-top"));
       }); letVars['unwoundNucleotides'] = unwoundNucleotides;
-      if (PrimChecks.agentset.any(unwoundNucleotides)) {
-        let minUnwoundPlace = PrimChecks.list.min(PrimChecks.agentset.of(unwoundNucleotides, function() { return SelfManager.self().getVariable("place"); })); letVars['minUnwoundPlace'] = minUnwoundPlace;
-        Errors.askNobodyCheck(PrimChecks.agentset.with(unwoundNucleotides, function() { return Prims.equality(SelfManager.self().getVariable("place"), minUnwoundPlace); })).ask(function() {
+      if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, unwoundNucleotides))) {
+        let minUnwoundPlace = PrimChecks.list.min(PrimChecks.validator.checkArg('MIN', 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, unwoundNucleotides), function() { return SelfManager.self().getVariable("place"); }))); letVars['minUnwoundPlace'] = minUnwoundPlace;
+        Errors.askNobodyCheck(PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, unwoundNucleotides), function() { return Prims.equality(SelfManager.self().getVariable("place"), minUnwoundPlace); })).ask(function() {
           SelfManager.self().right(world.observer.getGlobal("wind-angle"));
           SelfManager.self().setVariable("unwound?", false);
           SelfManager.self().setVariable("color", world.observer.getGlobal("wound-dna-color"));
@@ -530,10 +532,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let wereAnyNucleotidesUnzippedFurther_p = false; letVars['wereAnyNucleotidesUnzippedFurther_p'] = wereAnyNucleotidesUnzippedFurther_p;
-      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
-        return PrimChecks.math.bool('AND', procedures["NEXT-NUCLEOTIDE-UNZIPPED-THE-SAME?"]()) && PrimChecks.math.bool('AND', Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0));
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
+        return (PrimChecks.validator.checkArg('AND', 2, procedures["NEXT-NUCLEOTIDE-UNZIPPED-THE-SAME?"]()) && Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0));
       })).ask(function() {
-        let fractionalSeparation = PrimChecks.math.div(SelfManager.self().getVariable("unzipped-stage"), 2); letVars['fractionalSeparation'] = fractionalSeparation;
+        let fractionalSeparation = PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, SelfManager.self().getVariable("unzipped-stage")), 2); letVars['fractionalSeparation'] = fractionalSeparation;
         if (Prims.equality(SelfManager.self().getVariable("unzipped-stage"), 3)) {
           Errors.askNobodyCheck(LinkPrims.myLinks("OLD-STAIRS")).ask(function() { SelfManager.self().die(); }, true);
           Errors.askNobodyCheck(LinkPrims.myOutLinks("BACKBONES")).ask(function() { SelfManager.self().die(); }, true);
@@ -542,13 +544,13 @@ var procedures = (function() {
           Errors.askNobodyCheck(LinkPrims.myOutLinks("BACKBONES")).ask(function() { SelfManager.self().untie(); }, true);
         }
         if ((Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0) && Prims.lt(SelfManager.self().getVariable("unzipped-stage"), 4))) {
-          SelfManager.self().setVariable("unzipped-stage", PrimChecks.math.plus(SelfManager.self().getVariable("unzipped-stage"), 1));
+          SelfManager.self().setVariable("unzipped-stage", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("unzipped-stage")), 1));
           wereAnyNucleotidesUnzippedFurther_p = true; letVars['wereAnyNucleotidesUnzippedFurther_p'] = wereAnyNucleotidesUnzippedFurther_p;
           if (Prims.equality(SelfManager.self().getVariable("class"), "original-dna-top")) {
             SelfManager.self().setVariable("ycor", fractionalSeparation);
           }
           if (Prims.equality(SelfManager.self().getVariable("class"), "original-dna-bottom")) {
-            SelfManager.self().setVariable("ycor", PrimChecks.math.mult(-1, fractionalSeparation));
+            SelfManager.self().setVariable("ycor", PrimChecks.math.mult(-1, PrimChecks.validator.checkArg('*', 1, fractionalSeparation)));
           }
         }
       }, true);
@@ -573,20 +575,20 @@ var procedures = (function() {
       let lowestPlace = 0; letVars['lowestPlace'] = lowestPlace;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("HELICASES")).ask(function() {
         let thisHelicase = SelfManager.self(); letVars['thisHelicase'] = thisHelicase;
-        let unzippedNucleotides = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() { return Prims.equality(SelfManager.self().getVariable("unzipped-stage"), 0); }); letVars['unzippedNucleotides'] = unzippedNucleotides;
-        if (PrimChecks.agentset.any(unzippedNucleotides)) {
-          lowestPlace = PrimChecks.agentset.minOneOf(unzippedNucleotides, function() { return SelfManager.self().getVariable("place"); }); letVars['lowestPlace'] = lowestPlace;
+        let unzippedNucleotides = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() { return Prims.equality(SelfManager.self().getVariable("unzipped-stage"), 0); }); letVars['unzippedNucleotides'] = unzippedNucleotides;
+        if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, unzippedNucleotides))) {
+          lowestPlace = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 112, unzippedNucleotides), function() { return SelfManager.self().getVariable("place"); }); letVars['lowestPlace'] = lowestPlace;
         }
-        let availableNucleotides = PrimChecks.agentset.with(unzippedNucleotides, function() {
-          return PrimChecks.math.bool('AND', Prims.lt(SelfManager.self().distance(thisHelicase), 1)) && PrimChecks.math.bool('AND', procedures["ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?"]());
+        let availableNucleotides = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, unzippedNucleotides), function() {
+          return (Prims.lt(SelfManager.self().distance(thisHelicase), 1) && PrimChecks.validator.checkArg('AND', 2, procedures["ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?"]()));
         }); letVars['availableNucleotides'] = availableNucleotides;
-        if (PrimChecks.agentset.any(availableNucleotides)) {
-          let lowestValueNucleotide = PrimChecks.agentset.minOneOf(availableNucleotides, function() { return SelfManager.self().getVariable("place"); }); letVars['lowestValueNucleotide'] = lowestValueNucleotide;
+        if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, availableNucleotides))) {
+          let lowestValueNucleotide = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 112, availableNucleotides), function() { return SelfManager.self().getVariable("place"); }); letVars['lowestValueNucleotide'] = lowestValueNucleotide;
           Errors.askNobodyCheck(lowestValueNucleotide).ask(function() {
             let base = SelfManager.self(); letVars['base'] = base;
             let basePlace = SelfManager.self().getVariable("place"); letVars['basePlace'] = basePlace;
             let otherBase = PrimChecks.agentset.otherWith(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() { return Prims.equality(SelfManager.self().getVariable("place"), basePlace); }); letVars['otherBase'] = otherBase;
-            if (PrimChecks.agentset.any(otherBase)) {
+            if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, otherBase))) {
               SelfManager.self().setVariable("unzipped-stage", 1);
               Errors.askNobodyCheck(otherBase).ask(function() { SelfManager.self().setVariable("unzipped-stage", 1); }, true);
             }
@@ -605,7 +607,7 @@ var procedures = (function() {
       var letVars = { };
       let allMolecules = PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), world.turtleManager.turtlesOfBreed("PHOSPHATES"), world.turtleManager.turtlesOfBreed("POLYMERASES"), world.turtleManager.turtlesOfBreed("HELICASES"), world.turtleManager.turtlesOfBreed("TOPOISOMERASES")); letVars['allMolecules'] = allMolecules;
       Errors.askNobodyCheck(allMolecules).ask(function() {
-        if (PrimChecks.math.not(procedures["BEING-DRAGGED-BY-CURSOR?"]())) {
+        if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, procedures["BEING-DRAGGED-BY-CURSOR?"]()))) {
           SelfManager.self().fd(world.observer.getGlobal("molecule-step"));
         }
       }, true);
@@ -634,11 +636,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOSIDES")), world.observer.getGlobal("free-nucleosides"))) {
+      if (Prims.lt(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("NUCLEOSIDES")), world.observer.getGlobal("free-nucleosides"))) {
         procedures["MAKE-A-NUCLEOSIDE"]();
       }
-      if (Prims.gt(PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOSIDES")), world.observer.getGlobal("free-nucleosides"))) {
-        Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"))).ask(function() {
+      if (Prims.gt(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("NUCLEOSIDES")), world.observer.getGlobal("free-nucleosides"))) {
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"))).ask(function() {
           Errors.askNobodyCheck(LinkPrims.linkNeighbors("TAGLINES")).ask(function() { SelfManager.self().die(); }, true);
           SelfManager.self().die();
         }, true);
@@ -660,34 +662,34 @@ var procedures = (function() {
         let nucleosidesReadyToGearToPolymerase = Nobody; letVars['nucleosidesReadyToGearToPolymerase'] = nucleosidesReadyToGearToPolymerase;
         let potentialNucleosideReadyToGearToPolymerase = Nobody; letVars['potentialNucleosideReadyToGearToPolymerase'] = potentialNucleosideReadyToGearToPolymerase;
         let targetNucleotideReadyToGearToPolymerase = Nobody; letVars['targetNucleotideReadyToGearToPolymerase'] = targetNucleotideReadyToGearToPolymerase;
-        nucleosidesReadyToGearToPolymerase = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), function() {
+        nucleosidesReadyToGearToPolymerase = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), function() {
           return Prims.lt(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("lock-radius"));
         }); letVars['nucleosidesReadyToGearToPolymerase'] = nucleosidesReadyToGearToPolymerase;
         if (PrimChecks.agentset.optimizeCount(nucleosidesReadyToGearToPolymerase, 1, (a, b) => a > b)) {
-          potentialNucleosideReadyToGearToPolymerase = PrimChecks.agentset.minOneOf(nucleosidesReadyToGearToPolymerase, function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['potentialNucleosideReadyToGearToPolymerase'] = potentialNucleosideReadyToGearToPolymerase;
+          potentialNucleosideReadyToGearToPolymerase = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 112, nucleosidesReadyToGearToPolymerase), function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['potentialNucleosideReadyToGearToPolymerase'] = potentialNucleosideReadyToGearToPolymerase;
         }
         if (PrimChecks.agentset.optimizeCount(nucleosidesReadyToGearToPolymerase, 1, (a, b) => a === b)) {
           potentialNucleosideReadyToGearToPolymerase = nucleosidesReadyToGearToPolymerase; letVars['potentialNucleosideReadyToGearToPolymerase'] = potentialNucleosideReadyToGearToPolymerase;
         }
-        let nucleotidesReadyToGearToPolymerase = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
-          return (((PrimChecks.math.not_unchecked(PrimChecks.agentset.any_unchecked(LinkPrims.myLinks("OLD-STAIRS"))) && PrimChecks.math.not_unchecked(PrimChecks.agentset.any_unchecked(LinkPrims.myLinks("NEW-STAIRS")))) && (Prims.equality(SelfManager.self().getVariable("class"), "original-dna-bottom") || Prims.equality(SelfManager.self().getVariable("class"), "original-dna-top"))) && Prims.lt(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("lock-radius")));
+        let nucleotidesReadyToGearToPolymerase = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
+          return (((PrimChecks.math.not(PrimChecks.agentset.any(LinkPrims.myLinks("OLD-STAIRS"))) && PrimChecks.math.not(PrimChecks.agentset.any(LinkPrims.myLinks("NEW-STAIRS")))) && (Prims.equality(SelfManager.self().getVariable("class"), "original-dna-bottom") || Prims.equality(SelfManager.self().getVariable("class"), "original-dna-top"))) && Prims.lt(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("lock-radius")));
         }); letVars['nucleotidesReadyToGearToPolymerase'] = nucleotidesReadyToGearToPolymerase;
-        if ((PrimChecks.math.bool('AND', PrimChecks.agentset.any(nucleotidesReadyToGearToPolymerase)) && PrimChecks.math.bool('AND', procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && PrimChecks.math.not(procedures["BEING-DRAGGED-BY-CURSOR?"]()))) {
-          targetNucleotideReadyToGearToPolymerase = PrimChecks.agentset.minOneOf(nucleotidesReadyToGearToPolymerase, function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['targetNucleotideReadyToGearToPolymerase'] = targetNucleotideReadyToGearToPolymerase;
-          targetXcor = PrimChecks.agentset.of(targetNucleotideReadyToGearToPolymerase, function() { return SelfManager.self().getVariable("xcor"); }); letVars['targetXcor'] = targetXcor;
-          targetYcor = PrimChecks.agentset.of(targetNucleotideReadyToGearToPolymerase, function() { return SelfManager.self().getVariable("ycor"); }); letVars['targetYcor'] = targetYcor;
-          targetClass = PrimChecks.agentset.of(targetNucleotideReadyToGearToPolymerase, function() { return SelfManager.self().getVariable("class"); }); letVars['targetClass'] = targetClass;
+        if (((PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, nucleotidesReadyToGearToPolymerase)) && PrimChecks.validator.checkArg('AND', 2, procedures["ALL-BASE-PAIRS-UNWOUND?"]())) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, procedures["BEING-DRAGGED-BY-CURSOR?"]())))) {
+          targetNucleotideReadyToGearToPolymerase = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 112, nucleotidesReadyToGearToPolymerase), function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['targetNucleotideReadyToGearToPolymerase'] = targetNucleotideReadyToGearToPolymerase;
+          targetXcor = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, targetNucleotideReadyToGearToPolymerase), function() { return SelfManager.self().getVariable("xcor"); }); letVars['targetXcor'] = targetXcor;
+          targetYcor = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, targetNucleotideReadyToGearToPolymerase), function() { return SelfManager.self().getVariable("ycor"); }); letVars['targetYcor'] = targetYcor;
+          targetClass = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, targetNucleotideReadyToGearToPolymerase), function() { return SelfManager.self().getVariable("class"); }); letVars['targetClass'] = targetClass;
           SelfManager.self().setXY(targetXcor, targetYcor);
         }
-        if ((PrimChecks.math.not_unchecked(PrimChecks.agentset.any(nucleotidesReadyToGearToPolymerase)) || SelfPrims._optimalAnyOther(SelfManager.self().breedHere("POLYMERASES")))) {
+        if ((PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, nucleotidesReadyToGearToPolymerase))) || SelfPrims._optimalAnyOther(SelfManager.self().breedHere("POLYMERASES")))) {
           SelfManager.self().setVariable("locked-state", 0);
         }
-        if (((PrimChecks.math.bool('AND', PrimChecks.agentset.any(nucleotidesReadyToGearToPolymerase)) && PrimChecks.math.bool('AND', procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && PrimChecks.math.not_unchecked(SelfPrims._optimalAnyOther(SelfManager.self().breedHere("POLYMERASES"))))) {
+        if ((((PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, nucleotidesReadyToGearToPolymerase)) && PrimChecks.validator.checkArg('AND', 2, procedures["ALL-BASE-PAIRS-UNWOUND?"]())) && Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && PrimChecks.math.not(SelfPrims._optimalAnyOther(SelfManager.self().breedHere("POLYMERASES"))))) {
           SelfManager.self().setVariable("locked-state", 1);
         }
-        if (((PrimChecks.math.bool('AND', !Prims.equality(targetNucleotideReadyToGearToPolymerase, Nobody)) && PrimChecks.math.bool('AND', procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && !Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && PrimChecks.math.not_unchecked(SelfPrims._optimalAnyOther(SelfManager.self().breedHere("POLYMERASES"))))) {
+        if ((((!Prims.equality(targetNucleotideReadyToGearToPolymerase, Nobody) && PrimChecks.validator.checkArg('AND', 2, procedures["ALL-BASE-PAIRS-UNWOUND?"]())) && !Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && PrimChecks.math.not(SelfPrims._optimalAnyOther(SelfManager.self().breedHere("POLYMERASES"))))) {
           SelfManager.self().setVariable("locked-state", 2);
-          if (PrimChecks.math.bool('OR', procedures["WOULD-THESE-NUCLEOTIDES-PAIR-CORRECTLY?"](targetNucleotideReadyToGearToPolymerase,potentialNucleosideReadyToGearToPolymerase)) || PrimChecks.math.bool('OR', world.observer.getGlobal("substitutions?"))) {
+          if ((PrimChecks.validator.checkArg('OR', 2, procedures["WOULD-THESE-NUCLEOTIDES-PAIR-CORRECTLY?"](targetNucleotideReadyToGearToPolymerase,potentialNucleosideReadyToGearToPolymerase)) || PrimChecks.validator.checkArg('OR', 2, world.observer.getGlobal("substitutions?")))) {
             Errors.askNobodyCheck(potentialNucleosideReadyToGearToPolymerase).ask(function() {
               Errors.askNobodyCheck(LinkPrims.myInLinks("CURSOR-DRAGS")).ask(function() { SelfManager.self().die(); }, true);
               Errors.askNobodyCheck(LinkPrims.linkNeighbors("TAGLINES")).ask(function() { SelfManager.self().die(); }, true);
@@ -745,20 +747,22 @@ var procedures = (function() {
       let targetXcor = 0; letVars['targetXcor'] = targetXcor;
       let targetYcor = 0; letVars['targetYcor'] = targetYcor;
       let targetClass = ""; letVars['targetClass'] = targetClass;
-      let woundNucleotides = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() { return PrimChecks.math.not(SelfManager.self().getVariable("unwound?")); }); letVars['woundNucleotides'] = woundNucleotides;
+      let woundNucleotides = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
+        return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getVariable("unwound?")));
+      }); letVars['woundNucleotides'] = woundNucleotides;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("TOPOISOMERASES")).ask(function() {
-        if (PrimChecks.agentset.any(woundNucleotides)) {
-          let targetPrimasesReadyToGearToTopoisomerase = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("PRIMASES"), function() {
+        if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, woundNucleotides))) {
+          let targetPrimasesReadyToGearToTopoisomerase = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PRIMASES"), function() {
             return Prims.lt(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("lock-radius"));
           }); letVars['targetPrimasesReadyToGearToTopoisomerase'] = targetPrimasesReadyToGearToTopoisomerase;
-          if (PrimChecks.agentset.any(targetPrimasesReadyToGearToTopoisomerase)) {
-            let targetPrimaseReadyToGearToTopoisomerase = PrimChecks.list.oneOf(targetPrimasesReadyToGearToTopoisomerase); letVars['targetPrimaseReadyToGearToTopoisomerase'] = targetPrimaseReadyToGearToTopoisomerase;
+          if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, targetPrimasesReadyToGearToTopoisomerase))) {
+            let targetPrimaseReadyToGearToTopoisomerase = PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, targetPrimasesReadyToGearToTopoisomerase)); letVars['targetPrimaseReadyToGearToTopoisomerase'] = targetPrimaseReadyToGearToTopoisomerase;
             SelfManager.self().setVariable("locked?", true);
-            if (PrimChecks.math.not_unchecked(MousePrims.isDown())) {
+            if (PrimChecks.math.not(MousePrims.isDown())) {
               procedures["UNWIND-DNA"]();
               Errors.askNobodyCheck(LinkPrims.myInLinks("CURSOR-DRAGS")).ask(function() { SelfManager.self().die(); }, true);
-              targetXcor = PrimChecks.agentset.of(targetPrimaseReadyToGearToTopoisomerase, function() { return SelfManager.self().getVariable("xcor"); }); letVars['targetXcor'] = targetXcor;
-              targetYcor = PrimChecks.agentset.of(targetPrimaseReadyToGearToTopoisomerase, function() { return SelfManager.self().getVariable("ycor"); }); letVars['targetYcor'] = targetYcor;
+              targetXcor = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, targetPrimaseReadyToGearToTopoisomerase), function() { return SelfManager.self().getVariable("xcor"); }); letVars['targetXcor'] = targetXcor;
+              targetYcor = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, targetPrimaseReadyToGearToTopoisomerase), function() { return SelfManager.self().getVariable("ycor"); }); letVars['targetYcor'] = targetYcor;
               SelfManager.self().setXY(targetXcor, targetYcor);
             }
           }
@@ -786,31 +790,31 @@ var procedures = (function() {
       world.observer.setGlobal("total-deletion-mutations-bottom-strand", 0);
       world.observer.setGlobal("total-substitution-mutations-bottom-strand", 0);
       world.observer.setGlobal("total-correct-duplications-bottom-strand", 0);
-      let originalNucleotides = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() { return Prims.equality(SelfManager.self().getVariable("class"), "original-dna-top"); }); letVars['originalNucleotides'] = originalNucleotides;
+      let originalNucleotides = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() { return Prims.equality(SelfManager.self().getVariable("class"), "original-dna-top"); }); letVars['originalNucleotides'] = originalNucleotides;
       Errors.askNobodyCheck(originalNucleotides).ask(function() {
-        if (PrimChecks.math.not_unchecked(PrimChecks.agentset.any_unchecked(LinkPrims.myLinks("NEW-STAIRS")))) {
-          world.observer.setGlobal("total-deletion-mutations-top-strand", PrimChecks.math.plus(world.observer.getGlobal("total-deletion-mutations-top-strand"), 1));
+        if (PrimChecks.math.not(PrimChecks.agentset.any(LinkPrims.myLinks("NEW-STAIRS")))) {
+          world.observer.setGlobal("total-deletion-mutations-top-strand", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-deletion-mutations-top-strand")), 1));
         }
-        if (Prims.gte(PrimChecks.agentset.count_unchecked(LinkPrims.myLinks("NEW-STAIRS")), 1)) {
+        if (Prims.gte(PrimChecks.agentset.count(LinkPrims.myLinks("NEW-STAIRS")), 1)) {
           if (procedures["IS-THIS-NUCLEOTIDE-PAIRED-CORRECTLY?"]()) {
-            world.observer.setGlobal("total-correct-duplications-top-strand", PrimChecks.math.plus(world.observer.getGlobal("total-correct-duplications-top-strand"), 1));
+            world.observer.setGlobal("total-correct-duplications-top-strand", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-top-strand")), 1));
           }
           else {
-            world.observer.setGlobal("total-substitution-mutations-top-strand", PrimChecks.math.plus(world.observer.getGlobal("total-substitution-mutations-top-strand"), 1));
+            world.observer.setGlobal("total-substitution-mutations-top-strand", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-substitution-mutations-top-strand")), 1));
           }
         }
       }, true);
-      originalNucleotides = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() { return Prims.equality(SelfManager.self().getVariable("class"), "original-dna-bottom"); }); letVars['originalNucleotides'] = originalNucleotides;
+      originalNucleotides = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() { return Prims.equality(SelfManager.self().getVariable("class"), "original-dna-bottom"); }); letVars['originalNucleotides'] = originalNucleotides;
       Errors.askNobodyCheck(originalNucleotides).ask(function() {
-        if (PrimChecks.math.not_unchecked(PrimChecks.agentset.any_unchecked(LinkPrims.myLinks("NEW-STAIRS")))) {
-          world.observer.setGlobal("total-deletion-mutations-bottom-strand", PrimChecks.math.plus(world.observer.getGlobal("total-deletion-mutations-bottom-strand"), 1));
+        if (PrimChecks.math.not(PrimChecks.agentset.any(LinkPrims.myLinks("NEW-STAIRS")))) {
+          world.observer.setGlobal("total-deletion-mutations-bottom-strand", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-deletion-mutations-bottom-strand")), 1));
         }
-        if (Prims.gte(PrimChecks.agentset.count_unchecked(LinkPrims.myLinks("NEW-STAIRS")), 1)) {
+        if (Prims.gte(PrimChecks.agentset.count(LinkPrims.myLinks("NEW-STAIRS")), 1)) {
           if (procedures["IS-THIS-NUCLEOTIDE-PAIRED-CORRECTLY?"]()) {
-            world.observer.setGlobal("total-correct-duplications-bottom-strand", PrimChecks.math.plus(world.observer.getGlobal("total-correct-duplications-bottom-strand"), 1));
+            world.observer.setGlobal("total-correct-duplications-bottom-strand", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-bottom-strand")), 1));
           }
           else {
-            world.observer.setGlobal("total-substitution-mutations-bottom-strand", PrimChecks.math.plus(world.observer.getGlobal("total-substitution-mutations-bottom-strand"), 1));
+            world.observer.setGlobal("total-substitution-mutations-bottom-strand", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-substitution-mutations-bottom-strand")), 1));
           }
         }
       }, true);
@@ -833,31 +837,31 @@ var procedures = (function() {
         SelfManager.self().setXY(pMouseXcor, pMouseYcor);
         SelfManager.self().setVariable("hidden?", true);
         let allMoveableMolecules = PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), world.turtleManager.turtlesOfBreed("POLYMERASES"), world.turtleManager.turtlesOfBreed("HELICASES"), world.turtleManager.turtlesOfBreed("TOPOISOMERASES")); letVars['allMoveableMolecules'] = allMoveableMolecules;
-        let draggableMolecules = PrimChecks.agentset.with(allMoveableMolecules, function() {
-          return (PrimChecks.math.not(procedures["BEING-DRAGGED-BY-CURSOR?"]()) && Prims.lte(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("mouse-drag-radius")));
+        let draggableMolecules = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, allMoveableMolecules), function() {
+          return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, procedures["BEING-DRAGGED-BY-CURSOR?"]())) && Prims.lte(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("mouse-drag-radius")));
         }); letVars['draggableMolecules'] = draggableMolecules;
-        if (((PrimChecks.math.not(currentMouseDown_p) && MousePrims.isInside()) && PrimChecks.agentset.any(draggableMolecules))) {
+        if (((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, currentMouseDown_p)) && MousePrims.isInside()) && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, draggableMolecules)))) {
           SelfManager.self().setVariable("color", world.observer.getGlobal("cursor-detect-color"));
           SelfManager.self().setVariable("hidden?", false);
           SelfManager.self().right(4);
         }
-        if (PrimChecks.math.bool('AND', procedures["IS-THIS-CURSOR-DRAGGING-ANYTHING?"]()) && PrimChecks.math.bool('AND', MousePrims.isInside())) {
+        if ((PrimChecks.validator.checkArg('AND', 2, procedures["IS-THIS-CURSOR-DRAGGING-ANYTHING?"]()) && MousePrims.isInside())) {
           SelfManager.self().setVariable("color", world.observer.getGlobal("cursor-drag-color"));
           SelfManager.self().setVariable("hidden?", false);
         }
-        if (((PrimChecks.math.bool('AND', PrimChecks.math.not(world.observer.getGlobal("mouse-continuous-down?"))) && PrimChecks.math.bool('AND', currentMouseDown_p) && PrimChecks.math.not(procedures["IS-THIS-CURSOR-DRAGGING-ANYTHING?"]())) && PrimChecks.agentset.any(draggableMolecules))) {
-          targetTurtle = PrimChecks.agentset.minOneOf(draggableMolecules, function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['targetTurtle'] = targetTurtle;
+        if ((((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("mouse-continuous-down?"))) && PrimChecks.validator.checkArg('AND', 2, currentMouseDown_p)) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, procedures["IS-THIS-CURSOR-DRAGGING-ANYTHING?"]()))) && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, draggableMolecules)))) {
+          targetTurtle = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 112, draggableMolecules), function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['targetTurtle'] = targetTurtle;
           Errors.askNobodyCheck(targetTurtle).ask(function() { SelfManager.self().setXY(pMouseXcor, pMouseYcor); }, true);
           LinkPrims.createLinkTo(targetTurtle, "CURSOR-DRAGS").ask(function() {
             SelfManager.self().setVariable("hidden?", false);
             SelfManager.self().tie();
           }, true);
         }
-        if (PrimChecks.math.not(currentMouseDown_p)) {
+        if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, currentMouseDown_p))) {
           Errors.askNobodyCheck(LinkPrims.myOutLinks("CURSOR-DRAGS")).ask(function() { SelfManager.self().die(); }, true);
         }
       }, true);
-      if (PrimChecks.math.bool('AND', currentMouseDown_p) && PrimChecks.math.bool('AND', MousePrims.isDown())) {
+      if ((PrimChecks.validator.checkArg('AND', 2, currentMouseDown_p) && MousePrims.isDown())) {
         world.observer.setGlobal("mouse-continuous-down?", true);
       }
       else {
@@ -945,7 +949,7 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if (PrimChecks.agentset.any_unchecked(LinkPrims.outLinkNeighbors("CURSOR-DRAGS"))) {
+      if (PrimChecks.agentset.any(LinkPrims.outLinkNeighbors("CURSOR-DRAGS"))) {
         Errors.reportInContextCheck(reporterContext);
         return true;
       }
@@ -964,7 +968,7 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if (PrimChecks.agentset.any_unchecked(LinkPrims.myInLinks("CURSOR-DRAGS"))) {
+      if (PrimChecks.agentset.any(LinkPrims.myInLinks("CURSOR-DRAGS"))) {
         Errors.reportInContextCheck(reporterContext);
         return true;
       }
@@ -983,7 +987,9 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() { return PrimChecks.math.not(SelfManager.self().getVariable("unwound?")); })) {
+      if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
+        return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getVariable("unwound?")));
+      })) {
         Errors.reportInContextCheck(reporterContext);
         return false;
       }
@@ -1002,7 +1008,7 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if (Prims.equality(procedures["COMPLEMENTARY-BASE"](PrimChecks.agentset.of(nucleotide1, function() { return SelfManager.self().getVariable("value"); })), PrimChecks.list.item(0, PrimChecks.agentset.of(nucleotide2, function() { return SelfManager.self().getVariable("value"); })))) {
+      if (Prims.equality(procedures["COMPLEMENTARY-BASE"](PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, nucleotide1), function() { return SelfManager.self().getVariable("value"); })), PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, nucleotide2), function() { return SelfManager.self().getVariable("value"); }))))) {
         Errors.reportInContextCheck(reporterContext);
         return true;
       }
@@ -1022,18 +1028,18 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       let originalNucleotide = SelfManager.self(); letVars['originalNucleotide'] = originalNucleotide;
-      let thisStair = PrimChecks.list.oneOf_unchecked(LinkPrims.myLinks("NEW-STAIRS")); letVars['thisStair'] = thisStair;
+      let thisStair = PrimChecks.list.oneOf(LinkPrims.myLinks("NEW-STAIRS")); letVars['thisStair'] = thisStair;
       let thisPairedNucleotide = Nobody; letVars['thisPairedNucleotide'] = thisPairedNucleotide;
       let overwrite_p = false; letVars['overwrite_p'] = overwrite_p;
       Errors.askNobodyCheck(thisStair).ask(function() {
         thisPairedNucleotide = SelfManager.self().otherEnd(); letVars['thisPairedNucleotide'] = thisPairedNucleotide;
         if (!Prims.equality(thisPairedNucleotide, Nobody)) {
-          if ((!Prims.equality(PrimChecks.agentset.of(thisPairedNucleotide, function() { return SelfManager.self().getVariable("class"); }), "copy-of-dna-bottom") && !Prims.equality(PrimChecks.agentset.of(thisPairedNucleotide, function() { return SelfManager.self().getVariable("class"); }), "copy-of-dna-top"))) {
+          if ((!Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, thisPairedNucleotide), function() { return SelfManager.self().getVariable("class"); }), "copy-of-dna-bottom") && !Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, thisPairedNucleotide), function() { return SelfManager.self().getVariable("class"); }), "copy-of-dna-top"))) {
             overwrite_p = true; letVars['overwrite_p'] = overwrite_p;
           }
         }
       }, true);
-      if ((Prims.equality(SelfManager.self().getVariable("value"), procedures["COMPLEMENTARY-BASE"](PrimChecks.agentset.of(thisPairedNucleotide, function() { return SelfManager.self().getVariable("value"); }))) && PrimChecks.math.not(overwrite_p))) {
+      if ((Prims.equality(SelfManager.self().getVariable("value"), procedures["COMPLEMENTARY-BASE"](PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, thisPairedNucleotide), function() { return SelfManager.self().getVariable("value"); }))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, overwrite_p)))) {
         Errors.reportInContextCheck(reporterContext);
         return true;
       }
@@ -1055,12 +1061,12 @@ var procedures = (function() {
       let myUnzippedStage = SelfManager.self().getVariable("unzipped-stage"); letVars['myUnzippedStage'] = myUnzippedStage;
       let myPlace = SelfManager.self().getVariable("place"); letVars['myPlace'] = myPlace;
       let myClass = SelfManager.self().getVariable("class"); letVars['myClass'] = myClass;
-      let nextNucleotidesAvailable = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
-        return ((Prims.equality(SelfManager.self().getVariable("class"), myClass) && Prims.equality(SelfManager.self().getVariable("place"), PrimChecks.math.plus(myPlace, 1))) && Prims.equality(SelfManager.self().getVariable("unzipped-stage"), myUnzippedStage));
+      let nextNucleotidesAvailable = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
+        return ((Prims.equality(SelfManager.self().getVariable("class"), myClass) && Prims.equality(SelfManager.self().getVariable("place"), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, myPlace), 1))) && Prims.equality(SelfManager.self().getVariable("unzipped-stage"), myUnzippedStage));
       }); letVars['nextNucleotidesAvailable'] = nextNucleotidesAvailable;
       let canContinueToUnzip_p = false; letVars['canContinueToUnzip_p'] = canContinueToUnzip_p;
       if (Prims.lt(myPlace, world.observer.getGlobal("dna-strand-length"))) {
-        if (PrimChecks.math.bool('AND', PrimChecks.agentset.any(nextNucleotidesAvailable)) && PrimChecks.math.bool('AND', procedures["ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?"]())) {
+        if ((PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, nextNucleotidesAvailable)) && PrimChecks.validator.checkArg('AND', 2, procedures["ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?"]()))) {
           canContinueToUnzip_p = true; letVars['canContinueToUnzip_p'] = canContinueToUnzip_p;
         }
         else {
@@ -1084,14 +1090,16 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       let myPlace = SelfManager.self().getVariable("place"); letVars['myPlace'] = myPlace;
-      let previousNucleotides = PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() { return Prims.equality(SelfManager.self().getVariable("place"), PrimChecks.math.minus(myPlace, 1)); }); letVars['previousNucleotides'] = previousNucleotides;
+      let previousNucleotides = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
+        return Prims.equality(SelfManager.self().getVariable("place"), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, myPlace), 1));
+      }); letVars['previousNucleotides'] = previousNucleotides;
       let valueToReturn = false; letVars['valueToReturn'] = valueToReturn;
-      if (PrimChecks.math.not_unchecked(PrimChecks.agentset.any(previousNucleotides))) {
+      if (PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, previousNucleotides)))) {
         valueToReturn = true; letVars['valueToReturn'] = valueToReturn;
       }
       else {
-        let previousNucleotidesAreUnzipped = PrimChecks.agentset.with(previousNucleotides, function() { return Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0); }); letVars['previousNucleotidesAreUnzipped'] = previousNucleotidesAreUnzipped;
-        if (PrimChecks.agentset.any(previousNucleotidesAreUnzipped)) {
+        let previousNucleotidesAreUnzipped = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, previousNucleotides), function() { return Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0); }); letVars['previousNucleotidesAreUnzipped'] = previousNucleotidesAreUnzipped;
+        if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, previousNucleotidesAreUnzipped))) {
           valueToReturn = true; letVars['valueToReturn'] = valueToReturn;
         }
         else {
@@ -1111,9 +1119,9 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let duplicationRate = PrimChecks.math.precision_unchecked(PrimChecks.math.div(PrimChecks.math.plus(world.observer.getGlobal("total-correct-duplications-top-strand"), world.observer.getGlobal("total-correct-duplications-bottom-strand")), world.observer.getGlobal("final-time")), 4); letVars['duplicationRate'] = duplicationRate;
+      let duplicationRate = PrimChecks.math.precision(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-bottom-strand"))), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("final-time"))), 4); letVars['duplicationRate'] = duplicationRate;
       Errors.reportInContextCheck(reporterContext);
-      return (workspace.dump('') + workspace.dump("You had ") + workspace.dump(PrimChecks.math.plus(world.observer.getGlobal("total-correct-duplications-top-strand"), world.observer.getGlobal("total-correct-duplications-bottom-strand"))) + workspace.dump(" correct replications and ") + workspace.dump(PrimChecks.math.plus(world.observer.getGlobal("total-substitution-mutations-top-strand"), world.observer.getGlobal("total-substitution-mutations-bottom-strand"))) + workspace.dump(" substitutions and ") + workspace.dump(PrimChecks.math.plus(world.observer.getGlobal("total-deletion-mutations-top-strand"), world.observer.getGlobal("total-deletion-mutations-bottom-strand"))) + workspace.dump("  deletions.") + workspace.dump(" That replication process took you ") + workspace.dump(world.observer.getGlobal("final-time")) + workspace.dump(" seconds.  This was a rate of ") + workspace.dump(duplicationRate) + workspace.dump(" correct nucleotides duplicated per second."));
+      return (workspace.dump('') + workspace.dump("You had ") + workspace.dump(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-bottom-strand")))) + workspace.dump(" correct replications and ") + workspace.dump(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-substitution-mutations-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-substitution-mutations-bottom-strand")))) + workspace.dump(" substitutions and ") + workspace.dump(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-deletion-mutations-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-deletion-mutations-bottom-strand")))) + workspace.dump("  deletions.") + workspace.dump(" That replication process took you ") + workspace.dump(world.observer.getGlobal("final-time")) + workspace.dump(" seconds.  This was a rate of ") + workspace.dump(duplicationRate) + workspace.dump(" correct nucleotides duplicated per second."));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -1126,7 +1134,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return (Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : (workspace.dump('') + workspace.dump(world.observer.getGlobal("current-instruction")) + workspace.dump(" / ") + workspace.dump(PrimChecks.list.length(procedures["INSTRUCTIONS"]()))));
+      return (Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : (workspace.dump('') + workspace.dump(world.observer.getGlobal("current-instruction")) + workspace.dump(" / ") + workspace.dump(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, procedures["INSTRUCTIONS"]())))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -1138,7 +1146,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["SHOW-INSTRUCTION"](PrimChecks.math.plus(world.observer.getGlobal("current-instruction"), 1));
+      procedures["SHOW-INSTRUCTION"](PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("current-instruction")), 1));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -1149,7 +1157,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["SHOW-INSTRUCTION"](PrimChecks.math.minus(world.observer.getGlobal("current-instruction"), 1));
+      procedures["SHOW-INSTRUCTION"](PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("current-instruction")), 1));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -1160,13 +1168,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if ((Prims.gte(i, 1) && Prims.lte(i, PrimChecks.list.length(procedures["INSTRUCTIONS"]())))) {
+      if ((Prims.gte(i, 1) && Prims.lte(i, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, procedures["INSTRUCTIONS"]()))))) {
         world.observer.setGlobal("current-instruction", i);
         OutputPrims.clear();
         var _foreach_35144_35151 = Tasks.forEach(Tasks.commandTask(function(_0) {
           Errors.procedureArgumentsCheck(1, arguments.length);
           OutputPrims.print(_0);
-        }, "output-print"), PrimChecks.list.item(PrimChecks.math.minus(world.observer.getGlobal("current-instruction"), 1), procedures["INSTRUCTIONS"]())); if(reporterContext && _foreach_35144_35151 !== undefined) { return _foreach_35144_35151; }
+        }, "output-print"), PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("current-instruction")), 1), PrimChecks.validator.checkArg('ITEM', 12, procedures["INSTRUCTIONS"]()))); if(reporterContext && _foreach_35144_35151 !== undefined) { return _foreach_35144_35151; }
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)

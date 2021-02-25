@@ -75,9 +75,9 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      Errors.askNobodyCheck(PrimChecks.list.nOf_unchecked(PrimChecks.math.div_unchecked(PrimChecks.agentset.count_unchecked(world.patches()), 2), world.patches())).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
+      Errors.askNobodyCheck(PrimChecks.list.nOf(PrimChecks.math.div(PrimChecks.agentset.count(world.patches()), 2), world.patches())).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
       Errors.askNobodyCheck(world.patches()).ask(function() { procedures["UPDATE-VISUAL"](); }, true);
-      world.observer.setGlobal("global-energy", PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.patches(), function() { return procedures["FIND-ENERGY"](); })));
+      world.observer.setGlobal("global-energy", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.patches(), function() { return procedures["FIND-ENERGY"](); }))));
       world.observer.setGlobal("temperature", 1);
       world.ticker.reset();
     } catch (e) {
@@ -91,10 +91,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++){
-        Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(world.patches())).ask(function() { procedures["TRY-SWAP"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.patches())).ask(function() { procedures["TRY-SWAP"](); }, true);
       }
-      world.observer.setGlobal("temperature", PrimChecks.math.mult(world.observer.getGlobal("temperature"), PrimChecks.math.minus_unchecked(1, PrimChecks.math.div(world.observer.getGlobal("cooling-rate"), 100))));
-      world.observer.setGlobal("global-energy", PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.patches(), function() { return procedures["FIND-ENERGY"](); })));
+      world.observer.setGlobal("temperature", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("temperature")), PrimChecks.math.minus(1, PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("cooling-rate")), 100))));
+      world.observer.setGlobal("global-energy", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.patches(), function() { return procedures["FIND-ENERGY"](); }))));
       world.ticker.tick();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -106,7 +106,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.mult(SelfManager.self().getPatchVariable("brightness"), 9.9));
+      SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("brightness")), 9.9));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -118,7 +118,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return ((Prims.lt(newEnergy, oldEnergy) || PrimChecks.math.bool('AND', world.observer.getGlobal("accept-equal-changes?")) && PrimChecks.math.bool('AND', Prims.equality(newEnergy, oldEnergy))) || Prims.lt(PrimChecks.math.randomFloat_unchecked(1), world.observer.getGlobal("temperature")));
+      return ((Prims.lt(newEnergy, oldEnergy) || (PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("accept-equal-changes?")) && Prims.equality(newEnergy, oldEnergy))) || Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("temperature")));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -130,14 +130,14 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let p2 = PrimChecks.list.oneOf_unchecked(SelfManager.self().inRadius(world.patches(), world.observer.getGlobal("swap-radius"))); letVars['p2'] = p2;
-      if (Prims.equality(SelfManager.self().getPatchVariable("brightness"), PrimChecks.agentset.of(p2, function() { return SelfManager.self().getPatchVariable("brightness"); }))) {
+      let p2 = PrimChecks.list.oneOf(SelfManager.self().inRadius(world.patches(), world.observer.getGlobal("swap-radius"))); letVars['p2'] = p2;
+      if (Prims.equality(SelfManager.self().getPatchVariable("brightness"), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p2), function() { return SelfManager.self().getPatchVariable("brightness"); }))) {
         throw new Exception.StopInterrupt;
       }
-      let affectedPatches = PrimChecks.agentset.patchSet(SelfManager.self(), p2, SelfManager.self().getNeighbors4(), PrimChecks.agentset.of(p2, function() { return SelfManager.self().getNeighbors4(); })); letVars['affectedPatches'] = affectedPatches;
-      let oldEnergy = PrimChecks.list.sum(PrimChecks.agentset.of(affectedPatches, function() { return procedures["FIND-ENERGY"](); })); letVars['oldEnergy'] = oldEnergy;
+      let affectedPatches = PrimChecks.agentset.patchSet(SelfManager.self(), p2, SelfManager.self().getNeighbors4(), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p2), function() { return SelfManager.self().getNeighbors4(); })); letVars['affectedPatches'] = affectedPatches;
+      let oldEnergy = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, affectedPatches), function() { return procedures["FIND-ENERGY"](); }))); letVars['oldEnergy'] = oldEnergy;
       procedures["SWAP-VALUES"](SelfManager.self(),p2);
-      let newEnergy = PrimChecks.list.sum(PrimChecks.agentset.of(affectedPatches, function() { return procedures["FIND-ENERGY"](); })); letVars['newEnergy'] = newEnergy;
+      let newEnergy = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, affectedPatches), function() { return procedures["FIND-ENERGY"](); }))); letVars['newEnergy'] = newEnergy;
       if (procedures["ACCEPT-CHANGE?"](oldEnergy,newEnergy)) {
         procedures["UPDATE-VISUAL"]();
         Errors.askNobodyCheck(p2).ask(function() { procedures["UPDATE-VISUAL"](); }, true);
@@ -155,9 +155,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let temp = PrimChecks.agentset.of(p1, function() { return SelfManager.self().getPatchVariable("brightness"); }); letVars['temp'] = temp;
+      let temp = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p1), function() { return SelfManager.self().getPatchVariable("brightness"); }); letVars['temp'] = temp;
       Errors.askNobodyCheck(p1).ask(function() {
-        SelfManager.self().setPatchVariable("brightness", PrimChecks.agentset.of(p2, function() { return SelfManager.self().getPatchVariable("brightness"); }));
+        SelfManager.self().setPatchVariable("brightness", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p2), function() { return SelfManager.self().getPatchVariable("brightness"); }));
       }, true);
       Errors.askNobodyCheck(p2).ask(function() { SelfManager.self().setPatchVariable("brightness", temp); }, true);
     } catch (e) {
@@ -172,16 +172,16 @@ var procedures = (function() {
       var letVars = { };
       let unhappiness = 0; letVars['unhappiness'] = unhappiness;
       Errors.askNobodyCheck(SelfManager.self()._optimalPatchNorth()).ask(function() {
-        unhappiness = PrimChecks.math.plus(unhappiness, PrimChecks.math.pow_unchecked(PrimChecks.math.minus(SelfManager.self().getPatchVariable("brightness"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
+        unhappiness = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, unhappiness), PrimChecks.math.pow(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("brightness")), PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); }))), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
       Errors.askNobodyCheck(SelfManager.self()._optimalPatchSouth()).ask(function() {
-        unhappiness = PrimChecks.math.plus(unhappiness, PrimChecks.math.pow_unchecked(PrimChecks.math.minus(SelfManager.self().getPatchVariable("brightness"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
+        unhappiness = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, unhappiness), PrimChecks.math.pow(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("brightness")), PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); }))), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
       Errors.askNobodyCheck(SelfManager.self()._optimalPatchEast()).ask(function() {
-        unhappiness = PrimChecks.math.minus_unchecked(PrimChecks.math.plus(unhappiness, 1), PrimChecks.math.pow_unchecked(PrimChecks.math.minus(SelfManager.self().getPatchVariable("brightness"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
+        unhappiness = PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, unhappiness), 1), PrimChecks.math.pow(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("brightness")), PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); }))), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
       Errors.askNobodyCheck(SelfManager.self()._optimalPatchWest()).ask(function() {
-        unhappiness = PrimChecks.math.minus_unchecked(PrimChecks.math.plus(unhappiness, 1), PrimChecks.math.pow_unchecked(PrimChecks.math.minus(SelfManager.self().getPatchVariable("brightness"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
+        unhappiness = PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, unhappiness), 1), PrimChecks.math.pow(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("brightness")), PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); }))), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
       Errors.reportInContextCheck(reporterContext);
       return unhappiness;

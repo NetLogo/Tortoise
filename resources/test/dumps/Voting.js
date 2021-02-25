@@ -83,7 +83,7 @@ var procedures = (function() {
         }
         if (Prims.equality(SelfManager.self().getPatchVariable("total"), 4)) {
           if (world.observer.getGlobal("change-vote-if-tied?")) {
-            SelfManager.self().setPatchVariable("vote", PrimChecks.math.minus(1, SelfManager.self().getPatchVariable("vote")));
+            SelfManager.self().setPatchVariable("vote", PrimChecks.math.minus(1, PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("vote"))));
           }
         }
         if (Prims.equality(SelfManager.self().getPatchVariable("total"), 5)) {
@@ -107,7 +107,7 @@ var procedures = (function() {
         }
         procedures["RECOLOR-PATCH"]();
       }, true);
-      if (PrimChecks.math.not(anyVotesChanged_p)) {
+      if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, anyVotesChanged_p))) {
         throw new Exception.StopInterrupt;
       }
       world.ticker.tick();

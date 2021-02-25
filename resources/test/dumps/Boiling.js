@@ -92,7 +92,7 @@ var procedures = (function() {
       var letVars = { };
       world.topology.diffuse("heat", 1, false)
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("heat", PrimChecks.math.mod_unchecked(PrimChecks.math.plus(SelfManager.self().getPatchVariable("heat"), 5), 212));
+        SelfManager.self().setPatchVariable("heat", PrimChecks.math.mod(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("heat")), 5), 212));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("heat"), 0, 212));
       }, true);
       world.ticker.tick();
@@ -107,7 +107,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.list.mean(PrimChecks.agentset.of_unchecked(world.patches(), function() { return SelfManager.self().getPatchVariable("heat"); }));
+      return PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.patches(), function() { return SelfManager.self().getPatchVariable("heat"); })));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

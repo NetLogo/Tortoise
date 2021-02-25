@@ -111,7 +111,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
         procedures["CHOOSE-SEX"]();
         SelfManager.self().setVariable("size", 3);
-        SelfManager.self().setVariable("my-group-site", PrimChecks.list.oneOf(world.observer.getGlobal("group-sites")));
+        SelfManager.self().setVariable("my-group-site", PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, world.observer.getGlobal("group-sites"))));
         SelfManager.self().moveTo(SelfManager.self().getVariable("my-group-site"));
       }, true);
       Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["UPDATE-HAPPINESS"](); }, true);
@@ -153,12 +153,12 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let total = PrimChecks.agentset.count_unchecked(SelfManager.self().turtlesHere()); letVars['total'] = total;
+      let total = PrimChecks.agentset.count(SelfManager.self().turtlesHere()); letVars['total'] = total;
       let same = PrimChecks.agentset.countWith(SelfManager.self().turtlesHere(), function() {
-        return Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
+        return Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
       }); letVars['same'] = same;
-      let opposite = PrimChecks.math.minus(total, same); letVars['opposite'] = opposite;
-      SelfManager.self().setVariable("happy?", Prims.lte(PrimChecks.math.div(opposite, total), PrimChecks.math.div(world.observer.getGlobal("tolerance"), 100)));
+      let opposite = PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, total), PrimChecks.validator.checkArg('-', 1, same)); letVars['opposite'] = opposite;
+      SelfManager.self().setVariable("happy?", Prims.lte(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, opposite), PrimChecks.validator.checkArg('/', 1, total)), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("tolerance")), 100)));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -169,8 +169,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (PrimChecks.math.not(SelfManager.self().getVariable("happy?"))) {
-        SelfManager.self().setVariable("heading", PrimChecks.list.oneOf_unchecked([90, 270]));
+      if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getVariable("happy?")))) {
+        SelfManager.self().setVariable("heading", PrimChecks.list.oneOf([90, 270]));
         SelfManager.self()._optimalFdOne();
       }
     } catch (e) {
@@ -184,10 +184,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       notImplemented('display', undefined)();
-      let malcontents = PrimChecks.agentset.with_unchecked(world.turtles(), function() {
-        return PrimChecks.math.not_unchecked(PrimChecks.list.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites")));
+      let malcontents = PrimChecks.agentset.with(world.turtles(), function() {
+        return PrimChecks.math.not(PrimChecks.list.member(SelfManager.self().getPatchHere(), PrimChecks.validator.checkArg('MEMBER?', 124, world.observer.getGlobal("group-sites"))));
       }); letVars['malcontents'] = malcontents;
-      if (PrimChecks.math.not_unchecked(PrimChecks.agentset.any(malcontents))) {
+      if (PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, malcontents)))) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(malcontents).ask(function() { SelfManager.self()._optimalFdOne(); }, true);
@@ -202,9 +202,9 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let groupInterval = PrimChecks.math.floor_unchecked(PrimChecks.math.div(world.topology.width, world.observer.getGlobal("num-groups"))); letVars['groupInterval'] = groupInterval;
+      let groupInterval = PrimChecks.math.floor(PrimChecks.math.div(world.topology.width, PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("num-groups")))); letVars['groupInterval'] = groupInterval;
       Errors.reportInContextCheck(reporterContext);
-      return (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(PrimChecks.math.floor_unchecked(PrimChecks.math.div(PrimChecks.math.unaryminus(SelfManager.self().getPatchVariable("pxcor")), groupInterval)), world.observer.getGlobal("num-groups")));
+      return (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, SelfManager.self().getPatchVariable("pxcor")), PrimChecks.validator.checkArg('MOD', 1, groupInterval)), 0)) && Prims.lt(PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("pxcor"))), PrimChecks.validator.checkArg('/', 1, groupInterval))), world.observer.getGlobal("num-groups")));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -228,7 +228,7 @@ var procedures = (function() {
           SelfManager.self()._optimalFdOne();
         }
         else {
-          SelfManager.self().setVariable("xcor", PrimChecks.math.minus(SelfManager.self().getVariable("xcor"), 1));
+          SelfManager.self().setVariable("xcor", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("xcor")), 1));
           SelfManager.self().setVariable("ycor", 0);
           SelfManager.self().fd(4);
         }
@@ -263,7 +263,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return Prims.equality(PrimChecks.list.length_unchecked(PrimChecks.list.removeDuplicates(PrimChecks.agentset.of_unchecked(SelfManager.self().turtlesHere(), function() { return SelfManager.self().getVariable("color"); }))), 1);
+      return Prims.equality(PrimChecks.list.length(PrimChecks.list.removeDuplicates(PrimChecks.validator.checkArg('REMOVE-DUPLICATES', 8, PrimChecks.agentset.of(SelfManager.self().turtlesHere(), function() { return SelfManager.self().getVariable("color"); })))), 1);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -276,7 +276,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.observer.getGlobal("group-sites")).ask(function() {
-        SelfManager.self().setPatchVariable("plabel", PrimChecks.agentset.count_unchecked(SelfManager.self().turtlesHere()));
+        SelfManager.self().setPatchVariable("plabel", PrimChecks.agentset.count(SelfManager.self().turtlesHere()));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -288,7 +288,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("color", PrimChecks.list.oneOf_unchecked([135, 105]));
+      SelfManager.self().setVariable("color", PrimChecks.list.oneOf([135, 105]));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

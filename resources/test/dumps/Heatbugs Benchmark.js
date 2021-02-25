@@ -55,7 +55,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      PrimChecks.math.randomSeed_unchecked(362);
+      PrimChecks.math.randomSeed(362);
       procedures["SETUP"]();
       workspace.timer.reset();
       for (let _index_216_222 = 0, _repeatcount_216_222 = StrictMath.floor(1000); _index_216_222 < _repeatcount_216_222; _index_216_222++){
@@ -74,13 +74,13 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.ticker.reset();
-      Errors.askNobodyCheck(PrimChecks.list.nOf(world.observer.getGlobal("bug-count"), world.patches())).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.list.nOf(PrimChecks.validator.checkArg('N-OF', 1, world.observer.getGlobal("bug-count")), world.patches())).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("color", 65);
           SelfManager.self().setVariable("size", 1.75);
-          SelfManager.self().setVariable("ideal-temp", PrimChecks.math.plus(world.observer.getGlobal("min-ideal-temp"), PrimChecks.math.random_unchecked(PrimChecks.math.abs_unchecked(PrimChecks.math.minus(world.observer.getGlobal("max-ideal-temp"), world.observer.getGlobal("min-ideal-temp"))))));
-          SelfManager.self().setVariable("output-heat", PrimChecks.math.plus(world.observer.getGlobal("min-output-heat"), PrimChecks.math.random_unchecked(PrimChecks.math.abs_unchecked(PrimChecks.math.minus(world.observer.getGlobal("max-output-heat"), world.observer.getGlobal("min-output-heat"))))));
-          SelfManager.self().setVariable("unhappiness", PrimChecks.math.abs_unchecked(PrimChecks.math.minus(SelfManager.self().getVariable("ideal-temp"), SelfManager.self().getPatchVariable("temp"))));
+          SelfManager.self().setVariable("ideal-temp", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("min-ideal-temp")), PrimChecks.math.random(PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("max-ideal-temp")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("min-ideal-temp")))))));
+          SelfManager.self().setVariable("output-heat", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("min-output-heat")), PrimChecks.math.random(PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("max-output-heat")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("min-output-heat")))))));
+          SelfManager.self().setVariable("unhappiness", PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("ideal-temp")), PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("temp")))));
         }, true);
       }, true);
     } catch (e) {
@@ -93,7 +93,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (PrimChecks.math.not_unchecked(PrimChecks.agentset.any_unchecked(world.turtles()))) {
+      if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtles()))) {
         throw new Exception.StopInterrupt;
       }
       world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"), false)
@@ -111,7 +111,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("temp", PrimChecks.math.mult(SelfManager.self().getPatchVariable("temp"), PrimChecks.math.minus(1, world.observer.getGlobal("evaporation-rate"))));
+        SelfManager.self().setPatchVariable("temp", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("temp")), PrimChecks.math.minus(1, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("evaporation-rate")))));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("temp"), 0, 500));
       }, true);
     } catch (e) {
@@ -124,16 +124,16 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("unhappiness", PrimChecks.math.abs_unchecked(PrimChecks.math.minus(SelfManager.self().getVariable("ideal-temp"), SelfManager.self().getPatchVariable("temp"))));
+      SelfManager.self().setVariable("unhappiness", PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("ideal-temp")), PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("temp")))));
       if (Prims.equality(SelfManager.self().getVariable("unhappiness"), 0)) {
-        SelfManager.self().setPatchVariable("temp", PrimChecks.math.plus(SelfManager.self().getPatchVariable("temp"), SelfManager.self().getVariable("output-heat")));
+        SelfManager.self().setPatchVariable("temp", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("temp")), PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("output-heat"))));
       }
       else {
         let target = procedures["FIND-TARGET"](); letVars['target'] = target;
         if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), RandomPrims.randomLong(100)))) {
           procedures["BUG-MOVE"](target);
         }
-        SelfManager.self().setPatchVariable("temp", PrimChecks.math.plus(SelfManager.self().getPatchVariable("temp"), SelfManager.self().getVariable("output-heat")));
+        SelfManager.self().setPatchVariable("temp", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("temp")), PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("output-heat"))));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -165,14 +165,14 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let tries = 0; letVars['tries'] = tries;
-      if (PrimChecks.math.not_unchecked(PrimChecks.agentset.any_unchecked(PrimChecks.agentset.turtlesOn(target)))) {
+      if (PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(PrimChecks.validator.checkArg('TURTLES-ON', 1904, target))))) {
         SelfManager.self().moveTo(target);
         throw new Exception.StopInterrupt;
       }
       while (Prims.lte(tries, 9)) {
-        tries = PrimChecks.math.plus(tries, 1); letVars['tries'] = tries;
-        target = PrimChecks.list.oneOf_unchecked(SelfManager.self().getNeighbors());
-        if (PrimChecks.math.not_unchecked(PrimChecks.agentset.any_unchecked(PrimChecks.agentset.turtlesOn(target)))) {
+        tries = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, tries), 1); letVars['tries'] = tries;
+        target = PrimChecks.list.oneOf(SelfManager.self().getNeighbors());
+        if (PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(PrimChecks.validator.checkArg('TURTLES-ON', 1904, target))))) {
           SelfManager.self().moveTo(target);
           throw new Exception.StopInterrupt;
         }

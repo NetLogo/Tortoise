@@ -58,7 +58,7 @@ var procedures = (function() {
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (Prims.lt(PrimChecks.math.randomFloat_unchecked(100), world.observer.getGlobal("density"))) {
+        if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("density"))) {
           SelfManager.self().setPatchVariable("pcolor", 45);
         }
       }, true);
@@ -84,7 +84,7 @@ var procedures = (function() {
           var reporterContext = false;
           var letVars = { };
           if (Prims.gt(SelfManager.self().getVariable("steps"), 0)) {
-            SelfManager.self().setVariable("steps", PrimChecks.math.minus(SelfManager.self().getVariable("steps"), 1));
+            SelfManager.self().setVariable("steps", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("steps")), 1));
           }
           else {
             var _run_677_680 = Prims.runCode(

@@ -57,7 +57,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
-        SelfManager.self().setVariable("color", PrimChecks.math.plus_unchecked(PrimChecks.math.minus_unchecked(45, 2), RandomPrims.randomLong(7)));
+        SelfManager.self().setVariable("color", PrimChecks.math.plus(PrimChecks.math.minus(45, 2), RandomPrims.randomLong(7)));
         SelfManager.self().setVariable("size", 1.5);
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("flockmates", new TurtleSet([], world));
@@ -90,7 +90,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       procedures["FIND-FLOCKMATES"]();
-      if (PrimChecks.agentset.any(SelfManager.self().getVariable("flockmates"))) {
+      if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, SelfManager.self().getVariable("flockmates")))) {
         procedures["FIND-NEAREST-NEIGHBOR"]();
         if (Prims.lt(SelfManager.self().distance(SelfManager.self().getVariable("nearest-neighbor")), world.observer.getGlobal("minimum-separation"))) {
           procedures["SEPARATE"]();
@@ -121,7 +121,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("nearest-neighbor", PrimChecks.agentset.minOneOf(SelfManager.self().getVariable("flockmates"), function() { return SelfManager.self().distance(SelfManager.myself()); }));
+      SelfManager.self().setVariable("nearest-neighbor", PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 112, SelfManager.self().getVariable("flockmates")), function() { return SelfManager.self().distance(SelfManager.myself()); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -132,7 +132,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["TURN-AWAY"](PrimChecks.agentset.of(SelfManager.self().getVariable("nearest-neighbor"), function() { return SelfManager.self().getVariable("heading"); }),world.observer.getGlobal("max-separate-turn"));
+      procedures["TURN-AWAY"](PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("nearest-neighbor")), function() { return SelfManager.self().getVariable("heading"); }),world.observer.getGlobal("max-separate-turn"));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -154,15 +154,15 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let xComponent = PrimChecks.list.sum(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() { return SelfManager.self().dx(); })); letVars['xComponent'] = xComponent;
-      let yComponent = PrimChecks.list.sum(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() { return SelfManager.self().dy(); })); letVars['yComponent'] = yComponent;
+      let xComponent = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("flockmates")), function() { return SelfManager.self().dx(); }))); letVars['xComponent'] = xComponent;
+      let yComponent = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("flockmates")), function() { return SelfManager.self().dy(); }))); letVars['yComponent'] = yComponent;
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
         Errors.reportInContextCheck(reporterContext);
         return SelfManager.self().getVariable("heading");
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return PrimChecks.math.atan(xComponent, yComponent);
+        return PrimChecks.math.atan(PrimChecks.validator.checkArg('ATAN', 1, xComponent), PrimChecks.validator.checkArg('ATAN', 1, yComponent));
       }
       Errors.missingReport();
     } catch (e) {
@@ -186,19 +186,19 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let xComponent = PrimChecks.list.mean(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() {
-        return PrimChecks.math.sin_unchecked(PrimChecks.math.plus_unchecked(SelfManager.self().towards(SelfManager.myself()), 180));
-      })); letVars['xComponent'] = xComponent;
-      let yComponent = PrimChecks.list.mean(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() {
-        return PrimChecks.math.cos_unchecked(PrimChecks.math.plus_unchecked(SelfManager.self().towards(SelfManager.myself()), 180));
-      })); letVars['yComponent'] = yComponent;
+      let xComponent = PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("flockmates")), function() {
+        return PrimChecks.math.sin(PrimChecks.math.plus(SelfManager.self().towards(SelfManager.myself()), 180));
+      }))); letVars['xComponent'] = xComponent;
+      let yComponent = PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("flockmates")), function() {
+        return PrimChecks.math.cos(PrimChecks.math.plus(SelfManager.self().towards(SelfManager.myself()), 180));
+      }))); letVars['yComponent'] = yComponent;
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
         Errors.reportInContextCheck(reporterContext);
         return SelfManager.self().getVariable("heading");
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return PrimChecks.math.atan(xComponent, yComponent);
+        return PrimChecks.math.atan(PrimChecks.validator.checkArg('ATAN', 1, xComponent), PrimChecks.validator.checkArg('ATAN', 1, yComponent));
       }
       Errors.missingReport();
     } catch (e) {
@@ -211,7 +211,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["TURN-AT-MOST"](PrimChecks.math.subtractHeadings(newHeading, SelfManager.self().getVariable("heading")),maxTurn);
+      procedures["TURN-AT-MOST"](PrimChecks.math.subtractHeadings(PrimChecks.validator.checkArg('SUBTRACT-HEADINGS', 1, newHeading), PrimChecks.validator.checkArg('SUBTRACT-HEADINGS', 1, SelfManager.self().getVariable("heading"))),maxTurn);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -222,7 +222,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["TURN-AT-MOST"](PrimChecks.math.subtractHeadings(SelfManager.self().getVariable("heading"), newHeading),maxTurn);
+      procedures["TURN-AT-MOST"](PrimChecks.math.subtractHeadings(PrimChecks.validator.checkArg('SUBTRACT-HEADINGS', 1, SelfManager.self().getVariable("heading")), PrimChecks.validator.checkArg('SUBTRACT-HEADINGS', 1, newHeading)),maxTurn);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -233,7 +233,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.gt(PrimChecks.math.abs(turn), maxTurn)) {
+      if (Prims.gt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, turn)), maxTurn)) {
         if (Prims.gt(turn, 0)) {
           SelfManager.self().right(maxTurn);
         }
