@@ -187,6 +187,9 @@ class MathChecks
   # (Number) => Number
   randomExponential: (mean) ->
     @validator.commonArgChecks.number("RANDOM-EXPONENTIAL", arguments)
+    @randomExponential_unchecked(mean)
+
+  randomExponential_unchecked: (mean) ->
     @validator.checkNumber(@randomPrims.randomExponential(mean))
 
   # (Number) => Number
