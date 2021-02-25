@@ -115,6 +115,25 @@ object ReporterPrims {
     arguments.exists { case (allowed: Int, actual: Int) => !ReporterPrims.allTypesAllowed(allowed, actual) }
   }
 
+  def makeCheckedArgOps(a: Application, ops: Seq[String]) = {
+      val syntax          = a.instruction.syntax
+      val argAllowedTypes = if (syntax.isInfix) List(syntax.left) ++ syntax.right else syntax.right
+      val argsWithTypes   = argAllowedTypes.zip(a.args).zip(ops)
+
+      val argOps = argsWithTypes.map( { case ((allowed: Int, exp: Expression), op: String) =>
+        ReporterPrims.makeCheckedOp(a.instruction.token.text, allowed, exp.reportedType(), op)
+      })
+      argOps.mkString(", ")
+    }
+
+  def makeCheckedOp(prim: String, allowed: Int, actual: Int, op: String): String = {
+    if (ReporterPrims.allTypesAllowed(allowed, actual)) {
+      op
+    } else {
+      s"PrimChecks.validator.checkArg('$prim', $allowed, $op)"
+    }
+  }
+
 }
 
 trait ReporterPrims extends PrimUtils {
@@ -135,21 +154,8 @@ trait ReporterPrims extends PrimUtils {
     def argsSep(sep: String) =
       args.mkString(sep)
 
-    def checkedArgs = {
-      val syntax          = r.instruction.syntax
-      val argAllowedTypes = if (syntax.isInfix) List(syntax.left) ++ syntax.right else syntax.right
-      val argsWithTypes   = argAllowedTypes.zip(r.args)
-
-      val argOps = argsWithTypes.map( { case (allowed: Int, exp: Expression) => {
-        val expOp = handlers.reporter(exp)
-        if (ReporterPrims.allTypesAllowed(allowed, exp.reportedType())) {
-          expOp
-        } else {
-          s"PrimChecks.validator.checkArg('${r.instruction.token.text}', $allowed, $expOp)"
-        }
-      }})
-      argOps.mkString(", ")
-    }
+    def checkedArgs =
+      ReporterPrims.makeCheckedArgOps(r, args)
 
     def hasUnchecked =
       ReporterPrims.hasUncheckedArgs(r)
@@ -158,11 +164,12 @@ trait ReporterPrims extends PrimUtils {
       if (hasUnchecked) "" else "_unchecked"
 
     // `and` and `or` need to short-circuit, so we check them a bit differently.  -Jeremy B February 2021
-    def makeInfixBoolOp(prim: String, op: String): String =
-      if (hasUnchecked)
-        s"PrimChecks.math.bool('${prim}', ${arg(0)}) ${op} PrimChecks.math.bool('${prim}', ${arg(1)})"
-      else
-        s"(${arg(0)} ${op} ${arg(1)})"
+    def makeInfixBoolOp(prim: String, op: String): String = {
+      val syntax = r.instruction.syntax
+      val left   = ReporterPrims.makeCheckedOp(prim, syntax.left,     r.args(0).reportedType(), arg(0))
+      val right  = ReporterPrims.makeCheckedOp(prim, syntax.right(0), r.args(1).reportedType(), arg(1))
+      s"($left $op $right)"
+    }
 
     r.reporter match {
 
@@ -340,13 +347,13 @@ trait CommandPrims extends PrimUtils {
     def argsSep(sep: String) =
       args.mkString(sep)
 
-    def uncheckedCall =
-      if (ReporterPrims.hasUncheckedArgs(s)) "" else "_unchecked"
+    def checkedArgs =
+      ReporterPrims.makeCheckedArgOps(s, args)
 
     s.command match {
       case SimplePrims.SimpleCommand(op)  => if (op.isEmpty) "" else s"$op;"
       case SimplePrims.NormalCommand(op)  => s"$op($commaArgs);"
-      case SimplePrims.CheckedCommand(op) => s"$op$uncheckedCall($commaArgs);"
+      case SimplePrims.CheckedCommand(op) => s"$op($checkedArgs);"
 
       case _: prim._set                  => generateSet(s)
       case _: prim.etc._loop             => generateLoop(s)

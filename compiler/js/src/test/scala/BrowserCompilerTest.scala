@@ -207,7 +207,7 @@ object BrowserCompilerTest extends TestSuite {
         "3 + (bananas 8 10)" -> """PrimChecks.math.plus(3, PrimChecks.validator.checkArg('+', 1, procedures[\"BANANAS\"](8,10)))""",
 
         "(3 / apples + (bananas 9001 3) > 0) or oranges" ->
-          """PrimChecks.math.bool('OR', Prims.gt(PrimChecks.math.plus(PrimChecks.math.div(3, world.observer.getGlobal(\"apples\")), PrimChecks.validator.checkArg('+', 1, procedures[\"BANANAS\"](9001,3))), 0)) || PrimChecks.math.bool('OR', world.observer.getGlobal(\"oranges\"))""",
+          """(Prims.gt(PrimChecks.math.plus(PrimChecks.math.div(3, PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal(\"apples\"))), PrimChecks.validator.checkArg('+', 1, procedures[\"BANANAS\"](9001,3))), 0) || PrimChecks.validator.checkArg('OR', 2, world.observer.getGlobal(\"oranges\")))""",
 
         "sum [xcor] of turtles" ->
           """PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtles(), function() { return SelfManager.self().getVariable(\"xcor\"); }))""",

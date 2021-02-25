@@ -45,7 +45,46 @@ object SimplePrims {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
 
+        // Math
+        case _: prim.etc._abs              => "PrimChecks.math.abs"
+        case _: prim.etc._acos             => "PrimChecks.math.acos"
+        case _: prim.etc._asin             => "PrimChecks.math.asin"
+        case _: prim.etc._atan             => "PrimChecks.math.atan"
+        case _: prim.etc._ceil             => "PrimChecks.math.ceil"
+        case _: prim.etc._cos              => "PrimChecks.math.cos"
+        case _: prim.etc._div              => "PrimChecks.math.div"
+        case _: prim.etc._exp              => "PrimChecks.math.exp"
+        case _: prim.etc._floor            => "PrimChecks.math.floor"
+        case _: prim.etc._int              => "PrimChecks.math.int"
+        case _: prim.etc._ln               => "PrimChecks.math.ln"
+        case _: prim.etc._log              => "PrimChecks.math.log"
+        case _: prim.etc._mod              => "PrimChecks.math.mod"
+        case _: prim.etc._pow              => "PrimChecks.math.pow"
+        case _: prim.etc._precision        => "PrimChecks.math.precision"
+        case _: prim.etc._remainder        => "PrimChecks.math.remainder"
+        case _: prim.etc._round            => "PrimChecks.math.round"
+        case _: prim.etc._sin              => "PrimChecks.math.sin"
+        case _: prim.etc._sqrt             => "PrimChecks.math.sqrt"
+        case _: prim.etc._subtractheadings => "PrimChecks.math.subtractHeadings"
+        case _: prim.etc._tan              => "PrimChecks.math.tan"
+        case _: prim._unaryminus           => "PrimChecks.math.unaryminus"
+
+        // Infix math
         case _: prim.etc._plus => "PrimChecks.math.plus"
+        case _: prim._minus    => "PrimChecks.math.minus"
+        case _: prim.etc._mult => "PrimChecks.math.mult"
+
+        // Boolean
+        case _: prim._not     => "PrimChecks.math.not"
+        case _: prim.etc._xor => "PrimChecks.math.xor"
+
+        // Random
+        case _: prim._random                => "PrimChecks.math.random"
+        case _: prim.etc._randomexponential => "PrimChecks.math.randomExponential"
+        case _: prim.etc._randomfloat       => "PrimChecks.math.randomFloat"
+        case _: prim.etc._randomnormal      => "PrimChecks.math.randomNormal"
+        case _: prim.etc._randompoisson     => "PrimChecks.math.randomPoisson"
+        case _: prim.etc._randomgamma       => "PrimChecks.math.randomGamma"
 
       }
   }
@@ -88,43 +127,6 @@ object SimplePrims {
         case _: prim.etc._variance          => "PrimChecks.list.variance"
         case _: prim._oneof                 => "PrimChecks.list.oneOf"
         case _: prim._sum                   => "PrimChecks.list.sum"
-
-        // Math
-        case _: prim.etc._abs              => "PrimChecks.math.abs"
-        case _: prim.etc._acos             => "PrimChecks.math.acos"
-        case _: prim.etc._asin             => "PrimChecks.math.asin"
-        case _: prim.etc._atan             => "PrimChecks.math.atan"
-        case _: prim.etc._ceil             => "PrimChecks.math.ceil"
-        case _: prim.etc._cos              => "PrimChecks.math.cos"
-        case _: prim.etc._div              => "PrimChecks.math.div"
-        case _: prim.etc._exp              => "PrimChecks.math.exp"
-        case _: prim.etc._floor            => "PrimChecks.math.floor"
-        case _: prim.etc._int              => "PrimChecks.math.int"
-        case _: prim.etc._ln               => "PrimChecks.math.ln"
-        case _: prim.etc._log              => "PrimChecks.math.log"
-        case _: prim.etc._mod              => "PrimChecks.math.mod"
-        case _: prim.etc._pow              => "PrimChecks.math.pow"
-        case _: prim.etc._precision        => "PrimChecks.math.precision"
-        case _: prim.etc._round            => "PrimChecks.math.round"
-        case _: prim.etc._sin              => "PrimChecks.math.sin"
-        case _: prim.etc._sqrt             => "PrimChecks.math.sqrt"
-        case _: prim.etc._subtractheadings => "PrimChecks.math.subtractHeadings"
-        case _: prim.etc._tan              => "PrimChecks.math.tan"
-
-        case _: prim._minus         => "PrimChecks.math.minus"
-        case _: prim.etc._mult      => "PrimChecks.math.mult"
-        case _: prim.etc._remainder => "PrimChecks.math.remainder"
-        case _: prim._unaryminus    => "PrimChecks.math.unaryminus"
-        case _: prim._not           => "PrimChecks.math.not"
-        case _: prim.etc._xor       => "PrimChecks.math.xor"
-
-        // Random
-        case _: prim._random                => "PrimChecks.math.random"
-        case _: prim.etc._randomexponential => "PrimChecks.math.randomExponential"
-        case _: prim.etc._randomfloat       => "PrimChecks.math.randomFloat"
-        case _: prim.etc._randomnormal      => "PrimChecks.math.randomNormal"
-        case _: prim.etc._randompoisson     => "PrimChecks.math.randomPoisson"
-        case _: prim.etc._randomgamma       => "PrimChecks.math.randomGamma"
 
       }
   }
