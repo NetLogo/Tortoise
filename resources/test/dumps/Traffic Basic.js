@@ -129,7 +129,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.gt(world.observer.getGlobal("number-of-cars"), world.topology.width)) {
-        UserDialogPrims.confirm((workspace.dump('') + workspace.dump("There are too many cars for the amount of road. ") + workspace.dump("Please decrease the NUMBER-OF-CARS slider to below ") + workspace.dump((world.topology.width + 1)) + workspace.dump(" and press the SETUP button again. ") + workspace.dump("The setup has stopped.")));
+        UserDialogPrims.confirm((workspace.dump('') + workspace.dump("There are too many cars for the amount of road. ") + workspace.dump("Please decrease the NUMBER-OF-CARS slider to below ") + workspace.dump(PrimChecks.math.plus_unchecked(world.topology.width, 1)) + workspace.dump(" and press the SETUP button again. ") + workspace.dump("The setup has stopped.")));
         throw new Exception.StopInterrupt;
       }
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")
@@ -137,12 +137,12 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 105);
         SelfManager.self().setVariable("xcor", RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor));
         SelfManager.self().setVariable("heading", 90);
-        SelfManager.self().setVariable("speed", (0.1 + PrimChecks.math.randomFloat(0.9)));
+        SelfManager.self().setVariable("speed", PrimChecks.math.plus_unchecked(0.1, PrimChecks.math.randomFloat_unchecked(0.9)));
         SelfManager.self().setVariable("speed-limit", 1);
         SelfManager.self().setVariable("speed-min", 0);
         procedures["SEPARATE-CARS"]();
       }, true);
-      world.observer.setGlobal("sample-car", PrimChecks.list.oneOf(world.turtles()));
+      world.observer.setGlobal("sample-car", PrimChecks.list.oneOf_unchecked(world.turtles()));
       Errors.askNobodyCheck(world.observer.getGlobal("sample-car")).ask(function() { SelfManager.self().setVariable("color", 15); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -169,7 +169,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        let carAhead = PrimChecks.list.oneOf(PrimChecks.agentset.turtlesOn_unchecked(SelfManager.self().patchAhead(1))); letVars['carAhead'] = carAhead;
+        let carAhead = PrimChecks.list.oneOf_unchecked(PrimChecks.agentset.turtlesOn_unchecked(SelfManager.self().patchAhead(1))); letVars['carAhead'] = carAhead;
         if (!Prims.equality(carAhead, Nobody)) {
           procedures["SLOW-DOWN-CAR"](carAhead);
         }
@@ -195,7 +195,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("speed", (PrimChecks.agentset.of(carAhead, function() { return SelfManager.self().getVariable("speed"); }) - world.observer.getGlobal("deceleration")));
+      SelfManager.self().setVariable("speed", PrimChecks.math.minus(PrimChecks.agentset.of(carAhead, function() { return SelfManager.self().getVariable("speed"); }), world.observer.getGlobal("deceleration")));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -206,7 +206,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + world.observer.getGlobal("acceleration")));
+      SelfManager.self().setVariable("speed", PrimChecks.math.plus(SelfManager.self().getVariable("speed"), world.observer.getGlobal("acceleration")));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

@@ -77,13 +77,13 @@ var procedures = (function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
           procedures["TURN-TOWARD-CHEMICAL"]();
         }
-        SelfManager.self().right(((PrimChecks.math.randomFloat(world.observer.getGlobal("wiggle-angle")) - PrimChecks.math.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
+        SelfManager.self().right(PrimChecks.math.plus(PrimChecks.math.minus_unchecked(PrimChecks.math.randomFloat(world.observer.getGlobal("wiggle-angle")), PrimChecks.math.randomFloat(world.observer.getGlobal("wiggle-angle"))), world.observer.getGlobal("wiggle-bias")));
         SelfManager.self()._optimalFdOne();
-        SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + 2));
+        SelfManager.self().setPatchVariable("chemical", PrimChecks.math.plus(SelfManager.self().getPatchVariable("chemical"), 2));
       }, true);
       world.topology.diffuse("chemical", 1, false)
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") * 0.9));
+        SelfManager.self().setPatchVariable("chemical", PrimChecks.math.mult(SelfManager.self().getPatchVariable("chemical"), 0.9));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 3));
       }, true);
       world.ticker.tick();

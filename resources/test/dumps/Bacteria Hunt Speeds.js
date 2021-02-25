@@ -210,7 +210,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("bacteria-caught", (world.observer.getGlobal("bacteria-caught") + 1));
+      world.observer.setGlobal("bacteria-caught", PrimChecks.math.plus(world.observer.getGlobal("bacteria-caught"), 1));
       procedures["MAKE-A-REMOVAL-SPOT"]();
       Errors.askNobodyCheck(LinkPrims.outLinkNeighbors("LINKS")).ask(function() { SelfManager.self().die(); }, true);
       SelfManager.self().die();
@@ -241,11 +241,11 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BACTERIA")).ask(function() {
         if (world.observer.getGlobal("wiggle?")) {
-          SelfManager.self().right((PrimChecks.math.randomFloat(25) - PrimChecks.math.randomFloat(25)));
+          SelfManager.self().right(PrimChecks.math.minus_unchecked(PrimChecks.math.randomFloat_unchecked(25), PrimChecks.math.randomFloat_unchecked(25)));
         }
-        SelfManager.self().fd((SelfManager.self().getVariable("variation") * world.observer.getGlobal("speed-scalar")));
+        SelfManager.self().fd(PrimChecks.math.mult(SelfManager.self().getVariable("variation"), world.observer.getGlobal("speed-scalar")));
         let predatorsInFrontOfMe = SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("PREDATORS"), 2, 120); letVars['predatorsInFrontOfMe'] = predatorsInFrontOfMe;
-        if ((!world.observer.getGlobal("camouflage?") && PrimChecks.agentset.any(predatorsInFrontOfMe))) {
+        if ((PrimChecks.math.not(world.observer.getGlobal("camouflage?")) && PrimChecks.agentset.any(predatorsInFrontOfMe))) {
           SelfManager.self().face(PrimChecks.list.oneOf(predatorsInFrontOfMe));
           SelfManager.self().right(180);
         }
@@ -261,7 +261,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(world.getPatchAt(MousePrims.getX(), MousePrims.getY()), world.observer.getGlobal("predator-location"))) {
-        world.observer.setGlobal("tick-counter", (world.observer.getGlobal("tick-counter") + 1));
+        world.observer.setGlobal("tick-counter", PrimChecks.math.plus(world.observer.getGlobal("tick-counter"), 1));
       }
       else {
         world.observer.setGlobal("predator-location", world.getPatchAt(MousePrims.getX(), MousePrims.getY()));
@@ -278,7 +278,7 @@ var procedures = (function() {
         }
         SelfManager.self().setXY(MousePrims.getX(), MousePrims.getY());
         world.observer.setGlobal("predator-location", world.getPatchAt(SelfManager.self().getVariable("xcor"), SelfManager.self().getVariable("ycor")));
-        SelfManager.self().setVariable("hidden?", !MousePrims.isInside());
+        SelfManager.self().setVariable("hidden?", PrimChecks.math.not_unchecked(MousePrims.isInside()));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -292,9 +292,9 @@ var procedures = (function() {
       var letVars = { };
       let flagellaSwing = 15; letVars['flagellaSwing'] = flagellaSwing;
       let flagellaSpeed = 60; letVars['flagellaSpeed'] = flagellaSpeed;
-      let newSwing = (flagellaSwing * PrimChecks.math.sin((flagellaSpeed * world.ticker.tickCount()))); letVars['newSwing'] = newSwing;
-      let myBacteria = PrimChecks.list.oneOf(LinkPrims.inLinkNeighbors("LINKS")); letVars['myBacteria'] = myBacteria;
-      SelfManager.self().setVariable("heading", (PrimChecks.agentset.of(myBacteria, function() { return SelfManager.self().getVariable("heading"); }) + newSwing));
+      let newSwing = PrimChecks.math.mult(flagellaSwing, PrimChecks.math.sin_unchecked(PrimChecks.math.mult(flagellaSpeed, world.ticker.tickCount()))); letVars['newSwing'] = newSwing;
+      let myBacteria = PrimChecks.list.oneOf_unchecked(LinkPrims.inLinkNeighbors("LINKS")); letVars['myBacteria'] = myBacteria;
+      SelfManager.self().setVariable("heading", PrimChecks.math.plus(PrimChecks.agentset.of(myBacteria, function() { return SelfManager.self().getVariable("heading"); }), newSwing));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -305,17 +305,17 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if ((!MousePrims.isDown() || !MousePrims.isInside())) {
+      if ((PrimChecks.math.not_unchecked(MousePrims.isDown()) || PrimChecks.math.not_unchecked(MousePrims.isInside()))) {
         throw new Exception.StopInterrupt;
       }
-      let prey = PrimChecks.agentset.of(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("PREDATORS")), function() {
+      let prey = PrimChecks.agentset.of(PrimChecks.list.oneOf_unchecked(world.turtleManager.turtlesOfBreed("PREDATORS")), function() {
         return SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("BACTERIA"), PrimChecks.math.div(SelfManager.self().getVariable("size"), 2));
       }); letVars['prey'] = prey;
-      if (!PrimChecks.agentset.any(prey)) {
+      if (PrimChecks.math.not_unchecked(PrimChecks.agentset.any(prey))) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(PrimChecks.list.oneOf(prey)).ask(function() { procedures["DEATH"](); }, true);
-      Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("BACTERIA"))).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(world.turtleManager.turtlesOfBreed("BACTERIA"))).ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().right(RandomPrims.randomLong(360));
           procedures["MAKE-FLAGELLA"]();
@@ -339,7 +339,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("label", "");
         }
         if (PrimChecks.list.member(world.observer.getGlobal("visualize-variation"), ["flagella and color", "as color only"])) {
-          SelfManager.self().setVariable("color", PrimChecks.list.item((SelfManager.self().getVariable("variation") - 1), [115, 105, 55, 35, 25, 15]));
+          SelfManager.self().setVariable("color", PrimChecks.list.item_unchecked(PrimChecks.math.minus(SelfManager.self().getVariable("variation"), 1), [115, 105, 55, 35, 25, 15]));
         }
         else {
           SelfManager.self().setVariable("color", world.observer.getGlobal("bacteria-default-color"));
@@ -359,8 +359,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS")).ask(function() {
-        SelfManager.self().setVariable("countdown", (SelfManager.self().getVariable("countdown") - 1));
-        SelfManager.self().setVariable("color", PrimChecks.list.lput((SelfManager.self().getVariable("countdown") * 4), [0, 100, 0]));
+        SelfManager.self().setVariable("countdown", PrimChecks.math.minus(SelfManager.self().getVariable("countdown"), 1));
+        SelfManager.self().setVariable("color", PrimChecks.list.lput_unchecked(PrimChecks.math.mult(SelfManager.self().getVariable("countdown"), 4), [0, 100, 0]));
         if (Prims.lte(SelfManager.self().getVariable("countdown"), 0)) {
           SelfManager.self().die();
         }

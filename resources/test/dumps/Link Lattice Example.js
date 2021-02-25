@@ -79,7 +79,7 @@ var procedures = (function() {
         if (Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
           LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), "LINKS").ask(function() {}, false);
           LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), "LINKS").ask(function() {}, false);
-          SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.5));
+          SelfManager.self().setVariable("ycor", PrimChecks.math.minus(SelfManager.self().getVariable("ycor"), 0.5));
         }
       }, true);
       world.ticker.reset();

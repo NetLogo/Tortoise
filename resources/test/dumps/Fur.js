@@ -81,7 +81,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("initial-density"))) {
+        if (Prims.lt(PrimChecks.math.randomFloat_unchecked(100), world.observer.getGlobal("initial-density"))) {
           SelfManager.self().setPatchVariable("pcolor", 9.9);
         }
         else {
@@ -114,7 +114,7 @@ var procedures = (function() {
       var letVars = { };
       let activator = PrimChecks.agentset.countWith(SelfManager.self().getPatchVariable("inner-neighbors"), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }); letVars['activator'] = activator;
       let inhibitor = PrimChecks.agentset.countWith(SelfManager.self().getPatchVariable("outer-neighbors"), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }); letVars['inhibitor'] = inhibitor;
-      let difference = (activator - (world.observer.getGlobal("ratio") * inhibitor)); letVars['difference'] = difference;
+      let difference = PrimChecks.math.minus(activator, PrimChecks.math.mult(world.observer.getGlobal("ratio"), inhibitor)); letVars['difference'] = difference;
       if (Prims.gt(difference, 0)) {
         SelfManager.self().setPatchVariable("new-color", 9.9);
       }
@@ -134,8 +134,8 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.agentset.with_unchecked(SelfManager.self().inRadius(world.patches(), PrimChecks.list.max(ListPrims.list(xRadius, yRadius))), function() {
-        return Prims.gte(1, (PrimChecks.math.div(PrimChecks.math.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(xRadius, 2)) + PrimChecks.math.div(PrimChecks.math.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(yRadius, 2))));
+      return PrimChecks.agentset.with_unchecked(SelfManager.self().inRadius(world.patches(), PrimChecks.list.max_unchecked(ListPrims.list(xRadius, yRadius))), function() {
+        return Prims.gte(1, PrimChecks.math.plus_unchecked(PrimChecks.math.div_unchecked(PrimChecks.math.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(xRadius, 2)), PrimChecks.math.div_unchecked(PrimChecks.math.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(yRadius, 2))));
       });
       Errors.missingReport();
     } catch (e) {
@@ -149,8 +149,8 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.agentset.with_unchecked(SelfManager.self().inRadius(world.patches(), PrimChecks.list.max(ListPrims.list(outxRadius, outyRadius))), function() {
-        return (Prims.gte(1, (PrimChecks.math.div(PrimChecks.math.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(outxRadius, 2)) + PrimChecks.math.div(PrimChecks.math.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(outyRadius, 2)))) && Prims.lt(1, (PrimChecks.math.div(PrimChecks.math.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(inxRadius, 2)) + PrimChecks.math.div(PrimChecks.math.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(inyRadius, 2)))));
+      return PrimChecks.agentset.with_unchecked(SelfManager.self().inRadius(world.patches(), PrimChecks.list.max_unchecked(ListPrims.list(outxRadius, outyRadius))), function() {
+        return (Prims.gte(1, PrimChecks.math.plus_unchecked(PrimChecks.math.div_unchecked(PrimChecks.math.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(outxRadius, 2)), PrimChecks.math.div_unchecked(PrimChecks.math.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(outyRadius, 2)))) && Prims.lt(1, PrimChecks.math.plus_unchecked(PrimChecks.math.div_unchecked(PrimChecks.math.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(inxRadius, 2)), PrimChecks.math.div_unchecked(PrimChecks.math.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), PrimChecks.math.pow(inyRadius, 2)))));
       });
       Errors.missingReport();
     } catch (e) {

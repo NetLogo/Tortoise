@@ -141,7 +141,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().fd((PrimChecks.math.div((3.141592653589793 * r), 180) * PrimChecks.math.div(world.observer.getGlobal("speed"), 50)));
+      SelfManager.self().fd(PrimChecks.math.mult_unchecked(PrimChecks.math.div_unchecked(PrimChecks.math.mult(3.141592653589793, r), 180), PrimChecks.math.div(world.observer.getGlobal("speed"), 50)));
       SelfManager.self().right(PrimChecks.math.div(world.observer.getGlobal("speed"), 50));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -170,8 +170,8 @@ var procedures = (function() {
       var letVars = { };
       world.clearDrawing();
       world.turtleManager.createTurtles(1, "").ask(function() {
-        SelfManager.self().setVariable("color", (5 - 3));
-        SelfManager.self().setVariable("size", (2 * world.observer.getGlobal("draw-radius")));
+        SelfManager.self().setVariable("color", PrimChecks.math.minus_unchecked(5, 3));
+        SelfManager.self().setVariable("size", PrimChecks.math.mult(2, world.observer.getGlobal("draw-radius")));
         SelfManager.self().setVariable("shape", "circle");
         SelfManager.self().stamp();
         SelfManager.self().die();

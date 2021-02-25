@@ -205,7 +205,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-        SelfManager.self().setVariable("color", (5 + (PrimChecks.math.random(world.observer.getGlobal("colors")) * 10)));
+        SelfManager.self().setVariable("color", PrimChecks.math.plus_unchecked(5, PrimChecks.math.mult_unchecked(PrimChecks.math.random(world.observer.getGlobal("colors")), 10)));
         if (Prims.equality(SelfManager.self().getVariable("color"), 75)) {
           SelfManager.self().setVariable("color", 125);
         }

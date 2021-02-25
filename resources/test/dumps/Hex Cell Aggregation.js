@@ -89,7 +89,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("eligible?", false);
       world.observer.setGlobal("eligibles", PrimChecks.list.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
       Errors.askNobodyCheck(SelfManager.self().getVariable("hex-neighbors")).ask(function() {
-        SelfManager.self().setVariable("live-neighbor-count", (SelfManager.self().getVariable("live-neighbor-count") + 1));
+        SelfManager.self().setVariable("live-neighbor-count", PrimChecks.math.plus(SelfManager.self().getVariable("live-neighbor-count"), 1));
         if (Prims.equality(SelfManager.self().getVariable("live-neighbor-count"), 6)) {
           SelfManager.self().setVariable("color", 15);
         }
@@ -106,13 +106,13 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (SelfManager.self().getVariable("eligible?")) {
-        if (!PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))) {
+        if (PrimChecks.math.not_unchecked(PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches")))) {
           SelfManager.self().setVariable("eligible?", false);
           world.observer.setGlobal("eligibles", PrimChecks.list.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
         }
       }
       else {
-        if ((SelfManager.self().getVariable("hidden?") && PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches")))) {
+        if (PrimChecks.math.bool('AND', SelfManager.self().getVariable("hidden?")) && PrimChecks.math.bool('AND', PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches")))) {
           SelfManager.self().setVariable("eligible?", true);
           world.observer.setGlobal("eligibles", PrimChecks.list.fput(SelfManager.self(), world.observer.getGlobal("eligibles")));
         }
@@ -147,7 +147,7 @@ var procedures = (function() {
         world.observer.setGlobal("switches", PrimChecks.list.lput(6, world.observer.getGlobal("switches")));
       }
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CELLS")).ask(function() {
-        SelfManager.self().setVariable("eligible?", (SelfManager.self().getVariable("hidden?") && PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))));
+        SelfManager.self().setVariable("eligible?", PrimChecks.math.bool('AND', SelfManager.self().getVariable("hidden?")) && PrimChecks.math.bool('AND', PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))));
       }, true);
       world.observer.setGlobal("eligibles", PrimChecks.agentset.of_unchecked(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("CELLS"), function() { return SelfManager.self().getVariable("eligible?"); }), function() { return SelfManager.self(); }));
     } catch (e) {
@@ -167,7 +167,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("color", 25);
           SelfManager.self().setVariable("eligible?", false);
           if (Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
-            SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.5));
+            SelfManager.self().setVariable("ycor", PrimChecks.math.minus(SelfManager.self().getVariable("ycor"), 0.5));
           }
         }, true);
       }, true);

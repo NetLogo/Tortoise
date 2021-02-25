@@ -143,13 +143,13 @@ var procedures = (function() {
       world.clearAll();
       world.observer.setGlobal("max-tick-advance-amount", 0.01);
       world.observer.setGlobal("margin-outside-box", 4);
-      world.observer.setGlobal("box-edge", (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box")));
+      world.observer.setGlobal("box-edge", PrimChecks.math.minus(world.topology.maxPxcor, world.observer.getGlobal("margin-outside-box")));
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("FLASHES").getSpecialName(), "square")
       world.observer.setGlobal("molecule-size", 1.4);
       world.observer.setGlobal("pressure-history", [0, 0, 0, 0, 0, 0]);
       world.observer.setGlobal("box-intact?", true);
-      world.observer.setGlobal("length-horizontal-surface", ((2 * (world.observer.getGlobal("box-edge") - 1)) + 1));
-      world.observer.setGlobal("length-vertical-surface", ((2 * (world.observer.getGlobal("box-edge") - 1)) + 1));
+      world.observer.setGlobal("length-horizontal-surface", PrimChecks.math.plus_unchecked(PrimChecks.math.mult_unchecked(2, PrimChecks.math.minus(world.observer.getGlobal("box-edge"), 1)), 1));
+      world.observer.setGlobal("length-vertical-surface", PrimChecks.math.plus_unchecked(PrimChecks.math.mult_unchecked(2, PrimChecks.math.minus(world.observer.getGlobal("box-edge"), 1)), 1));
       procedures["MAKE-BOX"]();
       procedures["MAKE-GAS-MOLECULES"]();
       procedures["UPDATE-VARIABLES"]();
@@ -165,7 +165,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() {
-        return ((Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))) || (Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))));
+        return ((Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), PrimChecks.math.minus(world.topology.maxPxcor, world.observer.getGlobal("margin-outside-box"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), PrimChecks.math.minus(world.topology.maxPycor, world.observer.getGlobal("margin-outside-box")))) || (Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), PrimChecks.math.minus(world.topology.maxPxcor, world.observer.getGlobal("margin-outside-box"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), PrimChecks.math.minus(world.topology.maxPycor, world.observer.getGlobal("margin-outside-box")))));
       })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -232,11 +232,11 @@ var procedures = (function() {
       let openPatches = Nobody; letVars['openPatches'] = openPatches;
       let openPatch = Nobody; letVars['openPatch'] = openPatch;
       openPatches = PrimChecks.agentset.with_unchecked(world.patches(), function() {
-        return (Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box"))));
+        return (Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), PrimChecks.math.minus(world.topology.maxPxcor, world.observer.getGlobal("margin-outside-box"))) && Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), PrimChecks.math.minus(world.topology.maxPycor, world.observer.getGlobal("margin-outside-box"))));
       }); letVars['openPatches'] = openPatches;
       openPatch = PrimChecks.list.oneOf(openPatches); letVars['openPatch'] = openPatch;
       SelfManager.self().moveTo(openPatch);
-      SelfManager.self().setVariable("heading", PrimChecks.math.randomFloat(360));
+      SelfManager.self().setVariable("heading", PrimChecks.math.randomFloat_unchecked(360));
       SelfManager.self().setVariable("energy", world.observer.getGlobal("initial-gas-temperature"));
       SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
     } catch (e) {
@@ -307,10 +307,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("FLASHES")).ask(function() {
-        if (Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4)) {
+        if (Prims.gt(PrimChecks.math.minus(world.ticker.tickCount(), SelfManager.self().getVariable("birthday")), 0.4)) {
           SelfManager.self().die();
         }
-        SelfManager.self().setVariable("color", PrimChecks.list.lput((255 - PrimChecks.math.div((255 * (world.ticker.tickCount() - SelfManager.self().getVariable("birthday"))), 0.4)), [20, 20, 20]));
+        SelfManager.self().setVariable("color", PrimChecks.list.lput_unchecked(PrimChecks.math.minus_unchecked(255, PrimChecks.math.div_unchecked(PrimChecks.math.mult_unchecked(255, PrimChecks.math.minus(world.ticker.tickCount(), SelfManager.self().getVariable("birthday"))), 0.4)), [20, 20, 20]));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -329,14 +329,14 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       if (Prims.equality(PrimChecks.math.abs(newPx), world.observer.getGlobal("box-edge"))) {
-        SelfManager.self().setVariable("heading",  -(SelfManager.self().getVariable("heading")));
-        SelfManager.self().setVariable("momentum-instant", PrimChecks.math.div(PrimChecks.math.abs((((PrimChecks.math.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface")));
-        SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + SelfManager.self().getVariable("momentum-instant")));
+        SelfManager.self().setVariable("heading", PrimChecks.math.unaryminus(SelfManager.self().getVariable("heading")));
+        SelfManager.self().setVariable("momentum-instant", PrimChecks.math.div(PrimChecks.math.abs_unchecked(PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.mult_unchecked(PrimChecks.math.sin(SelfManager.self().getVariable("heading")), 2), SelfManager.self().getVariable("mass")), SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface")));
+        SelfManager.self().setVariable("momentum-difference", PrimChecks.math.plus(SelfManager.self().getVariable("momentum-difference"), SelfManager.self().getVariable("momentum-instant")));
       }
       if (Prims.equality(PrimChecks.math.abs(newPy), world.observer.getGlobal("box-edge"))) {
-        SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
-        SelfManager.self().setVariable("momentum-instant", PrimChecks.math.div(PrimChecks.math.abs((((PrimChecks.math.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface")));
-        SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + SelfManager.self().getVariable("momentum-instant")));
+        SelfManager.self().setVariable("heading", PrimChecks.math.minus(180, SelfManager.self().getVariable("heading")));
+        SelfManager.self().setVariable("momentum-instant", PrimChecks.math.div(PrimChecks.math.abs_unchecked(PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.mult_unchecked(PrimChecks.math.cos(SelfManager.self().getVariable("heading")), 2), SelfManager.self().getVariable("mass")), SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface")));
+        SelfManager.self().setVariable("momentum-difference", PrimChecks.math.plus(SelfManager.self().getVariable("momentum-difference"), SelfManager.self().getVariable("momentum-instant")));
       }
       if (world.observer.getGlobal("show-wall-hits?")) {
         Errors.askNobodyCheck(world.getPatchAt(newPx, newPy)).ask(function() { procedures["MAKE-A-FLASH"](); }, true);
@@ -371,11 +371,11 @@ var procedures = (function() {
       }); letVars['centerPatch'] = centerPatch;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BROKEN-WALLS")).ask(function() {
         SelfManager.self().setVariable("heading", SelfManager.self().towards(centerPatch));
-        SelfManager.self().setVariable("heading", (SelfManager.self().getVariable("heading") + 180));
+        SelfManager.self().setVariable("heading", PrimChecks.math.plus(SelfManager.self().getVariable("heading"), 180));
         if ((((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.maxPxcor) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor)) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor))) {
           SelfManager.self().die();
         }
-        SelfManager.self().fd((world.observer.getGlobal("avg-speed") * world.observer.getGlobal("tick-advance-amount")));
+        SelfManager.self().fd(PrimChecks.math.mult(world.observer.getGlobal("avg-speed"), world.observer.getGlobal("tick-advance-amount")));
       }, true);
       Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5); })).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
@@ -396,10 +396,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!Prims.equality(SelfManager.self().patchAhead((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-advance-amount"))), SelfManager.self().getPatchHere())) {
+      if (!Prims.equality(SelfManager.self().patchAhead(PrimChecks.math.mult(SelfManager.self().getVariable("speed"), world.observer.getGlobal("tick-advance-amount"))), SelfManager.self().getPatchHere())) {
         SelfManager.self().setVariable("last-collision", Nobody);
       }
-      SelfManager.self().jumpIfAble((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-advance-amount")));
+      SelfManager.self().jumpIfAble(PrimChecks.math.mult(SelfManager.self().getVariable("speed"), world.observer.getGlobal("tick-advance-amount")));
       if ((((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.maxPxcor) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor)) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor))) {
         SelfManager.self().die();
       }
@@ -413,8 +413,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("pressure", (100 * PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("momentum-difference"); }))));
-      world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.list.butFirst('but-first')(world.observer.getGlobal("pressure-history"))));
+      world.observer.setGlobal("pressure", PrimChecks.math.mult_unchecked(100, PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("momentum-difference"); }))));
+      world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.list.butFirst('but-first', world.observer.getGlobal("pressure-history"))));
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("GAS-MOLECULES")).ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -427,7 +427,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {
-        world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
+        world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min_unchecked(ListPrims.list(PrimChecks.math.div_unchecked(1, PrimChecks.math.ceil_unchecked(PrimChecks.list.max(PrimChecks.agentset.of_unchecked(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
       }
       else {
         world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
@@ -444,8 +444,8 @@ var procedures = (function() {
       var letVars = { };
       world.clearDrawing();
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("GAS-MOLECULES")).ask(function() { SelfManager.self().penManager.raisePen(); }, true);
-      Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"))).ask(function() {
-        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") * 10));
+      Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"))).ask(function() {
+        SelfManager.self().setVariable("speed", PrimChecks.math.mult(SelfManager.self().getVariable("speed"), 10));
         SelfManager.self().setVariable("energy", procedures["ENERGY-FROM-SPEED"]());
         SelfManager.self().penManager.lowerPen();
       }, true);
@@ -468,7 +468,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("speed", 0);
         }
         let hydrogenReactants = PrimChecks.list.nOf(2, hitHydrogen); letVars['hydrogenReactants'] = hydrogenReactants;
-        let totalEnergyAllReactants = (thisInitialOxygenMoleculesEnergy + PrimChecks.list.sum(PrimChecks.agentset.of(hydrogenReactants, function() { return SelfManager.self().getVariable("energy"); }))); letVars['totalEnergyAllReactants'] = totalEnergyAllReactants;
+        let totalEnergyAllReactants = PrimChecks.math.plus(thisInitialOxygenMoleculesEnergy, PrimChecks.list.sum(PrimChecks.agentset.of(hydrogenReactants, function() { return SelfManager.self().getVariable("energy"); }))); letVars['totalEnergyAllReactants'] = totalEnergyAllReactants;
         if (Prims.gt(totalEnergyAllReactants, world.observer.getGlobal("activation-energy"))) {
           Errors.askNobodyCheck(hydrogenReactants).ask(function() {
             if (world.observer.getGlobal("highlight-product?")) {
@@ -479,7 +479,7 @@ var procedures = (function() {
             }
             SelfManager.self().setVariable("molecule-type", "water");
             SelfManager.self().setVariable("mass", 10);
-            let totalEnergyProducts = (totalEnergyAllReactants + world.observer.getGlobal("bond-energy-released")); letVars['totalEnergyProducts'] = totalEnergyProducts;
+            let totalEnergyProducts = PrimChecks.math.plus(totalEnergyAllReactants, world.observer.getGlobal("bond-energy-released")); letVars['totalEnergyProducts'] = totalEnergyProducts;
             SelfManager.self().setVariable("energy", PrimChecks.math.div(totalEnergyProducts, 2));
             SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
           }, true);
@@ -497,7 +497,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(SelfPrims._optimalCountOther(SelfManager.self().inRadius(SelfManager.self().breedHere("GAS-MOLECULES"), 1)), 1)) {
-        let candidate = PrimChecks.list.oneOf(PrimChecks.agentset.otherWith(SelfManager.self().breedHere("GAS-MOLECULES"), function() {
+        let candidate = PrimChecks.list.oneOf_unchecked(PrimChecks.agentset.otherWith(SelfManager.self().breedHere("GAS-MOLECULES"), function() {
           return (Prims.lt(SelfManager.self(), SelfManager.myself()) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
         })); letVars['candidate'] = candidate;
         if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(PrimChecks.agentset.of(candidate, function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
@@ -521,24 +521,24 @@ var procedures = (function() {
       let mass2 = PrimChecks.agentset.of(otherGasMolecules, function() { return SelfManager.self().getVariable("mass"); }); letVars['mass2'] = mass2;
       let speed2 = PrimChecks.agentset.of(otherGasMolecules, function() { return SelfManager.self().getVariable("speed"); }); letVars['speed2'] = speed2;
       let heading2 = PrimChecks.agentset.of(otherGasMolecules, function() { return SelfManager.self().getVariable("heading"); }); letVars['heading2'] = heading2;
-      let theta = PrimChecks.math.randomFloat(360); letVars['theta'] = theta;
-      let v1t = (SelfManager.self().getVariable("speed") * PrimChecks.math.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
-      let v1l = (SelfManager.self().getVariable("speed") * PrimChecks.math.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
-      let v2t = (speed2 * PrimChecks.math.cos((theta - heading2))); letVars['v2t'] = v2t;
-      let v2l = (speed2 * PrimChecks.math.sin((theta - heading2))); letVars['v2l'] = v2l;
-      let vcm = PrimChecks.math.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2)); letVars['vcm'] = vcm;
-      v1t = ((2 * vcm) - v1t); letVars['v1t'] = v1t;
-      v2t = ((2 * vcm) - v2t); letVars['v2t'] = v2t;
-      SelfManager.self().setVariable("speed", PrimChecks.math.sqrt((PrimChecks.math.pow(v1t, 2) + PrimChecks.math.pow(v1l, 2))));
-      SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * PrimChecks.math.pow(SelfManager.self().getVariable("speed"), 2)));
+      let theta = PrimChecks.math.randomFloat_unchecked(360); letVars['theta'] = theta;
+      let v1t = PrimChecks.math.mult(SelfManager.self().getVariable("speed"), PrimChecks.math.cos_unchecked(PrimChecks.math.minus(theta, SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
+      let v1l = PrimChecks.math.mult(SelfManager.self().getVariable("speed"), PrimChecks.math.sin_unchecked(PrimChecks.math.minus(theta, SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
+      let v2t = PrimChecks.math.mult(speed2, PrimChecks.math.cos_unchecked(PrimChecks.math.minus(theta, heading2))); letVars['v2t'] = v2t;
+      let v2l = PrimChecks.math.mult(speed2, PrimChecks.math.sin_unchecked(PrimChecks.math.minus(theta, heading2))); letVars['v2l'] = v2l;
+      let vcm = PrimChecks.math.div_unchecked(PrimChecks.math.plus_unchecked(PrimChecks.math.mult(SelfManager.self().getVariable("mass"), v1t), PrimChecks.math.mult(mass2, v2t)), PrimChecks.math.plus(SelfManager.self().getVariable("mass"), mass2)); letVars['vcm'] = vcm;
+      v1t = PrimChecks.math.minus(PrimChecks.math.mult(2, vcm), v1t); letVars['v1t'] = v1t;
+      v2t = PrimChecks.math.minus(PrimChecks.math.mult(2, vcm), v2t); letVars['v2t'] = v2t;
+      SelfManager.self().setVariable("speed", PrimChecks.math.sqrt_unchecked(PrimChecks.math.plus_unchecked(PrimChecks.math.pow(v1t, 2), PrimChecks.math.pow(v1l, 2))));
+      SelfManager.self().setVariable("energy", PrimChecks.math.mult_unchecked(PrimChecks.math.mult(0.5, SelfManager.self().getVariable("mass")), PrimChecks.math.pow(SelfManager.self().getVariable("speed"), 2)));
       if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
-        SelfManager.self().setVariable("heading", (theta - PrimChecks.math.atan(v1l, v1t)));
+        SelfManager.self().setVariable("heading", PrimChecks.math.minus(theta, PrimChecks.math.atan(v1l, v1t)));
       }
       Errors.askNobodyCheck(otherGasMolecules).ask(function() {
-        SelfManager.self().setVariable("speed", PrimChecks.math.sqrt((PrimChecks.math.pow(v2t, 2) + PrimChecks.math.pow(v2l, 2))));
-        SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * PrimChecks.math.pow(SelfManager.self().getVariable("speed"), 2)));
+        SelfManager.self().setVariable("speed", PrimChecks.math.sqrt_unchecked(PrimChecks.math.plus_unchecked(PrimChecks.math.pow(v2t, 2), PrimChecks.math.pow(v2l, 2))));
+        SelfManager.self().setVariable("energy", PrimChecks.math.mult_unchecked(PrimChecks.math.mult(0.5, SelfManager.self().getVariable("mass")), PrimChecks.math.pow(SelfManager.self().getVariable("speed"), 2)));
         if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-          SelfManager.self().setVariable("heading", (theta - PrimChecks.math.atan(v2l, v2t)));
+          SelfManager.self().setVariable("heading", PrimChecks.math.minus(theta, PrimChecks.math.atan(v2l, v2t)));
         }
       }, true);
     } catch (e) {
@@ -552,7 +552,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.sqrt(PrimChecks.math.div((2 * SelfManager.self().getVariable("energy")), SelfManager.self().getVariable("mass")));
+      return PrimChecks.math.sqrt_unchecked(PrimChecks.math.div(PrimChecks.math.mult(2, SelfManager.self().getVariable("energy")), SelfManager.self().getVariable("mass")));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -565,7 +565,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return (((0.5 * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed")) * SelfManager.self().getVariable("speed"));
+      return PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.mult(0.5, SelfManager.self().getVariable("mass")), SelfManager.self().getVariable("speed")), SelfManager.self().getVariable("speed"));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

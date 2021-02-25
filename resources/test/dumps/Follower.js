@@ -161,13 +161,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let xd = (world.observer.getGlobal("near-radius") + PrimChecks.math.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius")))); letVars['xd'] = xd;
-      let yd = (world.observer.getGlobal("near-radius") + PrimChecks.math.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius")))); letVars['yd'] = yd;
+      let xd = PrimChecks.math.plus(world.observer.getGlobal("near-radius"), PrimChecks.math.random_unchecked(PrimChecks.math.minus(world.observer.getGlobal("far-radius"), world.observer.getGlobal("near-radius")))); letVars['xd'] = xd;
+      let yd = PrimChecks.math.plus(world.observer.getGlobal("near-radius"), PrimChecks.math.random_unchecked(PrimChecks.math.minus(world.observer.getGlobal("far-radius"), world.observer.getGlobal("near-radius")))); letVars['yd'] = yd;
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-        xd =  -(xd); letVars['xd'] = xd;
+        xd = PrimChecks.math.unaryminus(xd); letVars['xd'] = xd;
       }
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-        yd =  -(yd); letVars['yd'] = yd;
+        yd = PrimChecks.math.unaryminus(yd); letVars['yd'] = yd;
       }
       let candidate = PrimChecks.agentset.oneOfWith(SelfManager.self().turtlesAt(xd, yd), function() { return Prims.equality(SelfManager.self().getVariable("follower"), Nobody); }); letVars['candidate'] = candidate;
       if (Prims.equality(candidate, Nobody)) {
@@ -202,7 +202,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(SelfManager.self().getVariable("leader"), Nobody)) {
-        SelfManager.self().right((PrimChecks.math.randomFloat(world.observer.getGlobal("waver")) - PrimChecks.math.randomFloat(world.observer.getGlobal("waver"))));
+        SelfManager.self().right(PrimChecks.math.minus_unchecked(PrimChecks.math.randomFloat(world.observer.getGlobal("waver")), PrimChecks.math.randomFloat(world.observer.getGlobal("waver"))));
       }
       else {
         SelfManager.self().face(SelfManager.self().getVariable("leader"));

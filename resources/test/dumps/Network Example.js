@@ -61,7 +61,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 105);
         SelfManager.self().setVariable("size", 2);
       }, true);
-      LayoutManager.layoutCircle(world.turtles(), (PrimChecks.math.div(world.topology.width, 2) - 2));
+      LayoutManager.layoutCircle(world.turtles(), PrimChecks.math.minus_unchecked(PrimChecks.math.div_unchecked(world.topology.width, 2), 2));
       world.ticker.reset();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -73,14 +73,14 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!PrimChecks.agentset.any_unchecked(world.turtles())) {
+      if (PrimChecks.math.not_unchecked(PrimChecks.agentset.any_unchecked(world.turtles()))) {
         throw new Exception.StopInterrupt;
       }
-      Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtles())).ask(function() {
-        LinkPrims.createLinkWith(PrimChecks.list.oneOf(SelfPrims.other(world.turtles())), "LINKS").ask(function() {}, false);
+      Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(world.turtles())).ask(function() {
+        LinkPrims.createLinkWith(PrimChecks.list.oneOf_unchecked(SelfPrims.other(world.turtles())), "LINKS").ask(function() {}, false);
       }, true);
       while (Prims.gt(PrimChecks.agentset.count_unchecked(world.links()), world.observer.getGlobal("number-of-links"))) {
-        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.links())).ask(function() { SelfManager.self().die(); }, true);
+        Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(world.links())).ask(function() { SelfManager.self().die(); }, true);
       }
       world.ticker.tick();
     } catch (e) {

@@ -143,8 +143,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - 1));
-      Errors.askNobodyCheck(PrimChecks.list.oneOf(SelfPrims.other(world.turtles()))).ask(function() { SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") + 1)); }, true);
+      SelfManager.self().setVariable("wealth", PrimChecks.math.minus(SelfManager.self().getVariable("wealth"), 1));
+      Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(SelfPrims.other(world.turtles()))).ask(function() {
+        SelfManager.self().setVariable("wealth", PrimChecks.math.plus(SelfManager.self().getVariable("wealth"), 1));
+      }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -156,7 +158,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(PrimChecks.agentset.maxNOf(world.turtles(), (PrimChecks.agentset.count_unchecked(world.turtles()) * 0.1), function() { return SelfManager.self().getVariable("wealth"); }), function() { return SelfManager.self().getVariable("wealth"); }));
+      return PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(PrimChecks.agentset.maxNOf(world.turtles(), PrimChecks.math.mult_unchecked(PrimChecks.agentset.count_unchecked(world.turtles()), 0.1), function() { return SelfManager.self().getVariable("wealth"); }), function() { return SelfManager.self().getVariable("wealth"); }));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -169,7 +171,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(PrimChecks.agentset.minNOf(world.turtles(), (PrimChecks.agentset.count_unchecked(world.turtles()) * 0.5), function() { return SelfManager.self().getVariable("wealth"); }), function() { return SelfManager.self().getVariable("wealth"); }));
+      return PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(PrimChecks.agentset.minNOf(world.turtles(), PrimChecks.math.mult_unchecked(PrimChecks.agentset.count_unchecked(world.turtles()), 0.5), function() { return SelfManager.self().getVariable("wealth"); }), function() { return SelfManager.self().getVariable("wealth"); }));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

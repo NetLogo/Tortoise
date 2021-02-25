@@ -79,10 +79,10 @@ var procedures = (function() {
       world.clearAll();
       world.ticker.reset();
       world.observer.setGlobal("eps", 1);
-      world.observer.setGlobal("diameter", PrimChecks.math.sqrt(PrimChecks.math.div(((world.observer.getGlobal("density") * world.topology.width) * world.topology.height), world.observer.getGlobal("num-atoms"))));
+      world.observer.setGlobal("diameter", PrimChecks.math.sqrt_unchecked(PrimChecks.math.div(PrimChecks.math.mult_unchecked(PrimChecks.math.mult(world.observer.getGlobal("density"), world.topology.width), world.topology.height), world.observer.getGlobal("num-atoms"))));
       world.observer.setGlobal("max-move-dist", world.observer.getGlobal("diameter"));
-      world.observer.setGlobal("cutoff-dist", (2.5 * world.observer.getGlobal("diameter")));
-      world.observer.setGlobal("pot-offset",  -((4 * (PrimChecks.math.pow(PrimChecks.math.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 12) - PrimChecks.math.pow(PrimChecks.math.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 6)))));
+      world.observer.setGlobal("cutoff-dist", PrimChecks.math.mult(2.5, world.observer.getGlobal("diameter")));
+      world.observer.setGlobal("pot-offset", PrimChecks.math.unaryminus_unchecked(PrimChecks.math.mult_unchecked(4, PrimChecks.math.minus_unchecked(PrimChecks.math.pow_unchecked(PrimChecks.math.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 12), PrimChecks.math.pow_unchecked(PrimChecks.math.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 6)))));
       world.observer.setGlobal("v-total", procedures["CALC-V-TOTAL"]());
       world.turtleManager.createTurtles(world.observer.getGlobal("num-atoms"), "").ask(function() {
         SelfManager.self().setVariable("shape", "circle");
@@ -101,7 +101,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++){
-        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtles())).ask(function() { procedures["ATTEMPT-MOVE"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(world.turtles())).ask(function() { procedures["ATTEMPT-MOVE"](); }, true);
       }
       if (Prims.equality(PrimChecks.math.mod(world.ticker.tickCount(), world.observer.getGlobal("num-atoms")), 1)) {
         procedures["TUNE-ACCEPTANCE-RATE"]();
@@ -117,21 +117,21 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("total-move-attempts", (world.observer.getGlobal("total-move-attempts") + 1));
-      world.observer.setGlobal("current-move-attempts", (world.observer.getGlobal("current-move-attempts") + 1));
+      world.observer.setGlobal("total-move-attempts", PrimChecks.math.plus(world.observer.getGlobal("total-move-attempts"), 1));
+      world.observer.setGlobal("current-move-attempts", PrimChecks.math.plus(world.observer.getGlobal("current-move-attempts"), 1));
       let vOld = procedures["CALC-V"](); letVars['vOld'] = vOld;
-      let deltaX = ((PrimChecks.math.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist")); letVars['deltaX'] = deltaX;
-      let deltaY = ((PrimChecks.math.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist")); letVars['deltaY'] = deltaY;
-      SelfManager.self().setXY((SelfManager.self().getVariable("xcor") + deltaX), (SelfManager.self().getVariable("ycor") + deltaY));
+      let deltaX = PrimChecks.math.minus(PrimChecks.math.mult(PrimChecks.math.randomFloat_unchecked(2), world.observer.getGlobal("max-move-dist")), world.observer.getGlobal("max-move-dist")); letVars['deltaX'] = deltaX;
+      let deltaY = PrimChecks.math.minus(PrimChecks.math.mult(PrimChecks.math.randomFloat_unchecked(2), world.observer.getGlobal("max-move-dist")), world.observer.getGlobal("max-move-dist")); letVars['deltaY'] = deltaY;
+      SelfManager.self().setXY(PrimChecks.math.plus(SelfManager.self().getVariable("xcor"), deltaX), PrimChecks.math.plus(SelfManager.self().getVariable("ycor"), deltaY));
       let vNew = procedures["CALC-V"](); letVars['vNew'] = vNew;
-      let deltaV = (vNew - vOld); letVars['deltaV'] = deltaV;
-      if ((Prims.lt(vNew, vOld) || Prims.lt(PrimChecks.math.randomFloat(1), PrimChecks.math.exp(PrimChecks.math.div( -(deltaV), world.observer.getGlobal("temperature")))))) {
-        world.observer.setGlobal("total-successful-moves", (world.observer.getGlobal("total-successful-moves") + 1));
-        world.observer.setGlobal("current-successful-moves", (world.observer.getGlobal("current-successful-moves") + 1));
-        world.observer.setGlobal("v-total", (world.observer.getGlobal("v-total") + deltaV));
+      let deltaV = PrimChecks.math.minus(vNew, vOld); letVars['deltaV'] = deltaV;
+      if ((Prims.lt(vNew, vOld) || Prims.lt(PrimChecks.math.randomFloat_unchecked(1), PrimChecks.math.exp_unchecked(PrimChecks.math.div(PrimChecks.math.unaryminus(deltaV), world.observer.getGlobal("temperature")))))) {
+        world.observer.setGlobal("total-successful-moves", PrimChecks.math.plus(world.observer.getGlobal("total-successful-moves"), 1));
+        world.observer.setGlobal("current-successful-moves", PrimChecks.math.plus(world.observer.getGlobal("current-successful-moves"), 1));
+        world.observer.setGlobal("v-total", PrimChecks.math.plus(world.observer.getGlobal("v-total"), deltaV));
       }
       else {
-        SelfManager.self().setXY((SelfManager.self().getVariable("xcor") - deltaX), (SelfManager.self().getVariable("ycor") - deltaY));
+        SelfManager.self().setXY(PrimChecks.math.minus(SelfManager.self().getVariable("xcor"), deltaX), PrimChecks.math.minus(SelfManager.self().getVariable("ycor"), deltaY));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -144,7 +144,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtles(), function() { return procedures["CALC-V"](); })), 2);
+      return PrimChecks.math.div_unchecked(PrimChecks.list.sum(PrimChecks.agentset.of_unchecked(world.turtles(), function() { return procedures["CALC-V"](); })), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -158,12 +158,12 @@ var procedures = (function() {
       var letVars = { };
       let v = 0; letVars['v'] = v;
       Errors.askNobodyCheck(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("cutoff-dist")))).ask(function() {
-        let rsquare = PrimChecks.math.pow(SelfManager.self().distance(SelfManager.myself()), 2); letVars['rsquare'] = rsquare;
-        let dsquare = (world.observer.getGlobal("diameter") * world.observer.getGlobal("diameter")); letVars['dsquare'] = dsquare;
-        let attractTerm = PrimChecks.math.div(PrimChecks.math.pow(dsquare, 3), PrimChecks.math.pow(rsquare, 3)); letVars['attractTerm'] = attractTerm;
-        let repelTerm = (attractTerm * attractTerm); letVars['repelTerm'] = repelTerm;
-        let vi = (((4 * world.observer.getGlobal("eps")) * (repelTerm - attractTerm)) + world.observer.getGlobal("pot-offset")); letVars['vi'] = vi;
-        v = (v + vi); letVars['v'] = v;
+        let rsquare = PrimChecks.math.pow_unchecked(SelfManager.self().distance(SelfManager.myself()), 2); letVars['rsquare'] = rsquare;
+        let dsquare = PrimChecks.math.mult(world.observer.getGlobal("diameter"), world.observer.getGlobal("diameter")); letVars['dsquare'] = dsquare;
+        let attractTerm = PrimChecks.math.div_unchecked(PrimChecks.math.pow(dsquare, 3), PrimChecks.math.pow(rsquare, 3)); letVars['attractTerm'] = attractTerm;
+        let repelTerm = PrimChecks.math.mult(attractTerm, attractTerm); letVars['repelTerm'] = repelTerm;
+        let vi = PrimChecks.math.plus(PrimChecks.math.mult_unchecked(PrimChecks.math.mult(4, world.observer.getGlobal("eps")), PrimChecks.math.minus(repelTerm, attractTerm)), world.observer.getGlobal("pot-offset")); letVars['vi'] = vi;
+        v = PrimChecks.math.plus(v, vi); letVars['v'] = v;
       }, true);
       Errors.reportInContextCheck(reporterContext);
       return v;
@@ -192,10 +192,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.lt(procedures["ACCEPT-RATE"](), 0.5)) {
-        world.observer.setGlobal("max-move-dist", (world.observer.getGlobal("max-move-dist") * 0.95));
+        world.observer.setGlobal("max-move-dist", PrimChecks.math.mult(world.observer.getGlobal("max-move-dist"), 0.95));
       }
       else {
-        world.observer.setGlobal("max-move-dist", (world.observer.getGlobal("max-move-dist") * 1.05));
+        world.observer.setGlobal("max-move-dist", PrimChecks.math.mult(world.observer.getGlobal("max-move-dist"), 1.05));
         if (Prims.gt(world.observer.getGlobal("max-move-dist"), world.observer.getGlobal("diameter"))) {
           world.observer.setGlobal("max-move-dist", world.observer.getGlobal("diameter"));
         }
@@ -227,18 +227,18 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.equality(world.observer.getGlobal("initial-config"), "HCP")) {
         let l = PrimChecks.math.sqrt(world.observer.getGlobal("num-atoms")); letVars['l'] = l;
-        let rowDist = (PrimChecks.math.pow(2, PrimChecks.math.div(1, 6)) * world.observer.getGlobal("diameter")); letVars['rowDist'] = rowDist;
-        let ypos = PrimChecks.math.div(( -(l) * rowDist), 2); letVars['ypos'] = ypos;
-        let xpos = PrimChecks.math.div(( -(l) * rowDist), 2); letVars['xpos'] = xpos;
+        let rowDist = PrimChecks.math.mult(PrimChecks.math.pow_unchecked(2, PrimChecks.math.div_unchecked(1, 6)), world.observer.getGlobal("diameter")); letVars['rowDist'] = rowDist;
+        let ypos = PrimChecks.math.div_unchecked(PrimChecks.math.mult(PrimChecks.math.unaryminus(l), rowDist), 2); letVars['ypos'] = ypos;
+        let xpos = PrimChecks.math.div_unchecked(PrimChecks.math.mult(PrimChecks.math.unaryminus(l), rowDist), 2); letVars['xpos'] = xpos;
         let rNum = 0; letVars['rNum'] = rNum;
         Errors.askNobodyCheck(world.turtles()).ask(function() {
-          if (Prims.gt(xpos, PrimChecks.math.div((l * rowDist), 2))) {
-            rNum = (rNum + 1); letVars['rNum'] = rNum;
-            xpos = (PrimChecks.math.div(( -(l) * rowDist), 2) + PrimChecks.math.div((PrimChecks.math.mod(rNum, 2) * rowDist), 2)); letVars['xpos'] = xpos;
-            ypos = (ypos + rowDist); letVars['ypos'] = ypos;
+          if (Prims.gt(xpos, PrimChecks.math.div_unchecked(PrimChecks.math.mult(l, rowDist), 2))) {
+            rNum = PrimChecks.math.plus(rNum, 1); letVars['rNum'] = rNum;
+            xpos = PrimChecks.math.plus_unchecked(PrimChecks.math.div_unchecked(PrimChecks.math.mult(PrimChecks.math.unaryminus(l), rowDist), 2), PrimChecks.math.div_unchecked(PrimChecks.math.mult(PrimChecks.math.mod(rNum, 2), rowDist), 2)); letVars['xpos'] = xpos;
+            ypos = PrimChecks.math.plus(ypos, rowDist); letVars['ypos'] = ypos;
           }
           SelfManager.self().setXY(xpos, ypos);
-          xpos = (xpos + rowDist); letVars['xpos'] = xpos;
+          xpos = PrimChecks.math.plus(xpos, rowDist); letVars['xpos'] = xpos;
         }, true);
       }
       if (Prims.equality(world.observer.getGlobal("initial-config"), "random")) {
@@ -257,7 +257,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let rMin = (0.7 * world.observer.getGlobal("diameter")); letVars['rMin'] = rMin;
+      let rMin = PrimChecks.math.mult(0.7, world.observer.getGlobal("diameter")); letVars['rMin'] = rMin;
       Errors.askNobodyCheck(world.turtles()).ask(function() {
         while (procedures["OVERLAPPING"](rMin)) {
           SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));

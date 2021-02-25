@@ -78,12 +78,12 @@ var procedures = (function() {
         SelfManager.self().setVariable("new?", false);
         SelfManager.self().penManager.lowerPen();
       }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtles(), function() { return !SelfManager.self().getVariable("new?"); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtles(), function() { return PrimChecks.math.not(SelfManager.self().getVariable("new?")); })).ask(function() {
         SelfManager.self().fd(4);
         SelfManager.self().right(15);
         SelfManager.self().fd(8);
         SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().setVariable("new?", true); }, true);
-        SelfManager.self().setVariable("color", (SelfManager.self().getVariable("color") + world.observer.getGlobal("color-inc")));
+        SelfManager.self().setVariable("color", PrimChecks.math.plus(SelfManager.self().getVariable("color"), world.observer.getGlobal("color-inc")));
         SelfManager.self().right(180);
         SelfManager.self().jumpIfAble(8);
         SelfManager.self().right(180);
@@ -91,7 +91,7 @@ var procedures = (function() {
         SelfManager.self().fd(4);
         SelfManager.self().right(-(15));
         SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().setVariable("new?", true); }, true);
-        SelfManager.self().setVariable("color", (SelfManager.self().getVariable("color") + world.observer.getGlobal("color-inc")));
+        SelfManager.self().setVariable("color", PrimChecks.math.plus(SelfManager.self().getVariable("color"), world.observer.getGlobal("color-inc")));
         SelfManager.self().fd(8);
         SelfManager.self().die();
       }, true);

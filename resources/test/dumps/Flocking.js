@@ -57,7 +57,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
-        SelfManager.self().setVariable("color", ((45 - 2) + RandomPrims.randomLong(7)));
+        SelfManager.self().setVariable("color", PrimChecks.math.plus_unchecked(PrimChecks.math.minus_unchecked(45, 2), RandomPrims.randomLong(7)));
         SelfManager.self().setVariable("size", 1.5);
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("flockmates", new TurtleSet([], world));
@@ -186,8 +186,12 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let xComponent = PrimChecks.list.mean(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() { return PrimChecks.math.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['xComponent'] = xComponent;
-      let yComponent = PrimChecks.list.mean(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() { return PrimChecks.math.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['yComponent'] = yComponent;
+      let xComponent = PrimChecks.list.mean(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() {
+        return PrimChecks.math.sin_unchecked(PrimChecks.math.plus_unchecked(SelfManager.self().towards(SelfManager.myself()), 180));
+      })); letVars['xComponent'] = xComponent;
+      let yComponent = PrimChecks.list.mean(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() {
+        return PrimChecks.math.cos_unchecked(PrimChecks.math.plus_unchecked(SelfManager.self().towards(SelfManager.myself()), 180));
+      })); letVars['yComponent'] = yComponent;
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
         Errors.reportInContextCheck(reporterContext);
         return SelfManager.self().getVariable("heading");

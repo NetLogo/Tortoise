@@ -113,7 +113,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       for (let _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++){
-        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.patches())).ask(function() { procedures["UPDATE"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(world.patches())).ask(function() { procedures["UPDATE"](); }, true);
       }
       world.ticker.tickAdvance(1000);
       plotManager.updatePlots();
@@ -127,10 +127,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let ediff = ((2 * SelfManager.self().getPatchVariable("spin")) * SelfManager.self()._optimalNSum4("spin")); letVars['ediff'] = ediff;
-      if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(PrimChecks.math.randomFloat(1), PrimChecks.math.exp(PrimChecks.math.div( -(ediff), world.observer.getGlobal("temperature"))))))) {
-        SelfManager.self().setPatchVariable("spin",  -(SelfManager.self().getPatchVariable("spin")));
-        world.observer.setGlobal("sum-of-spins", (world.observer.getGlobal("sum-of-spins") + (2 * SelfManager.self().getPatchVariable("spin"))));
+      let ediff = PrimChecks.math.mult_unchecked(PrimChecks.math.mult(2, SelfManager.self().getPatchVariable("spin")), SelfManager.self()._optimalNSum4("spin")); letVars['ediff'] = ediff;
+      if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(PrimChecks.math.randomFloat_unchecked(1), PrimChecks.math.exp_unchecked(PrimChecks.math.div(PrimChecks.math.unaryminus(ediff), world.observer.getGlobal("temperature"))))))) {
+        SelfManager.self().setPatchVariable("spin", PrimChecks.math.unaryminus(SelfManager.self().getPatchVariable("spin")));
+        world.observer.setGlobal("sum-of-spins", PrimChecks.math.plus(world.observer.getGlobal("sum-of-spins"), PrimChecks.math.mult(2, SelfManager.self().getPatchVariable("spin"))));
         procedures["RECOLOR"]();
       }
     } catch (e) {
@@ -144,10 +144,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(SelfManager.self().getPatchVariable("spin"), 1)) {
-        SelfManager.self().setPatchVariable("pcolor", (105 + 2));
+        SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus_unchecked(105, 2));
       }
       else {
-        SelfManager.self().setPatchVariable("pcolor", (105 - 2));
+        SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus_unchecked(105, 2));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)

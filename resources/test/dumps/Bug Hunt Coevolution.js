@@ -247,7 +247,7 @@ var procedures = (function() {
       let predator = Nobody; letVars['predator'] = predator;
       let allPredators = PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("BIRDS"), world.turtleManager.turtlesOfBreed("PLAYERS")); letVars['allPredators'] = allPredators;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BUGS")).ask(function() {
-        SelfManager.self().fd((SelfManager.self().getVariable("speed") * world.observer.getGlobal("speed-factor")));
+        SelfManager.self().fd(PrimChecks.math.mult(SelfManager.self().getVariable("speed"), world.observer.getGlobal("speed-factor")));
         if (PrimChecks.agentset.any_unchecked(SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120))) {
           candidatePredators = SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120); letVars['candidatePredators'] = candidatePredators;
           if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "any") && PrimChecks.agentset.any(candidatePredators))) {
@@ -256,7 +256,7 @@ var procedures = (function() {
           if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "nearest") && PrimChecks.agentset.any(candidatePredators))) {
             predator = PrimChecks.agentset.minOneOf(candidatePredators, function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['predator'] = predator;
           }
-          targetHeading = (180 + SelfManager.self().towards(predator)); letVars['targetHeading'] = targetHeading;
+          targetHeading = PrimChecks.math.plus_unchecked(180, SelfManager.self().towards(predator)); letVars['targetHeading'] = targetHeading;
           SelfManager.self().setVariable("heading", targetHeading);
           SelfManager.self().setVariable("label-color", 0);
           SelfManager.self().setVariable("label", "!");
@@ -288,7 +288,7 @@ var procedures = (function() {
             preyAgent = closestBug; letVars['preyAgent'] = preyAgent;
             SelfManager.self().setVariable("target", preyAgent);
             SelfManager.self().setVariable("heading", SelfManager.self().towards(preyAgent));
-            SelfManager.self().setVariable("label-color", (15 - 2));
+            SelfManager.self().setVariable("label-color", PrimChecks.math.minus_unchecked(15, 2));
             SelfManager.self().setVariable("label", "!");
             assignedTarget_p = true; letVars['assignedTarget_p'] = assignedTarget_p;
           }
@@ -296,7 +296,7 @@ var procedures = (function() {
             preyAgent = closestBug; letVars['preyAgent'] = preyAgent;
             SelfManager.self().setVariable("target", preyAgent);
             SelfManager.self().setVariable("heading", SelfManager.self().towards(preyAgent));
-            SelfManager.self().setVariable("label-color", (15 - 2));
+            SelfManager.self().setVariable("label-color", PrimChecks.math.minus_unchecked(15, 2));
             SelfManager.self().setVariable("label", "!");
             assignedTarget_p = true; letVars['assignedTarget_p'] = assignedTarget_p;
           }
@@ -311,7 +311,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("label", "");
           procedures["WIGGLE"]();
         }
-        SelfManager.self().fd((SelfManager.self().getVariable("speed") * world.observer.getGlobal("speed-factor")));
+        SelfManager.self().fd(PrimChecks.math.mult(SelfManager.self().getVariable("speed"), world.observer.getGlobal("speed-factor")));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -324,8 +324,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (world.observer.getGlobal("wiggle?")) {
-        SelfManager.self().right(PrimChecks.math.div((PrimChecks.math.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
-        SelfManager.self().right(-(PrimChecks.math.div((PrimChecks.math.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor"))));
+        SelfManager.self().right(PrimChecks.math.div(PrimChecks.math.mult_unchecked(PrimChecks.math.randomFloat_unchecked(30), 0.05), world.observer.getGlobal("speed-factor")));
+        SelfManager.self().right(-(PrimChecks.math.div(PrimChecks.math.mult_unchecked(PrimChecks.math.randomFloat_unchecked(30), 0.05), world.observer.getGlobal("speed-factor"))));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -363,26 +363,26 @@ var procedures = (function() {
       if ((MousePrims.isDown() && MousePrims.isInside())) {
         localBugs = PrimChecks.agentset.breedOn("BUGS", world.getPatchAt(snapMouseXcor, snapMouseYcor)); letVars['localBugs'] = localBugs;
         if (PrimChecks.agentset.any(localBugs)) {
-          world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
+          world.observer.setGlobal("total-caught", PrimChecks.math.plus(world.observer.getGlobal("total-caught"), 1));
           Errors.askNobodyCheck(PrimChecks.list.oneOf(localBugs)).ask(function() {
             speedOfCaught = SelfManager.self().getVariable("speed"); letVars['speedOfCaught'] = speedOfCaught;
             if (Prims.equality(speedOfCaught, 1)) {
-              world.observer.setGlobal("total-speed-6-caught", (world.observer.getGlobal("total-speed-6-caught") + 1));
+              world.observer.setGlobal("total-speed-6-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-6-caught"), 1));
             }
             if (Prims.equality(speedOfCaught, 2)) {
-              world.observer.setGlobal("total-speed-5-caught", (world.observer.getGlobal("total-speed-5-caught") + 1));
+              world.observer.setGlobal("total-speed-5-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-5-caught"), 1));
             }
             if (Prims.equality(speedOfCaught, 3)) {
-              world.observer.setGlobal("total-speed-4-caught", (world.observer.getGlobal("total-speed-4-caught") + 1));
+              world.observer.setGlobal("total-speed-4-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-4-caught"), 1));
             }
             if (Prims.equality(speedOfCaught, 4)) {
-              world.observer.setGlobal("total-speed-3-caught", (world.observer.getGlobal("total-speed-3-caught") + 1));
+              world.observer.setGlobal("total-speed-3-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-3-caught"), 1));
             }
             if (Prims.equality(speedOfCaught, 5)) {
-              world.observer.setGlobal("total-speed-2-caught", (world.observer.getGlobal("total-speed-2-caught") + 1));
+              world.observer.setGlobal("total-speed-2-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-2-caught"), 1));
             }
             if (Prims.equality(speedOfCaught, 6)) {
-              world.observer.setGlobal("total-speed-1-caught", (world.observer.getGlobal("total-speed-1-caught") + 1));
+              world.observer.setGlobal("total-speed-1-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-1-caught"), 1));
             }
             Errors.askNobodyCheck(LinkPrims.outLinkNeighbors("LINKS")).ask(function() {
               SelfManager.self().setVariable("color", 15);
@@ -406,27 +406,27 @@ var procedures = (function() {
       let speedOfCaught = 0; letVars['speedOfCaught'] = speedOfCaught;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BIRDS")).ask(function() {
         if (PrimChecks.agentset.any_unchecked(SelfManager.self().breedHere("BUGS"))) {
-          world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
-          SelfManager.self().setVariable("eaten", (SelfManager.self().getVariable("eaten") + 1));
-          Errors.askNobodyCheck(PrimChecks.list.oneOf(SelfManager.self().breedHere("BUGS"))).ask(function() {
+          world.observer.setGlobal("total-caught", PrimChecks.math.plus(world.observer.getGlobal("total-caught"), 1));
+          SelfManager.self().setVariable("eaten", PrimChecks.math.plus(SelfManager.self().getVariable("eaten"), 1));
+          Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(SelfManager.self().breedHere("BUGS"))).ask(function() {
             speedOfCaught = SelfManager.self().getVariable("speed"); letVars['speedOfCaught'] = speedOfCaught;
             if (Prims.equality(speedOfCaught, 1)) {
-              world.observer.setGlobal("total-speed-6-caught", (world.observer.getGlobal("total-speed-6-caught") + 1));
+              world.observer.setGlobal("total-speed-6-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-6-caught"), 1));
             }
             if (Prims.equality(speedOfCaught, 2)) {
-              world.observer.setGlobal("total-speed-5-caught", (world.observer.getGlobal("total-speed-5-caught") + 1));
+              world.observer.setGlobal("total-speed-5-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-5-caught"), 1));
             }
             if (Prims.equality(speedOfCaught, 3)) {
-              world.observer.setGlobal("total-speed-4-caught", (world.observer.getGlobal("total-speed-4-caught") + 1));
+              world.observer.setGlobal("total-speed-4-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-4-caught"), 1));
             }
             if (Prims.equality(speedOfCaught, 4)) {
-              world.observer.setGlobal("total-speed-3-caught", (world.observer.getGlobal("total-speed-3-caught") + 1));
+              world.observer.setGlobal("total-speed-3-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-3-caught"), 1));
             }
             if (Prims.equality(speedOfCaught, 5)) {
-              world.observer.setGlobal("total-speed-2-caught", (world.observer.getGlobal("total-speed-2-caught") + 1));
+              world.observer.setGlobal("total-speed-2-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-2-caught"), 1));
             }
             if (Prims.equality(speedOfCaught, 6)) {
-              world.observer.setGlobal("total-speed-1-caught", (world.observer.getGlobal("total-speed-1-caught") + 1));
+              world.observer.setGlobal("total-speed-1-caught", PrimChecks.math.plus(world.observer.getGlobal("total-speed-1-caught"), 1));
             }
             Errors.askNobodyCheck(LinkPrims.outLinkNeighbors("LINKS")).ask(function() {
               SelfManager.self().setVariable("color", 15);
@@ -448,10 +448,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("BUGS"))).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(world.turtleManager.turtlesOfBreed("BUGS"))).ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
           procedures["MUTATE-OFFSPRING-BUG"]();
-          SelfManager.self().setVariable("heading", PrimChecks.math.randomFloat(360));
+          SelfManager.self().setVariable("heading", PrimChecks.math.randomFloat_unchecked(360));
           procedures["ATTACH-VISION-CONE"]();
         }, true);
       }, true);
@@ -467,12 +467,12 @@ var procedures = (function() {
       var letVars = { };
       let birdEnergySplit = 0; letVars['birdEnergySplit'] = birdEnergySplit;
       if (PrimChecks.agentset.optimizeCount(world.turtleManager.turtlesOfBreed("BIRDS"), 0, (a, b) => a > b)) {
-        Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("BIRDS"))).ask(function() {
+        Errors.askNobodyCheck(PrimChecks.list.oneOf_unchecked(world.turtleManager.turtlesOfBreed("BIRDS"))).ask(function() {
           birdEnergySplit = PrimChecks.math.div(SelfManager.self().getVariable("eaten"), 2); letVars['birdEnergySplit'] = birdEnergySplit;
           SelfManager.self().setVariable("eaten", birdEnergySplit);
           SelfManager.self().hatch(1, "").ask(function() {
             procedures["MUTATE-OFFSPRING-BIRD"]();
-            SelfManager.self().setVariable("heading", PrimChecks.math.randomFloat(360));
+            SelfManager.self().setVariable("heading", PrimChecks.math.randomFloat_unchecked(360));
             procedures["ATTACH-VISION-CONE"]();
           }, true);
         }, true);
@@ -488,10 +488,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + PrimChecks.math.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
+        SelfManager.self().setVariable("vision", PrimChecks.math.plus(SelfManager.self().getVariable("vision"), PrimChecks.math.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
       }
       else {
-        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") - PrimChecks.math.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
+        SelfManager.self().setVariable("vision", PrimChecks.math.minus(SelfManager.self().getVariable("vision"), PrimChecks.math.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
       }
       if (Prims.gt(SelfManager.self().getVariable("vision"), world.observer.getGlobal("max-vision"))) {
         SelfManager.self().setVariable("vision", world.observer.getGlobal("max-vision"));
@@ -500,10 +500,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("vision", 0);
       }
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + PrimChecks.math.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
+        SelfManager.self().setVariable("speed", PrimChecks.math.plus(SelfManager.self().getVariable("speed"), PrimChecks.math.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
       }
       else {
-        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") - PrimChecks.math.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
+        SelfManager.self().setVariable("speed", PrimChecks.math.minus(SelfManager.self().getVariable("speed"), PrimChecks.math.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
       }
       if (Prims.gt(SelfManager.self().getVariable("speed"), world.observer.getGlobal("max-speed"))) {
         SelfManager.self().setVariable("speed", world.observer.getGlobal("max-speed"));
@@ -522,10 +522,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + PrimChecks.math.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
+        SelfManager.self().setVariable("vision", PrimChecks.math.plus(SelfManager.self().getVariable("vision"), PrimChecks.math.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
       }
       else {
-        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") - PrimChecks.math.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
+        SelfManager.self().setVariable("vision", PrimChecks.math.minus(SelfManager.self().getVariable("vision"), PrimChecks.math.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
       }
       if (Prims.gt(SelfManager.self().getVariable("vision"), world.observer.getGlobal("max-vision"))) {
         SelfManager.self().setVariable("vision", world.observer.getGlobal("max-vision"));
@@ -534,10 +534,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("vision", 0);
       }
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + PrimChecks.math.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
+        SelfManager.self().setVariable("speed", PrimChecks.math.plus(SelfManager.self().getVariable("speed"), PrimChecks.math.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
       }
       else {
-        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") - PrimChecks.math.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
+        SelfManager.self().setVariable("speed", PrimChecks.math.minus(SelfManager.self().getVariable("speed"), PrimChecks.math.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
       }
       if (Prims.gt(SelfManager.self().getVariable("speed"), world.observer.getGlobal("max-speed"))) {
         SelfManager.self().setVariable("speed", world.observer.getGlobal("max-speed"));
@@ -573,14 +573,14 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let parentVision = PrimChecks.agentset.of(PrimChecks.list.oneOf(LinkPrims.inLinkNeighbors("LINKS")), function() { return SelfManager.self().getVariable("vision"); }); letVars['parentVision'] = parentVision;
+      let parentVision = PrimChecks.agentset.of(PrimChecks.list.oneOf_unchecked(LinkPrims.inLinkNeighbors("LINKS")), function() { return SelfManager.self().getVariable("vision"); }); letVars['parentVision'] = parentVision;
       if (world.observer.getGlobal("show-vision-cone?")) {
         SelfManager.self().setVariable("hidden?", false);
-        SelfManager.self().setVariable("size", (2 * parentVision));
+        SelfManager.self().setVariable("size", PrimChecks.math.mult(2, parentVision));
       }
       else {
         SelfManager.self().setVariable("hidden?", true);
-        SelfManager.self().setVariable("size", (2 * parentVision));
+        SelfManager.self().setVariable("size", PrimChecks.math.mult(2, parentVision));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -592,7 +592,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("color", (111 + SelfManager.self().getVariable("speed")));
+      SelfManager.self().setVariable("color", PrimChecks.math.plus(111, SelfManager.self().getVariable("speed")));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -610,7 +610,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 25);
       }
       if (Prims.equality(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 4)) {
-        SelfManager.self().setVariable("color", (45 - 1));
+        SelfManager.self().setVariable("color", PrimChecks.math.minus_unchecked(45, 1));
       }
       if (Prims.equality(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 3)) {
         SelfManager.self().setVariable("color", 55);
@@ -622,10 +622,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 115);
       }
       if (Prims.gte(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 7)) {
-        SelfManager.self().setVariable("color", (5 - 2));
+        SelfManager.self().setVariable("color", PrimChecks.math.minus_unchecked(5, 2));
       }
       if (Prims.lt(PrimChecks.math.floor(SelfManager.self().getVariable("speed")), 1)) {
-        SelfManager.self().setVariable("color", (5 + 2));
+        SelfManager.self().setVariable("color", PrimChecks.math.plus_unchecked(5, 2));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -637,7 +637,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(PrimChecks.math.mod(world.ticker.tickCount(), 100), 1)) {
+      if (Prims.equality(PrimChecks.math.mod_unchecked(world.ticker.tickCount(), 100), 1)) {
         plotManager.setCurrentPlot("Avg. Vision vs. Time");
         plotManager.setCurrentPen("bugs");
         if (PrimChecks.agentset.any_unchecked(world.turtleManager.turtlesOfBreed("BUGS"))) {

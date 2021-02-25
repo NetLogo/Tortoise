@@ -64,7 +64,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      PrimChecks.math.randomSeed(579);
+      PrimChecks.math.randomSeed_unchecked(579);
       procedures["SETUP"]();
       workspace.timer.reset();
       for (let _index_175_181 = 0, _repeatcount_175_181 = StrictMath.floor(10000); _index_175_181 < _repeatcount_175_181; _index_175_181++){
@@ -95,16 +95,16 @@ var procedures = (function() {
       world.turtleManager.createOrderedTurtles(world.observer.getGlobal("init-sheep"), "SHEEP");
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SHEEP")).ask(function() {
         SelfManager.self().setVariable("color", 9.9);
-        SelfManager.self().setVariable("energy", PrimChecks.math.randomFloat((2 * world.observer.getGlobal("sheep-metabolism"))));
+        SelfManager.self().setVariable("energy", PrimChecks.math.randomFloat_unchecked(PrimChecks.math.mult(2, world.observer.getGlobal("sheep-metabolism"))));
         SelfManager.self().setVariable("shape", "sheep");
-        SelfManager.self().setXY(PrimChecks.math.random(world.topology.width), PrimChecks.math.random(world.topology.height));
+        SelfManager.self().setXY(PrimChecks.math.random_unchecked(world.topology.width), PrimChecks.math.random_unchecked(world.topology.height));
       }, true);
       world.turtleManager.createOrderedTurtles(world.observer.getGlobal("init-wolves"), "WOLVES");
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("WOLVES")).ask(function() {
         SelfManager.self().setVariable("color", 0);
-        SelfManager.self().setVariable("energy", PrimChecks.math.randomFloat((2 * world.observer.getGlobal("wolf-metabolism"))));
+        SelfManager.self().setVariable("energy", PrimChecks.math.randomFloat_unchecked(PrimChecks.math.mult(2, world.observer.getGlobal("wolf-metabolism"))));
         SelfManager.self().setVariable("shape", "wolf");
-        SelfManager.self().setXY(PrimChecks.math.random(world.topology.width), PrimChecks.math.random(world.topology.height));
+        SelfManager.self().setXY(PrimChecks.math.random_unchecked(world.topology.width), PrimChecks.math.random_unchecked(world.topology.height));
       }, true);
       if (world.observer.getGlobal("plot?")) {
         procedures["GRAPH"]();
@@ -122,7 +122,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SHEEP")).ask(function() {
         procedures["MOVE"]();
         if (world.observer.getGlobal("grass?")) {
-          SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 1));
+          SelfManager.self().setVariable("energy", PrimChecks.math.minus(SelfManager.self().getVariable("energy"), 1));
           procedures["EAT-GRASS"]();
         }
         procedures["REPRODUCE-SHEEP"]();
@@ -130,7 +130,7 @@ var procedures = (function() {
       }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("WOLVES")).ask(function() {
         procedures["MOVE"]();
-        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 1));
+        SelfManager.self().setVariable("energy", PrimChecks.math.minus(SelfManager.self().getVariable("energy"), 1));
         procedures["CATCH-SHEEP"]();
         procedures["REPRODUCE-WOLVES"]();
         procedures["DEATH"]();
@@ -155,7 +155,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right((RandomPrims.randomLong(50) - RandomPrims.randomLong(50)));
+      SelfManager.self().right(PrimChecks.math.minus_unchecked(RandomPrims.randomLong(50), RandomPrims.randomLong(50)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -169,7 +169,7 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
         SelfManager.self().setPatchVariable("pcolor", 35);
-        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("sheep-metabolism")));
+        SelfManager.self().setVariable("energy", PrimChecks.math.plus(SelfManager.self().getVariable("energy"), world.observer.getGlobal("sheep-metabolism")));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -181,8 +181,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("sheep-reproduce"))) {
-        SelfManager.self().setVariable("energy", PrimChecks.math.round(PrimChecks.math.div(SelfManager.self().getVariable("energy"), 2)));
+      if (Prims.lt(PrimChecks.math.randomFloat_unchecked(100), world.observer.getGlobal("sheep-reproduce"))) {
+        SelfManager.self().setVariable("energy", PrimChecks.math.round_unchecked(PrimChecks.math.div(SelfManager.self().getVariable("energy"), 2)));
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().right(RandomPrims.randomLong(360));
           SelfManager.self()._optimalFdOne();
@@ -198,8 +198,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("wolf-reproduce"))) {
-        SelfManager.self().setVariable("energy", PrimChecks.math.round(PrimChecks.math.div(SelfManager.self().getVariable("energy"), 2)));
+      if (Prims.lt(PrimChecks.math.randomFloat_unchecked(100), world.observer.getGlobal("wolf-reproduce"))) {
+        SelfManager.self().setVariable("energy", PrimChecks.math.round_unchecked(PrimChecks.math.div(SelfManager.self().getVariable("energy"), 2)));
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().right(RandomPrims.randomLong(360));
           SelfManager.self()._optimalFdOne();
@@ -215,10 +215,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("prey", PrimChecks.list.oneOf(SelfManager.self().breedHere("SHEEP")));
+      SelfManager.self().setVariable("prey", PrimChecks.list.oneOf_unchecked(SelfManager.self().breedHere("SHEEP")));
       if (!Prims.equality(SelfManager.self().getVariable("prey"), Nobody)) {
         Errors.askNobodyCheck(SelfManager.self().getVariable("prey")).ask(function() { SelfManager.self().setVariable("energy", -1); }, true);
-        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("wolf-metabolism")));
+        SelfManager.self().setVariable("energy", PrimChecks.math.plus(SelfManager.self().getVariable("energy"), world.observer.getGlobal("wolf-metabolism")));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -249,7 +249,7 @@ var procedures = (function() {
           SelfManager.self().setPatchVariable("countdown", world.observer.getGlobal("grass-delay"));
         }
         else {
-          SelfManager.self().setPatchVariable("countdown", (SelfManager.self().getPatchVariable("countdown") - 1));
+          SelfManager.self().setPatchVariable("countdown", PrimChecks.math.minus(SelfManager.self().getPatchVariable("countdown"), 1));
         }
       }
     } catch (e) {
@@ -268,7 +268,7 @@ var procedures = (function() {
       plotManager.plotValue(PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("WOLVES")));
       if (world.observer.getGlobal("grass?")) {
         plotManager.setCurrentPen("grass / 4");
-        plotManager.plotValue(PrimChecks.math.div(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }), 4));
+        plotManager.plotValue(PrimChecks.math.div_unchecked(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }), 4));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)

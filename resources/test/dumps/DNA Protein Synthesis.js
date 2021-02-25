@@ -97,10 +97,10 @@ var procedures = (function() {
       procedures["INITIALIZE-CODON-TO-AMINO-ACID-KEY"]();
       procedures["SETUP-STARTING-DNA"]();
       procedures["VISUALIZE-ALL-GENES"]();
-      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 - 4)); }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), 2); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 - 3.5)); }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), 0); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", (55 - 4)); }, true);
-      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), -3); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", (55 - 3.5)); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus_unchecked(105, 4)); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), 2); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus_unchecked(105, 3.5)); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), 0); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus_unchecked(55, 4)); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.patches(), function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), -3); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus_unchecked(55, 3.5)); }, true);
       procedures["SHOW-INSTRUCTION"](1);
       world.ticker.reset();
     } catch (e) {
@@ -200,10 +200,10 @@ var procedures = (function() {
       var letVars = { };
       Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("TRNAS"), function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); })).ask(function() {
         if (Prims.equality(strandType, "original")) {
-          SelfManager.self().setVariable("ycor", (world.observer.getGlobal("original-ribosome-ycor") + 1));
+          SelfManager.self().setVariable("ycor", PrimChecks.math.plus(world.observer.getGlobal("original-ribosome-ycor"), 1));
         }
         if (Prims.equality(strandType, "duplicate")) {
-          SelfManager.self().setVariable("ycor", (world.observer.getGlobal("duplicate-ribosome-ycor") + 1));
+          SelfManager.self().setVariable("ycor", PrimChecks.math.plus(world.observer.getGlobal("duplicate-ribosome-ycor"), 1));
         }
       }, true);
     } catch (e) {
@@ -230,7 +230,7 @@ var procedures = (function() {
             SelfManager.self().setVariable("heading", 0);
             SelfManager.self().setVariable("place", placeCounter);
             procedures["ATTACH-TAG"](5,0.5,SelfManager.self().getVariable("value"),world.observer.getGlobal("nucleo-tag-color"));
-            placeCounter = (placeCounter + 1); letVars['placeCounter'] = placeCounter;
+            placeCounter = PrimChecks.math.plus(placeCounter, 1); letVars['placeCounter'] = placeCounter;
           }, true);
           SelfManager.self().fd(world.observer.getGlobal("nucleotide-spacing"));
         }
@@ -265,32 +265,32 @@ var procedures = (function() {
             SelfManager.self().setVariable("hidden?", true);
             SelfManager.self().setVariable("strand", strandType);
             if (Prims.equality(SelfManager.self().getVariable("strand"), "original")) {
-              world.observer.setGlobal("original-strand-gene-counter", (world.observer.getGlobal("original-strand-gene-counter") + 1));
+              world.observer.setGlobal("original-strand-gene-counter", PrimChecks.math.plus(world.observer.getGlobal("original-strand-gene-counter"), 1));
               SelfManager.self().setVariable("gene-number", world.observer.getGlobal("original-strand-gene-counter"));
             }
             if (Prims.equality(SelfManager.self().getVariable("strand"), "duplicate")) {
-              world.observer.setGlobal("duplicate-strand-gene-counter", (world.observer.getGlobal("duplicate-strand-gene-counter") + 1));
+              world.observer.setGlobal("duplicate-strand-gene-counter", PrimChecks.math.plus(world.observer.getGlobal("duplicate-strand-gene-counter"), 1));
               SelfManager.self().setVariable("gene-number", world.observer.getGlobal("duplicate-strand-gene-counter"));
             }
             SelfManager.self().setVariable("start-position", itemPosition);
             SelfManager.self().setVariable("end-position", PrimChecks.list.length(world.observer.getGlobal("original-dna-string")));
-            SelfManager.self().setVariable("code", (workspace.dump('') + workspace.dump(triplet) + workspace.dump(PrimChecks.list.substring(dnaString, (itemPosition + 1), PrimChecks.list.length(dnaString)))));
+            SelfManager.self().setVariable("code", (workspace.dump('') + workspace.dump(triplet) + workspace.dump(PrimChecks.list.substring(dnaString, PrimChecks.math.plus(itemPosition, 1), PrimChecks.list.length(dnaString)))));
           }, true);
         }
-        itemPosition = (itemPosition + 1); letVars['itemPosition'] = itemPosition;
+        itemPosition = PrimChecks.math.plus(itemPosition, 1); letVars['itemPosition'] = itemPosition;
       }
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("GENES")).ask(function() {
         let endOfGene_p = false; letVars['endOfGene_p'] = endOfGene_p;
         let tripletCounter = 0; letVars['tripletCounter'] = tripletCounter;
         let newCode = SelfManager.self().getVariable("code"); letVars['newCode'] = newCode;
-        for (let _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.list.length(SelfManager.self().getVariable("code")), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++){
-          let thisTriplet = (workspace.dump('') + workspace.dump(PrimChecks.list.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + workspace.dump(PrimChecks.list.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + workspace.dump(PrimChecks.list.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))); letVars['thisTriplet'] = thisTriplet;
-          if ((((Prims.equality(thisTriplet, "TAG") || Prims.equality(thisTriplet, "TGA")) || Prims.equality(thisTriplet, "TAA")) && !endOfGene_p)) {
-            SelfManager.self().setVariable("end-position", (tripletCounter * 3));
+        for (let _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(PrimChecks.math.floor_unchecked(PrimChecks.math.div_unchecked(PrimChecks.list.length(SelfManager.self().getVariable("code")), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++){
+          let thisTriplet = (workspace.dump('') + workspace.dump(PrimChecks.list.item(PrimChecks.math.plus_unchecked(0, PrimChecks.math.mult(tripletCounter, 3)), SelfManager.self().getVariable("code"))) + workspace.dump(PrimChecks.list.item(PrimChecks.math.plus_unchecked(1, PrimChecks.math.mult(tripletCounter, 3)), SelfManager.self().getVariable("code"))) + workspace.dump(PrimChecks.list.item(PrimChecks.math.plus_unchecked(2, PrimChecks.math.mult(tripletCounter, 3)), SelfManager.self().getVariable("code")))); letVars['thisTriplet'] = thisTriplet;
+          if ((((Prims.equality(thisTriplet, "TAG") || Prims.equality(thisTriplet, "TGA")) || Prims.equality(thisTriplet, "TAA")) && PrimChecks.math.not(endOfGene_p))) {
+            SelfManager.self().setVariable("end-position", PrimChecks.math.mult(tripletCounter, 3));
             newCode = PrimChecks.list.substring(SelfManager.self().getVariable("code"), 0, SelfManager.self().getVariable("end-position")); letVars['newCode'] = newCode;
             endOfGene_p = true; letVars['endOfGene_p'] = endOfGene_p;
           }
-          tripletCounter = (tripletCounter + 1); letVars['tripletCounter'] = tripletCounter;
+          tripletCounter = PrimChecks.math.plus(tripletCounter, 1); letVars['tripletCounter'] = tripletCounter;
         }
         tripletCounter = 0; letVars['tripletCounter'] = tripletCounter;
         endOfGene_p = false; letVars['endOfGene_p'] = endOfGene_p;
@@ -330,7 +330,7 @@ var procedures = (function() {
           }, true);
           SelfManager.self().hatch(1, "").ask(function() {
             SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TERMINATORS"));
-            SelfManager.self().fd((PrimChecks.list.length(thisCode) * 0.45));
+            SelfManager.self().fd(PrimChecks.math.mult_unchecked(PrimChecks.list.length(thisCode), 0.45));
             procedures["ATTACH-TAG"](142,1.7,(workspace.dump('') + workspace.dump("end:") + workspace.dump(SelfManager.self().getVariable("gene-number"))),geneColorLabel);
             LinkPrims.createLinkFrom(thisGene, "BACKBONES").ask(function() {
               SelfManager.self().setVariable("hidden?", true);
@@ -395,13 +395,13 @@ var procedures = (function() {
       Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("MRNAS"), function() {
         return (Prims.equality(SelfManager.self().getVariable("cap-type"), "start") && Prims.equality(SelfManager.self().getVariable("strand"), strandType));
       })).ask(function() {
-        let numberOfTripletsInList = PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.list.length(SelfManager.self().getVariable("code")), 3)); letVars['numberOfTripletsInList'] = numberOfTripletsInList;
+        let numberOfTripletsInList = PrimChecks.math.floor_unchecked(PrimChecks.math.div_unchecked(PrimChecks.list.length(SelfManager.self().getVariable("code")), 3)); letVars['numberOfTripletsInList'] = numberOfTripletsInList;
         let thisTriplet = ""; letVars['thisTriplet'] = thisTriplet;
         let tripletCounter = 0; letVars['tripletCounter'] = tripletCounter;
         for (let _index_13127_13133 = 0, _repeatcount_13127_13133 = StrictMath.floor(numberOfTripletsInList); _index_13127_13133 < _repeatcount_13127_13133; _index_13127_13133++){
-          thisTriplet = (workspace.dump('') + workspace.dump(procedures["COMPLEMENTARY-MRNA-BASE"](PrimChecks.list.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))) + workspace.dump(procedures["COMPLEMENTARY-MRNA-BASE"](PrimChecks.list.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))) + workspace.dump(procedures["COMPLEMENTARY-MRNA-BASE"](PrimChecks.list.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))))); letVars['thisTriplet'] = thisTriplet;
+          thisTriplet = (workspace.dump('') + workspace.dump(procedures["COMPLEMENTARY-MRNA-BASE"](PrimChecks.list.item(PrimChecks.math.plus_unchecked(0, PrimChecks.math.mult(tripletCounter, 3)), SelfManager.self().getVariable("code")))) + workspace.dump(procedures["COMPLEMENTARY-MRNA-BASE"](PrimChecks.list.item(PrimChecks.math.plus_unchecked(1, PrimChecks.math.mult(tripletCounter, 3)), SelfManager.self().getVariable("code")))) + workspace.dump(procedures["COMPLEMENTARY-MRNA-BASE"](PrimChecks.list.item(PrimChecks.math.plus_unchecked(2, PrimChecks.math.mult(tripletCounter, 3)), SelfManager.self().getVariable("code"))))); letVars['thisTriplet'] = thisTriplet;
           procedures["BUILD-TRNA-FOR-THIS-TRIPLET"](thisTriplet,tripletCounter);
-          tripletCounter = (tripletCounter + 1); letVars['tripletCounter'] = tripletCounter;
+          tripletCounter = PrimChecks.math.plus(tripletCounter, 1); letVars['tripletCounter'] = tripletCounter;
         }
       }, true);
     } catch (e) {
@@ -473,7 +473,7 @@ var procedures = (function() {
         }, true);
         SelfManager.self()._optimalFdOne();
         SelfManager.self().setVariable("heading", 90);
-        SelfManager.self().fd((world.observer.getGlobal("nucleotide-spacing") + ((world.observer.getGlobal("nucleotide-spacing") * 3) * tripletCounter)));
+        SelfManager.self().fd(PrimChecks.math.plus(world.observer.getGlobal("nucleotide-spacing"), PrimChecks.math.mult(PrimChecks.math.mult(world.observer.getGlobal("nucleotide-spacing"), 3), tripletCounter)));
         SelfManager.self().setVariable("heading", 0);
       }, true);
     } catch (e) {
@@ -510,8 +510,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"))).ask(function() {
-        Errors.askNobodyCheck(LinkPrims.linkNeighbors("TAGLINES")).ask(function() { SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("show-genes?")); }, true);
-        SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("show-genes?"));
+        Errors.askNobodyCheck(LinkPrims.linkNeighbors("TAGLINES")).ask(function() {
+          SelfManager.self().setVariable("hidden?", PrimChecks.math.not(world.observer.getGlobal("show-genes?")));
+        }, true);
+        SelfManager.self().setVariable("hidden?", PrimChecks.math.not(world.observer.getGlobal("show-genes?")));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -570,7 +572,7 @@ var procedures = (function() {
         procedures["DISPLAY-USER-MESSAGE-NO-GENES"]();
       }
       if (Prims.equality(strandType, "original")) {
-        world.observer.setGlobal("original-display-mrna-counter", (world.observer.getGlobal("original-display-mrna-counter") + 1));
+        world.observer.setGlobal("original-display-mrna-counter", PrimChecks.math.plus(world.observer.getGlobal("original-display-mrna-counter"), 1));
         if (Prims.gt(world.observer.getGlobal("original-display-mrna-counter"), PrimChecks.agentset.count(theseGenes))) {
           world.observer.setGlobal("original-display-mrna-counter", 1);
         }
@@ -597,7 +599,7 @@ var procedures = (function() {
         }, true);
       }
       if (Prims.equality(strandType, "duplicate")) {
-        world.observer.setGlobal("duplicate-display-mrna-counter", (world.observer.getGlobal("duplicate-display-mrna-counter") + 1));
+        world.observer.setGlobal("duplicate-display-mrna-counter", PrimChecks.math.plus(world.observer.getGlobal("duplicate-display-mrna-counter"), 1));
         if (Prims.gt(world.observer.getGlobal("duplicate-display-mrna-counter"), PrimChecks.agentset.count(theseGenes))) {
           world.observer.setGlobal("duplicate-display-mrna-counter", 1);
         }
@@ -635,7 +637,7 @@ var procedures = (function() {
       var letVars = { };
       let thisGeneNumber = procedures["GENE-NUMBER-FOR-THIS-STRAND"](strandType); letVars['thisGeneNumber'] = thisGeneNumber;
       Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("MRNAS"), function() {
-        return (((Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start")) && SelfManager.self().getVariable("released?")) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
+        return (PrimChecks.math.bool('AND', (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start"))) && PrimChecks.math.bool('AND', SelfManager.self().getVariable("released?")) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
       })).ask(function() {
         Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("TRNAS"), function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); })).ask(function() {
           if (Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber)) {
@@ -678,7 +680,7 @@ var procedures = (function() {
       let makeProtein_p = false; letVars['makeProtein_p'] = makeProtein_p;
       let thisGeneNumber = procedures["GENE-NUMBER-FOR-THIS-STRAND"](strandType); letVars['thisGeneNumber'] = thisGeneNumber;
       Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("MRNAS"), function() {
-        return (((Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start")) && SelfManager.self().getVariable("released?")) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
+        return (PrimChecks.math.bool('AND', (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start"))) && PrimChecks.math.bool('AND', SelfManager.self().getVariable("released?")) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
       })).ask(function() {
         Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("TRNAS"), function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); })).ask(function() {
           if (Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber)) {
@@ -728,9 +730,9 @@ var procedures = (function() {
         Errors.procedureArgumentsCheck(1, arguments.length);
         thisProteinValue = (workspace.dump('') + workspace.dump(thisProteinValue) + workspace.dump("-") + workspace.dump(PrimChecks.agentset.of(theAminoAcid, function() { return SelfManager.self().getVariable("value"); }))); letVars['thisProteinValue'] = thisProteinValue;
       }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" [ value ] of the-amino-acid ]"), orderedAminoAcids); if(reporterContext && _foreach_19530_19537 !== undefined) { return _foreach_19530_19537; }
-      if (!PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PROTEINS"), function() {
+      if (PrimChecks.math.not_unchecked(PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PROTEINS"), function() {
         return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("value"), thisProteinValue));
-      })) {
+      }))) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PROTEINS"));
           SelfManager.self().setVariable("value", thisProteinValue);
@@ -771,19 +773,19 @@ var procedures = (function() {
         world.observer.setGlobal("event-3-completed?", false);
         world.observer.setGlobal("event-4-completed?", false);
       }
-      if ((world.observer.getGlobal("event-2-triggered?") && world.observer.getGlobal("event-1-completed?"))) {
+      if (PrimChecks.math.bool('AND', world.observer.getGlobal("event-2-triggered?")) && PrimChecks.math.bool('AND', world.observer.getGlobal("event-1-completed?"))) {
         procedures["RELEASE-NEXT-MRNA-FROM-NUCLEUS"]("original");
         world.observer.setGlobal("event-2-triggered?", false);
         world.observer.setGlobal("event-3-completed?", false);
         world.observer.setGlobal("event-4-completed?", false);
       }
-      if ((world.observer.getGlobal("event-3-triggered?") && world.observer.getGlobal("event-2-completed?"))) {
+      if (PrimChecks.math.bool('AND', world.observer.getGlobal("event-3-triggered?")) && PrimChecks.math.bool('AND', world.observer.getGlobal("event-2-completed?"))) {
         procedures["SHOW-NEXT-TRNA"]("original");
         world.observer.setGlobal("event-3-triggered?", false);
         world.observer.setGlobal("event-3-completed?", true);
         world.observer.setGlobal("event-4-completed?", false);
       }
-      if ((world.observer.getGlobal("event-4-triggered?") && world.observer.getGlobal("event-3-completed?"))) {
+      if (PrimChecks.math.bool('AND', world.observer.getGlobal("event-4-triggered?")) && PrimChecks.math.bool('AND', world.observer.getGlobal("event-3-completed?"))) {
         procedures["RELEASE-NEXT-PROTEIN"]("original");
         world.observer.setGlobal("event-4-triggered?", false);
         world.observer.setGlobal("event-4-completed?", true);
@@ -796,19 +798,19 @@ var procedures = (function() {
         world.observer.setGlobal("event-8-completed?", false);
         world.observer.setGlobal("event-9-completed?", false);
       }
-      if ((world.observer.getGlobal("event-7-triggered?") && world.observer.getGlobal("event-6-completed?"))) {
+      if (PrimChecks.math.bool('AND', world.observer.getGlobal("event-7-triggered?")) && PrimChecks.math.bool('AND', world.observer.getGlobal("event-6-completed?"))) {
         procedures["RELEASE-NEXT-MRNA-FROM-NUCLEUS"]("duplicate");
         world.observer.setGlobal("event-7-triggered?", false);
         world.observer.setGlobal("event-8-completed?", false);
         world.observer.setGlobal("event-9-completed?", false);
       }
-      if ((world.observer.getGlobal("event-8-triggered?") && world.observer.getGlobal("event-7-completed?"))) {
+      if (PrimChecks.math.bool('AND', world.observer.getGlobal("event-8-triggered?")) && PrimChecks.math.bool('AND', world.observer.getGlobal("event-7-completed?"))) {
         procedures["SHOW-NEXT-TRNA"]("duplicate");
         world.observer.setGlobal("event-8-triggered?", false);
         world.observer.setGlobal("event-8-completed?", true);
         world.observer.setGlobal("event-9-completed?", false);
       }
-      if ((world.observer.getGlobal("event-9-triggered?") && world.observer.getGlobal("event-8-completed?"))) {
+      if (PrimChecks.math.bool('AND', world.observer.getGlobal("event-9-triggered?")) && PrimChecks.math.bool('AND', world.observer.getGlobal("event-8-completed?"))) {
         procedures["RELEASE-NEXT-PROTEIN"]("duplicate");
         world.observer.setGlobal("event-9-triggered?", false);
         world.observer.setGlobal("event-9-completed?", true);
@@ -826,11 +828,11 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(PrimChecks.agentset.with_unchecked(world.turtleManager.turtlesOfBreed("MRNAS"), function() {
-        return (SelfManager.self().getVariable("traveling?") && Prims.equality(SelfManager.self().getVariable("cap-type"), "start"));
+        return PrimChecks.math.bool('AND', SelfManager.self().getVariable("traveling?")) && PrimChecks.math.bool('AND', Prims.equality(SelfManager.self().getVariable("cap-type"), "start"));
       })).ask(function() {
         if (Prims.equality(SelfManager.self().getVariable("strand"), "original")) {
           if (Prims.lt(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("original-ribosome-ycor"))) {
-            SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") + 0.1));
+            SelfManager.self().setVariable("ycor", PrimChecks.math.plus(SelfManager.self().getVariable("ycor"), 0.1));
           }
           if (Prims.gte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("original-ribosome-ycor"))) {
             SelfManager.self().setVariable("traveling?", false);
@@ -840,7 +842,7 @@ var procedures = (function() {
         }
         if (Prims.equality(SelfManager.self().getVariable("strand"), "duplicate")) {
           if (Prims.gt(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("duplicate-ribosome-ycor"))) {
-            SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.1));
+            SelfManager.self().setVariable("ycor", PrimChecks.math.minus(SelfManager.self().getVariable("ycor"), 0.1));
           }
           if (Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("duplicate-ribosome-ycor"))) {
             SelfManager.self().setVariable("traveling?", false);
@@ -893,7 +895,7 @@ var procedures = (function() {
       world.observer.setGlobal("duplicate-strand-gene-counter", 0);
       let cleanDuplicateDnaString = world.observer.getGlobal("original-dna-string"); letVars['cleanDuplicateDnaString'] = cleanDuplicateDnaString;
       let mutatingCopyOfDnaString = world.observer.getGlobal("original-dna-string"); letVars['mutatingCopyOfDnaString'] = mutatingCopyOfDnaString;
-      let targetLoci = PrimChecks.math.random((PrimChecks.list.length(mutatingCopyOfDnaString) - world.observer.getGlobal("#-nucleotides-affected"))); letVars['targetLoci'] = targetLoci;
+      let targetLoci = PrimChecks.math.random_unchecked(PrimChecks.math.minus(PrimChecks.list.length(mutatingCopyOfDnaString), world.observer.getGlobal("#-nucleotides-affected"))); letVars['targetLoci'] = targetLoci;
       let dnaAtTarget = PrimChecks.list.item(targetLoci, mutatingCopyOfDnaString); letVars['dnaAtTarget'] = dnaAtTarget;
       let dnaBeforeTarget = PrimChecks.list.substring(mutatingCopyOfDnaString, 0, targetLoci); letVars['dnaBeforeTarget'] = dnaBeforeTarget;
       let lociCounter = 0; letVars['lociCounter'] = lociCounter;
@@ -905,8 +907,8 @@ var procedures = (function() {
       }
       if (Prims.equality(world.observer.getGlobal("mutation-type"), "substitution")) {
         for (let _index_24236_24242 = 0, _repeatcount_24236_24242 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24236_24242 < _repeatcount_24236_24242; _index_24236_24242++){
-          mutatingCopyOfDnaString = PrimChecks.list.replaceItem((targetLoci + lociCounter), mutatingCopyOfDnaString, procedures["RANDOM-BASE-LETTER-DNA"]()); letVars['mutatingCopyOfDnaString'] = mutatingCopyOfDnaString;
-          lociCounter = (lociCounter + 1); letVars['lociCounter'] = lociCounter;
+          mutatingCopyOfDnaString = PrimChecks.list.replaceItem(PrimChecks.math.plus(targetLoci, lociCounter), mutatingCopyOfDnaString, procedures["RANDOM-BASE-LETTER-DNA"]()); letVars['mutatingCopyOfDnaString'] = mutatingCopyOfDnaString;
+          lociCounter = PrimChecks.math.plus(lociCounter, 1); letVars['lociCounter'] = lociCounter;
         }
       }
       if (Prims.equality(world.observer.getGlobal("mutation-type"), "insertion")) {
@@ -963,7 +965,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.list.item(1, PrimChecks.list.item(0, PrimChecks.list.filter(Tasks.reporterTask(function(pair) {
+      return PrimChecks.list.item(1, PrimChecks.list.item_unchecked(0, PrimChecks.list.filter(Tasks.reporterTask(function(pair) {
         Errors.procedureArgumentsCheck(1, arguments.length);
         return Prims.equality(PrimChecks.list.first(pair), thisCodon);
       }, "[ pair -> first pair = this-codon ]"), world.observer.getGlobal("codon-to-amino-acid-key"))));
@@ -1034,11 +1036,11 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if (Prims.gte(world.observer.getGlobal("gene-color-counter"), (PrimChecks.list.length(ColorModel.BASE_COLORS) - 1))) {
+      if (Prims.gte(world.observer.getGlobal("gene-color-counter"), PrimChecks.math.minus_unchecked(PrimChecks.list.length_unchecked(ColorModel.BASE_COLORS), 1))) {
         world.observer.setGlobal("gene-color-counter", 0);
       }
       else {
-        world.observer.setGlobal("gene-color-counter", (world.observer.getGlobal("gene-color-counter") + 1));
+        world.observer.setGlobal("gene-color-counter", PrimChecks.math.plus(world.observer.getGlobal("gene-color-counter"), 1));
       }
       Errors.reportInContextCheck(reporterContext);
       return PrimChecks.list.item(world.observer.getGlobal("gene-color-counter"), ColorModel.BASE_COLORS);
@@ -1077,7 +1079,7 @@ var procedures = (function() {
       let nextItem = 0; letVars['nextItem'] = nextItem;
       for (let _index_28754_28760 = 0, _repeatcount_28754_28760 = StrictMath.floor(PrimChecks.list.length(dnaString)); _index_28754_28760 < _repeatcount_28754_28760; _index_28754_28760++){
         newString = PrimChecks.list.replaceItem(nextItem, newString, procedures["COMPLEMENTARY-MRNA-BASE"](PrimChecks.list.item(nextItem, newString))); letVars['newString'] = newString;
-        nextItem = (nextItem + 1); letVars['nextItem'] = nextItem;
+        nextItem = PrimChecks.math.plus(nextItem, 1); letVars['nextItem'] = nextItem;
       }
       Errors.reportInContextCheck(reporterContext);
       return newString;
@@ -1096,7 +1098,7 @@ var procedures = (function() {
       let nextItem = 0; letVars['nextItem'] = nextItem;
       for (let _index_29220_29226 = 0, _repeatcount_29220_29226 = StrictMath.floor(PrimChecks.list.length(dnaString)); _index_29220_29226 < _repeatcount_29220_29226; _index_29220_29226++){
         newString = PrimChecks.list.replaceItem(nextItem, newString, procedures["REPLACE-NON-NUCLEOTIDE-CHARACTER"](PrimChecks.list.item(nextItem, newString))); letVars['newString'] = newString;
-        nextItem = (nextItem + 1); letVars['nextItem'] = nextItem;
+        nextItem = PrimChecks.math.plus(nextItem, 1); letVars['nextItem'] = nextItem;
       }
       if (Prims.gt(PrimChecks.list.length(dnaString), 64)) {
         newString = PrimChecks.list.substring(newString, 0, 64); letVars['newString'] = newString;
@@ -1144,7 +1146,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") + 1));
+      procedures["SHOW-INSTRUCTION"](PrimChecks.math.plus(world.observer.getGlobal("current-instruction"), 1));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -1155,7 +1157,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") - 1));
+      procedures["SHOW-INSTRUCTION"](PrimChecks.math.minus(world.observer.getGlobal("current-instruction"), 1));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -1172,7 +1174,7 @@ var procedures = (function() {
         var _foreach_30596_30603 = Tasks.forEach(Tasks.commandTask(function(_0) {
           Errors.procedureArgumentsCheck(1, arguments.length);
           OutputPrims.print(_0);
-        }, "output-print"), PrimChecks.list.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]())); if(reporterContext && _foreach_30596_30603 !== undefined) { return _foreach_30596_30603; }
+        }, "output-print"), PrimChecks.list.item(PrimChecks.math.minus(world.observer.getGlobal("current-instruction"), 1), procedures["INSTRUCTIONS"]())); if(reporterContext && _foreach_30596_30603 !== undefined) { return _foreach_30596_30603; }
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -1197,11 +1199,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if ((((world.observer.getGlobal("event-1-triggered?") || world.observer.getGlobal("event-2-triggered?")) || world.observer.getGlobal("event-3-triggered?")) || world.observer.getGlobal("event-4-triggered?"))) {
+      if (PrimChecks.math.bool('OR', PrimChecks.math.bool('OR', PrimChecks.math.bool('OR', world.observer.getGlobal("event-1-triggered?")) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-2-triggered?"))) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-3-triggered?"))) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-4-triggered?"))) {
         world.observer.setGlobal("event-4-completed?", false);
-        if (((world.observer.getGlobal("event-1-triggered?") || world.observer.getGlobal("event-2-triggered?")) || world.observer.getGlobal("event-3-triggered?"))) {
+        if (PrimChecks.math.bool('OR', PrimChecks.math.bool('OR', world.observer.getGlobal("event-1-triggered?")) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-2-triggered?"))) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-3-triggered?"))) {
           world.observer.setGlobal("event-3-completed?", false);
-          if ((world.observer.getGlobal("event-1-triggered?") || world.observer.getGlobal("event-2-triggered?"))) {
+          if (PrimChecks.math.bool('OR', world.observer.getGlobal("event-1-triggered?")) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-2-triggered?"))) {
             world.observer.setGlobal("event-2-completed?", false);
             if (world.observer.getGlobal("event-1-triggered?")) {
               world.observer.setGlobal("event-1-completed?", false);
@@ -1209,11 +1211,11 @@ var procedures = (function() {
           }
         }
       }
-      if ((((world.observer.getGlobal("event-6-triggered?") || world.observer.getGlobal("event-7-triggered?")) || world.observer.getGlobal("event-8-triggered?")) || world.observer.getGlobal("event-9-triggered?"))) {
+      if (PrimChecks.math.bool('OR', PrimChecks.math.bool('OR', PrimChecks.math.bool('OR', world.observer.getGlobal("event-6-triggered?")) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-7-triggered?"))) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-8-triggered?"))) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-9-triggered?"))) {
         world.observer.setGlobal("event-9-completed?", false);
-        if (((world.observer.getGlobal("event-6-triggered?") || world.observer.getGlobal("event-7-triggered?")) || world.observer.getGlobal("event-8-triggered?"))) {
+        if (PrimChecks.math.bool('OR', PrimChecks.math.bool('OR', world.observer.getGlobal("event-6-triggered?")) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-7-triggered?"))) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-8-triggered?"))) {
           world.observer.setGlobal("event-8-completed?", false);
-          if ((world.observer.getGlobal("event-6-triggered?") || world.observer.getGlobal("event-7-triggered?"))) {
+          if (PrimChecks.math.bool('OR', world.observer.getGlobal("event-6-triggered?")) || PrimChecks.math.bool('OR', world.observer.getGlobal("event-7-triggered?"))) {
             world.observer.setGlobal("event-7-completed?", false);
             if (world.observer.getGlobal("event-6-triggered?")) {
               world.observer.setGlobal("event-6-completed?", false);

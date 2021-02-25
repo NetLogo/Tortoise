@@ -123,7 +123,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-birds"), "BIRDS").ask(function() {
         SelfManager.self().setVariable("color", 0);
         SelfManager.self().setVariable("memory", []);
-        SelfManager.self().setVariable("shape", PrimChecks.list.oneOf(["bird 1", "bird 2"]));
+        SelfManager.self().setVariable("shape", PrimChecks.list.oneOf_unchecked(["bird 1", "bird 2"]));
       }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-monarchs"), "MONARCHS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-viceroys"), "VICEROYS").ask(function() { SelfManager.self().setVariable("color", 105); }, true);
@@ -168,7 +168,7 @@ var procedures = (function() {
       else {
         SelfManager.self().setVariable("shape", "bird 1");
       }
-      SelfManager.self().setVariable("heading", (180 + RandomPrims.randomLong(180)));
+      SelfManager.self().setVariable("heading", PrimChecks.math.plus_unchecked(180, RandomPrims.randomLong(180)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -193,11 +193,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let birdHere = PrimChecks.list.oneOf(SelfManager.self().breedHere("BIRDS")); letVars['birdHere'] = birdHere;
+      let birdHere = PrimChecks.list.oneOf_unchecked(SelfManager.self().breedHere("BIRDS")); letVars['birdHere'] = birdHere;
       if (!Prims.equality(birdHere, Nobody)) {
-        if (!PrimChecks.agentset.of(birdHere, function() {
+        if (PrimChecks.math.not(PrimChecks.agentset.of(birdHere, function() {
           return procedures["COLOR-IN-MEMORY?"](PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
-        })) {
+        }))) {
           if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
             Errors.askNobodyCheck(birdHere).ask(function() {
               procedures["REMEMBER-COLOR"](PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
@@ -237,7 +237,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.gte(PrimChecks.list.length(SelfManager.self().getVariable("memory")), world.observer.getGlobal("memory-size"))) {
-        SelfManager.self().setVariable("memory", PrimChecks.list.butFirst('but-first')(SelfManager.self().getVariable("memory")));
+        SelfManager.self().setVariable("memory", PrimChecks.list.butFirst('but-first', SelfManager.self().getVariable("memory")));
       }
       SelfManager.self().setVariable("memory", PrimChecks.list.lput(ListPrims.list(c, 0), SelfManager.self().getVariable("memory")));
     } catch (e) {
@@ -252,7 +252,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("memory", Tasks.map(Tasks.reporterTask(function(i) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        return ListPrims.list(PrimChecks.list.item(0, i), (1 + PrimChecks.list.item(1, i)));
+        return ListPrims.list(PrimChecks.list.item(0, i), PrimChecks.math.plus(1, PrimChecks.list.item(1, i)));
       }, "[ i -> list item 0 i 1 + item 1 i ]"), SelfManager.self().getVariable("memory")));
       SelfManager.self().setVariable("memory", PrimChecks.list.filter(Tasks.reporterTask(function(i) {
         Errors.procedureArgumentsCheck(1, arguments.length);
@@ -269,12 +269,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
-        if (Prims.lt(PrimChecks.math.random(PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("MONARCHS"))), (world.observer.getGlobal("carrying-capacity-monarchs") - PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("MONARCHS"))))) {
+        if (Prims.lt(PrimChecks.math.random_unchecked(PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("MONARCHS"))), PrimChecks.math.minus(world.observer.getGlobal("carrying-capacity-monarchs"), PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("MONARCHS"))))) {
           procedures["HATCH-BUTTERFLY"]();
         }
       }
       else {
-        if (Prims.lt(PrimChecks.math.random(PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("VICEROYS"))), (world.observer.getGlobal("carrying-capacity-viceroys") - PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("VICEROYS"))))) {
+        if (Prims.lt(PrimChecks.math.random_unchecked(PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("VICEROYS"))), PrimChecks.math.minus(world.observer.getGlobal("carrying-capacity-viceroys"), PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("VICEROYS"))))) {
           procedures["HATCH-BUTTERFLY"]();
         }
       }
@@ -288,11 +288,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("reproduction-chance"))) {
+      if (Prims.lt(PrimChecks.math.randomFloat_unchecked(100), world.observer.getGlobal("reproduction-chance"))) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self()._optimalFdOne();
-          if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("mutation-rate"))) {
-            SelfManager.self().setVariable("color", PrimChecks.list.oneOf(PrimChecks.list.sublist(ColorModel.BASE_COLORS, 1, 10)));
+          if (Prims.lt(PrimChecks.math.randomFloat_unchecked(100), world.observer.getGlobal("mutation-rate"))) {
+            SelfManager.self().setVariable("color", PrimChecks.list.oneOf_unchecked(PrimChecks.list.sublist_unchecked(ColorModel.BASE_COLORS, 1, 10)));
           }
         }, true);
       }

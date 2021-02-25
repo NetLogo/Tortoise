@@ -56,11 +56,11 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      Errors.askNobodyCheck(PrimChecks.list.nOf(100, world.patches())).ask(function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true);
+      Errors.askNobodyCheck(PrimChecks.list.nOf_unchecked(100, world.patches())).ask(function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true);
       for (let _index_296_302 = 0, _repeatcount_296_302 = StrictMath.floor(20); _index_296_302 < _repeatcount_296_302; _index_296_302++){
         world.topology.diffuse("pcolor", 1, false)
       }
-      Errors.askNobodyCheck(PrimChecks.list.nOf(800, world.patches())).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.list.nOf_unchecked(800, world.patches())).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("peak?", false);
           SelfManager.self().setVariable("color", 15);

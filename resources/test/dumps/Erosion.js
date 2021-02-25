@@ -60,7 +60,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.patches()).ask(function() {
         if (world.observer.getGlobal("bumpy?")) {
           if (world.observer.getGlobal("hill?")) {
-            SelfManager.self().setPatchVariable("elevation", (((-100 * PrimChecks.math.div(SelfManager.self().distanceXY(0, 0), world.topology.maxPxcor)) + 100) + RandomPrims.randomLong(100)));
+            SelfManager.self().setPatchVariable("elevation", PrimChecks.math.plus_unchecked(PrimChecks.math.plus_unchecked(PrimChecks.math.mult_unchecked(-100, PrimChecks.math.div_unchecked(SelfManager.self().distanceXY(0, 0), world.topology.maxPxcor)), 100), RandomPrims.randomLong(100)));
           }
           else {
             SelfManager.self().setPatchVariable("elevation", RandomPrims.randomLong(125));
@@ -82,7 +82,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("elevation", -10000000);
       }, true);
       world.observer.setGlobal("drains", PrimChecks.agentset.with(world.patches(), function() { return SelfManager.self().getPatchVariable("drain?"); }));
-      world.observer.setGlobal("land", PrimChecks.agentset.with_unchecked(world.patches(), function() { return !SelfManager.self().getPatchVariable("drain?"); }));
+      world.observer.setGlobal("land", PrimChecks.agentset.with_unchecked(world.patches(), function() { return PrimChecks.math.not(SelfManager.self().getPatchVariable("drain?")); }));
       Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() { procedures["RECOLOR"](); }, true);
       world.ticker.reset();
     } catch (e) {
@@ -95,11 +95,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if ((Prims.equality(SelfManager.self().getPatchVariable("water"), 0) || !world.observer.getGlobal("show-water?"))) {
+      if ((Prims.equality(SelfManager.self().getPatchVariable("water"), 0) || PrimChecks.math.not(world.observer.getGlobal("show-water?")))) {
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(9.9, SelfManager.self().getPatchVariable("elevation"), -250, 100));
       }
       else {
-        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(105, PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), 75)), 100, -10));
+        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(105, PrimChecks.list.min_unchecked(ListPrims.list(SelfManager.self().getPatchVariable("water"), 75)), 100, -10));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -136,8 +136,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() {
-        if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("rainfall"))) {
-          SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + 1));
+        if (Prims.lt(PrimChecks.math.randomFloat_unchecked(1), world.observer.getGlobal("rainfall"))) {
+          SelfManager.self().setPatchVariable("water", PrimChecks.math.plus(SelfManager.self().getPatchVariable("water"), 1));
         }
       }, true);
       Errors.askNobodyCheck(world.observer.getGlobal("land")).ask(function() {
@@ -162,16 +162,16 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let target = PrimChecks.agentset.minOneOf_unchecked(SelfManager.self().getNeighbors(), function() {
-        return (SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water"));
+        return PrimChecks.math.plus(SelfManager.self().getPatchVariable("elevation"), SelfManager.self().getPatchVariable("water"));
       }); letVars['target'] = target;
-      let amount = PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("elevation"); })) - PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
+      let amount = PrimChecks.list.min_unchecked(ListPrims.list(SelfManager.self().getPatchVariable("water"), PrimChecks.math.mult_unchecked(0.5, PrimChecks.math.minus(PrimChecks.math.minus(PrimChecks.math.plus(SelfManager.self().getPatchVariable("elevation"), SelfManager.self().getPatchVariable("water")), PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("elevation"); })), PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
       if (Prims.gt(amount, 0)) {
-        let erosion = (amount * (1 - world.observer.getGlobal("soil-hardness"))); letVars['erosion'] = erosion;
-        SelfManager.self().setPatchVariable("elevation", (SelfManager.self().getPatchVariable("elevation") - erosion));
-        amount = PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("elevation"); })) - PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
-        SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") - amount));
+        let erosion = PrimChecks.math.mult(amount, PrimChecks.math.minus(1, world.observer.getGlobal("soil-hardness"))); letVars['erosion'] = erosion;
+        SelfManager.self().setPatchVariable("elevation", PrimChecks.math.minus(SelfManager.self().getPatchVariable("elevation"), erosion));
+        amount = PrimChecks.list.min_unchecked(ListPrims.list(SelfManager.self().getPatchVariable("water"), PrimChecks.math.mult_unchecked(0.5, PrimChecks.math.minus(PrimChecks.math.minus(PrimChecks.math.plus(SelfManager.self().getPatchVariable("elevation"), SelfManager.self().getPatchVariable("water")), PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("elevation"); })), PrimChecks.agentset.of(target, function() { return SelfManager.self().getPatchVariable("water"); }))))); letVars['amount'] = amount;
+        SelfManager.self().setPatchVariable("water", PrimChecks.math.minus(SelfManager.self().getPatchVariable("water"), amount));
         Errors.askNobodyCheck(target).ask(function() {
-          SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + amount));
+          SelfManager.self().setPatchVariable("water", PrimChecks.math.plus(SelfManager.self().getPatchVariable("water"), amount));
         }, true);
       }
     } catch (e) {

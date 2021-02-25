@@ -134,7 +134,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       SelfManager.self().setPatchVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
-      SelfManager.self().setPatchVariable("nest-scent", (200 - SelfManager.self().distanceXY(0, 0)));
+      SelfManager.self().setPatchVariable("nest-scent", PrimChecks.math.minus_unchecked(200, SelfManager.self().distanceXY(0, 0)));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -145,17 +145,17 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(SelfManager.self().distanceXY((0.6 * world.topology.maxPxcor), 0), 5)) {
+      if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult_unchecked(0.6, world.topology.maxPxcor), 0), 5)) {
         SelfManager.self().setPatchVariable("food-source-number", 1);
       }
-      if (Prims.lt(SelfManager.self().distanceXY((-0.6 * world.topology.maxPxcor), (-0.6 * world.topology.maxPycor)), 5)) {
+      if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult_unchecked(-0.6, world.topology.maxPxcor), PrimChecks.math.mult_unchecked(-0.6, world.topology.maxPycor)), 5)) {
         SelfManager.self().setPatchVariable("food-source-number", 2);
       }
-      if (Prims.lt(SelfManager.self().distanceXY((-0.8 * world.topology.maxPxcor), (0.8 * world.topology.maxPycor)), 5)) {
+      if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult_unchecked(-0.8, world.topology.maxPxcor), PrimChecks.math.mult_unchecked(0.8, world.topology.maxPycor)), 5)) {
         SelfManager.self().setPatchVariable("food-source-number", 3);
       }
       if (Prims.gt(SelfManager.self().getPatchVariable("food-source-number"), 0)) {
-        SelfManager.self().setPatchVariable("food", PrimChecks.list.oneOf([1, 2]));
+        SelfManager.self().setPatchVariable("food", PrimChecks.list.oneOf_unchecked([1, 2]));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -217,7 +217,7 @@ var procedures = (function() {
       }, true);
       world.topology.diffuse("chemical", PrimChecks.math.div(world.observer.getGlobal("diffusion-rate"), 100), false)
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("chemical", PrimChecks.math.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
+        SelfManager.self().setPatchVariable("chemical", PrimChecks.math.div_unchecked(PrimChecks.math.mult(SelfManager.self().getPatchVariable("chemical"), PrimChecks.math.minus(100, world.observer.getGlobal("evaporation-rate"))), 100));
         procedures["RECOLOR-PATCH"]();
       }, true);
       world.ticker.tick();
@@ -236,7 +236,7 @@ var procedures = (function() {
         SelfManager.self().right(180);
       }
       else {
-        SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + 60));
+        SelfManager.self().setPatchVariable("chemical", PrimChecks.math.plus(SelfManager.self().getPatchVariable("chemical"), 60));
         procedures["UPHILL-NEST-SCENT"]();
       }
     } catch (e) {
@@ -250,8 +250,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
-        SelfManager.self().setVariable("color", (25 + 1));
-        SelfManager.self().setPatchVariable("food", (SelfManager.self().getPatchVariable("food") - 1));
+        SelfManager.self().setVariable("color", PrimChecks.math.plus_unchecked(25, 1));
+        SelfManager.self().setPatchVariable("food", PrimChecks.math.minus(SelfManager.self().getPatchVariable("food"), 1));
         SelfManager.self().right(180);
         throw new Exception.StopInterrupt;
       }
@@ -312,7 +312,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().right(RandomPrims.randomLong(40));
       SelfManager.self().right(-(RandomPrims.randomLong(40)));
-      if (!SelfManager.self().canMove(1)) {
+      if (PrimChecks.math.not_unchecked(SelfManager.self().canMove(1))) {
         SelfManager.self().right(180);
       }
     } catch (e) {

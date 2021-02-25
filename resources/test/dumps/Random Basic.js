@@ -56,7 +56,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      world.observer.setGlobal("max-y-histogram", (world.topology.minPycor + world.observer.getGlobal("height")));
+      world.observer.setGlobal("max-y-histogram", PrimChecks.math.plus(world.topology.minPycor, world.observer.getGlobal("height")));
       procedures["CREATE-HISTOGRAM-WIDTH"]();
       procedures["SETUP-COLUMN-COUNTERS"]();
       world.observer.setGlobal("time-to-stop?", false);
@@ -72,7 +72,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div( -(world.observer.getGlobal("sample-space")), 2)) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div(world.observer.getGlobal("sample-space"), 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("max-y-histogram")))) {
+        if (((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div_unchecked(PrimChecks.math.unaryminus(world.observer.getGlobal("sample-space")), 2)) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div(world.observer.getGlobal("sample-space"), 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("max-y-histogram")))) {
           SelfManager.self().setPatchVariable("pcolor", 45);
         }
         else {
@@ -95,7 +95,7 @@ var procedures = (function() {
         SelfManager.self().sprout(1, "COLUMN-COUNTERS").ask(function() {
           SelfManager.self().hideTurtle(true);;
           SelfManager.self().setVariable("heading", 0);
-          SelfManager.self().setVariable("my-column", PrimChecks.math.floor(((SelfManager.self().getPatchVariable("pxcor") + PrimChecks.math.div(world.observer.getGlobal("sample-space"), 2)) + 1)));
+          SelfManager.self().setVariable("my-column", PrimChecks.math.floor_unchecked(PrimChecks.math.plus_unchecked(PrimChecks.math.plus(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div(world.observer.getGlobal("sample-space"), 2)), 1)));
           SelfManager.self().setVariable("my-column-patches", PrimChecks.agentset.with_unchecked(world.patches(), function() {
             return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pxcor"); }));
           }));
@@ -133,13 +133,13 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(world.getPatchAt(0, (world.observer.getGlobal("max-y-histogram") + 4))).ask(function() {
+      Errors.askNobodyCheck(world.getPatchAt(0, PrimChecks.math.plus(world.observer.getGlobal("max-y-histogram"), 4))).ask(function() {
         SelfManager.self().sprout(1, "MESSENGERS").ask(function() {
           SelfManager.self().setVariable("shape", "default");
           SelfManager.self().setVariable("color", 0);
           SelfManager.self().setVariable("heading", 180);
           SelfManager.self().setVariable("size", 12);
-          SelfManager.self().setVariable("label", (1 + PrimChecks.math.random(world.observer.getGlobal("sample-space"))));
+          SelfManager.self().setVariable("label", PrimChecks.math.plus_unchecked(1, PrimChecks.math.random(world.observer.getGlobal("sample-space"))));
           world.observer.setGlobal("the-messenger", SelfManager.self());
         }, true);
       }, true);
@@ -198,7 +198,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS")).ask(function() {
-        if (Prims.lte(SelfManager.self().getVariable("my-column"), PrimChecks.math.div((world.observer.getGlobal("red-green") * world.observer.getGlobal("sample-space")), 100))) {
+        if (Prims.lte(SelfManager.self().getVariable("my-column"), PrimChecks.math.div_unchecked(PrimChecks.math.mult(world.observer.getGlobal("red-green"), world.observer.getGlobal("sample-space")), 100))) {
           Errors.askNobodyCheck(PrimChecks.agentset.with(SelfManager.self().getVariable("my-column-patches"), function() {
             return Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.agentset.of_unchecked(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pycor"); }));
           })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
@@ -220,7 +220,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.precision(PrimChecks.math.div((100 * PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); })), PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("FRAMES"))), 2);
+      return PrimChecks.math.precision_unchecked(PrimChecks.math.div_unchecked(PrimChecks.math.mult_unchecked(100, PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); })), PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("FRAMES"))), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -233,7 +233,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.precision(PrimChecks.math.div((100 * PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("FRAMES"))), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2);
+      return PrimChecks.math.precision_unchecked(PrimChecks.math.div_unchecked(PrimChecks.math.mult_unchecked(100, PrimChecks.agentset.count_unchecked(world.turtleManager.turtlesOfBreed("FRAMES"))), PrimChecks.math.mult(world.observer.getGlobal("height"), world.observer.getGlobal("sample-space"))), 2);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -256,7 +256,7 @@ var procedures = (function() {
         });
       })); letVars['minColumn'] = minColumn;
       Errors.reportInContextCheck(reporterContext);
-      return (maxColumn - minColumn);
+      return PrimChecks.math.minus(maxColumn, minColumn);
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
