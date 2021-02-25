@@ -106,7 +106,7 @@ object ReporterPrims {
   def allTypesAllowed(allowed: Int, actual: Int): Boolean =
     types.filter( (t) => !isSupported(allowed, t) && isSupported(actual, t) ).isEmpty
 
-  def makeCheckedArgOps(a: Application, ops: Seq[String]) = {
+  def makeCheckedArgOps(a: Application, ops: Seq[String]): String = {
     // TODO: Handle `Syntax.RepeatableType` arguments. -Jeremy B February 2021
     val syntax        = a.instruction.syntax
     val allAllowed    = if (syntax.isInfix) List(syntax.left) ++ syntax.right else syntax.right
