@@ -78,6 +78,7 @@ class Validator
 
     result
 
+  # (String) => String
   addIndefiniteArticle: (text) ->
     if ['A', 'E', 'I', 'O', 'U'].includes(text.charAt(0).toUpperCase())
       "an #{text}"
@@ -140,6 +141,7 @@ class Validator
 
     value
 
+  # (Int) => Array[NLType]
   syntaxTypeToRuntimeTypes: (syntax) ->
     if @_cachedRuntimeTypes.has(syntax)
       @_cachedRuntimeTypes.get(syntax)
@@ -148,6 +150,7 @@ class Validator
       @_cachedRuntimeTypes.set(allowedTypes)
       allowedTypes
 
+  # (String, Int, Any) => Any
   checkArg: (prim, syntax, argValue) ->
     allowedTypes = @syntaxTypeToRuntimeTypes(syntax)
     @checkValueTypes(prim, allowedTypes, argValue)

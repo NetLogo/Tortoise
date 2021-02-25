@@ -14,6 +14,7 @@ class ListChecks
       @validator.error('Can_t find element _ of the _ _, which is only of length _.', index, getTypeOf(listOrString).niceName(), @dumper(listOrString), listOrString.length)
     return
 
+  # (String, Array | String) => Unit
   checkNotEmpty: (prim, listOrString) ->
     if listOrString.length is 0
       argType  = getTypeOf(listOrString)

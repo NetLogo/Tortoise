@@ -37,6 +37,7 @@ syntaxToTypes = [
   , [2097152, unknown, 99]
 ].reverse() # The reverse is important so we check syntax values from largest to smallest. -Jeremy B February 2021
 
+# (Int) => Array[NLType]
 getTypesFromSyntax = (syntax) ->
   syntaxToTypes.filter( ([check, type, _]) ->
     hasType = (syntax >= check) and (syntax & check) isnt 0
