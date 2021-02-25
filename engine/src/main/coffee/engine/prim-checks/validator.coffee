@@ -14,44 +14,14 @@ class Validator
     # These arrays of types and the common checks below are pre-computed so that all prims
     # can share them without making loads of extra array instances and extra functions.
     # -Jeremy B December 2020
-    agentOrAgentSet                    = [types.Agent, types.AgentSet]
-    agentSet                           = [types.AgentSet]
-    # Order of these is for `_sort` error message.  -Jeremy B February 2021
-    agentSetOrList                     = [types.List, types.AgentSet]
-    boolean                            = [types.Boolean]
-    list                               = [types.List]
-    number                             = [types.Number]
-    # Order of these is for the `_breedon` error message.  -Jeremy B February 2021
-    patchOrTurtleOrPatchSetOrTurtleSet = [types.TurtleSet, types.PatchSet, types.Turtle, types.Patch]
-    reporter                           = [types.ReporterLambda]
-    string                             = [types.String]
-    stringOrList                       = [types.String, types.List]
-    stringOrListOrAgentSet             = [types.String, types.List, types.AgentSet]
-    wildcard                           = [types.Wildcard]
+    # Most of these have gone away in favor of the compiler-based arg type checks.
+    # -Jeremy B February 2021
+    agentSet = [types.AgentSet]
+    boolean  = [types.Boolean]
 
     @commonArgChecks = {
-      agentOrAgentSet:                           @makeArgTypeCheck(agentOrAgentSet)
-      agentSet:                                  @makeArgTypeCheck(agentSet)
-      agentSetOrList:                            @makeArgTypeCheck(agentSetOrList)
-      agentSet_list:                             @makeArgTypeCheck(agentSet, list)
-      agentSet_number:                           @makeArgTypeCheck(agentSet, number)
-      boolean:                                   @makeArgTypeCheck(boolean)
-      boolean_boolean:                           @makeArgTypeCheck(boolean, boolean)
-      list:                                      @makeArgTypeCheck(list)
-      list_number_number:                        @makeArgTypeCheck(list, number, number)
-      number:                                    @makeArgTypeCheck(number)
-      number_agentSetOrList:                     @makeArgTypeCheck(number, agentSetOrList)
-      number_number:                             @makeArgTypeCheck(number, number)
-      number_stringOrList:                       @makeArgTypeCheck(number, stringOrList)
-      number_stringOrList_wildcard:              @makeArgTypeCheck(number, stringOrList, wildcard)
-      reporter_agentSetOrList:                   @makeArgTypeCheck(reporter, agentSetOrList)
-      reporter_list:                             @makeArgTypeCheck(reporter, list)
-      stringOrList:                              @makeArgTypeCheck(stringOrList)
-      string_number_number:                      @makeArgTypeCheck(string, number, number)
-      string_patchOrTurtleOrPatchSetOrTurtleSet: @makeArgTypeCheck(string, patchOrTurtleOrPatchSetOrTurtleSet)
-      wildcard_list:                             @makeArgTypeCheck(wildcard, list)
-      wildcard_stringOrList:                     @makeArgTypeCheck(wildcard, stringOrList)
-      wildcard_stringOrListOrAgentSet:           @makeArgTypeCheck(wildcard, stringOrListOrAgentSet)
+      agentSet: @makeArgTypeCheck(agentSet)
+      boolean:  @makeArgTypeCheck(boolean)
     }
 
     @commonValueChecks = {
