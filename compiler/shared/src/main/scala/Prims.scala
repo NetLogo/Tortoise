@@ -130,7 +130,7 @@ object ReporterPrims {
     if (ReporterPrims.allTypesAllowed(allowed, actual)) {
       op
     } else {
-      s"PrimChecks.validator.checkArg('$prim', $allowed, $op)"
+      s"PrimChecks.validator.checkArg('${prim.toUpperCase()}', $allowed, $op)"
     }
   }
 
@@ -176,8 +176,7 @@ trait ReporterPrims extends PrimUtils {
       // Basics stuff
       case SimplePrims.SimpleReporter(op)  => op
       case SimplePrims.NormalReporter(op)  => s"$op($commaArgs)"
-      case SimplePrims.CheckedReporter(op) => s"$op$uncheckedCall($commaArgs)"
-      case SimplePrims.CompilerCheckedReporter(op) => s"$op($checkedArgs)"
+      case SimplePrims.CheckedReporter(op) => s"$op($checkedArgs)"
       case SimplePrims.TypeCheck(check)    => s"NLType.checks.$check${arg(0)})"
       case VariableReporter(op)            => op
       case p: prim._const                  => handlers.literal(p.value)
@@ -244,8 +243,8 @@ trait ReporterPrims extends PrimUtils {
       case b: prim.etc._breedon           => s"PrimChecks.agentset.breedOn$uncheckedCall(${jsString(b.breedName)}, ${arg(0)})"
 
       // List prims
-      case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst$uncheckedCall('${b.token.text}', ${arg(0)})"
-      case b: prim.etc._butlast           => s"PrimChecks.list.butLast$uncheckedCall('${b.token.text}', ${arg(0)})"
+      case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}', $checkedArgs)"
+      case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.token.text}', $checkedArgs)"
 
       // Link finding
       case p: prim.etc._inlinkfrom       => s"LinkPrims.inLinkFrom(${jsString(fixBN(p.breedName))}, ${arg(0)})"

@@ -6,43 +6,41 @@ class UnknownType extends NLType
 
 unknown = new UnknownType()
 
-syntaxToTypes = new Map()
-syntaxToTypes.set(      1, types.Number)
-syntaxToTypes.set(      2, types.Boolean)
-syntaxToTypes.set(      4, types.String)
-syntaxToTypes.set(      8, types.List)
-syntaxToTypes.set(     16, types.TurtleSet)
-syntaxToTypes.set(     32, types.PatchSet)
-syntaxToTypes.set(     64, types.LinkSet)
-syntaxToTypes.set(    128, types.Nobody)
-syntaxToTypes.set(    256, types.Turtle)
-syntaxToTypes.set(    512, types.Patch)
-syntaxToTypes.set(   1024, types.Link)
-syntaxToTypes.set(   2048, types.CommandLambda)
-syntaxToTypes.set(   4096, types.ReporterLambda)
-syntaxToTypes.set(   8192, unknown)
-syntaxToTypes.set(  16384, unknown)
-syntaxToTypes.set(  32768, unknown)
-syntaxToTypes.set(  65536, unknown)
-syntaxToTypes.set( 131072, unknown)
-syntaxToTypes.set( 262144, unknown)
-syntaxToTypes.set( 524288, unknown)
-syntaxToTypes.set(1048576, unknown)
-syntaxToTypes.set(2097152, unknown)
+syntaxToTypes = [
+    [      1, types.Number]
+  , [      2, types.Boolean]
+  , [      4, types.String]
+  , [      8, types.List]
+  , [     16, types.TurtleSet]
+  , [     32, types.PatchSet]
+  , [     64, types.LinkSet]
+  , [    112, types.AgentSet]
+  , [    128, types.Nobody]
+  , [    256, types.Turtle]
+  , [    512, types.Patch]
+  , [   1024, types.Link]
+  , [   1792, types.Agent]
+  , [   2048, types.CommandLambda]
+  , [   4096, types.ReporterLambda]
+  , [   8191, types.Wildcard]
+  , [   8192, unknown]
+  , [  16384, unknown]
+  , [  32768, unknown]
+  , [  65536, unknown]
+  , [ 131072, unknown]
+  , [ 262144, unknown]
+  , [ 524288, unknown]
+  , [1048576, unknown]
+  , [2097152, unknown]
+].reverse() # The reverse is important so we check syntax values from largest to smallest. -Jeremy B February 2021
 
 getTypesFromSyntax = (syntax) ->
-  types = []
-  getTypesRec = (syntax, check) ->
-    hasType = (syntax & check) isnt 0
+  syntaxToTypes.filter( ([check, type]) ->
+    hasType = (syntax >= check) and (syntax & check) isnt 0
     if hasType
-      types.push(syntaxToTypes.get(check))
-
-    if check is 1
-      types
-    else
-      getTypesRec(syntax, check / 2)
-
-  getTypesRec(syntax, 2097152)
+      syntax = syntax - check
+    hasType
+  ).map( ([_, type]) -> type ).reverse()
 
 module.exports = {
   getTypesFromSyntax
