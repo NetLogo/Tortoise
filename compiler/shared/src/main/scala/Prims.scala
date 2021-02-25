@@ -135,14 +135,23 @@ trait ReporterPrims extends PrimUtils {
     def argsSep(sep: String) =
       args.mkString(sep)
 
+    def hasUnchecked =
+      ReporterPrims.hasUncheckedArgs(r)
+
     def uncheckedCall =
-      if (ReporterPrims.hasUncheckedArgs(r)) "" else "_unchecked"
+      if (hasUnchecked) "" else "_unchecked"
+
+    // `and` and `or` need to short-circuit, so we check them a bit differently.  -Jeremy B February 2021
+    def makeInfixBoolOp(prim: String, op: String): String =
+      if (hasUnchecked)
+        s"PrimChecks.math.bool('${prim}', ${arg(0)}) ${op} PrimChecks.math.bool('${prim}', ${arg(1)})"
+      else
+        s"(${arg(0)} ${op} ${arg(1)})"
 
     r.reporter match {
 
       // Basics stuff
       case SimplePrims.SimpleReporter(op)  => op
-      case SimplePrims.InfixReporter(op)   => s"(${arg(0)} $op ${arg(1)})"
       case SimplePrims.NormalReporter(op)  => s"$op($commaArgs)"
       case SimplePrims.CheckedReporter(op) => s"$op$uncheckedCall($commaArgs)"
       case SimplePrims.TypeCheck(check)    => s"NLType.checks.$check${arg(0)})"
@@ -155,12 +164,14 @@ trait ReporterPrims extends PrimUtils {
         s"""procedures["${call.name}"](${args.mkString(",")})"""
 
       // Blarg
-      case _: prim._unaryminus         => s" -(${arg(0)})" // The space is important, because these can be nested --JAB (6/12/14)
-      case _: prim._not                => s"!${arg(0)}"
       case _: prim._word               => ("''" +: args).map(arg => s"workspace.dump($arg)").mkString("(", " + ", ")")
       case _: prim.etc._ifelsevalue    => generateIfElseValue(r.args)
       case _: prim.etc._nvalues        => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
+
+      // Boolean
+      case _: prim._and => makeInfixBoolOp("AND", "&&")
+      case _: prim._or  => makeInfixBoolOp("OR",  "||")
 
       // Agentset filtering
       case _: prim._any           => s"PrimChecks.agentset.any$uncheckedCall(${arg(0)})"

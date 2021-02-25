@@ -31,6 +31,8 @@ class Validator
       agentSetOrList:                            @makeArgTypeCheck(agentSetOrList)
       agentSet_list:                             @makeArgTypeCheck(agentSet, list)
       agentSet_number:                           @makeArgTypeCheck(agentSet, number)
+      boolean:                                   @makeArgTypeCheck(boolean)
+      boolean_boolean:                           @makeArgTypeCheck(boolean, boolean)
       list:                                      @makeArgTypeCheck(list)
       list_number_number:                        @makeArgTypeCheck(list, number, number)
       number:                                    @makeArgTypeCheck(number)

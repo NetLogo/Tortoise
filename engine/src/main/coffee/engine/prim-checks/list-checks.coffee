@@ -22,7 +22,7 @@ class ListChecks
 
   # (String, Array | String) => Array | String
   butFirst: (prim, listOrString) ->
-    @validator.commonArgChecks.stringOrList(prim, arguments)
+    @validator.commonArgChecks.stringOrList(prim, [listOrString])
     @butFirst_unchecked(prim, listOrString)
 
   butFirst_unchecked: (prim, listOrString) ->

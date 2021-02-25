@@ -41,19 +41,6 @@ object SimplePrims {
       }
   }
 
-  object InfixReporter {
-    def unapply(r: Reporter): Option[String] =
-      PartialFunction.condOpt(r) {
-        case _: prim.etc._plus      => "+"
-        case _: prim._minus         => "-"
-        case _: prim.etc._mult      => "*"
-        case _: prim.etc._remainder => "%"
-        case _: prim._and           => "&&"
-        case _: prim._or            => "||"
-        case _: prim.etc._xor       => "!="
-      }
-  }
-
   object CheckedReporter {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
@@ -114,6 +101,14 @@ object SimplePrims {
         case _: prim.etc._sqrt             => "PrimChecks.math.sqrt"
         case _: prim.etc._subtractheadings => "PrimChecks.math.subtractHeadings"
         case _: prim.etc._tan              => "PrimChecks.math.tan"
+
+        case _: prim.etc._plus      => "PrimChecks.math.plus"
+        case _: prim._minus         => "PrimChecks.math.minus"
+        case _: prim.etc._mult      => "PrimChecks.math.mult"
+        case _: prim.etc._remainder => "PrimChecks.math.remainder"
+        case _: prim._unaryminus    => "PrimChecks.math.unaryminus"
+        case _: prim._not           => "PrimChecks.math.not"
+        case _: prim.etc._xor       => "PrimChecks.math.xor"
 
         // Random
         case _: prim._random                => "PrimChecks.math.random"

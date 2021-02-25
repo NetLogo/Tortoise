@@ -23,6 +23,11 @@ class MathChecks
   acos_unchecked: (d) ->
     @validator.checkNumber(NLMath.acos(d))
 
+  # (String, Boolean) => Boolean
+  bool: (prim, a) ->
+    @validator.commonArgChecks.boolean(prim, [a])
+    a
+
   # (Number) => Number
   asin: (d) ->
     @validator.commonArgChecks.number("ASIN", arguments)
@@ -117,12 +122,43 @@ class MathChecks
     NLMath.log(n, b)
 
   # (Number, Number) => Number
+  minus: (a, b) ->
+    @validator.commonArgChecks.number_number("-", arguments)
+    @minus_unchecked(a, b)
+
+  minus_unchecked: (a, b) ->
+    @validator.checkNumber(a - b)
+
+  # (Number, Number) => Number
   mod: (p, q) ->
     @validator.commonArgChecks.number_number("MOD", arguments)
     @mod_unchecked(p, q)
 
   mod_unchecked: (p, q) ->
     NLMath.mod(p, q)
+
+  # (Number, Number) => Number
+  mult: (a, b) ->
+    @validator.commonArgChecks.number_number("*", arguments)
+    @mult_unchecked(a, b)
+
+  mult_unchecked: (a, b) ->
+    @validator.checkNumber(a * b)
+
+  not: (a) ->
+    @validator.commonArgChecks.boolean("NOT", arguments)
+    @not_unchecked(a)
+
+  not_unchecked: (a) ->
+    not a
+
+  # (Number, Number) => Number
+  plus: (a, b) ->
+    @validator.commonArgChecks.number_number("+", arguments)
+    @plus_unchecked(a, b)
+
+  plus_unchecked: (a, b) ->
+    @validator.checkNumber(a + b)
 
   # (Number, Number) => Number
   pow: (b, p) ->
@@ -203,6 +239,14 @@ class MathChecks
     @randomPrims.randomSeed(seed)
     return
 
+  # (Number, Number) => Number
+  remainder: (a, b) ->
+    @validator.commonArgChecks.number_number("REMAINDER", arguments)
+    @remainder_unchecked(a, b)
+
+  remainder_unchecked: (a, b) ->
+    a % b
+
   # (Number) => Number
   round: (n) ->
     @validator.commonArgChecks.number("ROUND", arguments)
@@ -245,5 +289,21 @@ class MathChecks
 
   tan_unchecked: (d) ->
     NLMath.tan(d)
+
+  # (Number) => Number
+  unaryminus: (a) ->
+    @validator.commonArgChecks.number("-", arguments)
+    @unaryminus_unchecked(a)
+
+  unaryminus_unchecked: (a) ->
+    -(a)
+
+  # (Boolean, Boolean) => Boolean
+  xor: (a, b) ->
+    @validator.commonArgChecks.boolean_boolean("XOR", arguments)
+    @xor_unchecked(a, b)
+
+  xor_unchecked: (a, b) ->
+    a isnt b
 
 module.exports = MathChecks
