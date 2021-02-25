@@ -121,6 +121,12 @@ object SimplePrims {
         case _: prim.etc._randompoisson     => "PrimChecks.math.randomPoisson"
         case _: prim.etc._randomgamma       => "PrimChecks.math.randomGamma"
 
+        // Agentset
+        case _: prim._any           => "PrimChecks.agentset.any"
+        case _: prim.etc._atpoints  => "PrimChecks.agentset.atPoints"
+        case _: prim._count         => "PrimChecks.agentset.count"
+        case _: prim.etc._turtleson => "PrimChecks.agentset.turtlesOn"
+
       }
   }
 
@@ -169,6 +175,9 @@ object SimplePrims {
         case _: prim._sentence => "ListPrims.sentence"
 
         // Agentset
+        // In theory these should be able to be made standard `CheckedReporters`, but in practice
+        // their errors are weird enough that I'm going to leave them as custom.
+        // -Jeremy B February 2021
         case _: prim.etc._linkset   => "PrimChecks.agentset.linkSet"
         case _: prim.etc._patchset  => "PrimChecks.agentset.patchSet"
         case _: prim.etc._turtleset => "PrimChecks.agentset.turtleSet"

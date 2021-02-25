@@ -106,25 +106,17 @@ object ReporterPrims {
   def allTypesAllowed(allowed: Int, actual: Int): Boolean =
     types.filter( (t) => !isSupported(allowed, t) && isSupported(actual, t) ).isEmpty
 
-  def hasUncheckedArgs(a: Application): Boolean = {
-    // TODO: Handle `Syntax.RepeatableType` arguments. -Jeremy B February 2021
-    val s = a.instruction.syntax
-    val argValueTypes = a.args.map(_.reportedType())
-    val argAllowedTypes = if (s.isInfix) List(s.left) ++ s.right else s.right
-    val arguments: List[(Int, Int)] = argAllowedTypes.zip(argValueTypes)
-    arguments.exists { case (allowed: Int, actual: Int) => !ReporterPrims.allTypesAllowed(allowed, actual) }
-  }
-
   def makeCheckedArgOps(a: Application, ops: Seq[String]) = {
-      val syntax          = a.instruction.syntax
-      val argAllowedTypes = if (syntax.isInfix) List(syntax.left) ++ syntax.right else syntax.right
-      val argsWithTypes   = argAllowedTypes.zip(a.args).zip(ops)
+    // TODO: Handle `Syntax.RepeatableType` arguments. -Jeremy B February 2021
+    val syntax        = a.instruction.syntax
+    val allAllowed    = if (syntax.isInfix) List(syntax.left) ++ syntax.right else syntax.right
+    val argsWithTypes = allAllowed.zip(a.args).zip(ops)
 
-      val argOps = argsWithTypes.map( { case ((allowed: Int, exp: Expression), op: String) =>
-        ReporterPrims.makeCheckedOp(a.instruction.token.text, allowed, exp.reportedType(), op)
-      })
-      argOps.mkString(", ")
-    }
+    val argOps = argsWithTypes.map( { case ((allowed: Int, exp: Expression), op: String) =>
+      ReporterPrims.makeCheckedOp(a.instruction.token.text, allowed, exp.reportedType(), op)
+    })
+    argOps.mkString(", ")
+  }
 
   def makeCheckedOp(prim: String, allowed: Int, actual: Int, op: String): String = {
     if (ReporterPrims.allTypesAllowed(allowed, actual)) {
@@ -157,17 +149,20 @@ trait ReporterPrims extends PrimUtils {
     def checkedArgs =
       ReporterPrims.makeCheckedArgOps(r, args)
 
-    def hasUnchecked =
-      ReporterPrims.hasUncheckedArgs(r)
-
-    def uncheckedCall =
-      if (hasUnchecked) "" else "_unchecked"
+    def makeCheckedOp(i: Int) = {
+      val syntax = r.instruction.syntax
+      val allowed = if (!r.instruction.syntax.isInfix) {
+        syntax.right(i)
+      } else {
+        if (i == 0) syntax.left else syntax.right(i - 1)
+      }
+      ReporterPrims.makeCheckedOp(r.instruction.token.text, allowed, r.args(i).reportedType(), arg(i))
+    }
 
     // `and` and `or` need to short-circuit, so we check them a bit differently.  -Jeremy B February 2021
-    def makeInfixBoolOp(prim: String, op: String): String = {
-      val syntax = r.instruction.syntax
-      val left   = ReporterPrims.makeCheckedOp(prim, syntax.left,     r.args(0).reportedType(), arg(0))
-      val right  = ReporterPrims.makeCheckedOp(prim, syntax.right(0), r.args(1).reportedType(), arg(1))
+    def makeInfixBoolOp(op: String): String = {
+      val left  = makeCheckedOp(0)
+      val right = makeCheckedOp(1)
       s"($left $op $right)"
     }
 
@@ -193,24 +188,20 @@ trait ReporterPrims extends PrimUtils {
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
 
       // Boolean
-      case _: prim._and => makeInfixBoolOp("AND", "&&")
-      case _: prim._or  => makeInfixBoolOp("OR",  "||")
+      case _: prim._and => makeInfixBoolOp("&&")
+      case _: prim._or  => makeInfixBoolOp("||")
 
       // Agentset filtering
-      case _: prim._any           => s"PrimChecks.agentset.any$uncheckedCall(${arg(0)})"
-      case _: prim.etc._all       => s"PrimChecks.agentset.all$uncheckedCall(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._atpoints  => s"PrimChecks.agentset.atPoints$uncheckedCall(${arg(0)}, ${arg(1)})"
-      case _: prim._count         => s"PrimChecks.agentset.count$uncheckedCall(${arg(0)})"
-      case _: prim.etc._maxnof    => s"PrimChecks.agentset.maxNOf$uncheckedCall(${arg(1)}, ${arg(0)}, ${handlers.fun(r.args(2), true)})"
-      case _: prim.etc._maxoneof  => s"PrimChecks.agentset.maxOneOf$uncheckedCall(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._minnof    => s"PrimChecks.agentset.minNOf$uncheckedCall(${arg(1)}, ${arg(0)}, ${handlers.fun(r.args(2), true)})"
-      case _: prim.etc._minoneof  => s"PrimChecks.agentset.minOneOf$uncheckedCall(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim._of            => s"PrimChecks.agentset.of$uncheckedCall(${arg(1)}, ${handlers.fun(r.args(0), isReporter = true)})"
-      case _: prim.etc._sorton    => s"PrimChecks.agentset.sortOn$uncheckedCall(${arg(1)}, ${handlers.fun(r.args(0), true)})"
-      case _: prim._with          => s"PrimChecks.agentset.with$uncheckedCall(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._withmax   => s"PrimChecks.agentset.withMax$uncheckedCall(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._withmin   => s"PrimChecks.agentset.withMin$uncheckedCall(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._turtleson => s"PrimChecks.agentset.turtlesOn$uncheckedCall(${arg(0)})"
+      case _: prim.etc._all      => s"PrimChecks.agentset.all(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._maxnof   => s"PrimChecks.agentset.maxNOf(${makeCheckedOp(1)}, ${makeCheckedOp(0)}, ${handlers.fun(r.args(2), true)})"
+      case _: prim.etc._maxoneof => s"PrimChecks.agentset.maxOneOf(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._minnof   => s"PrimChecks.agentset.minNOf(${makeCheckedOp(1)}, ${makeCheckedOp(0)}, ${handlers.fun(r.args(2), true)})"
+      case _: prim.etc._minoneof => s"PrimChecks.agentset.minOneOf(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim._of           => s"PrimChecks.agentset.of(${makeCheckedOp(1)}, ${handlers.fun(r.args(0), isReporter = true)})"
+      case _: prim.etc._sorton   => s"PrimChecks.agentset.sortOn(${makeCheckedOp(1)}, ${handlers.fun(r.args(0), true)})"
+      case _: prim._with         => s"PrimChecks.agentset.with(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._withmax  => s"PrimChecks.agentset.withMax(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._withmin  => s"PrimChecks.agentset.withMin(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
 
       case _: Optimizer._countotherwith => s"PrimChecks.agentset.countOtherWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
       case _: Optimizer._countwith      => s"PrimChecks.agentset.countWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
@@ -240,7 +231,7 @@ trait ReporterPrims extends PrimUtils {
       case p: prim.etc._linkbreedsingular => s"world.linkManager.getLink(${arg(0)}, ${arg(1)}, ${jsString(p.breedName)})"
       case b: prim.etc._breedat           => s"SelfManager.self().breedAt(${jsString(b.breedName)}, ${arg(0)}, ${arg(1)})"
       case b: prim.etc._breedhere         => s"SelfManager.self().breedHere(${jsString(b.breedName)})"
-      case b: prim.etc._breedon           => s"PrimChecks.agentset.breedOn$uncheckedCall(${jsString(b.breedName)}, ${arg(0)})"
+      case b: prim.etc._breedon           => s"PrimChecks.agentset.breedOn(${jsString(b.breedName)}, ${makeCheckedOp(0)})"
 
       // List prims
       case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}', $checkedArgs)"

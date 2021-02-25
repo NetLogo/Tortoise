@@ -58,10 +58,6 @@ class AgentSetChecks
 
   # (AgentSet[T]) => Boolean
   any: (agentset) ->
-    @validator.commonArgChecks.agentSet("ANY?", arguments)
-    @any_unchecked(agentset)
-
-  any_unchecked: (agentset) ->
     not agentset.isEmpty()
 
   # (AgentSet[T], () => Boolean) => Boolean
@@ -76,18 +72,10 @@ class AgentSetChecks
 
   # (AgentSet[T], (T) => Boolean) => Boolean
   all: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("ALL?", arguments)
-    @all_unchecked(agentset, @makeCheckedF("ALL?", f))
-
-  all_unchecked: (agentset, f) ->
-    agentset.agentAll(f)
+    agentset.agentAll(@makeCheckedF("ALL?", f))
 
   # (AgentSet[T], Array[Array[Number]]) => AgentSet
   atPoints: (agentset, coords) ->
-    @validator.commonArgChecks.agentSet_list("AT-POINTS", arguments)
-    @atPoints_unchecked(agentset, coords)
-
-  atPoints_unchecked: (agentset, coords) ->
     if not AgentSetChecks.isListOfPoints(coords)
       @validator.error('Invalid list of points: _', @dumper(coords))
 
@@ -95,10 +83,6 @@ class AgentSetChecks
 
   # (String, Patch | Turtle | PatchSet | TurtleSet) => AgentSet
   breedOn: (breedName, target) ->
-    @validator.commonArgChecks.string_patchOrTurtleOrPatchSetOrTurtleSet("#{breedName}-ON", arguments)
-    @breedOn_unchecked(breedName, target)
-
-  breedOn_unchecked: (breedName, target) ->
     if checks.isPatch(target)
       @prims.breedOnPatch(breedName, target)
     else if checks.isTurtle(target)
@@ -110,10 +94,6 @@ class AgentSetChecks
 
   # (AgentSet[T]) => Number
   count: (agentset) ->
-    @validator.commonArgChecks.agentSet("COUNT", arguments)
-    @count_unchecked(agentset)
-
-  count_unchecked: (agentset) ->
     agentset.size()
 
   # (AgentSet[T], () => Boolean) => Number
@@ -133,10 +113,6 @@ class AgentSetChecks
 
   # (AgentSet[T], Number, (T) => Number) => AgentSet[T]
   maxNOf: (agentset, n, f) ->
-    @validator.commonArgChecks.agentSet_number("MAX-N-OF", arguments)
-    @maxNOf_unchecked(agentset, n, f)
-
-  maxNOf_unchecked: (agentset, n, f) ->
     if n > agentset.size()
       @validator.error('Requested _ random agents from a set of only _ agents.', n, agentset.size())
     if n < 0
@@ -146,18 +122,10 @@ class AgentSetChecks
 
   # (AgentSet[T], (T) => Number) => AgentSet
   maxOneOf: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("MAX-ONE-OF", arguments)
-    @maxOneOf_unchecked(agentset, f)
-
-  maxOneOf_unchecked: (agentset, f) ->
     agentset.maxOneOf(f)
 
   # (AgentSet[T], Number, (T) => Number) => AgentSet[T]
   minNOf: (agentset, n, f) ->
-    @validator.commonArgChecks.agentSet_number("MIN-N-OF", arguments)
-    @minNOf_unchecked(agentset, n, f)
-
-  minNOf_unchecked: (agentset, n, f) ->
     if n > agentset.size()
       @validator.error('Requested _ random agents from a set of only _ agents.', n, agentset.size())
     if n < 0
@@ -167,18 +135,10 @@ class AgentSetChecks
 
   # (AgentSet[T], (T) => Number) => AgentSet
   minOneOf: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("MIN-ONE-OF", arguments)
-    @minOneOf_unchecked(agentset, f)
-
-  minOneOf_unchecked: (agentset, f) ->
     agentset.minOneOf(f)
 
   # (T | AgentSet[T], (T) => U) => U | List[U]
   of: (agentOrAgentset, f) ->
-    @validator.commonArgChecks.agentOrAgentSet("OF", arguments)
-    @of_unchecked(agentOrAgentset, f)
-
-  of_unchecked: (agentOrAgentset, f) ->
     agentOrAgentset.projectionBy(f)
 
   # (AgentSet[T], () => Boolean) => T
@@ -203,10 +163,6 @@ class AgentSetChecks
 
   # (AgentSet[T], () => Number | String | Agent) => AgentSet[T]
   sortOn: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("SORT-ON", arguments)
-    @sortOn_unchecked(agentset, f)
-
-  sortOn_unchecked: (agentset, f) ->
     compare      = null
     badFirstType = false
     sortingFunc = ([[], o1], [[], o2]) =>
@@ -238,10 +194,6 @@ class AgentSetChecks
 
   # (Agent | AgentSet) => TurtleSet
   turtlesOn: (agentOrAgentset) ->
-    @validator.commonArgChecks.agentOrAgentSet("TURTLES-ON", arguments)
-    @turtlesOn_unchecked(agentOrAgentset)
-
-  turtlesOn_unchecked: (agentOrAgentset) ->
     if checks.isAgentSet(agentOrAgentset)
       @prims.turtlesOnAgentSet(agentOrAgentset)
     else
@@ -254,26 +206,14 @@ class AgentSetChecks
 
   # (AgentSet[T], () => Boolean) => AgentSet[T]
   with: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH", arguments)
-    @with_unchecked(agentset, @makeCheckedF("WITH", f))
-
-  with_unchecked: (agentset, f) ->
-    agentset.agentFilter(f)
+    agentset.agentFilter(@makeCheckedF("WITH", f))
 
   # (AgentSet[T], () => Number) => AgentSet[T]
   withMax: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH-MAX", arguments)
-    @withMax_unchecked(agentset, f)
-
-  withMax_unchecked: (agentset, f) ->
     agentset.maxesBy(f)
 
   # (AgentSet[T], () => Number) => AgentSet[T]
   withMin: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH-MIN", arguments)
-    @withMin_unchecked(agentset, f)
-
-  withMin_unchecked: (agentset, f) ->
     agentset.minsBy(f)
 
 module.exports = AgentSetChecks
