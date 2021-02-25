@@ -68,7 +68,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!!world.turtles().isEmpty()) {
+      if (!PrimChecks.agentset.any(world.turtles())) {
         if (Prims.equality(world.observer.getGlobal("countdown"), 0)) {
           procedures["INIT-ROCKETS"]();
           world.observer.setGlobal("countdown", (Prims.ifElseValueBooleanCheck(world.observer.getGlobal("trails?")) ? 30 : 10));

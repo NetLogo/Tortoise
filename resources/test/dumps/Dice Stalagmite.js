@@ -108,14 +108,14 @@ var procedures = (function() {
       world.clearAll();
       world.observer.setGlobal("single-outcomes", []);
       world.observer.setGlobal("pair-outcomes", []);
-      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pxcor"), 4); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.gt(SelfManager.self().getPatchVariable("pxcor"), 4); })).ask(function() {
         SelfManager.self().setPatchVariable("column", PrimChecks.math.floor(PrimChecks.math.div((SelfManager.self().getPatchVariable("pxcor") - 1), 2)));
       }, true);
-      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pxcor"), -4); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.lt(SelfManager.self().getPatchVariable("pxcor"), -4); })).ask(function() {
         SelfManager.self().setPatchVariable("column", ((SelfManager.self().getPatchVariable("pxcor") - world.topology.minPxcor) + 1));
       }, true);
       Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 3)); }, true);
-      Errors.askNobodyCheck(world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("column"), 0); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return !Prims.equality(SelfManager.self().getPatchVariable("column"), 0); })).ask(function() {
         if (Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("column"), 2), 0)) {
           SelfManager.self().setPatchVariable("pcolor", 5);
         }
@@ -123,8 +123,8 @@ var procedures = (function() {
           SelfManager.self().setPatchVariable("pcolor", (35 - 1));
         }
       }, true);
-      world.observer.setGlobal("top-row", world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor); }));
-      world.observer.setGlobal("generators", world.observer.getGlobal("top-row").agentFilter(function() {
+      world.observer.setGlobal("top-row", PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor); }));
+      world.observer.setGlobal("generators", PrimChecks.agentset.with(world.observer.getGlobal("top-row"), function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), -1) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0));
       }));
       world.ticker.reset();
@@ -138,16 +138,16 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if ((world.observer.getGlobal("stop-at-top?") && !Prims.turtlesOn(world.observer.getGlobal("top-row")).isEmpty())) {
+      if ((world.observer.getGlobal("stop-at-top?") && PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(world.observer.getGlobal("top-row"))))) {
         UserDialogPrims.confirm("The top has been reached. Turn STOP-AT-TOP? off to keep going.");
         throw new Exception.StopInterrupt;
       }
       if (!world.observer.getGlobal("stop-at-top?")) {
-        procedures["BUMP-DOWN"](world.turtleManager.turtlesOfBreed("STACKED-DICE").agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pxcor"), 0); }));
-        procedures["BUMP-DOWN"](world.turtleManager.turtlesOfBreed("STACKED-DICE").agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pxcor"), 0); }));
+        procedures["BUMP-DOWN"](PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("STACKED-DICE"), function() { return Prims.lt(SelfManager.self().getPatchVariable("pxcor"), 0); }));
+        procedures["BUMP-DOWN"](PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("STACKED-DICE"), function() { return Prims.gt(SelfManager.self().getPatchVariable("pxcor"), 0); }));
       }
       procedures["ROLL-DICE"]();
-      while ((!world.turtleManager.turtlesOfBreed("SINGLE-DICE").isEmpty() || !world.turtleManager.turtlesOfBreed("PAIRED-DICE").isEmpty())) {
+      while ((PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("SINGLE-DICE")) || PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("PAIRED-DICE")))) {
         procedures["MOVE-PAIRED-DICE"]();
         procedures["MOVE-SINGLE-DICE"]();
         notImplemented('display', undefined)();
@@ -174,10 +174,10 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAIRED-DICE")).ask(function() {
         SelfManager.self().hatch(1, "SINGLE-DICE").ask(function() {
           SelfManager.self().setVariable("heading", 270);
-          SelfManager.self().setVariable("shape", SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("shape"); }));
+          SelfManager.self().setVariable("shape", PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("shape"); }));
         }, true);
       }, true);
-      let total = PrimChecks.list.sum(world.turtleManager.turtlesOfBreed("PAIRED-DICE").projectionBy(function() { return SelfManager.self().getVariable("die-value"); })); letVars['total'] = total;
+      let total = PrimChecks.list.sum(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { return SelfManager.self().getVariable("die-value"); })); letVars['total'] = total;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAIRED-DICE")).ask(function() { SelfManager.self().setVariable("pair-sum", total); }, true);
       world.observer.setGlobal("pair-outcomes", PrimChecks.list.lput(total, world.observer.getGlobal("pair-outcomes")));
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SINGLE-DICE")).ask(function() {
@@ -193,7 +193,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (world.turtleManager.turtlesOfBreed("PAIRED-DICE")._optimalAnyWith(function() {
+      if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() {
         return !Prims.equality(SelfManager.self().getVariable("pair-sum"), SelfManager.self().getPatchVariable("column"));
       })) {
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAIRED-DICE")).ask(function() { SelfManager.self()._optimalFdOne(); }, true);
@@ -216,12 +216,12 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let howMany = world.turtleManager.turtlesOfBreed("SINGLE-DICE").size(); letVars['howMany'] = howMany;
+      let howMany = PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SINGLE-DICE")); letVars['howMany'] = howMany;
       if (Prims.gt(howMany, 0)) {
-        Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SINGLE-DICE").minOneOf(function() { return SelfManager.self().getPatchVariable("pycor"); })).ask(function() { procedures["MOVE-SINGLE-DIE"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return SelfManager.self().getPatchVariable("pycor"); })).ask(function() { procedures["MOVE-SINGLE-DIE"](); }, true);
       }
       if (Prims.gt(howMany, 1)) {
-        Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SINGLE-DICE").maxOneOf(function() { return SelfManager.self().getPatchVariable("pycor"); })).ask(function() { procedures["MOVE-SINGLE-DIE"](); }, true);
+        Errors.askNobodyCheck(PrimChecks.agentset.maxOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return SelfManager.self().getPatchVariable("pycor"); })).ask(function() { procedures["MOVE-SINGLE-DIE"](); }, true);
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -253,7 +253,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       SelfManager.self().setVariable("heading", 180);
-      if ((Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && !!Prims.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1)).isEmpty())) {
+      if ((Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && !PrimChecks.agentset.any(PrimChecks.agentset.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1))))) {
         SelfManager.self()._optimalFdOne();
       }
       else {
@@ -321,7 +321,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      while (candidates._optimalAnyWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 2)); })) {
+      while (PrimChecks.agentset.anyWith(candidates, function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 2)); })) {
         Errors.askNobodyCheck(candidates).ask(function() {
           if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
             SelfManager.self().die();

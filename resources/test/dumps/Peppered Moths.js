@@ -291,7 +291,7 @@ var procedures = (function() {
       if (Prims.equality(RandomPrims.randomLong(13), 0)) {
         SelfManager.self().die();
       }
-      if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), procedures["UPPER-BOUND"]())) {
+      if (Prims.gt(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("MOTHS")), procedures["UPPER-BOUND"]())) {
         if (Prims.equality(RandomPrims.randomLong(2), 0)) {
           SelfManager.self().die();
         }
@@ -333,9 +333,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("light-moths", world.turtleManager.turtlesOfBreed("MOTHS")._optimalCountWith(function() { return Prims.gte(SelfManager.self().getVariable("color"), 7); }));
-      world.observer.setGlobal("dark-moths", world.turtleManager.turtlesOfBreed("MOTHS")._optimalCountWith(function() { return Prims.lte(SelfManager.self().getVariable("color"), 3); }));
-      world.observer.setGlobal("medium-moths", (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal("light-moths") + world.observer.getGlobal("dark-moths"))));
+      world.observer.setGlobal("light-moths", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("MOTHS"), function() { return Prims.gte(SelfManager.self().getVariable("color"), 7); }));
+      world.observer.setGlobal("dark-moths", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("MOTHS"), function() { return Prims.lte(SelfManager.self().getVariable("color"), 3); }));
+      world.observer.setGlobal("medium-moths", (PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("MOTHS")) - (world.observer.getGlobal("light-moths") + world.observer.getGlobal("dark-moths"))));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

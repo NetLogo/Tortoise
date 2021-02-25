@@ -297,7 +297,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       procedures["WIGGLE"]();
-      let scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); }); letVars['scentAhead'] = scentAhead;
+      let scentAhead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("chemical"); }); letVars['scentAhead'] = scentAhead;
       let scentRight = procedures["CHEMICAL-SCENT"](45); letVars['scentRight'] = scentRight;
       let scentLeft = procedures["CHEMICAL-SCENT"](-45); letVars['scentLeft'] = scentLeft;
       if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
@@ -319,7 +319,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       procedures["WIGGLE"]();
-      let scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); }); letVars['scentAhead'] = scentAhead;
+      let scentAhead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("nest-scent"); }); letVars['scentAhead'] = scentAhead;
       let scentRight = procedures["GET-NEST-SCENT"](45); letVars['scentRight'] = scentRight;
       let scentLeft = procedures["GET-NEST-SCENT"](-45); letVars['scentLeft'] = scentLeft;
       if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
@@ -357,7 +357,7 @@ var procedures = (function() {
       let p = SelfManager.self().patchRightAndAhead(angle, 1); letVars['p'] = p;
       if (!Prims.equality(p, Nobody)) {
         Errors.reportInContextCheck(reporterContext);
-        return p.projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); });
+        return PrimChecks.agentset.of(p, function() { return SelfManager.self().getPatchVariable("nest-scent"); });
       }
       Errors.reportInContextCheck(reporterContext);
       return 0;
@@ -375,7 +375,7 @@ var procedures = (function() {
       let p = SelfManager.self().patchRightAndAhead(angle, 1); letVars['p'] = p;
       if (!Prims.equality(p, Nobody)) {
         Errors.reportInContextCheck(reporterContext);
-        return p.projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
+        return PrimChecks.agentset.of(p, function() { return SelfManager.self().getPatchVariable("chemical"); });
       }
       Errors.reportInContextCheck(reporterContext);
       return 0;
@@ -395,11 +395,11 @@ var procedures = (function() {
       }
       plotManager.setCurrentPlot("Food in each pile");
       plotManager.setCurrentPen("food-in-pile1");
-      plotManager.plotValue(world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 85); }));
+      plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 85); }));
       plotManager.setCurrentPen("food-in-pile2");
-      plotManager.plotValue(world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 95); }));
+      plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 95); }));
       plotManager.setCurrentPen("food-in-pile3");
-      plotManager.plotValue(world.patches()._optimalCountWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105); }));
+      plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

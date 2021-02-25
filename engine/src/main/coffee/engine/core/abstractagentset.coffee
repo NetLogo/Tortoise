@@ -1,10 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-projectionSort = require('./projectionsort')
-{ checks }     = require('./typechecker')
-Iterator       = require('util/iterator')
-Shufflerator   = require('util/shufflerator')
-stableSort     = require('util/stablesort')
+{ checks }   = require('./typechecker')
+Iterator     = require('util/iterator')
+Shufflerator = require('util/shufflerator')
+stableSort   = require('util/stablesort')
 
 { foldl, map } = require('brazierjs/array')
 { pipeline   } = require('brazierjs/function')
@@ -21,7 +20,7 @@ module.exports =
 
     # (() => Boolean) => AbstractAgentSet[T]
     agentFilter: (f) ->
-      @filter(Iterator.withBoolCheck(@_world.selfManager.askAgent(f)))
+      @filter(@_world.selfManager.askAgent(f))
 
     # (() => Boolean) => Boolean
     agentAll: (f) ->
@@ -47,7 +46,7 @@ module.exports =
     atPoints: (points) ->
       getSelf    =        => @_world.selfManager.self()
       getPatchAt = (x, y) => @_world.getPatchAt(x, y)
-      require('./agentset/atpoints')(@_world.dump, getSelf, getPatchAt).call(this, points)
+      require('./agentset/atpoints')(getSelf, getPatchAt).call(this, points)
 
     # (T) => Boolean
     contains: (item) ->
@@ -96,13 +95,6 @@ module.exports =
 
     # (Number, () => Number) => AbstractAgentSet[T]
     maxNOf: (n, f) ->
-
-      if n > @size()
-        throw new Error("Requested #{n} random agents from a set of only #{@size()} agents.")
-
-      if n < 0
-        throw new Error("First input to MAX-N-OF can't be negative.")
-
       @_findBestNOf(n, f, (x, y) -> if x is y then 0 else if x > y then -1 else 1)
 
     # (() => Number) => T
@@ -111,13 +103,6 @@ module.exports =
 
     # (Number, () => Number) => AbstractAgentSet[T]
     minNOf: (n, f) ->
-
-      if n > @size()
-        throw new Error("Requested #{n} random agents from a set of only #{@size()} agents.")
-
-      if n < 0
-        throw new Error("First input to MIN-N-OF can't be negative.")
-
       @_findBestNOf(n, f, (x, y) -> if x is y then 0 else if x < y then -1 else 1)
 
     # (() => Number) => T
@@ -161,9 +146,13 @@ module.exports =
       else
         stableSort(@_unsafeIterator().toArray())((x, y) -> x.compare(y).toInt)
 
-    # [U] @ ((T) => U) => Array[T]
-    sortOn: (f) ->
-      projectionSort(@shufflerator().toArray())(f)
+    # [U] @ ((T) => U, (U, U) => Int) => Array[T]
+    sortOn: (f, sortingFunc) ->
+      if @isEmpty()
+        []
+      else
+        agentValuePairs = @shufflerator().toArray().map( (agent) -> [agent, agent.projectionBy(f)] )
+        stableSort(agentValuePairs)(sortingFunc).map( ([a, _]) -> a )
 
     # () => Array[T]
     toArray: ->
@@ -256,19 +245,12 @@ module.exports =
     # (() => Boolean) => AgentSet
     _optimalOtherWith: (f) ->
       self = @_world.selfManager.self()
-      filterer =
-        (x) ->
-          if x isnt self
-            Iterator.boolOrError(x, x.projectionBy(f))
-          else
-            false
+      filterer = (x) -> x isnt self and x.projectionBy(f)
       @copyWithNewAgents(@_unsafeIterator().filter(filterer))
 
     # (() => Boolean) => Agent
     _optimalOneOfWith: (f) ->
-      finder =
-        (x) ->
-          y = Iterator.boolOrError(x, x.projectionBy(f))
+      finder = (x) -> x.projectionBy(f)
       @shufflerator().find(finder, Nobody)
 
     # (() => Boolean) => Boolean
@@ -278,19 +260,18 @@ module.exports =
     # (() => Boolean) => Boolean
     _optimalAnyOtherWith: (f) ->
       self = @_world.selfManager.self()
-      checker = (x) -> x isnt self and Iterator.boolOrError(x, x.projectionBy(f))
+      checker = (x) -> x isnt self and x.projectionBy(f)
       @exists(checker)
 
     # (() => Boolean) => Number
     _optimalCountOtherWith: (f) ->
       self = @_world.selfManager.self()
-      filterer = (x) -> x isnt self and Iterator.boolOrError(x, x.projectionBy(f))
+      filterer = (x) -> x isnt self and x.projectionBy(f)
       @_unsafeIterator().filter(filterer).length
 
     # (() => Boolean) => Number
     _optimalCountWith: (f) ->
-      self = @_world.selfManager.self()
-      filterer = (x) -> Iterator.boolOrError(x, x.projectionBy(f))
+      filterer = (x) -> x.projectionBy(f)
       @_unsafeIterator().filter(filterer).length
 
     # (Number, (Number, Number) => Boolean) => Boolean

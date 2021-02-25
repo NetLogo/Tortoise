@@ -58,7 +58,7 @@ var procedures = (function() {
       world.clearAll();
       procedures["SETUP-GRID"]();
       procedures["READ-SWITCHES"]();
-      Errors.askNobodyCheck(Prims.breedOn("CELLS", world.getPatchAt(0, 0))).ask(function() { procedures["BECOME-ALIVE"](); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.breedOn("CELLS", world.getPatchAt(0, 0))).ask(function() { procedures["BECOME-ALIVE"](); }, true);
       world.ticker.reset();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -149,7 +149,7 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CELLS")).ask(function() {
         SelfManager.self().setVariable("eligible?", (SelfManager.self().getVariable("hidden?") && PrimChecks.list.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))));
       }, true);
-      world.observer.setGlobal("eligibles", world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() { return SelfManager.self().getVariable("eligible?"); }).projectionBy(function() { return SelfManager.self(); }));
+      world.observer.setGlobal("eligibles", PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("CELLS"), function() { return SelfManager.self().getVariable("eligible?"); }), function() { return SelfManager.self(); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -173,10 +173,10 @@ var procedures = (function() {
       }, true);
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CELLS")).ask(function() {
         if (Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
-          SelfManager.self().setVariable("hex-neighbors", Prims.breedOn("CELLS", world.patches().atPoints([[0, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]])));
+          SelfManager.self().setVariable("hex-neighbors", PrimChecks.agentset.breedOn("CELLS", PrimChecks.agentset.atPoints(world.patches(), [[0, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]])));
         }
         else {
-          SelfManager.self().setVariable("hex-neighbors", Prims.breedOn("CELLS", world.patches().atPoints([[0, 1], [1, 1], [1, 0], [0, -1], [-1, 0], [-1, 1]])));
+          SelfManager.self().setVariable("hex-neighbors", PrimChecks.agentset.breedOn("CELLS", PrimChecks.agentset.atPoints(world.patches(), [[0, 1], [1, 1], [1, 0], [0, -1], [-1, 0], [-1, 1]])));
         }
       }, true);
     } catch (e) {

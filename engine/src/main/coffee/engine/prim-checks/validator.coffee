@@ -9,33 +9,43 @@ class Validator
   constructor: (@bundle, @dumper) ->
     # These arrays of types and the common checks below are pre-computed so that all prims
     # can share them without making loads of extra array instances and extra functions.
-    # -Jeremy B December
-    agentSetOrList         = [types.AgentSet, types.List]
-    boolean                = [types.Boolean]
-    list                   = [types.List]
-    number                 = [types.Number]
-    reporter               = [types.ReporterLambda]
-    string                 = [types.String]
-    stringOrList           = [types.String, types.List]
-    stringOrListOrAgentSet = [types.String, types.List, types.AgentSet]
-    wildcard               = [types.Wildcard]
+    # -Jeremy B December 2020
+    agentOrAgentSet                    = [types.Agent, types.AgentSet]
+    agentSet                           = [types.AgentSet]
+    # Order of these is for `_sort` error message.  -Jeremy B February 2021
+    agentSetOrList                     = [types.List, types.AgentSet]
+    boolean                            = [types.Boolean]
+    list                               = [types.List]
+    number                             = [types.Number]
+    # Order of these is for the `_breedon` error message.  -Jeremy B February 2021
+    patchOrTurtleOrPatchSetOrTurtleSet = [types.TurtleSet, types.PatchSet, types.Turtle, types.Patch]
+    reporter                           = [types.ReporterLambda]
+    string                             = [types.String]
+    stringOrList                       = [types.String, types.List]
+    stringOrListOrAgentSet             = [types.String, types.List, types.AgentSet]
+    wildcard                           = [types.Wildcard]
 
     @commonArgChecks = {
-      agentSetOrList:                  @makeArgTypeCheck(agentSetOrList)
-      list:                            @makeArgTypeCheck(list)
-      list_number_number:              @makeArgTypeCheck(list, number, number)
-      number:                          @makeArgTypeCheck(number)
-      number_agentSetOrList:           @makeArgTypeCheck(number, agentSetOrList)
-      number_number:                   @makeArgTypeCheck(number, number)
-      number_stringOrList:             @makeArgTypeCheck(number, stringOrList)
-      number_stringOrList_wildcard:    @makeArgTypeCheck(number, stringOrList, wildcard)
-      reporter_agentSetOrList:         @makeArgTypeCheck(reporter, agentSetOrList)
-      reporter_list:                   @makeArgTypeCheck(reporter, list)
-      stringOrList:                    @makeArgTypeCheck(stringOrList)
-      string_number_number:            @makeArgTypeCheck(string, number, number)
-      wildcard_list:                   @makeArgTypeCheck(wildcard, list)
-      wildcard_stringOrList:           @makeArgTypeCheck(wildcard, stringOrList)
-      wildcard_stringOrListOrAgentSet: @makeArgTypeCheck(wildcard, stringOrListOrAgentSet)
+      agentOrAgentSet:                           @makeArgTypeCheck(agentOrAgentSet)
+      agentSet:                                  @makeArgTypeCheck(agentSet)
+      agentSetOrList:                            @makeArgTypeCheck(agentSetOrList)
+      agentSet_list:                             @makeArgTypeCheck(agentSet, list)
+      agentSet_number:                           @makeArgTypeCheck(agentSet, number)
+      list:                                      @makeArgTypeCheck(list)
+      list_number_number:                        @makeArgTypeCheck(list, number, number)
+      number:                                    @makeArgTypeCheck(number)
+      number_agentSetOrList:                     @makeArgTypeCheck(number, agentSetOrList)
+      number_number:                             @makeArgTypeCheck(number, number)
+      number_stringOrList:                       @makeArgTypeCheck(number, stringOrList)
+      number_stringOrList_wildcard:              @makeArgTypeCheck(number, stringOrList, wildcard)
+      reporter_agentSetOrList:                   @makeArgTypeCheck(reporter, agentSetOrList)
+      reporter_list:                             @makeArgTypeCheck(reporter, list)
+      stringOrList:                              @makeArgTypeCheck(stringOrList)
+      string_number_number:                      @makeArgTypeCheck(string, number, number)
+      string_patchOrTurtleOrPatchSetOrTurtleSet: @makeArgTypeCheck(string, patchOrTurtleOrPatchSetOrTurtleSet)
+      wildcard_list:                             @makeArgTypeCheck(wildcard, list)
+      wildcard_stringOrList:                     @makeArgTypeCheck(wildcard, stringOrList)
+      wildcard_stringOrListOrAgentSet:           @makeArgTypeCheck(wildcard, stringOrListOrAgentSet)
     }
 
     @commonValueChecks = {
@@ -62,27 +72,32 @@ class Validator
 
     result
 
+  addIndefiniteArticle: (text) ->
+    if ['A', 'E', 'I', 'O', 'U'].includes(text.charAt(0).toUpperCase())
+      "an #{text}"
+    else
+      "a #{text}"
+
   # (Array[NLType]) => String
   listTypeNames: (types) ->
     names    = types.map( (type) -> type.niceName() )
     nameList = names.join(" or ")
-    if ['A', 'E', 'I', 'O', 'U'].includes(nameList.charAt(0).toUpperCase())
-      "an #{nameList}"
-    else
-      "a #{nameList}"
+    @addIndefiniteArticle(nameList)
 
-  # (String, Any, Array[NLType]) => String
-  typeError: (prim, value, expectedTypes) ->
+  # (Any) => String
+  valueToString: (value) ->
     valueType = getTypeOf(value)
-    valueText = if valueType is types.Nobody
-      "nobody"
+    if valueType is types.Nobody
+      "NOBODY"
     else if valueType is types.Wildcard
       "any value"
     else
       "the #{valueType.niceName()} #{@dumper(value)}"
 
+  # (String, Any, Array[NLType]) => String
+  typeError: (prim, value, expectedTypes) ->
+    valueText = @valueToString(value)
     expectedText = @listTypeNames(expectedTypes)
-
     @bundle.get("_ expected input to be _ but got _ instead.", prim, expectedText, valueText)
 
   # (String, Any, Array[NLType]) => Unit
@@ -91,14 +106,15 @@ class Validator
     return
 
   # (Array[Array[NLType]]) => (String, Array[Any]) => Unit
-  makeArgTypeCheck: (argTypes...) -> (prim, args) =>
-    # We could use `zip()` or `foreach()` or whatever here, but I don't want to use anything that would
-    # generate extra closures as this code will get called a whole lot.  So we'll leave it ugly but
-    # hopefully "optimized" -Jeremy B December 2020
-    for i in [0...args.length]
-      @checkValueTypes(prim, argTypes[i], args[i])
+  makeArgTypeCheck: (argTypes...) ->
+    (prim, args) =>
+      # We could use `zip()` or `foreach()` or whatever here, but I don't want to use anything that would
+      # generate extra closures as this code will get called a whole lot.  So we'll leave it ugly but
+      # hopefully "optimized" -Jeremy B December 2020
+      for i in [0...argTypes.length]
+        @checkValueTypes(prim, argTypes[i], args[i])
 
-    return
+      return
 
   # (Array[NLType]) => (String, Any) => Any
   makeValueTypeCheck: (types...) -> (prim, value) =>

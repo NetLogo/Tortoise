@@ -143,7 +143,7 @@ var procedures = (function() {
       }
       on_pList = Tasks.map(Tasks.reporterTask(function(p) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        return p.projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
+        return PrimChecks.agentset.of(p, function() { return SelfManager.self().getPatchVariable("on?"); });
       }, "[ [p] -> [ on? ] of p ]"), PrimChecks.list.sort(world._optimalPatchRow(world.observer.getGlobal("row")))); letVars['on_pList'] = on_pList;
       procedures["SETUP-GENERAL"]();
       Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() {
@@ -188,8 +188,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let leftOn_p = SelfManager.self()._optimalPatchWest().projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['leftOn_p'] = leftOn_p;
-      let rightOn_p = SelfManager.self()._optimalPatchEast().projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['rightOn_p'] = rightOn_p;
+      let leftOn_p = PrimChecks.agentset.of(SelfManager.self()._optimalPatchWest(), function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['leftOn_p'] = leftOn_p;
+      let rightOn_p = PrimChecks.agentset.of(SelfManager.self()._optimalPatchEast(), function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['rightOn_p'] = rightOn_p;
       let newValue = ((((((((((world.observer.getGlobal("iii") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p) || (((world.observer.getGlobal("iio") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ioi") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ioo") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("oii") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("oio") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ooi") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ooo") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p)); letVars['newValue'] = newValue;
       Errors.askNobodyCheck(SelfManager.self()._optimalPatchSouth()).ask(function() { SelfManager.self().setPatchVariable("on?", newValue); }, true);
     } catch (e) {
@@ -314,8 +314,8 @@ var procedures = (function() {
       var letVars = { };
       procedures["SETUP-GENERAL"]();
       let rules = procedures["LIST-RULES"](); letVars['rules'] = rules;
-      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 5)); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
-      Errors.askNobodyCheck(world.patches().agentFilter(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 5)); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(PrimChecks.math.mod((SelfManager.self().getPatchVariable("pxcor") + 1), PrimChecks.math.floor(PrimChecks.math.div(world.topology.width, 8))), 0));
       })).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {

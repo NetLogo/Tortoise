@@ -93,7 +93,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!!world.turtles().isEmpty()) {
+      if (!PrimChecks.agentset.any(world.turtles())) {
         throw new Exception.StopInterrupt;
       }
       world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"), false)
@@ -147,11 +147,11 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.lt(SelfManager.self().getPatchVariable("temp"), SelfManager.self().getVariable("ideal-temp"))) {
         Errors.reportInContextCheck(reporterContext);
-        return SelfManager.self().getNeighbors().maxOneOf(function() { return SelfManager.self().getPatchVariable("temp"); });
+        return PrimChecks.agentset.maxOneOf(SelfManager.self().getNeighbors(), function() { return SelfManager.self().getPatchVariable("temp"); });
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return SelfManager.self().getNeighbors().minOneOf(function() { return SelfManager.self().getPatchVariable("temp"); });
+        return PrimChecks.agentset.minOneOf(SelfManager.self().getNeighbors(), function() { return SelfManager.self().getPatchVariable("temp"); });
       }
       Errors.missingReport();
     } catch (e) {
@@ -165,14 +165,14 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let tries = 0; letVars['tries'] = tries;
-      if (!!Prims.turtlesOn(target).isEmpty()) {
+      if (!PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(target))) {
         SelfManager.self().moveTo(target);
         throw new Exception.StopInterrupt;
       }
       while (Prims.lte(tries, 9)) {
         tries = (tries + 1); letVars['tries'] = tries;
         target = PrimChecks.list.oneOf(SelfManager.self().getNeighbors());
-        if (!!Prims.turtlesOn(target).isEmpty()) {
+        if (!PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(target))) {
           SelfManager.self().moveTo(target);
           throw new Exception.StopInterrupt;
         }

@@ -90,7 +90,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       procedures["FIND-FLOCKMATES"]();
-      if (!SelfManager.self().getVariable("flockmates").isEmpty()) {
+      if (PrimChecks.agentset.any(SelfManager.self().getVariable("flockmates"))) {
         procedures["FIND-NEAREST-NEIGHBOR"]();
         if (Prims.lt(SelfManager.self().distance(SelfManager.self().getVariable("nearest-neighbor")), world.observer.getGlobal("minimum-separation"))) {
           procedures["SEPARATE"]();
@@ -121,7 +121,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("nearest-neighbor", SelfManager.self().getVariable("flockmates").minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }));
+      SelfManager.self().setVariable("nearest-neighbor", PrimChecks.agentset.minOneOf(SelfManager.self().getVariable("flockmates"), function() { return SelfManager.self().distance(SelfManager.myself()); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -132,7 +132,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      procedures["TURN-AWAY"](SelfManager.self().getVariable("nearest-neighbor").projectionBy(function() { return SelfManager.self().getVariable("heading"); }),world.observer.getGlobal("max-separate-turn"));
+      procedures["TURN-AWAY"](PrimChecks.agentset.of(SelfManager.self().getVariable("nearest-neighbor"), function() { return SelfManager.self().getVariable("heading"); }),world.observer.getGlobal("max-separate-turn"));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -154,8 +154,8 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let xComponent = PrimChecks.list.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dx(); })); letVars['xComponent'] = xComponent;
-      let yComponent = PrimChecks.list.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dy(); })); letVars['yComponent'] = yComponent;
+      let xComponent = PrimChecks.list.sum(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() { return SelfManager.self().dx(); })); letVars['xComponent'] = xComponent;
+      let yComponent = PrimChecks.list.sum(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() { return SelfManager.self().dy(); })); letVars['yComponent'] = yComponent;
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
         Errors.reportInContextCheck(reporterContext);
         return SelfManager.self().getVariable("heading");
@@ -186,8 +186,8 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      let xComponent = PrimChecks.list.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return PrimChecks.math.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['xComponent'] = xComponent;
-      let yComponent = PrimChecks.list.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return PrimChecks.math.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['yComponent'] = yComponent;
+      let xComponent = PrimChecks.list.mean(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() { return PrimChecks.math.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['xComponent'] = xComponent;
+      let yComponent = PrimChecks.list.mean(PrimChecks.agentset.of(SelfManager.self().getVariable("flockmates"), function() { return PrimChecks.math.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); })); letVars['yComponent'] = yComponent;
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
         Errors.reportInContextCheck(reporterContext);
         return SelfManager.self().getVariable("heading");

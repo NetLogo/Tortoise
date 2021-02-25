@@ -78,7 +78,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (world.turtles().agentAll(function() { return SelfManager.self().getVariable("peak?"); })) {
+      if (PrimChecks.agentset.all(world.turtles(), function() { return SelfManager.self().getVariable("peak?"); })) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtles()).ask(function() {

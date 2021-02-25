@@ -70,7 +70,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("region"), 0); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return !Prims.equality(SelfManager.self().getPatchVariable("region"), 0); })).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", (2 + (SelfManager.self().getPatchVariable("region") * 10)));
         SelfManager.self().setPatchVariable("plabel-color", (SelfManager.self().getPatchVariable("pcolor") + 1));
         SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("region"));
@@ -87,7 +87,7 @@ var procedures = (function() {
       var letVars = { };
       var _foreach_1146_1153 = Tasks.forEach(Tasks.commandTask(function(regionNumber) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        let regionPatches = world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("region"), regionNumber); }); letVars['regionPatches'] = regionPatches;
+        let regionPatches = PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("region"), regionNumber); }); letVars['regionPatches'] = regionPatches;
         world.turtleManager.createTurtles(world.observer.getGlobal("number-of-turtles-per-region"), "").ask(function() {
           SelfManager.self().moveTo(PrimChecks.list.oneOf(regionPatches));
           SelfManager.self().setVariable("color", (SelfManager.self().getPatchVariable("pcolor") + 3));
@@ -138,7 +138,7 @@ var procedures = (function() {
       let regionNumbers = Prims.rangeBinary(1, (numRegions + 1)); letVars['regionNumbers'] = regionNumbers;
       var _foreach_2401_2408 = Tasks.forEach(Tasks.commandTask(function(boundaries, regionNumber) {
         Errors.procedureArgumentsCheck(2, arguments.length);
-        Errors.askNobodyCheck(world.patches().agentFilter(function() {
+        Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
           return (Prims.gte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.list.first(boundaries)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.list.last(boundaries)));
         })).ask(function() { SelfManager.self().setPatchVariable("region", regionNumber); }, true);
       }, "[ [boundaries region-number] -> ask patches with [ pxcor >= first boundaries and pxcor <= last boundaries ] [ set region region-number ] ]"), world.observer.getGlobal("region-boundaries"), regionNumbers); if(reporterContext && _foreach_2401_2408 !== undefined) { return _foreach_2401_2408; }
@@ -172,7 +172,7 @@ var procedures = (function() {
       Errors.reportInContextCheck(reporterContext);
       return Tasks.nValues((numRegions + 1), Tasks.reporterTask(function(n) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        return world.getPatchAt((world.topology.minPxcor + (n * PrimChecks.math.div((world.topology.maxPxcor - world.topology.minPxcor), numRegions))), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
+        return PrimChecks.agentset.of(world.getPatchAt((world.topology.minPxcor + (n * PrimChecks.math.div((world.topology.maxPxcor - world.topology.minPxcor), numRegions))), 0), function() { return SelfManager.self().getPatchVariable("pxcor"); });
       }, "[ n -> [ pxcor ] of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]"));
       Errors.missingReport();
     } catch (e) {

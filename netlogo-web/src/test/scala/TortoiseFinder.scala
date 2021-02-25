@@ -95,26 +95,10 @@ private[tortoise] object Freebies {
 
   private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
   private val incErrorDetectReporterNames = Seq(
-    "Lists::SortBy5",
     "RunResult::RunResult4",
     "RunResult::RunResult5",
   )
   private val incErrorDetectCommandNames = Seq(
-    "Agentsets::Agentsets3",
-    "Agentsets::Agentsets4_2D",
-    // The Iterator.withBoolCheck() adds a very rudimentary type check which
-    // addresses some Agentsets::OtherWithOptsShowCorrectErrorName failures.
-    // But in core/headless they use differing agent sets for arrays and trees.
-    // This causes the Agentsets::OtherWithOptsShowCorrectErrorName test
-    // to fail for being "out of order".  Not much we can do about that, short
-    // of implementing an agent set tree in Tortoise.  Just noting it here for
-    // reference if someone tries tracking down those differences.
-    // -JMB July 2017.
-    "Agentsets::OtherWithOptsShowCorrectErrorName",
-    "AgentsetBuilding::TurtleSet_2D",
-    "AgentsetBuilding::PatchSet2_2D",
-    "AgentsetBuilding::LinkSet_2D",
-    "AnyAll::All5_2D",
     "Ask::AskAllTurtles",
     "Ask::AskAllPatches",
     "Breeds::SetBreedToNonBreed",
@@ -135,14 +119,9 @@ private[tortoise] object Freebies {
     "RGB::PatchesRGBColor_2D",
     "RGB::TurtlesRGBColor",
     "RGB::LinksRGBColor",
-    "Random::RandomNOfWithLists",
     "Random::OneOfWithAgentSets",
     "Sort::SortByBadReporter",
-    "Sort::SortingTypeErrors",
-    "Sort::sort-on-rejects-mixed-types",
-    "Sum::SumOfExceedsNumericRange",
     "Turtles::Turtles1a",
-    "TurtlesOn::TurtlesOn1_2D",
     "TypeChecking::AgentClassChecking1",
     "TypeChecking::AgentClassChecking3a",
     "TypeChecking::AgentClassChecking3b"

@@ -164,7 +164,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(world.patches().agentFilter(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
         return ((Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))) || (Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))));
       })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
     } catch (e) {
@@ -231,7 +231,7 @@ var procedures = (function() {
       var letVars = { };
       let openPatches = Nobody; letVars['openPatches'] = openPatches;
       let openPatch = Nobody; letVars['openPatch'] = openPatch;
-      openPatches = world.patches().agentFilter(function() {
+      openPatches = PrimChecks.agentset.with(world.patches(), function() {
         return (Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lt(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box"))));
       }); letVars['openPatches'] = openPatches;
       openPatch = PrimChecks.list.oneOf(openPatches); letVars['openPatch'] = openPatch;
@@ -249,7 +249,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (world.turtleManager.turtlesOfBreed("GAS-MOLECULES")._optimalCheckCount(0, (a, b) => a === b)) {
+      if (PrimChecks.agentset.optimizeCount(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), 0, (a, b) => a === b)) {
         throw new Exception.StopInterrupt;
       }
       if (world.observer.getGlobal("box-intact?")) {
@@ -262,7 +262,7 @@ var procedures = (function() {
         procedures["MOVE"]();
         procedures["CHECK-FOR-COLLISION"]();
       }, true);
-      Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "oxygen"); })).ask(function() { procedures["CHECK-FOR-REACTION"](); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "oxygen"); })).ask(function() { procedures["CHECK-FOR-REACTION"](); }, true);
       procedures["UPDATE-VARIABLES"]();
       procedures["CALCULATE-PRESSURE"]();
       if (Prims.gt(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-limit-container"))) {
@@ -283,9 +283,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!world.turtleManager.turtlesOfBreed("GAS-MOLECULES").isEmpty()) {
-        world.observer.setGlobal("avg-speed", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
-        world.observer.setGlobal("avg-energy", PrimChecks.list.mean(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
+      if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"))) {
+        world.observer.setGlobal("avg-speed", PrimChecks.list.mean(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("speed"); })));
+        world.observer.setGlobal("avg-energy", PrimChecks.list.mean(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("energy"); })));
         world.observer.setGlobal("temperature", world.observer.getGlobal("avg-energy"));
       }
       else {
@@ -293,9 +293,9 @@ var procedures = (function() {
         world.observer.setGlobal("avg-energy", 0);
         world.observer.setGlobal("temperature", 0);
       }
-      world.observer.setGlobal("number-oxygen-molecules", world.turtleManager.turtlesOfBreed("GAS-MOLECULES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "oxygen"); }));
-      world.observer.setGlobal("number-hydrogen-molecules", world.turtleManager.turtlesOfBreed("GAS-MOLECULES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); }));
-      world.observer.setGlobal("number-water-molecules", world.turtleManager.turtlesOfBreed("GAS-MOLECULES")._optimalCountWith(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "water"); }));
+      world.observer.setGlobal("number-oxygen-molecules", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "oxygen"); }));
+      world.observer.setGlobal("number-hydrogen-molecules", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); }));
+      world.observer.setGlobal("number-water-molecules", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "water"); }));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -323,8 +323,8 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let newPatch = SelfManager.self().patchAhead(1); letVars['newPatch'] = newPatch;
-      let newPx = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }); letVars['newPx'] = newPx;
-      let newPy = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }); letVars['newPy'] = newPy;
+      let newPx = PrimChecks.agentset.of(newPatch, function() { return SelfManager.self().getPatchVariable("pxcor"); }); letVars['newPx'] = newPx;
+      let newPy = PrimChecks.agentset.of(newPatch, function() { return SelfManager.self().getPatchVariable("pycor"); }); letVars['newPy'] = newPy;
       if ((!Prims.equality(PrimChecks.math.abs(newPx), world.observer.getGlobal("box-edge")) && !Prims.equality(PrimChecks.math.abs(newPy), world.observer.getGlobal("box-edge")))) {
         throw new Exception.StopInterrupt;
       }
@@ -366,7 +366,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let centerPatch = world.patches()._optimalOneOfWith(function() {
+      let centerPatch = PrimChecks.agentset.oneOfWith(world.patches(), function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0));
       }); letVars['centerPatch'] = centerPatch;
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("BROKEN-WALLS")).ask(function() {
@@ -377,7 +377,7 @@ var procedures = (function() {
         }
         SelfManager.self().fd((world.observer.getGlobal("avg-speed") * world.observer.getGlobal("tick-advance-amount")));
       }, true);
-      Errors.askNobodyCheck(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5); })).ask(function() {
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5); })).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("BROKEN-WALLS"));
           SelfManager.self().setVariable("color", 5);
@@ -413,7 +413,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("pressure", (100 * PrimChecks.list.sum(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
+      world.observer.setGlobal("pressure", (100 * PrimChecks.list.sum(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("momentum-difference"); }))));
       world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.list.butFirst('but-first')(world.observer.getGlobal("pressure-history"))));
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("GAS-MOLECULES")).ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
     } catch (e) {
@@ -426,8 +426,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (world.turtleManager.turtlesOfBreed("GAS-MOLECULES")._optimalAnyWith(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {
-        world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
+      if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {
+        world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
       }
       else {
         world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
@@ -460,15 +460,15 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let hitHydrogen = SelfManager.self().breedHere("GAS-MOLECULES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); }); letVars['hitHydrogen'] = hitHydrogen;
+      let hitHydrogen = PrimChecks.agentset.with(SelfManager.self().breedHere("GAS-MOLECULES"), function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); }); letVars['hitHydrogen'] = hitHydrogen;
       let thisInitialOxygenMoleculesEnergy = SelfManager.self().getVariable("energy"); letVars['thisInitialOxygenMoleculesEnergy'] = thisInitialOxygenMoleculesEnergy;
       let totalEnergy = 0; letVars['totalEnergy'] = totalEnergy;
-      if (Prims.gte(hitHydrogen.size(), 2)) {
+      if (Prims.gte(PrimChecks.agentset.count(hitHydrogen), 2)) {
         if (Prims.lt(SelfManager.self().getVariable("speed"), 0)) {
           SelfManager.self().setVariable("speed", 0);
         }
         let hydrogenReactants = PrimChecks.list.nOf(2, hitHydrogen); letVars['hydrogenReactants'] = hydrogenReactants;
-        let totalEnergyAllReactants = (thisInitialOxygenMoleculesEnergy + PrimChecks.list.sum(hydrogenReactants.projectionBy(function() { return SelfManager.self().getVariable("energy"); }))); letVars['totalEnergyAllReactants'] = totalEnergyAllReactants;
+        let totalEnergyAllReactants = (thisInitialOxygenMoleculesEnergy + PrimChecks.list.sum(PrimChecks.agentset.of(hydrogenReactants, function() { return SelfManager.self().getVariable("energy"); }))); letVars['totalEnergyAllReactants'] = totalEnergyAllReactants;
         if (Prims.gt(totalEnergyAllReactants, world.observer.getGlobal("activation-energy"))) {
           Errors.askNobodyCheck(hydrogenReactants).ask(function() {
             if (world.observer.getGlobal("highlight-product?")) {
@@ -497,10 +497,10 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.equality(SelfPrims._optimalCountOther(SelfManager.self().inRadius(SelfManager.self().breedHere("GAS-MOLECULES"), 1)), 1)) {
-        let candidate = PrimChecks.list.oneOf(SelfManager.self().breedHere("GAS-MOLECULES")._optimalOtherWith(function() {
+        let candidate = PrimChecks.list.oneOf(PrimChecks.agentset.otherWith(SelfManager.self().breedHere("GAS-MOLECULES"), function() {
           return (Prims.lt(SelfManager.self(), SelfManager.myself()) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
         })); letVars['candidate'] = candidate;
-        if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
+        if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(PrimChecks.agentset.of(candidate, function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
           procedures["COLLIDE-WITH"](candidate);
           Errors.askNobodyCheck(candidate).ask(function() { SelfManager.self().penManager.raisePen(); }, true);
           SelfManager.self().setVariable("last-collision", candidate);
@@ -518,9 +518,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let mass2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("mass"); }); letVars['mass2'] = mass2;
-      let speed2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("speed"); }); letVars['speed2'] = speed2;
-      let heading2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("heading"); }); letVars['heading2'] = heading2;
+      let mass2 = PrimChecks.agentset.of(otherGasMolecules, function() { return SelfManager.self().getVariable("mass"); }); letVars['mass2'] = mass2;
+      let speed2 = PrimChecks.agentset.of(otherGasMolecules, function() { return SelfManager.self().getVariable("speed"); }); letVars['speed2'] = speed2;
+      let heading2 = PrimChecks.agentset.of(otherGasMolecules, function() { return SelfManager.self().getVariable("heading"); }); letVars['heading2'] = heading2;
       let theta = PrimChecks.math.randomFloat(360); letVars['theta'] = theta;
       let v1t = (SelfManager.self().getVariable("speed") * PrimChecks.math.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
       let v1l = (SelfManager.self().getVariable("speed") * PrimChecks.math.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;

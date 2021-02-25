@@ -41,22 +41,23 @@ module.exports =
     boom: ->
       throw new Error("boom!")
 
-    # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
-    breedOn: (breedName, x) ->
-      patches =
-        if checks.isPatch(x)
-          [x]
-        else if checks.isTurtle(x)
-          [x.getPatchHere()]
-        else if checks.isPatchSet(x)
-          x.toArray()
-        else if checks.isTurtleSet(x)
-          map((t) -> t.getPatchHere())(x.iterator().toArray())
-        else
-          throw new Error("`breed-on` unsupported for class '#{typeof(x)}'")
-
+    # (String, Array[Patch]) -> TurtleSet
+    breedOn: (breedName, patches) ->
       turtles = flatMap((p) -> p.breedHereArray(breedName))(patches)
       new TurtleSet(turtles, @_world)
+
+    # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
+    breedOnPatch: (breedName, patch) ->
+      @breedOn(breedName, [patch])
+
+    breedOnTurtle: (breedName, turtle) ->
+      @breedOn(breedName, [turtle.getPatchHere()])
+
+    breedOnPatchSet: (breedName, patchSet) ->
+      @breedOn(breedName, patchSet.toArray())
+
+    breedOnTurtleSet: (breedName, turtleSet) ->
+      @breedOn(breedName, map((t) -> t.getPatchHere())(turtleSet.iterator().toArray()))
 
     booleanCheck: (b, primName) ->
       if checks.isBoolean(b)
@@ -154,7 +155,7 @@ module.exports =
       @gt(a, b) or @equality(a, b)
 
     # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
-    linkSet: (inputs...) ->
+    linkSet: (inputs) ->
       @_createAgentSet(inputs, Link, LinkSet)
 
     # (Any, Any) => Boolean
@@ -197,7 +198,7 @@ module.exports =
       StrictMath.floor(nanos)
 
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
-    patchSet: (inputs...) ->
+    patchSet: (inputs) ->
       @_createAgentSet(inputs, Patch, PatchSet)
 
     # (Number) => Array[Number]
@@ -243,16 +244,17 @@ module.exports =
       return
 
     # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
-    turtleSet: (inputs...) ->
+    turtleSet: (inputs) ->
       @_createAgentSet(inputs, Turtle, TurtleSet)
 
-    # (PatchSet|TurtleSet|Patch|Turtle) => TurtleSet
-    turtlesOn: (agentsOrAgent) ->
-      if checks.isAgentSet(agentsOrAgent)
-        turtles = flatMap((agent) -> agent.turtlesHere().toArray())(agentsOrAgent.iterator().toArray())
-        new TurtleSet(turtles, @_world)
-      else
-        agentsOrAgent.turtlesHere()
+    # (Patch|Turtle) => TurtleSet
+    turtlesOnAgent: (agent) ->
+      agent.turtlesHere()
+
+    # (PatchSet|TurtleSet) => TurtleSet
+    turtlesOnAgentSet: (agents) ->
+      turtles = flatMap((agent) -> agent.turtlesHere().toArray())(agents.iterator().toArray())
+      new TurtleSet(turtles, @_world)
 
     # (Number) => Unit
     wait: (seconds) ->

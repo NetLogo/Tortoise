@@ -133,6 +133,12 @@ object SimplePrims {
         case _: prim._sentence              => "ListPrims.sentence"
         case _: prim._sum                   => "PrimChecks.list.sum"
 
+        // Agentset
+        case _: prim.etc._linkset           => "PrimChecks.agentset.linkSet"
+        case _: prim.etc._patchset          => "PrimChecks.agentset.patchSet"
+        case _: prim.etc._turtleset         => "PrimChecks.agentset.turtleSet"
+        case _: prim.etc._turtleson         => "PrimChecks.agentset.turtlesOn"
+
         // Plotting
         case _: prim.etc._autoplot      => "plotManager.isAutoplotting"
         case _: prim.etc._plotname      => "plotManager.getPlotName"
@@ -201,10 +207,6 @@ object SimplePrims {
         case _: prim.etc._map               => "Tasks.map"
         case _: prim.etc._newseed           => "Prims.generateNewSeed"
         case _: prim.etc._randomstate       => "Random.save"
-        case _: prim.etc._linkset           => "Prims.linkSet"
-        case _: prim.etc._patchset          => "Prims.patchSet"
-        case _: prim.etc._turtleset         => "Prims.turtleSet"
-        case _: prim.etc._turtleson         => "Prims.turtlesOn"
         case _: prim._greaterthan           => "Prims.gt"
         case _: prim._lessthan              => "Prims.lt"
         case _: prim.etc._greaterorequal    => "Prims.gte"

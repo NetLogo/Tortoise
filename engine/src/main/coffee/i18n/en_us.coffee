@@ -76,6 +76,29 @@ bundle = {
   , 'Can_t find the _ of a list without at least two numbers: __': (aspect, list, punc) ->
       "Can't find the #{aspect} of a list without at least two numbers: #{list}#{punc}"
 
+  , 'Invalid list of points: _': (points) ->
+      "Invalid list of points: #{points}"
+
+  , 'Requested _ random agents from a set of only _ agents.': (n, size) ->
+      "Requested #{n} random agents from a set of only #{size} agents."
+
+  , 'First input to _ can_t be negative.': (prim) ->
+      "First input to #{prim} can't be negative."
+
+  , '_ expected a true/false value from _, but got _ instead.': (prim, item, value) ->
+    "#{prim} expected a true/false value from #{item}, but got #{value} instead."
+
+  , '_-SET expected input to be a _ agentset or _ but got _ instead.': (prim, agentType, value) ->
+    "#{prim}-SET expected input to be a #{agentType} agentset or #{agentType} but got #{value} instead."
+
+  , 'List inputs to _-SET must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.': (prim, agentType, list, value) ->
+    "List inputs to #{prim}-SET must only contain #{agentType}, #{agentType} agentset, or list elements.  The list #{list} contained #{value} which is NOT a #{agentType} or #{agentType} agentset."
+
+  , 'List inputs to _-SET must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.': (prim, agentType, list, value) ->
+    "List inputs to #{prim}-SET must only contain #{agentType}, #{agentType} agentset, or list elements.  The list #{list} contained a different type agentset: #{value}."
+
+  , 'SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _': (type1, type2) ->
+    "SORT-ON works on numbers, strings, or agents of the same type, but not on #{type1} and #{type2}"
 }
 
 module.exports = bundle
