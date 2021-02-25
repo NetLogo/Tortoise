@@ -9,7 +9,7 @@ import
   JsOps.{ indented, jsString, jsStringEscaped }
 
 import
-  org.nlogo.core.{ AstNode, CommandBlock, CompilerException, Expression, prim, Reporter, ReporterApp, ReporterBlock, Statement, Token }
+  org.nlogo.core.{ Application, AstNode, CommandBlock, CompilerException, Expression, prim, Reporter, ReporterApp, ReporterBlock, Statement, Token }
 
 // The Prim traits are split apart as follows
 //                  JsOps
@@ -94,6 +94,7 @@ trait PrimUtils {
 }
 
 object ReporterPrims {
+
   // The magic number 21 here is for `Syntax.SymbolType` the largest mask value at the moment -Jeremy B February 2021
   // scalastyle:off magic.number
   private val types: Seq[Int] = Range(1, 21).map( (t) => Math.pow(2, t).asInstanceOf[Int] )
@@ -105,10 +106,10 @@ object ReporterPrims {
   def allTypesAllowed(allowed: Int, actual: Int): Boolean =
     types.filter( (t) => !isSupported(allowed, t) && isSupported(actual, t) ).isEmpty
 
-  def hasUncheckedArgs(r: ReporterApp): Boolean = {
+  def hasUncheckedArgs(a: Application): Boolean = {
     // TODO: Handle `Syntax.RepeatableType` arguments. -Jeremy B February 2021
-    val s = r.instruction.syntax
-    val argValueTypes = r.args.map(_.reportedType())
+    val s = a.instruction.syntax
+    val argValueTypes = a.args.map(_.reportedType())
     val argAllowedTypes = if (s.isInfix) List(s.left) ++ s.right else s.right
     val arguments: List[(Int, Int)] = argAllowedTypes.zip(argValueTypes)
     arguments.exists { case (allowed: Int, actual: Int) => !ReporterPrims.allTypesAllowed(allowed, actual) }
@@ -236,7 +237,6 @@ trait ReporterPrims extends PrimUtils {
         s"Tasks.commandTask($task)"
       }
 
-
       case x: prim._externreport =>
         val ExtensionPrimRegex = """_externreport\(([^:]+):([^)]+)\)""".r
         val ExtensionPrimRegex(extName, primName) = x.toString
@@ -296,19 +296,30 @@ trait CommandPrims extends PrimUtils {
   // scalastyle:off method.length
   def generateCommand(s: Statement)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    def arg(i: Int) = handlers.reporter(s.args(i))
-    def commaArgs = argsSep(", ")
+
+    def arg(i: Int) =
+      handlers.reporter(s.args(i))
+
+    def commaArgs =
+      argsSep(", ")
+
     def args =
       s.args.collect {
         case x: ReporterApp  => handlers.reporter(x)
         case z: CommandBlock => s"() => { ${handlers.commands(z)} }"
       }
+
     def argsSep(sep: String) =
       args.mkString(sep)
 
+    def uncheckedCall =
+      if (ReporterPrims.hasUncheckedArgs(s)) "" else "_unchecked"
+
     s.command match {
-      case SimplePrims.SimpleCommand(op) => if (op.isEmpty) "" else s"$op;"
-      case SimplePrims.NormalCommand(op) => s"$op($commaArgs);"
+      case SimplePrims.SimpleCommand(op)  => if (op.isEmpty) "" else s"$op;"
+      case SimplePrims.NormalCommand(op)  => s"$op($commaArgs);"
+      case SimplePrims.CheckedCommand(op) => s"$op$uncheckedCall($commaArgs);"
+
       case _: prim._set                  => generateSet(s)
       case _: prim.etc._loop             => generateLoop(s)
       case _: prim._repeat               => generateRepeat(s)
