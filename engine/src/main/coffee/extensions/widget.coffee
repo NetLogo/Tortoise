@@ -98,6 +98,50 @@ module.exports = {
       else
         workspace.printPrims.print("Move group #{name} to the place #{index} in the panel")
       return
+      
+    # () => Unit
+    showJoystick = () ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Joystick", Action: "Show" }
+        )
+      else
+        workspace.printPrims.print("Show the virtual joystick. ")
+      return
+
+    # () => Unit
+    hideJoystick = () ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Joystick", Action: "Hide" }
+        )
+      else
+        workspace.printPrims.print("Hide the virtual joystick. ")
+      return
+      
+    # (string, string, string, string) => Unit
+    bindJoystick = (W, A, S, D) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Joystick", Action: "Bind", Target: [ W, A, S, D ] }
+        )
+      else
+        workspace.printPrims.print("Bind the virtual joystick to #{W}, #{A}, #{S}, #{D}. ")
+      return
+      
+    # () => Number
+    joystickX = () ->
+      if mouse = MousePrims
+        return mouse.getJoystickX()
+      else
+        return 0
+        
+    # () => Number
+    joystickY = () ->
+      if mouse = MousePrims
+        return mouse.getJoystickY()
+      else
+        return 0
 
     {
       name: "widget"
@@ -111,6 +155,11 @@ module.exports = {
       ,      "HIDE-GROUP": hideGroup
       ,      "MOVE-GROUP": moveGroup
       ,    "RENAME-GROUP": renameGroup
+      ,   "SHOW-JOYSTICK": showJoystick
+      ,   "HIDE-JOYSTICK": hideJoystick
+      ,   "BIND-JOYSTICK": bindJoystick
+      ,      "JOYSTICK-X": joystickX
+      ,      "JOYSTICK-Y": joystickY
       }
     }
 }

@@ -69,6 +69,36 @@
         "string"
       ],
       "returnType": "unit"
+    }, {
+      "name": "show-joystick",
+      "actionName": "show-joystick",
+      "argTypes": [ ],
+      "returnType": "unit"
+    }, {
+      "name": "hide-joystick",
+      "actionName": "hide-joystick",
+      "argTypes": [ ],
+      "returnType": "unit"
+    }, {
+      "name": "bind-joystick",
+      "actionName": "bind-joystick",
+      "argTypes": [
+        "string", 
+        "string", 
+        "string", 
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "joystick-x",
+      "actionName": "joystick-x",
+      "argTypes": [ ],
+      "returnType": "number"
+    }, {
+      "name": "joystick-y",
+      "actionName": "joystick-y",
+      "argTypes": [ ],
+      "returnType": "number"
     }
   ]
 }
