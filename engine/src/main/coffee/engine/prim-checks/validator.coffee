@@ -117,7 +117,7 @@ class Validator
       @_cachedRuntimeTypes.get(syntax)
     else
       allowedTypes = getTypesFromSyntax(syntax)
-      @_cachedRuntimeTypes.set(allowedTypes)
+      @_cachedRuntimeTypes.set(syntax, allowedTypes)
       allowedTypes
 
   # (String, Int, Any) => Any
