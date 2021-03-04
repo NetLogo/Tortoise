@@ -48,7 +48,7 @@ trait PrimUtils {
     val (pre, post) = if (!isRunResult && procContext.isProcedure)
       // if the runCode() didn't give us a value, we want to fall through to the "did not report" error that follows
       // otherwise returning an undefined might blow something else up with an unrelated error message. -JMB September 2017
-      (s"var $tmp = ", s"if(reporterContext && $tmp !== undefined) { return $tmp; }")
+      (s"var $tmp = ", s"if (reporterContext && $tmp !== undefined) { return $tmp; }")
     else
       ("", "")
 
@@ -399,7 +399,7 @@ trait CommandPrims extends PrimUtils {
       case fe: prim.etc._foreach          =>
         val lists = args.init.mkString(", ")
         val tmp = handlers.unusedVarname(fe.token, "foreach")
-        s"var ${tmp} = Tasks.forEach(${arg(s.args.size - 1)}, $lists); if(reporterContext && ${tmp} !== undefined) { return ${tmp}; }"
+        s"var ${tmp} = Tasks.forEach(${arg(s.args.size - 1)}, $lists); if (reporterContext && ${tmp} !== undefined) { return ${tmp}; }"
       case x: prim._extern =>
         val ExtensionPrimRegex = """_extern\(([^:]+):([^)]+)\)""".r
         val ExtensionPrimRegex(extName, primName) = x.toString
