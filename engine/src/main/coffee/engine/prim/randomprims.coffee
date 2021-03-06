@@ -60,6 +60,7 @@ class RandomPrims
     q
 
   randomSeed: (seed) ->
+    console.log("random prim Set seed"+ seed)
     @_rng.setSeed(seed)
 
 module.exports = RandomPrims

@@ -17,7 +17,9 @@ PlotManager   = require('./plot/plotmanager')
 Prims         = require('./prim/prims')
 RandomPrims   = require('./prim/randomprims')
 PrimChecks    = require('./prim-checks/checker')
-RNG           = require('util/rng')
+# when enabling this, also remember to enable export of random in webpack-bootstrap.js
+# RNG           = require('util/rng').default;
+RNG           = require('util/rng');
 SelfManager   = require('./core/structure/selfmanager')
 SelfPrims     = require('./prim/selfprims')
 StringPrims   = require('./prim/stringprims')

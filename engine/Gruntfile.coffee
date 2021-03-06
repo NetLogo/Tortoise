@@ -42,17 +42,17 @@ module.exports = (grunt) ->
     }
   })
 
-  grunt.loadNpmTasks('grunt-browserify');
+#   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-coffeelint');
-  grunt.loadNpmTasks('grunt-contrib-coffee')
-  grunt.loadNpmTasks('grunt-contrib-copy')
+#   grunt.loadNpmTasks('grunt-contrib-coffee')
+#   grunt.loadNpmTasks('grunt-contrib-copy')
 
-  grunt.task.registerTask('fix_require', 'Changes "require" varname to "tortoise_require"', ->
-    filepath    = './target/classes/js/tortoise-engine.js'
-    strContents = grunt.file.read(filepath)
-    grunt.file.write(filepath, "tortoise_#{strContents}")
-    return
-  )
+#   grunt.task.registerTask('fix_require', 'Changes "require" varname to "tortoise_require"', ->
+#     filepath    = './target/classes/js/tortoise-engine.js'
+#     strContents = grunt.file.read(filepath)
+#     grunt.file.write(filepath, "tortoise_#{strContents}")
+#     return
+#   )
 
   # I do this because inlining it in `browserify`'s options causes the value to
   # be evaluated before any of the tasks are run, but we need to wait until
@@ -65,4 +65,4 @@ module.exports = (grunt) ->
     return
   )
 
-  grunt.registerTask('default', ['coffeelint', 'coffee', 'gen_aliases', 'browserify', 'fix_require'])
+  grunt.registerTask('default', ['coffeelint'])

@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "lib": ["ESNext.String"],
+    "types": ["node"]
+  }
+}

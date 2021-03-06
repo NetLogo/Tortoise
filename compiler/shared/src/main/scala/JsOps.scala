@@ -29,7 +29,7 @@ object JsOps {
     val jsArgs = args.mkString("(", ", ", ")")
     if (body.length == 0)
       s"function$jsArgs {}"
-    else if (body.lines.length < 2 && body.length < 100)
+    else if (body.linesIterator.length < 2 && body.length < 100)
       s"function$jsArgs { $body }"
     else
       s"""|function$jsArgs {
@@ -44,5 +44,5 @@ object JsOps {
     if (str.nonEmpty) jsFunction(body = s"return $str;") else jsFunction()
 
   def indented(s: String): String =
-    s.lines.map("  " + _).mkString("\n")
+    s.linesIterator.map("  " + _).mkString("\n")
 }
