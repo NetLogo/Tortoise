@@ -206,7 +206,7 @@ var procedures = (function() {
       world.turtleManager.clearTurtles();
       plotManager.clearAllPlots();
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-        SelfManager.self().setVariable("color", PrimChecks.list.item(PrimChecks.math.random(world.observer.getGlobal("colors")), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
+        SelfManager.self().setVariable("color", PrimChecks.list.item(PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("colors"))), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         procedures["MOVE-OFF-WALL"]();
       }, true);
@@ -221,11 +221,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(PrimChecks.list.variance(PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable("color"); })), 0)) {
+      if (Prims.equality(PrimChecks.list.variance(PrimChecks.validator.checkArg('VARIANCE', 8, PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable("color"); }))), 0)) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        SelfManager.self().right((RandomPrims.randomLong(50) - RandomPrims.randomLong(50)));
+        SelfManager.self().right(PrimChecks.math.minus(RandomPrims.randomLong(50), RandomPrims.randomLong(50)));
         procedures["MEET"]();
         if (Prims.equality(PrimChecks.agentset.of(SelfManager.self().patchAhead(0.5), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 0)) {
           SelfManager.self()._optimalFdLessThan1(0.5);
@@ -248,7 +248,7 @@ var procedures = (function() {
       var letVars = { };
       let candidate = PrimChecks.list.oneOf(SelfManager.self().turtlesAt(1, 0)); letVars['candidate'] = candidate;
       if (!Prims.equality(candidate, Nobody)) {
-        SelfManager.self().setVariable("color", PrimChecks.agentset.of(candidate, function() { return SelfManager.self().getVariable("color"); }));
+        SelfManager.self().setVariable("color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, candidate), function() { return SelfManager.self().getVariable("color"); }));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -268,7 +268,7 @@ var procedures = (function() {
           winningAmount = howMany; letVars['winningAmount'] = winningAmount;
         }
       }, "[ c -> let count turtles with [ color = c ] if how-many > winning-amount [ set winning-amount how-many ] ]"), ColorModel.BASE_COLORS); if(reporterContext && _foreach_1075_1082 !== undefined) { return _foreach_1075_1082; }
-      world.observer.setGlobal("max-percent", PrimChecks.math.div((100 * winningAmount), PrimChecks.agentset.count(world.turtles())));
+      world.observer.setGlobal("max-percent", PrimChecks.math.div(PrimChecks.math.mult(100, PrimChecks.validator.checkArg('*', 1, winningAmount)), PrimChecks.agentset.count(world.turtles())));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -281,7 +281,7 @@ var procedures = (function() {
       var letVars = { };
       if (MousePrims.isDown()) {
         Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
-          return (Prims.equality(PrimChecks.math.abs(SelfManager.self().getPatchVariable("pycor")), world.topology.maxPycor) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.round(MousePrims.getY())));
+          return (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pycor"))), world.topology.maxPycor) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.round(MousePrims.getY())));
         })).ask(function() {
           SelfManager.self().setPatchVariable("pcolor", 9.9);
           Errors.askNobodyCheck(SelfManager.self().turtlesHere()).ask(function() { procedures["MOVE-OFF-WALL"](); }, true);

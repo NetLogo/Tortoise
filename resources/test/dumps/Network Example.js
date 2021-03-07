@@ -61,7 +61,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 105);
         SelfManager.self().setVariable("size", 2);
       }, true);
-      LayoutManager.layoutCircle(world.turtles(), (PrimChecks.math.div(world.topology.width, 2) - 2));
+      LayoutManager.layoutCircle(world.turtles(), PrimChecks.math.minus(PrimChecks.math.div(world.topology.width, 2), 2));
       world.ticker.reset();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -73,7 +73,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!PrimChecks.agentset.any(world.turtles())) {
+      if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtles()))) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(PrimChecks.list.oneOf(world.turtles())).ask(function() {

@@ -205,7 +205,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-        SelfManager.self().setVariable("color", (5 + (PrimChecks.math.random(world.observer.getGlobal("colors")) * 10)));
+        SelfManager.self().setVariable("color", PrimChecks.math.plus(5, PrimChecks.math.mult(PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("colors"))), 10)));
         if (Prims.equality(SelfManager.self().getVariable("color"), 75)) {
           SelfManager.self().setVariable("color", 125);
         }
@@ -222,7 +222,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(PrimChecks.list.variance(PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable("color"); })), 0)) {
+      if (Prims.equality(PrimChecks.list.variance(PrimChecks.validator.checkArg('VARIANCE', 8, PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable("color"); }))), 0)) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtles()).ask(function() {
@@ -258,7 +258,7 @@ var procedures = (function() {
       var letVars = { };
       let totalTurtles = PrimChecks.agentset.count(world.turtles()); letVars['totalTurtles'] = totalTurtles;
       Errors.askNobodyCheck(world.turtles()).ask(function() {
-        if (Prims.gt(PrimChecks.math.random(totalTurtles), world.observer.getGlobal("number"))) {
+        if (Prims.gt(PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, totalTurtles)), world.observer.getGlobal("number"))) {
           SelfManager.self().die();
         }
       }, true);

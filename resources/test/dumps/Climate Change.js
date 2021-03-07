@@ -93,7 +93,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("sky-top", (world.topology.maxPycor - 5));
+      world.observer.setGlobal("sky-top", PrimChecks.math.minus(world.topology.maxPycor, 5));
       world.observer.setGlobal("earth-top", 0);
       Errors.askNobodyCheck(world.patches()).ask(function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("sky-top"))) {
@@ -103,7 +103,7 @@ var procedures = (function() {
           SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(105, SelfManager.self().getPatchVariable("pycor"), -20, 20));
         }
         if (Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("earth-top"))) {
-          SelfManager.self().setPatchVariable("pcolor", (15 + 3));
+          SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(15, 3));
         }
         if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("earth-top"))) {
           procedures["UPDATE-ALBEDO"]();
@@ -147,20 +147,20 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let skyHeight = (world.observer.getGlobal("sky-top") - world.observer.getGlobal("earth-top")); letVars['skyHeight'] = skyHeight;
-      let y = ((world.observer.getGlobal("earth-top") + PrimChecks.math.randomFloat((skyHeight - 4))) + 2); letVars['y'] = y;
-      let speed = (PrimChecks.math.randomFloat(0.1) + 0.01); letVars['speed'] = speed;
+      let skyHeight = PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("sky-top")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("earth-top"))); letVars['skyHeight'] = skyHeight;
+      let y = PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("earth-top")), PrimChecks.math.randomFloat(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, skyHeight), 4))), 2); letVars['y'] = y;
+      let speed = PrimChecks.math.plus(PrimChecks.math.randomFloat(0.1), 0.01); letVars['speed'] = speed;
       let x = RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor); letVars['x'] = x;
       let id = 0; letVars['id'] = id;
       if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("CLOUDS"))) {
-        id = (PrimChecks.list.max(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { return SelfManager.self().getVariable("cloud-id"); })) + 1); letVars['id'] = id;
+        id = PrimChecks.math.plus(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { return SelfManager.self().getVariable("cloud-id"); }))), 1); letVars['id'] = id;
       }
-      world.turtleManager.createTurtles((3 + RandomPrims.randomLong(20)), "CLOUDS").ask(function() {
+      world.turtleManager.createTurtles(PrimChecks.math.plus(3, RandomPrims.randomLong(20)), "CLOUDS").ask(function() {
         SelfManager.self().setVariable("cloud-speed", speed);
         SelfManager.self().setVariable("cloud-id", id);
-        SelfManager.self().setXY(((x + RandomPrims.randomLong(9)) - 4), (((y + 2.5) + PrimChecks.math.randomFloat(2)) - PrimChecks.math.randomFloat(2)));
+        SelfManager.self().setXY(PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, x), RandomPrims.randomLong(9)), 4), PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, y), 2.5), PrimChecks.math.randomFloat(2)), PrimChecks.math.randomFloat(2)));
         SelfManager.self().setVariable("color", 9.9);
-        SelfManager.self().setVariable("size", (2 + RandomPrims.randomLong(2)));
+        SelfManager.self().setVariable("size", PrimChecks.math.plus(2, RandomPrims.randomLong(2)));
         SelfManager.self().setVariable("heading", 90);
       }, true);
     } catch (e) {
@@ -174,7 +174,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("CLOUDS"))) {
-        let doomedId = PrimChecks.list.oneOf(PrimChecks.list.removeDuplicates(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { return SelfManager.self().getVariable("cloud-id"); }))); letVars['doomedId'] = doomedId;
+        let doomedId = PrimChecks.list.oneOf(PrimChecks.list.removeDuplicates(PrimChecks.validator.checkArg('REMOVE-DUPLICATES', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { return SelfManager.self().getVariable("cloud-id"); })))); letVars['doomedId'] = doomedId;
         Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { return Prims.equality(SelfManager.self().getVariable("cloud-id"), doomedId); })).ask(function() { SelfManager.self().die(); }, true);
       }
     } catch (e) {
@@ -188,7 +188,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("RAYS")).ask(function() {
-        if (!SelfManager.self().canMove(0.3)) {
+        if (PrimChecks.math.not(SelfManager.self().canMove(0.3))) {
           SelfManager.self().die();
         }
         SelfManager.self()._optimalFdLessThan1(0.3);
@@ -206,11 +206,11 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.gt((10 * world.observer.getGlobal("sun-brightness")), RandomPrims.randomLong(50))) {
+      if (Prims.gt(PrimChecks.math.mult(10, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("sun-brightness"))), RandomPrims.randomLong(50))) {
         world.turtleManager.createTurtles(1, "RAYS").ask(function() {
           SelfManager.self().setVariable("heading", 160);
           SelfManager.self().setVariable("color", 45);
-          SelfManager.self().setXY((RandomPrims.randomLong(10) + world.topology.minPxcor), world.topology.maxPycor);
+          SelfManager.self().setXY(PrimChecks.math.plus(RandomPrims.randomLong(10), world.topology.minPxcor), world.topology.maxPycor);
         }, true);
       }
     } catch (e) {
@@ -223,7 +223,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("RAYS"), function() { return PrimChecks.agentset.any(SelfManager.self().breedHere("CLOUDS")); })).ask(function() { SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading"))); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("RAYS"), function() { return PrimChecks.agentset.any(SelfManager.self().breedHere("CLOUDS")); })).ask(function() {
+        SelfManager.self().setVariable("heading", PrimChecks.math.minus(180, PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("heading"))));
+      }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -235,12 +237,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("RAYS"), function() { return Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top")); })).ask(function() {
-        if (Prims.gt((100 * world.observer.getGlobal("albedo")), RandomPrims.randomLong(100))) {
-          SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
+        if (Prims.gt(PrimChecks.math.mult(100, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("albedo"))), RandomPrims.randomLong(100))) {
+          SelfManager.self().setVariable("heading", PrimChecks.math.minus(180, PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("heading"))));
         }
         else {
-          SelfManager.self().right((RandomPrims.randomLong(45) - RandomPrims.randomLong(45)));
-          SelfManager.self().setVariable("color", ((15 - 2) + RandomPrims.randomLong(4)));
+          SelfManager.self().right(PrimChecks.math.minus(RandomPrims.randomLong(45), RandomPrims.randomLong(45)));
+          SelfManager.self().setVariable("color", PrimChecks.math.plus(PrimChecks.math.minus(15, 2), RandomPrims.randomLong(4)));
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
         }
       }, true);
@@ -254,23 +256,23 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("temperature", ((0.99 * world.observer.getGlobal("temperature")) + (0.01 * (12 + (0.1 * PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("HEATS")))))));
+      world.observer.setGlobal("temperature", PrimChecks.math.plus(PrimChecks.math.mult(0.99, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("temperature"))), PrimChecks.math.mult(0.01, PrimChecks.math.plus(12, PrimChecks.math.mult(0.1, PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("HEATS")))))));
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("HEATS")).ask(function() {
-        let dist = (0.5 * PrimChecks.math.randomFloat(1)); letVars['dist'] = dist;
+        let dist = PrimChecks.math.mult(0.5, PrimChecks.math.randomFloat(1)); letVars['dist'] = dist;
         if (SelfManager.self().canMove(dist)) {
           SelfManager.self().fd(dist);
         }
         else {
-          SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
+          SelfManager.self().setVariable("heading", PrimChecks.math.minus(180, PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("heading"))));
         }
         if (Prims.gte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top"))) {
-          if (((Prims.gt(world.observer.getGlobal("temperature"), (20 + RandomPrims.randomLong(40))) && Prims.gt(SelfManager.self().getVariable("xcor"), 0)) && Prims.lt(SelfManager.self().getVariable("xcor"), (world.topology.maxPxcor - 8)))) {
+          if (((Prims.gt(world.observer.getGlobal("temperature"), PrimChecks.math.plus(20, RandomPrims.randomLong(40))) && Prims.gt(SelfManager.self().getVariable("xcor"), 0)) && Prims.lt(SelfManager.self().getVariable("xcor"), PrimChecks.math.minus(world.topology.maxPxcor, 8)))) {
             SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("IRS"));
             SelfManager.self().setVariable("heading", 20);
             SelfManager.self().setVariable("color", 125);
           }
           else {
-            SelfManager.self().setVariable("heading", (100 + RandomPrims.randomLong(160)));
+            SelfManager.self().setVariable("heading", PrimChecks.math.plus(100, RandomPrims.randomLong(160)));
           }
         }
       }, true);
@@ -285,7 +287,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("IRS")).ask(function() {
-        if (!SelfManager.self().canMove(0.3)) {
+        if (PrimChecks.math.not(SelfManager.self().canMove(0.3))) {
           SelfManager.self().die();
         }
         SelfManager.self()._optimalFdLessThan1(0.3);
@@ -293,10 +295,10 @@ var procedures = (function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
           SelfManager.self().right(RandomPrims.randomLong(45));
           SelfManager.self().right(-(RandomPrims.randomLong(45)));
-          SelfManager.self().setVariable("color", ((15 - 2) + RandomPrims.randomLong(4)));
+          SelfManager.self().setVariable("color", PrimChecks.math.plus(PrimChecks.math.minus(15, 2), RandomPrims.randomLong(4)));
         }
         if (PrimChecks.agentset.any(SelfManager.self().breedHere("CO2S"))) {
-          SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
+          SelfManager.self().setVariable("heading", PrimChecks.math.minus(180, PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("heading"))));
         }
       }, true);
     } catch (e) {
@@ -309,10 +311,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let skyHeight = (world.observer.getGlobal("sky-top") - world.observer.getGlobal("earth-top")); letVars['skyHeight'] = skyHeight;
+      let skyHeight = PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("sky-top")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("earth-top"))); letVars['skyHeight'] = skyHeight;
       world.turtleManager.createTurtles(25, "CO2S").ask(function() {
         SelfManager.self().setVariable("color", 55);
-        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), (world.observer.getGlobal("earth-top") + PrimChecks.math.randomFloat(skyHeight)));
+        SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("earth-top")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, skyHeight))));
       }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -340,10 +342,12 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("CO2S")).ask(function() {
-        SelfManager.self().right((RandomPrims.randomLong(51) - 25));
-        let dist = (0.05 + PrimChecks.math.randomFloat(0.1)); letVars['dist'] = dist;
-        if (PrimChecks.agentset.of(SelfManager.self().patchAhead(dist), function() { return !ColorModel.areRelatedByShade(105, SelfManager.self().getPatchVariable("pcolor")); })) {
-          SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
+        SelfManager.self().right(PrimChecks.math.minus(RandomPrims.randomLong(51), 25));
+        let dist = PrimChecks.math.plus(0.05, PrimChecks.math.randomFloat(0.1)); letVars['dist'] = dist;
+        if (PrimChecks.agentset.of(SelfManager.self().patchAhead(dist), function() {
+          return PrimChecks.math.not(ColorModel.areRelatedByShade(105, SelfManager.self().getPatchVariable("pcolor")));
+        })) {
+          SelfManager.self().setVariable("heading", PrimChecks.math.minus(180, PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("heading"))));
         }
         SelfManager.self().fd(dist);
       }, true);

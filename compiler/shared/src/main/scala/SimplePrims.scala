@@ -41,16 +41,92 @@ object SimplePrims {
       }
   }
 
-  object InfixReporter {
+  object CheckedReporter {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
-        case _: prim.etc._plus      => "+"
-        case _: prim._minus         => "-"
-        case _: prim.etc._mult      => "*"
-        case _: prim.etc._remainder => "%"
-        case _: prim._and           => "&&"
-        case _: prim._or            => "||"
-        case _: prim.etc._xor       => "!="
+
+        // List prims
+        case _: prim.etc._empty             => "PrimChecks.list.empty"
+        case _: prim.etc._filter            => "PrimChecks.list.filter"
+        case _: prim.etc._first             => "PrimChecks.list.first"
+        case _: prim.etc._fput              => "PrimChecks.list.fput"
+        case _: prim.etc._insertitem        => "PrimChecks.list.insertItem"
+        case _: prim.etc._item              => "PrimChecks.list.item"
+        case _: prim.etc._last              => "PrimChecks.list.last"
+        case _: prim.etc._length            => "PrimChecks.list.length"
+        case _: prim.etc._lput              => "PrimChecks.list.lput"
+        case _: prim.etc._max               => "PrimChecks.list.max"
+        case _: prim.etc._mean              => "PrimChecks.list.mean"
+        case _: prim.etc._median            => "PrimChecks.list.median"
+        case _: prim.etc._member            => "PrimChecks.list.member"
+        case _: prim.etc._min               => "PrimChecks.list.min"
+        case _: prim.etc._modes             => "PrimChecks.list.modes"
+        case _: prim.etc._nof               => "PrimChecks.list.nOf"
+        case _: prim.etc._position          => "PrimChecks.list.position"
+        case _: prim.etc._reduce            => "PrimChecks.list.reduce"
+        case _: prim.etc._removeduplicates  => "PrimChecks.list.removeDuplicates"
+        case _: prim.etc._removeitem        => "PrimChecks.list.removeItem"
+        case _: prim.etc._remove            => "PrimChecks.list.remove"
+        case _: prim.etc._replaceitem       => "PrimChecks.list.replaceItem"
+        case _: prim.etc._reverse           => "PrimChecks.list.reverse"
+        case _: prim.etc._shuffle           => "PrimChecks.list.shuffle"
+        case _: prim.etc._sort              => "PrimChecks.list.sort"
+        case _: prim.etc._sortby            => "PrimChecks.list.sortBy"
+        case _: prim.etc._standarddeviation => "PrimChecks.list.standardDeviation"
+        case _: prim.etc._sublist           => "PrimChecks.list.sublist"
+        case _: prim.etc._substring         => "PrimChecks.list.substring"
+        case _: prim.etc._uptonof           => "PrimChecks.list.upToNOf"
+        case _: prim.etc._variance          => "PrimChecks.list.variance"
+        case _: prim._oneof                 => "PrimChecks.list.oneOf"
+        case _: prim._sum                   => "PrimChecks.list.sum"
+
+        // Math
+        case _: prim.etc._abs              => "PrimChecks.math.abs"
+        case _: prim.etc._acos             => "PrimChecks.math.acos"
+        case _: prim.etc._asin             => "PrimChecks.math.asin"
+        case _: prim.etc._atan             => "PrimChecks.math.atan"
+        case _: prim.etc._ceil             => "PrimChecks.math.ceil"
+        case _: prim.etc._cos              => "PrimChecks.math.cos"
+        case _: prim.etc._div              => "PrimChecks.math.div"
+        case _: prim.etc._exp              => "PrimChecks.math.exp"
+        case _: prim.etc._floor            => "PrimChecks.math.floor"
+        case _: prim.etc._int              => "PrimChecks.math.int"
+        case _: prim.etc._ln               => "PrimChecks.math.ln"
+        case _: prim.etc._log              => "PrimChecks.math.log"
+        case _: prim.etc._mod              => "PrimChecks.math.mod"
+        case _: prim.etc._pow              => "PrimChecks.math.pow"
+        case _: prim.etc._precision        => "PrimChecks.math.precision"
+        case _: prim.etc._remainder        => "PrimChecks.math.remainder"
+        case _: prim.etc._round            => "PrimChecks.math.round"
+        case _: prim.etc._sin              => "PrimChecks.math.sin"
+        case _: prim.etc._sqrt             => "PrimChecks.math.sqrt"
+        case _: prim.etc._subtractheadings => "PrimChecks.math.subtractHeadings"
+        case _: prim.etc._tan              => "PrimChecks.math.tan"
+        case _: prim._unaryminus           => "PrimChecks.math.unaryminus"
+
+        // Infix math
+        case _: prim.etc._plus => "PrimChecks.math.plus"
+        case _: prim._minus    => "PrimChecks.math.minus"
+        case _: prim.etc._mult => "PrimChecks.math.mult"
+
+        // Boolean
+        case _: prim._not     => "PrimChecks.math.not"
+        case _: prim.etc._xor => "PrimChecks.math.xor"
+
+        // Random
+        case _: prim._random                => "PrimChecks.math.random"
+        case _: prim.etc._randomexponential => "PrimChecks.math.randomExponential"
+        case _: prim.etc._randomfloat       => "PrimChecks.math.randomFloat"
+        case _: prim.etc._randomnormal      => "PrimChecks.math.randomNormal"
+        case _: prim.etc._randompoisson     => "PrimChecks.math.randomPoisson"
+        case _: prim.etc._randomgamma       => "PrimChecks.math.randomGamma"
+
+        // Agentset
+        case _: prim._any           => "PrimChecks.agentset.any"
+        case _: prim.etc._atpoints  => "PrimChecks.agentset.atPoints"
+        case _: prim._count         => "PrimChecks.agentset.count"
+        case _: prim.etc._turtleson => "PrimChecks.agentset.turtlesOn"
+
       }
   }
 
@@ -95,49 +171,16 @@ object SimplePrims {
         case _: prim._patchat                        => "SelfManager.self().patchAt"
 
         // ListPrims
-        case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}')"
-        case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.token.text}')"
-        case _: prim.etc._empty             => "PrimChecks.list.empty"
-        case _: prim.etc._filter            => "PrimChecks.list.filter"
-        case _: prim.etc._first             => "PrimChecks.list.first"
-        case _: prim.etc._fput              => "PrimChecks.list.fput"
-        case _: prim.etc._insertitem        => "PrimChecks.list.insertItem"
-        case _: prim.etc._item              => "PrimChecks.list.item"
-        case _: prim.etc._last              => "PrimChecks.list.last"
-        case _: prim.etc._length            => "PrimChecks.list.length"
-        case _: prim.etc._lput              => "PrimChecks.list.lput"
-        case _: prim.etc._max               => "PrimChecks.list.max"
-        case _: prim.etc._mean              => "PrimChecks.list.mean"
-        case _: prim.etc._median            => "PrimChecks.list.median"
-        case _: prim.etc._member            => "PrimChecks.list.member"
-        case _: prim.etc._min               => "PrimChecks.list.min"
-        case _: prim.etc._modes             => "PrimChecks.list.modes"
-        case _: prim.etc._nof               => "PrimChecks.list.nOf"
-        case _: prim.etc._position          => "PrimChecks.list.position"
-        case _: prim.etc._reduce            => "PrimChecks.list.reduce"
-        case _: prim.etc._removeduplicates  => "PrimChecks.list.removeDuplicates"
-        case _: prim.etc._removeitem        => "PrimChecks.list.removeItem"
-        case _: prim.etc._remove            => "PrimChecks.list.remove"
-        case _: prim.etc._replaceitem       => "PrimChecks.list.replaceItem"
-        case _: prim.etc._reverse           => "PrimChecks.list.reverse"
-        case _: prim.etc._shuffle           => "PrimChecks.list.shuffle"
-        case _: prim.etc._sort              => "PrimChecks.list.sort"
-        case _: prim.etc._sortby            => "PrimChecks.list.sortBy"
-        case _: prim.etc._standarddeviation => "PrimChecks.list.standardDeviation"
-        case _: prim.etc._sublist           => "PrimChecks.list.sublist"
-        case _: prim.etc._substring         => "PrimChecks.list.substring"
-        case _: prim.etc._uptonof           => "PrimChecks.list.upToNOf"
-        case _: prim.etc._variance          => "PrimChecks.list.variance"
-        case _: prim._list                  => "ListPrims.list"
-        case _: prim._oneof                 => "PrimChecks.list.oneOf"
-        case _: prim._sentence              => "ListPrims.sentence"
-        case _: prim._sum                   => "PrimChecks.list.sum"
+        case _: prim._list     => "ListPrims.list"
+        case _: prim._sentence => "ListPrims.sentence"
 
         // Agentset
-        case _: prim.etc._linkset           => "PrimChecks.agentset.linkSet"
-        case _: prim.etc._patchset          => "PrimChecks.agentset.patchSet"
-        case _: prim.etc._turtleset         => "PrimChecks.agentset.turtleSet"
-        case _: prim.etc._turtleson         => "PrimChecks.agentset.turtlesOn"
+        // In theory these should be able to be made standard `CheckedReporters`, but in practice
+        // their errors are weird enough that I'm going to leave them as custom.
+        // -Jeremy B February 2021
+        case _: prim.etc._linkset   => "PrimChecks.agentset.linkSet"
+        case _: prim.etc._patchset  => "PrimChecks.agentset.patchSet"
+        case _: prim.etc._turtleset => "PrimChecks.agentset.turtleSet"
 
         // Plotting
         case _: prim.etc._autoplot      => "plotManager.isAutoplotting"
@@ -154,72 +197,45 @@ object SimplePrims {
         case _: prim.etc._mousexcor   => "MousePrims.getX"
         case _: prim.etc._mouseycor   => "MousePrims.getY"
 
-        // NLMath
-        case _: prim.etc._abs              => "PrimChecks.math.abs"
-        case _: prim.etc._acos             => "PrimChecks.math.acos"
-        case _: prim.etc._asin             => "PrimChecks.math.asin"
-        case _: prim.etc._atan             => "PrimChecks.math.atan"
-        case _: prim.etc._ceil             => "PrimChecks.math.ceil"
-        case _: prim.etc._cos              => "PrimChecks.math.cos"
-        case _: prim.etc._div              => "PrimChecks.math.div"
-        case _: prim.etc._exp              => "PrimChecks.math.exp"
-        case _: prim.etc._floor            => "PrimChecks.math.floor"
-        case _: prim.etc._int              => "PrimChecks.math.int"
-        case _: prim.etc._ln               => "PrimChecks.math.ln"
-        case _: prim.etc._log              => "PrimChecks.math.log"
-        case _: prim.etc._mod              => "PrimChecks.math.mod"
-        case _: prim.etc._pow              => "PrimChecks.math.pow"
-        case _: prim.etc._precision        => "PrimChecks.math.precision"
-        case _: prim.etc._round            => "PrimChecks.math.round"
-        case _: prim.etc._sin              => "PrimChecks.math.sin"
-        case _: prim.etc._sqrt             => "PrimChecks.math.sqrt"
-        case _: prim.etc._subtractheadings => "PrimChecks.math.subtractHeadings"
-        case _: prim.etc._tan              => "PrimChecks.math.tan"
-
-        case _: prim._random                => "PrimChecks.math.random"
-        case _: Optimizer._randomconst      => "RandomPrims.randomLong"
-        case _: prim.etc._randomexponential => "PrimChecks.math.randomExponential"
-        case _: prim.etc._randomfloat       => "PrimChecks.math.randomFloat"
-        case _: prim.etc._randomnormal      => "PrimChecks.math.randomNormal"
-        case _: prim.etc._randompoisson     => "PrimChecks.math.randomPoisson"
-        case _: prim.etc._randomgamma       => "PrimChecks.math.randomGamma"
+        // Random
+        case _: Optimizer._randomconst => "RandomPrims.randomLong"
 
         // ColorModel
-        case _: prim.etc._approximatehsb    => "ColorModel.nearestColorNumberOfHSB"
-        case _: prim.etc._approximatergb    => "ColorModel.nearestColorNumberOfRGB"
-        case _: prim.etc._extracthsb        => "ColorModel.colorToHSB"
-        case _: prim.etc._extractrgb        => "ColorModel.colorToRGB"
-        case _: prim.etc._hsb               => "ColorModel.hsbToRGB"
-        case _: prim.etc._rgb               => "ColorModel.genRGBFromComponents"
-        case _: prim.etc._scalecolor        => "ColorModel.scaleColor"
-        case _: prim.etc._shadeof           => "ColorModel.areRelatedByShade"
-        case _: prim.etc._wrapcolor         => "ColorModel.wrapColor"
+        case _: prim.etc._approximatehsb => "ColorModel.nearestColorNumberOfHSB"
+        case _: prim.etc._approximatergb => "ColorModel.nearestColorNumberOfRGB"
+        case _: prim.etc._extracthsb     => "ColorModel.colorToHSB"
+        case _: prim.etc._extractrgb     => "ColorModel.colorToRGB"
+        case _: prim.etc._hsb            => "ColorModel.hsbToRGB"
+        case _: prim.etc._rgb            => "ColorModel.genRGBFromComponents"
+        case _: prim.etc._scalecolor     => "ColorModel.scaleColor"
+        case _: prim.etc._shadeof        => "ColorModel.areRelatedByShade"
+        case _: prim.etc._wrapcolor      => "ColorModel.wrapColor"
 
-        case _: prim._turtle                => "world.turtleManager.getTurtle"
-        case _: prim.etc._patch             => "world.getPatchAt"
-        case _: prim._equal                 => "Prims.equality"
-        case _: prim._notequal              => "!Prims.equality"
-        case _: prim._turtles               => "world.turtles"
-        case _: prim.etc._links             => "world.links"
-        case _: prim._patches               => "world.patches"
-        case _: prim.etc._ticks             => "world.ticker.tickCount"
-        case _: prim.etc._timer             => "workspace.timer.elapsed"
-        case _: prim.etc._map               => "Tasks.map"
-        case _: prim.etc._newseed           => "Prims.generateNewSeed"
-        case _: prim.etc._randomstate       => "Random.save"
-        case _: prim._greaterthan           => "Prims.gt"
-        case _: prim._lessthan              => "Prims.lt"
-        case _: prim.etc._greaterorequal    => "Prims.gte"
-        case _: prim.etc._lessorequal       => "Prims.lte"
-        case _: prim.etc._link              => "world.linkManager.getLink"
-        case _: prim.etc._applyresult       => "Tasks.apply"
-        case _: prim.etc._boom              => "Prims.boom"
-        case _: prim.etc._subject           => "world.observer.subject"
-        case _: prim.etc._dateandtime       => "Prims.dateAndTime"
-        case _: prim.etc._nanotime          => "Prims.nanoTime"
-        case _: prim.etc._useryesorno       => "UserDialogPrims.yesOrNo"
-        case _: prim.etc._userinput         => "UserDialogPrims.input"
-        case _: prim.etc._readfromstring    => "Prims.readFromString"
+        case _: prim._turtle             => "world.turtleManager.getTurtle"
+        case _: prim.etc._patch          => "world.getPatchAt"
+        case _: prim._equal              => "Prims.equality"
+        case _: prim._notequal           => "!Prims.equality"
+        case _: prim._turtles            => "world.turtles"
+        case _: prim.etc._links          => "world.links"
+        case _: prim._patches            => "world.patches"
+        case _: prim.etc._ticks          => "world.ticker.tickCount"
+        case _: prim.etc._timer          => "workspace.timer.elapsed"
+        case _: prim.etc._map            => "Tasks.map"
+        case _: prim.etc._newseed        => "Prims.generateNewSeed"
+        case _: prim.etc._randomstate    => "Random.save"
+        case _: prim._greaterthan        => "Prims.gt"
+        case _: prim._lessthan           => "Prims.lt"
+        case _: prim.etc._greaterorequal => "Prims.gte"
+        case _: prim.etc._lessorequal    => "Prims.lte"
+        case _: prim.etc._link           => "world.linkManager.getLink"
+        case _: prim.etc._applyresult    => "Tasks.apply"
+        case _: prim.etc._boom           => "Prims.boom"
+        case _: prim.etc._subject        => "world.observer.subject"
+        case _: prim.etc._dateandtime    => "Prims.dateAndTime"
+        case _: prim.etc._nanotime       => "Prims.nanoTime"
+        case _: prim.etc._useryesorno    => "UserDialogPrims.yesOrNo"
+        case _: prim.etc._userinput      => "UserDialogPrims.input"
+        case _: prim.etc._readfromstring => "Prims.readFromString"
 
       }
   }
@@ -251,15 +267,25 @@ object SimplePrims {
     def unapply(c: Command): Option[String] =
       PartialFunction.condOpt(c) {
 
-        case _: prim._done                         => ""
-        case _: prim._stop                         => "throw new Exception.StopInterrupt"
-        case _: prim.etc._observercode             => ""
-        case _: prim.etc._hideturtle               => "SelfManager.self().hideTurtle(true);"
-        case _: prim.etc._showturtle               => "SelfManager.self().hideTurtle(false);"
+        case _: prim._done             => ""
+        case _: prim._stop             => "throw new Exception.StopInterrupt"
+        case _: prim.etc._observercode => ""
+        case _: prim.etc._hideturtle   => "SelfManager.self().hideTurtle(true);"
+        case _: prim.etc._showturtle   => "SelfManager.self().hideTurtle(false);"
 
         case _: prim.etc._importpatchcolors => "Errors.imperfectImport('import-pcolors')"
         case _: prim.etc._importpcolorsrgb  => "Errors.imperfectImport('import-pcolors-rgb')"
         case _: prim.etc._importworld       => "Errors.imperfectImport('import-world')"
+
+      }
+  }
+
+  object CheckedCommand {
+    def unapply(c: Command): Option[String] =
+      PartialFunction.condOpt(c) {
+
+        // Random
+        case _: prim.etc._randomseed => "PrimChecks.math.randomSeed"
 
       }
   }
@@ -348,7 +374,6 @@ object SimplePrims {
         case _: prim.etc._tick             => "world.ticker.tick"
         case _: prim.etc._tickadvance      => "world.ticker.tickAdvance"
         case _: prim.etc._resettimer       => "workspace.timer.reset"
-        case _: prim.etc._randomseed       => "PrimChecks.math.randomSeed"
         case _: prim.etc._follow           => "world.observer.follow"
         case _: prim.etc._ride             => "world.observer.ride"
         case _: prim.etc._watch            => "world.observer.watch"

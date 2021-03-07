@@ -84,7 +84,7 @@ var procedures = (function() {
           var reporterContext = false;
           var letVars = { };
           if (Prims.gt(SelfManager.self().getVariable("steps"), 0)) {
-            SelfManager.self().setVariable("steps", (SelfManager.self().getVariable("steps") - 1));
+            SelfManager.self().setVariable("steps", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("steps")), 1));
           }
           else {
             var _run_677_680 = Prims.runCode(

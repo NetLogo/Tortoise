@@ -82,18 +82,18 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.clearAll();
-      let halfedge = PrimChecks.math.int(PrimChecks.math.div(world.observer.getGlobal("edge"), 2)); letVars['halfedge'] = halfedge;
+      let halfedge = PrimChecks.math.int(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("edge")), 2)); letVars['halfedge'] = halfedge;
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"),  -(halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -(halfedge))) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge))) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge)))) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))))) {
           SelfManager.self().setPatchVariable("pcolor", 105);
         }
-        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -(halfedge))) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge)))) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))))) {
           SelfManager.self().setPatchVariable("pcolor", 105);
         }
-        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"),  -(halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -(halfedge))) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge))) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge)))) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))))) {
           SelfManager.self().setPatchVariable("pcolor", 105);
         }
-        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -(halfedge))) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge)))) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))))) {
           SelfManager.self().setPatchVariable("pcolor", 105);
         }
       }, true);

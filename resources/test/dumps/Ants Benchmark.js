@@ -132,7 +132,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       SelfManager.self().setPatchVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
-      SelfManager.self().setPatchVariable("nest-scent", (200 - SelfManager.self().distanceXY(0, 0)));
+      SelfManager.self().setPatchVariable("nest-scent", PrimChecks.math.minus(200, SelfManager.self().distanceXY(0, 0)));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -143,17 +143,17 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.lt(SelfManager.self().distanceXY((0.6 * world.topology.maxPxcor), 0), 5)) {
+      if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(0.6, world.topology.maxPxcor), 0), 5)) {
         SelfManager.self().setPatchVariable("food-source-number", 1);
       }
-      if (Prims.lt(SelfManager.self().distanceXY((-0.6 * world.topology.maxPxcor), (-0.6 * world.topology.maxPycor)), 5)) {
+      if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(-0.6, world.topology.maxPxcor), PrimChecks.math.mult(-0.6, world.topology.maxPycor)), 5)) {
         SelfManager.self().setPatchVariable("food-source-number", 2);
       }
-      if (Prims.lt(SelfManager.self().distanceXY((-0.8 * world.topology.maxPxcor), (0.8 * world.topology.maxPycor)), 5)) {
+      if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(-0.8, world.topology.maxPxcor), PrimChecks.math.mult(0.8, world.topology.maxPycor)), 5)) {
         SelfManager.self().setPatchVariable("food-source-number", 3);
       }
       if (Prims.gt(SelfManager.self().getPatchVariable("food-source-number"), 0)) {
-        SelfManager.self().setPatchVariable("food", (1 + RandomPrims.randomLong(2)));
+        SelfManager.self().setPatchVariable("food", PrimChecks.math.plus(1, RandomPrims.randomLong(2)));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -195,7 +195,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.turtles()).ask(function() { procedures["GO-TURTLES"](); }, true);
-      world.topology.diffuse("chemical", PrimChecks.math.div(world.observer.getGlobal("diffusion-rate"), 100), false)
+      world.topology.diffuse("chemical", PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("diffusion-rate")), 100), false)
       Errors.askNobodyCheck(world.patches()).ask(function() { procedures["GO-PATCHES"](); }, true);
       world.ticker.tick();
       procedures["DO-PLOTTING"]();
@@ -211,7 +211,7 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.lt(SelfManager.self().getVariable("who"), world.ticker.tickCount())) {
         if (SelfManager.self().getVariable("carrying-food?")) {
-          SelfManager.self().setVariable("color", (25 + 1));
+          SelfManager.self().setVariable("color", PrimChecks.math.plus(25, 1));
           procedures["RETURN-TO-NEST"]();
         }
         else {
@@ -229,7 +229,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setPatchVariable("chemical", PrimChecks.math.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
+      SelfManager.self().setPatchVariable("chemical", PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("chemical")), PrimChecks.math.minus(100, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("evaporation-rate")))), 100));
       procedures["UPDATE-DISPLAY"]();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -247,8 +247,8 @@ var procedures = (function() {
         SelfManager.self()._optimalFdOne();
       }
       else {
-        SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + SelfManager.self().getVariable("drop-size")));
-        SelfManager.self().setVariable("drop-size", (SelfManager.self().getVariable("drop-size") - 1.5));
+        SelfManager.self().setPatchVariable("chemical", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("chemical")), PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("drop-size"))));
+        SelfManager.self().setVariable("drop-size", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("drop-size")), 1.5));
         if (Prims.lt(SelfManager.self().getVariable("drop-size"), 1)) {
           SelfManager.self().setVariable("drop-size", 1);
         }
@@ -268,7 +268,7 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
         SelfManager.self().setVariable("carrying-food?", true);
-        SelfManager.self().setPatchVariable("food", (SelfManager.self().getPatchVariable("food") - 1));
+        SelfManager.self().setPatchVariable("food", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("food")), 1));
         SelfManager.self().setVariable("drop-size", 60);
         SelfManager.self().right(180);
         throw new Exception.StopInterrupt;
@@ -340,8 +340,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right((RandomPrims.randomLong(40) - RandomPrims.randomLong(40)));
-      if (!SelfManager.self().canMove(1)) {
+      SelfManager.self().right(PrimChecks.math.minus(RandomPrims.randomLong(40), RandomPrims.randomLong(40)));
+      if (PrimChecks.math.not(SelfManager.self().canMove(1))) {
         SelfManager.self().right(180);
       }
     } catch (e) {
@@ -357,7 +357,7 @@ var procedures = (function() {
       let p = SelfManager.self().patchRightAndAhead(angle, 1); letVars['p'] = p;
       if (!Prims.equality(p, Nobody)) {
         Errors.reportInContextCheck(reporterContext);
-        return PrimChecks.agentset.of(p, function() { return SelfManager.self().getPatchVariable("nest-scent"); });
+        return PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p), function() { return SelfManager.self().getPatchVariable("nest-scent"); });
       }
       Errors.reportInContextCheck(reporterContext);
       return 0;
@@ -375,7 +375,7 @@ var procedures = (function() {
       let p = SelfManager.self().patchRightAndAhead(angle, 1); letVars['p'] = p;
       if (!Prims.equality(p, Nobody)) {
         Errors.reportInContextCheck(reporterContext);
-        return PrimChecks.agentset.of(p, function() { return SelfManager.self().getPatchVariable("chemical"); });
+        return PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p), function() { return SelfManager.self().getPatchVariable("chemical"); });
       }
       Errors.reportInContextCheck(reporterContext);
       return 0;
@@ -390,7 +390,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!world.observer.getGlobal("plot?")) {
+      if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("plot?")))) {
         throw new Exception.StopInterrupt;
       }
       plotManager.setCurrentPlot("Food in each pile");

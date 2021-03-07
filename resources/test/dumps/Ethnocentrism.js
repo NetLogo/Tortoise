@@ -236,9 +236,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let emptyPatches = PrimChecks.agentset.with(world.patches(), function() { return !PrimChecks.agentset.any(SelfManager.self().turtlesHere()); }); letVars['emptyPatches'] = emptyPatches;
-      let howMany = PrimChecks.list.min(ListPrims.list(world.observer.getGlobal("immigrants-per-day"), PrimChecks.agentset.count(emptyPatches))); letVars['howMany'] = howMany;
-      Errors.askNobodyCheck(PrimChecks.list.nOf(howMany, emptyPatches)).ask(function() { procedures["CREATE-TURTLE"](); }, true);
+      let emptyPatches = PrimChecks.agentset.with(world.patches(), function() { return PrimChecks.math.not(PrimChecks.agentset.any(SelfManager.self().turtlesHere())); }); letVars['emptyPatches'] = emptyPatches;
+      let howMany = PrimChecks.list.min(ListPrims.list(world.observer.getGlobal("immigrants-per-day"), PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 112, emptyPatches)))); letVars['howMany'] = howMany;
+      Errors.askNobodyCheck(PrimChecks.list.nOf(PrimChecks.validator.checkArg('N-OF', 1, howMany), PrimChecks.validator.checkArg('N-OF', 120, emptyPatches))).ask(function() { procedures["CREATE-TURTLE"](); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -250,34 +250,34 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors4())).ask(function() {
-        world.observer.setGlobal("meet", (world.observer.getGlobal("meet") + 1));
-        world.observer.setGlobal("meet-agg", (world.observer.getGlobal("meet-agg") + 1));
+        world.observer.setGlobal("meet", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("meet")), 1));
+        world.observer.setGlobal("meet-agg", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("meet-agg")), 1));
         if (Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }))) {
-          world.observer.setGlobal("meetown", (world.observer.getGlobal("meetown") + 1));
-          world.observer.setGlobal("meetown-agg", (world.observer.getGlobal("meetown-agg") + 1));
+          world.observer.setGlobal("meetown", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("meetown")), 1));
+          world.observer.setGlobal("meetown-agg", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("meetown-agg")), 1));
           if (PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("cooperate-with-same?"); })) {
-            world.observer.setGlobal("coopown", (world.observer.getGlobal("coopown") + 1));
-            world.observer.setGlobal("coopown-agg", (world.observer.getGlobal("coopown-agg") + 1));
+            world.observer.setGlobal("coopown", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopown")), 1));
+            world.observer.setGlobal("coopown-agg", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopown-agg")), 1));
             Errors.askNobodyCheck(SelfManager.myself()).ask(function() {
-              SelfManager.self().setVariable("ptr", (SelfManager.self().getVariable("ptr") - world.observer.getGlobal("cost-of-giving")));
+              SelfManager.self().setVariable("ptr", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("ptr")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("cost-of-giving"))));
             }, true);
-            SelfManager.self().setVariable("ptr", (SelfManager.self().getVariable("ptr") + world.observer.getGlobal("gain-of-receiving")));
+            SelfManager.self().setVariable("ptr", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("ptr")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("gain-of-receiving"))));
           }
         }
         if (!Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }))) {
-          world.observer.setGlobal("meetother", (world.observer.getGlobal("meetother") + 1));
-          world.observer.setGlobal("meetother-agg", (world.observer.getGlobal("meetother-agg") + 1));
+          world.observer.setGlobal("meetother", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("meetother")), 1));
+          world.observer.setGlobal("meetother-agg", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("meetother-agg")), 1));
           if (PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("cooperate-with-different?"); })) {
-            world.observer.setGlobal("coopother", (world.observer.getGlobal("coopother") + 1));
-            world.observer.setGlobal("coopother-agg", (world.observer.getGlobal("coopother-agg") + 1));
+            world.observer.setGlobal("coopother", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopother")), 1));
+            world.observer.setGlobal("coopother-agg", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopother-agg")), 1));
             Errors.askNobodyCheck(SelfManager.myself()).ask(function() {
-              SelfManager.self().setVariable("ptr", (SelfManager.self().getVariable("ptr") - world.observer.getGlobal("cost-of-giving")));
+              SelfManager.self().setVariable("ptr", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("ptr")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("cost-of-giving"))));
             }, true);
-            SelfManager.self().setVariable("ptr", (SelfManager.self().getVariable("ptr") + world.observer.getGlobal("gain-of-receiving")));
+            SelfManager.self().setVariable("ptr", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("ptr")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("gain-of-receiving"))));
           }
           else {
-            world.observer.setGlobal("defother", (world.observer.getGlobal("defother") + 1));
-            world.observer.setGlobal("defother-agg", (world.observer.getGlobal("defother-agg") + 1));
+            world.observer.setGlobal("defother", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("defother")), 1));
+            world.observer.setGlobal("defother-agg", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("defother-agg")), 1));
           }
         }
       }, true);
@@ -292,7 +292,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.lt(PrimChecks.math.randomFloat(1), SelfManager.self().getVariable("ptr"))) {
-        let destination = PrimChecks.agentset.oneOfWith(SelfManager.self().getNeighbors4(), function() { return !PrimChecks.agentset.any(SelfManager.self().turtlesHere()); }); letVars['destination'] = destination;
+        let destination = PrimChecks.agentset.oneOfWith(SelfManager.self().getNeighbors4(), function() { return PrimChecks.math.not(PrimChecks.agentset.any(SelfManager.self().turtlesHere())); }); letVars['destination'] = destination;
         if (!Prims.equality(destination, Nobody)) {
           SelfManager.self().hatch(1, "").ask(function() {
             SelfManager.self().moveTo(destination);
@@ -317,10 +317,10 @@ var procedures = (function() {
         }
       }
       if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
-        SelfManager.self().setVariable("cooperate-with-same?", !SelfManager.self().getVariable("cooperate-with-same?"));
+        SelfManager.self().setVariable("cooperate-with-same?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getVariable("cooperate-with-same?"))));
       }
       if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
-        SelfManager.self().setVariable("cooperate-with-different?", !SelfManager.self().getVariable("cooperate-with-different?"));
+        SelfManager.self().setVariable("cooperate-with-different?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getVariable("cooperate-with-different?"))));
       }
       procedures["UPDATE-SHAPE"]();
     } catch (e) {
@@ -374,16 +374,16 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("last100dd", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("shape"), "square 2"); }), world.observer.getGlobal("last100dd"))));
-      world.observer.setGlobal("last100cc", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle"); }), world.observer.getGlobal("last100cc"))));
-      world.observer.setGlobal("last100cd", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle 2"); }), world.observer.getGlobal("last100cd"))));
-      world.observer.setGlobal("last100dc", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("shape"), "square"); }), world.observer.getGlobal("last100dc"))));
-      world.observer.setGlobal("last100coopown", procedures["SHORTEN"](PrimChecks.list.lput(world.observer.getGlobal("coopown"), world.observer.getGlobal("last100coopown"))));
-      world.observer.setGlobal("last100defother", procedures["SHORTEN"](PrimChecks.list.lput(world.observer.getGlobal("defother"), world.observer.getGlobal("last100defother"))));
-      world.observer.setGlobal("last100meetown", procedures["SHORTEN"](PrimChecks.list.lput(world.observer.getGlobal("meetown"), world.observer.getGlobal("last100meetown"))));
-      world.observer.setGlobal("last100coop", procedures["SHORTEN"](PrimChecks.list.lput((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")), world.observer.getGlobal("last100coop"))));
-      world.observer.setGlobal("last100meet", procedures["SHORTEN"](PrimChecks.list.lput(world.observer.getGlobal("meet"), world.observer.getGlobal("last100meet"))));
-      world.observer.setGlobal("last100meetother", procedures["SHORTEN"](PrimChecks.list.lput(world.observer.getGlobal("meetother"), world.observer.getGlobal("last100meetother"))));
+      world.observer.setGlobal("last100dd", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("shape"), "square 2"); }), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100dd")))));
+      world.observer.setGlobal("last100cc", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle"); }), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100cc")))));
+      world.observer.setGlobal("last100cd", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle 2"); }), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100cd")))));
+      world.observer.setGlobal("last100dc", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("shape"), "square"); }), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100dc")))));
+      world.observer.setGlobal("last100coopown", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("coopown")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100coopown")))));
+      world.observer.setGlobal("last100defother", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("defother")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100defother")))));
+      world.observer.setGlobal("last100meetown", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("meetown")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100meetown")))));
+      world.observer.setGlobal("last100coop", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopown")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopother"))), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100coop")))));
+      world.observer.setGlobal("last100meet", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("meet")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100meet")))));
+      world.observer.setGlobal("last100meetother", procedures["SHORTEN"](PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("meetother")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100meetother")))));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -394,9 +394,9 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if (Prims.gt(PrimChecks.list.length(theList), 100)) {
+      if (Prims.gt(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, theList)), 100)) {
         Errors.reportInContextCheck(reporterContext);
-        return PrimChecks.list.butFirst('butfirst')(theList);
+        return PrimChecks.list.butFirst('butfirst', PrimChecks.validator.checkArg('BUTFIRST', 12, theList));
       }
       else {
         Errors.reportInContextCheck(reporterContext);
@@ -414,7 +414,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("meetown"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
+      return PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("meetown")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -427,7 +427,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("meetown-agg"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
+      return PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("meetown-agg")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -440,7 +440,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("coopown"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetown"))));
+      return PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("coopown")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetown"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -453,7 +453,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("coopown-agg"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg"))));
+      return PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("coopown-agg")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -466,7 +466,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("defother"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetother"))));
+      return PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("defother")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetother"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -479,7 +479,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(world.observer.getGlobal("defother-agg"), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg"))));
+      return PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("defother-agg")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -492,7 +492,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div((world.observer.getGlobal("defother") + world.observer.getGlobal("coopown")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
+      return PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("defother")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopown"))), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -505,7 +505,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div((world.observer.getGlobal("defother-agg") + world.observer.getGlobal("coopown-agg")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
+      return PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("defother-agg")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopown-agg"))), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -518,7 +518,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
+      return PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopown")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopother"))), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -531,7 +531,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div((world.observer.getGlobal("coopown-agg") + world.observer.getGlobal("coopother-agg")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
+      return PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopown-agg")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopother-agg"))), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -544,7 +544,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100cc")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100cc")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100cc"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("last100cc"))))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -557,7 +557,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100cd")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100cd")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100cd"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("last100cd"))))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -570,7 +570,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100dc")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100dc")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100dc"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("last100dc"))))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -583,7 +583,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100dd")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(world.observer.getGlobal("last100dd")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100dd"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("last100dd"))))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -596,7 +596,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(procedures["CC-COUNT"](), PrimChecks.list.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
+      return PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, procedures["CC-COUNT"]()), PrimChecks.list.max(ListPrims.list(1, PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, procedures["CC-COUNT"]()), PrimChecks.validator.checkArg('+', 1, procedures["CD-COUNT"]())), PrimChecks.validator.checkArg('+', 1, procedures["DC-COUNT"]())), PrimChecks.validator.checkArg('+', 1, procedures["DD-COUNT"]())))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -609,7 +609,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(procedures["CD-COUNT"](), PrimChecks.list.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
+      return PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, procedures["CD-COUNT"]()), PrimChecks.list.max(ListPrims.list(1, PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, procedures["CC-COUNT"]()), PrimChecks.validator.checkArg('+', 1, procedures["CD-COUNT"]())), PrimChecks.validator.checkArg('+', 1, procedures["DC-COUNT"]())), PrimChecks.validator.checkArg('+', 1, procedures["DD-COUNT"]())))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -622,7 +622,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(procedures["DC-COUNT"](), PrimChecks.list.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
+      return PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, procedures["DC-COUNT"]()), PrimChecks.list.max(ListPrims.list(1, PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, procedures["CC-COUNT"]()), PrimChecks.validator.checkArg('+', 1, procedures["CD-COUNT"]())), PrimChecks.validator.checkArg('+', 1, procedures["DC-COUNT"]())), PrimChecks.validator.checkArg('+', 1, procedures["DD-COUNT"]())))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -635,7 +635,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(procedures["DD-COUNT"](), PrimChecks.list.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))));
+      return PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, procedures["DD-COUNT"]()), PrimChecks.list.max(ListPrims.list(1, PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, procedures["CC-COUNT"]()), PrimChecks.validator.checkArg('+', 1, procedures["CD-COUNT"]())), PrimChecks.validator.checkArg('+', 1, procedures["DC-COUNT"]())), PrimChecks.validator.checkArg('+', 1, procedures["DD-COUNT"]())))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -648,7 +648,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100coopown")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(world.observer.getGlobal("last100meetown")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100coopown"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meetown"))))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -661,7 +661,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100defother")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(world.observer.getGlobal("last100meetother")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100defother"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meetother"))))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -674,7 +674,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div((PrimChecks.list.sum(world.observer.getGlobal("last100defother")) + PrimChecks.list.sum(world.observer.getGlobal("last100coopown"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(world.observer.getGlobal("last100meet")))));
+      return PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100defother"))), PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100coopown")))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meet"))))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -687,7 +687,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100meetown")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(world.observer.getGlobal("last100meet")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meetown"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meet"))))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)
@@ -700,7 +700,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       Errors.reportInContextCheck(reporterContext);
-      return PrimChecks.math.div(PrimChecks.list.sum(world.observer.getGlobal("last100coop")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(world.observer.getGlobal("last100meet")))));
+      return PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100coop"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meet"))))));
       Errors.missingReport();
     } catch (e) {
       Errors.stopInReportCheck(e)

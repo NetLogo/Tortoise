@@ -179,9 +179,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let nodeList = PrimChecks.list.sort(nodeset); letVars['nodeList'] = nodeList;
-      let neighborChoiceList = PrimChecks.list.sublist(nodeList, 0, k); letVars['neighborChoiceList'] = neighborChoiceList;
-      Errors.askNobodyCheck(PrimChecks.list.item(k, nodeList)).ask(function() {
+      let nodeList = PrimChecks.list.sort(PrimChecks.validator.checkArg('SORT', 120, nodeset)); letVars['nodeList'] = nodeList;
+      let neighborChoiceList = PrimChecks.list.sublist(PrimChecks.validator.checkArg('SUBLIST', 8, nodeList), 0, PrimChecks.validator.checkArg('SUBLIST', 1, k)); letVars['neighborChoiceList'] = neighborChoiceList;
+      Errors.askNobodyCheck(PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, k), PrimChecks.validator.checkArg('ITEM', 12, nodeList))).ask(function() {
         var _foreach_2544_2551 = Tasks.forEach(Tasks.commandTask(function(neighbor) {
           Errors.procedureArgumentsCheck(1, arguments.length);
           if (Prims.equality(RandomPrims.randomLong(2), 0)) {
@@ -198,9 +198,9 @@ var procedures = (function() {
         Errors.askNobodyCheck(node).ask(function() {
           let tempNeighborList = neighborChoiceList; letVars['tempNeighborList'] = tempNeighborList;
           for (let _index_3056_3062 = 0, _repeatcount_3056_3062 = StrictMath.floor(k); _index_3056_3062 < _repeatcount_3056_3062; _index_3056_3062++){
-            let neighbor = PrimChecks.list.oneOf(tempNeighborList); letVars['neighbor'] = neighbor;
-            tempNeighborList = PrimChecks.list.remove(neighbor, tempNeighborList); letVars['tempNeighborList'] = tempNeighborList;
-            neighborChoiceList = PrimChecks.list.fput(neighbor, neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
+            let neighbor = PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, tempNeighborList)); letVars['neighbor'] = neighbor;
+            tempNeighborList = PrimChecks.list.remove(neighbor, PrimChecks.validator.checkArg('REMOVE', 12, tempNeighborList)); letVars['tempNeighborList'] = tempNeighborList;
+            neighborChoiceList = PrimChecks.list.fput(neighbor, PrimChecks.validator.checkArg('FPUT', 8, neighborChoiceList)); letVars['neighborChoiceList'] = neighborChoiceList;
             if (Prims.equality(RandomPrims.randomLong(2), 0)) {
               LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
             }
@@ -210,7 +210,7 @@ var procedures = (function() {
           }
           neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() { return SelfManager.self(); }, "[ self ]")), neighborChoiceList); letVars['neighborChoiceList'] = neighborChoiceList;
         }, true);
-      }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]"), PrimChecks.list.sublist(nodeList, (k + 1), PrimChecks.list.length(nodeList))); if(reporterContext && _foreach_2894_2901 !== undefined) { return _foreach_2894_2901; }
+      }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]"), PrimChecks.list.sublist(PrimChecks.validator.checkArg('SUBLIST', 8, nodeList), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, k), 1), PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, nodeList)))); if(reporterContext && _foreach_2894_2901 !== undefined) { return _foreach_2894_2901; }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -243,25 +243,25 @@ var procedures = (function() {
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() { SelfManager.self().setVariable("new-rank", 0); }, true);
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
           if (PrimChecks.agentset.any(LinkPrims.outLinkNeighbors("LINKS"))) {
-            let rankIncrement = PrimChecks.math.div(SelfManager.self().getVariable("rank"), PrimChecks.agentset.count(LinkPrims.outLinkNeighbors("LINKS"))); letVars['rankIncrement'] = rankIncrement;
+            let rankIncrement = PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, SelfManager.self().getVariable("rank")), PrimChecks.agentset.count(LinkPrims.outLinkNeighbors("LINKS"))); letVars['rankIncrement'] = rankIncrement;
             Errors.askNobodyCheck(LinkPrims.outLinkNeighbors("LINKS")).ask(function() {
-              SelfManager.self().setVariable("new-rank", (SelfManager.self().getVariable("new-rank") + rankIncrement));
+              SelfManager.self().setVariable("new-rank", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("new-rank")), PrimChecks.validator.checkArg('+', 1, rankIncrement)));
             }, true);
           }
           else {
-            let rankIncrement = PrimChecks.math.div(SelfManager.self().getVariable("rank"), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("PAGES"))); letVars['rankIncrement'] = rankIncrement;
+            let rankIncrement = PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, SelfManager.self().getVariable("rank")), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("PAGES"))); letVars['rankIncrement'] = rankIncrement;
             Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
-              SelfManager.self().setVariable("new-rank", (SelfManager.self().getVariable("new-rank") + rankIncrement));
+              SelfManager.self().setVariable("new-rank", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("new-rank")), PrimChecks.validator.checkArg('+', 1, rankIncrement)));
             }, true);
           }
         }, true);
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
-          SelfManager.self().setVariable("rank", (PrimChecks.math.div((1 - world.observer.getGlobal("damping-factor")), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("PAGES"))) + (world.observer.getGlobal("damping-factor") * SelfManager.self().getVariable("new-rank"))));
+          SelfManager.self().setVariable("rank", PrimChecks.math.plus(PrimChecks.math.div(PrimChecks.math.minus(1, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("damping-factor"))), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("PAGES"))), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("damping-factor")), PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("new-rank")))));
         }, true);
       }
       else {
         if (Prims.lt(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS")), world.observer.getGlobal("number-of-surfers"))) {
-          world.turtleManager.createTurtles((world.observer.getGlobal("number-of-surfers") - PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS"))), "SURFERS").ask(function() {
+          world.turtleManager.createTurtles(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("number-of-surfers")), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS"))), "SURFERS").ask(function() {
             SelfManager.self().setVariable("current-page", PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
             if (world.observer.getGlobal("watch-surfers?")) {
               procedures["MOVE-SURFER"]();
@@ -272,7 +272,7 @@ var procedures = (function() {
           }, true);
         }
         if (Prims.gt(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS")), world.observer.getGlobal("number-of-surfers"))) {
-          Errors.askNobodyCheck(PrimChecks.list.nOf((PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS")) - world.observer.getGlobal("number-of-surfers")), world.turtleManager.turtlesOfBreed("SURFERS"))).ask(function() { SelfManager.self().die(); }, true);
+          Errors.askNobodyCheck(PrimChecks.list.nOf(PrimChecks.math.minus(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("number-of-surfers"))), world.turtleManager.turtlesOfBreed("SURFERS"))).ask(function() { SelfManager.self().die(); }, true);
         }
         Errors.askNobodyCheck(world.links()).ask(function() {
           SelfManager.self().setVariable("color", 5);
@@ -280,9 +280,11 @@ var procedures = (function() {
         }, true);
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("SURFERS")).ask(function() {
           let oldPage = SelfManager.self().getVariable("current-page"); letVars['oldPage'] = oldPage;
-          Errors.askNobodyCheck(SelfManager.self().getVariable("current-page")).ask(function() { SelfManager.self().setVariable("visits", (SelfManager.self().getVariable("visits") + 1)); }, true);
-          if ((Prims.lte(PrimChecks.math.randomFloat(1), world.observer.getGlobal("damping-factor")) && PrimChecks.agentset.any(PrimChecks.agentset.of(SelfManager.self().getVariable("current-page"), function() { return LinkPrims.myOutLinks("LINKS"); })))) {
-            SelfManager.self().setVariable("current-page", PrimChecks.list.oneOf(PrimChecks.agentset.of(SelfManager.self().getVariable("current-page"), function() { return LinkPrims.outLinkNeighbors("LINKS"); })));
+          Errors.askNobodyCheck(SelfManager.self().getVariable("current-page")).ask(function() {
+            SelfManager.self().setVariable("visits", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("visits")), 1));
+          }, true);
+          if ((Prims.lte(PrimChecks.math.randomFloat(1), world.observer.getGlobal("damping-factor")) && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("current-page")), function() { return LinkPrims.myOutLinks("LINKS"); }))))) {
+            SelfManager.self().setVariable("current-page", PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("current-page")), function() { return LinkPrims.outLinkNeighbors("LINKS"); }))));
           }
           else {
             SelfManager.self().setVariable("current-page", PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
@@ -305,9 +307,9 @@ var procedures = (function() {
             SelfManager.self().hideTurtle(true);;
           }
         }, true);
-        let totalVisits = PrimChecks.list.sum(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAGES"), function() { return SelfManager.self().getVariable("visits"); })); letVars['totalVisits'] = totalVisits;
+        let totalVisits = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAGES"), function() { return SelfManager.self().getVariable("visits"); }))); letVars['totalVisits'] = totalVisits;
         Errors.askNobodyCheck(world.turtleManager.turtlesOfBreed("PAGES")).ask(function() {
-          SelfManager.self().setVariable("rank", PrimChecks.math.div(SelfManager.self().getVariable("visits"), totalVisits));
+          SelfManager.self().setVariable("rank", PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, SelfManager.self().getVariable("visits")), PrimChecks.validator.checkArg('/', 1, totalVisits)));
         }, true);
       }
       procedures["UPDATE-GLOBALS"]();
@@ -335,8 +337,8 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.observer.setGlobal("total-rank", PrimChecks.list.sum(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAGES"), function() { return SelfManager.self().getVariable("rank"); })));
-      world.observer.setGlobal("max-rank", PrimChecks.list.max(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAGES"), function() { return SelfManager.self().getVariable("rank"); })));
+      world.observer.setGlobal("total-rank", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAGES"), function() { return SelfManager.self().getVariable("rank"); }))));
+      world.observer.setGlobal("max-rank", PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAGES"), function() { return SelfManager.self().getVariable("rank"); }))));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -347,9 +349,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("size", (0.2 + (4 * PrimChecks.math.sqrt(PrimChecks.math.div(SelfManager.self().getVariable("rank"), world.observer.getGlobal("total-rank"))))));
+      SelfManager.self().setVariable("size", PrimChecks.math.plus(0.2, PrimChecks.math.mult(4, PrimChecks.math.sqrt(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, SelfManager.self().getVariable("rank")), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("total-rank")))))));
       if (world.observer.getGlobal("show-page-ranks?")) {
-        SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(PrimChecks.math.precision(SelfManager.self().getVariable("rank"), 3)) + workspace.dump("     ")));
+        SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(PrimChecks.math.precision(PrimChecks.validator.checkArg('PRECISION', 1, SelfManager.self().getVariable("rank")), 3)) + workspace.dump("     ")));
       }
       else {
         SelfManager.self().setVariable("label", "");

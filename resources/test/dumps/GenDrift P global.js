@@ -193,7 +193,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("pcolor", ((PrimChecks.math.random(world.observer.getGlobal("colors")) * 10) + 5));
+        SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(PrimChecks.math.mult(PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("colors"))), 10), 5));
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 75)) {
           SelfManager.self().setPatchVariable("pcolor", 125);
         }
@@ -210,7 +210,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       Errors.askNobodyCheck(world.patches()).ask(function() {
-        SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(PrimChecks.list.oneOf(world.patches()), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
+        SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.list.oneOf(world.patches())), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
       }, true);
       world.ticker.tick();
     } catch (e) {

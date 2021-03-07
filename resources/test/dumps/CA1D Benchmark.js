@@ -71,7 +71,7 @@ var procedures = (function() {
       PrimChecks.math.randomSeed(4378);
       procedures["SETUP-RANDOM"]();
       workspace.timer.reset();
-      for (let _index_415_421 = 0, _repeatcount_415_421 = StrictMath.floor((10 * world.topology.height)); _index_415_421 < _repeatcount_415_421; _index_415_421++){
+      for (let _index_415_421 = 0, _repeatcount_415_421 = StrictMath.floor(PrimChecks.math.mult(10, world.topology.height)); _index_415_421 < _repeatcount_415_421; _index_415_421++){
         procedures["GO"]();
       }
       world.observer.setGlobal("result", workspace.timer.elapsed());
@@ -138,16 +138,16 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let on_pList = []; letVars['on_pList'] = on_pList;
-      if (!world.observer.getGlobal("gone?")) {
+      if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("gone?")))) {
         throw new Exception.StopInterrupt;
       }
       on_pList = Tasks.map(Tasks.reporterTask(function(p) {
         Errors.procedureArgumentsCheck(1, arguments.length);
-        return PrimChecks.agentset.of(p, function() { return SelfManager.self().getPatchVariable("on?"); });
+        return PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p), function() { return SelfManager.self().getPatchVariable("on?"); });
       }, "[ [p] -> [ on? ] of p ]"), PrimChecks.list.sort(world._optimalPatchRow(world.observer.getGlobal("row")))); letVars['on_pList'] = on_pList;
       procedures["SETUP-GENERAL"]();
       Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() {
-        SelfManager.self().setPatchVariable("on?", PrimChecks.list.item((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), on_pList));
+        SelfManager.self().setPatchVariable("on?", PrimChecks.list.item(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pxcor")), world.topology.maxPxcor), PrimChecks.validator.checkArg('ITEM', 12, on_pList)));
         procedures["COLOR-PATCH"]();
       }, true);
       world.observer.setGlobal("gone?", true);
@@ -174,7 +174,7 @@ var procedures = (function() {
         }
       }
       Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() { procedures["DO-RULE"](); }, true);
-      world.observer.setGlobal("row", (world.observer.getGlobal("row") - 1));
+      world.observer.setGlobal("row", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("row")), 1));
       Errors.askNobodyCheck(world._optimalPatchRow(world.observer.getGlobal("row"))).ask(function() { procedures["COLOR-PATCH"](); }, true);
       world.observer.setGlobal("gone?", true);
       world.ticker.tick();
@@ -190,7 +190,7 @@ var procedures = (function() {
       var letVars = { };
       let leftOn_p = PrimChecks.agentset.of(SelfManager.self()._optimalPatchWest(), function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['leftOn_p'] = leftOn_p;
       let rightOn_p = PrimChecks.agentset.of(SelfManager.self()._optimalPatchEast(), function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['rightOn_p'] = rightOn_p;
-      let newValue = ((((((((((world.observer.getGlobal("iii") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p) || (((world.observer.getGlobal("iio") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ioi") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ioo") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("oii") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("oio") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ooi") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ooo") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p)); letVars['newValue'] = newValue;
+      let newValue = ((((((((((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("iii")) && PrimChecks.validator.checkArg('AND', 2, leftOn_p)) && PrimChecks.validator.checkArg('AND', 2, SelfManager.self().getPatchVariable("on?"))) && PrimChecks.validator.checkArg('AND', 2, rightOn_p)) || (((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("iio")) && PrimChecks.validator.checkArg('AND', 2, leftOn_p)) && PrimChecks.validator.checkArg('AND', 2, SelfManager.self().getPatchVariable("on?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, rightOn_p)))) || (((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("ioi")) && PrimChecks.validator.checkArg('AND', 2, leftOn_p)) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getPatchVariable("on?")))) && PrimChecks.validator.checkArg('AND', 2, rightOn_p))) || (((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("ioo")) && PrimChecks.validator.checkArg('AND', 2, leftOn_p)) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getPatchVariable("on?")))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, rightOn_p)))) || (((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("oii")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, leftOn_p))) && PrimChecks.validator.checkArg('AND', 2, SelfManager.self().getPatchVariable("on?"))) && PrimChecks.validator.checkArg('AND', 2, rightOn_p))) || (((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("oio")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, leftOn_p))) && PrimChecks.validator.checkArg('AND', 2, SelfManager.self().getPatchVariable("on?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, rightOn_p)))) || (((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("ooi")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, leftOn_p))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getPatchVariable("on?")))) && PrimChecks.validator.checkArg('AND', 2, rightOn_p))) || (((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("ooo")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, leftOn_p))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getPatchVariable("on?")))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, rightOn_p)))); letVars['newValue'] = newValue;
       Errors.askNobodyCheck(SelfManager.self()._optimalPatchSouth()).ask(function() { SelfManager.self().setPatchVariable("on?", newValue); }, true);
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -220,11 +220,11 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.equality(powerOfTwo, 0)) {
         Errors.reportInContextCheck(reporterContext);
-        return PrimChecks.math.mod(PrimChecks.math.floor(number), 2);
+        return PrimChecks.math.mod(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, number)), 2);
       }
       else {
         Errors.reportInContextCheck(reporterContext);
-        return procedures["BINDIGIT"](PrimChecks.math.div(PrimChecks.math.floor(number), 2),(powerOfTwo - 1));
+        return procedures["BINDIGIT"](PrimChecks.math.div(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, number)), 2),PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, powerOfTwo), 1));
       }
       Errors.missingReport();
     } catch (e) {
@@ -276,28 +276,28 @@ var procedures = (function() {
       var letVars = { };
       let rresult = 0; letVars['rresult'] = rresult;
       if (world.observer.getGlobal("ooo")) {
-        rresult = (rresult + 1); letVars['rresult'] = rresult;
+        rresult = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, rresult), 1); letVars['rresult'] = rresult;
       }
       if (world.observer.getGlobal("ooi")) {
-        rresult = (rresult + 2); letVars['rresult'] = rresult;
+        rresult = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, rresult), 2); letVars['rresult'] = rresult;
       }
       if (world.observer.getGlobal("oio")) {
-        rresult = (rresult + 4); letVars['rresult'] = rresult;
+        rresult = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, rresult), 4); letVars['rresult'] = rresult;
       }
       if (world.observer.getGlobal("oii")) {
-        rresult = (rresult + 8); letVars['rresult'] = rresult;
+        rresult = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, rresult), 8); letVars['rresult'] = rresult;
       }
       if (world.observer.getGlobal("ioo")) {
-        rresult = (rresult + 16); letVars['rresult'] = rresult;
+        rresult = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, rresult), 16); letVars['rresult'] = rresult;
       }
       if (world.observer.getGlobal("ioi")) {
-        rresult = (rresult + 32); letVars['rresult'] = rresult;
+        rresult = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, rresult), 32); letVars['rresult'] = rresult;
       }
       if (world.observer.getGlobal("iio")) {
-        rresult = (rresult + 64); letVars['rresult'] = rresult;
+        rresult = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, rresult), 64); letVars['rresult'] = rresult;
       }
       if (world.observer.getGlobal("iii")) {
-        rresult = (rresult + 128); letVars['rresult'] = rresult;
+        rresult = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, rresult), 128); letVars['rresult'] = rresult;
       }
       Errors.reportInContextCheck(reporterContext);
       return rresult;
@@ -314,23 +314,25 @@ var procedures = (function() {
       var letVars = { };
       procedures["SETUP-GENERAL"]();
       let rules = procedures["LIST-RULES"](); letVars['rules'] = rules;
-      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 5)); })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
       Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
-        return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(PrimChecks.math.mod((SelfManager.self().getPatchVariable("pxcor") + 1), PrimChecks.math.floor(PrimChecks.math.div(world.topology.width, 8))), 0));
+        return Prims.gt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.minus(world.topology.maxPycor, 5));
+      })).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
+      Errors.askNobodyCheck(PrimChecks.agentset.with(world.patches(), function() {
+        return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(PrimChecks.math.mod(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pxcor")), 1), PrimChecks.math.floor(PrimChecks.math.div(world.topology.width, 8))), 0));
       })).ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
           SelfManager.self().setVariable("heading", 270);
           SelfManager.self().fd(18);
-          procedures["PRINT-BLOCK"](PrimChecks.list.item(0, PrimChecks.list.item(SelfManager.self().getVariable("who"), rules)));
+          procedures["PRINT-BLOCK"](PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, SelfManager.self().getVariable("who")), PrimChecks.validator.checkArg('ITEM', 12, rules)))));
           SelfManager.self().fd(2);
-          procedures["PRINT-BLOCK"](PrimChecks.list.item(1, PrimChecks.list.item(SelfManager.self().getVariable("who"), rules)));
+          procedures["PRINT-BLOCK"](PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, SelfManager.self().getVariable("who")), PrimChecks.validator.checkArg('ITEM', 12, rules)))));
           SelfManager.self().fd(2);
-          procedures["PRINT-BLOCK"](PrimChecks.list.item(2, PrimChecks.list.item(SelfManager.self().getVariable("who"), rules)));
+          procedures["PRINT-BLOCK"](PrimChecks.list.item(2, PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, SelfManager.self().getVariable("who")), PrimChecks.validator.checkArg('ITEM', 12, rules)))));
           SelfManager.self().fd(-(2));
           SelfManager.self().setVariable("heading", 180);
           SelfManager.self().fd(2);
           SelfManager.self().setVariable("heading", 90);
-          procedures["PRINT-BLOCK"](PrimChecks.list.item(3, PrimChecks.list.item(SelfManager.self().getVariable("who"), rules)));
+          procedures["PRINT-BLOCK"](PrimChecks.list.item(3, PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, SelfManager.self().getVariable("who")), PrimChecks.validator.checkArg('ITEM', 12, rules)))));
           SelfManager.self().die();
         }, true);
       }, true);
@@ -368,14 +370,14 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       let rules = []; letVars['rules'] = rules;
-      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ooo"), [false, false, false]), rules); letVars['rules'] = rules;
-      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ooi"), [false, false, true]), rules); letVars['rules'] = rules;
-      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("oio"), [false, true, false]), rules); letVars['rules'] = rules;
-      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("oii"), [false, true, true]), rules); letVars['rules'] = rules;
-      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ioo"), [true, false, false]), rules); letVars['rules'] = rules;
-      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ioi"), [true, false, true]), rules); letVars['rules'] = rules;
-      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("iio"), [true, true, false]), rules); letVars['rules'] = rules;
-      rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("iii"), [true, true, true]), rules); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("ooo")), [false, false, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("ooi")), [false, false, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("oio")), [false, true, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("oii")), [false, true, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("ioo")), [true, false, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("ioi")), [true, false, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("iio")), [true, true, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); letVars['rules'] = rules;
+      rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("iii")), [true, true, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); letVars['rules'] = rules;
       Errors.reportInContextCheck(reporterContext);
       return rules;
       Errors.missingReport();

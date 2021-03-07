@@ -45,7 +45,12 @@ getTypeOf = (x) ->
 
 types  = {}
 checks = {}
-module.exports = { types, checks, getTypeOf }
+
+class NLType
+  isOfType: unimplemented
+  niceName: unimplemented
+
+module.exports = { types, checks, getTypeOf, NLType }
 
 AbstractAgentSet = require('./abstractagentset')
 Link             = require('./link')
@@ -95,10 +100,6 @@ isValidUndirectedLink = (x) -> isValidLink(x) and not x.isDirected
 
 unimplemented = () ->
   throw new Error("Unimplemented abstract method!")
-
-class NLType
-  isOfType: unimplemented
-  niceName: unimplemented
 
 class CommandLambdaType extends NLType
   isOfType: isCommandLambda

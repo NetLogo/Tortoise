@@ -90,7 +90,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
         SelfManager.self().setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("shape", "butterfly");
-        SelfManager.self().setVariable("clock", PrimChecks.math.random(PrimChecks.math.round(world.observer.getGlobal("cycle-length"))));
+        SelfManager.self().setVariable("clock", PrimChecks.math.random(PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 1, world.observer.getGlobal("cycle-length")))));
         SelfManager.self().setVariable("threshold", world.observer.getGlobal("flash-length"));
         if (Prims.equality(world.observer.getGlobal("strategy"), "delay")) {
           SelfManager.self().setVariable("reset-level", SelfManager.self().getVariable("threshold"));
@@ -98,7 +98,7 @@ var procedures = (function() {
         }
         else {
           SelfManager.self().setVariable("reset-level", 0);
-          SelfManager.self().setVariable("window", (SelfManager.self().getVariable("threshold") + 1));
+          SelfManager.self().setVariable("window", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("threshold")), 1));
         }
         SelfManager.self().setVariable("size", 2);
         procedures["RECOLOR"]();
@@ -138,7 +138,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 45);
       }
       else {
-        SelfManager.self().setVariable("color", (5 - 2));
+        SelfManager.self().setVariable("color", PrimChecks.math.minus(5, 2));
         if (world.observer.getGlobal("show-dark-fireflies?")) {
           SelfManager.self().hideTurtle(false);;
         }
@@ -156,7 +156,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().right((PrimChecks.math.randomFloat(90) - PrimChecks.math.randomFloat(90)));
+      SelfManager.self().right(PrimChecks.math.minus(PrimChecks.math.randomFloat(90), PrimChecks.math.randomFloat(90)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -168,7 +168,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      SelfManager.self().setVariable("clock", (SelfManager.self().getVariable("clock") + 1));
+      SelfManager.self().setVariable("clock", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("clock")), 1));
       if (Prims.equality(SelfManager.self().getVariable("clock"), world.observer.getGlobal("cycle-length"))) {
         SelfManager.self().setVariable("clock", 0);
       }

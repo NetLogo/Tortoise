@@ -131,7 +131,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("RABBITS"))) {
+      if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("RABBITS")))) {
         throw new Exception.StopInterrupt;
       }
       procedures["GROW-GRASS-AND-WEEDS"]();
@@ -176,7 +176,7 @@ var procedures = (function() {
       SelfManager.self().right(RandomPrims.randomLong(50));
       SelfManager.self().right(-(RandomPrims.randomLong(50)));
       SelfManager.self()._optimalFdOne();
-      SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 0.5));
+      SelfManager.self().setVariable("energy", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("energy")), 0.5));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }
@@ -189,7 +189,7 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
         SelfManager.self().setPatchVariable("pcolor", 0);
-        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
+        SelfManager.self().setVariable("energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("energy")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("grass-energy"))));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -203,7 +203,7 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 115)) {
         SelfManager.self().setPatchVariable("pcolor", 0);
-        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("weed-energy")));
+        SelfManager.self().setVariable("energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("energy")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("weed-energy"))));
       }
     } catch (e) {
       return Errors.stopInCommandCheck(e)
@@ -216,7 +216,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("birth-threshold"))) {
-        SelfManager.self().setVariable("energy", PrimChecks.math.div(SelfManager.self().getVariable("energy"), 2));
+        SelfManager.self().setVariable("energy", PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, SelfManager.self().getVariable("energy")), 2));
         SelfManager.self().hatch(1, "").ask(function() { SelfManager.self()._optimalFdOne(); }, true);
       }
     } catch (e) {

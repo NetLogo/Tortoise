@@ -76,10 +76,10 @@ var procedures = (function() {
       Errors.askNobodyCheck(world.turtles()).ask(function() {
         LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS").ask(function() {}, false);
         LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS").ask(function() {}, false);
-        if (Prims.equality(PrimChecks.math.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
+        if (Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, SelfManager.self().getPatchVariable("pxcor")), 2), 0)) {
           LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), "LINKS").ask(function() {}, false);
           LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), "LINKS").ask(function() {}, false);
-          SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.5));
+          SelfManager.self().setVariable("ycor", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("ycor")), 0.5));
         }
       }, true);
       world.ticker.reset();

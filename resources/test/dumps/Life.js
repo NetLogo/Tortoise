@@ -136,7 +136,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let erasing_p = PrimChecks.agentset.of(world.getPatchAt(MousePrims.getX(), MousePrims.getY()), function() { return SelfManager.self().getPatchVariable("living?"); }); letVars['erasing_p'] = erasing_p;
+      let erasing_p = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.getPatchAt(MousePrims.getX(), MousePrims.getY())), function() { return SelfManager.self().getPatchVariable("living?"); }); letVars['erasing_p'] = erasing_p;
       while (MousePrims.isDown()) {
         Errors.askNobodyCheck(world.getPatchAt(MousePrims.getX(), MousePrims.getY())).ask(function() {
           if (erasing_p) {

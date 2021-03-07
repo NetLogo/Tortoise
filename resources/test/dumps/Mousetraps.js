@@ -95,7 +95,7 @@ var procedures = (function() {
       var letVars = { };
       world.clearAll();
       world.observer.setGlobal("traps-triggered", 0);
-      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 + 3)); }, true);
+      Errors.askNobodyCheck(world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(105, 3)); }, true);
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("color", 9.9);
@@ -112,7 +112,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!PrimChecks.agentset.any(world.turtles())) {
+      if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtles()))) {
         throw new Exception.StopInterrupt;
       }
       Errors.askNobodyCheck(world.turtles()).ask(function() {
@@ -121,7 +121,7 @@ var procedures = (function() {
         }
         else {
           SelfManager.self().setPatchVariable("pcolor", 15);
-          world.observer.setGlobal("traps-triggered", (world.observer.getGlobal("traps-triggered") + 1));
+          world.observer.setGlobal("traps-triggered", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("traps-triggered")), 1));
           SelfManager.self().hatch(1, "").ask(function() { procedures["MOVE"](); }, true);
           procedures["MOVE"]();
         }
@@ -138,7 +138,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       SelfManager.self().right(PrimChecks.math.randomFloat(360));
-      SelfManager.self().fd(PrimChecks.math.randomFloat(world.observer.getGlobal("max-distance")));
+      SelfManager.self().fd(PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("max-distance"))));
     } catch (e) {
       return Errors.stopInCommandCheck(e)
     }

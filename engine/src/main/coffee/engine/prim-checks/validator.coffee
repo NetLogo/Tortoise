@@ -3,49 +3,25 @@
 StrictMath                   = require('shim/strictmath')
 formatFloat                  = require('util/formatfloat')
 { checks, getTypeOf, types } = require('engine/core/typechecker')
+{ getTypesFromSyntax }       = require('engine/prim-checks/syntax')
 
 class Validator
+
+  # Map[Int, Array[NLType]]
+  _cachedRuntimeTypes: new Map()
 
   constructor: (@bundle, @dumper) ->
     # These arrays of types and the common checks below are pre-computed so that all prims
     # can share them without making loads of extra array instances and extra functions.
     # -Jeremy B December 2020
-    agentOrAgentSet                    = [types.Agent, types.AgentSet]
-    agentSet                           = [types.AgentSet]
-    # Order of these is for `_sort` error message.  -Jeremy B February 2021
-    agentSetOrList                     = [types.List, types.AgentSet]
-    boolean                            = [types.Boolean]
-    list                               = [types.List]
-    number                             = [types.Number]
-    # Order of these is for the `_breedon` error message.  -Jeremy B February 2021
-    patchOrTurtleOrPatchSetOrTurtleSet = [types.TurtleSet, types.PatchSet, types.Turtle, types.Patch]
-    reporter                           = [types.ReporterLambda]
-    string                             = [types.String]
-    stringOrList                       = [types.String, types.List]
-    stringOrListOrAgentSet             = [types.String, types.List, types.AgentSet]
-    wildcard                           = [types.Wildcard]
+    # Most of these have gone away in favor of the compiler-based arg type checks.
+    # -Jeremy B February 2021
+    agentSet = [types.AgentSet]
+    boolean  = [types.Boolean]
 
     @commonArgChecks = {
-      agentOrAgentSet:                           @makeArgTypeCheck(agentOrAgentSet)
-      agentSet:                                  @makeArgTypeCheck(agentSet)
-      agentSetOrList:                            @makeArgTypeCheck(agentSetOrList)
-      agentSet_list:                             @makeArgTypeCheck(agentSet, list)
-      agentSet_number:                           @makeArgTypeCheck(agentSet, number)
-      list:                                      @makeArgTypeCheck(list)
-      list_number_number:                        @makeArgTypeCheck(list, number, number)
-      number:                                    @makeArgTypeCheck(number)
-      number_agentSetOrList:                     @makeArgTypeCheck(number, agentSetOrList)
-      number_number:                             @makeArgTypeCheck(number, number)
-      number_stringOrList:                       @makeArgTypeCheck(number, stringOrList)
-      number_stringOrList_wildcard:              @makeArgTypeCheck(number, stringOrList, wildcard)
-      reporter_agentSetOrList:                   @makeArgTypeCheck(reporter, agentSetOrList)
-      reporter_list:                             @makeArgTypeCheck(reporter, list)
-      stringOrList:                              @makeArgTypeCheck(stringOrList)
-      string_number_number:                      @makeArgTypeCheck(string, number, number)
-      string_patchOrTurtleOrPatchSetOrTurtleSet: @makeArgTypeCheck(string, patchOrTurtleOrPatchSetOrTurtleSet)
-      wildcard_list:                             @makeArgTypeCheck(wildcard, list)
-      wildcard_stringOrList:                     @makeArgTypeCheck(wildcard, stringOrList)
-      wildcard_stringOrListOrAgentSet:           @makeArgTypeCheck(wildcard, stringOrListOrAgentSet)
+      agentSet: @makeArgTypeCheck(agentSet)
+      boolean:  @makeArgTypeCheck(boolean)
     }
 
     @commonValueChecks = {
@@ -72,6 +48,7 @@ class Validator
 
     result
 
+  # (String) => String
   addIndefiniteArticle: (text) ->
     if ['A', 'E', 'I', 'O', 'U'].includes(text.charAt(0).toUpperCase())
       "an #{text}"
@@ -79,8 +56,8 @@ class Validator
       "a #{text}"
 
   # (Array[NLType]) => String
-  listTypeNames: (types) ->
-    names    = types.map( (type) -> type.niceName() )
+  listTypeNames: (typesToName) ->
+    names    = typesToName.map( (type) -> type.niceName() )
     nameList = names.join(" or ")
     @addIndefiniteArticle(nameList)
 
@@ -117,20 +94,35 @@ class Validator
       return
 
   # (Array[NLType]) => (String, Any) => Any
-  makeValueTypeCheck: (types...) -> (prim, value) =>
-    @checkValueTypes(prim, types, value)
+  makeValueTypeCheck: (allowedTypes...) -> (prim, value) =>
+    @checkValueTypes(prim, allowedTypes, value)
 
   # (String, Array[NLType], Any) => Any
-  checkValueTypes: (prim, types, value) ->
+  checkValueTypes: (prim, allowedTypes, value) ->
     # And we could use `some()` here, but that also could generate transient closure objects. -Jeremy B December 2020
     match = false
-    for j in [0...types.length]
-      if types[j].isOfType(value)
+    for j in [0...allowedTypes.length]
+      if allowedTypes[j].isOfType(value)
         match = true
+        break
 
     if not match
-      @throwTypeError(prim, value, types...)
+      @throwTypeError(prim, value, allowedTypes...)
 
     value
+
+  # (Int) => Array[NLType]
+  syntaxTypeToRuntimeTypes: (syntax) ->
+    if @_cachedRuntimeTypes.has(syntax)
+      @_cachedRuntimeTypes.get(syntax)
+    else
+      allowedTypes = getTypesFromSyntax(syntax)
+      @_cachedRuntimeTypes.set(syntax, allowedTypes)
+      allowedTypes
+
+  # (String, Int, Any) => Any
+  checkArg: (prim, syntax, argValue) ->
+    allowedTypes = @syntaxTypeToRuntimeTypes(syntax)
+    @checkValueTypes(prim, allowedTypes, argValue)
 
 module.exports = Validator

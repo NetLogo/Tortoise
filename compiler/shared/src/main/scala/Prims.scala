@@ -9,7 +9,7 @@ import
   JsOps.{ indented, jsString, jsStringEscaped }
 
 import
-  org.nlogo.core.{ AstNode, CommandBlock, CompilerException, Expression, prim, Reporter, ReporterApp, ReporterBlock, Statement, Token }
+  org.nlogo.core.{ Application, AstNode, CommandBlock, CompilerException, Expression, prim, Reporter, ReporterApp, ReporterBlock, Statement, Token }
 
 // The Prim traits are split apart as follows
 //                  JsOps
@@ -93,54 +93,115 @@ trait PrimUtils {
   }
 }
 
+object ReporterPrims {
+
+  // The magic number 21 here is for `Syntax.SymbolType` the largest mask value at the moment -Jeremy B February 2021
+  // scalastyle:off magic.number
+  private val types: Seq[Int] = Range(1, 21).map( (t) => Math.pow(2, t).asInstanceOf[Int] )
+  // scalastyle:on magic.number
+
+  def isSupported(mask: Int, t: Int): Boolean =
+    (mask & t) != 0
+
+  def allTypesAllowed(allowed: Int, actual: Int): Boolean =
+    types.filter( (t) => !isSupported(allowed, t) && isSupported(actual, t) ).isEmpty
+
+  def makeCheckedArgOps(a: Application, ops: Seq[String]): String = {
+    // TODO: Handle `Syntax.RepeatableType` arguments. -Jeremy B February 2021
+    val syntax        = a.instruction.syntax
+    val allAllowed    = if (syntax.isInfix) List(syntax.left) ++ syntax.right else syntax.right
+    val argsWithTypes = allAllowed.zip(a.args).zip(ops)
+
+    val argOps = argsWithTypes.map( { case ((allowed: Int, exp: Expression), op: String) =>
+      ReporterPrims.makeCheckedOp(a.instruction.token.text, allowed, exp.reportedType(), op)
+    })
+    argOps.mkString(", ")
+  }
+
+  def makeCheckedOp(prim: String, allowed: Int, actual: Int, op: String): String = {
+    if (ReporterPrims.allTypesAllowed(allowed, actual)) {
+      op
+    } else {
+      s"PrimChecks.validator.checkArg('${prim.toUpperCase()}', $allowed, $op)"
+    }
+  }
+
+}
+
 trait ReporterPrims extends PrimUtils {
   // scalastyle:off method.length
   // scalastyle:off cyclomatic.complexity
   def reporter(r: ReporterApp)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    def arg(i: Int) = handlers.reporter(r.args(i))
-    def commaArgs = argsSep(", ")
+
+    def arg(i: Int) =
+      handlers.reporter(r.args(i))
+
+    def commaArgs =
+      argsSep(", ")
+
     def args =
-      r.args.collect{ case x: ReporterApp => handlers.reporter(x) }
+      r.args.collect { case x: ReporterApp => handlers.reporter(x) }
+
     def argsSep(sep: String) =
       args.mkString(sep)
+
+    def checkedArgs =
+      ReporterPrims.makeCheckedArgOps(r, args)
+
+    def makeCheckedOp(i: Int) = {
+      val syntax = r.instruction.syntax
+      val allowed = if (!r.instruction.syntax.isInfix) {
+        syntax.right(i)
+      } else {
+        if (i == 0) syntax.left else syntax.right(i - 1)
+      }
+      ReporterPrims.makeCheckedOp(r.instruction.token.text, allowed, r.args(i).reportedType(), arg(i))
+    }
+
+    // `and` and `or` need to short-circuit, so we check them a bit differently.  -Jeremy B February 2021
+    def makeInfixBoolOp(op: String): String = {
+      val left  = makeCheckedOp(0)
+      val right = makeCheckedOp(1)
+      s"($left $op $right)"
+    }
+
     r.reporter match {
 
       // Basics stuff
-      case SimplePrims.SimpleReporter(op) => op
-      case SimplePrims.InfixReporter(op)  => s"(${arg(0)} $op ${arg(1)})"
-      case SimplePrims.NormalReporter(op) => s"$op($commaArgs)"
-      case SimplePrims.TypeCheck(check)   => s"NLType.checks.$check${arg(0)})"
-      case VariableReporter(op)           => op
-      case p: prim._const                 => handlers.literal(p.value)
-      case lv: prim._letvariable          => handlers.ident(lv.let.name)
-      case pv: prim._procedurevariable    => handlers.ident(pv.name)
-      case lv: prim._lambdavariable       => handlers.ident(lv.name)
-      case call: prim._callreport         =>
+      case SimplePrims.SimpleReporter(op)  => op
+      case SimplePrims.NormalReporter(op)  => s"$op($commaArgs)"
+      case SimplePrims.CheckedReporter(op) => s"$op($checkedArgs)"
+      case SimplePrims.TypeCheck(check)    => s"NLType.checks.$check${arg(0)})"
+      case VariableReporter(op)            => op
+      case p: prim._const                  => handlers.literal(p.value)
+      case lv: prim._letvariable           => handlers.ident(lv.let.name)
+      case pv: prim._procedurevariable     => handlers.ident(pv.name)
+      case lv: prim._lambdavariable        => handlers.ident(lv.name)
+      case call: prim._callreport          =>
         s"""procedures["${call.name}"](${args.mkString(",")})"""
 
       // Blarg
-      case _: prim._unaryminus         => s" -(${arg(0)})" // The space is important, because these can be nested --JAB (6/12/14)
-      case _: prim._not                => s"!${arg(0)}"
       case _: prim._word               => ("''" +: args).map(arg => s"workspace.dump($arg)").mkString("(", " + ", ")")
       case _: prim.etc._ifelsevalue    => generateIfElseValue(r.args)
       case _: prim.etc._nvalues        => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
 
+      // Boolean
+      case _: prim._and => makeInfixBoolOp("&&")
+      case _: prim._or  => makeInfixBoolOp("||")
+
       // Agentset filtering
-      case _: prim._any          => s"PrimChecks.agentset.any(${arg(0)})"
-      case _: prim.etc._all      => s"PrimChecks.agentset.all(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._atpoints => s"PrimChecks.agentset.atPoints(${arg(0)}, ${arg(1)})"
-      case _: prim._count        => s"PrimChecks.agentset.count(${arg(0)})"
-      case _: prim.etc._maxnof   => s"PrimChecks.agentset.maxNOf(${arg(1)}, ${arg(0)}, ${handlers.fun(r.args(2), true)})"
-      case _: prim.etc._maxoneof => s"PrimChecks.agentset.maxOneOf(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._minnof   => s"PrimChecks.agentset.minNOf(${arg(1)}, ${arg(0)}, ${handlers.fun(r.args(2), true)})"
-      case _: prim.etc._minoneof => s"PrimChecks.agentset.minOneOf(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim._of           => s"PrimChecks.agentset.of(${arg(1)}, ${handlers.fun(r.args(0), isReporter = true)})"
-      case _: prim.etc._sorton   => s"PrimChecks.agentset.sortOn(${arg(1)}, ${handlers.fun(r.args(0), true)})"
-      case _: prim._with         => s"PrimChecks.agentset.with(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._withmax  => s"PrimChecks.agentset.withMax(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._withmin  => s"PrimChecks.agentset.withMin(${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._all      => s"PrimChecks.agentset.all(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._maxnof   => s"PrimChecks.agentset.maxNOf(${makeCheckedOp(1)}, ${makeCheckedOp(0)}, ${handlers.fun(r.args(2), true)})"
+      case _: prim.etc._maxoneof => s"PrimChecks.agentset.maxOneOf(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._minnof   => s"PrimChecks.agentset.minNOf(${makeCheckedOp(1)}, ${makeCheckedOp(0)}, ${handlers.fun(r.args(2), true)})"
+      case _: prim.etc._minoneof => s"PrimChecks.agentset.minOneOf(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim._of           => s"PrimChecks.agentset.of(${makeCheckedOp(1)}, ${handlers.fun(r.args(0), isReporter = true)})"
+      case _: prim.etc._sorton   => s"PrimChecks.agentset.sortOn(${makeCheckedOp(1)}, ${handlers.fun(r.args(0), true)})"
+      case _: prim._with         => s"PrimChecks.agentset.with(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._withmax  => s"PrimChecks.agentset.withMax(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._withmin  => s"PrimChecks.agentset.withMin(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
 
       case _: Optimizer._countotherwith => s"PrimChecks.agentset.countOtherWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
       case _: Optimizer._countwith      => s"PrimChecks.agentset.countWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
@@ -170,7 +231,11 @@ trait ReporterPrims extends PrimUtils {
       case p: prim.etc._linkbreedsingular => s"world.linkManager.getLink(${arg(0)}, ${arg(1)}, ${jsString(p.breedName)})"
       case b: prim.etc._breedat           => s"SelfManager.self().breedAt(${jsString(b.breedName)}, ${arg(0)}, ${arg(1)})"
       case b: prim.etc._breedhere         => s"SelfManager.self().breedHere(${jsString(b.breedName)})"
-      case b: prim.etc._breedon           => s"PrimChecks.agentset.breedOn(${jsString(b.breedName)}, ${arg(0)})"
+      case b: prim.etc._breedon           => s"PrimChecks.agentset.breedOn(${jsString(b.breedName)}, ${makeCheckedOp(0)})"
+
+      // List prims
+      case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}', $checkedArgs)"
+      case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.token.text}', $checkedArgs)"
 
       // Link finding
       case p: prim.etc._inlinkfrom       => s"LinkPrims.inLinkFrom(${jsString(fixBN(p.breedName))}, ${arg(0)})"
@@ -196,7 +261,6 @@ trait ReporterPrims extends PrimUtils {
         val task = generateTask(r.args(0), false, l.argumentNames.map(handlers.ident), l.source)
         s"Tasks.commandTask($task)"
       }
-
 
       case x: prim._externreport =>
         val ExtensionPrimRegex = """_externreport\(([^:]+):([^)]+)\)""".r
@@ -257,19 +321,30 @@ trait CommandPrims extends PrimUtils {
   // scalastyle:off method.length
   def generateCommand(s: Statement)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    def arg(i: Int) = handlers.reporter(s.args(i))
-    def commaArgs = argsSep(", ")
+
+    def arg(i: Int) =
+      handlers.reporter(s.args(i))
+
+    def commaArgs =
+      argsSep(", ")
+
     def args =
       s.args.collect {
         case x: ReporterApp  => handlers.reporter(x)
         case z: CommandBlock => s"() => { ${handlers.commands(z)} }"
       }
+
     def argsSep(sep: String) =
       args.mkString(sep)
 
+    def checkedArgs =
+      ReporterPrims.makeCheckedArgOps(s, args)
+
     s.command match {
-      case SimplePrims.SimpleCommand(op) => if (op.isEmpty) "" else s"$op;"
-      case SimplePrims.NormalCommand(op) => s"$op($commaArgs);"
+      case SimplePrims.SimpleCommand(op)  => if (op.isEmpty) "" else s"$op;"
+      case SimplePrims.NormalCommand(op)  => s"$op($commaArgs);"
+      case SimplePrims.CheckedCommand(op) => s"$op($checkedArgs);"
+
       case _: prim._set                  => generateSet(s)
       case _: prim.etc._loop             => generateLoop(s)
       case _: prim._repeat               => generateRepeat(s)

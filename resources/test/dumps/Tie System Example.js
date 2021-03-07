@@ -63,16 +63,16 @@ var procedures = (function() {
       }, true);
       world.turtleManager.createTurtles(5, "PLANETS").ask(function() {
         SelfManager.self().setVariable("size", 2);
-        SelfManager.self().setVariable("color", (105 + RandomPrims.randomLong(3)));
-        SelfManager.self().fd((6 + PrimChecks.math.randomFloat(12)));
+        SelfManager.self().setVariable("color", PrimChecks.math.plus(105, RandomPrims.randomLong(3)));
+        SelfManager.self().fd(PrimChecks.math.plus(6, PrimChecks.math.randomFloat(12)));
         LinkPrims.createLinkFrom(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("SUNS")), "LINKS").ask(function() {
           SelfManager.self().tie();
           SelfManager.self().setVariable('hidden?', true)
         }, true);
         SelfManager.self().hatch(2, "MOONS").ask(function() {
           SelfManager.self().setVariable("size", 0.5);
-          SelfManager.self().setVariable("color", (5 + RandomPrims.randomLong(3)));
-          SelfManager.self().fd((1 + PrimChecks.math.randomFloat(3)));
+          SelfManager.self().setVariable("color", PrimChecks.math.plus(5, RandomPrims.randomLong(3)));
+          SelfManager.self().fd(PrimChecks.math.plus(1, PrimChecks.math.randomFloat(3)));
           LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS").ask(function() {
             SelfManager.self().tie();
             SelfManager.self().setVariable('hidden?', true)
