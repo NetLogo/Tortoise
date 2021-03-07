@@ -14,7 +14,7 @@ module.exports = {
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Control", Action: "Play" })
       else
-        workspace.printPrims.print("Control Play")
+        workspace.printPrims.print("Resume the simulation")
       return
 
     # () => Unit
@@ -22,23 +22,23 @@ module.exports = {
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Control", Action: "Pause" })
       else
-        workspace.printPrims.print("Control Pause")
+        workspace.printPrims.print("Pause the simulation")
       return
 
-    # () => Unit
+    # (String) => Unit
     show = (name) ->
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Layout", Action: "Show", Value: name })
       else
-        workspace.printPrims.print("Layout Show")
+        workspace.printPrims.print("Show UI component #{name}")
       return
 
-    # () => Unit
+    # (String) => Unit
     hide = (name) ->
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Layout", Action: "Hide", Value: name })
       else
-        workspace.printPrims.print("Layout Hide")
+        workspace.printPrims.print("Hide UI component #{name}")
       return
 
     # (Number) => Unit
@@ -46,7 +46,7 @@ module.exports = {
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Control", Action: "SetSpeed", Value: speed })
       else
-        workspace.printPrims.print("Control SetSpeed")
+        workspace.printPrims.print("Set speed to #{speed}")
       return
 
     # () => Unit
@@ -54,15 +54,7 @@ module.exports = {
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Control", Action: "Recompile" })
       else
-        workspace.printPrims.print("Recompile Code")
-      return
-
-    # () => Unit
-    recompileNT = () ->
-      if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue({ Type: "Control", Action: "Recompile-NT" })
-      else
-        workspace.printPrims.print("Recompile NetTango")
+        workspace.printPrims.print("Recompile NetLogo code")
       return
 
     # () => Unit
@@ -92,7 +84,6 @@ module.exports = {
     ,"EXECUTE-COMMAND": executeCommand
      ,"CLEAR-COMMANDS": clearCommands
       ,    "RECOMPILE": recompile
-      , "RECOMPILE-NT": recompileNT
       }
     }
 }

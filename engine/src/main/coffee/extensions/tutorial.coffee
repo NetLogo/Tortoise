@@ -112,6 +112,16 @@ module.exports = {
         workspace.printPrims.print("Deactivate section #{sectionName}")
       return
 
+    # (String) -> Boolean
+    isActivated = (sectionName) ->
+      if tortugaSession = getTortugaSession()
+        if sectionName of tortugaSession.Tutorial.Sections
+          section = tortugaSession.Tutorial.Sections[sectionName]
+          section.Activated is true
+        else
+          throw new Error("Section #{sectionName} is not defined in the tutorial")
+      else false
+
     # (String) -> Unit
     go = (sectionName) ->
       if tortugaSession = getTortugaSession()
@@ -145,7 +155,14 @@ module.exports = {
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue({ Type: "Tutorial", Action: "Survey", Value: triggerName })
       else
-        workspace.printPrims.print("Go to section #{sectionName}")
+        workspace.printPrims.print("Trigger survey #{triggerName}")
+        
+    # (String, String) -> Unit
+    trigger = (source, type) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.EventRegistry.HandleEvent({ Category: 0, Source: source, Type: type, Fields: {} })
+      else
+        workspace.printPrims.print("Trigger event #{type} from #{source}")
 
       return
     # () -> Boolean
@@ -169,9 +186,11 @@ module.exports = {
       ,              "GO": go
       ,        "ACTIVATE": activate
       ,      "DEACTIVATE": deactivate
+      ,   "IS-ACTIVATED?": isActivated
       ,         "FORWARD": forward
       ,            "BACK": back
       ,          "SURVEY": survey
+      ,         "TRIGGER": trigger
       ,    "IN-TUTORIAL?": inTutorial
       }
     }

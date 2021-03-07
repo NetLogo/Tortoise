@@ -1,0 +1,68 @@
+{
+    "name": "nettango",
+    "prims": [
+      {
+        "name": "activate",
+        "actionName": "activate",
+        "argTypes": [
+          "number"
+        ],
+        "returnType": "unit"
+      }, {
+        "name": "show",
+        "actionName": "show",
+        "argTypes": [
+          "number"
+        ],
+        "returnType": "unit"
+      }, {
+        "name": "hide",
+        "actionName": "hide",
+        "argTypes": [
+          "number"
+        ],
+        "returnType": "unit"
+      }, {
+        "name": "recompile",
+        "actionName": "recompile",
+        "argTypes": [],
+        "returnType": "unit"
+      }, {
+        "name": "show-blocks",
+        "actionName": "show-blocks",
+        "argTypes": [
+          "wildcard"
+        ],
+        "returnType": "unit"
+      }, {
+        "name": "show-blocks-except",
+        "actionName": "show-blocks-except",
+        "argTypes": [
+          "wildcard"
+        ],
+        "returnType": "unit"
+      }, {
+        "name": "hide-blocks",
+        "actionName": "hide-blocks",
+        "argTypes": [
+          "wildcard"
+        ],
+        "returnType": "unit"
+      }, {
+        "name": "hide-blocks-except",
+        "actionName": "hide-blocks-except",
+        "argTypes": [
+          "wildcard"
+        ],
+        "returnType": "unit"
+      }, {
+        "name": "switch-program",
+        "actionName": "switch-program",
+        "argTypes": [
+          "number"
+        ],
+        "returnType": "unit"
+      }
+    ]
+  }
+  

@@ -63,6 +63,13 @@
       ],
       "returnType": "unit"
     }, {
+      "name": "is-activated?",
+      "actionName": "is-activated?",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "boolean"
+    }, {
       "name": "go",
       "actionName": "go",
       "argTypes": [
@@ -83,7 +90,15 @@
       "name": "survey",
       "actionName": "survey",
       "argTypes": [ 
-        "string" 
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "trigger",
+      "actionName": "trigger",
+      "argTypes": [ 
+        "string",
+        "string"
       ],
       "returnType": "unit"
     }, {
