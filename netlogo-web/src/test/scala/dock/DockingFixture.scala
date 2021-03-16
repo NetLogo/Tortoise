@@ -134,7 +134,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   def runReporterMunged(reporter: Reporter, mode: TestMode, mungeActual: (String) => String) {
     if (!opened) declare(Model())
     netLogoCode ++= s"${reporter.reporter}\n"
-    val compiledJS = "var letVars = { }; " + tortoiseCompiler.compileReporter(
+    val compiledJS = tortoiseCompiler.compileReporter(
       reporter.reporter, workspace.procedures, workspace.world.program)
     reporter.result match {
       case Success(expected) =>
@@ -229,7 +229,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   override def runCommand(command: Command, mode: TestMode) = {
     val logo = command.command
     netLogoCode ++= s"$logo\n"
-    val compiledJS = "var letVars = { }; " + tortoiseCompiler.compileRawCommands(logo, workspace.procedures, workspace.world.program)
+    val compiledJS = tortoiseCompiler.compileRawCommands(logo, workspace.procedures, workspace.world.program)
     runDocked(_.command(logo))(_.run(compiledJS))
   }
 

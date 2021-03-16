@@ -13,10 +13,11 @@ NLMath            = require('util/nlmath')
 { foldl, forEach, map, uniqueBy } = require('brazierjs/array')
 { rangeUntil }                    = require('brazierjs/number')
 
-{ PenManager, PenStatus: { Down, Erase } }             = require('./structure/penmanager')
-{ ExtraVariableSpec }                                  = require('./structure/variablespec')
-{ DeathInterrupt: Death, ignoring, TopologyInterrupt } = require('util/exception')
-{ Setters, VariableSpecs }                             = require('./turtle/turtlevariables')
+{ PenManager, PenStatus: { Down, Erase } } = require('./structure/penmanager')
+{ ExtraVariableSpec }                      = require('./structure/variablespec')
+{ ignoring, TopologyInterrupt }            = require('util/exception')
+{ DeathInterrupt }                         = require('util/interrupts')
+{ Setters, VariableSpecs }                 = require('./turtle/turtlevariables')
 
 ignorantly = ignoring(TopologyInterrupt)
 
@@ -171,7 +172,7 @@ module.exports =
       if not @isDead()
         @world.selfManager.askAgent(f)(this)
         if @world.selfManager.self().isDead?()
-          throw new Death
+          return DeathInterrupt
       else
         throw new Error("That #{@getBreedNameSingular()} is dead.")
       return
@@ -277,7 +278,7 @@ module.exports =
     isDead: ->
       @id is -1
 
-    # () => Nothing
+    # () => DeathInterrupt
     die: ->
       @_breed.remove(this)
       if not @isDead()
@@ -287,7 +288,7 @@ module.exports =
         @id = -1
         @getPatchHere().untrackTurtle(this)
         @world.observer.unfocus(this)
-      throw new Death("Call only from inside an askAgent block")
+      return DeathInterrupt
 
     # (String) => Any
     getVariable: (varName) ->

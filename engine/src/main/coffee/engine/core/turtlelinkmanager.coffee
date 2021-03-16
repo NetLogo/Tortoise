@@ -6,10 +6,6 @@ TurtleSet = require('./turtleset')
 { filter, flatMap, map, unique } = require('brazierjs/array')
 { pipeline }                     = require('brazierjs/function')
 
-{ DeathInterrupt, ignoring } = require('util/exception')
-
-ignorantly = ignoring(DeathInterrupt)
-
 # data Directedness
 All = {}
 In  = {}
@@ -48,7 +44,7 @@ module.exports =
 
       # Purposely done after resetting the array so that calls to `TurtleLinkManager.remove` in `Link.die` don't spend
       # a ton of time iterating through long arrays that are in the process of being wiped out. --JAB (11/24/14)
-      oldLinks.forEach((link) -> ignorantly(() => link.die()))
+      oldLinks.forEach((link) -> link.die())
 
       return
 

@@ -10,36 +10,36 @@ class JSIdentProviderTest extends FunSuite {
     "netLogo" manglesTo "netlogo"
   }
 
-  test("camel-cases dash-separated identifiers") {
-    "net-logo" manglesTo "netLogo"
+  test("H-splits dash-separated identifiers") {
+    "net-logo" manglesTo "netHlogo"
   }
 
   test("escapes characters that are invalid in JS identifiers") {
-    "netlogo?" manglesTo "netlogo_p"
-    "netlogo!" manglesTo "netlogo_exclamation_"
-    "netlogo=" manglesTo "netlogo_eq"
+    "netlogo?" manglesTo "netlogo_Q"
+    "netlogo!" manglesTo "netlogo_EXC_"
+    "netlogo=" manglesTo "netlogo_EQ"
   }
 
   test("escapes identifiers that are JS keywords") {
-    "switch" manglesTo "_switch_"
+    "switch" manglesTo "_SWITCH_"
   }
 
   test("doesn't mangle identifiers that only partially contain JS keywords") {
-    "switch-colors" manglesTo "switchColors"
+    "switch-colors" manglesTo "switchHcolors"
   }
 
   test("changes names that are likely to clash with JS browser-specific methods") {
-    "onclose" manglesTo "on_close"
-    "is-finite" manglesTo "is_Finite"
-    "screen-x" manglesTo "screen_X"
-    "scroll-x" manglesTo "scroll_X"
-    "webkit-storage-info" manglesTo "webkit_StorageInfo"
-    "moz-contact" manglesTo "moz_Contact"
-    "ms-pac-man" manglesTo "ms_PacMan"
+    "onclose" manglesTo "ON_close"
+    "is-finite" manglesTo "IS_Hfinite"
+    "screen-x" manglesTo "SCREEN_Hx"
+    "scroll-x" manglesTo "SCROLL_Hx"
+    "webkit-storage-info" manglesTo "WEBKIT_HstorageHinfo"
+    "moz-contact" manglesTo "MOZ_Hcontact"
+    "ms-pac-man" manglesTo "MS_HpacHman"
   }
 
   test("doesn't mangle identifiers that only partially contain parts of browser-specific methods' names") {
-    "teardown-onclose" manglesTo "teardownOnclose"
+    "teardown-onclose" manglesTo "teardownHonclose"
   }
 
   private implicit class TestString(str: String) {

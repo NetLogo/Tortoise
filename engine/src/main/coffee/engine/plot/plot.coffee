@@ -8,7 +8,7 @@ StrictMath = require('shim/strictmath')
 { fold, isSomething, maybe }                            = require('brazierjs/maybe')
 { lookup, values }                                      = require('brazierjs/object')
 
-{ StopInterrupt: Stop } = require('util/exception')
+{ StopInterrupt } = require('util/interrupts')
 
 module.exports = class Plot
 
@@ -18,7 +18,7 @@ module.exports = class Plot
 
   name: undefined # String
 
-  # (String, Array[Pen], PlotOps, String, String, Boolean, Number, Number, Number, Number, () => (Unit | Stop), () => (Unit | Stop)) => Plot
+  # (String, Array[Pen], PlotOps, String, String, Boolean, Number, Number, Number, Number, () => (Unit | StopInterrupt), () => (Unit | StopInterrupt)) => Plot
   constructor: (@name, pens = [], @_ops, @xLabel, @yLabel, @isLegendEnabled = true, @isAutoplotting = true, @xMin = 0, @xMax = 10, @yMin = 0, @yMax = 10, @_setupThis = (->), @_updateThis = (->)) ->
     toName            = (p) -> p.name.toUpperCase()
     @_currentPenMaybe = maybe(pens[0])
@@ -163,7 +163,7 @@ module.exports = class Plot
   # () => Unit
   setup: ->
     setupResult = @_setupThis()
-    if not (setupResult instanceof Stop)
+    if not (setupResult is StopInterrupt)
       @getPens().forEach((pen) -> pen.setup())
     return
 
@@ -188,7 +188,7 @@ module.exports = class Plot
   # () => Unit
   update: ->
     updateResult = @_updateThis()
-    if not (updateResult instanceof Stop)
+    if not (updateResult is StopInterrupt)
       @getPens().forEach((pen) -> pen.update())
     return
 

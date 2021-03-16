@@ -10,7 +10,7 @@ import
   scalaz.ValidationNel
 
 case class Compilation(
-  compiledProcedures:      Seq[(String, Seq[String])],
+  compiledProcedures:      Seq[CompiledProcedure],
   widgets:                 Seq[CompiledWidget],
   interfaceGlobalCommands: Seq[ValidationNel[CompilerException, String]],
   model:                   Model,

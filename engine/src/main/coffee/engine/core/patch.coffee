@@ -7,9 +7,10 @@ Comparator      = require('util/comparator')
 
 { filter, foldl } = require('brazierjs/array')
 
-{ DeathInterrupt: Death, TopologyInterrupt } = require('util/exception')
-{ Setters, VariableSpecs }                   = require('./patch/patchvariables')
-{ ExtraVariableSpec }                        = require('./structure/variablespec')
+{ TopologyInterrupt }      = require('util/exception')
+{ DeathInterrupt }         = require('util/interrupts')
+{ Setters, VariableSpecs } = require('./patch/patchvariables')
+{ ExtraVariableSpec }      = require('./structure/variablespec')
 
 module.exports =
   class Patch
@@ -83,7 +84,7 @@ module.exports =
     ask: (f) ->
       @world.selfManager.askAgent(f)(this)
       if @world.selfManager.self().isDead?()
-        throw new Death
+        return DeathInterrupt
       return
 
     # [Result] @ (() => Result) => Result

@@ -9,7 +9,7 @@ stableSort   = require('util/stablesort')
 { pipeline   } = require('brazierjs/function')
 { keys       } = require('brazierjs/object')
 
-{ DeathInterrupt: Death } = require('util/exception')
+{ DeathInterrupt } = require('util/interrupts')
 
 # Never instantiate this class directly --JAB (5/7/14)
 module.exports =
@@ -38,7 +38,7 @@ module.exports =
       iter.forEach(@_world.selfManager.askAgent(f))
 
       if @_world.selfManager.self().isDead?()
-        throw new Death
+        return DeathInterrupt
 
       return
 

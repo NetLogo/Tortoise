@@ -8,9 +8,10 @@ TurtleSet        = require('./turtleset')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('util/comparator')
 
-{ AgentException, DeathInterrupt: Death } = require('util/exception')
-{ Setters, VariableSpecs }                = require('./link/linkvariables')
-{ ExtraVariableSpec }                     = require('./structure/variablespec')
+{ AgentException }         = require('util/exception')
+{ DeathInterrupt }         = require('util/interrupts')
+{ Setters, VariableSpecs } = require('./link/linkvariables')
+{ ExtraVariableSpec }      = require('./structure/variablespec')
 
 class StampMode
   constructor: (@name) -> # (String) => StampMode
@@ -70,7 +71,7 @@ module.exports =
       @_varManager[varName] = value
       return
 
-    # () => Nothing
+    # () => DeathInterrupt
     die: ->
       @_breed.remove(this)
       if not @isDead()
@@ -79,7 +80,7 @@ module.exports =
         @_registerRemoval(this)
         @_seppuku()
         @id = -1
-      throw new Death("Call only from inside an askAgent block")
+      return DeathInterrupt
 
     # () => Unit
     stamp: ->
@@ -159,7 +160,7 @@ module.exports =
       if not @isDead()
         @world.selfManager.askAgent(f)(this)
         if @world.selfManager.self().isDead?()
-          throw new Death
+          return DeathInterrupt
       else
         throw new Error("That #{@getBreedNameSingular()} is dead.")
       return

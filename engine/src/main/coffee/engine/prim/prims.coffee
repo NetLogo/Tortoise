@@ -34,7 +34,7 @@ module.exports =
     _everyMap: undefined # Object[String, Timer]
 
     # (Dump, Hasher, RNG, World) => Prims
-    constructor: (@_dumper, @_hasher, @_rng, @_world, @_evalPrims) ->
+    constructor: (@_dumper, @_hasher, @_rng, @_world) ->
       @_everyMap = {}
 
     # () => Nothing
@@ -215,21 +215,6 @@ module.exports =
         range(lowerBound, upperBound, stepSize)
       else
         throw new Error("The step-size for range must be non-zero.")
-
-    # (String) => Any
-    readFromString: (str) ->
-      @_evalPrims.readFromString(str)
-
-    # (Boolean, JsObject, Array[Any]) => Unit|Any
-    runCode: (isRunResult, procVars, args...) ->
-      f = args[0]
-      if checks.isString(f)
-        if args.length is 1
-          @_evalPrims.runCode(f, isRunResult, procVars)
-        else
-          throw new Error("#{if isRunResult then "runresult" else "run"} doesn't accept further inputs if the first is a string")
-      else
-        f(args.slice(1)...)
 
     # (Any) => Unit
     stdout: (x) ->

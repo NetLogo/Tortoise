@@ -1,9 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ DeathInterrupt, ignoring } = require('util/exception')
-
-ignorantly = ignoring(DeathInterrupt)
-
 module.exports =
   class SelfManager
 
@@ -40,7 +36,7 @@ module.exports =
         at._myself = at._self
         at._self   = agent
 
-        try ignorantly(f)
+        try f()
         finally
           at._self   = oldAgent
           at._myself = oldMyself

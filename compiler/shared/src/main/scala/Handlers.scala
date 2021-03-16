@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.compiler
 
 import
-  JsOps.{ jsArrayString, jsFunction, indented }
+  JsOps.{ jsArrayString, jsFunction }
 
 import
   org.nlogo.core.{ AstNode, CommandBlock, Dump, LogoList, Nobody => NlogoNobody, ReporterApp,
@@ -24,7 +24,7 @@ trait Handlers extends EveryIDProvider {
     val body = if (isReporter) s"return ${reporter(node)};" else commands(node)
     val fullBody =
       if (args.length > 0)
-        s"""Errors.procedureArgumentsCheck(${args.length}, arguments.length);
+        s"""PrimChecks.procedure.runArgCountCheck(${args.length}, arguments.length);
           |$body""".stripMargin
       else
         s"""$body""".stripMargin
@@ -36,7 +36,7 @@ trait Handlers extends EveryIDProvider {
   // objects, representing the concrete syntax of square brackets, but at this stage of compilation
   // the brackets are irrelevant.  So when we see a block we just immediately recurse into it.
 
-  def commands(node: AstNode, catchStop: Boolean = true, isProcRoot: Boolean = false)
+  def commands(node: AstNode)
               (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
     incrementingContext { context =>
       node match {
@@ -47,10 +47,7 @@ trait Handlers extends EveryIDProvider {
             statements.stmts.map(prims.generateCommand(_)(compilerFlags, context, procContext))
               .filter(_.nonEmpty)
               .mkString("\n")
-          if (isProcRoot || (catchStop && statements.nonLocalExit))
-            commandBlockContext(generatedJS)
-          else
-            generatedJS
+          generatedJS
       }
     }
 
@@ -76,28 +73,7 @@ trait Handlers extends EveryIDProvider {
       Dump.logoObject(x, readable = true, exporting = false)
   }
 
-  def ident(s: String): String = JSIdentProvider(s)
-
   def unusedVarname(token: Token, hint: String = ""): String =
     s"_${hint}_${token.start}_${token.end}"
-
-  def reporterProcContext(reporterJS: String): String =
-    s"""|try {
-        |  var reporterContext = true;
-        |  var letVars = { };
-        |${indented(reporterJS)}
-        |  Errors.missingReport();
-        |} catch (e) {
-        |  Errors.stopInReportCheck(e)
-        |}""".stripMargin
-
-  def commandBlockContext(commandJS: String): String =
-    s"""|try {
-        |  var reporterContext = false;
-        |  var letVars = { };
-        |${indented(commandJS)}
-        |} catch (e) {
-        |  return Errors.stopInCommandCheck(e)
-        |}""".stripMargin
 
 }

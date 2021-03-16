@@ -4,8 +4,6 @@ class NetLogoException
   constructor: (@message) ->
 
 class AgentException    extends NetLogoException
-class DeathInterrupt    extends NetLogoException
-class StopInterrupt     extends NetLogoException
 class TopologyInterrupt extends NetLogoException
 
 class HaltInterrupt extends NetLogoException
@@ -21,10 +19,8 @@ ignoring = (exceptionType) -> (f) ->
 
 module.exports = {
   AgentException
-  DeathInterrupt
   HaltInterrupt
   ignoring
   NetLogoException
-  StopInterrupt
   TopologyInterrupt
 }

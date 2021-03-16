@@ -3,63 +3,48 @@
 package org.nlogo.tortoise.compiler
 
 import
-  JsOps.{ jsFunction }
+  JsOps.jsFunction
 
 import
   org.nlogo.core.ProcedureDefinition
 
 import
-  ProcedureCompiler.CompiledProceduresDictionary
-
-import
-  TortoiseSymbol.JsDeclare
+  TortoiseSymbol.JsStatement
 
 class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext) {
-  def compileProcedures(procedureDefs: Seq[ProcedureDefinition]): CompiledProceduresDictionary =
+  def compileProcedures(procedureDefs: Seq[ProcedureDefinition]): Seq[CompiledProcedure] =
     procedureDefs.map(compileProcedureDef)
 
   private def compileProcedureDef(originalPd: ProcedureDefinition)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): (String, Seq[String]) = {
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): CompiledProcedure = {
 
     val pd = if (compilerFlags.optimizationsEnabled)
       Optimizer(originalPd)
     else
       originalPd
-    val originalName = pd.procedure.name
-    val safeName = handlers.ident(originalName)
+    val name       = pd.procedure.name.toLowerCase
+    val safeName   = JSIdentProvider(name)
     handlers.resetEveryID(safeName)
-    val parameters = pd.procedure.args.map( (p) => (p, handlers.ident(p)) )
+    val parameters = pd.procedure.args.map( (p) => (p, JSIdentProvider(p)) )
     implicit val procContext = ProcedureContext(true, parameters)
-    val body =
-      if (pd.procedure.isReporter) {
-        val unwrappedBody = handlers.commands(pd.statements, false)
-        handlers.reporterProcContext(unwrappedBody)
-      } else
-        handlers.commands(pd.statements, true, true)
-    val functionJs = s"(${jsFunction(args = procContext.parameters.map(_._2), body = body)})"
-    (functionJs, Seq(safeName, originalName).distinct)
+    val args       = procContext.parameters.map(_._2)
+    val body       = handlers.commands(pd.statements)
+    val functionJs = s"(${jsFunction(args = args, body = body)})"
+    if (pd.procedure.isReporter)
+      new CompiledReporter(name, functionJs)
+    else
+      new CompiledCommand(name, functionJs)
   }
 }
 
 object ProcedureCompiler {
-  type CompiledProceduresDictionary = Seq[(String, Seq[String])]
 
-  def formatProcedures(procedures: CompiledProceduresDictionary): Seq[TortoiseSymbol] =
-    Seq(JsDeclare("procedures", proceduresObject(procedures), Seq("workspace", "world")))
-
-  def formatProcedureBodies(procedures: CompiledProceduresDictionary): String =
-      procedures.map {
-        case (js, names) =>
-          names.map(name => s"""procs["$name"] = temp;""").mkString(s"temp = $js;\n", "\n", "")
-      }.mkString("\n")
-
-  private def proceduresObject(procedureDefs: CompiledProceduresDictionary) = {
-    val procedureDefsJs = formatProcedureBodies(procedureDefs)
-    val propertyFunctionBody =
-      s"""|var procs = {};
-          |var temp = undefined;
-          |$procedureDefsJs
-          |return procs;""".stripMargin
-    s"(${jsFunction(body = propertyFunctionBody)})()"
+  def formatProcedures(procedures: Seq[CompiledProcedure]): TortoiseSymbol = {
+    val procedureDefs = ProcedureCompiler.formatProcedureBodies(procedures)
+    JsStatement("procedures", procedureDefs, Seq("workspace", "world"))
   }
+
+  def formatProcedureBodies(procedures: Seq[CompiledProcedure]): String =
+    procedures.map(_.format).mkString("\n")
+
 }

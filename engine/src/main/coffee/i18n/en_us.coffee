@@ -99,6 +99,25 @@ bundle = {
 
   , 'SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _': (type1, type2) ->
     "SORT-ON works on numbers, strings, or agents of the same type, but not on #{type1} and #{type2}"
+
+  , 'anonymous procedure expected _ input_, but only got _': (needed, given) ->
+    "anonymous procedure expected #{needed} input#{if needed > 1 then "s" else ""}, but only got #{given}"
+
+  , 'REPORT can only be used inside TO-REPORT.': () ->
+    "REPORT can only be used inside TO-REPORT."
+
+  , 'STOP is not allowed inside TO-REPORT.': () ->
+    "STOP is not allowed inside TO-REPORT."
+
+  , 'Reached end of reporter procedure without REPORT being called.': () ->
+    "Reached end of reporter procedure without REPORT being called."
+
+  , '_ doesn_t accept further inputs if the first is a string': (primName) ->
+    "#{primName} doesn't accept further inputs if the first is a string"
+
+  , 'Unfortunately, no perfect equivalent to `_` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.': (primName) ->
+    "Unfortunately, no perfect equivalent to `#{primName}` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web."
+
 }
 
 module.exports = bundle

@@ -7,9 +7,11 @@ import
     annotation.meta.field,
     scalajs.js.annotation.{ JSExport, JSExportTopLevel }
 
+import scala.scalajs.js
+
 import
   org.nlogo.{ core, parse },
-    core.{ LiteralParser, LogoList, Model, Nobody => NlogoNobody },
+    core.{ LiteralParser, LogoList, Nobody => NlogoNobody },
     parse.CompilerUtilities
 
 import
@@ -27,7 +29,10 @@ object LiteralConverter {
 
   private val compiler = new Compiler()
 
-  class WrappedException(@(JSExport @field) val message: String) extends Throwable
+  class WrappedException(@(JSExport @field) val message: String) extends Throwable {
+    override def getMessage: String = message
+    override def toString: String = getMessage
+  }
 
   @JSExport
   def stringToJSValue(value: String): AnyRef = {
@@ -51,36 +56,33 @@ object LiteralConverter {
 
   }
 
-  private def reqToModelWithRun(req: CompilationRequest, isRunResult: Boolean, procVars: String, runString: String): Model = {
-    // The strings to run can end in comments like `; blah blah`, so the `\n` before the `end`s are necessary.
-    val newCode = if (isRunResult)
-      s"${req.code}\nto-report __run [$procVars] report ($runString\n)end"
-    else
-      s"${req.code}\nto __run [$procVars] $runString\nend"
-    req.copy(code = newCode).toModel
-  }
-
   @JSExport
-  def compileRunString(compilationRequest: NativeJson, runString: String, isRunResult: Boolean, procVars: String): String = {
-    val parsedReqResult = for {
-      tortoiseReq <- JsonReader.read[JsObject](toTortoise(compilationRequest)).leftMap(_.map(s => FailureString(s)))
-      parsedReq   <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
-    } yield parsedReq
-    parsedReqResult.fold(
-      errors    => throw new WrappedException(errors.map((e) => e).toList.mkString("\n")),
-      parsedReq => {
-        val compilation = try {
-           compiler.compileProcedures(reqToModelWithRun(parsedReq, isRunResult, procVars, runString))
-        } catch {
-          case ex: Exception => throw new WrappedException(ex.getMessage)
-        }
-        val runProcs = compilation.compiledProcedures.filter({ case (_, names) => names.contains("__run") })
-        runProcs.size match {
-          case 1 => runProcs.head._1
-          case 0 => throw new WrappedException("The compiler did not return a procedure for the run primitive, but it also did not throw an error.")
-          case _ => throw new WrappedException("The compiler returned multiple procedures with the same name for the run primitive.")
-        }
-    })
+  def compileRunString(compilationRequest: NativeJson, runString: String, isRunResult: Boolean, procVars: js.Array[String]): String = {
+    // The strings to run can end in comments like `; blah blah`, so the `\n` before the `end`s are necessary.
+    val netLogoArgs = procVars.toList.mkString(" ")
+    val code = if (isRunResult)
+      s"to-report __run [$netLogoArgs] report ($runString\n) end"
+    else
+      s"to __run [$netLogoArgs] $runString\nend"
+
+    val jsV = for {
+      tortoiseReq   <- JsonReader.read[JsObject](toTortoise(compilationRequest)).leftMap(_.map(s => FailureString(s)))
+      parsedReq     <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
+      model         =  parsedReq.toModel
+      compiledModel <- CompiledModel.fromModel(model, compiler)
+      jsV           <- compiledModel.compileRunProcedure(code, isRunResult)
+    } yield jsV
+
+    val js = jsV.fold(
+      errors => throw new WrappedException(errors.map((e) => e.asInstanceOf[Throwable].getMessage).toList.mkString("\n")),
+      js     => js
+    )
+
+    val jsArgs = procVars.map(JSIdentProvider.apply).mkString(", ")
+    if (isRunResult)
+      s"(function($jsArgs) { return ($js); })"
+    else
+      s"(function($jsArgs) { $js })"
   }
 
 }

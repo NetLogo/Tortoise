@@ -127,6 +127,8 @@ object SimplePrims {
         case _: prim._count         => "PrimChecks.agentset.count"
         case _: prim.etc._turtleson => "PrimChecks.agentset.turtlesOn"
 
+        case _: prim.etc._readfromstring => "ProcedurePrims.readFromString"
+
       }
   }
 
@@ -235,7 +237,6 @@ object SimplePrims {
         case _: prim.etc._nanotime       => "Prims.nanoTime"
         case _: prim.etc._useryesorno    => "UserDialogPrims.yesOrNo"
         case _: prim.etc._userinput      => "UserDialogPrims.input"
-        case _: prim.etc._readfromstring => "Prims.readFromString"
 
       }
   }
@@ -268,14 +269,15 @@ object SimplePrims {
       PartialFunction.condOpt(c) {
 
         case _: prim._done             => ""
-        case _: prim._stop             => "throw new Exception.StopInterrupt"
+        case _: prim._stop             => "return PrimChecks.procedure.stop()"
+        case _: prim.etc._die          => "return SelfManager.self().die()"
         case _: prim.etc._observercode => ""
-        case _: prim.etc._hideturtle   => "SelfManager.self().hideTurtle(true);"
-        case _: prim.etc._showturtle   => "SelfManager.self().hideTurtle(false);"
+        case _: prim.etc._hideturtle   => "SelfManager.self().hideTurtle(true)"
+        case _: prim.etc._showturtle   => "SelfManager.self().hideTurtle(false)"
 
-        case _: prim.etc._importpatchcolors => "Errors.imperfectImport('import-pcolors')"
-        case _: prim.etc._importpcolorsrgb  => "Errors.imperfectImport('import-pcolors-rgb')"
-        case _: prim.etc._importworld       => "Errors.imperfectImport('import-world')"
+        case _: prim.etc._importpatchcolors => "PrimChecks.imperfectImport('import-pcolors')"
+        case _: prim.etc._importpcolorsrgb  => "PrimChecks.imperfectImport('import-pcolors-rgb')"
+        case _: prim.etc._importworld       => "PrimChecks.imperfectImport('import-world')"
 
       }
   }
@@ -314,7 +316,6 @@ object SimplePrims {
         // SelfManager
         case _: prim._fd             => "SelfManager.self().fd"
         case _: prim._jump           => "SelfManager.self().jumpIfAble"
-        case _: prim.etc._die        => "SelfManager.self().die"
         case _: prim.etc._face       => "SelfManager.self().face"
         case _: prim.etc._facexy     => "SelfManager.self().faceXY"
         case _: prim.etc._followme   => "SelfManager.self().followMe"

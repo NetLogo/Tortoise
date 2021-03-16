@@ -9,7 +9,11 @@ import
   JsOps.{ indented, jsString, jsStringEscaped }
 
 import
-  org.nlogo.core.{ Application, AstNode, CommandBlock, CompilerException, Expression, prim, Reporter, ReporterApp, ReporterBlock, Statement, Token }
+  org.nlogo.core.{
+    Application, AstNode, CommandBlock, CompilerException,
+    Expression, Instruction, prim, Reporter, ReporterApp,
+    ReporterBlock, Statement, Syntax, Token
+  }
 
 // The Prim traits are split apart as follows
 //                  JsOps
@@ -40,31 +44,6 @@ trait PrimUtils {
   protected def generateNotImplementedStub(primName: String): String =
     s"notImplemented(${jsString(primName)}, undefined)"
 
-  protected def generateRunCode(isRunResult: Boolean, token: Token, args: Seq[String], procContext: ProcedureContext): String = {
-    val tmp = handlers.unusedVarname(token, "run")
-    val procVarsJS = procContext.parameters.map((pv) => s"""${tmp}Vars["${pv._1}"] = ${pv._2};""").mkString("\n")
-
-    // if a run returns a value, and we're not in a raw-reporter situation, we have to then return the value. Weird, huh?
-    val (pre, post) = if (!isRunResult && procContext.isProcedure)
-      // if the runCode() didn't give us a value, we want to fall through to the "did not report" error that follows
-      // otherwise returning an undefined might blow something else up with an unrelated error message. -JMB September 2017
-      (s"var $tmp = ", s"if (reporterContext && $tmp !== undefined) { return $tmp; }")
-    else
-      ("", "")
-
-    s"""|${pre}Prims.runCode(
-        |  $isRunResult,
-        |  (function() {
-        |    let ${tmp}Vars = { }; for(var v in letVars) { ${tmp}Vars[v] = letVars[v]; }
-        |    $procVarsJS
-        |    return ${tmp}Vars;
-        |  })(),
-        |  ${args.mkString(", ")}
-        |)
-        |$post
-        |""".stripMargin
-  }
-
   object VariableReporter extends VariablePrims {
     def unapply(r: Reporter): Option[String] =
       procedureAndVarName(r, "get").map {
@@ -91,6 +70,29 @@ trait PrimUtils {
       case ov: prim._observervariable     => (s"world.observer.${action}Global", ov.displayName.toLowerCase)
       }
   }
+
+  def maybeStoreProcedureArgsForRun(actual: Int, context: ProcedureContext, code: String): String = {
+    if (ReporterPrims.allTypesAllowed(Syntax.CommandType, actual) || context.parameters.length == 0) {
+      code
+    } else {
+      val lets = context.parameters.map( (arg) =>
+        s"""ProcedurePrims.stack().currentContext().registerStringRunArg("${arg._1}", ${arg._2});"""
+      ).mkString("\n")
+      s"$lets\n$code"
+    }
+  }
+
+  def maybeStoreProcedureArgsForRunResult(actual: Int, context: ProcedureContext, code: String): String = {
+    if (ReporterPrims.allTypesAllowed(Syntax.ReporterType, actual) || context.parameters.length == 0) {
+      code
+    } else {
+      val lets = context.parameters.map( (arg) =>
+        s"""ProcedurePrims.stack().currentContext().registerStringRunArg("${arg._1}", ${arg._2})"""
+      ).mkString(",\n")
+      s"($lets,\n$code)"
+    }
+  }
+
 }
 
 object ReporterPrims {
@@ -126,6 +128,26 @@ object ReporterPrims {
     }
   }
 
+  def makeCheckedOp(instruction: Instruction, i: Int, op: String, actual: Int): String = {
+    val syntax = instruction.syntax
+    val allowed = if (!syntax.isInfix) {
+      syntax.right(i)
+    } else {
+      if (i == 0) syntax.left else syntax.right(i - 1)
+    }
+    ReporterPrims.makeCheckedOp(instruction.token.text, allowed, actual, op)
+  }
+
+  def callArgs(name: String, args: Seq[String]): String = {
+    val procName = name.toLowerCase
+    s""""$procName"${optionalArgs(args)}"""
+  }
+
+  def optionalArgs(args: Seq[String]): String = {
+    val argsString    = args.mkString(", ")
+    if (argsString == "") "" else s", $argsString"
+  }
+
 }
 
 trait ReporterPrims extends PrimUtils {
@@ -149,15 +171,8 @@ trait ReporterPrims extends PrimUtils {
     def checkedArgs =
       ReporterPrims.makeCheckedArgOps(r, args)
 
-    def makeCheckedOp(i: Int) = {
-      val syntax = r.instruction.syntax
-      val allowed = if (!r.instruction.syntax.isInfix) {
-        syntax.right(i)
-      } else {
-        if (i == 0) syntax.left else syntax.right(i - 1)
-      }
-      ReporterPrims.makeCheckedOp(r.instruction.token.text, allowed, r.args(i).reportedType(), arg(i))
-    }
+    def makeCheckedOp(i: Int) =
+      ReporterPrims.makeCheckedOp(r.instruction, i, arg(i), r.args(i).reportedType())
 
     // `and` and `or` need to short-circuit, so we check them a bit differently.  -Jeremy B February 2021
     def makeInfixBoolOp(op: String): String = {
@@ -175,11 +190,10 @@ trait ReporterPrims extends PrimUtils {
       case SimplePrims.TypeCheck(check)    => s"NLType.checks.$check${arg(0)})"
       case VariableReporter(op)            => op
       case p: prim._const                  => handlers.literal(p.value)
-      case lv: prim._letvariable           => handlers.ident(lv.let.name)
-      case pv: prim._procedurevariable     => handlers.ident(pv.name)
-      case lv: prim._lambdavariable        => handlers.ident(lv.name)
-      case call: prim._callreport          =>
-        s"""procedures["${call.name}"](${args.mkString(",")})"""
+      case lv: prim._letvariable           => JSIdentProvider(lv.let.name)
+      case pv: prim._procedurevariable     => JSIdentProvider(pv.name)
+      case lv: prim._lambdavariable        => JSIdentProvider(lv.name)
+      case call: prim._callreport          => s"""PrimChecks.procedure.callReporter(${ReporterPrims.callArgs(call.name, args)})"""
 
       // Blarg
       case _: prim._word               => ("''" +: args).map(arg => s"workspace.dump($arg)").mkString("(", " + ", ")")
@@ -251,14 +265,16 @@ trait ReporterPrims extends PrimUtils {
       case p: prim.etc._outlinkneighbors => s"LinkPrims.outLinkNeighbors(${jsString(fixBN(p.breedName))})"
       case p: prim.etc._outlinkto        => s"LinkPrims.outLinkTo(${jsString(fixBN(p.breedName))}, ${arg(0)})"
 
-      case r: prim.etc._runresult        => generateRunCode(true, r.token, args, procContext)
+      case _: prim.etc._runresult        =>
+        val run = s"PrimChecks.procedure.runResult(${makeCheckedOp(0)}${ReporterPrims.optionalArgs(args.drop(1))})"
+        maybeStoreProcedureArgsForRunResult(r.args(0).reportedType(), procContext, run)
 
       case l: prim._reporterlambda => {
-        val task = generateTask(r.args(0), true, l.argumentNames.map(handlers.ident), l.source)
+        val task = generateTask(r.args(0), true, l.argumentNames.map(JSIdentProvider.apply), l.source)
         s"Tasks.reporterTask($task)"
       }
       case l: prim._commandlambda  => {
-        val task = generateTask(r.args(0), false, l.argumentNames.map(handlers.ident), l.source)
+        val task = generateTask(r.args(0), false, l.argumentNames.map(JSIdentProvider.apply), l.source)
         s"Tasks.commandTask($task)"
       }
 
@@ -340,6 +356,9 @@ trait CommandPrims extends PrimUtils {
     def checkedArgs =
       ReporterPrims.makeCheckedArgOps(s, args)
 
+    def makeCheckedOp(i: Int) =
+      ReporterPrims.makeCheckedOp(s.instruction, i, arg(i), s.args(i).reportedType())
+
     s.command match {
       case SimplePrims.SimpleCommand(op)  => if (op.isEmpty) "" else s"$op;"
       case SimplePrims.NormalCommand(op)  => s"$op($commaArgs);"
@@ -351,7 +370,7 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._while            => generateWhile(s)
       case _: prim.etc._if               => generateIf(s)
       case _: prim.etc._ifelse           => generateIfElse(s)
-      case _: prim._ask                  => generateAsk(s, shuffle = true)
+      case _: prim._ask                  => addAskContext(makeCheckedOp(0), handlers.fun(s.args(1)), true)
       case p: prim._carefully            => generateCarefully(s, p)
       case _: prim._createturtles        => generateCreateTurtles(s, ordered = false)
       case _: prim._createorderedturtles => generateCreateTurtles(s, ordered = true)
@@ -381,25 +400,25 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._hidelink         => "SelfManager.self().setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfManager.self().setVariable('hidden?', false)"
       case call: prim._call              => generateCall(call, args)
-      case _: prim._report               =>
-        s"""|Errors.reportInContextCheck(reporterContext);
-            |return ${arg(0)};
-            |""".stripMargin
+      case _: prim._report               => s"return PrimChecks.procedure.report(${arg(0)});"
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
         l.let.map(inner => {
-          val name = handlers.ident(inner.name)
-          s"let $name = ${arg(0)}; letVars['$name'] = $name;"
+          val name = JSIdentProvider(inner.name)
+          s"""let $name = ${arg(0)}; ProcedurePrims.stack().currentContext().registerStringRunVar("${inner.name}", $name);"""
         }).getOrElse("")
       case _: prim.etc._withlocalrandomness =>
         s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
 
-      case r: prim._run => generateRunCode(false, r.token, args, procContext)
+      case r: prim._run =>
+        val run = s"R = PrimChecks.procedure.run(${makeCheckedOp(0)}${ReporterPrims.optionalArgs(args.drop(1))}); if (R !== undefined) { return R; }"
+        maybeStoreProcedureArgsForRun(s.args(0).reportedType(), procContext, run)
 
-      case fe: prim.etc._foreach          =>
+      case fe: prim.etc._foreach =>
         val lists = args.init.mkString(", ")
-        val tmp = handlers.unusedVarname(fe.token, "foreach")
-        s"var ${tmp} = Tasks.forEach(${arg(s.args.size - 1)}, $lists); if (reporterContext && ${tmp} !== undefined) { return ${tmp}; }"
+        val code  = s"Tasks.forEach(${arg(s.args.size - 1)}, $lists)"
+        addReturn(code)
+
       case x: prim._extern =>
         val ExtensionPrimRegex = """_extern\(([^:]+):([^)]+)\)""".r
         val ExtensionPrimRegex(extName, primName) = x.toString
@@ -421,15 +440,18 @@ trait CommandPrims extends PrimUtils {
 
   /// custom generators for particular Commands
   def generateCall(call: prim._call, args: Seq[String])
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
-    val callDecl =
-      s"""procedures["${call.name}"](${args.mkString(",")});"""
-    if (compilerFlags.propagationStyle == WidgetPropagation && compilerContext.blockLevel == 1) {
-      val tmp = handlers.unusedVarname(call.token, "maybestop")
-      s"""|let $tmp = $callDecl
-          |if ($tmp instanceof Exception.StopInterrupt) { return $tmp; }""".stripMargin
-    } else
-      callDecl
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
+    val callCommand = s"ProcedurePrims.callCommand(${ReporterPrims.callArgs(call.name, args)})"
+    if (!procContext.isProcedure && compilerContext.blockLevel < 2) {
+      callCommand
+    } else {
+      val interrupt = if (compilerFlags.propagationStyle == WidgetPropagation && compilerContext.blockLevel == 1) {
+        "StopInterrupt"
+      } else {
+        "DeathInterrupt"
+      }
+      s"R = $callCommand; if (R === $interrupt) { return R; }"
+    }
   }
 
   def generateSet(s: Statement)
@@ -437,12 +459,13 @@ trait CommandPrims extends PrimUtils {
     def arg(i: Int) = handlers.reporter(s.args(i))
     s.args(0).asInstanceOf[ReporterApp].reporter match {
       case p: prim._letvariable =>
-        val name = handlers.ident(p.let.name)
-        s"$name = ${arg(1)}; letVars['$name'] = $name;"
+        val name = JSIdentProvider(p.let.name)
+        s"""$name = ${arg(1)}; ProcedurePrims.stack().currentContext().updateStringRunVar("${p.let.name}", $name);"""
       case p: prim._procedurevariable =>
-        s"${handlers.ident(p.name)} = ${arg(1)};"
+        val name = JSIdentProvider(p.name)
+        s"$name = ${arg(1)};"
       case p: prim._lambdavariable =>
-        s"${handlers.ident(p.name)} = ${arg(1)};"
+        s"${JSIdentProvider(p.name)} = ${arg(1)};"
       case VariableSetter(setValue) =>
         setValue(arg(1))
       case x =>
@@ -516,13 +539,6 @@ trait CommandPrims extends PrimUtils {
           |${elseBlock}""".stripMargin
   }
 
-  def generateAsk(s: Statement, shuffle: Boolean)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val agents = handlers.reporter(s.args(0))
-    val body = handlers.fun(s.args(1))
-    genAsk(agents, shuffle, body, errorOnNobody = true)
-  }
-
   def generateCarefully(s: Statement, c: prim._carefully)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val errorName   = handlers.unusedVarname(s.command.token, "error")
@@ -543,7 +559,7 @@ trait CommandPrims extends PrimUtils {
     // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
     val nonEmptyCommandBlock = s.args(1).asInstanceOf[CommandBlock].statements.stmts.nonEmpty
     val body = handlers.fun(s.args(1))
-    genAsk(s"LinkPrims.$name($other, ${jsString(fixBN(breedName))})", nonEmptyCommandBlock, body)
+    addAskContext(s"LinkPrims.$name($other, ${jsString(fixBN(breedName))})", body, nonEmptyCommandBlock)
   }
 
   def generateCreateTurtles(s: Statement, ordered: Boolean)
@@ -557,7 +573,7 @@ trait CommandPrims extends PrimUtils {
         case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
       }
     val body = handlers.fun(s.args(1))
-    genAsk(s"world.turtleManager.$name($n, ${jsString(breed)})", true, body)
+    addAskContext(s"world.turtleManager.$name($n, ${jsString(breed)})", body, true)
   }
 
   def optimalGenerateCreateTurtles(s: Statement, ordered: Boolean)
@@ -580,7 +596,7 @@ trait CommandPrims extends PrimUtils {
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
     val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
     val sprouted = s"SelfManager.self().sprout($n, ${jsString(trueBreedName)})"
-    genAsk(sprouted, true, body)
+    addAskContext(sprouted, body, true)
   }
 
   def optimalGenerateSprout(s: Statement)
@@ -599,7 +615,7 @@ trait CommandPrims extends PrimUtils {
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val n = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
-    genAsk(s"SelfManager.self().hatch($n, ${jsString(breedName)})", true, body)
+    addAskContext(s"SelfManager.self().hatch($n, ${jsString(breedName)})", body, true)
   }
 
   def optimalGenerateHatch(s: Statement, breedName: String)
@@ -619,12 +635,13 @@ trait CommandPrims extends PrimUtils {
         |}""".stripMargin
   }
 
-  def genAsk(agents: String, shouldShuffle: Boolean, body: String, errorOnNobody: Boolean = false): String = {
-    if (errorOnNobody)
-      s"""Errors.askNobodyCheck($agents).ask($body, $shouldShuffle);"""
-    else
-      s"""$agents.ask($body, $shouldShuffle);"""
+  def addAskContext(agents: String, code: String, shuffle: Boolean): String =
+    addReturn(s"ProcedurePrims.ask($agents, $code, $shuffle)")
+
+  def addReturn(code: String): String = {
+    s"R = $code; if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }"
   }
+
 }
 
 trait Prims extends PrimUtils with CommandPrims with ReporterPrims

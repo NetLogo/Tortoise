@@ -22,7 +22,7 @@ import
     Scalaz.ToValidationOps
 
 import CompilerFlags.WidgetPropagation
-import TortoiseSymbol.JsStatement
+import TortoiseSymbol.{ JsDeclare, JsStatement }
 
 // there are four main entry points here:
 //   compile{Reporter, Commands}
@@ -77,12 +77,14 @@ class Compiler {
     val procedures        = ProcedureCompiler.formatProcedures(result.compiledProcedures)
     val interfaceGlobalJs = result.interfaceGlobalCommands.map(globalCommands).mkString("\n")
 
+    val resultCheckVar    = JsDeclare("R", "null")
     val interfaceInit     = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
     val globalModelConfig = JsStatement("global.modelConfig", Polyfills.content)
     TortoiseLoader.integrateSymbols(
          init
       ++ plotConfig
-      ++ procedures
+      :+ resultCheckVar
+      :+ procedures
       :+ globalModelConfig
       :+ resolveModelConfig
       :+ interfaceInit
@@ -190,6 +192,33 @@ class Compiler {
     }
   }
 
+  def compileRunProcedure(code: String, oldProcedures: ProceduresMap, program: Program, isReporter: Boolean)
+    (implicit compilerFlags: CompilerFlags): String = {
+
+    val (defs, _) =
+      frontEnd.frontEnd(
+          code
+        , oldProcedures    = oldProcedures
+        , program          = program
+        , extensionManager = extensionManager
+      )
+
+    val pd =
+      if (compilerFlags.optimizationsEnabled)
+        Optimizer(defs.head)
+      else
+        defs.head
+
+    implicit val context     = new CompilerContext(code)
+    implicit val procContext = ProcedureContext(false, Seq())
+    if (isReporter) {
+      handlers.reporter(pd.statements.stmts(0).args(0))
+    } else {
+      handlers.commands(pd.statements)
+    }
+
+  }
+
   // How this works:
   // - the header/footer stuff wraps the code in `to` or `to-report`
   // - the compile returns a Seq, whose head is a ProcedureDefinition
@@ -228,7 +257,7 @@ class Compiler {
         defs.head
 
     if (commands)
-      handlers.commands(pd.statements, true, !raw)
+      handlers.commands(pd.statements)
     else
       handlers.reporter(pd.statements.stmts(1).args(0))
 

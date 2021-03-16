@@ -2,6 +2,7 @@
 
 globalEval = eval
 
+# (String) => Number | Boolean | String | Array
 readFromString = (str) ->
   try Converter.stringToJSValue(str)
   catch ex
@@ -9,11 +10,12 @@ readFromString = (str) ->
 
 evalCache = { }
 
-scalaJSEvalCode = (code, widgets, runString, isRunResult, procVars) ->
-  varNames  = Object.keys(procVars).sort() # must be sorted as order can vary depending on procedure structure
+# (String, Array[Widget], String, Boolean, Map[String, Any]) => Any
+runFromString = (code, widgets, runString, isRunResult, procVars) ->
+  varNames  = Array.from(procVars.keys()).sort() # must be sorted as order can vary depending on procedure structure
   varString = varNames.join(' ')
   runKey    = "#{varString} => #{runString}"
-  runFun    = if(evalCache[runKey]?)
+  runFun    = if (evalCache[runKey]?)
     evalCache[runKey]
   else
     compileParams = {
@@ -24,12 +26,12 @@ scalaJSEvalCode = (code, widgets, runString, isRunResult, procVars) ->
       turtleShapes: [],
       linkShapes:   []
     }
-    js  = Converter.compileRunString(compileParams, runString, isRunResult, varString)
+    js  = Converter.compileRunString(compileParams, runString, isRunResult, varNames)
     fun = globalEval(js)
     evalCache[runKey] = fun
     fun
 
-  result = runFun(varNames.map((vn) => procVars[vn])...)
+  result = runFun(varNames.map((vn) => procVars.get(vn))...)
 
   if isRunResult
     return result
@@ -41,4 +43,4 @@ module.exports =
     # (String, Array[Widget], (String) => Any) => EvalConfig
     constructor: (code, widgets, @readFromString = readFromString) ->
       @runCode = (runString, isRunResult, procVars) ->
-        scalaJSEvalCode(code, widgets, runString, isRunResult, procVars)
+        runFromString(code, widgets, runString, isRunResult, procVars)

@@ -72,6 +72,9 @@ class WidgetCompiler(
     }
   }
 
+  private def addContext(s: String) =
+    s"var R = null;\n$s"
+
   private def compileButton(b: Button): ValidationNel[Exception, SourceCompilation] = {
     def askWithKind(kind: String)(command: String): String = {
       def fail(kind: String): Nothing =
@@ -92,9 +95,11 @@ class WidgetCompiler(
     def sanitizeSource(s: String) =
       s.replace("\\n", "\n").replace("\\\\", "\\").replace("\\\"", "\"")
 
-    compileCommand(sanitizeSource(askWithKind(b.buttonKind.toString.toUpperCase)(b.source.getOrElse(""))))
+    val asked     = askWithKind(b.buttonKind.toString.toUpperCase)(b.source.getOrElse(""))
+    val sanitized = sanitizeSource(asked)
+    compileCommand(sanitized)
       .contextualizeError("button", b.display.orElse(b.source).getOrElse(""), "source")
-      .map(SourceCompilation.apply _)
+      .map( (s) => SourceCompilation.apply(addContext(s)) )
   }
 
   private def compileMonitor(m: Monitor): ExceptionValidation[SourceCompilation] =
@@ -124,14 +129,12 @@ class WidgetCompiler(
 
   private def compileInContext(code: String, plotNameRaw: String, penNameOpt: Option[String] = None): CompiledStringV = {
     val penName       = penNameOpt map (name => s"'$name'") getOrElse "undefined"
-    val inTempContext = (f: String) => s"plotManager.withTemporaryContext('$plotNameRaw', $penName)($f)"
-    val withCloneRNG  = (f: String) => s"workspace.rng.withClone($f)"
+    val inPlotContext = (f: String) => s"ProcedurePrims.runInPlotContext('$plotNameRaw', $penName, $f)"
     if (code.trim.isEmpty)
       thunkifyProcedure("").successNel
     else
       compileCommand(code) map thunkifyProcedure map
-        (inTempContext andThen thunkifyFunction) map
-        (withCloneRNG  andThen thunkifyFunction)
+        (inPlotContext andThen thunkifyFunction)
   }
 }
 

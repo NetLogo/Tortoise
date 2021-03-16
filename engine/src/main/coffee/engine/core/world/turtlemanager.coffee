@@ -9,10 +9,6 @@ IDManager  = require('./idmanager')
 { map }        = require('brazierjs/array')
 { rangeUntil } = require('brazierjs/number')
 
-{ DeathInterrupt, ignoring }  = require('util/exception')
-
-ignorantly = ignoring(DeathInterrupt)
-
 module.exports =
   class TurtleManager
 
@@ -28,7 +24,7 @@ module.exports =
 
     # () => Unit
     clearTurtles: ->
-      @turtles().forEach((turtle) -> ignorantly(() => turtle.die()))
+      @turtles().forEach((turtle) -> turtle.die())
       @_idManager.reset()
       return
 
