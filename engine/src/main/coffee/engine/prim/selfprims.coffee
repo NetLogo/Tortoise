@@ -44,7 +44,7 @@ module.exports =
       self = @_getSelf()
       (agentSet.filter((agent) -> agent isnt self)).size()
 
-    # () => Number
+    # () => Number | TowardsInterrupt
     linkHeading: ->
       @_getSelfSafe(linkType).getHeading()
 

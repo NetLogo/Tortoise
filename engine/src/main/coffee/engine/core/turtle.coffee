@@ -93,12 +93,12 @@ module.exports =
     getCoords: ->
       [@xcor, @ycor]
 
-    # (Turtle|Patch) => Number
+    # (Turtle|Patch) => Number | TowardsInterrupt
     towards: (agent) ->
       [x, y] = agent.getCoords()
       @towardsXY(x, y)
 
-    # (Number, Number) => Number
+    # (Number, Number) => Number | TowardsInterrupt
     towardsXY: (x, y) ->
       @world.topology.towards(@xcor, @ycor, x, y)
 

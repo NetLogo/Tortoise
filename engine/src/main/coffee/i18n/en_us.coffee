@@ -124,6 +124,12 @@ bundle = {
   , 'Cannot move turtle beyond the world_s edge.': () ->
     "Cannot move turtle beyond the world's edge."
 
+  , 'there is no heading of a link whose endpoints are in the same position': () ->
+    "there is no heading of a link whose endpoints are in the same position"
+
+  , 'No heading is defined from a point (_,_) to that same point.': (x, y) ->
+    "No heading is defined from a point (#{x},#{y}) to that same point."
+
 }
 
 module.exports = bundle

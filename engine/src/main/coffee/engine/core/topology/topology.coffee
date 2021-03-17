@@ -9,8 +9,7 @@ abstractMethod = require('util/abstractmethoderror')
 { filter, unique } = require('brazierjs/array')
 { pipeline }       = require('brazierjs/function')
 
-{ AgentException }    = require('util/exception')
-{ TopologyInterrupt } = require('util/interrupts')
+{ TopologyInterrupt, TowardsInterrupt } = require('util/interrupts')
 
 module.exports =
   class Topology
@@ -150,7 +149,7 @@ module.exports =
       else
         Math.min(@distanceXY(x1, y1, xcor, ycor), @distanceXY(x2, y2, xcor, ycor))
 
-    # (Number, Number, Number, Number) => Number
+    # (Number, Number, Number, Number) => Number | TowardsInterrupt
     towards: (x1, y1, x2, y2) ->
       @_towards(x1, y1, x2, y2, @_shortestX, @_shortestY)
 
@@ -220,7 +219,7 @@ module.exports =
     _shortestYWrapped: (cor1, cor2) ->
       @_shortestWrapped(cor1, cor2, @height)
 
-    # (Number, Number, Number, Number, (Number, Number) => Number, (Number, Number) => Number) => Number
+    # (Number, Number, Number, Number, (Number, Number) => Number, (Number, Number) => Number) => Number | TowardsInterrupt
     _towards: (x1, y1, x2, y2, findXDist, findYDist) ->
       if (x1 isnt x2) or (y1 isnt y2)
         dx = findXDist(x1, x2)
@@ -232,9 +231,9 @@ module.exports =
         else
           (270 + StrictMath.toDegrees(StrictMath.PI() + StrictMath.atan2(-dy, dx))) % 360
       else
-        throw new AgentException("No heading is defined from a point (#{x1},#{x2}) to that same point.")
+        TowardsInterrupt
 
-    # (Number, Number, Number, Number) => Number
+    # (Number, Number, Number, Number) => Number | TowardsInterrupt
     _towardsNotWrapped: (x1, y1, x2, y2) ->
       @_towards(x1, y1, x2, y2, @_shortestNotWrapped, @_shortestNotWrapped)
 

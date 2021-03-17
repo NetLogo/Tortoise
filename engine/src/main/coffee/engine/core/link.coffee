@@ -8,10 +8,9 @@ TurtleSet        = require('./turtleset')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('util/comparator')
 
-{ AgentException }         = require('util/exception')
-{ DeathInterrupt }         = require('util/interrupts')
-{ Setters, VariableSpecs } = require('./link/linkvariables')
-{ ExtraVariableSpec }      = require('./structure/variablespec')
+{ DeathInterrupt, TowardsInterrupt } = require('util/interrupts')
+{ Setters, VariableSpecs }           = require('./link/linkvariables')
+{ ExtraVariableSpec }                = require('./structure/variablespec')
 
 class StampMode
   constructor: (@name) -> # (String) => StampMode
@@ -126,14 +125,9 @@ module.exports =
     getCoords: ->
       [@getMidpointX(), @getMidpointY()]
 
-    # () => Number
+    # () => Number | TowardsInterrupt
     getHeading: ->
-      try @world.topology.towards(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
-      catch error
-        if error instanceof AgentException
-          throw new Error("there is no heading of a link whose endpoints are in the same position")
-        else
-          throw error
+      @world.topology.towards(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
 
     # () => Number
     getMidpointX: ->
@@ -190,13 +184,8 @@ module.exports =
       { xcor: e1x, ycor: e1y } = @end1
       { xcor: e2x, ycor: e2y } = @end2
 
-      stampHeading =
-        try @world.topology.towards(e1x, e1y, e2x, e2y)
-        catch error
-          if error instanceof AgentException
-            0
-          else
-            throw error
+      stampHeading = @world.topology.towards(e1x, e1y, e2x, e2y)
+      if stampHeading is TowardsInterrupt then stampHeading = 0
 
       color = ColorModel.colorToRGB(@_color)
       midX  = @getMidpointX()

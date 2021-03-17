@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ TopologyInterrupt } = require('util/interrupts')
+{ TopologyInterrupt, TowardsInterrupt } = require('util/interrupts')
 
 class TurtleChecks
 
@@ -25,6 +25,21 @@ class TurtleChecks
       @validator.error('The point [ _ , _ ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.', x, y)
 
     return
+
+  # (Agent) => Number
+  towards: (agent) ->
+    heading = @getSelf().towards(agent)
+    if heading is TowardsInterrupt
+      [x, y] = agent.getCoords()
+      @validator.error('No heading is defined from a point (_,_) to that same point.', x, y)
+    heading
+
+  # (Number, Number) => Number
+  towardsXY: (x, y) ->
+    heading = @getSelf().towardsXY(x, y)
+    if heading is TowardsInterrupt
+      @validator.error('No heading is defined from a point (_,_) to that same point.', x, y)
+    heading
 
   # (String, Any) => Unit
   setVariable: (name, value) ->

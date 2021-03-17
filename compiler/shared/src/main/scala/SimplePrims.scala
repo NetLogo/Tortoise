@@ -127,8 +127,15 @@ object SimplePrims {
         case _: prim._count         => "PrimChecks.agentset.count"
         case _: prim.etc._turtleson => "PrimChecks.agentset.turtlesOn"
 
+        // Turtle
+        case _: prim.etc._towards   => "PrimChecks.turtle.towards"
+        case _: prim.etc._towardsxy => "PrimChecks.turtle.towardsXY"
+
         // Patch
         case _: prim.etc._patch => "world.getPatchAt"
+
+        // Link
+        case _: prim.etc._linkheading => "PrimChecks.link.linkHeading"
 
         // Other
         case _: prim.etc._readfromstring => "ProcedurePrims.readFromString"
@@ -141,7 +148,6 @@ object SimplePrims {
       PartialFunction.condOpt(r) {
 
         // SelfPrims
-        case _: prim.etc._linkheading => "SelfPrims.linkHeading"
         case _: prim.etc._linklength  => "SelfPrims.linkLength"
         case _: prim._other           => "SelfPrims.other"
 
@@ -166,8 +172,6 @@ object SimplePrims {
         case _: prim.etc._patchleftandahead          => "SelfManager.self().patchLeftAndAhead"
         case _: prim.etc._patchrightandahead         => "SelfManager.self().patchRightAndAhead"
         case _: prim.etc._self                       => "SelfManager.self"
-        case _: prim.etc._towards                    => "SelfManager.self().towards"
-        case _: prim.etc._towardsxy                  => "SelfManager.self().towardsXY"
         case _: prim.etc._turtlesat                  => "SelfManager.self().turtlesAt"
         case _: prim.etc._turtleshere                => "SelfManager.self().turtlesHere"
         case _: prim.etc._incone                     => "SelfManager.self().inCone"
@@ -289,9 +293,13 @@ object SimplePrims {
     def unapply(c: Command): Option[String] =
       PartialFunction.condOpt(c) {
 
+        // Turtle
+        case _: prim.etc._setxy  => "PrimChecks.turtle.setXY"
+        case _: prim.etc._face   => "SelfManager.self().face"
+        case _: prim.etc._facexy => "SelfManager.self().faceXY"
+
         // Random
         case _: prim.etc._randomseed => "PrimChecks.math.randomSeed"
-        case _: prim.etc._setxy      => "PrimChecks.turtle.setXY"
 
       }
   }
@@ -320,8 +328,6 @@ object SimplePrims {
         // SelfManager
         case _: prim._fd             => "SelfManager.self().fd"
         case _: prim._jump           => "SelfManager.self().jumpIfAble"
-        case _: prim.etc._face       => "SelfManager.self().face"
-        case _: prim.etc._facexy     => "SelfManager.self().faceXY"
         case _: prim.etc._followme   => "SelfManager.self().followMe"
         case _: prim.etc._home       => "SelfManager.self().goHome"
         case _: prim.etc._moveto     => "SelfManager.self().moveTo"
