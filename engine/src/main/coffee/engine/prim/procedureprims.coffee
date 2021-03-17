@@ -32,6 +32,14 @@ class ProcedurePrims
     finally
       @_stack.currentContext().endAsk()
 
+  # (String) => Boolean
+  hasCommand: (name) ->
+    @_commands.has(name)
+
+  # (String) => Boolean
+  hasReporter: (name) ->
+    @_reporters.has(name)
+
   # (String, Array[Any]) => StopInterrupt | undefined
   callCommand: (name, args...) ->
     @_stack.startCommand()
