@@ -63,7 +63,7 @@ trait PrimUtils {
     protected def procedureAndVarName(r: Reporter, action: String): Option[(String, String)] = PartialFunction.condOpt(r) {
       case bv: prim._breedvariable        => (s"SelfManager.self().${action}Variable", bv.name.toLowerCase)
       case bv: prim._linkbreedvariable    => (s"SelfManager.self().${action}Variable", bv.name.toLowerCase)
-      case tv: prim._turtlevariable       => (s"SelfManager.self().${action}Variable", tv.displayName.toLowerCase)
+      case tv: prim._turtlevariable       => (s"PrimChecks.turtle.${action}Variable", tv.displayName.toLowerCase)
       case tv: prim._linkvariable         => (s"SelfManager.self().${action}Variable", tv.displayName.toLowerCase)
       case tv: prim._turtleorlinkvariable => (s"SelfManager.self().${action}Variable", tv.varName.toLowerCase)
       case pv: prim._patchvariable        => (s"SelfManager.self().${action}PatchVariable", pv.displayName.toLowerCase)

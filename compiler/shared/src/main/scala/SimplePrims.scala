@@ -127,6 +127,10 @@ object SimplePrims {
         case _: prim._count         => "PrimChecks.agentset.count"
         case _: prim.etc._turtleson => "PrimChecks.agentset.turtlesOn"
 
+        // Patch
+        case _: prim.etc._patch => "world.getPatchAt"
+
+        // Other
         case _: prim.etc._readfromstring => "ProcedurePrims.readFromString"
 
       }
@@ -214,7 +218,6 @@ object SimplePrims {
         case _: prim.etc._wrapcolor      => "ColorModel.wrapColor"
 
         case _: prim._turtle             => "world.turtleManager.getTurtle"
-        case _: prim.etc._patch          => "world.getPatchAt"
         case _: prim._equal              => "Prims.equality"
         case _: prim._notequal           => "!Prims.equality"
         case _: prim._turtles            => "world.turtles"
@@ -288,6 +291,7 @@ object SimplePrims {
 
         // Random
         case _: prim.etc._randomseed => "PrimChecks.math.randomSeed"
+        case _: prim.etc._setxy      => "PrimChecks.turtle.setXY"
 
       }
   }
@@ -326,7 +330,6 @@ object SimplePrims {
         case _: prim.etc._penup      => "SelfManager.self().penManager.raisePen"
         case _: prim.etc._rideme     => "SelfManager.self().rideMe"
         case _: prim.etc._right      => "SelfManager.self().right"
-        case _: prim.etc._setxy      => "SelfManager.self().setXY"
         case _: prim.etc._stamp      => "SelfManager.self().stamp"
         case _: prim.etc._stamperase => "SelfManager.self().stampErase"
         case _: prim.etc._tie        => "SelfManager.self().tie"

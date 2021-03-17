@@ -5,6 +5,7 @@ AgentSetChecks  = require('./agentset-checks')
 ListChecks      = require('./list-checks')
 MathChecks      = require('./math-checks')
 ProcedureChecks = require('./procedure-checks')
+TurtleChecks    = require('./turtle-checks')
 
 class Checker
 
@@ -14,6 +15,7 @@ class Checker
     @list      = new ListChecks(@validator, dumper, listPrims, stringPrims)
     @math      = new MathChecks(@validator, randomPrims)
     @procedure = new ProcedureChecks(@validator, procedurePrims)
+    @turtle    = new TurtleChecks(@validator, getSelf)
 
   # (String) => Unit
   imperfectImport: (primName) ->

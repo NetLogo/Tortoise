@@ -118,6 +118,12 @@ bundle = {
   , 'Unfortunately, no perfect equivalent to `_` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.': (primName) ->
     "Unfortunately, no perfect equivalent to `#{primName}` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web."
 
+  , 'The point [ _ , _ ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.': (x, y) ->
+    "The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions."
+
+  , 'Cannot move turtle beyond the world_s edge.': () ->
+    "Cannot move turtle beyond the world's edge."
+
 }
 
 module.exports = bundle

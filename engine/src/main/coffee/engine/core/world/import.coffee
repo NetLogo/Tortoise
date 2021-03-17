@@ -140,7 +140,7 @@ module.exports.importWorld = (
     patchFinishFs =
       patches.map(
         ({ pxcor, pycor, pcolor, plabel, plabelColor, patchesOwns }) =>
-          patch = @patchAtCoords(pxcor, pycor)
+          patch = @getPatchAt(pxcor, pycor)
           patch.setVariable('pcolor'      , extractColor(pcolor     ))
           patch.setVariable('plabel-color', extractColor(plabelColor))
           (->

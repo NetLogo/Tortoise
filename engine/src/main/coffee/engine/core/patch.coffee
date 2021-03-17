@@ -7,7 +7,6 @@ Comparator      = require('util/comparator')
 
 { filter, foldl } = require('brazierjs/array')
 
-{ TopologyInterrupt }      = require('util/exception')
 { DeathInterrupt }         = require('util/interrupts')
 { Setters, VariableSpecs } = require('./patch/patchvariables')
 { ExtraVariableSpec }      = require('./structure/variablespec')
@@ -125,7 +124,7 @@ module.exports =
 
     # (Number, Number) => Agent
     patchAtCoords: (x, y) ->
-      @world.patchAtCoords(x, y)
+      @world.getPatchAt(x, y)
 
     # (Number, Number) => Agent
     patchAtHeadingAndDistance: (angle, distance) ->

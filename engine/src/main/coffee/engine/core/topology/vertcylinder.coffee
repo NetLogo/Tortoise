@@ -12,7 +12,7 @@ module.exports =
     wrapX: (pos) ->
       @_wrapXLeniently(pos)
 
-    # (Number) => Number
+    # (Number) => Number | TopologyInterrupt
     wrapY: (pos) ->
       @_wrapYCautiously(pos)
 

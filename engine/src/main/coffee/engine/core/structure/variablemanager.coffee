@@ -7,12 +7,17 @@
 module.exports =
   class VariableManager
 
-    _names: undefined # Array[String]
+    _names:           undefined # Array[String]
+    _validitySetters: new Map() # Map[String, (Any) => Boolean]
 
     # (Agent, Array[VariableSpec[_]]) => VariableManager
     constructor: (@agent, varSpecs) ->
       @_addVarsBySpec(varSpecs)
       @_names = (name for { name } in varSpecs)
+
+    # (String, Any) => Boolean
+    setIfValid: (name, value) ->
+      @_validitySetters.get(name).call(@agent, value)
 
     # () => Array[String]
     names: ->
@@ -46,8 +51,9 @@ module.exports =
           if spec instanceof ExtraVariableSpec
             { configurable: true, value: 0, writable: true }
           else if spec instanceof MutableVariableSpec
-            get = do (spec) -> (-> spec.get.call(@agent))
-            set = do (spec) -> ((x) -> spec.set.call(@agent, x))
+            get        = do (spec) -> (-> spec.get.call(@agent))
+            set        = do (spec) -> ((v) -> spec.set.call(@agent, v))
+            @_validitySetters.set(spec.name, spec.setIfValid)
             { configurable: true, get, set }
           else if spec instanceof ImmutableVariableSpec
             { value: spec.get.call(@agent), writable: false }

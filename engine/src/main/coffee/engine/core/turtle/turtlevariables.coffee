@@ -8,7 +8,7 @@ NLMath     = require('util/nlmath')
 { clone } = require('brazierjs/object')
 
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
-{ ignoring, TopologyInterrupt }                = require('util/exception')
+{ TopologyInterrupt }                          = require('util/interrupts')
 
 ###
  "Jason, this is craziness!", you say.  "Not quite," I say.  It _is_ kind of lame, but changing turtle members
@@ -19,14 +19,21 @@ NLMath     = require('util/nlmath')
 
 # In this file: `this.type` is `Turtle`
 
-ignorantly = ignoring(TopologyInterrupt)
+# (Number) => Boolean
+setXcorIfValid = (newX) ->
+  setXcor.call(this, newX) isnt TopologyInterrupt
 
 # (Number, IDSet) => Unit
 setXcor = (newX, seenTurtlesSet = {}) ->
 
   originPatch = @getPatchHere()
   oldX        = @xcor
-  @xcor       = @world.topology.wrapX(newX)
+  xcor        = @world.topology.wrapX(newX)
+
+  if xcor is TopologyInterrupt
+    return TopologyInterrupt
+
+  @xcor = xcor
   @_updateVarsByName("xcor")
   @_drawSetLine(oldX, @ycor, newX, @ycor)
 
@@ -37,17 +44,26 @@ setXcor = (newX, seenTurtlesSet = {}) ->
   @linkManager._refresh()
 
   dx = newX - oldX
-  f  = (seenTurtles) => (turtle) => ignorantly(() => setXcor.call(turtle, turtle.xcor + dx, seenTurtles))
+  f  = (seenTurtles) => (turtle) => setXcor.call(turtle, turtle.xcor + dx, seenTurtles)
   @_withEachTiedTurtle(f, seenTurtlesSet)
 
   return
+
+# (Number) => Boolean
+setYcorIfValid = (newY) ->
+  setYcor.call(this, newY) isnt TopologyInterrupt
 
 # (Number, IDSet) => Unit
 setYcor = (newY, seenTurtlesSet = {}) ->
 
   originPatch = @getPatchHere()
   oldY        = @ycor
-  @ycor       = @world.topology.wrapY(newY)
+  ycor        = @world.topology.wrapY(newY)
+
+  if ycor is TopologyInterrupt
+    return TopologyInterrupt
+
+  @ycor = ycor
   @_updateVarsByName("ycor")
   @_drawSetLine(@xcor, oldY, @xcor, newY)
 
@@ -58,7 +74,7 @@ setYcor = (newY, seenTurtlesSet = {}) ->
   @linkManager._refresh()
 
   dy = newY - oldY
-  f  = (seenTurtles) => (turtle) => ignorantly(() => setYcor.call(turtle, turtle.ycor + dy, seenTurtles))
+  f  = (seenTurtles) => (turtle) => setYcor.call(turtle, turtle.ycor + dy, seenTurtles)
   @_withEachTiedTurtle(f, seenTurtlesSet)
 
   return
@@ -181,22 +197,14 @@ _handleTiesForHeadingChange = (seenTurtlesSet, dh) ->
   filteredPairs.forEach(
     ([turtle, mode]) =>
 
-      wentBoom =
-        try
-          r = @distance(turtle)
-          if r isnt 0
-            theta = @towards(turtle) + dh
-            newX  = x + r * NLMath.squash(NLMath.sin(theta))
-            newY  = y + r * NLMath.squash(NLMath.cos(theta))
-            turtle.setXY(newX, newY, clone(seenTurtlesSet))
-          false
-        catch ex
-          if ex instanceof TopologyInterrupt
-            true
-          else
-            throw ex
+      r = @distance(turtle)
+      if r isnt 0
+        theta = @towards(turtle) + dh
+        newX  = x + r * NLMath.squash(NLMath.sin(theta))
+        newY  = y + r * NLMath.squash(NLMath.cos(theta))
+        result = turtle.setXY(newX, newY, clone(seenTurtlesSet))
 
-      if mode is "fixed" and not wentBoom
+      if mode is "fixed" and result isnt TopologyInterrupt
         turtle.right(dh, clone(seenTurtlesSet))
 
   )
@@ -230,8 +238,8 @@ VariableSpecs = [
 , new MutableVariableSpec('pen-size',    (-> @penManager.getSize()),            ((x) -> @penManager.setSize(x)))
 , new MutableVariableSpec('shape',       (-> @_getShape()),                     setShape)
 , new MutableVariableSpec('size',        (-> @_size),                           setSize)
-, new MutableVariableSpec('xcor',        (-> @xcor),                            setXcor)
-, new MutableVariableSpec('ycor',        (-> @ycor),                            setYcor)
+, new MutableVariableSpec('xcor',        (-> @xcor),                            setXcor,                          setXcorIfValid)
+, new MutableVariableSpec('ycor',        (-> @ycor),                            setYcor,                          setYcorIfValid)
 ]
 
 module.exports = {

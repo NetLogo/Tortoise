@@ -15,11 +15,8 @@ NLMath            = require('util/nlmath')
 
 { PenManager, PenStatus: { Down, Erase } } = require('./structure/penmanager')
 { ExtraVariableSpec }                      = require('./structure/variablespec')
-{ ignoring, TopologyInterrupt }            = require('util/exception')
-{ DeathInterrupt }                         = require('util/interrupts')
+{ DeathInterrupt, TopologyInterrupt }      = require('util/interrupts')
 { Setters, VariableSpecs }                 = require('./turtle/turtlevariables')
-
-ignorantly = ignoring(TopologyInterrupt)
 
 class StampMode
   constructor: (@name) -> # (String) => StampMode
@@ -134,7 +131,7 @@ module.exports =
 
     # (Number, Number) => Patch
     patchAt: (dx, dy) =>
-      @world.patchAtCoords(@xcor + dx, @ycor + dy)
+      @world.getPatchAt(@xcor + dx, @ycor + dy)
 
     # (Number, Number) => TurtleSet
     turtlesAt: (dx, dy) ->
@@ -248,15 +245,14 @@ module.exports =
     setXY: (x, y, seenTurtlesSet = {}) ->
       origXcor = @xcor
       origYcor = @ycor
-      try
-        @_setXandY(x, y, seenTurtlesSet)
-        @_drawSetLine(origXcor, origYcor, x, y)
-      catch error
+      result = @_setXandY(x, y, seenTurtlesSet)
+
+      if result is TopologyInterrupt
         @_setXandY(origXcor, origYcor, seenTurtlesSet)
-        if error instanceof TopologyInterrupt
-          throw new TopologyInterrupt("The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.")
-        else
-          throw error
+        return TopologyInterrupt
+
+      @_drawSetLine(origXcor, origYcor, x, y)
+
       return
 
     # Handy for when your turtles are drunk --JAB (8/18/15)
@@ -298,6 +294,10 @@ module.exports =
     setVariable: (varName, value) ->
       @_varManager[varName] = value
       return
+
+    # (String, Any) => Boolean
+    setIfValid: (varName, value) ->
+      @_varManager.setIfValid(varName, value)
 
     # () => Patch
     getPatchHere: ->
@@ -512,8 +512,11 @@ module.exports =
       xcor        = @world.topology.wrapX(newX)
       ycor        = @world.topology.wrapY(newY)
 
+      if xcor is TopologyInterrupt or ycor is TopologyInterrupt
+        return TopologyInterrupt
+
       # DO NOT SET `xcor` AND `ycor` DIRECTLY FROM `wrap*`.  `wrap*` can throw a `TopologyException`.
-      # If we set only one of the coordinates and then bail with an exception (and without generating the View update),
+      # If we set only one of the coordinates and then bail with an interrupt (and without generating the View update),
       # it causes all sorts of bonkers stuff to happen. --JAB (10/17/17)
       @xcor = xcor
       @ycor = ycor
@@ -529,7 +532,7 @@ module.exports =
       # Using those will cause floating point arithmetic discrepancies. --JAB (10/22/15)
       dx = newX - oldX
       dy = newY - oldY
-      f  = (seenTurtles) => (turtle) => ignorantly(() => turtle._setXandY(turtle.xcor + dx, turtle.ycor + dy, seenTurtles))
+      f  = (seenTurtles) => (turtle) => turtle._setXandY(turtle.xcor + dx, turtle.ycor + dy, seenTurtles)
       @_withEachTiedTurtle(f, seenTurtlesSet)
 
       return

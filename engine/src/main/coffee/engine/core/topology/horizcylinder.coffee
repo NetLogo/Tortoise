@@ -8,7 +8,7 @@ module.exports =
     _wrapInX: false # Boolean
     _wrapInY: true  # Boolean
 
-    # (Number) => Number
+    # (Number) => Number | TopologyInterrupt
     wrapX: (pos) ->
       @_wrapXCautiously(pos)
 

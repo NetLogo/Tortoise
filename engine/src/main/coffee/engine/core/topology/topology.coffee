@@ -9,7 +9,8 @@ abstractMethod = require('util/abstractmethoderror')
 { filter, unique } = require('brazierjs/array')
 { pipeline }       = require('brazierjs/function')
 
-{ AgentException, TopologyInterrupt } = require('util/exception')
+{ AgentException }    = require('util/exception')
+{ TopologyInterrupt } = require('util/interrupts')
 
 module.exports =
   class Topology
@@ -250,7 +251,7 @@ module.exports =
       else
         pos
 
-    # (Number) => Number
+    # (Number) => Number | TopologyInterrupt
     _wrapXCautiously: (pos) ->
       @_wrapCautiously(@minPxcor, @maxPxcor, pos)
 
@@ -258,7 +259,7 @@ module.exports =
     _wrapXLeniently: (pos) ->
       @_wrapLeniently(@minPxcor, @maxPxcor, pos)
 
-    # (Number) => Number
+    # (Number) => Number | TopologyInterrupt
     _wrapYCautiously: (pos) ->
       @_wrapCautiously(@minPycor, @maxPycor, pos)
 
@@ -266,20 +267,20 @@ module.exports =
     _wrapYLeniently: (pos) ->
       @_wrapLeniently(@minPycor, @maxPycor, pos)
 
-    # (Number, Number, Number) => Number
+    # (Number, Number, Number) => Number | TopologyInterrupt
     _wrapCautiously: (minCor, maxCor, pos) ->
       min = minCor - 0.5
       max = maxCor + 0.5
       if min <= pos < max
         pos
       else
-        throw new TopologyInterrupt("Cannot move turtle beyond the world's edge.")
+        TopologyInterrupt
 
     # (Number, Number, Number) => Number
     _wrapLeniently:  (minCor, maxCor, pos) ->
       @_wrap(pos, minCor - 0.5, maxCor + 0.5)
 
-    # (Number) => Number
+    # (Number) => Number | TopologyInterrupt
     wrapX: (pos) -> abstractMethod('Topology.wrapX')
     wrapY: (pos) -> abstractMethod('Topology.wrapY')
 
