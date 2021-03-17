@@ -72,9 +72,6 @@ class WidgetCompiler(
     }
   }
 
-  private def addContext(s: String) =
-    s"var R = null;\n$s"
-
   private def compileButton(b: Button): ValidationNel[Exception, SourceCompilation] = {
     def askWithKind(kind: String)(command: String): String = {
       def fail(kind: String): Nothing =
@@ -99,7 +96,7 @@ class WidgetCompiler(
     val sanitized = sanitizeSource(asked)
     compileCommand(sanitized)
       .contextualizeError("button", b.display.orElse(b.source).getOrElse(""), "source")
-      .map( (s) => SourceCompilation.apply(addContext(s)) )
+      .map(SourceCompilation.apply _)
   }
 
   private def compileMonitor(m: Monitor): ExceptionValidation[SourceCompilation] =

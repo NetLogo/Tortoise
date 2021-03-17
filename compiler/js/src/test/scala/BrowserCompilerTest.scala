@@ -242,7 +242,7 @@ object BrowserCompilerTest extends TestSuite {
           """PrintPrims.show(SelfManager.self)(\"hello!\");""",
 
         "ask turtles [ fd apples ]" ->
-          """R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self().fd(world.observer.getGlobal(\"apples\")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }""",
+          """var R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self().fd(world.observer.getGlobal(\"apples\")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }""",
 
         "clear-all reset-ticks create-turtles (bananas 2 3)" ->
           """world.clearAll();\nworld.ticker.reset();\nworld.turtleManager.createTurtles(PrimChecks.procedure.callReporter(\"bananas\", 2, 3), \"\");"""

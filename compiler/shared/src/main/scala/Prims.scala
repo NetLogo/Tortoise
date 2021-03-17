@@ -411,7 +411,7 @@ trait CommandPrims extends PrimUtils {
         s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
 
       case r: prim._run =>
-        val run = s"R = PrimChecks.procedure.run(${makeCheckedOp(0)}${ReporterPrims.optionalArgs(args.drop(1))}); if (R !== undefined) { return R; }"
+        val run = s"var R = PrimChecks.procedure.run(${makeCheckedOp(0)}${ReporterPrims.optionalArgs(args.drop(1))}); if (R !== undefined) { return R; }"
         maybeStoreProcedureArgsForRun(s.args(0).reportedType(), procContext, run)
 
       case fe: prim.etc._foreach =>
@@ -450,7 +450,7 @@ trait CommandPrims extends PrimUtils {
       } else {
         "DeathInterrupt"
       }
-      s"R = $callCommand; if (R === $interrupt) { return R; }"
+      s"var R = $callCommand; if (R === $interrupt) { return R; }"
     }
   }
 
@@ -639,7 +639,7 @@ trait CommandPrims extends PrimUtils {
     addReturn(s"ProcedurePrims.ask($agents, $code, $shuffle)")
 
   def addReturn(code: String): String = {
-    s"R = $code; if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }"
+    s"var R = $code; if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }"
   }
 
 }

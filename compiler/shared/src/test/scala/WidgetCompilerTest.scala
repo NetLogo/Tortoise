@@ -118,7 +118,7 @@ class WidgetCompilerTest extends FunSuite {
       e => fail(),
       c => c match {
         case SourceCompilation(source) =>
-          assert(source == "var R = null;\nAgentSet.ask(world.turtles, function() { foobar; })")
+          assert(source == "AgentSet.ask(world.turtles, function() { foobar; })")
         case _ => fail("compilation should have succeeded")
       })
   }

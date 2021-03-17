@@ -22,7 +22,7 @@ import
     Scalaz.ToValidationOps
 
 import CompilerFlags.WidgetPropagation
-import TortoiseSymbol.{ JsDeclare, JsStatement }
+import TortoiseSymbol.JsStatement
 
 // there are four main entry points here:
 //   compile{Reporter, Commands}
@@ -77,13 +77,11 @@ class Compiler {
     val procedures        = ProcedureCompiler.formatProcedures(result.compiledProcedures)
     val interfaceGlobalJs = result.interfaceGlobalCommands.map(globalCommands).mkString("\n")
 
-    val resultCheckVar    = JsDeclare("R", "null")
     val interfaceInit     = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
     val globalModelConfig = JsStatement("global.modelConfig", Polyfills.content)
     TortoiseLoader.integrateSymbols(
          init
       ++ plotConfig
-      :+ resultCheckVar
       :+ procedures
       :+ globalModelConfig
       :+ resolveModelConfig
