@@ -4,6 +4,8 @@
 
 { ExtraVariableSpec, ImmutableVariableSpec, MutableVariableSpec } = require('./variablespec')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 module.exports =
   class VariableManager
 
@@ -25,7 +27,7 @@ module.exports =
 
     # (Array[String], Array[String]) => Unit
     refineBy: (oldNames, newNames) ->
-      invalidatedSetter = (name) -> (value) -> throw new Error("#{name} is no longer a valid variable.")
+      invalidatedSetter = (name) -> (value) -> throw exceptions.internal("#{name} is no longer a valid variable.")
 
       obsoletedNames = difference(oldNames)(newNames)
       freshNames     = difference(newNames)(oldNames)
@@ -58,7 +60,7 @@ module.exports =
           else if spec instanceof ImmutableVariableSpec
             { value: spec.get.call(@agent), writable: false }
           else
-            throw new Error("Non-exhaustive spec type match: #{typeof(spec)}!")
+            throw exceptions.internal("Non-exhaustive spec type match: #{typeof(spec)}!")
         @_defineProperty(spec.name, obj)
       return
 

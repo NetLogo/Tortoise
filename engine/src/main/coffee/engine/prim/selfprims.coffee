@@ -2,6 +2,8 @@
 
 { checks, getTypeOf } = require('../core/typechecker')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 class TypeSet
 
   # (Boolean, Boolean, Boolean, Boolean) => TypeSet
@@ -62,7 +64,7 @@ module.exports =
         part1    = "this code can't be run by a #{getTypeOf(self).niceName()}"
         agentStr = @_typeSetToAgentString(typeSet)
         part2    = if agentStr.length isnt 0 then ", only #{agentStr}" else ""
-        throw new Error(part1 + part2)
+        throw exceptions.runtime(part1 + part2)
 
     # (TypeSet) => String
     _typeSetToAgentString: (typeSet) ->

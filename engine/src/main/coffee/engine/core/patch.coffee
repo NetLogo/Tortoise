@@ -7,9 +7,10 @@ Comparator      = require('util/comparator')
 
 { filter, foldl } = require('brazierjs/array')
 
-{ DeathInterrupt }         = require('util/interrupts')
-{ Setters, VariableSpecs } = require('./patch/patchvariables')
-{ ExtraVariableSpec }      = require('./structure/variablespec')
+{ exceptionFactory: exceptions } = require('util/exception')
+{ DeathInterrupt }               = require('util/interrupts')
+{ Setters, VariableSpecs }       = require('./patch/patchvariables')
+{ ExtraVariableSpec }            = require('./structure/variablespec')
 
 module.exports =
   class Patch
@@ -181,7 +182,7 @@ module.exports =
         if checks.isNumber(x)
           acc + x
         else
-          throw new Exception("noSumOfListWithNonNumbers, #{x}")
+          throw exceptions.runtime("noSumOfListWithNonNumbers, #{x}")
       foldl(f)(0)(nbs.iterator().toArray())
 
     # (String) => Number

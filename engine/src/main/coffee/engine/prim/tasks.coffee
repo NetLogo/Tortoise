@@ -1,10 +1,10 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { all, length, map } = require('brazierjs/array')
 { pipeline }         = require('brazierjs/function')
 { rangeUntil }       = require('brazierjs/number')
-
-Exception = require('util/exception')
 
 module.exports = {
 
@@ -26,7 +26,7 @@ module.exports = {
       fn.apply(fn, args)
     else
       pluralStr = if fn.length is 1 then "" else "s"
-      throw new Error("anonymous procedure expected #{fn.length} input#{pluralStr}, but only got #{args.length}")
+      throw exceptions.runtime("anonymous procedure expected #{fn.length} input#{pluralStr}, but only got #{args.length}")
 
   # [Result] @ (Product => Result, Array[Any]*) => Array[Result]
   map: (fn, lists...) ->
@@ -63,6 +63,6 @@ module.exports = {
           if res?
             return res
     else
-      throw new Error("All the list arguments to #{primName.toUpperCase()} must be the same length.")
+      throw exceptions.runtime("All the list arguments to #{primName.toUpperCase()} must be the same length.")
 
 }

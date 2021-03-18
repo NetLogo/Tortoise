@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 { find, map   } = require('brazierjs/array')
 { arrayEquals } = require('brazierjs/equals')
 { pipeline    } = require('brazierjs/function')
@@ -10,10 +12,12 @@
 StrictMath      = require('shim/strictmath')
 vec             = require('vectorious')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensionporter')
 
 notImplementedException = (prim) ->
-  throw new Error("Extension exception: #{prim} has not been implemented.")
+  throw exceptions.extension("#{prim} has not been implemented.")
 
 # Check nestedList input for possible problems, used by fromRowList & fromColumnList
 # If input nestedList includes items, not numbers, replace them by zeros.
@@ -22,7 +26,7 @@ notImplementedException = (prim) ->
 checkNestedList = (list) ->
   numRows = list.length
   if numRows is 0
-    throw new Error("Extension exception: input list was empty")
+    throw exceptions.extension("input list was empty")
 
   numCols = -1
 
@@ -31,18 +35,18 @@ checkNestedList = (list) ->
       if numCols is -1
         numCols = rowList.length
       else if numCols isnt rowList.length
-        throw new Error(
-          "Extension exception: To convert a nested list into a matrix, all nested lists must be the same length" +
+        throw exceptions.extension(
+          "To convert a nested list into a matrix, all nested lists must be the same length" +
           " -- e.g. [[1 2 3 4] [1 2 3]] is invalid, because row 1 has one more entry."
         )
     else
-      throw new Error(
-        "Extension exception: To convert a nested list into a matrix, there must be exactly two levels of nesting" +
+      throw exceptions.extension(
+        "To convert a nested list into a matrix, there must be exactly two levels of nesting" +
         " -- e.g. [[1 2 3] [4 5 6]] creates a good 2x3 matrix."
       )
 
   if numCols is 0
-    throw new Error("Extension exception: input list contained only empty lists")
+    throw exceptions.extension("input list contained only empty lists")
 
   # Assign zeros if the element is not a number
   for row in rangeUntil(0)(numRows)
@@ -93,39 +97,34 @@ module.exports = {
     # (Any, Number*, Number*, List[Number]*) => [Number|Null, Number|Null]
     validate = (matrix, rows, cols, newVals) ->
       if not isMatrix(matrix)
-        throw new Error("Extension exception: not a matrix: #{workspace.dump(matrix, true)}")
+        throw exceptions.extension("not a matrix: #{workspace.dump(matrix, true)}")
 
       [numRows, numCols] = matrix.shape
 
       if rows? and cols?
         if not (0 <= rows < numRows) or not (0 <= cols < numCols)
-          throw new Error(
-            "Extension exception: " +
+          throw exceptions.extension(
             "[#{rows} #{cols}] are not valid indices for a matrix with dimensions #{numRows}x#{numCols}"
           )
         else
           return [floor(rows), floor(cols)]
       else if rows?
         if not (0 <= rows < numRows)
-          throw new Error(
-            "Extension exception: " +
+          throw exceptions.extension(
             "#{rows} is not a valid index for a matrix with dimensions #{numRows}x#{numCols}"
           )
         if newVals and (len = newVals.length) isnt numCols
-          throw new Error(
-            "Extension exception: " +
+          throw exceptions.extension(
             "The length of the given list (#{len}) is different from the length of the matrix row (#{numRows})")
         else
           return [floor(rows), null]
       else if cols?
         if not (0 <= cols < numCols)
-          throw new Error(
-            "Extension exception: " +
+          throw exceptions.extension(
             "#{cols} is not a valid index for a matrix with dimensions #{numRows}x#{numCols}"
           )
         if newVals and (len = newVals.length) isnt numRows
-            throw new Error(
-              "Extension exception: " +
+            throw exceptions.extension(
               "The length of the given list (#{len}) is different from the length of the matrix column (#{numCols})")
         else
           return [null, floor(cols)]
@@ -254,9 +253,9 @@ module.exports = {
           if not (lower <= arg <= upper)
             polarity  = if isStart then "Start" else "End"
             dimName   = if isRow   then "row"   else "column"
-            complaint = "Extension exception: #{polarity} #{dimName} index (#{arg}) is invalid."
+            complaint = "#{polarity} #{dimName} index (#{arg}) is invalid."
             remedy    = "Should be between #{lower} and #{upper} inclusive."
-            throw new Error("#{complaint}  #{remedy}")
+            throw exceptions.extension("#{complaint}  #{remedy}")
 
         [{ arg: r1, lower: 0, upper: numRows - 1, isStart:  true, isRow:  true }
         ,{ arg: c1, lower: 0, upper: numCols - 1, isStart:  true, isRow: false }
@@ -280,14 +279,14 @@ module.exports = {
     matrixMap = (reporter, matrix, rest...) ->
 
       if reporter.length > rest.length + 1
-        throw new Error("Extension exception: Task expected #{reporter.length} matrix inputs but only got #{rest.length + 1}.")
+        throw exceptions.extension("Task expected #{reporter.length} matrix inputs but only got #{rest.length + 1}.")
 
       for m in rest
         if not arrayEquals(matrix.shape)(m.shape)
           shapeToStr = ([x, y]) -> "#{x}x#{y}"
           firstShape = shapeToStr(matrix.shape)
           badShape   = shapeToStr(m.shape)
-          throw new Error("Extension exception: All matrices must have the same dimensions: the first was #{firstShape} and another was #{badShape}.")
+          throw exceptions.extension("All matrices must have the same dimensions: the first was #{firstShape} and another was #{badShape}.")
 
       matrix.map(
         (item, i) ->
@@ -329,7 +328,7 @@ module.exports = {
     # (Matrix|Number, Matrix|Number, (Matrix|Number)*) => Matrix|Number
     minus = (m1, m2, rest...) ->
       operands          = [m1, m2, rest...]
-      [rows, cols]      = pipeline(find(isMatrix), fold(-> throw new Error("One or more (-) operands must be a matrix..."))((x) -> x.shape))(operands)
+      [rows, cols]      = pipeline(find(isMatrix), fold(-> throw exceptions.extension("One or more (-) operands must be a matrix..."))((x) -> x.shape))(operands)
       broadcastIfNumber = (x) -> if checks.isNumber(x) then makeConstant(rows, cols, x) else x
       operands.reduce((left, right) -> vec.subtract(broadcastIfNumber(left), broadcastIfNumber(right)))
 

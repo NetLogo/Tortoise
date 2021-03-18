@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 StrictMath = require('../shim/strictmath')
-Exception  = require('./exception')
 
 module.exports = {
 

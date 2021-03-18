@@ -10,6 +10,8 @@ makePenLines      = require('./turtle/makepenlines')
 Comparator        = require('util/comparator')
 NLMath            = require('util/nlmath')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { foldl, forEach, map, uniqueBy } = require('brazierjs/array')
 { rangeUntil }                    = require('brazierjs/number')
 
@@ -117,11 +119,11 @@ module.exports =
     # [T] @ (AbstractAgentSet[T], Number, Number) => AbstractAgentSet[T]
     inCone: (agents, distance, angle) ->
       if distance < 0
-        throw new Error("IN-CONE cannot take a negative radius.")
+        throw exceptions.runtime("IN-CONE cannot take a negative radius.")
       else if angle < 0
-        throw new Error("IN-CONE cannot take a negative angle.")
+        throw exceptions.runtime("IN-CONE cannot take a negative angle.")
       else if angle > 360
-        throw new Error("IN-CONE cannot take an angle greater than 360.")
+        throw exceptions.runtime("IN-CONE cannot take an angle greater than 360.")
       else
         @world.topology.inCone(@xcor, @ycor, NLMath.normalizeHeading(@_heading), agents, distance, angle)
 
@@ -171,7 +173,7 @@ module.exports =
         if @world.selfManager.self().isDead?()
           return DeathInterrupt
       else
-        throw new Error("That #{@getBreedNameSingular()} is dead.")
+        throw exceptions.runtime("That #{@getBreedNameSingular()} is dead.")
       return
 
     # [Result] @ (() => Result) => Result
@@ -179,7 +181,7 @@ module.exports =
       if not @isDead()
         @world.selfManager.askAgent(f)(this)
       else
-        throw new Error("That #{@_breed.singular} is dead.")
+        throw exceptions.runtime("That #{@_breed.singular} is dead.")
 
     # Unfortunately, further attempts to streamline this code are very likely to lead to
     # floating point arithmetic mismatches with JVM NetLogo....  Beware. --JAB (7/28/14)

@@ -6,7 +6,8 @@ linkCompare      = require('./structure/linkcompare')
 VariableManager  = require('./structure/variablemanager')
 TurtleSet        = require('./turtleset')
 
-{ EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('util/comparator')
+{ EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT } = require('util/comparator')
+{ exceptionFactory: exceptions }                = require('util/exception')
 
 { DeathInterrupt, TowardsInterrupt } = require('util/interrupts')
 { Setters, VariableSpecs }           = require('./link/linkvariables')
@@ -156,7 +157,7 @@ module.exports =
         if @world.selfManager.self().isDead?()
           return DeathInterrupt
       else
-        throw new Error("That #{@getBreedNameSingular()} is dead.")
+        throw exceptions.runtime("That #{@getBreedNameSingular()} is dead.")
       return
 
     # [Result] @ (() => Result) => Result
@@ -164,7 +165,7 @@ module.exports =
       if not @isDead()
         @world.selfManager.askAgent(f)(this)
       else
-        throw new Error("That #{@_breed.singular} is dead.")
+        throw exceptions.runtime("That #{@_breed.singular} is dead.")
 
     # (Any) => { toInt: Number }
     compare: (x) ->
@@ -172,7 +173,7 @@ module.exports =
         when -1 then LT
         when  0 then EQ
         when  1 then GT
-        else throw new Error("Comparison should only yield an integer within the interval [-1,1]")
+        else exceptions.internal("Comparison should only yield an integer within the interval [-1,1]")
 
     # () => Array[String]
     varNames: ->

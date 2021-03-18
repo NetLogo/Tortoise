@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 module.exports =
   class SelfManager
 
@@ -22,7 +24,7 @@ module.exports =
       if @_myself isnt 0
         @_myself
       else
-        throw new Error("There is no agent for MYSELF to refer to.")
+        throw exceptions.runtime("There is no agent for MYSELF to refer to.")
 
     # Switch from letting CoffeeScript bind "this" to handling it manually to avoid creating extra anonymous functions
     # They add GC pressure, causing runtime slowdown - JMB 07/2017

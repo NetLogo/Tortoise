@@ -2,6 +2,8 @@
 
 SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensionporter')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 # (Any) => Boolean
 isMap = (x) ->
   x._type is "nl_map"
@@ -72,7 +74,7 @@ module.exports = {
 
     # (NLMap, String) => Any
     get = (nlMap, key) ->
-      nlMap[key] ? throw new Error("#{key} does not exist in this map")
+      nlMap[key] ? throw exceptions.extension("#{key} does not exist in this map")
 
     # (NLMap, String) => NLMap
     remove = (nlMap, key) ->
@@ -84,13 +86,13 @@ module.exports = {
     # NLMap => String
     mapToJson = (nlMap) ->
       if nlMap._type isnt "nl_map"
-        throw new Error("Only nlmap type values can be converted to JSON format.")
+        throw exceptions.extension("Only nlmap type values can be converted to JSON format.")
       JSON.stringify(nlMap)
 
     # NLMap => String
     mapToUrlEncoded = (nlMap) ->
       if nlMap._type isnt "nl_map"
-        throw new Error("Only nlmap type values can be converted to URL format.")
+        throw exceptions.extension("Only nlmap type values can be converted to URL format.")
       else
         kvps = []
 

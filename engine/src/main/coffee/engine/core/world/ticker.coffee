@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Exception = require('util/exception')
+{ exceptionFactory: exceptions } = require('util/exception')
 
 EvilSentinel = -1
 
@@ -36,18 +36,18 @@ module.exports =
       if @ticksAreStarted()
         @_updateTicks((counter) -> counter + 1)
       else
-        throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
+        throw exceptions.runtime("The tick counter has not been started yet. Use RESET-TICKS.")
       @_onTick()
       return
 
     # (Number) => Unit
     tickAdvance: (n) ->
       if n < 0
-        throw new Error("Cannot advance the tick counter by a negative amount.")
+        throw exceptions.runtime("Cannot advance the tick counter by a negative amount.")
       else if @ticksAreStarted()
         @_updateTicks((counter) -> counter + n)
       else
-        throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
+        throw exceptions.runtime("The tick counter has not been started yet. Use RESET-TICKS.")
 
     # () => Boolean
     ticksAreStarted: ->
@@ -58,7 +58,7 @@ module.exports =
       if @ticksAreStarted()
         @_count
       else
-        throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
+        throw exceptions.runtime("The tick counter has not been started yet. Use RESET-TICKS.")
 
     # ((Number) => Number) => Unit
     _updateTicks: (updateCountFunc) ->

@@ -4,6 +4,8 @@
 
 SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensionporter')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 # (Any) => Boolean
 isTable = (x) ->
   x instanceof Map
@@ -35,16 +37,16 @@ isValidKey = (x) ->
 checkIsValidList = (list) ->
   for pair in list
     if not (pair instanceof Array and pair.length >= 2)
-      throw new Error("Extension Exception: expected a two-element list: #{workspace.dump(pair, true)}")
+      throw exceptions.extension("expected a two-element list: #{workspace.dump(pair, true)}")
   return
 
 # (Any, String|Boolean|Number|List) ->
 checkInput = ({table, key}) ->
   if not isTable(table)
-    throw new Error("Extension Exception: not a table #{workspace.dump(table, true)}")
+    throw exceptions.extension("not a table #{workspace.dump(table, true)}")
 
   if key? and not isValidKey(key)
-      throw new Error("Extension Exception: " +
+      throw exceptions.extension("" +
         "#{workspace.dump(key, true)} is not a valid table key " +
         "(a table key may only be a number, a string, true or false, or a list whose items are valid keys)")
 
@@ -118,7 +120,7 @@ module.exports = {
       if originKey?
         table.get(originKey)
       else
-        throw new Error("Extension Exception: No value for #{key} in table.")
+        throw exceptions.extension("No value for #{key} in table.")
 
     # (Table, Any) => Boolean
     hasKey = (table, key) ->
@@ -204,7 +206,7 @@ module.exports = {
           when "turtles" then new TurtleSet(value, workspace.world)
           when "patches" then new PatchSet(value, workspace.world)
           when "links"   then new LinkSet(value, workspace.world)
-          else throw new Error("Extension Exception: Unknown agentset type")
+          else throw exceptions.internal("Unknown agentset type")
         group.set(key, newAgentset)
       )
 

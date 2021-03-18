@@ -26,6 +26,8 @@ Timer          = require('util/timer')
 Updater        = require('./updater')
 World          = require('./core/world')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 csvToWorldState = require('serialize/importcsv')
 
 { toObject }       = require('brazier/array')
@@ -52,7 +54,7 @@ module.exports =
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
     asyncDialogConfig  = modelConfig?.asyncDialog       ? { getChoice: (-> -> None), getText: (-> -> None), getYesOrNo: (-> -> None), showMessage: (-> -> None) }
-    base64ToImageData  = modelConfig?.base64ToImageData ? (-> throw new Error("Sorry, no image data converter was provided."))
+    base64ToImageData  = modelConfig?.base64ToImageData ? (-> throw exceptions.internal("Sorry, no image data converter was provided."))
     dialogConfig       = modelConfig?.dialog            ? new UserDialogConfig
     importExportConfig = modelConfig?.importExport      ? new ImportExportConfig
     inspectionConfig   = modelConfig?.inspection        ? new InspectionConfig
@@ -112,7 +114,7 @@ module.exports =
 
       functionify = (obj) -> (x) ->
         msg = "Cannot find corresponding breed name for #{x}!"
-        fold(-> throw new Error(msg))(id)(lookup(x)(obj))
+        fold(-> throw exceptions.internal(msg))(id)(lookup(x)(obj))
 
       breedNamePairs   = values(breedManager.breeds()).map(({ name, singular }) -> [name, singular])
       ptsObject        = toObject(breedNamePairs)

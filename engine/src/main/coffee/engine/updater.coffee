@@ -5,7 +5,8 @@ Patch     = require('./core/patch')
 Turtle    = require('./core/turtle')
 World     = require('./core/world')
 
-{ ifInterrupt } = require('util/interrupts')
+{ exceptionFactory: exceptions } = require('util/exception')
+{ ifInterrupt }                  = require('util/interrupts')
 
 { Perspective: { perspectiveToNum }, Observer } = require('./core/observer')
 
@@ -115,7 +116,7 @@ module.exports =
         else if obj instanceof Observer
           [update.observer, @_observerMap()]
         else
-          throw new Error("Unrecognized update type")
+          throw exceptions.internal("Unrecognized update type")
 
       entryUpdate = entry[obj.id] ? {}
 
@@ -132,7 +133,7 @@ module.exports =
             entryUpdate[varName] = getter(obj)
             entry[obj.id]        = entryUpdate
         else
-          throw new Error("Unknown #{obj.constructor.name} variable for update: #{v}")
+          throw exceptions.internal("Unknown #{obj.constructor.name} variable for update: #{v}")
 
       return
 

@@ -8,7 +8,8 @@ StrictMath = require('shim/strictmath')
 { fold, isSomething, maybe }                            = require('brazierjs/maybe')
 { lookup, values }                                      = require('brazierjs/object')
 
-{ StopInterrupt } = require('util/interrupts')
+{ exceptionFactory: exceptions } = require('util/exception')
+{ StopInterrupt }                = require('util/interrupts')
 
 module.exports = class Plot
 
@@ -69,7 +70,7 @@ module.exports = class Plot
           pen.drawHistogramFrom(list, @xMin, @xMax)
           @_verifyHistogramSize(pen)
         else
-          throw new Error("You cannot histogram with a plot-pen-interval of #{pen.interval}.")
+          throw exceptions.runtime("You cannot histogram with a plot-pen-interval of #{pen.interval}.")
     )
     return
 
@@ -135,7 +136,7 @@ module.exports = class Plot
     if isSomething(penMaybe)
       @_currentPenMaybe = penMaybe
     else
-      throw new Error("There is no pen named \"#{name}\" in the current plot")
+      throw exceptions.runtime("There is no pen named \"#{name}\" in the current plot")
     return
 
   # (Number) => Unit
@@ -146,7 +147,7 @@ module.exports = class Plot
           interval = (@xMax - @xMin) / num
           pen.setInterval(interval)
         else
-          throw new Error("You cannot make a histogram with #{num} bars.")
+          throw exceptions.runtime("You cannot make a histogram with #{num} bars.")
     )
     return
 
@@ -170,7 +171,7 @@ module.exports = class Plot
   # (Number, Number) => Unit
   setXRange: (min, max) ->
     if min >= max
-      throw new Error("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}")
+      throw exceptions.runtime("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}")
     @xMin = min
     @xMax = max
     @_resize()
@@ -179,7 +180,7 @@ module.exports = class Plot
   # (Number, Number) => Unit
   setYRange: (min, max) ->
     if min >= max
-      throw new Error("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}")
+      throw exceptions.runtime("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}")
     @yMin = min
     @yMax = max
     @_resize()
@@ -277,4 +278,4 @@ module.exports = class Plot
 
   # [T] @ ((Pen) => T) => T
   _withPen: (f) ->
-    fold(-> throw new Error("Plot '#{@name}' has no pens!"))(f)(@_currentPenMaybe)
+    fold(-> throw exceptions.runtime("Plot '#{@name}' has no pens!"))(f)(@_currentPenMaybe)

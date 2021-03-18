@@ -9,6 +9,8 @@ IDManager   = require('./idmanager')
 SortedLinks = require('./sortedlinks')
 stableSort  = require('util/stablesort')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { contains, exists, filter, isEmpty, map } = require('brazierjs/array')
 { pipeline }                               = require('brazierjs/function')
 { pairs, values }                          = require('brazierjs/object')
@@ -109,7 +111,7 @@ module.exports =
       @_errorIfBreedIsIncompatible(breed.name)
       existingLink = @getLink(end1.id, end2.id, breed.name)
       if existingLink isnt link and existingLink isnt Nobody
-        throw new Error("there is already a #{breed.singular.toUpperCase()} \
+        throw exceptions.runtime("there is already a #{breed.singular.toUpperCase()} \
                          with endpoints #{end1.getName()} and #{end2.getName()}")
       else
         @_removeFromSets(end1.id, end2.id, isDirected, oldBreedName)
@@ -157,7 +159,7 @@ module.exports =
     _errorIfBreedIsIncompatible: (breedName) ->
       if (breedName is   "LINKS" and @_hasBreededs()) or
          (breedName isnt "LINKS" and @_hasUnbreededs())
-        throw new Error("You cannot have both breeded and unbreeded links in the same world.")
+        throw exceptions.runtime("You cannot have both breeded and unbreeded links in the same world.")
       return
 
     # Unit -> Boolean

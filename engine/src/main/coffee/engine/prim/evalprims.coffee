@@ -1,12 +1,14 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 globalEval = eval
 
 # (String) => Number | Boolean | String | Array
 readFromString = (str) ->
   try Converter.stringToJSValue(str)
   catch ex
-    throw new Error(ex.message)
+    throw exceptions.internal(ex.message)
 
 evalCache = { }
 

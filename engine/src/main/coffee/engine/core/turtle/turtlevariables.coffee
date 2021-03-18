@@ -5,6 +5,8 @@ ColorModel = require('engine/core/colormodel')
 StrictMath = require('shim/strictmath')
 NLMath     = require('util/nlmath')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { clone } = require('brazierjs/object')
 
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
@@ -97,7 +99,7 @@ setBreed = (breed) ->
       if specialName? and not @world.breedManager.get(specialName).isLinky()
         @world.breedManager.get(specialName)
       else
-        throw new Error("You can't set BREED to a non-breed agentset.")
+        throw exceptions.runtime("You can't set BREED to a non-breed agentset.")
     else
       breed
 
