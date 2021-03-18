@@ -9,9 +9,9 @@ TurtleSet        = require('./turtleset')
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT } = require('util/comparator')
 { exceptionFactory: exceptions }                = require('util/exception')
 
-{ DeathInterrupt, TowardsInterrupt } = require('util/interrupts')
-{ Setters, VariableSpecs }           = require('./link/linkvariables')
-{ ExtraVariableSpec }                = require('./structure/variablespec')
+{ ifInterrupt, DeathInterrupt } = require('util/interrupts')
+{ Setters, VariableSpecs }      = require('./link/linkvariables')
+{ ExtraVariableSpec }           = require('./structure/variablespec')
 
 class StampMode
   constructor: (@name) -> # (String) => StampMode
@@ -185,8 +185,7 @@ module.exports =
       { xcor: e1x, ycor: e1y } = @end1
       { xcor: e2x, ycor: e2y } = @end2
 
-      stampHeading = @world.topology.towards(e1x, e1y, e2x, e2y)
-      if stampHeading is TowardsInterrupt then stampHeading = 0
+      stampHeading = ifInterrupt(@world.topology.towards(e1x, e1y, e2x, e2y), 0)
 
       color = ColorModel.colorToRGB(@_color)
       midX  = @getMidpointX()
