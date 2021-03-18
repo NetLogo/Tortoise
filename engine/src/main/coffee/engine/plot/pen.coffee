@@ -11,8 +11,8 @@ ColorModel                        = require('engine/core/colormodel')
 { exceptionFactory: exceptions } = require('util/exception')
 
 # data PenMode =
-Up   = {}
-Down = {}
+Up   = Object.freeze({ _debugInfo: "UP" })
+Down = Object.freeze({ _debugInfo: "DOWN" })
 
 module.exports.PenMode = {
   Up,
@@ -21,9 +21,9 @@ module.exports.PenMode = {
 }
 
 # data DisplayMode =
-Line  = {}
-Bar   = {}
-Point = {}
+Line  = Object.freeze({ _debugInfo: "LINE" })
+Bar   = Object.freeze({ _debugInfo: "BAR" })
+Point = Object.freeze({ _debugInfo: "POINT" })
 
 # (Number) => DisplayMode
 displayModeFromNum = (num) ->
