@@ -21,7 +21,7 @@ class I18nBundle
     else if @_current isnt EN_US and EN_US.hasOwnProperty(key)
       EN_US
     else
-      throw exceptions.extension("Could not find a message for this key: #{key}")
+      throw exceptions.internal("Could not find a message for this key: #{key}")
 
     message = bundle[key]
     message(args...)

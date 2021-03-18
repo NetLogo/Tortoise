@@ -7,11 +7,11 @@ class ListChecks
   constructor: (@validator, @dumper, @listPrims, @stringPrims) ->
 
   # (Number, Array[Any] | String) => Unit
-  indexBoundsChecks: (index, listOrString, inclusive = true) ->
+  indexBoundsChecks: (prim, index, listOrString, inclusive = true) ->
     if index < 0
-      @validator.error('_ isn_t greater than or equal to zero.', index)
+      @validator.error(prim, '_ isn_t greater than or equal to zero.', index)
     if index > listOrString.length or (inclusive and index is listOrString.length)
-      @validator.error('Can_t find element _ of the _ _, which is only of length _.', index, getTypeOf(listOrString).niceName(), @dumper(listOrString), listOrString.length)
+      @validator.error(prim, 'Can_t find element _ of the _ _, which is only of length _.', index, getTypeOf(listOrString).niceName(), @dumper(listOrString), listOrString.length)
     return
 
   # (String, Array | String) => Unit
@@ -19,7 +19,7 @@ class ListChecks
     if listOrString.length is 0
       argType  = getTypeOf(listOrString)
       primName = if argType is types.String then prim else prim.toUpperCase()
-      @validator.error('_ got an empty _ as input.', primName, argType.niceName())
+      @validator.error(prim, '_ got an empty _ as input.', primName, argType.niceName())
 
   # (String, Array | String) => Array | String
   butFirst: (prim, listOrString) ->
@@ -46,7 +46,7 @@ class ListChecks
   # (Array[Any] | String) => Any | String
   first: (listOrString) ->
     if listOrString.length is 0
-      @validator.error('List is empty.')
+      @validator.error('first', 'List is empty.')
 
     @listPrims.first(listOrString)
 
@@ -56,7 +56,7 @@ class ListChecks
 
   # (Number, Array[Any] | String, Any) => Array[Any] | String
   insertItem: (index, listOrString, item) ->
-    @indexBoundsChecks(index, listOrString, inclusive = false)
+    @indexBoundsChecks('insert-item', index, listOrString, inclusive = false)
 
     if checks.isString(listOrString)
       if not checks.isString(item)
@@ -68,14 +68,14 @@ class ListChecks
 
   # (Number, Array[Any] | String) => Any | String
   item: (index, listOrString) ->
-    @indexBoundsChecks(index, listOrString)
+    @indexBoundsChecks('item', index, listOrString)
 
     @listPrims.item(index, listOrString)
 
   # (Array[Any] | String) => Any | String
   last: (listOrString) ->
     if listOrString.length is 0
-      @validator.error('List is empty.')
+      @validator.error('last', 'List is empty.')
 
     @listPrims.last(listOrString)
 
@@ -91,7 +91,7 @@ class ListChecks
   max: (values) ->
     nums = values.filter(checks.isNumber)
     if nums.length < 1
-      @validator.error('Can_t find the _ of a list with no numbers: __', "maximum", @dumper(values), "")
+      @validator.error('max', 'Can_t find the _ of a list with no numbers: __', "maximum", @dumper(values), "")
 
     @listPrims.max(nums)
 
@@ -99,7 +99,7 @@ class ListChecks
   mean: (values) ->
     nums = values.filter(checks.isNumber)
     if nums.length < 1
-      @validator.error('Can_t find the _ of a list with no numbers: __', "mean", @dumper(values), ".")
+      @validator.error('mean', 'Can_t find the _ of a list with no numbers: __', "mean", @dumper(values), ".")
 
     @listPrims.mean(nums)
 
@@ -107,9 +107,9 @@ class ListChecks
   median: (values) ->
     nums = values.filter(checks.isNumber)
     if nums.length < 1
-      @validator.error('Can_t find the _ of a list with no numbers: __', "median", @dumper(values), ".")
+      @validator.error('median', 'Can_t find the _ of a list with no numbers: __', "median", @dumper(values), ".")
 
-    @validator.checkNumber(@listPrims.median(nums))
+    @validator.checkNumber('median', @listPrims.median(nums))
 
   # (Any, Array[Any] | AbstractAgentSet | String) => Boolean
   member: (item, items) ->
@@ -125,9 +125,9 @@ class ListChecks
     nums = values.filter(checks.isNumber)
 
     if nums.length < 1
-      @validator.error('Can_t find the _ of a list with no numbers: __', "minimum", @dumper(values), "")
+      @validator.error('min', 'Can_t find the _ of a list with no numbers: __', "minimum", @dumper(values), "")
 
-    @validator.checkNumber(@listPrims.min(nums))
+    @validator.checkNumber('min', @listPrims.min(nums))
 
   # (Array[Any]) => Array[Any]
   modes: (list) ->
@@ -136,17 +136,17 @@ class ListChecks
   # (Number, Array[Any] | AbstractAgentSet) => Array[Any] | AbstractAgentSet
   nOf: (count, agentSetOrList) ->
     if count < 0
-      @validator.error('First input to _ can_t be negative.', "N-OF")
+      @validator.error('n-of', 'First input to _ can_t be negative.', "N-OF")
 
     if checks.isList(agentSetOrList)
       if (agentSetOrList.length < count)
-        @validator.error('Requested _ random items from a list of length _.', count, agentSetOrList.length)
+        @validator.error('n-of', 'Requested _ random items from a list of length _.', count, agentSetOrList.length)
 
       @listPrims.nOfList(count, agentSetOrList)
 
     else # agentset
       if (agentSetOrList.size() < count)
-        @validator.error('Requested _ random agents from a set of only _ agents.', count, agentSetOrList.size())
+        @validator.error('n-of', 'Requested _ random agents from a set of only _ agents.', count, agentSetOrList.size())
 
       @listPrims.nOfAgentSet(count, agentSetOrList)
 
@@ -154,7 +154,7 @@ class ListChecks
   oneOf: (agentSetOrList) ->
     if checks.isList(agentSetOrList)
       if agentSetOrList.length is 0
-        @validator.error('_ got an empty _ as input.', "ONE-OF", types.List.niceName())
+        @validator.error('one-of', '_ got an empty _ as input.', "ONE-OF", types.List.niceName())
       @listPrims.oneOf(agentSetOrList)
     else # agentset
       agentSetOrList.randomAgent()
@@ -168,7 +168,7 @@ class ListChecks
 
   reduce: (f, list) ->
     if list.length is 0
-      @validator.error('The list argument to reduce must not be empty.')
+      @validator.error('reduce', 'The list argument to reduce must not be empty.')
 
     @listPrims.reduce(f, list)
 
@@ -188,7 +188,7 @@ class ListChecks
 
   # (Number, Array[Any] | String) => Array[Any] | String
   removeItem: (index, listOrString) ->
-    @indexBoundsChecks(index, listOrString)
+    @indexBoundsChecks('remove-item', index, listOrString)
 
     if checks.isString(listOrString)
       @stringPrims.removeItem(index, listOrString)
@@ -197,7 +197,7 @@ class ListChecks
 
   # (Number, Array[Any] | String, Any | String) => Array[Any] | String
   replaceItem: (index, listOrString, item) ->
-    @indexBoundsChecks(index, listOrString)
+    @indexBoundsChecks('replace-item', index, listOrString)
 
     if checks.isString(listOrString)
       if not checks.isString(item)
@@ -240,18 +240,18 @@ class ListChecks
   standardDeviation: (values) ->
     nums = values.filter(checks.isNumber)
     if nums.length < 2
-      @validator.error('Can_t find the _ of a list without at least two numbers: __', "standard deviation", @dumper(values), "")
+      @validator.error('standard-deviation', 'Can_t find the _ of a list without at least two numbers: __', "standard deviation", @dumper(values), "")
 
-    @validator.checkNumber(@listPrims.standardDeviation(nums))
+    @validator.checkNumber('standard-deviation', @listPrims.standardDeviation(nums))
 
   # (Array[Any], Number, Number) => Array[Any]
   sublist: (list, startIndex, endIndex) ->
     if startIndex < 0
-      @validator.error('_ is less than zero.', startIndex)
+      @validator.error('sublist', '_ is less than zero.', startIndex)
     if endIndex > list.length
-      @validator.error('_ is greater than the length of the input list (_).', endIndex, list.length)
+      @validator.error('sublist', '_ is greater than the length of the input list (_).', endIndex, list.length)
     if endIndex < startIndex
-      @validator.error('_ is less than _.', endIndex, startIndex)
+      @validator.error('sublist', '_ is less than _.', endIndex, startIndex)
 
     @listPrims.sublist(list, startIndex, endIndex)
 
@@ -262,12 +262,12 @@ class ListChecks
   # Array[Any] => Number
   sum: (values) ->
     nums = values.filter(checks.isNumber)
-    @validator.checkNumber(@listPrims.sum(nums))
+    @validator.checkNumber('sum', @listPrims.sum(nums))
 
   # (Number, Array[Any] | AbstractAgentSet) => Array[Any] | AbstractAgentSet
   upToNOf: (count, agentSetOrList) ->
     if count < 0
-      @validator.error('First input to _ can_t be negative.', "UP-TO-N-OF")
+      @validator.error('up-to-n-of', 'First input to _ can_t be negative.', "UP-TO-N-OF")
 
     if checks.isList(agentSetOrList)
       @listPrims.upToNOfList(count, agentSetOrList)
@@ -279,8 +279,8 @@ class ListChecks
   variance: (values) ->
     nums = values.filter(checks.isNumber)
     if nums.length < 2
-      @validator.error('Can_t find the _ of a list without at least two numbers: __', "variance", @dumper(values), ".")
+      @validator.error('variance', 'Can_t find the _ of a list without at least two numbers: __', "variance", @dumper(values), ".")
 
-    @validator.checkNumber(@listPrims.variance(nums))
+    @validator.checkNumber('variance', @listPrims.variance(nums))
 
 module.exports = ListChecks

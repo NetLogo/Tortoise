@@ -15,4 +15,4 @@ module.exports.Prims =
         if not agent.isDead()
           inspect(agent)
         else
-          throw exceptions.runtime("That #{agent.getBreedNameSingular()} is dead.")
+          throw exceptions.runtime("That #{agent.getBreedNameSingular()} is dead.", "inspect")

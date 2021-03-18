@@ -132,7 +132,7 @@ module.exports = class PlotManager
     if plot?
       @_currentPlotMaybe = maybe(plot)
     else
-      throw exceptions.runtime("no such plot: \"#{name}\"")
+      throw exceptions.runtime("no such plot: \"#{name}\"", "set-current-plot")
     return
 
   # (Number) => Unit
@@ -140,7 +140,7 @@ module.exports = class PlotManager
     if num > 0
       @_withPlot((plot) -> plot.setHistogramBarCount(num))
     else
-      throw exceptions.runtime("You cannot make a histogram with #{num} bars.")
+      throw exceptions.runtime("You cannot make a histogram with #{num} bars.", "set-histogram-num-bars")
     return
 
   # (Number) => Unit

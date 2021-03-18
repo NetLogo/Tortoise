@@ -99,7 +99,7 @@ setBreed = (breed) ->
       if specialName? and not @world.breedManager.get(specialName).isLinky()
         @world.breedManager.get(specialName)
       else
-        throw exceptions.runtime("You can't set BREED to a non-breed agentset.")
+        throw exceptions.runtime("You can't set BREED to a non-breed agentset.", "set")
     else
       breed
 

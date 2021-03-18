@@ -48,14 +48,14 @@ module.exports =
 
     # () => Number | TowardsInterrupt
     linkHeading: ->
-      @_getSelfSafe(linkType).getHeading()
+      @_getSelfSafe(linkType, "link-heading").getHeading()
 
     # () => Number
     linkLength: ->
-      @_getSelfSafe(linkType).getSize()
+      @_getSelfSafe(linkType, "link-length").getSize()
 
     # (TypeSet) => Agent
-    _getSelfSafe: (typeSet) ->
+    _getSelfSafe: (typeSet, primName) ->
       { link: allowsL, patch: allowsP, turtle: allowsT } = typeSet
       self = @_getSelf()
       if (checks.isTurtle(self) and allowsT) or (checks.isPatch(self) and allowsP) or (checks.isLink(self) and allowsL)
@@ -64,7 +64,7 @@ module.exports =
         part1    = "this code can't be run by a #{getTypeOf(self).niceName()}"
         agentStr = @_typeSetToAgentString(typeSet)
         part2    = if agentStr.length isnt 0 then ", only #{agentStr}" else ""
-        throw exceptions.runtime(part1 + part2)
+        throw exceptions.runtime(part1 + part2, primName)
 
     # (TypeSet) => String
     _typeSetToAgentString: (typeSet) ->

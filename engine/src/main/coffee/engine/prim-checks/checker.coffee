@@ -21,6 +21,6 @@ class Checker
 
   # (String) => Unit
   imperfectImport: (primName) ->
-    @validator.error('Unfortunately, no perfect equivalent to `_` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.', primName)
+    @validator.error(primName, 'Unfortunately, no perfect equivalent to `_` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.', primName)
 
 module.exports = Checker

@@ -157,7 +157,7 @@ module.exports =
         if @world.selfManager.self().isDead?()
           return DeathInterrupt
       else
-        throw exceptions.runtime("That #{@getBreedNameSingular()} is dead.")
+        throw exceptions.runtime("That #{@getBreedNameSingular()} is dead.", "ask")
       return
 
     # [Result] @ (() => Result) => Result
@@ -165,7 +165,7 @@ module.exports =
       if not @isDead()
         @world.selfManager.askAgent(f)(this)
       else
-        throw exceptions.runtime("That #{@_breed.singular} is dead.")
+        throw exceptions.runtime("That #{@_breed.singular} is dead.", "of")
 
     # (Any) => { toInt: Number }
     compare: (x) ->

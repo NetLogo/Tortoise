@@ -10,7 +10,7 @@ class ProcedureChecks
   # (Number, Number) => Unit
   runArgCountCheck: (needed, given) ->
     if (given < needed)
-      @validator.error('anonymous procedure expected _ input_, but only got _', needed, given)
+      @validator.error('run', 'anonymous procedure expected _ input_, but only got _', needed, given)
 
     return
 
@@ -19,7 +19,7 @@ class ProcedureChecks
     result = @procedurePrims.callReporter(name, args...)
 
     if result is undefined
-      @validator.error('Reached end of reporter procedure without REPORT being called.')
+      @validator.error('report', 'Reached end of reporter procedure without REPORT being called.')
 
     result
 
@@ -27,11 +27,11 @@ class ProcedureChecks
   preReturnCheck: (value) ->
     if value is StopInterrupt
       if not @procedurePrims.stack().currentContext().isStopAllowed()
-        @validator.error('STOP is not allowed inside TO-REPORT.')
+        @validator.error('stop', 'STOP is not allowed inside TO-REPORT.')
 
     else
       if not @procedurePrims.stack().currentContext().isReportAllowed()
-        @validator.error('REPORT can only be used inside TO-REPORT.')
+        @validator.error('report', 'REPORT can only be used inside TO-REPORT.')
 
     value
 
@@ -51,7 +51,8 @@ class ProcedureChecks
   runCode: (fOrString, isRunResult, args...) ->
     if checks.isString(fOrString)
       if args.length isnt 0
-        @validator.error('_ doesn_t accept further inputs if the first is a string', if isRunResult then "runresult" else "run")
+        prim = if isRunResult then "runresult" else "run"
+        @validator.error(prim, '_ doesn_t accept further inputs if the first is a string', prim)
       @procedurePrims.runString(fOrString, isRunResult)
 
     else

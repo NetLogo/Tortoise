@@ -9,7 +9,7 @@ class LinkChecks
   linkHeading: () ->
     heading = @selfPrims.linkHeading()
     if heading is TowardsInterrupt
-      @validator.error('there is no heading of a link whose endpoints are in the same position')
+      @validator.error('link-heading', 'there is no heading of a link whose endpoints are in the same position')
     heading
 
 module.exports = LinkChecks

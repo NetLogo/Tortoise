@@ -120,7 +120,7 @@ module.exports =
     _resizeHelper: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
 
       if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
-        throw exceptions.runtime("You must include the point (0, 0) in the world.")
+        throw exceptions.runtime("You must include the point (0, 0) in the world.", "resize-world")
 
       if (minPxcor isnt @topology?.minPxcor or minPycor isnt @topology?.minPycor or
           maxPxcor isnt @topology?.maxPxcor or maxPycor isnt @topology?.maxPycor)

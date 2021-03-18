@@ -119,11 +119,11 @@ module.exports =
     # [T] @ (AbstractAgentSet[T], Number, Number) => AbstractAgentSet[T]
     inCone: (agents, distance, angle) ->
       if distance < 0
-        throw exceptions.runtime("IN-CONE cannot take a negative radius.")
+        throw exceptions.runtime("IN-CONE cannot take a negative radius.", "in-cone")
       else if angle < 0
-        throw exceptions.runtime("IN-CONE cannot take a negative angle.")
+        throw exceptions.runtime("IN-CONE cannot take a negative angle.", "in-cone")
       else if angle > 360
-        throw exceptions.runtime("IN-CONE cannot take an angle greater than 360.")
+        throw exceptions.runtime("IN-CONE cannot take an angle greater than 360.", "in-cone")
       else
         @world.topology.inCone(@xcor, @ycor, NLMath.normalizeHeading(@_heading), agents, distance, angle)
 
@@ -173,7 +173,7 @@ module.exports =
         if @world.selfManager.self().isDead?()
           return DeathInterrupt
       else
-        throw exceptions.runtime("That #{@getBreedNameSingular()} is dead.")
+        throw exceptions.runtime("That #{@getBreedNameSingular()} is dead.", "ask")
       return
 
     # [Result] @ (() => Result) => Result
@@ -181,7 +181,7 @@ module.exports =
       if not @isDead()
         @world.selfManager.askAgent(f)(this)
       else
-        throw exceptions.runtime("That #{@_breed.singular} is dead.")
+        throw exceptions.runtime("That #{@_breed.singular} is dead.", "of")
 
     # Unfortunately, further attempts to streamline this code are very likely to lead to
     # floating point arithmetic mismatches with JVM NetLogo....  Beware. --JAB (7/28/14)

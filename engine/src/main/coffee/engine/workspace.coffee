@@ -101,6 +101,8 @@ module.exports =
     listPrims      = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
     stringPrims    = new StringPrims()
 
+    exceptions.setProcecurePrims(procedurePrims)
+
     inspectionPrims = new InspectionPrims(inspectionConfig)
     mousePrims      = new MousePrims(mouseConfig)
     outputPrims     = new OutputPrims(outputConfig, ((x) -> outputStore += x), (-> outputStore = ""), dump)

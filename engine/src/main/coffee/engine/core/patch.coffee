@@ -182,7 +182,7 @@ module.exports =
         if checks.isNumber(x)
           acc + x
         else
-          throw exceptions.runtime("noSumOfListWithNonNumbers, #{x}")
+          throw exceptions.runtime("noSumOfListWithNonNumbers, #{x}", "sum")
       foldl(f)(0)(nbs.iterator().toArray())
 
     # (String) => Number

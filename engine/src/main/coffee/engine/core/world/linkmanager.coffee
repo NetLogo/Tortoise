@@ -112,7 +112,7 @@ module.exports =
       existingLink = @getLink(end1.id, end2.id, breed.name)
       if existingLink isnt link and existingLink isnt Nobody
         throw exceptions.runtime("there is already a #{breed.singular.toUpperCase()} \
-                         with endpoints #{end1.getName()} and #{end2.getName()}")
+                         with endpoints #{end1.getName()} and #{end2.getName()}", "set")
       else
         @_removeFromSets(end1.id, end2.id, isDirected, oldBreedName)
         @_insertIntoSets(end1.id, end2.id, isDirected, breed.name)
@@ -159,7 +159,7 @@ module.exports =
     _errorIfBreedIsIncompatible: (breedName) ->
       if (breedName is   "LINKS" and @_hasBreededs()) or
          (breedName isnt "LINKS" and @_hasUnbreededs())
-        throw exceptions.runtime("You cannot have both breeded and unbreeded links in the same world.")
+        throw exceptions.runtime("You cannot have both breeded and unbreeded links in the same world.", "set")
       return
 
     # Unit -> Boolean

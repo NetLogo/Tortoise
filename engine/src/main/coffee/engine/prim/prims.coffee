@@ -40,7 +40,7 @@ module.exports =
 
     # () => Nothing
     boom: ->
-      throw exceptions.runtime("boom!")
+      throw exceptions.runtime("boom!", "boom")
 
     # (String, Array[Patch]) -> TurtleSet
     breedOn: (breedName, patches) ->
@@ -64,13 +64,13 @@ module.exports =
       if checks.isBoolean(b)
         b
       else
-        throw exceptions.runtime("#{primName} expected input to be a TRUE/FALSE but got the #{getTypeOf(b).niceName()} #{@_dumper(b)} instead.")
+        throw exceptions.runtime("#{primName} expected input to be a TRUE/FALSE but got the #{getTypeOf(b).niceName()} #{@_dumper(b)} instead.", primName)
 
     ifElseValueBooleanCheck: (b) ->
       @booleanCheck(b, "IFELSE-VALUE")
 
     ifElseValueMissingElse: () ->
-      throw exceptions.runtime("IFELSE-VALUE found no true conditions and no else branch. If you don't wish to error when no conditions are true, add a final else branch.")
+      throw exceptions.runtime("IFELSE-VALUE found no true conditions and no else branch. If you don't wish to error when no conditions are true, add a final else branch.", "ifelse-value")
 
     # (Any, Any) => Boolean
     equality: (a, b) ->
@@ -215,7 +215,7 @@ module.exports =
       if stepSize isnt 0
         range(lowerBound, upperBound, stepSize)
       else
-        throw exceptions.runtime("The step-size for range must be non-zero.")
+        throw exceptions.runtime("The step-size for range must be non-zero.", "range")
 
     # (Any) => Unit
     stdout: (x) ->

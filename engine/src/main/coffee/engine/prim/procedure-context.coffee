@@ -9,6 +9,8 @@ class ProcedureContext
   # Map[String, Any]
   _stringRunLetVars: new Map()
 
+  constructor: (@name) ->
+
   # This is for procedure arguments only, so as to skip the ask/task checks.  -Jeremy B March 2021
   # (String, Any) => Unit
   registerStringRunArg: (name, value) ->
@@ -68,19 +70,34 @@ class CommandContext extends ProcedureContext
   isReportAllowed: () -> false
   isStopAllowed:   () -> true
 
+  trace: () ->
+    "called by procedure #{@name.toUpperCase()}"
+
 class ReporterContext extends ProcedureContext
   isReportAllowed: () -> true
   isStopAllowed:   () -> @isInsideAsk()
 
+  trace: () ->
+    "called by procedure #{@name.toUpperCase()}"
+
 class PlotContext extends ProcedureContext
   isReportAllowed: () -> false
   isStopAllowed:   () -> true
+
+  trace: () ->
+    "called by plot #{@name}"
 
   # In the plot context, no lets allowed.  -Jeremy B March 2021
   registerStringRunVar: () -> return
   updateStringRunVar:   () -> return
 
 class RawContext extends ProcedureContext
+  constructor: () ->
+    super("")
+
+  trace: () ->
+    ""
+
   isReportAllowed: () -> true
   isStopAllowed:   () -> true
 
@@ -92,23 +109,28 @@ class ProcedureStack
   # Array[ProcedureContext]
   _stack: [new RawContext()]
 
+  # () => String
+  trace: () ->
+    names = @_stack.map( (context) -> context.trace() ).reverse().filter( (trace) -> trace isnt "" )
+    names.join("\n")
+
   # () => ProcedureContext
   currentContext: () ->
     @_stack[@_stack.length - 1]
 
   # () => Unit
-  startCommand: () ->
-    @_stack.push(new CommandContext())
+  startCommand: (name) ->
+    @_stack.push(new CommandContext(name))
     return
 
   # () => Unit
-  startReporter: () ->
-    @_stack.push(new ReporterContext())
+  startReporter: (name) ->
+    @_stack.push(new ReporterContext(name))
     return
 
   # () => Unit
-  startPlot: () ->
-    @_stack.push(new PlotContext())
+  startPlot: (name) ->
+    @_stack.push(new PlotContext(name))
     return
 
   # () => Unit

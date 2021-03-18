@@ -70,7 +70,7 @@ module.exports = class Plot
           pen.drawHistogramFrom(list, @xMin, @xMax)
           @_verifyHistogramSize(pen)
         else
-          throw exceptions.runtime("You cannot histogram with a plot-pen-interval of #{pen.interval}.")
+          throw exceptions.runtime("You cannot histogram with a plot-pen-interval of #{pen.interval}.", "histogram")
     )
     return
 
@@ -136,7 +136,7 @@ module.exports = class Plot
     if isSomething(penMaybe)
       @_currentPenMaybe = penMaybe
     else
-      throw exceptions.runtime("There is no pen named \"#{name}\" in the current plot")
+      throw exceptions.runtime("There is no pen named \"#{name}\" in the current plot", "set-current-plot-pen")
     return
 
   # (Number) => Unit
@@ -147,7 +147,7 @@ module.exports = class Plot
           interval = (@xMax - @xMin) / num
           pen.setInterval(interval)
         else
-          throw exceptions.runtime("You cannot make a histogram with #{num} bars.")
+          throw exceptions.runtime("You cannot make a histogram with #{num} bars.", "set-histogram-num-bars")
     )
     return
 
@@ -171,7 +171,7 @@ module.exports = class Plot
   # (Number, Number) => Unit
   setXRange: (min, max) ->
     if min >= max
-      throw exceptions.runtime("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}")
+      throw exceptions.runtime("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}", "set-plot-x-range")
     @xMin = min
     @xMax = max
     @_resize()
@@ -180,7 +180,7 @@ module.exports = class Plot
   # (Number, Number) => Unit
   setYRange: (min, max) ->
     if min >= max
-      throw exceptions.runtime("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}")
+      throw exceptions.runtime("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}", "set-plot-y-range")
     @yMin = min
     @yMax = max
     @_resize()
@@ -278,4 +278,4 @@ module.exports = class Plot
 
   # [T] @ ((Pen) => T) => T
   _withPen: (f) ->
-    fold(-> throw exceptions.runtime("Plot '#{@name}' has no pens!"))(f)(@_currentPenMaybe)
+    fold(-> throw exceptions.runtime("Plot '#{@name}' has no pens!", "plot"))(f)(@_currentPenMaybe)

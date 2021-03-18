@@ -11,6 +11,7 @@ class ProcedurePrims
 
   constructor: (@evalPrims, @plotManager, @rng) ->
 
+  # () => ProcedureStack
   stack: () ->
     @_stack
 
@@ -42,7 +43,7 @@ class ProcedurePrims
 
   # (String, Array[Any]) => StopInterrupt | undefined
   callCommand: (name, args...) ->
-    @_stack.startCommand()
+    @_stack.startCommand(name)
     try
       @_commands.get(name)(args...)
     finally
@@ -50,7 +51,7 @@ class ProcedurePrims
 
   # (String, Array[Any]) => Any
   callReporter: (name, args...) ->
-    @_stack.startReporter()
+    @_stack.startReporter(name)
     try
       @_reporters.get(name)(args...)
     finally
@@ -58,7 +59,7 @@ class ProcedurePrims
 
   # (String, String | undefined, () => Any) => Any
   runInPlotContext: (plotName, penName, f) ->
-    @_stack.startPlot()
+    @_stack.startPlot(plotName)
     try
       @rng.withClone( () => @plotManager.withTemporaryContext(plotName, penName)(f) )
     finally

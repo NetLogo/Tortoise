@@ -15,14 +15,14 @@ class TurtleChecks
     (value) =>
       turtle = @getSelf()
       if not turtle.setIfValid(name, value)
-        @validator.error(error)
+        @validator.error('set', error)
       return
 
   # (Number, Number) => Unit
   setXY: (x, y) ->
     result = @getSelf().setXY(x, y)
     if (result is TopologyInterrupt)
-      @validator.error('The point [ _ , _ ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.', x, y)
+      @validator.error('setxy', 'The point [ _ , _ ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.', x, y)
 
     return
 
@@ -31,14 +31,14 @@ class TurtleChecks
     heading = @getSelf().towards(agent)
     if heading is TowardsInterrupt
       [x, y] = agent.getCoords()
-      @validator.error('No heading is defined from a point (_,_) to that same point.', x, y)
+      @validator.error('towards', 'No heading is defined from a point (_,_) to that same point.', x, y)
     heading
 
   # (Number, Number) => Number
   towardsXY: (x, y) ->
     heading = @getSelf().towardsXY(x, y)
     if heading is TowardsInterrupt
-      @validator.error('No heading is defined from a point (_,_) to that same point.', x, y)
+      @validator.error('towardsxy', 'No heading is defined from a point (_,_) to that same point.', x, y)
     heading
 
   # (String, Any) => Unit
