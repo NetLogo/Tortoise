@@ -67,18 +67,24 @@ class ProcedureContext
     @_taskDepth isnt 0
 
 class CommandContext extends ProcedureContext
+  constructor: (name, @location) ->
+    super(name)
+
   isReportAllowed: () -> false
   isStopAllowed:   () -> true
 
   trace: () ->
-    { type: "command", name: @name }
+    { type: "command", name: @name, location: @location }
 
 class ReporterContext extends ProcedureContext
+  constructor: (name, @location) ->
+    super(name)
+
   isReportAllowed: () -> true
   isStopAllowed:   () -> @isInsideAsk()
 
   trace: () ->
-    { type: "reporter", name: @name }
+    { type: "reporter", name: @name, location: @location }
 
 class PlotContext extends ProcedureContext
   isReportAllowed: () -> false
@@ -96,7 +102,7 @@ class RawContext extends ProcedureContext
     super("")
 
   trace: () ->
-    { type: "raw", name: "" }
+    { type: "raw" }
 
   isReportAllowed: () -> true
   isStopAllowed:   () -> true
@@ -117,17 +123,17 @@ class ProcedureStack
   currentContext: () ->
     @_stack[@_stack.length - 1]
 
-  # () => Unit
-  startCommand: (name) ->
-    @_stack.push(new CommandContext(name))
+  # (Command) => Unit
+  startCommand: (command) ->
+    @_stack.push(new CommandContext(command.name, command.location))
     return
 
-  # () => Unit
-  startReporter: (name) ->
-    @_stack.push(new ReporterContext(name))
+  # (Reporter) => Unit
+  startReporter: (reporter) ->
+    @_stack.push(new ReporterContext(reporter.name, reporter.location))
     return
 
-  # () => Unit
+  # (String) => Unit
   startPlot: (name) ->
     @_stack.push(new PlotContext(name))
     return

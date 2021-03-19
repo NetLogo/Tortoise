@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ ProcedureStack } = require('./procedure-context')
-{ StopInterrupt }  = require('util/interrupts')
+{ Command, Reporter } = require('./procedure')
+{ ProcedureStack }    = require('./procedure-context')
+{ StopInterrupt }     = require('util/interrupts')
 
 class ProcedurePrims
   _commands:  new Map()
@@ -15,14 +16,14 @@ class ProcedurePrims
   stack: () ->
     @_stack
 
-  # (String, () => Unit) => Unit
-  defineCommand: (name, command) ->
-    @_commands.set(name, command)
+  # (String, Int, Int, () => Unit) => Unit
+  defineCommand: (name, start, end, command) ->
+    @_commands.set(name, new Command(name, start, end, command))
     return
 
-  # (String, () => Any) => Unit
-  defineReporter: (name, reporter) ->
-    @_reporters.set(name, reporter)
+  # (String, Int, Int, () => Any) => Unit
+  defineReporter: (name, start, end, reporter) ->
+    @_reporters.set(name, new Reporter(name, start, end, reporter))
     return
 
   # (Agentset, () => Any, Boolean) => Unit | DeathInterrupt
@@ -43,17 +44,19 @@ class ProcedurePrims
 
   # (String, Array[Any]) => StopInterrupt | undefined
   callCommand: (name, args...) ->
-    @_stack.startCommand(name)
+    command = @_commands.get(name)
+    @_stack.startCommand(command)
     try
-      @_commands.get(name)(args...)
+      command.call(args...)
     finally
       @_stack.endCall()
 
   # (String, Array[Any]) => Any
   callReporter: (name, args...) ->
-    @_stack.startReporter(name)
+    reporter = @_reporters.get(name)
+    @_stack.startReporter(reporter)
     try
-      @_reporters.get(name)(args...)
+      reporter.call(args...)
     finally
       @_stack.endCall()
 

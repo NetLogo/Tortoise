@@ -21,6 +21,8 @@ class InternalException extends NetLogoException
 # Represents typical, expected runtime errors in the engine, like dividing by zero
 # or using `ask` on nobody, etc.  -Jeremy B March 2021
 class RuntimeException extends NetLogoException
+  constructor: (message, @primitive, stackTrace, stackTraceMessage) ->
+    super(message, stackTrace, stackTraceMessage)
 
 class ExceptionFactory
   # Having `procedurePrims` be unset and then letting the `ExceptionFactory`
@@ -74,7 +76,7 @@ class ExceptionFactory
   runtime: (message, primitive) ->
     stackFrames       = @getStackTrace()
     stackTraceMessage = @makeStackTraceMessage(stackFrames, primitive)
-    new RuntimeException(message, stackFrames, stackTraceMessage)
+    new RuntimeException(message, primitive, stackFrames, stackTraceMessage)
 
 factory = new ExceptionFactory()
 

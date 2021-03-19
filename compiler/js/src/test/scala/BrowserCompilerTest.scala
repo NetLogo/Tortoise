@@ -277,7 +277,7 @@ object BrowserCompilerTest extends TestSuite {
 
       val result = nativeToString(compiler.compileProceduresIncremental("to foo left 150 end", js.Array("foo")))
 
-      val expected = makeSuccess("""ProcedurePrims.defineCommand(\"foo\", (function() { SelfManager.self().right(-(150)); }))""")
+      val expected = makeSuccess("""ProcedurePrims.defineCommand(\"foo\", 3, 16, (function() { SelfManager.self().right(-(150)); }))""")
       assert(expected == result)
     }
 

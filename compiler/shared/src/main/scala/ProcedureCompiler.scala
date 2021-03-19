@@ -31,9 +31,9 @@ class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlag
     val body       = handlers.commands(pd.statements)
     val functionJs = s"(${jsFunction(args = args, body = body)})"
     if (pd.procedure.isReporter)
-      new CompiledReporter(name, functionJs)
+      new CompiledReporter(name, pd.sourceLocation, functionJs)
     else
-      new CompiledCommand(name, functionJs)
+      new CompiledCommand(name, pd.sourceLocation, functionJs)
   }
 }
 
