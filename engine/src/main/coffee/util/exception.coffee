@@ -3,7 +3,7 @@
 { fold, maybe, None } = require('brazierjs/maybe')
 
 class NetLogoException
-  constructor: (@message, @stackTrace = "") ->
+  constructor: (@message, @stackTrace = [], @stackTraceMessage = "") ->
 
 class HaltInterrupt extends NetLogoException
   constructor: ->
@@ -11,20 +11,16 @@ class HaltInterrupt extends NetLogoException
 
 # Used by extensions to represent typical runtime errors. -Jeremy B March 2021
 class ExtensionException extends NetLogoException
-  constructor: (message, stackTrace) ->
-    super("Extension exception: #{message}", stackTrace)
+  constructor: (message, stackTrace, stackTraceMessage) ->
+    super("Extension exception: #{message}", stackTrace, stackTraceMessage)
 
 # Meant to represent truly exceptional, unexpected circumstances internal to the engine.
 # Possibly caused by malformed state or by bugs.  -Jeremy B March 2021
 class InternalException extends NetLogoException
-  constructor: (message, stackTrace) ->
-    super(message, stackTrace)
 
 # Represents typical, expected runtime errors in the engine, like dividing by zero
 # or using `ask` on nobody, etc.  -Jeremy B March 2021
 class RuntimeException extends NetLogoException
-  constructor: (message, stackTrace) ->
-    super(message, stackTrace)
 
 class ExceptionFactory
   # Having `procedurePrims` be unset and then letting the `ExceptionFactory`
@@ -41,14 +37,28 @@ class ExceptionFactory
     @procedurePrims = maybe(procedurePrims)
 
   # (String) => String
-  makeStackTrace: (primitive = "") ->
+  getStackTrace: () ->
+    fold( -> [] )( (procs) -> procs.stack().trace() )(@procedurePrims)
+
+  # (Array[{ type: String, name: String }]) => String
+  makeStackTraceMessage: (frames, primitive = "") ->
     start = "error while running #{if primitive is "" then "a primitive" else primitive.toUpperCase()}"
-    stack = fold( -> [] )( (procs) -> procs.stack().trace() )(@procedurePrims)
+
+    messages = frames.map( (frame) ->
+      switch frame.type
+        when "command"  then "called by procedure #{frame.name.toUpperCase()}"
+        when "reporter" then "called by procedure #{frame.name.toUpperCase()}"
+        when "plot"     then "called by plot #{frame.name}"
+        else                 "called by unknown"
+    )
+    stack = messages.join("\n")
     if stack isnt "" then "#{start}\n#{stack}" else start
 
   # (String) => ExtensionException
   extension: (message) ->
-    new ExtensionException(message, @makeStackTrace())
+    stackFrames       = @getStackTrace()
+    stackTraceMessage = @makeStackTraceMessage(stackFrames)
+    new ExtensionException(message, stackFrames, stackTraceMessage)
 
   # () => HaltInterrupt
   halt: () ->
@@ -56,11 +66,15 @@ class ExceptionFactory
 
   # (String) => InternalException
   internal: (message) ->
-    new InternalException(message, @makeStackTrace())
+    stackFrames       = @getStackTrace()
+    stackTraceMessage = @makeStackTraceMessage(stackFrames)
+    new InternalException(message, stackFrames, stackTraceMessage)
 
   # (String, String) => RuntimeException
   runtime: (message, primitive) ->
-    new RuntimeException(message, @makeStackTrace(primitive))
+    stackFrames       = @getStackTrace()
+    stackTraceMessage = @makeStackTraceMessage(stackFrames, primitive)
+    new RuntimeException(message, stackFrames, stackTraceMessage)
 
 factory = new ExceptionFactory()
 

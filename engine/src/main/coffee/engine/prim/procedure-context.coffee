@@ -71,21 +71,21 @@ class CommandContext extends ProcedureContext
   isStopAllowed:   () -> true
 
   trace: () ->
-    "called by procedure #{@name.toUpperCase()}"
+    { type: "command", name: @name }
 
 class ReporterContext extends ProcedureContext
   isReportAllowed: () -> true
   isStopAllowed:   () -> @isInsideAsk()
 
   trace: () ->
-    "called by procedure #{@name.toUpperCase()}"
+    { type: "reporter", name: @name }
 
 class PlotContext extends ProcedureContext
   isReportAllowed: () -> false
   isStopAllowed:   () -> true
 
   trace: () ->
-    "called by plot #{@name}"
+    { type: "plot", name: @name }
 
   # In the plot context, no lets allowed.  -Jeremy B March 2021
   registerStringRunVar: () -> return
@@ -96,7 +96,7 @@ class RawContext extends ProcedureContext
     super("")
 
   trace: () ->
-    ""
+    { type: "raw", name: "" }
 
   isReportAllowed: () -> true
   isStopAllowed:   () -> true
@@ -109,10 +109,9 @@ class ProcedureStack
   # Array[ProcedureContext]
   _stack: [new RawContext()]
 
-  # () => String
+  # () => Array[{ type: "command" | "reporter" | "plot" | "raw", name: String }]
   trace: () ->
-    names = @_stack.map( (context) -> context.trace() ).reverse().filter( (trace) -> trace isnt "" )
-    names.join("\n")
+    @_stack.map( (context) -> context.trace() ).filter( (frame) -> frame.type isnt "raw" ).reverse()
 
   # () => ProcedureContext
   currentContext: () ->
