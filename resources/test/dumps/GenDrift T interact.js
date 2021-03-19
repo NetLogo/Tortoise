@@ -107,7 +107,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 119, 463, (function() {
   world.turtleManager.clearTurtles();
   plotManager.clearAllPlots();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number"), ""), function() {
@@ -117,7 +117,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 471, 734, (function() {
   if (Prims.equality(PrimChecks.list.variance(PrimChecks.validator.checkArg('VARIANCE', 8, PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable("color"); }))), 0)) {
     return PrimChecks.procedure.stop();
   }
@@ -134,13 +134,13 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("find-top-species"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("meet", (function() {
+ProcedurePrims.defineCommand("meet", 742, 973, (function() {
   let candidate = PrimChecks.list.oneOf(SelfManager.self().turtlesAt(1, 0)); ProcedurePrims.stack().currentContext().registerStringRunVar("CANDIDATE", candidate);
   if (!Prims.equality(candidate, Nobody)) {
     SelfManager.self().setVariable("color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, candidate), function() { return SelfManager.self().getVariable("color"); }));
   }
 }))
-ProcedurePrims.defineCommand("find-top-species", (function() {
+ProcedurePrims.defineCommand("find-top-species", 981, 1282, (function() {
   let winningHamount = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("WINNING-AMOUNT", winningHamount);
   var R = Tasks.forEach(Tasks.commandTask(function(c) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
@@ -151,7 +151,7 @@ ProcedurePrims.defineCommand("find-top-species", (function() {
   }, "[ c -> let count turtles with [ color = c ] if how-many > winning-amount [ set winning-amount how-many ] ]"), ColorModel.BASE_COLORS); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("max-percent", PrimChecks.math.div(PrimChecks.math.mult(100, PrimChecks.validator.checkArg('*', 1, winningHamount)), PrimChecks.agentset.count(world.turtles())));
 }))
-ProcedurePrims.defineCommand("place-wall", (function() {
+ProcedurePrims.defineCommand("place-wall", 1698, 2202, (function() {
   if (MousePrims.isDown()) {
     var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() {
       return (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pycor"))), world.topology.maxPycor) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.round(MousePrims.getY())));
@@ -162,7 +162,7 @@ ProcedurePrims.defineCommand("place-wall", (function() {
     notImplemented('display', undefined)();
   }
 }))
-ProcedurePrims.defineCommand("remove-wall", (function() {
+ProcedurePrims.defineCommand("remove-wall", 2210, 2332, (function() {
   if (MousePrims.isDown()) {
     var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() {
       return Prims.equality(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.round(MousePrims.getY()));
@@ -170,8 +170,8 @@ ProcedurePrims.defineCommand("remove-wall", (function() {
     notImplemented('display', undefined)();
   }
 }))
-ProcedurePrims.defineCommand("remove-all-walls", (function() { world.clearPatches(); }))
-ProcedurePrims.defineCommand("move-off-wall", (function() {
+ProcedurePrims.defineCommand("remove-all-walls", 2340, 2373, (function() { world.clearPatches(); }))
+ProcedurePrims.defineCommand("move-off-wall", 2381, 2477, (function() {
   while (!Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
     SelfManager.self().moveTo(PrimChecks.list.oneOf(SelfManager.self().getNeighbors()));
   }

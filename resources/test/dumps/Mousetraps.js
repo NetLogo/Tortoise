@@ -67,7 +67,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 67, 351, (function() {
   world.clearAll();
   world.observer.setGlobal("traps-triggered", 0);
   var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(105, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -78,7 +78,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 359, 782, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtles()))) {
     return PrimChecks.procedure.stop();
   }
@@ -95,7 +95,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("move", (function() {
+ProcedurePrims.defineCommand("move", 790, 869, (function() {
   SelfManager.self().right(PrimChecks.math.randomFloat(360));
   SelfManager.self().fd(PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("max-distance"))));
 }))

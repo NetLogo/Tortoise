@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("benchmark", (function() {
+ProcedurePrims.defineCommand("benchmark", 52, 141, (function() {
   PrimChecks.math.randomSeed(5454);
   workspace.timer.reset();
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
@@ -58,7 +58,7 @@ ProcedurePrims.defineCommand("benchmark", (function() {
   }
   world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 149, 292, (function() {
   world.clearAll();
   world.ticker.reset();
   var R = ProcedurePrims.ask(world.patches(), function() {
@@ -66,7 +66,7 @@ ProcedurePrims.defineCommand("setup", (function() {
     SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 300, 571, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("find-new-state"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
     SelfManager.self().setPatchVariable("state", SelfManager.self().getPatchVariable("new-state"));
@@ -74,7 +74,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("find-new-state", (function() {
+ProcedurePrims.defineCommand("find-new-state", 579, 1094, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n"))) {
     SelfManager.self().setPatchVariable("new-state", 0);
   }

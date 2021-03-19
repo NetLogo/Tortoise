@@ -75,18 +75,18 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup-empty", (function() {
+ProcedurePrims.defineCommand("setup-empty", 2261, 2322, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("initialize-variables"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-full", (function() {
+ProcedurePrims.defineCommand("setup-full", 2377, 2469, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("initialize-variables"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("create-turtle"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("initialize-variables", (function() {
+ProcedurePrims.defineCommand("initialize-variables", 2477, 2999, (function() {
   world.observer.setGlobal("meetown", 0);
   world.observer.setGlobal("meetown-agg", 0);
   world.observer.setGlobal("meet", 0);
@@ -111,7 +111,7 @@ ProcedurePrims.defineCommand("initialize-variables", (function() {
   world.observer.setGlobal("last100meet", []);
   world.observer.setGlobal("last100coop", []);
 }))
-ProcedurePrims.defineCommand("create-turtle", (function() {
+ProcedurePrims.defineCommand("create-turtle", 3043, 3545, (function() {
   var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "TURTLES"), function() {
     SelfManager.self().setVariable("color", PrimChecks.procedure.callReporter("random-color"));
     PrimChecks.turtle.setVariable("cooperate-with-same?", Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("immigrant-chance-cooperate-with-same")));
@@ -119,8 +119,8 @@ ProcedurePrims.defineCommand("create-turtle", (function() {
     var R = ProcedurePrims.callCommand("update-shape"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("random-color", (function() { return PrimChecks.procedure.report(PrimChecks.list.oneOf([15, 105, 45, 55])); }))
-ProcedurePrims.defineCommand("clear-stats", (function() {
+ProcedurePrims.defineReporter("random-color", 3560, 3613, (function() { return PrimChecks.procedure.report(PrimChecks.list.oneOf([15, 105, 45, 55])); }))
+ProcedurePrims.defineCommand("clear-stats", 3682, 3792, (function() {
   world.observer.setGlobal("meetown", 0);
   world.observer.setGlobal("meet", 0);
   world.observer.setGlobal("coopown", 0);
@@ -128,7 +128,7 @@ ProcedurePrims.defineCommand("clear-stats", (function() {
   world.observer.setGlobal("meetother", 0);
   world.observer.setGlobal("coopother", 0);
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 3820, 4282, (function() {
   var R = ProcedurePrims.callCommand("clear-stats"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("immigrate"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtle.setVariable("ptr", world.observer.getGlobal("initial-ptr")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -138,12 +138,12 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("update-stats"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("immigrate", (function() {
+ProcedurePrims.defineCommand("immigrate", 4343, 4591, (function() {
   let emptyHpatches = PrimChecks.agentset.with(world.patches(), function() { return PrimChecks.math.not(PrimChecks.agentset.any(SelfManager.self().turtlesHere())); }); ProcedurePrims.stack().currentContext().registerStringRunVar("EMPTY-PATCHES", emptyHpatches);
   let howHmany = PrimChecks.list.min(ListPrims.list(world.observer.getGlobal("immigrants-per-day"), PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 112, emptyHpatches)))); ProcedurePrims.stack().currentContext().registerStringRunVar("HOW-MANY", howHmany);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(PrimChecks.validator.checkArg('N-OF', 1, howHmany), PrimChecks.validator.checkArg('N-OF', 120, emptyHpatches))), function() { var R = ProcedurePrims.callCommand("create-turtle"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("interact", (function() {
+ProcedurePrims.defineCommand("interact", 4599, 6139, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors4()), function() {
     world.observer.setGlobal("meet", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("meet")), 1));
     world.observer.setGlobal("meet-agg", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("meet-agg")), 1));
@@ -177,7 +177,7 @@ ProcedurePrims.defineCommand("interact", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("reproduce", (function() {
+ProcedurePrims.defineCommand("reproduce", 6202, 6675, (function() {
   if (Prims.lt(PrimChecks.math.randomFloat(1), PrimChecks.turtle.getVariable("ptr"))) {
     let destination = PrimChecks.agentset.oneOfWith(SelfManager.self().getNeighbors4(), function() { return PrimChecks.math.not(PrimChecks.agentset.any(SelfManager.self().turtlesHere())); }); ProcedurePrims.stack().currentContext().registerStringRunVar("DESTINATION", destination);
     if (!Prims.equality(destination, Nobody)) {
@@ -188,7 +188,7 @@ ProcedurePrims.defineCommand("reproduce", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("mutate", (function() {
+ProcedurePrims.defineCommand("mutate", 6747, 7273, (function() {
   if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
     let oldHcolor = SelfManager.self().getVariable("color"); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-COLOR", oldHcolor);
     while (Prims.equality(SelfManager.self().getVariable("color"), oldHcolor)) {
@@ -203,14 +203,14 @@ ProcedurePrims.defineCommand("mutate", (function() {
   }
   var R = ProcedurePrims.callCommand("update-shape"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("death", (function() {
+ProcedurePrims.defineCommand("death", 7281, 7434, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("death-rate"))) {
       return SelfManager.self().die();
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("update-shape", (function() {
+ProcedurePrims.defineCommand("update-shape", 7486, 7988, (function() {
   if (PrimChecks.turtle.getVariable("cooperate-with-same?")) {
     if (PrimChecks.turtle.getVariable("cooperate-with-different?")) {
       SelfManager.self().setVariable("shape", "circle");
@@ -228,7 +228,7 @@ ProcedurePrims.defineCommand("update-shape", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("update-stats", (function() {
+ProcedurePrims.defineCommand("update-stats", 8078, 8804, (function() {
   world.observer.setGlobal("last100dd", PrimChecks.procedure.callReporter("shorten", PrimChecks.list.lput(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("shape"), "square 2"); }), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100dd")))));
   world.observer.setGlobal("last100cc", PrimChecks.procedure.callReporter("shorten", PrimChecks.list.lput(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle"); }), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100cc")))));
   world.observer.setGlobal("last100cd", PrimChecks.procedure.callReporter("shorten", PrimChecks.list.lput(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle 2"); }), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100cd")))));
@@ -240,7 +240,7 @@ ProcedurePrims.defineCommand("update-stats", (function() {
   world.observer.setGlobal("last100meet", PrimChecks.procedure.callReporter("shorten", PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("meet")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100meet")))));
   world.observer.setGlobal("last100meetother", PrimChecks.procedure.callReporter("shorten", PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("meetother")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("last100meetother")))));
 }))
-ProcedurePrims.defineReporter("shorten", (function(theHlist) {
+ProcedurePrims.defineReporter("shorten", 8885, 8992, (function(theHlist) {
   if (Prims.gt(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, theHlist)), 100)) {
     return PrimChecks.procedure.report(PrimChecks.list.butFirst('butfirst', PrimChecks.validator.checkArg('BUTFIRST', 12, theHlist)));
   }
@@ -248,73 +248,73 @@ ProcedurePrims.defineReporter("shorten", (function(theHlist) {
     return PrimChecks.procedure.report(theHlist);
   }
 }))
-ProcedurePrims.defineReporter("meetown-percent", (function() {
+ProcedurePrims.defineReporter("meetown-percent", 9059, 9110, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("meetown")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
 }))
-ProcedurePrims.defineReporter("meetown-agg-percent", (function() {
+ProcedurePrims.defineReporter("meetown-agg-percent", 9124, 9187, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("meetown-agg")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
 }))
-ProcedurePrims.defineReporter("coopown-percent", (function() {
+ProcedurePrims.defineReporter("coopown-percent", 9201, 9255, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("coopown")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetown")))));
 }))
-ProcedurePrims.defineReporter("coopown-agg-percent", (function() {
+ProcedurePrims.defineReporter("coopown-agg-percent", 9269, 9335, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("coopown-agg")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg")))));
 }))
-ProcedurePrims.defineReporter("defother-percent", (function() {
+ProcedurePrims.defineReporter("defother-percent", 9349, 9407, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("defother")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetother")))));
 }))
-ProcedurePrims.defineReporter("defother-agg-percent", (function() {
+ProcedurePrims.defineReporter("defother-agg-percent", 9421, 9491, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("defother-agg")), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg")))));
 }))
-ProcedurePrims.defineReporter("consist-ethno-percent", (function() {
+ProcedurePrims.defineReporter("consist-ethno-percent", 9505, 9578, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("defother")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopown"))), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
 }))
-ProcedurePrims.defineReporter("consist-ethno-agg-percent", (function() {
+ProcedurePrims.defineReporter("consist-ethno-agg-percent", 9592, 9681, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("defother-agg")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopown-agg"))), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
 }))
-ProcedurePrims.defineReporter("coop-percent", (function() {
+ProcedurePrims.defineReporter("coop-percent", 9695, 9760, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopown")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopother"))), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
 }))
-ProcedurePrims.defineReporter("coop-agg-percent", (function() {
+ProcedurePrims.defineReporter("coop-agg-percent", 9774, 9854, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopown-agg")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("coopother-agg"))), PrimChecks.list.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
 }))
-ProcedurePrims.defineReporter("cc-count", (function() {
+ProcedurePrims.defineReporter("cc-count", 9868, 9930, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100cc"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("last100cc")))))));
 }))
-ProcedurePrims.defineReporter("cd-count", (function() {
+ProcedurePrims.defineReporter("cd-count", 9944, 10006, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100cd"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("last100cd")))))));
 }))
-ProcedurePrims.defineReporter("dc-count", (function() {
+ProcedurePrims.defineReporter("dc-count", 10020, 10082, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100dc"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("last100dc")))))));
 }))
-ProcedurePrims.defineReporter("dd-count", (function() {
+ProcedurePrims.defineReporter("dd-count", 10096, 10158, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100dd"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("last100dd")))))));
 }))
-ProcedurePrims.defineReporter("cc-percent", (function() {
+ProcedurePrims.defineReporter("cc-percent", 10172, 10260, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.procedure.callReporter("cc-count")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("cc-count")), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("cd-count"))), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("dc-count"))), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("dd-count")))))));
 }))
-ProcedurePrims.defineReporter("cd-percent", (function() {
+ProcedurePrims.defineReporter("cd-percent", 10274, 10362, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.procedure.callReporter("cd-count")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("cc-count")), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("cd-count"))), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("dc-count"))), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("dd-count")))))));
 }))
-ProcedurePrims.defineReporter("dc-percent", (function() {
+ProcedurePrims.defineReporter("dc-percent", 10376, 10464, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.procedure.callReporter("dc-count")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("cc-count")), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("cd-count"))), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("dc-count"))), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("dd-count")))))));
 }))
-ProcedurePrims.defineReporter("dd-percent", (function() {
+ProcedurePrims.defineReporter("dd-percent", 10478, 10566, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.procedure.callReporter("dd-count")), PrimChecks.list.max(ListPrims.list(1, PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("cc-count")), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("cd-count"))), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("dc-count"))), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("dd-count")))))));
 }))
-ProcedurePrims.defineReporter("last100coopown-percent", (function() {
+ProcedurePrims.defineReporter("last100coopown-percent", 10580, 10663, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100coopown"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meetown")))))));
 }))
-ProcedurePrims.defineReporter("last100defother-percent", (function() {
+ProcedurePrims.defineReporter("last100defother-percent", 10677, 10764, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100defother"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meetother")))))));
 }))
-ProcedurePrims.defineReporter("last100consist-ethno-percent", (function() {
+ProcedurePrims.defineReporter("last100consist-ethno-percent", 10778, 10888, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100defother"))), PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100coopown")))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meet")))))));
 }))
-ProcedurePrims.defineReporter("last100meetown-percent", (function() {
+ProcedurePrims.defineReporter("last100meetown-percent", 10902, 10982, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meetown"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meet")))))));
 }))
-ProcedurePrims.defineReporter("last100coop-percent", (function() {
+ProcedurePrims.defineReporter("last100coop-percent", 10996, 11070, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100coop"))), PrimChecks.list.max(ListPrims.list(1, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, world.observer.getGlobal("last100meet")))))));
 }))
 world.observer.setGlobal("mutation-rate", 0.005);

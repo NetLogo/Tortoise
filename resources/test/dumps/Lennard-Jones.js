@@ -62,7 +62,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 255, 740, (function() {
   world.clearAll();
   world.ticker.reset();
   world.observer.setGlobal("eps", 1);
@@ -78,7 +78,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("setup-atoms"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 748, 1047, (function() {
   for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++){
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.turtles())), function() { var R = ProcedurePrims.callCommand("attempt-move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
@@ -87,7 +87,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("attempt-move", (function() {
+ProcedurePrims.defineCommand("attempt-move", 1055, 2038, (function() {
   world.observer.setGlobal("total-move-attempts", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-move-attempts")), 1));
   world.observer.setGlobal("current-move-attempts", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("current-move-attempts")), 1));
   let vHold = PrimChecks.procedure.callReporter("calc-v"); ProcedurePrims.stack().currentContext().registerStringRunVar("V-OLD", vHold);
@@ -105,10 +105,10 @@ ProcedurePrims.defineCommand("attempt-move", (function() {
     PrimChecks.turtle.setXY(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("xcor")), PrimChecks.validator.checkArg('-', 1, deltaHx)), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ycor")), PrimChecks.validator.checkArg('-', 1, deltaHy)));
   }
 }))
-ProcedurePrims.defineReporter("calc-v-total", (function() {
+ProcedurePrims.defineReporter("calc-v-total", 2053, 2165, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.procedure.callReporter("calc-v"); }))), 2));
 }))
-ProcedurePrims.defineReporter("calc-v", (function() {
+ProcedurePrims.defineReporter("calc-v", 2180, 2580, (function() {
   let v = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("V", v);
   var R = ProcedurePrims.ask(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("cutoff-dist"))), function() {
     let rsquare = PrimChecks.math.pow(SelfManager.self().distance(SelfManager.myself()), 2); ProcedurePrims.stack().currentContext().registerStringRunVar("RSQUARE", rsquare);
@@ -120,10 +120,10 @@ ProcedurePrims.defineReporter("calc-v", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   return PrimChecks.procedure.report(v);
 }))
-ProcedurePrims.defineReporter("accept-rate", (function() {
+ProcedurePrims.defineReporter("accept-rate", 2595, 2665, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("current-successful-moves")), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("current-move-attempts"))));
 }))
-ProcedurePrims.defineCommand("tune-acceptance-rate", (function() {
+ProcedurePrims.defineCommand("tune-acceptance-rate", 2673, 2954, (function() {
   if (Prims.lt(PrimChecks.procedure.callReporter("accept-rate"), 0.5)) {
     world.observer.setGlobal("max-move-dist", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("max-move-dist")), 0.95));
   }
@@ -136,10 +136,10 @@ ProcedurePrims.defineCommand("tune-acceptance-rate", (function() {
   world.observer.setGlobal("current-successful-moves", 0);
   world.observer.setGlobal("current-move-attempts", 0);
 }))
-ProcedurePrims.defineReporter("energy-per-particle", (function() {
+ProcedurePrims.defineReporter("energy-per-particle", 2969, 3018, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("v-total")), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("num-atoms"))));
 }))
-ProcedurePrims.defineCommand("setup-atoms", (function() {
+ProcedurePrims.defineCommand("setup-atoms", 3067, 3915, (function() {
   if (Prims.equality(world.observer.getGlobal("initial-config"), "HCP")) {
     let l = PrimChecks.math.sqrt(PrimChecks.validator.checkArg('SQRT', 1, world.observer.getGlobal("num-atoms"))); ProcedurePrims.stack().currentContext().registerStringRunVar("L", l);
     let rowHdist = PrimChecks.math.mult(PrimChecks.math.pow(2, PrimChecks.math.div(1, 6)), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("diameter"))); ProcedurePrims.stack().currentContext().registerStringRunVar("ROW-DIST", rowHdist);
@@ -163,7 +163,7 @@ ProcedurePrims.defineCommand("setup-atoms", (function() {
     var R = ProcedurePrims.callCommand("remove-overlap"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("remove-overlap", (function() {
+ProcedurePrims.defineCommand("remove-overlap", 3923, 4059, (function() {
   let rHmin = PrimChecks.math.mult(0.7, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("diameter"))); ProcedurePrims.stack().currentContext().registerStringRunVar("R-MIN", rHmin);
   var R = ProcedurePrims.ask(world.turtles(), function() {
     while (PrimChecks.procedure.callReporter("overlapping", rHmin)) {
@@ -171,7 +171,7 @@ ProcedurePrims.defineCommand("remove-overlap", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("overlapping", (function(rHmin) {
+ProcedurePrims.defineReporter("overlapping", 4074, 4138, (function(rHmin) {
   return PrimChecks.procedure.report(SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtles(), rHmin)));
 }))
 world.observer.setGlobal("num-atoms", 250);

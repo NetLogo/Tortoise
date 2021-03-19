@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 84, 176, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
     SelfManager.self().setPatchVariable("vote", RandomPrims.randomLong(2));
@@ -57,7 +57,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 184, 1069, (function() {
   let anyHvotesHchanged_Q = false; ProcedurePrims.stack().currentContext().registerStringRunVar("ANY-VOTES-CHANGED?", anyHvotesHchanged_Q);
   var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("total", SelfManager.self()._optimalNSum("vote")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
@@ -99,7 +99,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("recolor-patch", (function() {
+ProcedurePrims.defineCommand("recolor-patch", 1077, 1178, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("vote"), 0)) {
     SelfManager.self().setPatchVariable("pcolor", 55);
   }

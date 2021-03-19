@@ -73,7 +73,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 27, 270, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(500, ""), function() {
     PrimChecks.turtle.setVariable("wealth", 100);
@@ -84,7 +84,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 278, 531, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtles(), function() { return Prims.gt(PrimChecks.turtle.getVariable("wealth"), 0); }), function() { var R = ProcedurePrims.callCommand("transact"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (Prims.lte(PrimChecks.turtle.getVariable("wealth"), world.topology.maxPxcor)) {
@@ -93,15 +93,15 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("transact", (function() {
+ProcedurePrims.defineCommand("transact", 539, 662, (function() {
   PrimChecks.turtle.setVariable("wealth", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("wealth")), 1));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(SelfPrims.other(world.turtles()))), function() {
     PrimChecks.turtle.setVariable("wealth", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("wealth")), 1));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("top-10-pct-wealth", (function() {
+ProcedurePrims.defineReporter("top-10-pct-wealth", 730, 826, (function() {
   return PrimChecks.procedure.report(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.agentset.maxNOf(world.turtles(), PrimChecks.math.mult(PrimChecks.agentset.count(world.turtles()), 0.1), function() { return PrimChecks.turtle.getVariable("wealth"); }), function() { return PrimChecks.turtle.getVariable("wealth"); }))));
 }))
-ProcedurePrims.defineReporter("bottom-50-pct-wealth", (function() {
+ProcedurePrims.defineReporter("bottom-50-pct-wealth", 899, 998, (function() {
   return PrimChecks.procedure.report(PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.agentset.minNOf(world.turtles(), PrimChecks.math.mult(PrimChecks.agentset.count(world.turtles()), 0.5), function() { return PrimChecks.turtle.getVariable("wealth"); }), function() { return PrimChecks.turtle.getVariable("wealth"); }))));
 }))

@@ -105,7 +105,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 1622, 2623, (function() {
   world.clearAll();
   world.observer.setGlobal("total-caught", 0);
   world.observer.setGlobal("histogram-interval-size", 1);
@@ -145,7 +145,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   world.ticker.reset();
   var R = ProcedurePrims.callCommand("do-plots"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("attach-vision-cone", (function() {
+ProcedurePrims.defineCommand("attach-vision-cone", 2632, 2863, (function() {
   let parentHvision = SelfManager.self().getVariable("vision"); ProcedurePrims.stack().currentContext().registerStringRunVar("PARENT-VISION", parentHvision);
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("VISION-CONES"));
@@ -156,7 +156,7 @@ ProcedurePrims.defineCommand("attach-vision-cone", (function() {
     var R = ProcedurePrims.callCommand("set-visualize-vision-cone"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 2940, 3117, (function() {
   var R = ProcedurePrims.callCommand("check-visualize-vision-cone-change"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("check-player-caught"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("check-bird-catch"); if (R === DeathInterrupt) { return R; }
@@ -168,7 +168,7 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("update-variables"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("do-plots"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("update-variables", (function() {
+ProcedurePrims.defineCommand("update-variables", 3126, 3417, (function() {
   if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("BUGS"))) {
     world.observer.setGlobal("avg-bug-speed", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return SelfManager.self().getVariable("speed"); }))));
     world.observer.setGlobal("avg-bug-vision", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return SelfManager.self().getVariable("vision"); }))));
@@ -184,7 +184,7 @@ ProcedurePrims.defineCommand("update-variables", (function() {
     world.observer.setGlobal("avg-bird-speed", 0);
   }
 }))
-ProcedurePrims.defineCommand("reproduce-birds", (function() {
+ProcedurePrims.defineCommand("reproduce-birds", 3425, 3715, (function() {
   let worstHbird = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("WORST-BIRD", worstHbird);
   if (((Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("total-caught")), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("reproduce-birds-after-eating"))), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("BIRDS")))) {
     worstHbird = PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return SelfManager.self().getVariable("eaten"); }); ProcedurePrims.stack().currentContext().updateStringRunVar("WORST-BIRD", worstHbird);
@@ -198,7 +198,7 @@ ProcedurePrims.defineCommand("reproduce-birds", (function() {
     var R = ProcedurePrims.callCommand("reproduce-one-bird"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("move-bugs", (function() {
+ProcedurePrims.defineCommand("move-bugs", 3723, 4807, (function() {
   let targetHheading = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET-HEADING", targetHheading);
   let candidateHpredators = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("CANDIDATE-PREDATORS", candidateHpredators);
   let predator = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("PREDATOR", predator);
@@ -224,7 +224,7 @@ ProcedurePrims.defineCommand("move-bugs", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("move-birds", (function() {
+ProcedurePrims.defineCommand("move-birds", 4815, 6236, (function() {
   let preyHagent = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("PREY-AGENT", preyHagent);
   let candidateHbugs = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("CANDIDATE-BUGS", candidateHbugs);
   let closestHbug = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("CLOSEST-BUG", closestHbug);
@@ -263,13 +263,13 @@ ProcedurePrims.defineCommand("move-birds", (function() {
     SelfManager.self().fd(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("speed")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("speed-factor"))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("wiggle", (function() {
+ProcedurePrims.defineCommand("wiggle", 6244, 6367, (function() {
   if (world.observer.getGlobal("wiggle?")) {
     SelfManager.self().right(PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.math.randomFloat(30), 0.05), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("speed-factor"))));
     SelfManager.self().right(-(PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.math.randomFloat(30), 0.05), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("speed-factor")))));
   }
 }))
-ProcedurePrims.defineCommand("move-player", (function() {
+ProcedurePrims.defineCommand("move-player", 6375, 6520, (function() {
   if (MousePrims.isInside()) {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PLAYERS"), function() {
       PrimChecks.turtle.setXY(MousePrims.getX(), MousePrims.getY());
@@ -280,7 +280,7 @@ ProcedurePrims.defineCommand("move-player", (function() {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PLAYERS"), function() { SelfManager.self().setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineCommand("check-player-caught", (function() {
+ProcedurePrims.defineCommand("check-player-caught", 6528, 7830, (function() {
   let speedHofHcaught = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("SPEED-OF-CAUGHT", speedHofHcaught);
   let localHbugs = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("LOCAL-BUGS", localHbugs);
   let snapHmouseHxcor = MousePrims.getX(); ProcedurePrims.stack().currentContext().registerStringRunVar("SNAP-MOUSE-XCOR", snapHmouseHxcor);
@@ -319,7 +319,7 @@ ProcedurePrims.defineCommand("check-player-caught", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("check-bird-catch", (function() {
+ProcedurePrims.defineCommand("check-bird-catch", 7839, 8853, (function() {
   let speedHofHcaught = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("SPEED-OF-CAUGHT", speedHofHcaught);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BIRDS"), function() {
     if (PrimChecks.agentset.any(SelfManager.self().breedHere("BUGS"))) {
@@ -356,7 +356,7 @@ ProcedurePrims.defineCommand("check-bird-catch", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("reproduce-one-bug", (function() {
+ProcedurePrims.defineCommand("reproduce-one-bug", 8950, 9096, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("BUGS"))), function() {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       var R = ProcedurePrims.callCommand("mutate-offspring-bug"); if (R === DeathInterrupt) { return R; }
@@ -365,7 +365,7 @@ ProcedurePrims.defineCommand("reproduce-one-bug", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("reproduce-one-bird", (function() {
+ProcedurePrims.defineCommand("reproduce-one-bird", 9104, 9373, (function() {
   let birdHenergyHsplit = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("BIRD-ENERGY-SPLIT", birdHenergyHsplit);
   if (PrimChecks.agentset.optimizeCount(world.turtleManager.turtlesOfBreed("BIRDS"), 0, (a, b) => a > b)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("BIRDS"))), function() {
@@ -379,7 +379,7 @@ ProcedurePrims.defineCommand("reproduce-one-bird", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineCommand("mutate-offspring-bug", (function() {
+ProcedurePrims.defineCommand("mutate-offspring-bug", 9381, 9843, (function() {
   if (Prims.equality(RandomPrims.randomLong(2), 0)) {
     SelfManager.self().setVariable("vision", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("vision")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("bug-vision-mutation")))));
   }
@@ -405,7 +405,7 @@ ProcedurePrims.defineCommand("mutate-offspring-bug", (function() {
     SelfManager.self().setVariable("speed", 0);
   }
 }))
-ProcedurePrims.defineCommand("mutate-offspring-bird", (function() {
+ProcedurePrims.defineCommand("mutate-offspring-bird", 9852, 10326, (function() {
   if (Prims.equality(RandomPrims.randomLong(2), 0)) {
     SelfManager.self().setVariable("vision", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("vision")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("bird-vision-mutation")))));
   }
@@ -431,7 +431,7 @@ ProcedurePrims.defineCommand("mutate-offspring-bird", (function() {
     SelfManager.self().setVariable("speed", 0);
   }
 }))
-ProcedurePrims.defineCommand("check-visualize-vision-cone-change", (function() {
+ProcedurePrims.defineCommand("check-visualize-vision-cone-change", 10410, 10783, (function() {
   if (!Prims.equality(world.observer.getGlobal("old-show-initial-bug-vision-cone?"), world.observer.getGlobal("show-vision-cone?"))) {
     world.observer.setGlobal("old-show-initial-bug-vision-cone?", world.observer.getGlobal("show-vision-cone?"));
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("VISION-CONES"), function() {
@@ -445,7 +445,7 @@ ProcedurePrims.defineCommand("check-visualize-vision-cone-change", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineCommand("set-visualize-vision-cone", (function() {
+ProcedurePrims.defineCommand("set-visualize-vision-cone", 10792, 11010, (function() {
   let parentHvision = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.list.oneOf(LinkPrims.inLinkNeighbors("LINKS"))), function() { return SelfManager.self().getVariable("vision"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("PARENT-VISION", parentHvision);
   if (world.observer.getGlobal("show-vision-cone?")) {
     SelfManager.self().setVariable("hidden?", false);
@@ -456,10 +456,10 @@ ProcedurePrims.defineCommand("set-visualize-vision-cone", (function() {
     PrimChecks.turtle.setVariable("size", PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, parentHvision)));
   }
 }))
-ProcedurePrims.defineCommand("recolor-shade", (function() {
+ProcedurePrims.defineCommand("recolor-shade", 11020, 11136, (function() {
   SelfManager.self().setVariable("color", PrimChecks.math.plus(111, PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("speed"))));
 }))
-ProcedurePrims.defineCommand("recolor-rainbow", (function() {
+ProcedurePrims.defineCommand("recolor-rainbow", 11144, 11608, (function() {
   if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, SelfManager.self().getVariable("speed"))), 6)) {
     SelfManager.self().setVariable("color", 15);
   }
@@ -485,7 +485,7 @@ ProcedurePrims.defineCommand("recolor-rainbow", (function() {
     SelfManager.self().setVariable("color", PrimChecks.math.plus(5, 2));
   }
 }))
-ProcedurePrims.defineCommand("do-plots", (function() {
+ProcedurePrims.defineCommand("do-plots", 11686, 12440, (function() {
   if (Prims.equality(PrimChecks.math.mod(world.ticker.tickCount(), 100), 1)) {
     plotManager.setCurrentPlot("Avg. Vision vs. Time");
     plotManager.setCurrentPen("bugs");
@@ -515,7 +515,7 @@ ProcedurePrims.defineCommand("do-plots", (function() {
     var R = ProcedurePrims.callCommand("plot-histograms-initial-bird-vision"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("plot-caught", (function() {
+ProcedurePrims.defineCommand("plot-caught", 12448, 12874, (function() {
   plotManager.setCurrentPen("speed=1");
   plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-1-caught"));
   plotManager.setCurrentPen("speed=2");
@@ -529,7 +529,7 @@ ProcedurePrims.defineCommand("plot-caught", (function() {
   plotManager.setCurrentPen("speed=6");
   plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-6-caught"));
 }))
-ProcedurePrims.defineCommand("plot-populations", (function() {
+ProcedurePrims.defineCommand("plot-populations", 12882, 13332, (function() {
   plotManager.setCurrentPen("speed=1");
   plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(SelfManager.self().getVariable("speed"), 1); }));
   plotManager.setCurrentPen("speed=2");
@@ -543,25 +543,25 @@ ProcedurePrims.defineCommand("plot-populations", (function() {
   plotManager.setCurrentPen("speed=6");
   plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(SelfManager.self().getVariable("speed"), 6); }));
 }))
-ProcedurePrims.defineCommand("plot-histograms-bugs-speed", (function() {
+ProcedurePrims.defineCommand("plot-histograms-bugs-speed", 13340, 13736, (function() {
   plotManager.setHistogramBarCount(10);
   plotManager.setCurrentPen("#");
   plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
   plotManager.drawHistogramFrom(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return SelfManager.self().getVariable("speed"); }));
 }))
-ProcedurePrims.defineCommand("plot-histograms-initial-bug-vision", (function() {
+ProcedurePrims.defineCommand("plot-histograms-initial-bug-vision", 13744, 14117, (function() {
   plotManager.setHistogramBarCount(10);
   plotManager.setCurrentPen("#");
   plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
   plotManager.drawHistogramFrom(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return SelfManager.self().getVariable("vision"); }));
 }))
-ProcedurePrims.defineCommand("plot-histograms-initial-bird-speed", (function() {
+ProcedurePrims.defineCommand("plot-histograms-initial-bird-speed", 14126, 14499, (function() {
   plotManager.setHistogramBarCount(10);
   plotManager.setCurrentPen("#");
   plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
   plotManager.drawHistogramFrom(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return SelfManager.self().getVariable("speed"); }));
 }))
-ProcedurePrims.defineCommand("plot-histograms-initial-bird-vision", (function() {
+ProcedurePrims.defineCommand("plot-histograms-initial-bird-vision", 14507, 14882, (function() {
   plotManager.setHistogramBarCount(10);
   plotManager.setCurrentPen("#");
   plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));

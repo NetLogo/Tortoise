@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup-square", (function() {
+ProcedurePrims.defineCommand("setup-square", 3, 494, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().sprout(1, "TURTLES"); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
@@ -57,7 +57,7 @@ ProcedurePrims.defineCommand("setup-square", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-hex", (function() {
+ProcedurePrims.defineCommand("setup-hex", 502, 1072, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().sprout(1, "TURTLES"); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {

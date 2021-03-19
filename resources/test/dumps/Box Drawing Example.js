@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup-corner", (function() {
+ProcedurePrims.defineCommand("setup-corner", 123, 956, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
     if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
@@ -67,7 +67,7 @@ ProcedurePrims.defineCommand("setup-corner", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-center", (function() {
+ProcedurePrims.defineCommand("setup-center", 1035, 2250, (function() {
   world.clearAll();
   let halfedge = PrimChecks.math.int(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("edge")), 2)); ProcedurePrims.stack().currentContext().registerStringRunVar("HALFEDGE", halfedge);
   var R = ProcedurePrims.ask(world.patches(), function() {

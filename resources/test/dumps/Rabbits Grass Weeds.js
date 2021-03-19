@@ -70,7 +70,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 50, 288, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("grow-grass-and-weeds"); if (R === DeathInterrupt) { return R; }
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RABBITS").getSpecialName(), "rabbit")
@@ -81,7 +81,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 296, 437, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("RABBITS")))) {
     return PrimChecks.procedure.stop();
   }
@@ -95,7 +95,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("grow-grass-and-weeds", (function() {
+ProcedurePrims.defineCommand("grow-grass-and-weeds", 445, 661, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
       if (Prims.lt(PrimChecks.math.randomFloat(1000), world.observer.getGlobal("weeds-grow-rate"))) {
@@ -107,31 +107,31 @@ ProcedurePrims.defineCommand("grow-grass-and-weeds", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("move", (function() {
+ProcedurePrims.defineCommand("move", 669, 788, (function() {
   SelfManager.self().right(RandomPrims.randomLong(50));
   SelfManager.self().right(-(RandomPrims.randomLong(50)));
   SelfManager.self()._optimalFdOne();
   SelfManager.self().setVariable("energy", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("energy")), 0.5));
 }))
-ProcedurePrims.defineCommand("eat-grass", (function() {
+ProcedurePrims.defineCommand("eat-grass", 796, 948, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
     SelfManager.self().setPatchVariable("pcolor", 0);
     SelfManager.self().setVariable("energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("energy")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("grass-energy"))));
   }
 }))
-ProcedurePrims.defineCommand("eat-weeds", (function() {
+ProcedurePrims.defineCommand("eat-weeds", 956, 1107, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 115)) {
     SelfManager.self().setPatchVariable("pcolor", 0);
     SelfManager.self().setVariable("energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("energy")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("weed-energy"))));
   }
 }))
-ProcedurePrims.defineCommand("reproduce", (function() {
+ProcedurePrims.defineCommand("reproduce", 1115, 1293, (function() {
   if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("birth-threshold"))) {
     SelfManager.self().setVariable("energy", PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, SelfManager.self().getVariable("energy")), 2));
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineCommand("death", (function() {
+ProcedurePrims.defineCommand("death", 1301, 1389, (function() {
   if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
     return SelfManager.self().die();
   }

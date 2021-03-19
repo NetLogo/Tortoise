@@ -105,7 +105,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 3, 239, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
     SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(PrimChecks.math.mult(PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("colors"))), 10), 5));
@@ -115,7 +115,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 247, 455, (function() {
   if (Prims.equality(PrimChecks.list.variance(PrimChecks.validator.checkArg('VARIANCE', 8, PrimChecks.agentset.of(world.patches(), function() { return SelfManager.self().getPatchVariable("pcolor"); }))), 0)) {
     return PrimChecks.procedure.stop();
   }

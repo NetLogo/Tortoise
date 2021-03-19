@@ -76,13 +76,13 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 1399, 1462, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-globals"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-people"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-globals", (function() {
+ProcedurePrims.defineCommand("setup-globals", 1470, 1888, (function() {
   world.observer.setGlobal("infection-chance", 50);
   world.observer.setGlobal("symptoms-show", 200);
   world.observer.setGlobal("slider-check-1", world.observer.getGlobal("average-commitment"));
@@ -90,7 +90,7 @@ ProcedurePrims.defineCommand("setup-globals", (function() {
   world.observer.setGlobal("slider-check-3", world.observer.getGlobal("average-condom-use"));
   world.observer.setGlobal("slider-check-4", world.observer.getGlobal("average-test-frequency"));
 }))
-ProcedurePrims.defineCommand("setup-people", (function() {
+ProcedurePrims.defineCommand("setup-people", 2064, 2648, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), ""), function() {
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
     PrimChecks.turtle.setVariable("known?", false);
@@ -113,7 +113,7 @@ ProcedurePrims.defineCommand("setup-people", (function() {
     var R = ProcedurePrims.callCommand("assign-color"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("assign-color", (function() {
+ProcedurePrims.defineCommand("assign-color", 2830, 2982, (function() {
   if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("infected?")))) {
     SelfManager.self().setVariable("color", 55);
   }
@@ -126,26 +126,26 @@ ProcedurePrims.defineCommand("assign-color", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("assign-commitment", (function() {
+ProcedurePrims.defineCommand("assign-commitment", 3225, 3312, (function() {
   PrimChecks.turtle.setVariable("commitment", PrimChecks.procedure.callReporter("random-near", world.observer.getGlobal("average-commitment")));
 }))
-ProcedurePrims.defineCommand("assign-coupling-tendency", (function() {
+ProcedurePrims.defineCommand("assign-coupling-tendency", 3320, 3428, (function() {
   PrimChecks.turtle.setVariable("coupling-tendency", PrimChecks.procedure.callReporter("random-near", world.observer.getGlobal("average-coupling-tendency")));
 }))
-ProcedurePrims.defineCommand("assign-condom-use", (function() {
+ProcedurePrims.defineCommand("assign-condom-use", 3436, 3523, (function() {
   PrimChecks.turtle.setVariable("condom-use", PrimChecks.procedure.callReporter("random-near", world.observer.getGlobal("average-condom-use")));
 }))
-ProcedurePrims.defineCommand("assign-test-frequency", (function() {
+ProcedurePrims.defineCommand("assign-test-frequency", 3531, 3630, (function() {
   PrimChecks.turtle.setVariable("test-frequency", PrimChecks.procedure.callReporter("random-near", world.observer.getGlobal("average-test-frequency")));
 }))
-ProcedurePrims.defineReporter("random-near", (function(center) {
+ProcedurePrims.defineReporter("random-near", 3645, 3785, (function(center) {
   let result = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("RESULT", result);
   for (let _index_3704_3710 = 0, _repeatcount_3704_3710 = StrictMath.floor(40); _index_3704_3710 < _repeatcount_3704_3710; _index_3704_3710++){
     result = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, result), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, center))); ProcedurePrims.stack().currentContext().updateStringRunVar("RESULT", result);
   }
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, result), 20));
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 3820, 4454, (function() {
   if (PrimChecks.agentset.all(world.turtles(), function() { return PrimChecks.turtle.getVariable("known?"); })) {
     return PrimChecks.procedure.stop();
   }
@@ -174,7 +174,7 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("assign-color"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("check-sliders", (function() {
+ProcedurePrims.defineCommand("check-sliders", 4595, 5163, (function() {
   if (!Prims.equality(world.observer.getGlobal("slider-check-1"), world.observer.getGlobal("average-commitment"))) {
     var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("assign-commitment"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     world.observer.setGlobal("slider-check-1", world.observer.getGlobal("average-commitment"));
@@ -196,11 +196,11 @@ ProcedurePrims.defineCommand("check-sliders", (function() {
     world.observer.setGlobal("slider-check-4", world.observer.getGlobal("average-test-frequency"));
   }
 }))
-ProcedurePrims.defineCommand("move", (function() {
+ProcedurePrims.defineCommand("move", 5204, 5259, (function() {
   SelfManager.self().right(PrimChecks.math.randomFloat(360));
   SelfManager.self()._optimalFdOne();
 }))
-ProcedurePrims.defineCommand("couple", (function() {
+ProcedurePrims.defineCommand("couple", 5450, 6095, (function() {
   let potentialHpartner = PrimChecks.agentset.oneOfWith(SelfManager.self().turtlesAt(-1, 0), function() {
     return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("coupled?"))) && Prims.equality(SelfManager.self().getVariable("shape"), "person lefty"));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("POTENTIAL-PARTNER", potentialHpartner);
@@ -217,7 +217,7 @@ ProcedurePrims.defineCommand("couple", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("uncouple", (function() {
+ProcedurePrims.defineCommand("uncouple", 6220, 6707, (function() {
   if ((PrimChecks.validator.checkArg('AND', 2, PrimChecks.turtle.getVariable("coupled?")) && Prims.equality(SelfManager.self().getVariable("shape"), "person righty"))) {
     if ((Prims.gt(PrimChecks.turtle.getVariable("couple-length"), PrimChecks.turtle.getVariable("commitment")) || Prims.gt(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("partner")), function() { return PrimChecks.turtle.getVariable("couple-length"); }), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("partner")), function() { return PrimChecks.turtle.getVariable("commitment"); })))) {
       PrimChecks.turtle.setVariable("coupled?", false);
@@ -231,7 +231,7 @@ ProcedurePrims.defineCommand("uncouple", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("infect", (function() {
+ProcedurePrims.defineCommand("infect", 7260, 7529, (function() {
   if (((PrimChecks.validator.checkArg('AND', 2, PrimChecks.turtle.getVariable("coupled?")) && PrimChecks.validator.checkArg('AND', 2, PrimChecks.turtle.getVariable("infected?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("known?"))))) {
     if ((Prims.gt(PrimChecks.math.randomFloat(10), PrimChecks.turtle.getVariable("condom-use")) || Prims.gt(PrimChecks.math.randomFloat(10), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("partner")), function() { return PrimChecks.turtle.getVariable("condom-use"); })))) {
       if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("infection-chance"))) {
@@ -240,7 +240,7 @@ ProcedurePrims.defineCommand("infect", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("test", (function() {
+ProcedurePrims.defineCommand("test", 7897, 8108, (function() {
   if (Prims.lt(PrimChecks.math.randomFloat(52), PrimChecks.turtle.getVariable("test-frequency"))) {
     if (PrimChecks.turtle.getVariable("infected?")) {
       PrimChecks.turtle.setVariable("known?", true);
@@ -252,7 +252,7 @@ ProcedurePrims.defineCommand("test", (function() {
     }
   }
 }))
-ProcedurePrims.defineReporter("%infected", (function() {
+ProcedurePrims.defineReporter("%infected", 8155, 8274, (function() {
   if (PrimChecks.agentset.any(world.turtles())) {
     return PrimChecks.procedure.report(PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.agentset.countWith(world.turtles(), function() { return PrimChecks.turtle.getVariable("infected?"); }), PrimChecks.agentset.count(world.turtles())), 100));
   }

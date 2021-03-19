@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 283, 642, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "square")
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("density")); }), function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -58,7 +58,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   world.observer.setGlobal("burned-trees", 0);
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 650, 835, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtles()))) {
     return PrimChecks.procedure.stop();
   }
@@ -69,12 +69,12 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("fade-embers"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("ignite", (function() {
+ProcedurePrims.defineCommand("ignite", 871, 992, (function() {
   var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "FIRES"), function() { SelfManager.self().setVariable("color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   SelfManager.self().setPatchVariable("pcolor", 0);
   world.observer.setGlobal("burned-trees", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("burned-trees")), 1));
 }))
-ProcedurePrims.defineCommand("fade-embers", (function() {
+ProcedurePrims.defineCommand("fade-embers", 1056, 1232, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("EMBERS"), function() {
     SelfManager.self().setVariable("color", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("color")), 0.3));
     if (Prims.lt(SelfManager.self().getVariable("color"), PrimChecks.math.minus(15, 3.5))) {

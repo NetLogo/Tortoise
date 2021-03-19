@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 150, 504, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(100, world.patches())), function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   for (let _index_296_302 = 0, _repeatcount_296_302 = StrictMath.floor(20); _index_296_302 < _repeatcount_296_302; _index_296_302++){
@@ -64,7 +64,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 512, 900, (function() {
   if (PrimChecks.agentset.all(world.turtles(), function() { return PrimChecks.turtle.getVariable("peak?"); })) {
     return PrimChecks.procedure.stop();
   }

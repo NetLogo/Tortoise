@@ -109,7 +109,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("make-newcomer", (function() {
+ProcedurePrims.defineCommand("make-newcomer", 763, 957, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
     SelfManager.self().setVariable("color", PrimChecks.math.plus(105, 1));
     PrimChecks.turtle.setVariable("size", 1.8);
@@ -120,7 +120,7 @@ ProcedurePrims.defineCommand("make-newcomer", (function() {
     PrimChecks.turtle.setVariable("explored?", false);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 966, 1374, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   for (let _index_1053_1059 = 0, _repeatcount_1053_1059 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_1053_1059 < _repeatcount_1053_1059; _index_1053_1059++){
@@ -140,7 +140,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.callCommand("find-all-components"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1456, 2009, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setVariable("incumbent?", true);
     SelfManager.self().setVariable("color", PrimChecks.math.minus(5, 1.5));
@@ -163,7 +163,7 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("find-all-components"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("pick-team-members", (function() {
+ProcedurePrims.defineCommand("pick-team-members", 2056, 3026, (function() {
   let newHteamHmember = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-TEAM-MEMBER", newHteamHmember);
   for (let _index_2105_2111 = 0, _repeatcount_2105_2111 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_2105_2111 < _repeatcount_2105_2111; _index_2105_2111++){
     if (Prims.gte(PrimChecks.math.randomFloat(100), world.observer.getGlobal("p"))) {
@@ -194,7 +194,7 @@ ProcedurePrims.defineCommand("pick-team-members", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineCommand("tie-collaborators", (function() {
+ProcedurePrims.defineCommand("tie-collaborators", 3104, 3343, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtles(), function() { return PrimChecks.turtle.getVariable("in-team?"); }), function() {
     var R = ProcedurePrims.ask(LinkPrims.createLinksWith(PrimChecks.agentset.otherWith(world.turtles(), function() { return PrimChecks.turtle.getVariable("in-team?"); }), "LINKS"), function() {
       SelfManager.self().setVariable("new-collaboration?", true);
@@ -202,7 +202,7 @@ ProcedurePrims.defineCommand("tie-collaborators", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("color-collaborations", (function() {
+ProcedurePrims.defineCommand("color-collaborations", 3496, 4092, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.links(), function() {
     return (PrimChecks.validator.checkArg('AND', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("end1")), function() { return PrimChecks.turtle.getVariable("in-team?"); })) && PrimChecks.validator.checkArg('AND', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("end2")), function() { return PrimChecks.turtle.getVariable("in-team?"); })));
   }), function() {
@@ -224,13 +224,13 @@ ProcedurePrims.defineCommand("color-collaborations", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("layout", (function() {
+ProcedurePrims.defineCommand("layout", 4150, 4233, (function() {
   for (let _index_4159_4165 = 0, _repeatcount_4159_4165 = StrictMath.floor(12); _index_4159_4165 < _repeatcount_4159_4165; _index_4159_4165++){
     LayoutManager.layoutSpring(world.turtles(), world.links(), 0.18, 0.01, 1.2);
     notImplemented('display', undefined)();
   }
 }))
-ProcedurePrims.defineCommand("find-all-components", (function() {
+ProcedurePrims.defineCommand("find-all-components", 4416, 5176, (function() {
   world.observer.setGlobal("components", []);
   world.observer.setGlobal("giant-component-size", 0);
   var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtle.setVariable("explored?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -249,7 +249,7 @@ ProcedurePrims.defineCommand("find-all-components", (function() {
     world.observer.setGlobal("components", PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("component-size")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("components"))));
   };
 }))
-ProcedurePrims.defineCommand("explore", (function() {
+ProcedurePrims.defineCommand("explore", 5232, 5378, (function() {
   if (PrimChecks.turtle.getVariable("explored?")) {
     return PrimChecks.procedure.stop();
   }

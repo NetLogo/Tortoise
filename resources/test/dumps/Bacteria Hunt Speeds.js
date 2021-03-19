@@ -83,7 +83,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 1375, 1855, (function() {
   world.clearAll();
   world.observer.setGlobal("predator-color-visible", [255, 0, 0, 100]);
   world.observer.setGlobal("predator-color-invisible", [200, 200, 200, 100]);
@@ -101,7 +101,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.callCommand("setup-predator"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-bacteria", (function() {
+ProcedurePrims.defineCommand("setup-bacteria", 1863, 2142, (function() {
   var R = Tasks.forEach(Tasks.commandTask(function(thisHvariation) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-bacteria-per-variation"), "BACTERIA"), function() {
@@ -114,7 +114,7 @@ ProcedurePrims.defineCommand("setup-bacteria", (function() {
   }, "[ this-variation -> create-bacteria initial-bacteria-per-variation [ set label-color black set size 1 set variation this-variation make-flagella setxy random-xcor random-ycor ] ]"), [1, 2, 3, 4, 5, 6]); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("visualize-bacteria"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("setup-predator", (function() {
+ProcedurePrims.defineCommand("setup-predator", 2150, 2312, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "PREDATORS"), function() {
     SelfManager.self().setVariable("shape", "circle");
     SelfManager.self().setVariable("color", world.observer.getGlobal("predator-color-visible"));
@@ -124,7 +124,7 @@ ProcedurePrims.defineCommand("setup-predator", (function() {
     SelfManager.self().hideTurtle(true);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("make-flagella", (function() {
+ProcedurePrims.defineCommand("make-flagella", 2320, 2638, (function() {
   let flagellaHshape = (workspace.dump('') + workspace.dump("flagella-") + workspace.dump(SelfManager.self().getVariable("variation"))); ProcedurePrims.stack().currentContext().registerStringRunVar("FLAGELLA-SHAPE", flagellaHshape);
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FLAGELLA"));
@@ -139,7 +139,7 @@ ProcedurePrims.defineCommand("make-flagella", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 2884, 3021, (function() {
   var R = ProcedurePrims.callCommand("check-caught"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("move-predator"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("move-bacteria"); if (R === DeathInterrupt) { return R; }
@@ -148,20 +148,20 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("visualize-removal-spots"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("death", (function() {
+ProcedurePrims.defineCommand("death", 3029, 3231, (function() {
   world.observer.setGlobal("bacteria-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("bacteria-caught")), 1));
   var R = ProcedurePrims.callCommand("make-a-removal-spot"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   return SelfManager.self().die();
 }))
-ProcedurePrims.defineCommand("make-a-removal-spot", (function() {
+ProcedurePrims.defineCommand("make-a-removal-spot", 3239, 3341, (function() {
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS"));
     PrimChecks.turtle.setVariable("size", 1.5);
     SelfManager.self().setVariable("countdown", 30);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("move-bacteria", (function() {
+ProcedurePrims.defineCommand("move-bacteria", 3349, 3658, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BACTERIA"), function() {
     if (world.observer.getGlobal("wiggle?")) {
       SelfManager.self().right(PrimChecks.math.minus(PrimChecks.math.randomFloat(25), PrimChecks.math.randomFloat(25)));
@@ -174,7 +174,7 @@ ProcedurePrims.defineCommand("move-bacteria", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("move-predator", (function() {
+ProcedurePrims.defineCommand("move-predator", 3666, 4226, (function() {
   if (Prims.equality(world.getPatchAt(MousePrims.getX(), MousePrims.getY()), world.observer.getGlobal("predator-location"))) {
     world.observer.setGlobal("tick-counter", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("tick-counter")), 1));
   }
@@ -196,14 +196,14 @@ ProcedurePrims.defineCommand("move-predator", (function() {
     SelfManager.self().setVariable("hidden?", PrimChecks.math.not(MousePrims.isInside()));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("move-flagella", (function() {
+ProcedurePrims.defineCommand("move-flagella", 4234, 4560, (function() {
   let flagellaHswing = 15; ProcedurePrims.stack().currentContext().registerStringRunVar("FLAGELLA-SWING", flagellaHswing);
   let flagellaHspeed = 60; ProcedurePrims.stack().currentContext().registerStringRunVar("FLAGELLA-SPEED", flagellaHspeed);
   let newHswing = PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, flagellaHswing), PrimChecks.math.sin(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, flagellaHspeed), world.ticker.tickCount()))); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-SWING", newHswing);
   let myHbacteria = PrimChecks.list.oneOf(LinkPrims.inLinkNeighbors("LINKS")); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-BACTERIA", myHbacteria);
   PrimChecks.turtle.setVariable("heading", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, myHbacteria), function() { return PrimChecks.turtle.getVariable("heading"); })), PrimChecks.validator.checkArg('+', 1, newHswing)));
 }))
-ProcedurePrims.defineCommand("check-caught", (function() {
+ProcedurePrims.defineCommand("check-caught", 4568, 5024, (function() {
   if ((PrimChecks.math.not(MousePrims.isDown()) || PrimChecks.math.not(MousePrims.isInside()))) {
     return PrimChecks.procedure.stop();
   }
@@ -221,7 +221,7 @@ ProcedurePrims.defineCommand("check-caught", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("visualize-bacteria", (function() {
+ProcedurePrims.defineCommand("visualize-bacteria", 5270, 5742, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BACTERIA"), function() {
     if (Prims.equality(world.observer.getGlobal("visualize-variation"), "# flagella as label")) {
       SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(SelfManager.self().getVariable("variation")) + workspace.dump("     ")));
@@ -240,7 +240,7 @@ ProcedurePrims.defineCommand("visualize-bacteria", (function() {
     SelfManager.self().setVariable("hidden?", PrimChecks.list.member(PrimChecks.validator.checkArg('MEMBER?', 8191, world.observer.getGlobal("visualize-variation")), ["as color only", "# flagella as label", "none"]));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("visualize-removal-spots", (function() {
+ProcedurePrims.defineCommand("visualize-removal-spots", 5750, 6001, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS"), function() {
     SelfManager.self().setVariable("countdown", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("countdown")), 1));
     SelfManager.self().setVariable("color", PrimChecks.list.lput(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("countdown")), 4), [0, 100, 0]));

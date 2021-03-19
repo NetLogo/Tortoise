@@ -89,14 +89,14 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 79, 322, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.callCommand("make-node", Nobody); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("make-node", world.turtleManager.getTurtle(0)); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 403, 638, (function() {
   var R = ProcedurePrims.ask(world.links(), function() { SelfManager.self().setVariable("color", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("make-node", PrimChecks.procedure.callReporter("find-partner")); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
@@ -104,7 +104,7 @@ ProcedurePrims.defineCommand("go", (function() {
     var R = ProcedurePrims.callCommand("layout"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("make-node", (function(oldHnode) {
+ProcedurePrims.defineCommand("make-node", 678, 920, (function(oldHnode) {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
     SelfManager.self().setVariable("color", 15);
     if (!Prims.equality(oldHnode, Nobody)) {
@@ -114,10 +114,10 @@ ProcedurePrims.defineCommand("make-node", (function(oldHnode) {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("find-partner", (function() {
+ProcedurePrims.defineReporter("find-partner", 1407, 1464, (function() {
   return PrimChecks.procedure.report(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.list.oneOf(world.links())), function() { return PrimChecks.list.oneOf(SelfManager.self().bothEnds()); }));
 }))
-ProcedurePrims.defineCommand("resize-nodes", (function() {
+ProcedurePrims.defineCommand("resize-nodes", 1598, 1896, (function() {
   if (PrimChecks.agentset.all(world.turtles(), function() { return Prims.lte(PrimChecks.turtle.getVariable("size"), 1); })) {
     var R = ProcedurePrims.ask(world.turtles(), function() {
       PrimChecks.turtle.setVariable("size", PrimChecks.math.sqrt(PrimChecks.agentset.count(LinkPrims.linkNeighbors("LINKS"))));
@@ -127,7 +127,7 @@ ProcedurePrims.defineCommand("resize-nodes", (function() {
     var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtle.setVariable("size", 1); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineCommand("layout", (function() {
+ProcedurePrims.defineCommand("layout", 1904, 2762, (function() {
   for (let _index_2025_2031 = 0, _repeatcount_2025_2031 = StrictMath.floor(3); _index_2025_2031 < _repeatcount_2025_2031; _index_2025_2031++){
     let factor = PrimChecks.math.sqrt(PrimChecks.agentset.count(world.turtles())); ProcedurePrims.stack().currentContext().registerStringRunVar("FACTOR", factor);
     LayoutManager.layoutSpring(world.turtles(), world.links(), PrimChecks.math.div(1, PrimChecks.validator.checkArg('/', 1, factor)), PrimChecks.math.div(7, PrimChecks.validator.checkArg('/', 1, factor)), PrimChecks.math.div(1, PrimChecks.validator.checkArg('/', 1, factor)));
@@ -141,7 +141,7 @@ ProcedurePrims.defineCommand("layout", (function() {
     PrimChecks.turtle.setXY(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("xcor")), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, xHoffset), 2)), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ycor")), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, yHoffset), 2)));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("limit-magnitude", (function(number, limit) {
+ProcedurePrims.defineReporter("limit-magnitude", 2777, 2906, (function(number, limit) {
   if (Prims.gt(number, limit)) {
     return PrimChecks.procedure.report(limit);
   }

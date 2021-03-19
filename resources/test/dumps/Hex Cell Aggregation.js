@@ -49,21 +49,21 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 1311, 1458, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-grid"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("read-switches"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.breedOn("CELLS", PrimChecks.validator.checkArg('CELLS-ON', 816, world.getPatchAt(0, 0))), function() { var R = ProcedurePrims.callCommand("become-alive"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1466, 1547, (function() {
   if (PrimChecks.list.empty(PrimChecks.validator.checkArg('EMPTY?', 12, world.observer.getGlobal("eligibles")))) {
     return PrimChecks.procedure.stop();
   }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, world.observer.getGlobal("eligibles")))), function() { var R = ProcedurePrims.callCommand("become-alive"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("become-alive", (function() {
+ProcedurePrims.defineCommand("become-alive", 1555, 1811, (function() {
   SelfManager.self().hideTurtle(false);
   SelfManager.self().setVariable("eligible?", false);
   world.observer.setGlobal("eligibles", PrimChecks.list.remove(SelfManager.self(), PrimChecks.validator.checkArg('REMOVE', 12, world.observer.getGlobal("eligibles"))));
@@ -75,7 +75,7 @@ ProcedurePrims.defineCommand("become-alive", (function() {
     var R = ProcedurePrims.callCommand("update-eligibility"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("update-eligibility", (function() {
+ProcedurePrims.defineCommand("update-eligibility", 1819, 2428, (function() {
   if (SelfManager.self().getVariable("eligible?")) {
     if (PrimChecks.math.not(PrimChecks.list.member(PrimChecks.validator.checkArg('MEMBER?', 8191, SelfManager.self().getVariable("live-neighbor-count")), PrimChecks.validator.checkArg('MEMBER?', 124, world.observer.getGlobal("switches"))))) {
       SelfManager.self().setVariable("eligible?", false);
@@ -89,7 +89,7 @@ ProcedurePrims.defineCommand("update-eligibility", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("read-switches", (function() {
+ProcedurePrims.defineCommand("read-switches", 2526, 3022, (function() {
   world.observer.setGlobal("switches", []);
   if (world.observer.getGlobal("one-neighbor?")) {
     world.observer.setGlobal("switches", PrimChecks.list.lput(1, PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("switches"))));
@@ -114,7 +114,7 @@ ProcedurePrims.defineCommand("read-switches", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("eligibles", PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("CELLS"), function() { return SelfManager.self().getVariable("eligible?"); }), function() { return SelfManager.self(); }));
 }))
-ProcedurePrims.defineCommand("setup-grid", (function() {
+ProcedurePrims.defineCommand("setup-grid", 3079, 3663, (function() {
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "hex")
   var R = ProcedurePrims.ask(world.patches(), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "CELLS"), function() {

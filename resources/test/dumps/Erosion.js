@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 353, 1051, (function() {
   world.clearAll();
   world.observer.setGlobal("show-water?", true);
   var R = ProcedurePrims.ask(world.patches(), function() {
@@ -83,7 +83,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("land")), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("recolor", (function() {
+ProcedurePrims.defineCommand("recolor", 1059, 1245, (function() {
   if ((Prims.equality(SelfManager.self().getPatchVariable("water"), 0) || PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("show-water?"))))) {
     SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(9.9, SelfManager.self().getPatchVariable("elevation"), -250, 100));
   }
@@ -91,15 +91,15 @@ ProcedurePrims.defineCommand("recolor", (function() {
     SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(105, PrimChecks.list.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), 75)), 100, -10));
   }
 }))
-ProcedurePrims.defineCommand("show-water", (function() {
+ProcedurePrims.defineCommand("show-water", 1253, 1310, (function() {
   world.observer.setGlobal("show-water?", true);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("land")), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("hide-water", (function() {
+ProcedurePrims.defineCommand("hide-water", 1318, 1376, (function() {
   world.observer.setGlobal("show-water?", false);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("land")), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1384, 1929, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("land")), function() {
     if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("rainfall"))) {
       SelfManager.self().setPatchVariable("water", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("water")), 1));
@@ -117,7 +117,7 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("land")), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("flow", (function() {
+ProcedurePrims.defineCommand("flow", 1937, 2756, (function() {
   let target = PrimChecks.agentset.minOneOf(SelfManager.self().getNeighbors(), function() {
     return PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("elevation")), PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("water")));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET", target);

@@ -70,19 +70,19 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 80, 173, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("setup-road"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("setup-cars"); if (R === DeathInterrupt) { return R; }
   world.observer.watch(world.observer.getGlobal("sample-car"));
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-road", (function() {
+ProcedurePrims.defineCommand("setup-road", 181, 262, (function() {
   if ((Prims.lt(SelfManager.self().getPatchVariable("pycor"), 2) && Prims.gt(SelfManager.self().getPatchVariable("pycor"), -2))) {
     SelfManager.self().setPatchVariable("pcolor", 9.9);
   }
 }))
-ProcedurePrims.defineCommand("setup-cars", (function() {
+ProcedurePrims.defineCommand("setup-cars", 270, 914, (function() {
   if (Prims.gt(world.observer.getGlobal("number-of-cars"), world.topology.width)) {
     UserDialogPrims.confirm((workspace.dump('') + workspace.dump("There are too many cars for the amount of road. ") + workspace.dump("Please decrease the NUMBER-OF-CARS slider to below ") + workspace.dump(PrimChecks.math.plus(world.topology.width, 1)) + workspace.dump(" and press the SETUP button again. ") + workspace.dump("The setup has stopped.")));
     return PrimChecks.procedure.stop();
@@ -100,13 +100,13 @@ ProcedurePrims.defineCommand("setup-cars", (function() {
   world.observer.setGlobal("sample-car", PrimChecks.list.oneOf(world.turtles()));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("sample-car")), function() { SelfManager.self().setVariable("color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("separate-cars", (function() {
+ProcedurePrims.defineCommand("separate-cars", 1028, 1124, (function() {
   if (SelfPrims._optimalAnyOther(SelfManager.self().turtlesHere())) {
     SelfManager.self()._optimalFdOne();
     var R = ProcedurePrims.callCommand("separate-cars"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1132, 1586, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     let carHahead = PrimChecks.list.oneOf(PrimChecks.agentset.turtlesOn(SelfManager.self().patchAhead(1))); ProcedurePrims.stack().currentContext().registerStringRunVar("CAR-AHEAD", carHahead);
     if (!Prims.equality(carHahead, Nobody)) {
@@ -125,10 +125,10 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("slow-down-car", (function(carHahead) {
+ProcedurePrims.defineCommand("slow-down-car", 1594, 1764, (function(carHahead) {
   PrimChecks.turtle.setVariable("speed", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, carHahead), function() { return PrimChecks.turtle.getVariable("speed"); })), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("deceleration"))));
 }))
-ProcedurePrims.defineCommand("speed-up-car", (function() {
+ProcedurePrims.defineCommand("speed-up-car", 1772, 1838, (function() {
   PrimChecks.turtle.setVariable("speed", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("acceleration"))));
 }))
 world.observer.setGlobal("number-of-cars", 20);

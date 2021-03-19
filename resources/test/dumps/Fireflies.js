@@ -62,7 +62,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 292, 693, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number"), ""), function() {
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
@@ -82,7 +82,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 701, 860, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("increment-clock"); if (R === DeathInterrupt) { return R; }
@@ -93,7 +93,7 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("recolor", (function() {
+ProcedurePrims.defineCommand("recolor", 869, 1077, (function() {
   if (Prims.lt(PrimChecks.turtle.getVariable("clock"), PrimChecks.turtle.getVariable("threshold"))) {
     SelfManager.self().hideTurtle(false);
     SelfManager.self().setVariable("color", 45);
@@ -108,17 +108,17 @@ ProcedurePrims.defineCommand("recolor", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("move", (function() {
+ProcedurePrims.defineCommand("move", 1085, 1155, (function() {
   SelfManager.self().right(PrimChecks.math.minus(PrimChecks.math.randomFloat(90), PrimChecks.math.randomFloat(90)));
   SelfManager.self()._optimalFdOne();
 }))
-ProcedurePrims.defineCommand("increment-clock", (function() {
+ProcedurePrims.defineCommand("increment-clock", 1163, 1268, (function() {
   PrimChecks.turtle.setVariable("clock", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("clock")), 1));
   if (Prims.equality(PrimChecks.turtle.getVariable("clock"), world.observer.getGlobal("cycle-length"))) {
     PrimChecks.turtle.setVariable("clock", 0);
   }
 }))
-ProcedurePrims.defineCommand("look", (function() {
+ProcedurePrims.defineCommand("look", 1276, 1403, (function() {
   if (Prims.gte(PrimChecks.agentset.countWith(SelfManager.self().inRadius(world.turtles(), 1), function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }), world.observer.getGlobal("flashes-to-reset"))) {
     PrimChecks.turtle.setVariable("clock", PrimChecks.turtle.getVariable("reset-level"));
   }

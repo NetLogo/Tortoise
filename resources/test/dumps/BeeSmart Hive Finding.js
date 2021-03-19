@@ -90,7 +90,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 2506, 2634, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-hives"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-tasks"); if (R === DeathInterrupt) { return R; }
@@ -99,7 +99,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   world.observer.setGlobal("scouts-visible?", true);
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-hives", (function() {
+ProcedurePrims.defineCommand("setup-hives", 2642, 3564, (function() {
   world.observer.setGlobal("color-list", [97.9, 94.5, 57.5, 63.8, 17.6, 14.9, 27.5, 25.1, 117.9, 114.4]);
   world.observer.setGlobal("quality-list", [100, 75, 50, 1, 54, 48, 40, 32, 24, 16]);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(PrimChecks.validator.checkArg('N-OF', 1, world.observer.getGlobal("hive-number")), PrimChecks.agentset.with(world.patches(), function() {
@@ -127,7 +127,7 @@ ProcedurePrims.defineCommand("setup-hives", (function() {
     i = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, i), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("I", i);
   }
 }))
-ProcedurePrims.defineCommand("setup-bees", (function() {
+ProcedurePrims.defineCommand("setup-bees", 3572, 4206, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(100, "SCOUTS"), function() {
     SelfManager.self().fd(PrimChecks.math.randomFloat(4));
     SelfManager.self().setVariable("my-home", SelfManager.self().getPatchHere());
@@ -147,7 +147,7 @@ ProcedurePrims.defineCommand("setup-bees", (function() {
     SelfManager.self().setVariable("bee-timer", RandomPrims.randomLong(100));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("setup-tasks", (function() {
+ProcedurePrims.defineCommand("setup-tasks", 4215, 4314, (function() {
   var R = ProcedurePrims.callCommand("watch-dance"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("discover"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("inspect-hive"); if (R === DeathInterrupt) { return R; }
@@ -157,7 +157,7 @@ ProcedurePrims.defineCommand("setup-tasks", (function() {
   var R = ProcedurePrims.callCommand("pipe"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("take-off"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("watch-dance", (function() {
+ProcedurePrims.defineCommand("watch-dance", 4439, 7166, (function() {
   world.observer.setGlobal("watch-dance-task", Tasks.commandTask(function() {
     if (PrimChecks.agentset.optimizeCount(SelfManager.self().inRadius(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { return SelfManager.self().getVariable("piping?"); }), 3), 0, (a, b) => a > b)) {
       SelfManager.self().setVariable("target", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.agentset.oneOfWith(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { return SelfManager.self().getVariable("piping?"); })), function() { return SelfManager.self().getVariable("target"); }));
@@ -192,7 +192,7 @@ ProcedurePrims.defineCommand("watch-dance", (function() {
     SelfManager.self().setVariable("bee-timer", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("bee-timer")), 1));
   }, "[ -> if count scouts with [ piping? ] in-radius 3 > 0 [ set target [ target ] of one-of scouts with [ piping? ] set color [ color ] of target set next-task pipe-task set task-string \"piping\" set bee-timer 20 set piping? true ] move-around if initial-scout? and bee-timer < 0 [ set next-task discover-task set task-string \"discovering\" set bee-timer initial-explore-time set initial-scout? false ] if not initial-scout? [ if bee-timer < 0 [ if count other scouts in-cone 3 60 > 0 [ let one-of scouts in-cone 3 60 if [ next-task ] of observed = dance-task [ if random 1 / [ interest ] of observed * 1000 < 1 [ set target [ target ] of observed set color white set next-task re-visit-task set task-string \"revisiting\" ] ] ] ] ] set bee-timer bee-timer - 1 ]"));
 }))
-ProcedurePrims.defineCommand("discover", (function() {
+ProcedurePrims.defineCommand("discover", 7292, 8833, (function() {
   world.observer.setGlobal("discover-task", Tasks.commandTask(function() {
     if (Prims.lt(SelfManager.self().getVariable("bee-timer"), 0)) {
       SelfManager.self().setVariable("next-task", world.observer.getGlobal("go-home-task"));
@@ -228,7 +228,7 @@ ProcedurePrims.defineCommand("discover", (function() {
     }
   }, "[ -> ifelse bee-timer < 0 [ set next-task go-home-task set task-string \"going-home\" set no-discovery? true ] [ ifelse count sites in-radius 3 > 0 [ let one-of sites in-radius 3 ifelse not [ discovered? ] of temp-target [ set target temp-target ask target [ set discovered? true set color item who color-list ] set interest [ quality ] of target set color [ color ] of target set next-task inspect-hive-task set task-string \"inspecting-hive\" set bee-timer 100 ] [ rt random 60 - random 60 proceed set bee-timer bee-timer - 1 ] ] [ rt random 60 - random 60 proceed ] set bee-timer bee-timer - 1 ] ]"));
 }))
-ProcedurePrims.defineCommand("inspect-hive", (function() {
+ProcedurePrims.defineCommand("inspect-hive", 8958, 10360, (function() {
   world.observer.setGlobal("inspect-hive-task", Tasks.commandTask(function() {
     if (Prims.lt(SelfManager.self().getVariable("bee-timer"), 0)) {
       SelfManager.self().setVariable("next-task", world.observer.getGlobal("go-home-task"));
@@ -262,7 +262,7 @@ ProcedurePrims.defineCommand("inspect-hive", (function() {
     }
   }, "[ -> ifelse bee-timer < 0 [ set next-task go-home-task set task-string \"going-home\" set on-site? false set trips trips + 1 ] [ if distance target > 2 [ face target fd 1 ] set on-site? true let scouts with [ on-site? and target = [ target ] of myself ] in-radius 3 if count nearby-scouts > quorum [ set next-task go-home-task set task-string \"going-home\" set on-site? false set piping? true ] ifelse random 3 = 0 [ hide-turtle ] [ show-turtle ] set dist-to-hive distancexy 0 0 set bee-timer bee-timer - 1 ] ]"));
 }))
-ProcedurePrims.defineCommand("go-home", (function() {
+ProcedurePrims.defineCommand("go-home", 10485, 11507, (function() {
   world.observer.setGlobal("go-home-task", Tasks.commandTask(function() {
     if (Prims.lt(SelfManager.self().distance(SelfManager.self().getVariable("my-home")), 1)) {
       if (SelfManager.self().getVariable("no-discovery?")) {
@@ -290,7 +290,7 @@ ProcedurePrims.defineCommand("go-home", (function() {
     }
   }, "[ -> ifelse distance my-home < 1 [ ifelse no-discovery? [ set next-task watch-dance-task set task-string \"watching-dance\" set no-discovery? false set initial-scout? false ] [ ifelse piping? [ set next-task pipe-task set task-string \"piping\" set bee-timer 20 ] [ set next-task dance-task set task-string \"dancing\" set bee-timer 0 ] ] ] [ face my-home proceed ] ]"));
 }))
-ProcedurePrims.defineCommand("dance", (function() {
+ProcedurePrims.defineCommand("dance", 12817, 14704, (function() {
   world.observer.setGlobal("dance-task", Tasks.commandTask(function() {
     if (PrimChecks.agentset.optimizeCount(SelfManager.self().inRadius(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { return SelfManager.self().getVariable("piping?"); }), 3), 0, (a, b) => a > b)) {
       SelfManager.self().penManager.raisePen();
@@ -342,7 +342,7 @@ ProcedurePrims.defineCommand("dance", (function() {
     }
   }, "[ -> ifelse count scouts with [ piping? ] in-radius 3 > 0 [ pen-up set next-task pipe-task set task-string \"piping\" set bee-timer 20 set target [ target ] of one-of scouts with [ piping? ] set color [ color ] of target set piping? true ] [ if bee-timer > interest - trips - 1 * 15 + random 5 and interest > 0 [ set next-task re-visit-task set task-string \"revisiting\" pen-up set interest interest - 15 + random 5 set bee-timer 25 ] if bee-timer > interest - trips - 1 * 15 + random 5 and interest <= 0 [ set next-task watch-dance-task set task-string \"watching-dance\" set target nobody set interest 0 set trips 0 set color gray set bee-timer 50 ] if bee-timer <= interest - trips - 1 * 15 + random 5 [ ifelse interest <= 50 and random 100 < 43 [ set next-task re-visit-task set task-string \"revisiting\" set interest interest - 15 + random 5 set bee-timer 10 ] [ ifelse show-dance-path? [ pen-down ] [ pen-up ] repeat 2 [ waggle make-semicircle ] ] ] set bee-timer bee-timer + 1 ] ]"));
 }))
-ProcedurePrims.defineCommand("re-visit", (function() {
+ProcedurePrims.defineCommand("re-visit", 14829, 15429, (function() {
   world.observer.setGlobal("re-visit-task", Tasks.commandTask(function() {
     if (Prims.gt(SelfManager.self().getVariable("bee-timer"), 0)) {
       SelfManager.self().setVariable("bee-timer", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("bee-timer")), 1));
@@ -365,7 +365,7 @@ ProcedurePrims.defineCommand("re-visit", (function() {
     }
   }, "[ -> ifelse bee-timer > 0 [ set bee-timer bee-timer - 1 ] [ pen-up ifelse distance target < 1 [ if interest = 0 [ set interest [ quality ] of target set color [ color ] of target ] set next-task inspect-hive-task set task-string \"inspecting-hive\" set bee-timer 50 ] [ proceed face target ] ] ]"));
 }))
-ProcedurePrims.defineCommand("pipe", (function() {
+ProcedurePrims.defineCommand("pipe", 15554, 16001, (function() {
   world.observer.setGlobal("pipe-task", Tasks.commandTask(function() {
     var R = ProcedurePrims.callCommand("move-around"); if (R === DeathInterrupt) { return R; }
     if (Prims.equality(PrimChecks.agentset.count(SelfManager.self().inRadius(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { return SelfManager.self().getVariable("piping?"); }), 5)), PrimChecks.agentset.count(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS"), 5)))) {
@@ -377,7 +377,7 @@ ProcedurePrims.defineCommand("pipe", (function() {
     }
   }, "[ -> move-around if count scouts with [ piping? ] in-radius 5 = count scouts in-radius 5 [ set bee-timer bee-timer - 1 ] if bee-timer < 0 [ set next-task take-off-task set task-string \"taking-off\" ] ]"));
 }))
-ProcedurePrims.defineCommand("take-off", (function() {
+ProcedurePrims.defineCommand("take-off", 16126, 16258, (function() {
   world.observer.setGlobal("take-off-task", Tasks.commandTask(function() {
     if (Prims.gt(SelfManager.self().distance(SelfManager.self().getVariable("target")), 1)) {
       SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, SelfManager.self().getVariable("target")));
@@ -388,7 +388,7 @@ ProcedurePrims.defineCommand("take-off", (function() {
     }
   }, "[ -> ifelse distance target > 1 [ face target fd 1 ] [ set on-site? true ] ]"));
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 16383, 16622, (function() {
   if ((PrimChecks.agentset.all(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { return SelfManager.self().getVariable("on-site?"); }) && Prims.equality(PrimChecks.list.length(PrimChecks.list.removeDuplicates(PrimChecks.validator.checkArg('REMOVE-DUPLICATES', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { return SelfManager.self().getVariable("target"); })))), 1))) {
     return PrimChecks.procedure.stop();
   }
@@ -398,7 +398,7 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("plot-on-site-scouts"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("make-semicircle", (function() {
+ProcedurePrims.defineCommand("make-semicircle", 16747, 17408, (function() {
   let numHofHturns = PrimChecks.math.mult(PrimChecks.math.div(1, PrimChecks.validator.checkArg('/', 1, SelfManager.self().getVariable("interest"))), 2600); ProcedurePrims.stack().currentContext().registerStringRunVar("NUM-OF-TURNS", numHofHturns);
   let angleHperHturn = PrimChecks.math.div(180, PrimChecks.validator.checkArg('/', 1, numHofHturns)); ProcedurePrims.stack().currentContext().registerStringRunVar("ANGLE-PER-TURN", angleHperHturn);
   let semicircle = PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.math.mult(0.5, PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("dist-to-hive"))), 3.141592653589793), 5); ProcedurePrims.stack().currentContext().registerStringRunVar("SEMICIRCLE", semicircle);
@@ -421,7 +421,7 @@ ProcedurePrims.defineCommand("make-semicircle", (function() {
   SelfManager.self().setVariable("circle-switch", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("circle-switch")), -1));
   PrimChecks.turtle.setXY(PrimChecks.validator.checkArg('SETXY', 1, SelfManager.self().getVariable("temp-x-dance")), PrimChecks.validator.checkArg('SETXY', 1, SelfManager.self().getVariable("temp-y-dance")));
 }))
-ProcedurePrims.defineCommand("waggle", (function() {
+ProcedurePrims.defineCommand("waggle", 17416, 18238, (function() {
   SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, SelfManager.self().getVariable("target")));
   SelfManager.self().setVariable("temp-x-dance", PrimChecks.turtle.getVariable("xcor"));
   SelfManager.self().setVariable("temp-y-dance", PrimChecks.turtle.getVariable("ycor"));
@@ -448,14 +448,14 @@ ProcedurePrims.defineCommand("waggle", (function() {
     SelfManager.self()._optimalFdLessThan1(0.4);
   }
 }))
-ProcedurePrims.defineCommand("proceed", (function() {
+ProcedurePrims.defineCommand("proceed", 18246, 18322, (function() {
   SelfManager.self().right(PrimChecks.math.minus(RandomPrims.randomLong(20), RandomPrims.randomLong(20)));
   if (PrimChecks.math.not(SelfManager.self().canMove(1))) {
     SelfManager.self().right(180);
   }
   SelfManager.self()._optimalFdOne();
 }))
-ProcedurePrims.defineCommand("move-around", (function() {
+ProcedurePrims.defineCommand("move-around", 18330, 18432, (function() {
   SelfManager.self().right(PrimChecks.math.minus(RandomPrims.randomLong(60), RandomPrims.randomLong(60)));
   SelfManager.self().fd(PrimChecks.math.randomFloat(0.1));
   if (Prims.gt(SelfManager.self().distanceXY(0, 0), 4)) {
@@ -463,7 +463,7 @@ ProcedurePrims.defineCommand("move-around", (function() {
     SelfManager.self()._optimalFdOne();
   }
 }))
-ProcedurePrims.defineCommand("plot-on-site-scouts", (function() {
+ProcedurePrims.defineCommand("plot-on-site-scouts", 18440, 18762, (function() {
   let i = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("I", i);
   for (let _index_18472_18478 = 0, _repeatcount_18472_18478 = StrictMath.floor(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SITES"))); _index_18472_18478 < _repeatcount_18472_18478; _index_18472_18478++){
     plotManager.setCurrentPlot("on-site");
@@ -479,13 +479,13 @@ ProcedurePrims.defineCommand("plot-on-site-scouts", (function() {
     i = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, i), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("I", i);
   }
 }))
-ProcedurePrims.defineCommand("show-hide-dance-path", (function() {
+ProcedurePrims.defineCommand("show-hide-dance-path", 18770, 18881, (function() {
   if (world.observer.getGlobal("show-dance-path?")) {
     world.clearDrawing();
   }
   world.observer.setGlobal("show-dance-path?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("show-dance-path?"))));
 }))
-ProcedurePrims.defineCommand("show-hide-scouts", (function() {
+ProcedurePrims.defineCommand("show-hide-scouts", 18889, 19045, (function() {
   if (world.observer.getGlobal("scouts-visible?")) {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { SelfManager.self().hideTurtle(true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }

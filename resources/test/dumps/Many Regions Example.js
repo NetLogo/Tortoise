@@ -49,21 +49,21 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 247, 643, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-regions", world.observer.getGlobal("number-of-regions")); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("color-regions"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-turtles"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("color-regions", (function() {
+ProcedurePrims.defineCommand("color-regions", 651, 945, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return !Prims.equality(SelfManager.self().getPatchVariable("region"), 0); }), function() {
     SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(2, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("region")), 10)));
     SelfManager.self().setPatchVariable("plabel-color", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pcolor")), 1));
     SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("region"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("setup-turtles", (function() {
+ProcedurePrims.defineCommand("setup-turtles", 953, 1400, (function() {
   var R = Tasks.forEach(Tasks.commandTask(function(regionHnumber) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     let regionHpatches = PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("region"), regionHnumber); }); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-PATCHES", regionHpatches);
@@ -73,18 +73,18 @@ ProcedurePrims.defineCommand("setup-turtles", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, "[ region-number -> let patches with [ region = region-number ] create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]"), Prims.rangeBinary(1, PrimChecks.math.plus(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("region-boundaries"))), 1))); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1408, 1441, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("move", (function() {
+ProcedurePrims.defineCommand("move", 1449, 1980, (function() {
   let currentHregion = SelfManager.self().getPatchVariable("region"); ProcedurePrims.stack().currentContext().registerStringRunVar("CURRENT-REGION", currentHregion);
   SelfManager.self().right(RandomPrims.randomLong(30));
   SelfManager.self().right(-(RandomPrims.randomLong(30)));
   SelfManager.self()._optimalFdLessThan1(0.25);
   var R = ProcedurePrims.callCommand("keep-in-region", currentHregion); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("setup-regions", (function(numHregions) {
+ProcedurePrims.defineCommand("setup-regions", 1988, 2598, (function(numHregions) {
   var R = Tasks.forEach(Tasks.commandTask(function(_0) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     var R = ProcedurePrims.callCommand("draw-region-division", _0); if (R === DeathInterrupt) { return R; }
@@ -98,20 +98,20 @@ ProcedurePrims.defineCommand("setup-regions", (function(numHregions) {
     }), function() { SelfManager.self().setPatchVariable("region", regionHnumber); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, "[ [boundaries region-number] -> ask patches with [ pxcor >= first boundaries and pxcor <= last boundaries ] [ set region region-number ] ]"), world.observer.getGlobal("region-boundaries"), regionHnumbers); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("calculate-region-boundaries", (function(numHregions) {
+ProcedurePrims.defineReporter("calculate-region-boundaries", 2613, 3128, (function(numHregions) {
   let divisions = PrimChecks.procedure.callReporter("region-divisions", numHregions); ProcedurePrims.stack().currentContext().registerStringRunVar("DIVISIONS", divisions);
   return PrimChecks.procedure.report(Tasks.map(Tasks.reporterTask(function(d1, d2) {
     PrimChecks.procedure.runArgCountCheck(2, arguments.length);
     return ListPrims.list(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, d1), 1), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, d2), 1));
   }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]"), PrimChecks.list.butLast('but-last', PrimChecks.validator.checkArg('BUT-LAST', 12, divisions)), PrimChecks.list.butFirst('but-first', PrimChecks.validator.checkArg('BUT-FIRST', 12, divisions))));
 }))
-ProcedurePrims.defineReporter("region-divisions", (function(numHregions) {
+ProcedurePrims.defineReporter("region-divisions", 3143, 3457, (function(numHregions) {
   return PrimChecks.procedure.report(Tasks.nValues(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, numHregions), 1), Tasks.reporterTask(function(n) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     return PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.getPatchAt(PrimChecks.math.plus(world.topology.minPxcor, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, n), PrimChecks.math.div(PrimChecks.math.minus(world.topology.maxPxcor, world.topology.minPxcor), PrimChecks.validator.checkArg('/', 1, numHregions)))), 0)), function() { return SelfManager.self().getPatchVariable("pxcor"); });
   }, "[ n -> [ pxcor ] of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]")));
 }))
-ProcedurePrims.defineCommand("draw-region-division", (function(x) {
+ProcedurePrims.defineCommand("draw-region-division", 3465, 4077, (function(x) {
   var R = ProcedurePrims.ask(world._optimalPatchCol(x), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(5, 1.5)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
     PrimChecks.turtle.setXY(PrimChecks.validator.checkArg('SETXY', 1, x), PrimChecks.math.plus(world.topology.maxPycor, 0.5));
@@ -126,7 +126,7 @@ ProcedurePrims.defineCommand("draw-region-division", (function(x) {
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("keep-in-region", (function(whichHregion) {
+ProcedurePrims.defineCommand("keep-in-region", 4085, 4987, (function(whichHregion) {
   if (!Prims.equality(SelfManager.self().getPatchVariable("region"), whichHregion)) {
     let regionHminHpxcor = PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, whichHregion), 1), PrimChecks.validator.checkArg('ITEM', 12, world.observer.getGlobal("region-boundaries"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-MIN-PXCOR", regionHminHpxcor);
     let regionHmaxHpxcor = PrimChecks.list.last(PrimChecks.validator.checkArg('LAST', 12, PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, whichHregion), 1), PrimChecks.validator.checkArg('ITEM', 12, world.observer.getGlobal("region-boundaries"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-MAX-PXCOR", regionHmaxHpxcor);

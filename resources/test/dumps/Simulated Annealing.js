@@ -58,7 +58,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 69, 275, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(PrimChecks.math.div(PrimChecks.agentset.count(world.patches()), 2), world.patches())), function() { SelfManager.self().setPatchVariable("brightness", 1); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("update-visual"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -66,7 +66,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   world.observer.setGlobal("temperature", 1);
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 284, 527, (function() {
   for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++){
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.patches())), function() { var R = ProcedurePrims.callCommand("try-swap"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
@@ -74,13 +74,13 @@ ProcedurePrims.defineCommand("go", (function() {
   world.observer.setGlobal("global-energy", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter("find-energy"); }))));
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("update-visual", (function() {
+ProcedurePrims.defineCommand("update-visual", 535, 605, (function() {
   SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("brightness")), 9.9));
 }))
-ProcedurePrims.defineReporter("accept-change?", (function(oldHenergy, newHenergy) {
+ProcedurePrims.defineReporter("accept-change?", 1002, 1189, (function(oldHenergy, newHenergy) {
   return PrimChecks.procedure.report(((Prims.lt(newHenergy, oldHenergy) || (PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("accept-equal-changes?")) && Prims.equality(newHenergy, oldHenergy))) || Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("temperature"))));
 }))
-ProcedurePrims.defineCommand("try-swap", (function() {
+ProcedurePrims.defineCommand("try-swap", 1197, 1800, (function() {
   let p2 = PrimChecks.list.oneOf(SelfManager.self().inRadius(world.patches(), world.observer.getGlobal("swap-radius"))); ProcedurePrims.stack().currentContext().registerStringRunVar("P2", p2);
   if (Prims.equality(SelfManager.self().getPatchVariable("brightness"), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p2), function() { return SelfManager.self().getPatchVariable("brightness"); }))) {
     return PrimChecks.procedure.stop();
@@ -97,14 +97,14 @@ ProcedurePrims.defineCommand("try-swap", (function() {
     var R = ProcedurePrims.callCommand("swap-values", SelfManager.self(), p2); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("swap-values", (function(p1, p2) {
+ProcedurePrims.defineCommand("swap-values", 1808, 1942, (function(p1, p2) {
   let temp = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p1), function() { return SelfManager.self().getPatchVariable("brightness"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("TEMP", temp);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, p1), function() {
     SelfManager.self().setPatchVariable("brightness", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p2), function() { return SelfManager.self().getPatchVariable("brightness"); }));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, p2), function() { SelfManager.self().setPatchVariable("brightness", temp); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("find-energy", (function() {
+ProcedurePrims.defineReporter("find-energy", 2070, 2565, (function() {
   let unhappiness = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("UNHAPPINESS", unhappiness);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorth()), function() {
     unhappiness = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, unhappiness), PrimChecks.math.pow(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("brightness")), PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);

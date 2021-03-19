@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 27, 207, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("population"), ""), function() {
     SelfManager.self().setVariable("color", 15);
@@ -59,7 +59,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("chemical", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 215, 807, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
       var R = ProcedurePrims.callCommand("turn-toward-chemical"); if (R === DeathInterrupt) { return R; }
@@ -75,7 +75,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("turn-toward-chemical", (function() {
+ProcedurePrims.defineCommand("turn-toward-chemical", 815, 1279, (function() {
   let ahead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("AHEAD", ahead);
   let myright = PrimChecks.agentset.of(SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return SelfManager.self().getPatchVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MYRIGHT", myright);
   let myleft = PrimChecks.agentset.of(SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return SelfManager.self().getPatchVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MYLEFT", myleft);

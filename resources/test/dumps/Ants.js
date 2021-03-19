@@ -70,7 +70,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 429, 629, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("population"), ""), function() {
@@ -80,18 +80,18 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.callCommand("setup-patches"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-patches", (function() {
+ProcedurePrims.defineCommand("setup-patches", 637, 715, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     var R = ProcedurePrims.callCommand("setup-nest"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("setup-food"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("setup-nest", (function() {
+ProcedurePrims.defineCommand("setup-nest", 723, 962, (function() {
   SelfManager.self().setPatchVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
   SelfManager.self().setPatchVariable("nest-scent", PrimChecks.math.minus(200, SelfManager.self().distanceXY(0, 0)));
 }))
-ProcedurePrims.defineCommand("setup-food", (function() {
+ProcedurePrims.defineCommand("setup-food", 970, 1497, (function() {
   if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(0.6, world.topology.maxPxcor), 0), 5)) {
     SelfManager.self().setPatchVariable("food-source-number", 1);
   }
@@ -105,7 +105,7 @@ ProcedurePrims.defineCommand("setup-food", (function() {
     SelfManager.self().setPatchVariable("food", PrimChecks.list.oneOf([1, 2]));
   }
 }))
-ProcedurePrims.defineCommand("recolor-patch", (function() {
+ProcedurePrims.defineCommand("recolor-patch", 1505, 1901, (function() {
   if (SelfManager.self().getPatchVariable("nest?")) {
     SelfManager.self().setPatchVariable("pcolor", 115);
   }
@@ -126,7 +126,7 @@ ProcedurePrims.defineCommand("recolor-patch", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1976, 2416, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (Prims.gte(PrimChecks.turtle.getVariable("who"), world.ticker.tickCount())) {
       return PrimChecks.procedure.stop();
@@ -147,7 +147,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("return-to-nest", (function() {
+ProcedurePrims.defineCommand("return-to-nest", 2424, 2676, (function() {
   if (SelfManager.self().getPatchVariable("nest?")) {
     SelfManager.self().setVariable("color", 15);
     SelfManager.self().right(180);
@@ -157,7 +157,7 @@ ProcedurePrims.defineCommand("return-to-nest", (function() {
     var R = ProcedurePrims.callCommand("uphill-nest-scent"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("look-for-food", (function() {
+ProcedurePrims.defineCommand("look-for-food", 2684, 3024, (function() {
   if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
     SelfManager.self().setVariable("color", PrimChecks.math.plus(25, 1));
     SelfManager.self().setPatchVariable("food", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("food")), 1));
@@ -168,7 +168,7 @@ ProcedurePrims.defineCommand("look-for-food", (function() {
     var R = ProcedurePrims.callCommand("uphill-chemical"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("uphill-chemical", (function() {
+ProcedurePrims.defineCommand("uphill-chemical", 3093, 3397, (function() {
   let scentHahead = PrimChecks.procedure.callReporter("chemical-scent-at-angle", 0); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-AHEAD", scentHahead);
   let scentHright = PrimChecks.procedure.callReporter("chemical-scent-at-angle", 45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-RIGHT", scentHright);
   let scentHleft = PrimChecks.procedure.callReporter("chemical-scent-at-angle", -45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-LEFT", scentHleft);
@@ -181,7 +181,7 @@ ProcedurePrims.defineCommand("uphill-chemical", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("uphill-nest-scent", (function() {
+ProcedurePrims.defineCommand("uphill-nest-scent", 3466, 3760, (function() {
   let scentHahead = PrimChecks.procedure.callReporter("nest-scent-at-angle", 0); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-AHEAD", scentHahead);
   let scentHright = PrimChecks.procedure.callReporter("nest-scent-at-angle", 45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-RIGHT", scentHright);
   let scentHleft = PrimChecks.procedure.callReporter("nest-scent-at-angle", -45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-LEFT", scentHleft);
@@ -194,21 +194,21 @@ ProcedurePrims.defineCommand("uphill-nest-scent", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("wiggle", (function() {
+ProcedurePrims.defineCommand("wiggle", 3768, 3858, (function() {
   SelfManager.self().right(RandomPrims.randomLong(40));
   SelfManager.self().right(-(RandomPrims.randomLong(40)));
   if (PrimChecks.math.not(SelfManager.self().canMove(1))) {
     SelfManager.self().right(180);
   }
 }))
-ProcedurePrims.defineReporter("nest-scent-at-angle", (function(angle) {
+ProcedurePrims.defineReporter("nest-scent-at-angle", 3873, 3995, (function(angle) {
   let p = SelfManager.self().patchRightAndAhead(angle, 1); ProcedurePrims.stack().currentContext().registerStringRunVar("P", p);
   if (Prims.equality(p, Nobody)) {
     return PrimChecks.procedure.report(0);
   }
   return PrimChecks.procedure.report(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p), function() { return SelfManager.self().getPatchVariable("nest-scent"); }));
 }))
-ProcedurePrims.defineReporter("chemical-scent-at-angle", (function(angle) {
+ProcedurePrims.defineReporter("chemical-scent-at-angle", 4010, 4134, (function(angle) {
   let p = SelfManager.self().patchRightAndAhead(angle, 1); ProcedurePrims.stack().currentContext().registerStringRunVar("P", p);
   if (Prims.equality(p, Nobody)) {
     return PrimChecks.procedure.report(0);

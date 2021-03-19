@@ -112,7 +112,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function(setupHtask) {
+ProcedurePrims.defineCommand("setup", 1265, 1703, (function(setupHtask) {
   world.clearAll();
   world.observer.setGlobal("default-color", 105);
   world.observer.setGlobal("fired-color", 15);
@@ -131,16 +131,16 @@ ProcedurePrims.defineCommand("setup", (function(setupHtask) {
   world.observer.setGlobal("lifetimes", []);
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-uniform", (function(initial) {
+ProcedurePrims.defineCommand("setup-uniform", 1787, 1834, (function(initial) {
   var R = ProcedurePrims.callCommand("setup", Tasks.reporterTask(function() { return initial; }, "[ -> initial ]")); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("setup-random", (function() {
+ProcedurePrims.defineCommand("setup-random", 1899, 1936, (function() {
   var R = ProcedurePrims.callCommand("setup", Tasks.reporterTask(function() { return RandomPrims.randomLong(4); }, "[ -> random 4 ]")); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("recolor", (function() {
+ProcedurePrims.defineCommand("recolor", 1996, 2046, (function() {
   SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(SelfManager.self().getPatchVariable("base-color"), SelfManager.self().getPatchVariable("n"), 0, 4));
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 2054, 2822, (function() {
   let drop = PrimChecks.procedure.callReporter("drop-patch"); ProcedurePrims.stack().currentContext().registerStringRunVar("DROP", drop);
   if (!Prims.equality(drop, Nobody)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, drop), function() {
@@ -167,7 +167,7 @@ ProcedurePrims.defineCommand("go", (function() {
     world.ticker.tick();
   }
 }))
-ProcedurePrims.defineCommand("explore", (function() {
+ProcedurePrims.defineCommand("explore", 2830, 3367, (function() {
   if (MousePrims.isInside()) {
     let p = world.getPatchAt(MousePrims.getX(), MousePrims.getY()); ProcedurePrims.stack().currentContext().registerStringRunVar("P", p);
     world.observer.setGlobal("selected-patch", p);
@@ -196,7 +196,7 @@ ProcedurePrims.defineCommand("explore", (function() {
     }
   }
 }))
-ProcedurePrims.defineReporter("stabilize", (function(animate_Q) {
+ProcedurePrims.defineReporter("stabilize", 3485, 4862, (function(animate_Q) {
   let activeHpatches = PrimChecks.agentset.with(world.patches(), function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); }); ProcedurePrims.stack().currentContext().registerStringRunVar("ACTIVE-PATCHES", activeHpatches);
   let iters = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("ITERS", iters);
   let avalancheHpatches = new PatchSet([], world); ProcedurePrims.stack().currentContext().registerStringRunVar("AVALANCHE-PATCHES", avalancheHpatches);
@@ -226,11 +226,11 @@ ProcedurePrims.defineReporter("stabilize", (function(animate_Q) {
   }
   return PrimChecks.procedure.report(ListPrims.list(avalancheHpatches, iters));
 }))
-ProcedurePrims.defineCommand("update-n", (function(howHmuch) {
+ProcedurePrims.defineCommand("update-n", 4951, 5023, (function(howHmuch) {
   SelfManager.self().setPatchVariable("n", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("n")), PrimChecks.validator.checkArg('+', 1, howHmuch)));
   world.observer.setGlobal("total", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total")), PrimChecks.validator.checkArg('+', 1, howHmuch)));
 }))
-ProcedurePrims.defineReporter("drop-patch", (function() {
+ProcedurePrims.defineReporter("drop-patch", 5038, 5282, (function() {
   if (Prims.equality(world.observer.getGlobal("drop-location"), "center")) {
     return PrimChecks.procedure.report(world.getPatchAt(0, 0));
   }
@@ -245,10 +245,10 @@ ProcedurePrims.defineReporter("drop-patch", (function() {
   }
   return PrimChecks.procedure.report(Nobody);
 }))
-ProcedurePrims.defineCommand("push-n", (function() {
+ProcedurePrims.defineCommand("push-n", 5316, 5371, (function() {
   SelfManager.self().setPatchVariable("n-stack", PrimChecks.list.fput(PrimChecks.validator.checkArg('FPUT', 8191, SelfManager.self().getPatchVariable("n")), PrimChecks.validator.checkArg('FPUT', 8, SelfManager.self().getPatchVariable("n-stack"))));
 }))
-ProcedurePrims.defineCommand("pop-n", (function() {
+ProcedurePrims.defineCommand("pop-n", 5408, 5561, (function() {
   var R = ProcedurePrims.callCommand("update-n", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, SelfManager.self().getPatchVariable("n-stack")))), PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("n")))); if (R === DeathInterrupt) { return R; }
   SelfManager.self().setPatchVariable("n-stack", PrimChecks.list.butLast('but-last', PrimChecks.validator.checkArg('BUT-LAST', 12, SelfManager.self().getPatchVariable("n-stack"))));
 }))

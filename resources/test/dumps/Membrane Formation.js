@@ -62,7 +62,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 278, 1282, (function() {
   world.clearAll();
   world.observer.setGlobal("lipid-length", 2);
   world.observer.setGlobal("interaction-distance", 4);
@@ -82,7 +82,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1290, 1402, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.callCommand("interact-with-neighbor"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("repel-too-close-neighbor"); if (R === DeathInterrupt) { return R; }
@@ -90,7 +90,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("interact-with-neighbor", (function() {
+ProcedurePrims.defineCommand("interact-with-neighbor", 1467, 1759, (function() {
   let near = PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, PrimChecks.agentset.otherWith(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")), function() { return PrimChecks.math.not(LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself())); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("NEAR", near);
   if (!Prims.equality(near, Nobody)) {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, near));
@@ -102,14 +102,14 @@ ProcedurePrims.defineCommand("interact-with-neighbor", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("repel-too-close-neighbor", (function() {
+ProcedurePrims.defineCommand("repel-too-close-neighbor", 1767, 1997, (function() {
   let tooHnear = PrimChecks.list.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("too-close-distance")))); ProcedurePrims.stack().currentContext().registerStringRunVar("TOO-NEAR", tooHnear);
   if (!Prims.equality(tooHnear, Nobody)) {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, tooHnear));
     SelfManager.self().fd(world.observer.getGlobal("too-close-force"));
   }
 }))
-ProcedurePrims.defineCommand("interact-with-partner", (function() {
+ProcedurePrims.defineCommand("interact-with-partner", 2005, 2250, (function() {
   let partner = PrimChecks.list.oneOf(LinkPrims.linkNeighbors("LINKS")); ProcedurePrims.stack().currentContext().registerStringRunVar("PARTNER", partner);
   if (!Prims.equality(partner, Nobody)) {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, partner));

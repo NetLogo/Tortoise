@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 53, 439, (function() {
   world.observer.setGlobal("hsb-as-rgb", ColorModel.hsbToRGB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
   world.observer.setGlobal("hsb-color", ColorModel.nearestColorNumberOfHSB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", -1, 1)), function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-as-rgb")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -61,10 +61,10 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", 1, -1)), function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("rgb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   notImplemented('display', undefined)();
 }))
-ProcedurePrims.defineReporter("quadrant", (function(x, y) {
+ProcedurePrims.defineReporter("quadrant", 454, 542, (function(x, y) {
   return PrimChecks.procedure.report(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.procedure.callReporter("patch-quadrant"), ListPrims.list(x, y)); }));
 }))
-ProcedurePrims.defineReporter("patch-quadrant", (function() {
+ProcedurePrims.defineReporter("patch-quadrant", 557, 712, (function() {
   return PrimChecks.procedure.report(ListPrims.list((Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1), (Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1)));
 }))
 world.observer.setGlobal("hue", 180);

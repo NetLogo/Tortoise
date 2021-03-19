@@ -58,7 +58,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 23, 141, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
     SelfManager.self().setPatchVariable("heat", RandomPrims.randomLong(212));
@@ -66,7 +66,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 149, 313, (function() {
   world.topology.diffuse("heat", 1, false)
   var R = ProcedurePrims.ask(world.patches(), function() {
     SelfManager.self().setPatchVariable("heat", PrimChecks.math.mod(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("heat")), 5), 212));
@@ -74,6 +74,6 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineReporter("average-heat", (function() {
+ProcedurePrims.defineReporter("average-heat", 328, 373, (function() {
   return PrimChecks.procedure.report(PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.patches(), function() { return SelfManager.self().getPatchVariable("heat"); }))));
 }))

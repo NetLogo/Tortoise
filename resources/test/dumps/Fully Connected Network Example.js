@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 3, 207, (function() {
   world.clearAll();
   world.turtleManager.createTurtles(world.observer.getGlobal("num-nodes"), "");
   LayoutManager.layoutCircle(world.turtles(), PrimChecks.math.minus(PrimChecks.math.div(world.topology.width, 2), 1));

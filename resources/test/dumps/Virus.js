@@ -75,7 +75,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 765, 874, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-constants"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-turtles"); if (R === DeathInterrupt) { return R; }
@@ -83,7 +83,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.callCommand("update-display"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-turtles", (function() {
+ProcedurePrims.defineCommand("setup-turtles", 984, 1244, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-people"), ""), function() {
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
     PrimChecks.turtle.setVariable("age", PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("lifespan"))));
@@ -94,27 +94,27 @@ ProcedurePrims.defineCommand("setup-turtles", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(10, world.turtles())), function() { var R = ProcedurePrims.callCommand("get-sick"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("get-sick", (function() {
+ProcedurePrims.defineCommand("get-sick", 1252, 1325, (function() {
   PrimChecks.turtle.setVariable("sick?", true);
   PrimChecks.turtle.setVariable("remaining-immunity", 0);
 }))
-ProcedurePrims.defineCommand("get-healthy", (function() {
+ProcedurePrims.defineCommand("get-healthy", 1333, 1428, (function() {
   PrimChecks.turtle.setVariable("sick?", false);
   PrimChecks.turtle.setVariable("remaining-immunity", 0);
   PrimChecks.turtle.setVariable("sick-time", 0);
 }))
-ProcedurePrims.defineCommand("become-immune", (function() {
+ProcedurePrims.defineCommand("become-immune", 1436, 1549, (function() {
   PrimChecks.turtle.setVariable("sick?", false);
   PrimChecks.turtle.setVariable("sick-time", 0);
   PrimChecks.turtle.setVariable("remaining-immunity", world.observer.getGlobal("immunity-duration"));
 }))
-ProcedurePrims.defineCommand("setup-constants", (function() {
+ProcedurePrims.defineCommand("setup-constants", 1603, 1776, (function() {
   world.observer.setGlobal("lifespan", PrimChecks.math.mult(50, 52));
   world.observer.setGlobal("carrying-capacity", 300);
   world.observer.setGlobal("chance-reproduce", 1);
   world.observer.setGlobal("immunity-duration", 52);
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1784, 1954, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.callCommand("get-older"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
@@ -132,13 +132,13 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("update-display"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("update-global-variables", (function() {
+ProcedurePrims.defineCommand("update-global-variables", 1962, 2157, (function() {
   if (PrimChecks.agentset.optimizeCount(world.turtles(), 0, (a, b) => a > b)) {
     world.observer.setGlobal("%infected", PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.agentset.countWith(world.turtles(), function() { return PrimChecks.turtle.getVariable("sick?"); }), PrimChecks.agentset.count(world.turtles())), 100));
     world.observer.setGlobal("%immune", PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.agentset.countWith(world.turtles(), function() { return PrimChecks.procedure.callReporter("immune?"); }), PrimChecks.agentset.count(world.turtles())), 100));
   }
 }))
-ProcedurePrims.defineCommand("update-display", (function() {
+ProcedurePrims.defineCommand("update-display", 2165, 2341, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (!Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("turtle-shape"))) {
       SelfManager.self().setVariable("shape", world.observer.getGlobal("turtle-shape"));
@@ -146,7 +146,7 @@ ProcedurePrims.defineCommand("update-display", (function() {
     SelfManager.self().setVariable("color", (Prims.ifElseValueBooleanCheck(PrimChecks.turtle.getVariable("sick?")) ? 15 : (Prims.ifElseValueBooleanCheck(PrimChecks.procedure.callReporter("immune?")) ? 5 : 55)));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("get-older", (function() {
+ProcedurePrims.defineCommand("get-older", 2391, 2675, (function() {
   PrimChecks.turtle.setVariable("age", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("age")), 1));
   if (Prims.gt(PrimChecks.turtle.getVariable("age"), world.observer.getGlobal("lifespan"))) {
     return SelfManager.self().die();
@@ -158,12 +158,12 @@ ProcedurePrims.defineCommand("get-older", (function() {
     PrimChecks.turtle.setVariable("sick-time", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("sick-time")), 1));
   }
 }))
-ProcedurePrims.defineCommand("move", (function() {
+ProcedurePrims.defineCommand("move", 2716, 2780, (function() {
   SelfManager.self().right(RandomPrims.randomLong(100));
   SelfManager.self().right(-(RandomPrims.randomLong(100)));
   SelfManager.self()._optimalFdOne();
 }))
-ProcedurePrims.defineCommand("infect", (function() {
+ProcedurePrims.defineCommand("infect", 2890, 3041, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.otherWith(SelfManager.self().turtlesHere(), function() {
     return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("sick?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.procedure.callReporter("immune?"))));
   })), function() {
@@ -172,7 +172,7 @@ ProcedurePrims.defineCommand("infect", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("recover-or-die", (function() {
+ProcedurePrims.defineCommand("recover-or-die", 3150, 3409, (function() {
   if (Prims.gt(PrimChecks.turtle.getVariable("sick-time"), world.observer.getGlobal("duration"))) {
     if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("chance-recover"))) {
       var R = ProcedurePrims.callCommand("become-immune"); if (R === DeathInterrupt) { return R; }
@@ -182,7 +182,7 @@ ProcedurePrims.defineCommand("recover-or-die", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("reproduce", (function() {
+ProcedurePrims.defineCommand("reproduce", 3504, 3668, (function() {
   if ((Prims.lt(PrimChecks.agentset.count(world.turtles()), world.observer.getGlobal("carrying-capacity")) && Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("chance-reproduce")))) {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       PrimChecks.turtle.setVariable("age", 1);
@@ -192,10 +192,10 @@ ProcedurePrims.defineCommand("reproduce", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineReporter("immune?", (function() {
+ProcedurePrims.defineReporter("immune?", 3683, 3723, (function() {
   return PrimChecks.procedure.report(Prims.gt(PrimChecks.turtle.getVariable("remaining-immunity"), 0));
 }))
-ProcedurePrims.defineCommand("startup", (function() { var R = ProcedurePrims.callCommand("setup-constants"); if (R === DeathInterrupt) { return R; } }))
+ProcedurePrims.defineCommand("startup", 3731, 3837, (function() { var R = ProcedurePrims.callCommand("setup-constants"); if (R === DeathInterrupt) { return R; } }))
 world.observer.setGlobal("duration", 20);
 world.observer.setGlobal("chance-recover", 75);
 world.observer.setGlobal("infectiousness", 65);

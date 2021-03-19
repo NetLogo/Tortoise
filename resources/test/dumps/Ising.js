@@ -68,7 +68,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 264, 462, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
     if (Prims.lt(RandomPrims.randomLong(100), world.observer.getGlobal("probability-of-spin-up"))) {
@@ -82,14 +82,14 @@ ProcedurePrims.defineCommand("setup", (function() {
   world.observer.setGlobal("sum-of-spins", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.patches(), function() { return SelfManager.self().getPatchVariable("spin"); }))));
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 470, 759, (function() {
   for (let _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++){
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.patches())), function() { var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
   world.ticker.tickAdvance(1000);
   plotManager.updatePlots();
 }))
-ProcedurePrims.defineCommand("update", (function() {
+ProcedurePrims.defineCommand("update", 804, 1188, (function() {
   let ediff = PrimChecks.math.mult(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("spin"))), SelfManager.self()._optimalNSum4("spin")); ProcedurePrims.stack().currentContext().registerStringRunVar("EDIFF", ediff);
   if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(PrimChecks.math.randomFloat(1), PrimChecks.math.exp(PrimChecks.math.div(PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, ediff)), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("temperature")))))))) {
     SelfManager.self().setPatchVariable("spin", PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("spin"))));
@@ -97,7 +97,7 @@ ProcedurePrims.defineCommand("update", (function() {
     var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("recolor", (function() {
+ProcedurePrims.defineCommand("recolor", 1241, 1343, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("spin"), 1)) {
     SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(105, 2));
   }
@@ -105,7 +105,7 @@ ProcedurePrims.defineCommand("recolor", (function() {
     SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(105, 2));
   }
 }))
-ProcedurePrims.defineReporter("magnetization", (function() {
+ProcedurePrims.defineReporter("magnetization", 1414, 1466, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("sum-of-spins")), PrimChecks.agentset.count(world.patches())));
 }))
 world.observer.setGlobal("temperature", 2.27);

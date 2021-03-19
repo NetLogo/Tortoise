@@ -82,7 +82,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 116, 493, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-recyclers"), "RECYCLERS"), function() { SelfManager.self().setVariable("color", 105); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -98,7 +98,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 502, 912, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("RECYCLERS"), function() {
     var R = ProcedurePrims.callCommand("recycler-process-patch"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -126,7 +126,7 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("update-patch"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("move", (function() {
+ProcedurePrims.defineCommand("move", 920, 1403, (function() {
   let targetHpatch = PrimChecks.list.oneOf(SelfManager.self().getNeighbors()); ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET-PATCH", targetHpatch);
   if (world.observer.getGlobal("agents-seek-resources?")) {
     let candidateHmoves = PrimChecks.agentset.with(SelfManager.self().getNeighbors(), function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("CANDIDATE-MOVES", candidateHmoves);
@@ -144,7 +144,7 @@ ProcedurePrims.defineCommand("move", (function() {
   SelfManager.self().moveTo(targetHpatch);
   PrimChecks.turtle.setVariable("energy", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("energy")), 1));
 }))
-ProcedurePrims.defineCommand("recycler-process-patch", (function() {
+ProcedurePrims.defineCommand("recycler-process-patch", 1411, 1793, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
     if (Prims.lte(PrimChecks.turtle.getVariable("energy"), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("max-stored-energy")), 2))) {
       PrimChecks.turtle.setVariable("energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("energy")), 2));
@@ -162,7 +162,7 @@ ProcedurePrims.defineCommand("recycler-process-patch", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("wasteful-process-patch", (function() {
+ProcedurePrims.defineCommand("wasteful-process-patch", 1801, 2213, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
     if (Prims.lte(PrimChecks.turtle.getVariable("energy"), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("max-stored-energy")), 4))) {
       PrimChecks.turtle.setVariable("energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("energy")), 4));
@@ -178,7 +178,7 @@ ProcedurePrims.defineCommand("wasteful-process-patch", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("update-patch", (function() {
+ProcedurePrims.defineCommand("update-patch", 2221, 2394, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
     SelfManager.self().setPatchVariable("pcolor", 55);
   }
@@ -191,7 +191,7 @@ ProcedurePrims.defineCommand("update-patch", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("update-environment", (function() {
+ProcedurePrims.defineCommand("update-environment", 2402, 2850, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }), function() {
     if (Prims.lt(RandomPrims.randomLong(100), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("resource-regeneration")), 10))) {
       SelfManager.self().setPatchVariable("resource-type", "new");

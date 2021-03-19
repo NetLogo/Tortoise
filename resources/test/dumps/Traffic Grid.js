@@ -84,7 +84,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 2026, 2945, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-globals"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-patches"); if (R === DeathInterrupt) { return R; }
@@ -103,7 +103,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("set-car-speed"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-globals", (function() {
+ProcedurePrims.defineCommand("setup-globals", 3010, 3350, (function() {
   world.observer.setGlobal("current-light", Nobody);
   world.observer.setGlobal("phase", 0);
   world.observer.setGlobal("num-cars-stopped", 0);
@@ -111,7 +111,7 @@ ProcedurePrims.defineCommand("setup-globals", (function() {
   world.observer.setGlobal("grid-y-inc", PrimChecks.math.div(world.topology.height, PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("grid-size-y"))));
   world.observer.setGlobal("acceleration", 0.099);
 }))
-ProcedurePrims.defineCommand("setup-patches", (function() {
+ProcedurePrims.defineCommand("setup-patches", 3501, 4221, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     SelfManager.self().setPatchVariable("intersection?", false);
     SelfManager.self().setPatchVariable("auto?", false);
@@ -130,7 +130,7 @@ ProcedurePrims.defineCommand("setup-patches", (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("roads")), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("setup-intersections"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("setup-intersections", (function() {
+ProcedurePrims.defineCommand("setup-intersections", 4443, 4720, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("intersections")), function() {
     SelfManager.self().setPatchVariable("intersection?", true);
     SelfManager.self().setPatchVariable("green-light-up?", true);
@@ -141,7 +141,7 @@ ProcedurePrims.defineCommand("setup-intersections", (function() {
     var R = ProcedurePrims.callCommand("set-signal-colors"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("setup-cars", (function() {
+ProcedurePrims.defineCommand("setup-cars", 4830, 5295, (function() {
   PrimChecks.turtle.setVariable("speed", 0);
   PrimChecks.turtle.setVariable("wait-time", 0);
   var R = ProcedurePrims.callCommand("put-on-empty-road"); if (R === DeathInterrupt) { return R; }
@@ -168,12 +168,12 @@ ProcedurePrims.defineCommand("setup-cars", (function() {
     PrimChecks.turtle.setVariable("heading", 90);
   }
 }))
-ProcedurePrims.defineCommand("put-on-empty-road", (function() {
+ProcedurePrims.defineCommand("put-on-empty-road", 5378, 5472, (function() {
   SelfManager.self().moveTo(PrimChecks.agentset.oneOfWith(world.observer.getGlobal("roads"), function() {
     return PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(SelfManager.self())));
   }));
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 5579, 6043, (function() {
   var R = ProcedurePrims.callCommand("update-current"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("set-signals"); if (R === DeathInterrupt) { return R; }
   world.observer.setGlobal("num-cars-stopped", 0);
@@ -186,7 +186,7 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("next-phase"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("choose-current", (function() {
+ProcedurePrims.defineCommand("choose-current", 6051, 6320, (function() {
   if (MousePrims.isDown()) {
     let xHmouse = MousePrims.getX(); ProcedurePrims.stack().currentContext().registerStringRunVar("X-MOUSE", xHmouse);
     let yHmouse = MousePrims.getY(); ProcedurePrims.stack().currentContext().registerStringRunVar("Y-MOUSE", yHmouse);
@@ -199,18 +199,18 @@ ProcedurePrims.defineCommand("choose-current", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("make-current", (function(light) {
+ProcedurePrims.defineCommand("make-current", 6388, 6528, (function(light) {
   world.observer.setGlobal("current-light", light);
   world.observer.setGlobal("current-phase", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.observer.getGlobal("current-light")), function() { return SelfManager.self().getPatchVariable("my-phase"); }));
   world.observer.setGlobal("current-auto?", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.observer.getGlobal("current-light")), function() { return SelfManager.self().getPatchVariable("auto?"); }));
 }))
-ProcedurePrims.defineCommand("update-current", (function() {
+ProcedurePrims.defineCommand("update-current", 6582, 6682, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("current-light")), function() {
     SelfManager.self().setPatchVariable("my-phase", world.observer.getGlobal("current-phase"));
     SelfManager.self().setPatchVariable("auto?", world.observer.getGlobal("current-auto?"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("label-current", (function() {
+ProcedurePrims.defineCommand("label-current", 6717, 6849, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("current-light")), function() {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorthWest()), function() {
       SelfManager.self().setPatchVariable("plabel-color", 0);
@@ -218,12 +218,12 @@ ProcedurePrims.defineCommand("label-current", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("unlabel-current", (function() {
+ProcedurePrims.defineCommand("unlabel-current", 6919, 7017, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("current-light")), function() {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorthWest()), function() { SelfManager.self().setPatchVariable("plabel", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("set-signals", (function() {
+ProcedurePrims.defineCommand("set-signals", 7110, 7286, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, world.observer.getGlobal("intersections")), function() {
     return (PrimChecks.validator.checkArg('AND', 2, SelfManager.self().getPatchVariable("auto?")) && Prims.equality(world.observer.getGlobal("phase"), PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("my-phase")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("ticks-per-cycle"))), 100))));
   }), function() {
@@ -231,7 +231,7 @@ ProcedurePrims.defineCommand("set-signals", (function() {
     var R = ProcedurePrims.callCommand("set-signal-colors"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("set-signal-colors", (function() {
+ProcedurePrims.defineCommand("set-signal-colors", 7459, 7854, (function() {
   if (world.observer.getGlobal("power?")) {
     if (SelfManager.self().getPatchVariable("green-light-up?")) {
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -247,7 +247,7 @@ ProcedurePrims.defineCommand("set-signal-colors", (function() {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorth()), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineCommand("set-car-speed", (function() {
+ProcedurePrims.defineCommand("set-car-speed", 8006, 8153, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
     PrimChecks.turtle.setVariable("speed", 0);
   }
@@ -260,7 +260,7 @@ ProcedurePrims.defineCommand("set-car-speed", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("set-speed", (function(deltaHx, deltaHy) {
+ProcedurePrims.defineCommand("set-speed", 8322, 8792, (function(deltaHx, deltaHy) {
   let turtlesHahead = SelfManager.self().turtlesAt(deltaHx, deltaHy); ProcedurePrims.stack().currentContext().registerStringRunVar("TURTLES-AHEAD", turtlesHahead);
   if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, turtlesHahead))) {
     if (PrimChecks.agentset.anyWith(turtlesHahead, function() {
@@ -277,7 +277,7 @@ ProcedurePrims.defineCommand("set-speed", (function(deltaHx, deltaHy) {
     var R = ProcedurePrims.callCommand("speed-up"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("slow-down", (function() {
+ProcedurePrims.defineCommand("slow-down", 8836, 8958, (function() {
   if (Prims.lte(PrimChecks.turtle.getVariable("speed"), 0)) {
     PrimChecks.turtle.setVariable("speed", 0);
   }
@@ -285,7 +285,7 @@ ProcedurePrims.defineCommand("slow-down", (function() {
     PrimChecks.turtle.setVariable("speed", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("acceleration"))));
   }
 }))
-ProcedurePrims.defineCommand("speed-up", (function() {
+ProcedurePrims.defineCommand("speed-up", 9002, 9126, (function() {
   if (Prims.gt(PrimChecks.turtle.getVariable("speed"), world.observer.getGlobal("speed-limit"))) {
     PrimChecks.turtle.setVariable("speed", world.observer.getGlobal("speed-limit"));
   }
@@ -293,7 +293,7 @@ ProcedurePrims.defineCommand("speed-up", (function() {
     PrimChecks.turtle.setVariable("speed", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("acceleration"))));
   }
 }))
-ProcedurePrims.defineCommand("set-car-color", (function() {
+ProcedurePrims.defineCommand("set-car-color", 9225, 9341, (function() {
   if (Prims.lt(PrimChecks.turtle.getVariable("speed"), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("speed-limit")), 2))) {
     SelfManager.self().setVariable("color", 105);
   }
@@ -301,7 +301,7 @@ ProcedurePrims.defineCommand("set-car-color", (function() {
     SelfManager.self().setVariable("color", PrimChecks.math.minus(85, 2));
   }
 }))
-ProcedurePrims.defineCommand("record-data", (function() {
+ProcedurePrims.defineCommand("record-data", 9466, 9626, (function() {
   if (Prims.equality(PrimChecks.turtle.getVariable("speed"), 0)) {
     world.observer.setGlobal("num-cars-stopped", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("num-cars-stopped")), 1));
     PrimChecks.turtle.setVariable("wait-time", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("wait-time")), 1));
@@ -310,13 +310,13 @@ ProcedurePrims.defineCommand("record-data", (function() {
     PrimChecks.turtle.setVariable("wait-time", 0);
   }
 }))
-ProcedurePrims.defineCommand("change-current", (function() {
+ProcedurePrims.defineCommand("change-current", 9634, 9745, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("current-light")), function() {
     SelfManager.self().setPatchVariable("green-light-up?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getPatchVariable("green-light-up?"))));
     var R = ProcedurePrims.callCommand("set-signal-colors"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("next-phase", (function() {
+ProcedurePrims.defineCommand("next-phase", 9799, 9954, (function() {
   world.observer.setGlobal("phase", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("phase")), 1));
   if (Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("phase")), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("ticks-per-cycle"))), 0)) {
     world.observer.setGlobal("phase", 0);

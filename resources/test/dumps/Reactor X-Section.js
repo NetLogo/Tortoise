@@ -65,7 +65,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 315, 543, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.callCommand("setup-globals"); if (R === DeathInterrupt) { return R; }
@@ -79,7 +79,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.callCommand("setup-control-rods"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-globals", (function() {
+ProcedurePrims.defineCommand("setup-globals", 551, 769, (function() {
   world.observer.setGlobal("power", 0);
   world.observer.setGlobal("old-power", 0);
   world.observer.setGlobal("old-power-2", 0);
@@ -89,18 +89,18 @@ ProcedurePrims.defineCommand("setup-globals", (function() {
   world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
   world.observer.setGlobal("n-rods", PrimChecks.math.minus(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("reactor-size")), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("rod-spacing")), 1)), 1));
 }))
-ProcedurePrims.defineCommand("build-reactor", (function() {
+ProcedurePrims.defineCommand("build-reactor", 777, 907, (function() {
   if (((Prims.equality(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r"))) || (Prims.equality(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r"))))) {
     SelfManager.self().setPatchVariable("pcolor", 5);
     SelfManager.self().setPatchVariable("rod?", false);
   }
 }))
-ProcedurePrims.defineCommand("setup-nuclear-fuel", (function() {
+ProcedurePrims.defineCommand("setup-nuclear-fuel", 915, 1020, (function() {
   if (((Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0) && Prims.lt(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r"))) && Prims.lt(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r")))) {
     SelfManager.self().setPatchVariable("pcolor", 15);
   }
 }))
-ProcedurePrims.defineCommand("setup-control-rods", (function() {
+ProcedurePrims.defineCommand("setup-control-rods", 1028, 2107, (function() {
   if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
     world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
   }
@@ -141,7 +141,7 @@ ProcedurePrims.defineCommand("setup-control-rods", (function() {
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("build-reactor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("place-control-rods"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("auto-react", (function() {
+ProcedurePrims.defineCommand("auto-react", 2217, 2565, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtles()))) {
     return PrimChecks.procedure.stop();
   }
@@ -163,7 +163,7 @@ ProcedurePrims.defineCommand("auto-react", (function() {
   }
   var R = ProcedurePrims.callCommand("react"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("manu-react", (function() {
+ProcedurePrims.defineCommand("manu-react", 2590, 2728, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtles()))) {
     return PrimChecks.procedure.stop();
   }
@@ -173,7 +173,7 @@ ProcedurePrims.defineCommand("manu-react", (function() {
   world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
   var R = ProcedurePrims.callCommand("react"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("react", (function() {
+ProcedurePrims.defineCommand("react", 2736, 3122, (function() {
   var R = ProcedurePrims.callCommand("place-control-rods"); if (R === DeathInterrupt) { return R; }
   world.observer.setGlobal("power", 0);
   var R = ProcedurePrims.ask(world.turtles(), function() {
@@ -193,7 +193,7 @@ ProcedurePrims.defineCommand("react", (function() {
   world.observer.setGlobal("old-power", world.observer.getGlobal("power"));
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("release-neutron", (function() {
+ProcedurePrims.defineCommand("release-neutron", 3130, 3406, (function() {
   let whom = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("WHOM", whom);
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
     SelfManager.self().setVariable("color", 45);
@@ -208,7 +208,7 @@ ProcedurePrims.defineCommand("release-neutron", (function() {
     var R = ProcedurePrims.callCommand("release-neutron"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("place-control-rods", (function() {
+ProcedurePrims.defineCommand("place-control-rods", 3414, 3554, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return SelfManager.self().getPatchVariable("rod?"); }), function() {
     if (Prims.gte(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("r")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("rod-length"))))) {
       SelfManager.self().setPatchVariable("pcolor", 5);
@@ -218,7 +218,7 @@ ProcedurePrims.defineCommand("place-control-rods", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("fission", (function() {
+ProcedurePrims.defineCommand("fission", 3562, 3799, (function() {
   SelfManager.self().right(RandomPrims.randomLong(360));
   if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
     if (world.observer.getGlobal("spend-fuel?")) {

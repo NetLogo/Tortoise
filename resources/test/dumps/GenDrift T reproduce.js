@@ -107,7 +107,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 3, 278, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number"), ""), function() {
     SelfManager.self().setVariable("color", PrimChecks.math.plus(5, PrimChecks.math.mult(PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("colors"))), 10)));
@@ -118,7 +118,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 286, 425, (function() {
   if (Prims.equality(PrimChecks.list.variance(PrimChecks.validator.checkArg('VARIANCE', 8, PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable("color"); }))), 0)) {
     return PrimChecks.procedure.stop();
   }
@@ -131,12 +131,12 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("death"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("birth", (function() {
+ProcedurePrims.defineCommand("birth", 473, 525, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(RandomPrims.randomLong(5), ""), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("death", (function() {
+ProcedurePrims.defineCommand("death", 660, 771, (function() {
   let totalHturtles = PrimChecks.agentset.count(world.turtles()); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL-TURTLES", totalHturtles);
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (Prims.gt(PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, totalHturtles)), world.observer.getGlobal("number"))) {

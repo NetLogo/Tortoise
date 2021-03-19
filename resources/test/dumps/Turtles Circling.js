@@ -62,11 +62,11 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 3, 52, (function() {
   var R = ProcedurePrims.callCommand("setup-circle", world.observer.getGlobal("radius"), world.observer.getGlobal("number")); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-circle", (function(r, n) {
+ProcedurePrims.defineCommand("setup-circle", 60, 268, (function(r, n) {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(n, ""), function() {
@@ -75,28 +75,28 @@ ProcedurePrims.defineCommand("setup-circle", (function(r, n) {
     SelfManager.self().right(90);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("all-circle", (function() {
+ProcedurePrims.defineCommand("all-circle", 276, 313, (function() {
   var R = ProcedurePrims.callCommand("circle", world.observer.getGlobal("radius")); if (R === DeathInterrupt) { return R; }
   notImplemented('display', undefined)();
 }))
-ProcedurePrims.defineCommand("circle", (function(r) {
+ProcedurePrims.defineCommand("circle", 321, 398, (function(r) {
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("move-along-circle", r); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   if (world.observer.getGlobal("plot?")) {
     plotManager.updatePlots();
   }
 }))
-ProcedurePrims.defineCommand("move-along-circle", (function(r) {
+ProcedurePrims.defineCommand("move-along-circle", 406, 479, (function(r) {
   SelfManager.self().fd(PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.math.mult(3.141592653589793, PrimChecks.validator.checkArg('*', 1, r)), 180), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("speed")), 50)));
   SelfManager.self().right(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("speed")), 50));
 }))
-ProcedurePrims.defineCommand("zero-circle", (function() {
+ProcedurePrims.defineCommand("zero-circle", 487, 572, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.turtleManager.getTurtle(0)), function() {
     SelfManager.self().penManager.lowerPen();
     var R = ProcedurePrims.callCommand("move-along-circle", world.observer.getGlobal("radius")); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   notImplemented('display', undefined)();
 }))
-ProcedurePrims.defineCommand("draw-circle", (function() {
+ProcedurePrims.defineCommand("draw-circle", 580, 732, (function() {
   world.clearDrawing();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
     SelfManager.self().setVariable("color", PrimChecks.math.minus(5, 3));

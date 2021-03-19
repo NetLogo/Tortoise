@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 1012, 1337, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("rows")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("columns"))), "SPAWNERS"), function() {
     SelfManager.self().setVariable("num-colors", PrimChecks.math.plus(RandomPrims.randomLong(14), 1));
@@ -62,7 +62,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   world.observer.setGlobal("first-parent", Nobody);
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("arrange-spawners", (function() {
+ProcedurePrims.defineCommand("arrange-spawners", 1345, 1719, (function() {
   let i = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("I", i);
   while (Prims.lt(i, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("rows")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("columns"))))) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.turtleManager.getTurtle(i)), function() {
@@ -73,7 +73,7 @@ ProcedurePrims.defineCommand("arrange-spawners", (function() {
     i = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, i), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("I", i);
   }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1727, 2436, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, "PETALS"), function() {
       SelfManager.self().setVariable("parent", SelfManager.myself());
@@ -98,7 +98,7 @@ ProcedurePrims.defineCommand("go", (function() {
     var R = ProcedurePrims.callCommand("handle-mouse-down"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("repopulate-from-two", (function(parent1, parent2) {
+ProcedurePrims.defineCommand("repopulate-from-two", 2444, 3316, (function(parent1, parent2) {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PETALS"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() {
     if (world.observer.getGlobal("controlled-mutation?")) {
@@ -113,7 +113,7 @@ ProcedurePrims.defineCommand("repopulate-from-two", (function(parent1, parent2) 
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("repopulate-from-one", (function(parent1) {
+ProcedurePrims.defineCommand("repopulate-from-one", 3324, 3921, (function(parent1) {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PETALS"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() {
     if (world.observer.getGlobal("controlled-mutation?")) {
@@ -128,7 +128,7 @@ ProcedurePrims.defineCommand("repopulate-from-one", (function(parent1) {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("handle-mouse-down", (function() {
+ProcedurePrims.defineCommand("handle-mouse-down", 3929, 4824, (function() {
   let newHparent = PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return SelfManager.self().distanceXY(MousePrims.getX(), MousePrims.getY()); }); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PARENT", newHparent);
   if (world.observer.getGlobal("asexual?")) {
     var R = ProcedurePrims.callCommand("repopulate-from-one", newHparent); if (R === DeathInterrupt) { return R; }

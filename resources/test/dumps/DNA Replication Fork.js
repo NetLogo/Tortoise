@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 7160, 9219, (function() {
   world.clearAll();
   world.observer.setGlobal("polymerase-color-0", [150, 150, 150, 150]);
   world.observer.setGlobal("polymerase-color-1", [75, 200, 75, 200]);
@@ -110,7 +110,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.callCommand("show-instruction", 1); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("initialize-length-of-time", (function() {
+ProcedurePrims.defineCommand("initialize-length-of-time", 9227, 9567, (function() {
   world.observer.setGlobal("using-time-limit", !Prims.equality(world.observer.getGlobal("time-limit"), "none"));
   if (Prims.equality(world.observer.getGlobal("time-limit"), "2 minutes")) {
     world.observer.setGlobal("length-of-simulation", 120);
@@ -121,7 +121,7 @@ ProcedurePrims.defineCommand("initialize-length-of-time", (function() {
     world.observer.setGlobal("time-remaining", 300);
   }
 }))
-ProcedurePrims.defineCommand("make-a-nucleoside", (function() {
+ProcedurePrims.defineCommand("make-a-nucleoside", 9575, 9994, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "NUCLEOSIDES"), function() {
     SelfManager.self().setVariable("value", PrimChecks.procedure.callReporter("random-base-letter"));
     SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("nucleoside-tri-") + workspace.dump(SelfManager.self().getVariable("value"))));
@@ -130,7 +130,7 @@ ProcedurePrims.defineCommand("make-a-nucleoside", (function() {
     PrimChecks.turtle.setXY(RandomPrims.randomInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomInRange(world.topology.minPycor, world.topology.maxPycor));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("make-polymerases", (function() {
+ProcedurePrims.defineCommand("make-polymerases", 10026, 10475, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "POLYMERASES"), function() {
     PrimChecks.turtle.setVariable("heading", PrimChecks.math.random(PrimChecks.math.plus(PrimChecks.math.minus(180, RandomPrims.randomLong(20)), RandomPrims.randomLong(20))));
     PrimChecks.turtle.setXY(PrimChecks.math.plus(PrimChecks.math.div(PrimChecks.math.minus(world.topology.maxPxcor, world.topology.minPxcor), 2), 3), PrimChecks.math.minus(world.topology.maxPycor, 1));
@@ -146,7 +146,7 @@ ProcedurePrims.defineCommand("make-polymerases", (function() {
     SelfManager.self().setVariable("color", world.observer.getGlobal("polymerase-color-0"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("make-a-helicase", (function() {
+ProcedurePrims.defineCommand("make-a-helicase", 10483, 10717, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "HELICASES"), function() {
     SelfManager.self().setVariable("shape", "helicase");
     SelfManager.self().setVariable("color", world.observer.getGlobal("helicase-color-0"));
@@ -156,7 +156,7 @@ ProcedurePrims.defineCommand("make-a-helicase", (function() {
     PrimChecks.turtle.setXY(PrimChecks.math.div(PrimChecks.math.minus(world.topology.maxPxcor, world.topology.minPxcor), 2), PrimChecks.math.minus(world.topology.maxPycor, 1));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("make-a-topoisomerase", (function() {
+ProcedurePrims.defineCommand("make-a-topoisomerase", 10725, 11196, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "TOPOISOMERASES"), function() {
     SelfManager.self().setVariable("shape", "topoisomerase");
     SelfManager.self().setVariable("locked?", false);
@@ -176,7 +176,7 @@ ProcedurePrims.defineCommand("make-a-topoisomerase", (function() {
     PrimChecks.turtle.setXY(PrimChecks.math.minus(PrimChecks.math.div(PrimChecks.math.minus(world.topology.maxPxcor, world.topology.minPxcor), 2), 3), PrimChecks.math.minus(world.topology.maxPycor, 1));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("make-and-attach-a-primase", (function() {
+ProcedurePrims.defineCommand("make-and-attach-a-primase", 11282, 11563, (function() {
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PRIMASES"));
     SelfManager.self().setVariable("shape", "primase");
@@ -192,7 +192,7 @@ ProcedurePrims.defineCommand("make-and-attach-a-primase", (function() {
     var R = ProcedurePrims.callCommand("attach-enzyme-tag", 100, 0, "primase"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("make-initial-dna-strip", (function() {
+ProcedurePrims.defineCommand("make-initial-dna-strip", 11571, 13381, (function() {
   let lastHnucleotideHtopHstrand = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("LAST-NUCLEOTIDE-TOP-STRAND", lastHnucleotideHtopHstrand);
   let lastHnucleotideHbottomHstrand = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("LAST-NUCLEOTIDE-BOTTOM-STRAND", lastHnucleotideHbottomHstrand);
   let placeHcounter = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("PLACE-COUNTER", placeHcounter);
@@ -250,7 +250,7 @@ ProcedurePrims.defineCommand("make-initial-dna-strip", (function() {
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("attach-nucleo-tag", (function(direction, displacement) {
+ProcedurePrims.defineCommand("attach-nucleo-tag", 13471, 13749, (function(direction, displacement) {
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     PrimChecks.turtle.setVariable("heading", direction);
     SelfManager.self().fd(displacement);
@@ -265,7 +265,7 @@ ProcedurePrims.defineCommand("attach-nucleo-tag", (function(direction, displacem
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("attach-enzyme-tag", (function(direction, displacement, labelHvalue) {
+ProcedurePrims.defineCommand("attach-enzyme-tag", 13823, 14137, (function(direction, displacement, labelHvalue) {
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     PrimChecks.turtle.setVariable("heading", direction);
     SelfManager.self().fd(displacement);
@@ -281,7 +281,7 @@ ProcedurePrims.defineCommand("attach-enzyme-tag", (function(direction, displacem
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 14461, 15852, (function() {
   if (((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("using-time-limit")) && Prims.gt(world.observer.getGlobal("time-remaining"), 0)) || (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("using-time-limit"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("cell-divided?")))))) {
     var R = ProcedurePrims.callCommand("check-timer"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("move-free-molecules"); if (R === DeathInterrupt) { return R; }
@@ -316,7 +316,7 @@ ProcedurePrims.defineCommand("go", (function() {
     world.observer.setGlobal("timer-message-shown?", true);
   }
 }))
-ProcedurePrims.defineCommand("check-timer", (function() {
+ProcedurePrims.defineCommand("check-timer", 15860, 16030, (function() {
   if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("simulation-started?")))) {
     world.observer.setGlobal("simulation-started?", true);
     workspace.timer.reset();
@@ -325,7 +325,7 @@ ProcedurePrims.defineCommand("check-timer", (function() {
     world.observer.setGlobal("time-remaining", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("length-of-simulation")), workspace.timer.elapsed()));
   }
 }))
-ProcedurePrims.defineCommand("visualize-agents", (function() {
+ProcedurePrims.defineCommand("visualize-agents", 16255, 17273, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("ENZYME-TAGS"), function() {
     SelfManager.self().setVariable("hidden?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("enzyme-labels?"))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -365,12 +365,12 @@ ProcedurePrims.defineCommand("visualize-agents", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("wind-initial-dna-into-bundle", (function() {
+ProcedurePrims.defineCommand("wind-initial-dna-into-bundle", 17612, 17685, (function() {
   for (let _index_17643_17649 = 0, _repeatcount_17643_17649 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_17643_17649 < _repeatcount_17643_17649; _index_17643_17649++){
     var R = ProcedurePrims.callCommand("wind-dna"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("unwind-dna", (function() {
+ProcedurePrims.defineCommand("unwind-dna", 17693, 18048, (function() {
   let woundHnucleotides = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
     return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getVariable("unwound?")));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("WOUND-NUCLEOTIDES", woundHnucleotides);
@@ -384,7 +384,7 @@ ProcedurePrims.defineCommand("unwind-dna", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineCommand("wind-dna", (function() {
+ProcedurePrims.defineCommand("wind-dna", 18056, 18469, (function() {
   let unwoundHnucleotides = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
     return ((PrimChecks.validator.checkArg('AND', 2, SelfManager.self().getVariable("unwound?")) && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-bottom")) && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-top"));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("UNWOUND-NUCLEOTIDES", unwoundHnucleotides);
@@ -397,7 +397,7 @@ ProcedurePrims.defineCommand("wind-dna", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineCommand("unzip-nucleotides", (function() {
+ProcedurePrims.defineCommand("unzip-nucleotides", 18808, 19992, (function() {
   let wereHanyHnucleotidesHunzippedHfurther_Q = false; ProcedurePrims.stack().currentContext().registerStringRunVar("WERE-ANY-NUCLEOTIDES-UNZIPPED-FURTHER?", wereHanyHnucleotidesHunzippedHfurther_Q);
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
     return (PrimChecks.validator.checkArg('AND', 2, PrimChecks.procedure.callReporter("next-nucleotide-unzipped-the-same?")) && Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0));
@@ -430,7 +430,7 @@ ProcedurePrims.defineCommand("unzip-nucleotides", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("separate-base-pairs", (function() {
+ProcedurePrims.defineCommand("separate-base-pairs", 20000, 20805, (function() {
   let lowestHplace = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("LOWEST-PLACE", lowestHplace);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("HELICASES"), function() {
     let thisHhelicase = SelfManager.self(); ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-HELICASE", thisHhelicase);
@@ -455,7 +455,7 @@ ProcedurePrims.defineCommand("separate-base-pairs", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("move-free-molecules", (function() {
+ProcedurePrims.defineCommand("move-free-molecules", 21198, 21510, (function() {
   let allHmolecules = PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), world.turtleManager.turtlesOfBreed("PHOSPHATES"), world.turtleManager.turtlesOfBreed("POLYMERASES"), world.turtleManager.turtlesOfBreed("HELICASES"), world.turtleManager.turtlesOfBreed("TOPOISOMERASES")); ProcedurePrims.stack().currentContext().registerStringRunVar("ALL-MOLECULES", allHmolecules);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, allHmolecules), function() {
     if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.procedure.callReporter("being-dragged-by-cursor?")))) {
@@ -463,14 +463,14 @@ ProcedurePrims.defineCommand("move-free-molecules", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("clean-up-free-phosphates", (function() {
+ProcedurePrims.defineCommand("clean-up-free-phosphates", 21518, 21705, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PHOSPHATES"), function() {
     if ((((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.maxPxcor)) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor))) {
       return SelfManager.self().die();
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("refill-or-remove-nucleosides", (function() {
+ProcedurePrims.defineCommand("refill-or-remove-nucleosides", 21713, 21935, (function() {
   if (Prims.lt(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("NUCLEOSIDES")), world.observer.getGlobal("free-nucleosides"))) {
     var R = ProcedurePrims.callCommand("make-a-nucleoside"); if (R === DeathInterrupt) { return R; }
   }
@@ -481,7 +481,7 @@ ProcedurePrims.defineCommand("refill-or-remove-nucleosides", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineCommand("lock-polymerase-to-one-nucleotide", (function() {
+ProcedurePrims.defineCommand("lock-polymerase-to-one-nucleotide", 22304, 25777, (function() {
   let targetHxcor = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET-XCOR", targetHxcor);
   let targetHycor = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET-YCOR", targetHycor);
   let targetHclass = ""; ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET-CLASS", targetHclass);
@@ -547,14 +547,14 @@ ProcedurePrims.defineCommand("lock-polymerase-to-one-nucleotide", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("break-off-phosphates-from-nucleoside", (function() {
+ProcedurePrims.defineCommand("break-off-phosphates-from-nucleoside", 25785, 25921, (function() {
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PHOSPHATES"));
     SelfManager.self().setVariable("shape", "phosphate-pair");
     PrimChecks.turtle.setVariable("heading", RandomPrims.randomLong(360));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("lock-topoisomerase-to-wound-primase", (function() {
+ProcedurePrims.defineCommand("lock-topoisomerase-to-wound-primase", 26290, 27218, (function() {
   let targetHxcor = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET-XCOR", targetHxcor);
   let targetHycor = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET-YCOR", targetHycor);
   let targetHclass = ""; ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET-CLASS", targetHclass);
@@ -586,7 +586,7 @@ ProcedurePrims.defineCommand("lock-topoisomerase-to-wound-primase", (function() 
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("calculate-mutations", (function() {
+ProcedurePrims.defineCommand("calculate-mutations", 27443, 28773, (function() {
   world.observer.setGlobal("total-deletion-mutations-top-strand", 0);
   world.observer.setGlobal("total-substitution-mutations-top-strand", 0);
   world.observer.setGlobal("total-correct-duplications-top-strand", 0);
@@ -622,7 +622,7 @@ ProcedurePrims.defineCommand("calculate-mutations", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("detect-mouse-selection-event", (function() {
+ProcedurePrims.defineCommand("detect-mouse-selection-event", 28998, 30666, (function() {
   let pHmouseHxcor = MousePrims.getX(); ProcedurePrims.stack().currentContext().registerStringRunVar("P-MOUSE-XCOR", pHmouseHxcor);
   let pHmouseHycor = MousePrims.getY(); ProcedurePrims.stack().currentContext().registerStringRunVar("P-MOUSE-YCOR", pHmouseHycor);
   let currentHmouseHdown_Q = MousePrims.isDown(); ProcedurePrims.stack().currentContext().registerStringRunVar("CURRENT-MOUSE-DOWN?", currentHmouseHdown_Q);
@@ -665,7 +665,7 @@ ProcedurePrims.defineCommand("detect-mouse-selection-event", (function() {
     world.observer.setGlobal("mouse-continuous-down?", false);
   }
 }))
-ProcedurePrims.defineReporter("random-base-letter", (function() {
+ProcedurePrims.defineReporter("random-base-letter", 30898, 31138, (function() {
   let r = RandomPrims.randomLong(4); ProcedurePrims.stack().currentContext().registerStringRunVar("R", r);
   let letterHtoHreport = ""; ProcedurePrims.stack().currentContext().registerStringRunVar("LETTER-TO-REPORT", letterHtoHreport);
   if (Prims.equality(r, 0)) {
@@ -682,7 +682,7 @@ ProcedurePrims.defineReporter("random-base-letter", (function() {
   }
   return PrimChecks.procedure.report(letterHtoHreport);
 }))
-ProcedurePrims.defineReporter("complementary-base", (function(base) {
+ProcedurePrims.defineReporter("complementary-base", 31153, 31391, (function(base) {
   let baseHtoHreport = ""; ProcedurePrims.stack().currentContext().registerStringRunVar("BASE-TO-REPORT", baseHtoHreport);
   if (Prims.equality(base, "A")) {
     baseHtoHreport = "T"; ProcedurePrims.stack().currentContext().updateStringRunVar("BASE-TO-REPORT", baseHtoHreport);
@@ -698,7 +698,7 @@ ProcedurePrims.defineReporter("complementary-base", (function(base) {
   }
   return PrimChecks.procedure.report(baseHtoHreport);
 }))
-ProcedurePrims.defineReporter("time-remaining-to-display", (function() {
+ProcedurePrims.defineReporter("time-remaining-to-display", 31406, 31493, (function() {
   if (world.observer.getGlobal("using-time-limit")) {
     return PrimChecks.procedure.report(world.observer.getGlobal("time-remaining"));
   }
@@ -706,7 +706,7 @@ ProcedurePrims.defineReporter("time-remaining-to-display", (function() {
     return PrimChecks.procedure.report("");
   }
 }))
-ProcedurePrims.defineReporter("is-this-cursor-dragging-anything?", (function() {
+ProcedurePrims.defineReporter("is-this-cursor-dragging-anything?", 31508, 31612, (function() {
   if (PrimChecks.agentset.any(LinkPrims.outLinkNeighbors("CURSOR-DRAGS"))) {
     return PrimChecks.procedure.report(true);
   }
@@ -714,7 +714,7 @@ ProcedurePrims.defineReporter("is-this-cursor-dragging-anything?", (function() {
     return PrimChecks.procedure.report(false);
   }
 }))
-ProcedurePrims.defineReporter("being-dragged-by-cursor?", (function() {
+ProcedurePrims.defineReporter("being-dragged-by-cursor?", 31627, 31713, (function() {
   if (PrimChecks.agentset.any(LinkPrims.myInLinks("CURSOR-DRAGS"))) {
     return PrimChecks.procedure.report(true);
   }
@@ -722,7 +722,7 @@ ProcedurePrims.defineReporter("being-dragged-by-cursor?", (function() {
     return PrimChecks.procedure.report(false);
   }
 }))
-ProcedurePrims.defineReporter("all-base-pairs-unwound?", (function() {
+ProcedurePrims.defineReporter("all-base-pairs-unwound?", 31728, 31826, (function() {
   if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
     return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getVariable("unwound?")));
   })) {
@@ -732,7 +732,7 @@ ProcedurePrims.defineReporter("all-base-pairs-unwound?", (function() {
     return PrimChecks.procedure.report(true);
   }
 }))
-ProcedurePrims.defineReporter("would-these-nucleotides-pair-correctly?", (function(nucleotideH1, nucleotideH2) {
+ProcedurePrims.defineReporter("would-these-nucleotides-pair-correctly?", 31841, 32028, (function(nucleotideH1, nucleotideH2) {
   if (Prims.equality(PrimChecks.procedure.callReporter("complementary-base", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, nucleotideH1), function() { return SelfManager.self().getVariable("value"); })), PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, nucleotideH2), function() { return SelfManager.self().getVariable("value"); }))))) {
     return PrimChecks.procedure.report(true);
   }
@@ -740,7 +740,7 @@ ProcedurePrims.defineReporter("would-these-nucleotides-pair-correctly?", (functi
     return PrimChecks.procedure.report(false);
   }
 }))
-ProcedurePrims.defineReporter("is-this-nucleotide-paired-correctly?", (function() {
+ProcedurePrims.defineReporter("is-this-nucleotide-paired-correctly?", 32043, 32594, (function() {
   let originalHnucleotide = SelfManager.self(); ProcedurePrims.stack().currentContext().registerStringRunVar("ORIGINAL-NUCLEOTIDE", originalHnucleotide);
   let thisHstair = PrimChecks.list.oneOf(LinkPrims.myLinks("NEW-STAIRS")); ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-STAIR", thisHstair);
   let thisHpairedHnucleotide = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-PAIRED-NUCLEOTIDE", thisHpairedHnucleotide);
@@ -760,7 +760,7 @@ ProcedurePrims.defineReporter("is-this-nucleotide-paired-correctly?", (function(
     return PrimChecks.procedure.report(false);
   }
 }))
-ProcedurePrims.defineReporter("next-nucleotide-unzipped-the-same?", (function() {
+ProcedurePrims.defineReporter("next-nucleotide-unzipped-the-same?", 32609, 33347, (function() {
   let myHunzippedHstage = SelfManager.self().getVariable("unzipped-stage"); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-UNZIPPED-STAGE", myHunzippedHstage);
   let myHplace = SelfManager.self().getVariable("place"); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-PLACE", myHplace);
   let myHclass = SelfManager.self().getVariable("class"); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-CLASS", myHclass);
@@ -781,7 +781,7 @@ ProcedurePrims.defineReporter("next-nucleotide-unzipped-the-same?", (function() 
   }
   return PrimChecks.procedure.report(canHcontinueHtoHunzip_Q);
 }))
-ProcedurePrims.defineReporter("are-previous-nucleotides-unzipped?", (function() {
+ProcedurePrims.defineReporter("are-previous-nucleotides-unzipped?", 33363, 33812, (function() {
   let myHplace = SelfManager.self().getVariable("place"); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-PLACE", myHplace);
   let previousHnucleotides = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), function() {
     return Prims.equality(SelfManager.self().getVariable("place"), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, myHplace), 1));
@@ -801,20 +801,20 @@ ProcedurePrims.defineReporter("are-previous-nucleotides-unzipped?", (function() 
   }
   return PrimChecks.procedure.report(valueHtoHreturn);
 }))
-ProcedurePrims.defineReporter("user-message-string-for-mutations", (function() {
+ProcedurePrims.defineReporter("user-message-string-for-mutations", 33827, 34503, (function() {
   let duplicationHrate = PrimChecks.math.precision(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-bottom-strand"))), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("final-time"))), 4); ProcedurePrims.stack().currentContext().registerStringRunVar("DUPLICATION-RATE", duplicationHrate);
   return PrimChecks.procedure.report((workspace.dump('') + workspace.dump("You had ") + workspace.dump(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-bottom-strand")))) + workspace.dump(" correct replications and ") + workspace.dump(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-substitution-mutations-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-substitution-mutations-bottom-strand")))) + workspace.dump(" substitutions and ") + workspace.dump(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-deletion-mutations-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-deletion-mutations-bottom-strand")))) + workspace.dump("  deletions.") + workspace.dump(" That replication process took you ") + workspace.dump(world.observer.getGlobal("final-time")) + workspace.dump(" seconds.  This was a rate of ") + workspace.dump(duplicationHrate) + workspace.dump(" correct nucleotides duplicated per second.")));
 }))
-ProcedurePrims.defineReporter("current-instruction-label", (function() {
+ProcedurePrims.defineReporter("current-instruction-label", 34724, 34879, (function() {
   return PrimChecks.procedure.report((Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : (workspace.dump('') + workspace.dump(world.observer.getGlobal("current-instruction")) + workspace.dump(" / ") + workspace.dump(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.procedure.callReporter("instructions")))))));
 }))
-ProcedurePrims.defineCommand("next-instruction", (function() {
+ProcedurePrims.defineCommand("next-instruction", 34887, 34947, (function() {
   var R = ProcedurePrims.callCommand("show-instruction", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("current-instruction")), 1)); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("previous-instruction", (function() {
+ProcedurePrims.defineCommand("previous-instruction", 34955, 35019, (function() {
   var R = ProcedurePrims.callCommand("show-instruction", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("current-instruction")), 1)); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("show-instruction", (function(i) {
+ProcedurePrims.defineCommand("show-instruction", 35027, 35213, (function(i) {
   if ((Prims.gte(i, 1) && Prims.lte(i, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.procedure.callReporter("instructions")))))) {
     world.observer.setGlobal("current-instruction", i);
     OutputPrims.clear();
@@ -824,7 +824,7 @@ ProcedurePrims.defineCommand("show-instruction", (function(i) {
     }, "output-print"), PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("current-instruction")), 1), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.procedure.callReporter("instructions")))); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineReporter("instructions", (function() {
+ProcedurePrims.defineReporter("instructions", 35228, 36589, (function() {
   return PrimChecks.procedure.report([["You will be simulating the process", "of DNA replication that occurs in", "every cell in every living creature", "as part of mitosis or meiosis."], ["To do this you will need to complete", "4 tasks in the shortest time you", "can. Each of these tasks requires", "you to drag a molecule using your", "mouse, from one location to another."], ["The 1st task will be to unwind a ", "twisted bundle of DNA by using your", "mouse to place a topoisomerase ", "enzyme on top of the primase enzyme."], ["The 2nd task will be to unzip the", "DNA ladder structure by dragging", "a helicase enzyme from the 1st ", "base pair to the last base pair."], ["The 3rd task will be to first drag", "a polymerase enzyme to an open", "nucleotide and then drag a floating", "nucleoside to the same location."], ["The last task is to simply repeat", "the previous task of connecting", "nucleosides to open nucleotides", "until as much of the DNA as", "possible has been replicated."], ["The simulation ends either when", "the timer runs out (if the timer?", "chooser is set to YES) or when you", "press the DIVIDE THE CELL button"]]);
 }))
 world.observer.setGlobal("dna-strand-length", 30);

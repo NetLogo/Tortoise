@@ -62,7 +62,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 775, 1674, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   BreedManager.setDefaultShape(world.links().getSpecialName(), "small-arrow-link")
@@ -89,7 +89,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.callCommand("update-visuals"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1755, 2470, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtle.setVariable("new-val", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     let recipients = LinkPrims.outLinkNeighbors("ACTIVE-LINKS"); ProcedurePrims.stack().currentContext().registerStringRunVar("RECIPIENTS", recipients);
@@ -111,7 +111,7 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("update-visuals"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("rewire-a-link", (function() {
+ProcedurePrims.defineCommand("rewire-a-link", 2478, 2687, (function() {
   if (PrimChecks.agentset.any(world.linkManager.linksOfBreed("ACTIVE-LINKS"))) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS"))), function() {
       SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
@@ -123,7 +123,7 @@ ProcedurePrims.defineCommand("rewire-a-link", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
-ProcedurePrims.defineCommand("update-globals", (function() {
+ProcedurePrims.defineCommand("update-globals", 2768, 2994, (function() {
   world.observer.setGlobal("total-val", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("val"); }))));
   world.observer.setGlobal("max-val", PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("val"); }))));
   if (PrimChecks.agentset.any(world.linkManager.linksOfBreed("ACTIVE-LINKS"))) {
@@ -131,7 +131,7 @@ ProcedurePrims.defineCommand("update-globals", (function() {
     world.observer.setGlobal("mean-flow", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.linkManager.linksOfBreed("ACTIVE-LINKS"), function() { return SelfManager.self().getVariable("current-flow"); }))));
   }
 }))
-ProcedurePrims.defineCommand("update-visuals", (function() {
+ProcedurePrims.defineCommand("update-visuals", 3002, 3104, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.callCommand("update-node-appearance"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -139,10 +139,10 @@ ProcedurePrims.defineCommand("update-visuals", (function() {
     var R = ProcedurePrims.callCommand("update-link-appearance"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("update-node-appearance", (function() {
+ProcedurePrims.defineCommand("update-node-appearance", 3112, 3241, (function() {
   PrimChecks.turtle.setVariable("size", PrimChecks.math.plus(0.1, PrimChecks.math.mult(5, PrimChecks.math.sqrt(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.turtle.getVariable("val")), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("total-val")))))));
 }))
-ProcedurePrims.defineCommand("update-link-appearance", (function() {
+ProcedurePrims.defineCommand("update-link-appearance", 3249, 3437, (function() {
   SelfManager.self().setVariable("color", ColorModel.scaleColor(5, PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, SelfManager.self().getVariable("current-flow")), PrimChecks.math.plus(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("mean-flow"))), 0.00001)), -0.4, 1));
 }))
 world.observer.setGlobal("link-chance", 50);

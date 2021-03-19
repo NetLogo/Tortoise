@@ -70,12 +70,12 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 3, 150, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.oneOf([15, 55, 105, 0])); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 158, 1941, (function() {
   let swapHevent = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("SWAP-EVENT", swapHevent);
   let reproduceHevent = 1; ProcedurePrims.stack().currentContext().registerStringRunVar("REPRODUCE-EVENT", reproduceHevent);
   let selectHevent = 2; ProcedurePrims.stack().currentContext().registerStringRunVar("SELECT-EVENT", selectHevent);
@@ -98,12 +98,12 @@ ProcedurePrims.defineCommand("go", (function() {
   }, "[ event -> ask one-of patches [ let one-of neighbors4 if event = swap-event [ swap target ] if event = reproduce-event [ reproduce target ] if event = select-event [ select target ] ] ]"), events); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("swap", (function(target) {
+ProcedurePrims.defineCommand("swap", 1996, 2107, (function(target) {
   let oldHcolor = SelfManager.self().getPatchVariable("pcolor"); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-COLOR", oldHcolor);
   SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, target), function() { SelfManager.self().setPatchVariable("pcolor", oldHcolor); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("select", (function(target) {
+ProcedurePrims.defineCommand("select", 2163, 2316, (function(target) {
   if (PrimChecks.procedure.callReporter("beat?", target)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, target), function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
@@ -113,7 +113,7 @@ ProcedurePrims.defineCommand("select", (function(target) {
     }
   }
 }))
-ProcedurePrims.defineCommand("reproduce", (function(target) {
+ProcedurePrims.defineCommand("reproduce", 2416, 2616, (function(target) {
   if (Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 0)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, target), function() {
       SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
@@ -125,22 +125,22 @@ ProcedurePrims.defineCommand("reproduce", (function(target) {
     }
   }
 }))
-ProcedurePrims.defineReporter("beat?", (function(target) {
+ProcedurePrims.defineReporter("beat?", 2672, 2869, (function(target) {
   return PrimChecks.procedure.report((((Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15) && Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 55)) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55) && Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 105))) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105) && Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 15))));
 }))
-ProcedurePrims.defineReporter("rate-from-exponent", (function(exponent) {
+ProcedurePrims.defineReporter("rate-from-exponent", 2906, 2961, (function(exponent) {
   return PrimChecks.procedure.report(PrimChecks.math.pow(10, PrimChecks.validator.checkArg('^', 1, exponent)));
 }))
-ProcedurePrims.defineReporter("swap-rate", (function() {
+ProcedurePrims.defineReporter("swap-rate", 2976, 3033, (function() {
   return PrimChecks.procedure.report(PrimChecks.procedure.callReporter("rate-from-exponent", world.observer.getGlobal("swap-rate-exponent")));
 }))
-ProcedurePrims.defineReporter("reproduce-rate", (function() {
+ProcedurePrims.defineReporter("reproduce-rate", 3048, 3115, (function() {
   return PrimChecks.procedure.report(PrimChecks.procedure.callReporter("rate-from-exponent", world.observer.getGlobal("reproduce-rate-exponent")));
 }))
-ProcedurePrims.defineReporter("select-rate", (function() {
+ProcedurePrims.defineReporter("select-rate", 3130, 3191, (function() {
   return PrimChecks.procedure.report(PrimChecks.procedure.callReporter("rate-from-exponent", world.observer.getGlobal("select-rate-exponent")));
 }))
-ProcedurePrims.defineReporter("percentage", (function(rate) {
+ProcedurePrims.defineReporter("percentage", 3279, 3364, (function(rate) {
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.math.mult(100, PrimChecks.validator.checkArg('*', 1, rate)), PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("swap-rate")), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("reproduce-rate"))), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("select-rate")))));
 }))
 world.observer.setGlobal("swap-rate-exponent", 0);

@@ -129,7 +129,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 812, 2101, (function() {
   world.clearAll();
   world.observer.setGlobal("bottom-line", PrimChecks.math.plus(world.topology.minPycor, 1));
   world.observer.setGlobal("evaporation-temp", 30);
@@ -157,7 +157,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 2203, 3345, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("LEAVES")))) {
     return PrimChecks.procedure.stop();
   }
@@ -185,7 +185,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineReporter("clip", (function(value) {
+ProcedurePrims.defineReporter("clip", 3360, 3450, (function(value) {
   if (Prims.lt(value, 0)) {
     return PrimChecks.procedure.report(0);
   }
@@ -194,7 +194,7 @@ ProcedurePrims.defineReporter("clip", (function(value) {
   }
   return PrimChecks.procedure.report(value);
 }))
-ProcedurePrims.defineCommand("make-wind-blow", (function() {
+ProcedurePrims.defineCommand("make-wind-blow", 3783, 3949, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("LEAVES"), function() {
     if (Prims.equality(RandomPrims.randomLong(2), 1)) {
       SelfManager.self().right(PrimChecks.math.mult(10, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("wind-factor"))));
@@ -205,7 +205,7 @@ ProcedurePrims.defineCommand("make-wind-blow", (function() {
     SelfManager.self().setVariable("attachedness", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("attachedness")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("wind-factor"))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("make-rain-fall", (function() {
+ProcedurePrims.defineCommand("make-rain-fall", 4146, 4534, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("rain-intensity"), "RAINDROPS"), function() {
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), world.topology.maxPycor);
     PrimChecks.turtle.setVariable("heading", 180);
@@ -217,7 +217,7 @@ ProcedurePrims.defineCommand("make-rain-fall", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("RAINDROPS"), function() { SelfManager.self().fd(PrimChecks.math.randomFloat(2)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("move-water", (function() {
+ProcedurePrims.defineCommand("move-water", 4775, 5983, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("RAINDROPS"), function() {
     return (Prims.equality(SelfManager.self().getVariable("location"), "falling") && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55));
   }), function() {
@@ -243,7 +243,7 @@ ProcedurePrims.defineCommand("move-water", (function() {
     return ((Prims.equality(SelfManager.self().getVariable("location"), "in trunk") || Prims.equality(SelfManager.self().getVariable("location"), "in leaves")) && ((Prims.gt(PrimChecks.turtle.getVariable("ycor"), PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("LEAVES"), function() { return PrimChecks.turtle.getVariable("ycor"); })))) || Prims.gt(PrimChecks.turtle.getVariable("xcor"), PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("LEAVES"), function() { return PrimChecks.turtle.getVariable("xcor"); }))))) || Prims.lt(PrimChecks.turtle.getVariable("xcor"), PrimChecks.list.min(PrimChecks.validator.checkArg('MIN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("LEAVES"), function() { return PrimChecks.turtle.getVariable("xcor"); }))))));
   }), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("show-intensity", (function() {
+ProcedurePrims.defineCommand("show-intensity", 6336, 6575, (function() {
   SelfManager.self().setVariable("color", ColorModel.scaleColor(45, world.observer.getGlobal("sun-intensity"), 0, 150));
   PrimChecks.turtle.setVariable("size", PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("sun-intensity")), 10));
   SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(world.observer.getGlobal("sun-intensity")) + workspace.dump("%")));
@@ -254,7 +254,7 @@ ProcedurePrims.defineCommand("show-intensity", (function() {
     SelfManager.self().setVariable("label-color", 0);
   }
 }))
-ProcedurePrims.defineCommand("adjust-water", (function() {
+ProcedurePrims.defineCommand("adjust-water", 6771, 7742, (function() {
   if (Prims.lt(world.observer.getGlobal("temperature"), 10)) {
     return PrimChecks.procedure.stop();
   }
@@ -275,7 +275,7 @@ ProcedurePrims.defineCommand("adjust-water", (function() {
     SelfManager.self().setVariable("attachedness", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("attachedness")), 1));
   }
 }))
-ProcedurePrims.defineCommand("adjust-chlorophyll", (function() {
+ProcedurePrims.defineCommand("adjust-chlorophyll", 8047, 8503, (function() {
   if (Prims.lt(world.observer.getGlobal("temperature"), 15)) {
     SelfManager.self().setVariable("chlorophyll", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("chlorophyll")), PrimChecks.math.mult(0.5, PrimChecks.math.minus(15, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("temperature"))))));
   }
@@ -286,7 +286,7 @@ ProcedurePrims.defineCommand("adjust-chlorophyll", (function() {
     SelfManager.self().setVariable("chlorophyll", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("chlorophyll")), 1));
   }
 }))
-ProcedurePrims.defineCommand("adjust-sugar", (function() {
+ProcedurePrims.defineCommand("adjust-sugar", 8655, 9086, (function() {
   if (((Prims.gt(SelfManager.self().getVariable("water-level"), 1) && Prims.gt(world.observer.getGlobal("sun-intensity"), 20)) && Prims.gt(SelfManager.self().getVariable("chlorophyll"), 1))) {
     SelfManager.self().setVariable("water-level", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("water-level")), 0.5));
     SelfManager.self().setVariable("chlorophyll", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("chlorophyll")), 0.5));
@@ -295,7 +295,7 @@ ProcedurePrims.defineCommand("adjust-sugar", (function() {
   }
   SelfManager.self().setVariable("sugar-level", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("sugar-level")), 0.5));
 }))
-ProcedurePrims.defineCommand("fall-if-necessary", (function() {
+ProcedurePrims.defineCommand("fall-if-necessary", 9308, 9556, (function() {
   if (Prims.gt(SelfManager.self().getVariable("attachedness"), 0)) {
     return PrimChecks.procedure.stop();
   }
@@ -305,7 +305,7 @@ ProcedurePrims.defineCommand("fall-if-necessary", (function() {
     SelfManager.self().fd(PrimChecks.math.randomFloat(PrimChecks.math.mult(0.7, PrimChecks.list.max(ListPrims.list(world.observer.getGlobal("wind-factor"), 0.5)))));
   }
 }))
-ProcedurePrims.defineCommand("change-color", (function() {
+ProcedurePrims.defineCommand("change-color", 9742, 10788, (function() {
   if (((Prims.lt(world.observer.getGlobal("temperature"), 20) && Prims.gt(SelfManager.self().getVariable("sugar-level"), 0)) && Prims.gt(SelfManager.self().getVariable("water-level"), 0))) {
     SelfManager.self().setVariable("sugar-level", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("sugar-level")), 1));
     SelfManager.self().setVariable("water-level", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("water-level")), 1));
@@ -326,7 +326,7 @@ ProcedurePrims.defineCommand("change-color", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("change-shape", (function() {
+ProcedurePrims.defineCommand("change-shape", 10796, 11388, (function() {
   if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "solid")) {
     SelfManager.self().setVariable("shape", "default");
   }
@@ -351,10 +351,10 @@ ProcedurePrims.defineCommand("change-shape", (function() {
     }
   }
 }))
-ProcedurePrims.defineReporter("attached-leaves", (function() {
+ProcedurePrims.defineReporter("attached-leaves", 11440, 11496, (function() {
   return PrimChecks.procedure.report(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("LEAVES"), function() { return Prims.gt(SelfManager.self().getVariable("attachedness"), 0); }));
 }))
-ProcedurePrims.defineCommand("set-shape-for-value", (function(value) {
+ProcedurePrims.defineCommand("set-shape-for-value", 11574, 11857, (function(value) {
   if (Prims.gt(value, 75)) {
     SelfManager.self().setVariable("shape", "default");
   }

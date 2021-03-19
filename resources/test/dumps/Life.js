@@ -49,12 +49,12 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup-blank", (function() {
+ProcedurePrims.defineCommand("setup-blank", 138, 205, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("cell-death"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-random", (function() {
+ProcedurePrims.defineCommand("setup-random", 213, 360, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
     if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("initial-density"))) {
@@ -66,15 +66,15 @@ ProcedurePrims.defineCommand("setup-random", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("cell-birth", (function() {
+ProcedurePrims.defineCommand("cell-birth", 368, 419, (function() {
   SelfManager.self().setPatchVariable("living?", true);
   SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("fgcolor"));
 }))
-ProcedurePrims.defineCommand("cell-death", (function() {
+ProcedurePrims.defineCommand("cell-death", 427, 479, (function() {
   SelfManager.self().setPatchVariable("living?", false);
   SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("bgcolor"));
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 487, 981, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     SelfManager.self().setPatchVariable("live-neighbors", PrimChecks.agentset.countWith(SelfManager.self().getNeighbors(), function() { return SelfManager.self().getPatchVariable("living?"); }));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -90,7 +90,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("draw-cells", (function() {
+ProcedurePrims.defineCommand("draw-cells", 989, 1204, (function() {
   let erasing_Q = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.getPatchAt(MousePrims.getX(), MousePrims.getY())), function() { return SelfManager.self().getPatchVariable("living?"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("ERASING?", erasing_Q);
   while (MousePrims.isDown()) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(MousePrims.getX(), MousePrims.getY())), function() {

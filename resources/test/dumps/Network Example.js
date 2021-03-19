@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 3, 191, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), ""), function() {
@@ -59,7 +59,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   LayoutManager.layoutCircle(world.turtles(), PrimChecks.math.minus(PrimChecks.math.div(world.topology.width, 2), 2));
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 371, 596, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtles()))) {
     return PrimChecks.procedure.stop();
   }

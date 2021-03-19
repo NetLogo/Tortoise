@@ -134,7 +134,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 846, 1390, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
   world.observer.setGlobal("box-edge", PrimChecks.math.minus(world.topology.maxPxcor, 1));
@@ -157,7 +157,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   world.observer.setGlobal("init-avg-speed", world.observer.getGlobal("avg-speed"));
   world.observer.setGlobal("init-avg-energy", world.observer.getGlobal("avg-energy"));
 }))
-ProcedurePrims.defineCommand("make-particles", (function() {
+ProcedurePrims.defineCommand("make-particles", 1398, 2051, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-particles"), "PARTICLES"), function() {
     SelfManager.self().setVariable("speed", 1);
     PrimChecks.turtle.setVariable("size", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("smallest-particle-size")), PrimChecks.math.randomFloat(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("largest-particle-size")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("smallest-particle-size"))))));
@@ -178,15 +178,15 @@ ProcedurePrims.defineCommand("make-particles", (function() {
     return Prims.gt(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, a), function() { return PrimChecks.turtle.getVariable("size"); }), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, b), function() { return PrimChecks.turtle.getVariable("size"); }));
   }, "[ [a b] -> [ size ] of a > [ size ] of b ]"), world.turtleManager.turtlesOfBreed("PARTICLES"))); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("overlapping?", (function() {
+ProcedurePrims.defineReporter("overlapping?", 2066, 2359, (function() {
   return PrimChecks.procedure.report(PrimChecks.agentset.anyOtherWith(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("size")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("largest-particle-size"))), 2)), function() {
     return Prims.lt(SelfManager.self().distance(SelfManager.myself()), PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("size")), PrimChecks.validator.checkArg('+', 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtle.getVariable("size"); }))), 2));
   }));
 }))
-ProcedurePrims.defineCommand("position-randomly", (function() {
+ProcedurePrims.defineCommand("position-randomly", 2367, 2592, (function() {
   PrimChecks.turtle.setXY(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.list.oneOf([1, -1])), PrimChecks.math.randomFloat(PrimChecks.math.minus(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge")), 0.5), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.turtle.getVariable("size")), 2)))), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.list.oneOf([1, -1])), PrimChecks.math.randomFloat(PrimChecks.math.minus(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge")), 0.5), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.turtle.getVariable("size")), 2)))));
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 2776, 3033, (function() {
   var R = ProcedurePrims.callCommand("choose-next-collision"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
     SelfManager.self().jumpIfAble(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("speed")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("tick-delta"))));
@@ -199,7 +199,7 @@ ProcedurePrims.defineCommand("go", (function() {
     plotManager.updatePlots();
   }
 }))
-ProcedurePrims.defineCommand("update-variables", (function() {
+ProcedurePrims.defineCommand("update-variables", 3041, 3454, (function() {
   world.observer.setGlobal("medium", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }));
   world.observer.setGlobal("slow", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }));
   world.observer.setGlobal("fast", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }));
@@ -209,7 +209,7 @@ ProcedurePrims.defineCommand("update-variables", (function() {
   world.observer.setGlobal("avg-speed", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("speed"); }))));
   world.observer.setGlobal("avg-energy", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("energy"); }))));
 }))
-ProcedurePrims.defineCommand("recalculate-particles-that-just-collided", (function() {
+ProcedurePrims.defineCommand("recalculate-particles-that-just-collided", 3463, 5199, (function() {
   if (NLType.checks.isValidTurtle(world.observer.getGlobal("particle2"))) {
     world.observer.setGlobal("collisions", PrimChecks.list.filter(Tasks.reporterTask(function(theHcollision) {
       PrimChecks.procedure.runArgCountCheck(1, arguments.length);
@@ -245,7 +245,7 @@ ProcedurePrims.defineCommand("recalculate-particles-that-just-collided", (functi
   world.observer.setGlobal("particle1", Nobody);
   world.observer.setGlobal("particle2", Nobody);
 }))
-ProcedurePrims.defineCommand("check-for-particle-collision", (function() {
+ProcedurePrims.defineCommand("check-for-particle-collision", 5637, 11512, (function() {
   let myHx = PrimChecks.turtle.getVariable("xcor"); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-X", myHx);
   let myHy = PrimChecks.turtle.getVariable("ycor"); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-Y", myHy);
   let myHparticleHsize = PrimChecks.turtle.getVariable("size"); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-PARTICLE-SIZE", myHparticleHsize);
@@ -272,7 +272,7 @@ ProcedurePrims.defineCommand("check-for-particle-collision", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("check-for-wall-collision", (function() {
+ProcedurePrims.defineCommand("check-for-wall-collision", 11582, 12678, (function() {
   let xHspeed = PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("speed")), SelfManager.self().dx()); ProcedurePrims.stack().currentContext().registerStringRunVar("X-SPEED", xHspeed);
   if (!Prims.equality(xHspeed, 0)) {
     let rightHinterval = PrimChecks.math.div(PrimChecks.math.minus(PrimChecks.math.minus(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge")), 0.5), PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("xcor"))), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.turtle.getVariable("size")), 2)), PrimChecks.validator.checkArg('/', 1, xHspeed)); ProcedurePrims.stack().currentContext().registerStringRunVar("RIGHT-INTERVAL", rightHinterval);
@@ -296,11 +296,11 @@ ProcedurePrims.defineCommand("check-for-wall-collision", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("assign-colliding-wall", (function(timeHtoHcollision, wall) {
+ProcedurePrims.defineCommand("assign-colliding-wall", 12687, 13224, (function(timeHtoHcollision, wall) {
   let collidingHpair = ListPrims.list(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, timeHtoHcollision), world.ticker.tickCount()), SelfManager.self(), wall); ProcedurePrims.stack().currentContext().registerStringRunVar("COLLIDING-PAIR", collidingHpair);
   world.observer.setGlobal("collisions", PrimChecks.list.fput(collidingHpair, PrimChecks.validator.checkArg('FPUT', 8, world.observer.getGlobal("collisions"))));
 }))
-ProcedurePrims.defineCommand("choose-next-collision", (function() {
+ProcedurePrims.defineCommand("choose-next-collision", 13232, 14111, (function() {
   if (Prims.equality(world.observer.getGlobal("collisions"), [])) {
     return PrimChecks.procedure.stop();
   }
@@ -322,7 +322,7 @@ ProcedurePrims.defineCommand("choose-next-collision", (function() {
   world.observer.setGlobal("particle1", PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, winner)));
   world.observer.setGlobal("particle2", PrimChecks.list.item(2, PrimChecks.validator.checkArg('ITEM', 12, winner)));
 }))
-ProcedurePrims.defineCommand("perform-next-collision", (function() {
+ProcedurePrims.defineCommand("perform-next-collision", 14120, 14630, (function() {
   if (Prims.equality(world.observer.getGlobal("particle1"), Nobody)) {
     return PrimChecks.procedure.stop();
   }
@@ -344,7 +344,7 @@ ProcedurePrims.defineCommand("perform-next-collision", (function() {
     var R = ProcedurePrims.callCommand("collide-with", world.observer.getGlobal("particle2")); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("collide-with", (function(otherHparticle) {
+ProcedurePrims.defineCommand("collide-with", 14639, 16773, (function(otherHparticle) {
   let mass2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHparticle), function() { return SelfManager.self().getVariable("mass"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MASS2", mass2);
   let speed2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHparticle), function() { return SelfManager.self().getVariable("speed"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("SPEED2", speed2);
   let heading2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHparticle), function() { return PrimChecks.turtle.getVariable("heading"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("HEADING2", heading2);
@@ -371,7 +371,7 @@ ProcedurePrims.defineCommand("collide-with", (function(otherHparticle) {
   var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, otherHparticle), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("recolor", (function() {
+ProcedurePrims.defineCommand("recolor", 16958, 17591, (function() {
   if (Prims.lt(SelfManager.self().getVariable("speed"), PrimChecks.math.mult(0.5, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("avg-speed"))))) {
     SelfManager.self().setVariable("color", 105);
   }
@@ -384,7 +384,7 @@ ProcedurePrims.defineCommand("recolor", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("test-time-reversal", (function(n) {
+ProcedurePrims.defineCommand("test-time-reversal", 18586, 18782, (function(n) {
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { SelfManager.self().stamp(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   while (Prims.lt(world.ticker.tickCount(), n)) {
@@ -397,7 +397,7 @@ ProcedurePrims.defineCommand("test-time-reversal", (function(n) {
   }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { SelfManager.self().setVariable("color", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("reverse-time", (function() {
+ProcedurePrims.defineCommand("reverse-time", 18790, 19574, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { SelfManager.self().right(180); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("collisions", []);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
@@ -408,14 +408,14 @@ ProcedurePrims.defineCommand("reverse-time", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("perform-next-collision"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineReporter("init-particle-speed", (function() { return PrimChecks.procedure.report(1); }))
-ProcedurePrims.defineReporter("max-particle-mass", (function() {
+ProcedurePrims.defineReporter("init-particle-speed", 19765, 19796, (function() { return PrimChecks.procedure.report(1); }))
+ProcedurePrims.defineReporter("max-particle-mass", 19811, 19862, (function() {
   return PrimChecks.procedure.report(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return SelfManager.self().getVariable("mass"); }))));
 }))
-ProcedurePrims.defineReporter("kinetic-energy", (function() {
+ProcedurePrims.defineReporter("kinetic-energy", 19877, 19931, (function() {
   return PrimChecks.procedure.report(PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.mult(0.5, PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("mass"))), PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("speed"))), PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("speed"))));
 }))
-ProcedurePrims.defineCommand("draw-vert-line", (function(xval) {
+ProcedurePrims.defineCommand("draw-vert-line", 19939, 20043, (function(xval) {
   plotManager.plotPoint(xval, plotManager.getPlotYMin());
   plotManager.lowerPen();
   plotManager.plotPoint(xval, plotManager.getPlotYMax());

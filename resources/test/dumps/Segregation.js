@@ -71,7 +71,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 590, 971, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
     SelfManager.self().setPatchVariable("pcolor", 9.9);
@@ -86,7 +86,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.callCommand("update-globals"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1008, 1113, (function() {
   if (PrimChecks.agentset.all(world.turtles(), function() { return PrimChecks.turtle.getVariable("happy?"); })) {
     return PrimChecks.procedure.stop();
   }
@@ -95,12 +95,12 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("update-globals"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("move-unhappy-turtles", (function() {
+ProcedurePrims.defineCommand("move-unhappy-turtles", 1154, 1231, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtles(), function() {
     return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("happy?")));
   }), function() { var R = ProcedurePrims.callCommand("find-new-spot"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("find-new-spot", (function() {
+ProcedurePrims.defineCommand("find-new-spot", 1279, 1478, (function() {
   SelfManager.self().right(PrimChecks.math.randomFloat(360));
   SelfManager.self().fd(PrimChecks.math.randomFloat(10));
   if (SelfPrims._optimalAnyOther(SelfManager.self().turtlesHere())) {
@@ -108,7 +108,7 @@ ProcedurePrims.defineCommand("find-new-spot", (function() {
   }
   SelfManager.self().moveTo(SelfManager.self().getPatchHere());
 }))
-ProcedurePrims.defineCommand("update-turtles", (function() {
+ProcedurePrims.defineCommand("update-turtles", 1486, 2127, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setVariable("similar-nearby", PrimChecks.agentset.countWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), function() {
       return Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
@@ -132,7 +132,7 @@ ProcedurePrims.defineCommand("update-turtles", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("update-globals", (function() {
+ProcedurePrims.defineCommand("update-globals", 2135, 2410, (function() {
   let similarHneighbors = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("similar-nearby"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("SIMILAR-NEIGHBORS", similarHneighbors);
   let totalHneighbors = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("total-nearby"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL-NEIGHBORS", totalHneighbors);
   world.observer.setGlobal("percent-similar", PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, similarHneighbors), PrimChecks.validator.checkArg('/', 1, totalHneighbors)), 100));

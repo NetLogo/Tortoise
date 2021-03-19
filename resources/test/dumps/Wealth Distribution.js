@@ -125,7 +125,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 572, 792, (function() {
   world.clearAll();
   world.observer.setGlobal("max-grain", 50);
   var R = ProcedurePrims.callCommand("setup-patches"); if (R === DeathInterrupt) { return R; }
@@ -133,7 +133,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   var R = ProcedurePrims.callCommand("update-lorenz-and-gini"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-patches", (function() {
+ProcedurePrims.defineCommand("setup-patches", 854, 1692, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     SelfManager.self().setPatchVariable("max-grain-here", 0);
     if (Prims.lte(PrimChecks.math.randomFloat(100), world.observer.getGlobal("percent-best-land"))) {
@@ -156,10 +156,10 @@ ProcedurePrims.defineCommand("setup-patches", (function() {
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("recolor-patch", (function() {
+ProcedurePrims.defineCommand("recolor-patch", 1700, 1826, (function() {
   SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(45, SelfManager.self().getPatchVariable("grain-here"), 0, world.observer.getGlobal("max-grain")));
 }))
-ProcedurePrims.defineCommand("setup-turtles", (function() {
+ProcedurePrims.defineCommand("setup-turtles", 1888, 2116, (function() {
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-people"), ""), function() {
     SelfManager.self().moveTo(PrimChecks.list.oneOf(world.patches()));
@@ -168,7 +168,7 @@ ProcedurePrims.defineCommand("setup-turtles", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("recolor-turtles"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("set-initial-turtle-vars", (function() {
+ProcedurePrims.defineCommand("set-initial-turtle-vars", 2124, 2443, (function() {
   SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, PrimChecks.list.oneOf(SelfManager.self().getNeighbors4())));
   PrimChecks.turtle.setVariable("life-expectancy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("life-expectancy-min")), PrimChecks.math.random(PrimChecks.math.plus(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("life-expectancy-max")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("life-expectancy-min"))), 1))));
   PrimChecks.turtle.setVariable("metabolism", PrimChecks.math.plus(1, PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("metabolism-max")))));
@@ -176,7 +176,7 @@ ProcedurePrims.defineCommand("set-initial-turtle-vars", (function() {
   PrimChecks.turtle.setVariable("vision", PrimChecks.math.plus(1, PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("max-vision")))));
   PrimChecks.turtle.setVariable("age", PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, PrimChecks.turtle.getVariable("life-expectancy"))));
 }))
-ProcedurePrims.defineCommand("recolor-turtles", (function() {
+ProcedurePrims.defineCommand("recolor-turtles", 2658, 2912, (function() {
   let maxHwealth = PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("wealth"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("MAX-WEALTH", maxHwealth);
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (Prims.lte(PrimChecks.turtle.getVariable("wealth"), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, maxHwealth), 3))) {
@@ -192,7 +192,7 @@ ProcedurePrims.defineCommand("recolor-turtles", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 2948, 3292, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("turn-towards-grain"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("harvest"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("move-eat-age-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -203,7 +203,7 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("update-lorenz-and-gini"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("turn-towards-grain", (function() {
+ProcedurePrims.defineCommand("turn-towards-grain", 3425, 3909, (function() {
   PrimChecks.turtle.setVariable("heading", 0);
   let bestHdirection = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("BEST-DIRECTION", bestHdirection);
   let bestHamount = PrimChecks.procedure.callReporter("grain-ahead"); ProcedurePrims.stack().currentContext().registerStringRunVar("BEST-AMOUNT", bestHamount);
@@ -224,7 +224,7 @@ ProcedurePrims.defineCommand("turn-towards-grain", (function() {
   }
   PrimChecks.turtle.setVariable("heading", bestHdirection);
 }))
-ProcedurePrims.defineReporter("grain-ahead", (function() {
+ProcedurePrims.defineReporter("grain-ahead", 3924, 4110, (function() {
   let total = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL", total);
   let howHfar = 1; ProcedurePrims.stack().currentContext().registerStringRunVar("HOW-FAR", howHfar);
   for (let _index_3989_3995 = 0, _repeatcount_3989_3995 = StrictMath.floor(PrimChecks.turtle.getVariable("vision")); _index_3989_3995 < _repeatcount_3989_3995; _index_3989_3995++){
@@ -233,7 +233,7 @@ ProcedurePrims.defineReporter("grain-ahead", (function() {
   }
   return PrimChecks.procedure.report(total);
 }))
-ProcedurePrims.defineCommand("grow-grain", (function() {
+ProcedurePrims.defineCommand("grow-grain", 4118, 4550, (function() {
   if (Prims.lt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
     SelfManager.self().setPatchVariable("grain-here", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("grain-here")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("num-grain-grown"))));
     if (Prims.gt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
@@ -242,7 +242,7 @@ ProcedurePrims.defineCommand("grow-grain", (function() {
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("harvest", (function() {
+ProcedurePrims.defineCommand("harvest", 4694, 5025, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setVariable("wealth", PrimChecks.math.floor(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("wealth")), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, SelfManager.self().getPatchVariable("grain-here")), PrimChecks.agentset.count(SelfManager.self().turtlesHere())))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -251,7 +251,7 @@ ProcedurePrims.defineCommand("harvest", (function() {
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("move-eat-age-die", (function() {
+ProcedurePrims.defineCommand("move-eat-age-die", 5033, 5511, (function() {
   SelfManager.self()._optimalFdOne();
   PrimChecks.turtle.setVariable("wealth", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("wealth")), PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("metabolism"))));
   PrimChecks.turtle.setVariable("age", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("age")), 1));
@@ -259,7 +259,7 @@ ProcedurePrims.defineCommand("move-eat-age-die", (function() {
     var R = ProcedurePrims.callCommand("set-initial-turtle-vars"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("update-lorenz-and-gini", (function() {
+ProcedurePrims.defineCommand("update-lorenz-and-gini", 5651, 6347, (function() {
   let sortedHwealths = PrimChecks.list.sort(PrimChecks.validator.checkArg('SORT', 120, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("wealth"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("SORTED-WEALTHS", sortedHwealths);
   let totalHwealth = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, sortedHwealths)); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL-WEALTH", totalHwealth);
   let wealthHsumHsoHfar = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("WEALTH-SUM-SO-FAR", wealthHsumHsoHfar);

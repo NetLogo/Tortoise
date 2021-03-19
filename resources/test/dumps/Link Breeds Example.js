@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 245, 813, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(10, ""), function() {
     SelfManager.self().fd(5);

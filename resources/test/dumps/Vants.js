@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 3, 203, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), ""), function() {
@@ -59,7 +59,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go-forward", (function() {
+ProcedurePrims.defineCommand("go-forward", 392, 484, (function() {
   var R = Tasks.forEach(Tasks.commandTask(function(t) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, t), function() {
@@ -69,7 +69,7 @@ ProcedurePrims.defineCommand("go-forward", (function() {
   }, "[ t -> ask t [ fd 1 turn ] ]"), PrimChecks.list.sort(world.turtles())); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("go-reverse", (function() {
+ProcedurePrims.defineCommand("go-reverse", 492, 592, (function() {
   var R = Tasks.forEach(Tasks.commandTask(function(t) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, t), function() {
@@ -79,7 +79,7 @@ ProcedurePrims.defineCommand("go-reverse", (function() {
   }, "[ t -> ask t [ turn bk 1 ] ]"), PrimChecks.list.reverse(PrimChecks.list.sort(world.turtles()))); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("turn", (function() {
+ProcedurePrims.defineCommand("turn", 600, 703, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9)) {
     SelfManager.self().setPatchVariable("pcolor", 0);
     SelfManager.self().right(90);

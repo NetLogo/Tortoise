@@ -65,13 +65,13 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 778, 844, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-variables"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-turtles"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("setup-variables", (function() {
+ProcedurePrims.defineCommand("setup-variables", 876, 1080, (function() {
   world.observer.setGlobal("carrying-capacity-monarchs", 225);
   world.observer.setGlobal("carrying-capacity-viceroys", 225);
   world.observer.setGlobal("carrying-capacity-birds", 75);
@@ -79,7 +79,7 @@ ProcedurePrims.defineCommand("setup-variables", (function() {
   world.observer.setGlobal("color-range-begin", 15);
   world.observer.setGlobal("color-range-end", 109);
 }))
-ProcedurePrims.defineCommand("setup-turtles", (function() {
+ProcedurePrims.defineCommand("setup-turtles", 1344, 1839, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("MONARCHS").getSpecialName(), "butterfly monarch")
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("VICEROYS").getSpecialName(), "butterfly viceroy")
@@ -94,7 +94,7 @@ ProcedurePrims.defineCommand("setup-turtles", (function() {
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1876, 2171, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BIRDS"), function() { var R = ProcedurePrims.callCommand("birds-move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtles(), function() {
     return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
@@ -112,7 +112,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("birds-move", (function() {
+ProcedurePrims.defineCommand("birds-move", 2179, 2372, (function() {
   if (Prims.equality(SelfManager.self().getVariable("shape"), "bird 1")) {
     SelfManager.self().setVariable("shape", "bird 2");
   }
@@ -122,12 +122,12 @@ ProcedurePrims.defineCommand("birds-move", (function() {
   PrimChecks.turtle.setVariable("heading", PrimChecks.math.plus(180, RandomPrims.randomLong(180)));
   SelfManager.self()._optimalFdOne();
 }))
-ProcedurePrims.defineCommand("butterflies-move", (function() {
+ProcedurePrims.defineCommand("butterflies-move", 2380, 2461, (function() {
   SelfManager.self().right(RandomPrims.randomLong(100));
   SelfManager.self().right(-(RandomPrims.randomLong(100)));
   SelfManager.self()._optimalFdOne();
 }))
-ProcedurePrims.defineCommand("butterflies-get-eaten", (function() {
+ProcedurePrims.defineCommand("butterflies-get-eaten", 2735, 3020, (function() {
   let birdHhere = PrimChecks.list.oneOf(SelfManager.self().breedHere("BIRDS")); ProcedurePrims.stack().currentContext().registerStringRunVar("BIRD-HERE", birdHhere);
   if (!Prims.equality(birdHhere, Nobody)) {
     if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, birdHhere), function() {
@@ -142,7 +142,7 @@ ProcedurePrims.defineCommand("butterflies-get-eaten", (function() {
     }
   }
 }))
-ProcedurePrims.defineReporter("color-in-memory?", (function(c) {
+ProcedurePrims.defineReporter("color-in-memory?", 3120, 3232, (function(c) {
   var R = Tasks.forEach(Tasks.commandTask(function(i) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     if (Prims.equality(PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, i)), c)) {
@@ -151,13 +151,13 @@ ProcedurePrims.defineReporter("color-in-memory?", (function(c) {
   }, "[ i -> if item 0 i = c [ report true ] ]"), SelfManager.self().getVariable("memory")); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   return PrimChecks.procedure.report(false);
 }))
-ProcedurePrims.defineCommand("remember-color", (function(c) {
+ProcedurePrims.defineCommand("remember-color", 3280, 3747, (function(c) {
   if (Prims.gte(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, SelfManager.self().getVariable("memory"))), world.observer.getGlobal("memory-size"))) {
     SelfManager.self().setVariable("memory", PrimChecks.list.butFirst('but-first', PrimChecks.validator.checkArg('BUT-FIRST', 12, SelfManager.self().getVariable("memory"))));
   }
   SelfManager.self().setVariable("memory", PrimChecks.list.lput(ListPrims.list(c, 0), PrimChecks.validator.checkArg('LPUT', 8, SelfManager.self().getVariable("memory"))));
 }))
-ProcedurePrims.defineCommand("birds-forget", (function() {
+ProcedurePrims.defineCommand("birds-forget", 3855, 4128, (function() {
   SelfManager.self().setVariable("memory", Tasks.map(Tasks.reporterTask(function(i) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     return ListPrims.list(PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, i)), PrimChecks.math.plus(1, PrimChecks.validator.checkArg('+', 1, PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, i)))));
@@ -167,7 +167,7 @@ ProcedurePrims.defineCommand("birds-forget", (function() {
     return Prims.lte(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, i)), world.observer.getGlobal("memory-duration"));
   }, "[ i -> item 1 i <= memory-duration ]"), PrimChecks.validator.checkArg('FILTER', 8, SelfManager.self().getVariable("memory"))));
 }))
-ProcedurePrims.defineCommand("butterflies-reproduce", (function() {
+ProcedurePrims.defineCommand("butterflies-reproduce", 4258, 4533, (function() {
   if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
     if (Prims.lt(PrimChecks.math.random(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("MONARCHS"))), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("carrying-capacity-monarchs")), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("MONARCHS"))))) {
       var R = ProcedurePrims.callCommand("hatch-butterfly"); if (R === DeathInterrupt) { return R; }
@@ -179,7 +179,7 @@ ProcedurePrims.defineCommand("butterflies-reproduce", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("hatch-butterfly", (function() {
+ProcedurePrims.defineCommand("hatch-butterfly", 4541, 4990, (function() {
   if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("reproduction-chance"))) {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       SelfManager.self()._optimalFdOne();

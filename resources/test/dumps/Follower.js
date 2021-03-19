@@ -77,7 +77,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 218, 382, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("population"), ""), function() {
     SelfManager.self().setVariable("color", 125);
@@ -87,7 +87,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 390, 514, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (Prims.equality(PrimChecks.turtle.getVariable("leader"), Nobody)) {
       var R = ProcedurePrims.callCommand("attach-turtle"); if (R === DeathInterrupt) { return R; }
@@ -97,7 +97,7 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("attach-turtle", (function() {
+ProcedurePrims.defineCommand("attach-turtle", 522, 1335, (function() {
   let xd = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("near-radius")), PrimChecks.math.random(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("far-radius")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("near-radius"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("XD", xd);
   let yd = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("near-radius")), PrimChecks.math.random(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("far-radius")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("near-radius"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("YD", yd);
   if (Prims.equality(RandomPrims.randomLong(2), 0)) {
@@ -129,7 +129,7 @@ ProcedurePrims.defineCommand("attach-turtle", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("turn-turtle", (function() {
+ProcedurePrims.defineCommand("turn-turtle", 1343, 1568, (function() {
   if (Prims.equality(PrimChecks.turtle.getVariable("leader"), Nobody)) {
     SelfManager.self().right(PrimChecks.math.minus(PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("waver"))), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("waver")))));
   }

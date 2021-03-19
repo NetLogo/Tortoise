@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("benchmark", (function() {
+ProcedurePrims.defineCommand("benchmark", 21, 112, (function() {
   PrimChecks.math.randomSeed(362);
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
   workspace.timer.reset();
@@ -58,7 +58,7 @@ ProcedurePrims.defineCommand("benchmark", (function() {
   }
   world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 125, 219, (function() {
   world.clearAll();
   world.ticker.reset();
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(1000, ""), function() {
@@ -66,7 +66,7 @@ ProcedurePrims.defineCommand("setup", (function() {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, PrimChecks.list.oneOf(SelfManager.self().getNeighbors4())));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 227, 293, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, PrimChecks.list.oneOf(SelfManager.self().getNeighbors4())));
     SelfManager.self()._optimalFdOne();

@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("benchmark", (function() {
+ProcedurePrims.defineCommand("benchmark", 577, 702, (function() {
   PrimChecks.math.randomSeed(12345);
   workspace.timer.reset();
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
@@ -59,7 +59,7 @@ ProcedurePrims.defineCommand("benchmark", (function() {
   }
   world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 710, 1282, (function() {
   world.clearAll();
   world.ticker.reset();
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
@@ -74,7 +74,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   world.observer.setGlobal("colliding-particle-2", Nobody);
   var R = ProcedurePrims.callCommand("rebuild-collision-list"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("rebuild-collision-list", (function() {
+ProcedurePrims.defineCommand("rebuild-collision-list", 1290, 1433, (function() {
   world.observer.setGlobal("colliding-particles", []);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
     var R = ProcedurePrims.callCommand("check-for-wall-collision"); if (R === DeathInterrupt) { return R; }
@@ -83,7 +83,7 @@ ProcedurePrims.defineCommand("rebuild-collision-list", (function() {
     var R = ProcedurePrims.callCommand("check-for-particle-collision"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 1442, 3434, (function() {
   if (NLType.checks.isValidTurtle(world.observer.getGlobal("colliding-particle-2"))) {
     world.observer.setGlobal("colliding-particles", PrimChecks.list.filter(Tasks.reporterTask(function(collision) {
       PrimChecks.procedure.runArgCountCheck(1, arguments.length);
@@ -125,13 +125,13 @@ ProcedurePrims.defineCommand("go", (function() {
     }
   }
 }))
-ProcedurePrims.defineReporter("convert-heading-x", (function(headingHangle) {
+ProcedurePrims.defineReporter("convert-heading-x", 3449, 3510, (function(headingHangle) {
   return PrimChecks.procedure.report(PrimChecks.math.sin(PrimChecks.validator.checkArg('SIN', 1, headingHangle)));
 }))
-ProcedurePrims.defineReporter("convert-heading-y", (function(headingHangle) {
+ProcedurePrims.defineReporter("convert-heading-y", 3525, 3586, (function(headingHangle) {
   return PrimChecks.procedure.report(PrimChecks.math.cos(PrimChecks.validator.checkArg('COS', 1, headingHangle)));
 }))
-ProcedurePrims.defineCommand("check-for-particle-collision", (function() {
+ProcedurePrims.defineCommand("check-for-particle-collision", 3595, 10888, (function() {
   let myHx = PrimChecks.turtle.getVariable("xcor"); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-X", myHx);
   let myHy = PrimChecks.turtle.getVariable("ycor"); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-Y", myHy);
   let myHparticleHsize = PrimChecks.turtle.getVariable("size"); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-PARTICLE-SIZE", myHparticleHsize);
@@ -159,7 +159,7 @@ ProcedurePrims.defineCommand("check-for-particle-collision", (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("check-for-wall-collision", (function() {
+ProcedurePrims.defineCommand("check-for-wall-collision", 10897, 13047, (function() {
   let xHspeed = PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("speed")), PrimChecks.validator.checkArg('*', 1, PrimChecks.procedure.callReporter("convert-heading-x", PrimChecks.turtle.getVariable("heading")))); ProcedurePrims.stack().currentContext().registerStringRunVar("X-SPEED", xHspeed);
   let yHspeed = PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("speed")), PrimChecks.validator.checkArg('*', 1, PrimChecks.procedure.callReporter("convert-heading-y", PrimChecks.turtle.getVariable("heading")))); ProcedurePrims.stack().currentContext().registerStringRunVar("Y-SPEED", yHspeed);
   let xposHplane = PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge")), 0.5); ProcedurePrims.stack().currentContext().registerStringRunVar("XPOS-PLANE", xposHplane);
@@ -215,11 +215,11 @@ ProcedurePrims.defineCommand("check-for-wall-collision", (function() {
     var R = ProcedurePrims.callCommand("assign-colliding-wall", tHplaneHyneg, "plane-yneg"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("assign-colliding-wall", (function(timeHtoHcollision, wall) {
+ProcedurePrims.defineCommand("assign-colliding-wall", 13055, 13589, (function(timeHtoHcollision, wall) {
   let collidingHpair = ListPrims.list(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, timeHtoHcollision), world.ticker.tickCount()), SelfManager.self(), wall); ProcedurePrims.stack().currentContext().registerStringRunVar("COLLIDING-PAIR", collidingHpair);
   world.observer.setGlobal("colliding-particles", PrimChecks.list.fput(collidingHpair, PrimChecks.validator.checkArg('FPUT', 8, world.observer.getGlobal("colliding-particles"))));
 }))
-ProcedurePrims.defineCommand("sort-collisions", (function() {
+ProcedurePrims.defineCommand("sort-collisions", 13598, 15397, (function() {
   world.observer.setGlobal("colliding-particles", PrimChecks.list.filter(Tasks.reporterTask(function(collision) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     return (!Prims.equality(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, collision)), world.observer.getGlobal("colliding-particle-1")) || !Prims.equality(PrimChecks.list.item(2, PrimChecks.validator.checkArg('ITEM', 12, collision)), world.observer.getGlobal("colliding-particle-2")));
@@ -249,7 +249,7 @@ ProcedurePrims.defineCommand("sort-collisions", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("collide-winners", (function() {
+ProcedurePrims.defineCommand("collide-winners", 15406, 16178, (function() {
   if (Prims.equality(world.observer.getGlobal("colliding-particle-1"), Nobody)) {
     return PrimChecks.procedure.stop();
   }
@@ -269,7 +269,7 @@ ProcedurePrims.defineCommand("collide-winners", (function() {
     var R = ProcedurePrims.callCommand("collide-with", world.observer.getGlobal("colliding-particle-2")); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("collide-with", (function(otherHparticle) {
+ProcedurePrims.defineCommand("collide-with", 16187, 18316, (function(otherHparticle) {
   let mass2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHparticle), function() { return SelfManager.self().getVariable("mass"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MASS2", mass2);
   let speed2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHparticle), function() { return SelfManager.self().getVariable("speed"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("SPEED2", speed2);
   let heading2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHparticle), function() { return PrimChecks.turtle.getVariable("heading"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("HEADING2", heading2);
@@ -296,7 +296,7 @@ ProcedurePrims.defineCommand("collide-with", (function(otherHparticle) {
   var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, otherHparticle), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("recolor", (function() {
+ProcedurePrims.defineCommand("recolor", 18325, 18498, (function() {
   if (Prims.equality(world.observer.getGlobal("color-scheme"), "red-green-blue")) {
     var R = ProcedurePrims.callCommand("recolor-banded"); if (R === DeathInterrupt) { return R; }
   }
@@ -307,7 +307,7 @@ ProcedurePrims.defineCommand("recolor", (function() {
     var R = ProcedurePrims.callCommand("recolor-none"); if (R === DeathInterrupt) { return R; }
   }
 }))
-ProcedurePrims.defineCommand("recolor-banded", (function() {
+ProcedurePrims.defineCommand("recolor-banded", 18507, 19156, (function() {
   let avgHspeed = 1; ProcedurePrims.stack().currentContext().registerStringRunVar("AVG-SPEED", avgHspeed);
   if (Prims.lt(SelfManager.self().getVariable("speed"), PrimChecks.math.mult(0.5, PrimChecks.validator.checkArg('*', 1, avgHspeed)))) {
     SelfManager.self().setVariable("color", 105);
@@ -321,7 +321,7 @@ ProcedurePrims.defineCommand("recolor-banded", (function() {
     }
   }
 }))
-ProcedurePrims.defineCommand("recolor-shaded", (function() {
+ProcedurePrims.defineCommand("recolor-shaded", 19165, 19568, (function() {
   let avgHspeed = 1; ProcedurePrims.stack().currentContext().registerStringRunVar("AVG-SPEED", avgHspeed);
   if (Prims.lt(SelfManager.self().getVariable("speed"), PrimChecks.math.mult(3, PrimChecks.validator.checkArg('*', 1, avgHspeed)))) {
     SelfManager.self().setVariable("color", PrimChecks.math.plus(PrimChecks.math.minus(95, 3.001), PrimChecks.math.div(PrimChecks.math.mult(8, PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("speed"))), PrimChecks.math.mult(3, PrimChecks.validator.checkArg('*', 1, avgHspeed)))));
@@ -330,13 +330,13 @@ ProcedurePrims.defineCommand("recolor-shaded", (function() {
     SelfManager.self().setVariable("color", PrimChecks.math.plus(95, 4.999));
   }
 }))
-ProcedurePrims.defineCommand("recolor-none", (function() { SelfManager.self().setVariable("color", PrimChecks.math.minus(55, 1)); }))
-ProcedurePrims.defineCommand("make-box", (function() {
+ProcedurePrims.defineCommand("recolor-none", 19576, 19611, (function() { SelfManager.self().setVariable("color", PrimChecks.math.minus(55, 1)); }))
+ProcedurePrims.defineCommand("make-box", 19652, 19840, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() {
     return ((Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pxcor"))), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pycor"))), world.observer.getGlobal("box-edge"))) || (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pycor"))), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pxcor"))), world.observer.getGlobal("box-edge"))));
   }), function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("make-particles", (function() {
+ProcedurePrims.defineCommand("make-particles", 19874, 20194, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(world.observer.getGlobal("number"), "PARTICLES"), function() {
     SelfManager.self().setVariable("speed", 1);
     PrimChecks.turtle.setVariable("size", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("smallest-particle-size")), PrimChecks.math.randomFloat(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("largest-particle-size")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("smallest-particle-size"))))));
@@ -346,27 +346,27 @@ ProcedurePrims.defineCommand("make-particles", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("arrange", world.turtleManager.turtlesOfBreed("PARTICLES")); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("arrange", (function(particleHset) {
+ProcedurePrims.defineCommand("arrange", 20651, 20792, (function(particleHset) {
   if (PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, particleHset)))) {
     return PrimChecks.procedure.stop();
   }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, particleHset), function() { var R = ProcedurePrims.callCommand("random-position"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("arrange", PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, particleHset), function() { return PrimChecks.procedure.callReporter("overlapping?"); })); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineReporter("overlapping?", (function() {
+ProcedurePrims.defineReporter("overlapping?", 20807, 21057, (function() {
   return PrimChecks.procedure.report(PrimChecks.agentset.anyOtherWith(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("size")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("largest-particle-size"))), 2)), function() {
     return Prims.lt(SelfManager.self().distance(SelfManager.myself()), PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("size")), PrimChecks.validator.checkArg('+', 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtle.getVariable("size"); }))), 2));
   }));
 }))
-ProcedurePrims.defineCommand("random-position", (function() {
+ProcedurePrims.defineCommand("random-position", 21118, 21287, (function() {
   PrimChecks.turtle.setXY(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.list.oneOf([1, -1])), PrimChecks.math.randomFloat(PrimChecks.math.minus(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge")), 0.5), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.turtle.getVariable("size")), 2)))), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.list.oneOf([1, -1])), PrimChecks.math.randomFloat(PrimChecks.math.minus(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge")), 0.5), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.turtle.getVariable("size")), 2)))));
 }))
-ProcedurePrims.defineCommand("reverse-time", (function() {
+ProcedurePrims.defineCommand("reverse-time", 21338, 22048, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { SelfManager.self().right(180); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("rebuild-collision-list"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("collide-winners"); if (R === DeathInterrupt) { return R; }
 }))
-ProcedurePrims.defineCommand("test-time-reversal", (function(n) {
+ProcedurePrims.defineCommand("test-time-reversal", 22865, 23061, (function(n) {
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { SelfManager.self().stamp(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   while (Prims.lt(world.ticker.tickCount(), n)) {

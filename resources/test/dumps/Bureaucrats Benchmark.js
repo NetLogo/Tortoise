@@ -66,7 +66,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("benchmark", (function() {
+ProcedurePrims.defineCommand("benchmark", 43, 131, (function() {
   PrimChecks.math.randomSeed(0);
   workspace.timer.reset();
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
@@ -75,7 +75,7 @@ ProcedurePrims.defineCommand("benchmark", (function() {
   }
   world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 139, 246, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
     SelfManager.self().setPatchVariable("n", 2);
@@ -84,7 +84,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   world.observer.setGlobal("total", PrimChecks.math.mult(2, PrimChecks.agentset.count(world.patches())));
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 254, 739, (function() {
   let activeHpatches = PrimChecks.agentset.patchSet(PrimChecks.list.oneOf(world.patches())); ProcedurePrims.stack().currentContext().registerStringRunVar("ACTIVE-PATCHES", activeHpatches);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, activeHpatches), function() {
     SelfManager.self().setPatchVariable("n", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("n")), 1));
@@ -107,7 +107,7 @@ ProcedurePrims.defineCommand("go", (function() {
   }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("colorize", (function() {
+ProcedurePrims.defineCommand("colorize", 747, 855, (function() {
   if (Prims.lte(SelfManager.self().getPatchVariable("n"), 3)) {
     SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, SelfManager.self().getPatchVariable("n")), [83, 54, 45, 25]));
   }

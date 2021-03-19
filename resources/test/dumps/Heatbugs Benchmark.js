@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("benchmark", (function() {
+ProcedurePrims.defineCommand("benchmark", 103, 254, (function() {
   PrimChecks.math.randomSeed(362);
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
   workspace.timer.reset();
@@ -58,7 +58,7 @@ ProcedurePrims.defineCommand("benchmark", (function() {
   }
   world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 262, 842, (function() {
   world.clearAll();
   world.ticker.reset();
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(PrimChecks.validator.checkArg('N-OF', 1, world.observer.getGlobal("bug-count")), world.patches())), function() {
@@ -71,7 +71,7 @@ ProcedurePrims.defineCommand("setup", (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 850, 1041, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtles()))) {
     return PrimChecks.procedure.stop();
   }
@@ -80,13 +80,13 @@ ProcedurePrims.defineCommand("go", (function() {
   var R = ProcedurePrims.callCommand("recolor-patches"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("recolor-patches", (function() {
+ProcedurePrims.defineCommand("recolor-patches", 1049, 1314, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     SelfManager.self().setPatchVariable("temp", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("temp")), PrimChecks.math.minus(1, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("evaporation-rate")))));
     SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("temp"), 0, 500));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("step", (function() {
+ProcedurePrims.defineCommand("step", 1322, 1878, (function() {
   PrimChecks.turtle.setVariable("unhappiness", PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ideal-temp")), PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("temp")))));
   if (Prims.equality(PrimChecks.turtle.getVariable("unhappiness"), 0)) {
     SelfManager.self().setPatchVariable("temp", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("temp")), PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("output-heat"))));
@@ -99,7 +99,7 @@ ProcedurePrims.defineCommand("step", (function() {
     SelfManager.self().setPatchVariable("temp", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("temp")), PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("output-heat"))));
   }
 }))
-ProcedurePrims.defineReporter("find-target", (function() {
+ProcedurePrims.defineReporter("find-target", 1944, 2090, (function() {
   if (Prims.lt(SelfManager.self().getPatchVariable("temp"), PrimChecks.turtle.getVariable("ideal-temp"))) {
     return PrimChecks.procedure.report(PrimChecks.agentset.maxOneOf(SelfManager.self().getNeighbors(), function() { return SelfManager.self().getPatchVariable("temp"); }));
   }
@@ -107,7 +107,7 @@ ProcedurePrims.defineReporter("find-target", (function() {
     return PrimChecks.procedure.report(PrimChecks.agentset.minOneOf(SelfManager.self().getNeighbors(), function() { return SelfManager.self().getPatchVariable("temp"); }));
   }
 }))
-ProcedurePrims.defineCommand("bug-move", (function(target) {
+ProcedurePrims.defineCommand("bug-move", 2098, 2698, (function(target) {
   let tries = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TRIES", tries);
   if (PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(PrimChecks.validator.checkArg('TURTLES-ON', 1904, target))))) {
     SelfManager.self().moveTo(target);

@@ -49,7 +49,7 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", (function() {
+ProcedurePrims.defineCommand("setup", 215, 585, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.topology.width, ""), function() {
@@ -65,7 +65,7 @@ ProcedurePrims.defineCommand("setup", (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", (function() {
+ProcedurePrims.defineCommand("go", 593, 1852, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }), function() {
     if (Prims.gt(world.ticker.tickCount(), 100)) {
       PrimChecks.turtle.setVariable("ypos", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("amplitude")), PrimChecks.math.sin(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("frequency")), world.ticker.tickCount()))));
