@@ -34,10 +34,12 @@ import
 
 class WidgetCompilerTest extends FunSuite {
   val commandMap = Map(
-    "foobar"                 -> "foobar()",
-    "ask turtles [ foobar ]" -> "AgentSet.ask(world.turtles, function() { foobar; })",
-    "setup"                  -> "procedures.setup()",
-    "update"                 -> "procedures.update()")
+      "foobar" -> "foobar()"
+    , "setup"  -> "procedures.setup()"
+    , "update" -> "procedures.update()"
+    , "ifelse count turtles = 0 [ stop ] [ ask turtles [ foobar ] ]" ->
+      "AgentSet.ask(world.turtles, function() { foobar; })"
+  )
 
   val reporterMap = Map(
     "0"                   -> "0",
@@ -46,10 +48,10 @@ class WidgetCompilerTest extends FunSuite {
     "reporter"            -> "globalVar()")
 
   def compileCommand(logo: String): CompiledStringV =
-    commandMap.get(logo).toSuccess(NonEmptyList(new Exception("Expected command")))
+    commandMap.get(logo).toSuccess(NonEmptyList(new Exception("WidgetCompilerTest: Did not get one of our pre-approved commands to 'compile'.")))
 
   def compileReporter(logo: String): CompiledStringV =
-    reporterMap.get(logo).toSuccess(NonEmptyList(new Exception("Expected reporter")))
+    reporterMap.get(logo).toSuccess(NonEmptyList(new Exception("WidgetCompilerTest: Did not get one of our pre-approved reporters to 'compile'.")))
 
   def compileWidgets(ws: Widget*): Seq[CompiledWidget] =
     new WidgetCompiler(compileCommand, compileReporter).compileWidgets(ws)
@@ -62,7 +64,7 @@ class WidgetCompilerTest extends FunSuite {
   }
 
   def assertIsSuccess(compiledWidget: CompiledWidget): Unit =
-    compiledWidget.widgetCompilation.fold(_ => fail("expected success"), _ => ())
+    compiledWidget.widgetCompilation.fold(ex => fail(s"expected success: $ex"), _ => ())
 
   def assertIsFailure(compiledWidget: CompiledWidget): Unit =
     compiledWidget.widgetCompilation.fold(_ => (), _ => fail("expected failure"))

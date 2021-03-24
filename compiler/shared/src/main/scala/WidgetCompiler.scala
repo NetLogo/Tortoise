@@ -77,14 +77,20 @@ class WidgetCompiler(
       def fail(kind: String): Nothing =
         throw new IllegalArgumentException(s"This type of agent cannot be asked: $kind")
 
-      def askBlock(agents: String)(logoAsk: String): String =
-        s"ask $agents [ $logoAsk ]"
+      def askBlock(agents: String, checkAllDead: Boolean)(logoAsk: String): String = {
+        val ask = s"ask $agents [ $logoAsk ]"
+        if (!checkAllDead) {
+          ask
+        } else {
+          s"ifelse count $agents = 0 [ stop ] [ $ask ]"
+        }
+      }
 
       val kindToAgentSetString = Map[String, String => String](
         "OBSERVER" -> identity _,
-        "TURTLE"   -> askBlock("turtles") _,
-        "PATCH"    -> askBlock("patches") _,
-        "LINK"     -> askBlock("links")   _)
+        "TURTLE"   -> askBlock("turtles", true)  _,
+        "PATCH"    -> askBlock("patches", false) _,
+        "LINK"     -> askBlock("links",   true)  _)
 
       kindToAgentSetString.getOrElse(kind, fail(kind)).apply(command)
     }
