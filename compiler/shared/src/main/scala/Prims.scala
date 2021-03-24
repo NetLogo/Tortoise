@@ -487,7 +487,7 @@ trait CommandPrims extends PrimUtils {
     val body = handlers.commands(w.args(1))
     val i = handlers.unusedVarname(w.command.token, "index")
     val j = handlers.unusedVarname(w.command.token, "repeatcount")
-    s"""|for (let $i = 0, $j = StrictMath.floor($count); $i < $j; $i++){
+    s"""|for (let $i = 0, $j = StrictMath.floor($count); $i < $j; $i++) {
         |${indented(body)}
         |}""".stripMargin
   }
