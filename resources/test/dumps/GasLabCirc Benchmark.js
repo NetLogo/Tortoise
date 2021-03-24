@@ -54,7 +54,7 @@ ProcedurePrims.defineCommand("benchmark", 577, 702, (function() {
   workspace.timer.reset();
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
   world.observer.setGlobal("manage-view-updates?", false);
-  for (let _index_664_670 = 0, _repeatcount_664_670 = StrictMath.floor(3500); _index_664_670 < _repeatcount_664_670; _index_664_670++){
+  for (let _index_664_670 = 0, _repeatcount_664_670 = StrictMath.floor(3500); _index_664_670 < _repeatcount_664_670; _index_664_670++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
   world.observer.setGlobal("result", workspace.timer.elapsed());

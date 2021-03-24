@@ -141,13 +141,13 @@ ProcedurePrims.defineCommand("setup-patches", 854, 1692, (function() {
       SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  for (let _index_1278_1284 = 0, _repeatcount_1278_1284 = StrictMath.floor(5); _index_1278_1284 < _repeatcount_1278_1284; _index_1278_1284++){
+  for (let _index_1278_1284 = 0, _repeatcount_1278_1284 = StrictMath.floor(5); _index_1278_1284 < _repeatcount_1278_1284; _index_1278_1284++) {
     var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return !Prims.equality(SelfManager.self().getPatchVariable("max-grain-here"), 0); }), function() {
       SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     world.topology.diffuse("grain-here", 0.25, false)
   }
-  for (let _index_1408_1414 = 0, _repeatcount_1408_1414 = StrictMath.floor(10); _index_1408_1414 < _repeatcount_1408_1414; _index_1408_1414++){
+  for (let _index_1408_1414 = 0, _repeatcount_1408_1414 = StrictMath.floor(10); _index_1408_1414 < _repeatcount_1408_1414; _index_1408_1414++) {
     world.topology.diffuse("grain-here", 0.25, false)
   }
   var R = ProcedurePrims.ask(world.patches(), function() {
@@ -227,7 +227,7 @@ ProcedurePrims.defineCommand("turn-towards-grain", 3425, 3909, (function() {
 ProcedurePrims.defineReporter("grain-ahead", 3924, 4110, (function() {
   let total = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL", total);
   let howHfar = 1; ProcedurePrims.stack().currentContext().registerStringRunVar("HOW-FAR", howHfar);
-  for (let _index_3989_3995 = 0, _repeatcount_3989_3995 = StrictMath.floor(PrimChecks.turtle.getVariable("vision")); _index_3989_3995 < _repeatcount_3989_3995; _index_3989_3995++){
+  for (let _index_3989_3995 = 0, _repeatcount_3989_3995 = StrictMath.floor(PrimChecks.turtle.getVariable("vision")); _index_3989_3995 < _repeatcount_3989_3995; _index_3989_3995++) {
     total = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, total), PrimChecks.validator.checkArg('+', 1, PrimChecks.agentset.of(SelfManager.self().patchAhead(howHfar), function() { return SelfManager.self().getPatchVariable("grain-here"); }))); ProcedurePrims.stack().currentContext().updateStringRunVar("TOTAL", total);
     howHfar = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, howHfar), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("HOW-FAR", howHfar);
   }
@@ -266,7 +266,7 @@ ProcedurePrims.defineCommand("update-lorenz-and-gini", 5651, 6347, (function() {
   let index = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("INDEX", index);
   world.observer.setGlobal("gini-index-reserve", 0);
   world.observer.setGlobal("lorenz-points", []);
-  for (let _index_6015_6021 = 0, _repeatcount_6015_6021 = StrictMath.floor(world.observer.getGlobal("num-people")); _index_6015_6021 < _repeatcount_6015_6021; _index_6015_6021++){
+  for (let _index_6015_6021 = 0, _repeatcount_6015_6021 = StrictMath.floor(world.observer.getGlobal("num-people")); _index_6015_6021 < _repeatcount_6015_6021; _index_6015_6021++) {
     wealthHsumHsoHfar = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, wealthHsumHsoHfar), PrimChecks.validator.checkArg('+', 1, PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, index), PrimChecks.validator.checkArg('ITEM', 12, sortedHwealths)))); ProcedurePrims.stack().currentContext().updateStringRunVar("WEALTH-SUM-SO-FAR", wealthHsumHsoHfar);
     world.observer.setGlobal("lorenz-points", PrimChecks.list.lput(PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, wealthHsumHsoHfar), PrimChecks.validator.checkArg('/', 1, totalHwealth)), 100), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("lorenz-points"))));
     index = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, index), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("INDEX", index);

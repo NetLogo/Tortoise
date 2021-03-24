@@ -79,7 +79,7 @@ ProcedurePrims.defineCommand("setup", 255, 740, (function() {
   var R = ProcedurePrims.callCommand("setup-atoms"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("go", 748, 1047, (function() {
-  for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++){
+  for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.turtles())), function() { var R = ProcedurePrims.callCommand("attempt-move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
   if (Prims.equality(PrimChecks.math.mod(world.ticker.tickCount(), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("num-atoms"))), 1)) {

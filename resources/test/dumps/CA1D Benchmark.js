@@ -58,7 +58,7 @@ ProcedurePrims.defineCommand("benchmark", 355, 466, (function() {
   PrimChecks.math.randomSeed(4378);
   var R = ProcedurePrims.callCommand("setup-random"); if (R === DeathInterrupt) { return R; }
   workspace.timer.reset();
-  for (let _index_415_421 = 0, _repeatcount_415_421 = StrictMath.floor(PrimChecks.math.mult(10, world.topology.height)); _index_415_421 < _repeatcount_415_421; _index_415_421++){
+  for (let _index_415_421 = 0, _repeatcount_415_421 = StrictMath.floor(PrimChecks.math.mult(10, world.topology.height)); _index_415_421 < _repeatcount_415_421; _index_415_421++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
   world.observer.setGlobal("result", workspace.timer.elapsed());
@@ -232,7 +232,7 @@ ProcedurePrims.defineCommand("print-block", 5431, 5663, (function(state) {
     SelfManager.self().setVariable("color", world.observer.getGlobal("background"));
   }
   PrimChecks.turtle.setVariable("heading", 90);
-  for (let _index_5606_5612 = 0, _repeatcount_5606_5612 = StrictMath.floor(4); _index_5606_5612 < _repeatcount_5606_5612; _index_5606_5612++){
+  for (let _index_5606_5612 = 0, _repeatcount_5606_5612 = StrictMath.floor(4); _index_5606_5612 < _repeatcount_5606_5612; _index_5606_5612++) {
     SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getVariable("color"));
     SelfManager.self().right(90);
     SelfManager.self()._optimalFdOne();

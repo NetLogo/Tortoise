@@ -140,7 +140,7 @@ ProcedurePrims.defineCommand("assign-test-frequency", 3531, 3630, (function() {
 }))
 ProcedurePrims.defineReporter("random-near", 3645, 3785, (function(center) {
   let result = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("RESULT", result);
-  for (let _index_3704_3710 = 0, _repeatcount_3704_3710 = StrictMath.floor(40); _index_3704_3710 < _repeatcount_3704_3710; _index_3704_3710++){
+  for (let _index_3704_3710 = 0, _repeatcount_3704_3710 = StrictMath.floor(40); _index_3704_3710 < _repeatcount_3704_3710; _index_3704_3710++) {
     result = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, result), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, center))); ProcedurePrims.stack().currentContext().updateStringRunVar("RESULT", result);
   }
   return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, result), 20));

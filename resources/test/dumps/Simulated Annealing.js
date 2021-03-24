@@ -67,7 +67,7 @@ ProcedurePrims.defineCommand("setup", 69, 275, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 284, 527, (function() {
-  for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++){
+  for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.patches())), function() { var R = ProcedurePrims.callCommand("try-swap"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
   world.observer.setGlobal("temperature", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("temperature")), PrimChecks.math.minus(1, PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("cooling-rate")), 100))));

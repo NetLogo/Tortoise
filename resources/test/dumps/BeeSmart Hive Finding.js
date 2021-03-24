@@ -113,7 +113,7 @@ ProcedurePrims.defineCommand("setup-hives", 2642, 3564, (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   let i = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("I", i);
-  for (let _index_3202_3208 = 0, _repeatcount_3202_3208 = StrictMath.floor(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SITES"))); _index_3202_3208 < _repeatcount_3202_3208; _index_3202_3208++){
+  for (let _index_3202_3208 = 0, _repeatcount_3202_3208 = StrictMath.floor(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SITES"))); _index_3202_3208 < _repeatcount_3202_3208; _index_3202_3208++) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.turtleManager.getTurtleOfBreed("SITES", i)), function() {
       SelfManager.self().setVariable("quality", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, i), PrimChecks.validator.checkArg('ITEM', 12, world.observer.getGlobal("quality-list"))));
       SelfManager.self().setVariable("label", SelfManager.self().getVariable("quality"));
@@ -332,7 +332,7 @@ ProcedurePrims.defineCommand("dance", 12817, 14704, (function() {
           else {
             SelfManager.self().penManager.raisePen();
           }
-          for (let _index_14583_14589 = 0, _repeatcount_14583_14589 = StrictMath.floor(2); _index_14583_14589 < _repeatcount_14583_14589; _index_14583_14589++){
+          for (let _index_14583_14589 = 0, _repeatcount_14583_14589 = StrictMath.floor(2); _index_14583_14589 < _repeatcount_14583_14589; _index_14583_14589++) {
             var R = ProcedurePrims.callCommand("waggle"); if (R === DeathInterrupt) { return R; }
             var R = ProcedurePrims.callCommand("make-semicircle"); if (R === DeathInterrupt) { return R; }
           }
@@ -405,7 +405,7 @@ ProcedurePrims.defineCommand("make-semicircle", 16747, 17408, (function() {
   if (Prims.equality(SelfManager.self().getVariable("circle-switch"), 1)) {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, SelfManager.self().getVariable("target")));
     SelfManager.self().right(-(90));
-    for (let _index_17080_17086 = 0, _repeatcount_17080_17086 = StrictMath.floor(numHofHturns); _index_17080_17086 < _repeatcount_17080_17086; _index_17080_17086++){
+    for (let _index_17080_17086 = 0, _repeatcount_17080_17086 = StrictMath.floor(numHofHturns); _index_17080_17086 < _repeatcount_17080_17086; _index_17080_17086++) {
       SelfManager.self().right(-(angleHperHturn));
       SelfManager.self().fd(PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, semicircle), 180), PrimChecks.validator.checkArg('*', 1, angleHperHturn)));
     }
@@ -413,7 +413,7 @@ ProcedurePrims.defineCommand("make-semicircle", 16747, 17408, (function() {
   if (Prims.equality(SelfManager.self().getVariable("circle-switch"), -1)) {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, SelfManager.self().getVariable("target")));
     SelfManager.self().right(90);
-    for (let _index_17233_17239 = 0, _repeatcount_17233_17239 = StrictMath.floor(numHofHturns); _index_17233_17239 < _repeatcount_17233_17239; _index_17233_17239++){
+    for (let _index_17233_17239 = 0, _repeatcount_17233_17239 = StrictMath.floor(numHofHturns); _index_17233_17239 < _repeatcount_17233_17239; _index_17233_17239++) {
       SelfManager.self().right(angleHperHturn);
       SelfManager.self().fd(PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, semicircle), 180), PrimChecks.validator.checkArg('*', 1, angleHperHturn)));
     }
@@ -428,7 +428,7 @@ ProcedurePrims.defineCommand("waggle", 17416, 18238, (function() {
   let waggleHswitch = 1; ProcedurePrims.stack().currentContext().registerStringRunVar("WAGGLE-SWITCH", waggleHswitch);
   SelfManager.self().right(-(60));
   SelfManager.self()._optimalFdLessThan1(0.4);
-  for (let _index_17897_17903 = 0, _repeatcount_17897_17903 = StrictMath.floor(PrimChecks.math.div(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("dist-to-hive")), 2), 2)); _index_17897_17903 < _repeatcount_17897_17903; _index_17897_17903++){
+  for (let _index_17897_17903 = 0, _repeatcount_17897_17903 = StrictMath.floor(PrimChecks.math.div(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("dist-to-hive")), 2), 2)); _index_17897_17903 < _repeatcount_17897_17903; _index_17897_17903++) {
     if (Prims.equality(waggleHswitch, 1)) {
       SelfManager.self().right(120);
       SelfManager.self()._optimalFdLessThan1(0.8);
@@ -465,7 +465,7 @@ ProcedurePrims.defineCommand("move-around", 18330, 18432, (function() {
 }))
 ProcedurePrims.defineCommand("plot-on-site-scouts", 18440, 18762, (function() {
   let i = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("I", i);
-  for (let _index_18472_18478 = 0, _repeatcount_18472_18478 = StrictMath.floor(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SITES"))); _index_18472_18478 < _repeatcount_18472_18478; _index_18472_18478++){
+  for (let _index_18472_18478 = 0, _repeatcount_18472_18478 = StrictMath.floor(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SITES"))); _index_18472_18478 < _repeatcount_18472_18478; _index_18472_18478++) {
     plotManager.setCurrentPlot("on-site");
     plotManager.setCurrentPen((workspace.dump('') + workspace.dump("site") + workspace.dump(i)));
     plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("SCOUTS"), function() {

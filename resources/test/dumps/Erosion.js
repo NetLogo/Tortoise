@@ -68,7 +68,7 @@ ProcedurePrims.defineCommand("setup", 353, 1051, (function() {
     SelfManager.self().setPatchVariable("drain?", false);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   if (world.observer.getGlobal("bumpy?")) {
-    for (let _index_729_735 = 0, _repeatcount_729_735 = StrictMath.floor(world.observer.getGlobal("terrain-smoothness")); _index_729_735 < _repeatcount_729_735; _index_729_735++){
+    for (let _index_729_735 = 0, _repeatcount_729_735 = StrictMath.floor(world.observer.getGlobal("terrain-smoothness")); _index_729_735 < _repeatcount_729_735; _index_729_735++) {
       world.topology.diffuse("elevation", 0.5, false)
     }
   }

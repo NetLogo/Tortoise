@@ -117,13 +117,13 @@ ProcedurePrims.defineCommand("setup-dna-string", 6109, 7532, (function() {
   }
   if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (short strand)")) {
     let initialHlengthHdna = 12; ProcedurePrims.stack().currentContext().registerStringRunVar("INITIAL-LENGTH-DNA", initialHlengthHdna);
-    for (let _index_6358_6364 = 0, _repeatcount_6358_6364 = StrictMath.floor(initialHlengthHdna); _index_6358_6364 < _repeatcount_6358_6364; _index_6358_6364++){
+    for (let _index_6358_6364 = 0, _repeatcount_6358_6364 = StrictMath.floor(initialHlengthHdna); _index_6358_6364 < _repeatcount_6358_6364; _index_6358_6364++) {
       world.observer.setGlobal("original-dna-string", (workspace.dump('') + workspace.dump(world.observer.getGlobal("original-dna-string")) + workspace.dump(PrimChecks.procedure.callReporter("random-base-letter-dna"))));
     }
   }
   if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (long strand)")) {
     let initialHlengthHdna = 56; ProcedurePrims.stack().currentContext().registerStringRunVar("INITIAL-LENGTH-DNA", initialHlengthHdna);
-    for (let _index_6550_6556 = 0, _repeatcount_6550_6556 = StrictMath.floor(initialHlengthHdna); _index_6550_6556 < _repeatcount_6550_6556; _index_6550_6556++){
+    for (let _index_6550_6556 = 0, _repeatcount_6550_6556 = StrictMath.floor(initialHlengthHdna); _index_6550_6556 < _repeatcount_6550_6556; _index_6550_6556++) {
       world.observer.setGlobal("original-dna-string", (workspace.dump('') + workspace.dump(world.observer.getGlobal("original-dna-string")) + workspace.dump(PrimChecks.procedure.callReporter("random-base-letter-dna"))));
     }
   }
@@ -176,7 +176,7 @@ ProcedurePrims.defineCommand("make-a-nucleotide-chain-for-dna-string", 8031, 869
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
     PrimChecks.turtle.setVariable("heading", 90);
     SelfManager.self()._optimalFdOne();
-    for (let _index_8203_8209 = 0, _repeatcount_8203_8209 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring))); _index_8203_8209 < _repeatcount_8203_8209; _index_8203_8209++){
+    for (let _index_8203_8209 = 0, _repeatcount_8203_8209 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring))); _index_8203_8209 < _repeatcount_8203_8209; _index_8203_8209++) {
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
         SelfManager.self().setVariable("strand", strandHtype);
@@ -200,7 +200,7 @@ ProcedurePrims.defineCommand("build-genes-from-dna", 8704, 10555, (function(stra
   let triplet = ""; ProcedurePrims.stack().currentContext().registerStringRunVar("TRIPLET", triplet);
   let itemHposition = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("ITEM-POSITION", itemHposition);
   let lastHitemHkept = PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring)); ProcedurePrims.stack().currentContext().registerStringRunVar("LAST-ITEM-KEPT", lastHitemHkept);
-  for (let _index_8923_8929 = 0, _repeatcount_8923_8929 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring))); _index_8923_8929 < _repeatcount_8923_8929; _index_8923_8929++){
+  for (let _index_8923_8929 = 0, _repeatcount_8923_8929 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring))); _index_8923_8929 < _repeatcount_8923_8929; _index_8923_8929++) {
     let firstHitem = PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, remainingHdna)); ProcedurePrims.stack().currentContext().registerStringRunVar("FIRST-ITEM", firstHitem);
     remainingHdna = PrimChecks.list.removeItem(0, PrimChecks.validator.checkArg('REMOVE-ITEM', 12, remainingHdna)); ProcedurePrims.stack().currentContext().updateStringRunVar("REMAINING-DNA", remainingHdna);
     lastHlastHitem = lastHitem; ProcedurePrims.stack().currentContext().updateStringRunVar("LAST-LAST-ITEM", lastHlastHitem);
@@ -230,7 +230,7 @@ ProcedurePrims.defineCommand("build-genes-from-dna", 8704, 10555, (function(stra
     let endHofHgene_Q = false; ProcedurePrims.stack().currentContext().registerStringRunVar("END-OF-GENE?", endHofHgene_Q);
     let tripletHcounter = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TRIPLET-COUNTER", tripletHcounter);
     let newHcode = SelfManager.self().getVariable("code"); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-CODE", newHcode);
-    for (let _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, SelfManager.self().getVariable("code"))), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++){
+    for (let _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, SelfManager.self().getVariable("code"))), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++) {
       let thisHtriplet = (workspace.dump('') + workspace.dump(PrimChecks.list.item(PrimChecks.math.plus(0, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, SelfManager.self().getVariable("code")))) + workspace.dump(PrimChecks.list.item(PrimChecks.math.plus(1, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, SelfManager.self().getVariable("code")))) + workspace.dump(PrimChecks.list.item(PrimChecks.math.plus(2, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, SelfManager.self().getVariable("code"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-TRIPLET", thisHtriplet);
       if ((((Prims.equality(thisHtriplet, "TAG") || Prims.equality(thisHtriplet, "TGA")) || Prims.equality(thisHtriplet, "TAA")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, endHofHgene_Q)))) {
         SelfManager.self().setVariable("end-position", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3));
@@ -250,7 +250,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
     let thisHgene = SelfManager.self(); ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-GENE", thisHgene);
     PrimChecks.turtle.setVariable("heading", 90);
     SelfManager.self()._optimalFdLessThan1(0.1);
-    for (let _index_10725_10731 = 0, _repeatcount_10725_10731 = StrictMath.floor(SelfManager.self().getVariable("start-position")); _index_10725_10731 < _repeatcount_10725_10731; _index_10725_10731++){
+    for (let _index_10725_10731 = 0, _repeatcount_10725_10731 = StrictMath.floor(SelfManager.self().getVariable("start-position")); _index_10725_10731 < _repeatcount_10725_10731; _index_10725_10731++) {
       SelfManager.self()._optimalFdLessThan1(0.45);
     }
     let geneHcolor = PrimChecks.procedure.callReporter("next-gene-color"); ProcedurePrims.stack().currentContext().registerStringRunVar("GENE-COLOR", geneHcolor);
@@ -302,7 +302,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
           SelfManager.self().tie();
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         let codeHtoHtranscribe = SelfManager.self().getVariable("code"); ProcedurePrims.stack().currentContext().registerStringRunVar("CODE-TO-TRANSCRIBE", codeHtoHtranscribe);
-        for (let _index_12422_12428 = 0, _repeatcount_12422_12428 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, SelfManager.self().getVariable("code")))); _index_12422_12428 < _repeatcount_12422_12428; _index_12422_12428++){
+        for (let _index_12422_12428 = 0, _repeatcount_12422_12428 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, SelfManager.self().getVariable("code")))); _index_12422_12428 < _repeatcount_12422_12428; _index_12422_12428++) {
           var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
             SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES"));
             SelfManager.self().setVariable("value", PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, codeHtoHtranscribe)));
@@ -329,7 +329,7 @@ ProcedurePrims.defineCommand("build-protein-from-mrna", 12909, 13543, (function(
     let numberHofHtripletsHinHlist = PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, SelfManager.self().getVariable("code"))), 3)); ProcedurePrims.stack().currentContext().registerStringRunVar("NUMBER-OF-TRIPLETS-IN-LIST", numberHofHtripletsHinHlist);
     let thisHtriplet = ""; ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-TRIPLET", thisHtriplet);
     let tripletHcounter = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TRIPLET-COUNTER", tripletHcounter);
-    for (let _index_13127_13133 = 0, _repeatcount_13127_13133 = StrictMath.floor(numberHofHtripletsHinHlist); _index_13127_13133 < _repeatcount_13127_13133; _index_13127_13133++){
+    for (let _index_13127_13133 = 0, _repeatcount_13127_13133 = StrictMath.floor(numberHofHtripletsHinHlist); _index_13127_13133 < _repeatcount_13127_13133; _index_13127_13133++) {
       thisHtriplet = (workspace.dump('') + workspace.dump(PrimChecks.procedure.callReporter("complementary-mrna-base", PrimChecks.list.item(PrimChecks.math.plus(0, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, SelfManager.self().getVariable("code"))))) + workspace.dump(PrimChecks.procedure.callReporter("complementary-mrna-base", PrimChecks.list.item(PrimChecks.math.plus(1, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, SelfManager.self().getVariable("code"))))) + workspace.dump(PrimChecks.procedure.callReporter("complementary-mrna-base", PrimChecks.list.item(PrimChecks.math.plus(2, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, SelfManager.self().getVariable("code")))))); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-TRIPLET", thisHtriplet);
       var R = ProcedurePrims.callCommand("build-trna-for-this-triplet", thisHtriplet, tripletHcounter); if (R === DeathInterrupt) { return R; }
       tripletHcounter = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, tripletHcounter), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("TRIPLET-COUNTER", tripletHcounter);
@@ -704,18 +704,18 @@ ProcedurePrims.defineCommand("make-duplicate-dna-string", 23434, 24783, (functio
   let lociHcounter = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("LOCI-COUNTER", lociHcounter);
   let dnaHatHandHafterHtarget = PrimChecks.list.substring(PrimChecks.validator.checkArg('SUBSTRING', 4, mutatingHcopyHofHdnaHstring), PrimChecks.validator.checkArg('SUBSTRING', 1, targetHloci), PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, mutatingHcopyHofHdnaHstring))); ProcedurePrims.stack().currentContext().registerStringRunVar("DNA-AT-AND-AFTER-TARGET", dnaHatHandHafterHtarget);
   if (Prims.equality(world.observer.getGlobal("mutation-type"), "deletion")) {
-    for (let _index_24050_24056 = 0, _repeatcount_24050_24056 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24050_24056 < _repeatcount_24050_24056; _index_24050_24056++){
+    for (let _index_24050_24056 = 0, _repeatcount_24050_24056 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24050_24056 < _repeatcount_24050_24056; _index_24050_24056++) {
       mutatingHcopyHofHdnaHstring = PrimChecks.list.removeItem(PrimChecks.validator.checkArg('REMOVE-ITEM', 1, targetHloci), PrimChecks.validator.checkArg('REMOVE-ITEM', 12, mutatingHcopyHofHdnaHstring)); ProcedurePrims.stack().currentContext().updateStringRunVar("MUTATING-COPY-OF-DNA-STRING", mutatingHcopyHofHdnaHstring);
     }
   }
   if (Prims.equality(world.observer.getGlobal("mutation-type"), "substitution")) {
-    for (let _index_24236_24242 = 0, _repeatcount_24236_24242 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24236_24242 < _repeatcount_24236_24242; _index_24236_24242++){
+    for (let _index_24236_24242 = 0, _repeatcount_24236_24242 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24236_24242 < _repeatcount_24236_24242; _index_24236_24242++) {
       mutatingHcopyHofHdnaHstring = PrimChecks.list.replaceItem(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, targetHloci), PrimChecks.validator.checkArg('+', 1, lociHcounter)), PrimChecks.validator.checkArg('REPLACE-ITEM', 12, mutatingHcopyHofHdnaHstring), PrimChecks.procedure.callReporter("random-base-letter-dna")); ProcedurePrims.stack().currentContext().updateStringRunVar("MUTATING-COPY-OF-DNA-STRING", mutatingHcopyHofHdnaHstring);
       lociHcounter = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, lociHcounter), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("LOCI-COUNTER", lociHcounter);
     }
   }
   if (Prims.equality(world.observer.getGlobal("mutation-type"), "insertion")) {
-    for (let _index_24503_24509 = 0, _repeatcount_24503_24509 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24503_24509 < _repeatcount_24503_24509; _index_24503_24509++){
+    for (let _index_24503_24509 = 0, _repeatcount_24503_24509 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24503_24509 < _repeatcount_24503_24509; _index_24503_24509++) {
       dnaHatHandHafterHtarget = (workspace.dump('') + workspace.dump(PrimChecks.procedure.callReporter("random-base-letter-dna")) + workspace.dump(dnaHatHandHafterHtarget)); ProcedurePrims.stack().currentContext().updateStringRunVar("DNA-AT-AND-AFTER-TARGET", dnaHatHandHafterHtarget);
     }
     mutatingHcopyHofHdnaHstring = (workspace.dump('') + workspace.dump(dnaHbeforeHtarget) + workspace.dump(dnaHatHandHafterHtarget)); ProcedurePrims.stack().currentContext().updateStringRunVar("MUTATING-COPY-OF-DNA-STRING", mutatingHcopyHofHdnaHstring);
@@ -806,7 +806,7 @@ ProcedurePrims.defineReporter("gene-number-for-this-strand", 28327, 28589, (func
 ProcedurePrims.defineReporter("mrna-string-from-dna-string", 28665, 28948, (function(dnaHstring) {
   let newHstring = dnaHstring; ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-STRING", newHstring);
   let nextHitem = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("NEXT-ITEM", nextHitem);
-  for (let _index_28754_28760 = 0, _repeatcount_28754_28760 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring))); _index_28754_28760 < _repeatcount_28754_28760; _index_28754_28760++){
+  for (let _index_28754_28760 = 0, _repeatcount_28754_28760 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring))); _index_28754_28760 < _repeatcount_28754_28760; _index_28754_28760++) {
     newHstring = PrimChecks.list.replaceItem(PrimChecks.validator.checkArg('REPLACE-ITEM', 1, nextHitem), PrimChecks.validator.checkArg('REPLACE-ITEM', 12, newHstring), PrimChecks.procedure.callReporter("complementary-mrna-base", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, nextHitem), PrimChecks.validator.checkArg('ITEM', 12, newHstring)))); ProcedurePrims.stack().currentContext().updateStringRunVar("NEW-STRING", newHstring);
     nextHitem = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, nextHitem), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("NEXT-ITEM", nextHitem);
   }
@@ -815,7 +815,7 @@ ProcedurePrims.defineReporter("mrna-string-from-dna-string", 28665, 28948, (func
 ProcedurePrims.defineReporter("dna-string-with-non-nucleotide-characters-replaced", 29108, 29494, (function(dnaHstring) {
   let newHstring = dnaHstring; ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-STRING", newHstring);
   let nextHitem = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("NEXT-ITEM", nextHitem);
-  for (let _index_29220_29226 = 0, _repeatcount_29220_29226 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring))); _index_29220_29226 < _repeatcount_29220_29226; _index_29220_29226++){
+  for (let _index_29220_29226 = 0, _repeatcount_29220_29226 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring))); _index_29220_29226 < _repeatcount_29220_29226; _index_29220_29226++) {
     newHstring = PrimChecks.list.replaceItem(PrimChecks.validator.checkArg('REPLACE-ITEM', 1, nextHitem), PrimChecks.validator.checkArg('REPLACE-ITEM', 12, newHstring), PrimChecks.procedure.callReporter("replace-non-nucleotide-character", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, nextHitem), PrimChecks.validator.checkArg('ITEM', 12, newHstring)))); ProcedurePrims.stack().currentContext().updateStringRunVar("NEW-STRING", newHstring);
     nextHitem = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, nextHitem), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("NEXT-ITEM", nextHitem);
   }

@@ -62,7 +62,7 @@ ProcedurePrims.defineCommand("benchmark", 123, 214, (function() {
   PrimChecks.math.randomSeed(579);
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
   workspace.timer.reset();
-  for (let _index_175_181 = 0, _repeatcount_175_181 = StrictMath.floor(10000); _index_175_181 < _repeatcount_175_181; _index_175_181++){
+  for (let _index_175_181 = 0, _repeatcount_175_181 = StrictMath.floor(10000); _index_175_181 < _repeatcount_175_181; _index_175_181++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
   world.observer.setGlobal("result", workspace.timer.elapsed());

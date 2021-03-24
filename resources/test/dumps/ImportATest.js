@@ -148,7 +148,7 @@ ProcedurePrims.defineCommand("test-world-url", 194573, 194760, (function() {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     Extensions["IMPORT-A"].prims["WORLD"](worldHtext);
     world.ticker.reset();
-    for (let _index_194738_194744 = 0, _repeatcount_194738_194744 = StrictMath.floor(x); _index_194738_194744 < _repeatcount_194738_194744; _index_194738_194744++){
+    for (let _index_194738_194744 = 0, _repeatcount_194738_194744 = StrictMath.floor(x); _index_194738_194744 < _repeatcount_194738_194744; _index_194738_194744++) {
       world.ticker.tick();
     }
   }, "[ world-text -> import-a:world world-text reset-ticks repeat x [ tick ] ]"));
@@ -185,7 +185,7 @@ ProcedurePrims.defineCommand("test-world-file", 195103, 195297, (function() {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     Extensions["IMPORT-A"].prims["WORLD"](worldHtext);
     world.ticker.reset();
-    for (let _index_195275_195281 = 0, _repeatcount_195275_195281 = StrictMath.floor(x); _index_195275_195281 < _repeatcount_195275_195281; _index_195275_195281++){
+    for (let _index_195275_195281 = 0, _repeatcount_195275_195281 = StrictMath.floor(x); _index_195275_195281 < _repeatcount_195275_195281; _index_195275_195281++) {
       world.ticker.tick();
     }
   }, "[ world-text -> import-a:world world-text reset-ticks repeat x [ tick ] ]"));
@@ -211,7 +211,7 @@ ProcedurePrims.defineCommand("test-world-reporter", 195574, 195697, (function() 
   let x = world.ticker.tickCount(); ProcedurePrims.stack().currentContext().registerStringRunVar("X", x);
   Extensions["IMPORT-A"].prims["WORLD"](PrimChecks.procedure.callReporter("world"));
   world.ticker.reset();
-  for (let _index_195679_195685 = 0, _repeatcount_195679_195685 = StrictMath.floor(x); _index_195679_195685 < _repeatcount_195679_195685; _index_195679_195685++){
+  for (let _index_195679_195685 = 0, _repeatcount_195679_195685 = StrictMath.floor(x); _index_195679_195685 < _repeatcount_195679_195685; _index_195679_195685++) {
     world.ticker.tick();
   }
 }))

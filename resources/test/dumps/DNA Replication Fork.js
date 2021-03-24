@@ -97,7 +97,7 @@ ProcedurePrims.defineCommand("setup", 7160, 9219, (function() {
     SelfManager.self().setVariable("color", [255, 255, 255, 100]);
     SelfManager.self().setVariable("hidden?", true);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  for (let _index_8948_8954 = 0, _repeatcount_8948_8954 = StrictMath.floor(world.observer.getGlobal("free-nucleosides")); _index_8948_8954 < _repeatcount_8948_8954; _index_8948_8954++){
+  for (let _index_8948_8954 = 0, _repeatcount_8948_8954 = StrictMath.floor(world.observer.getGlobal("free-nucleosides")); _index_8948_8954 < _repeatcount_8948_8954; _index_8948_8954++) {
     var R = ProcedurePrims.callCommand("make-a-nucleoside"); if (R === DeathInterrupt) { return R; }
   }
   var R = ProcedurePrims.callCommand("make-initial-dna-strip"); if (R === DeathInterrupt) { return R; }
@@ -204,7 +204,7 @@ ProcedurePrims.defineCommand("make-initial-dna-strip", 11571, 13381, (function()
     SelfManager.self()._optimalFdOne();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CHROMOSOME-BUILDERS"), function() {
-    for (let _index_11870_11876 = 0, _repeatcount_11870_11876 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_11870_11876 < _repeatcount_11870_11876; _index_11870_11876++){
+    for (let _index_11870_11876 = 0, _repeatcount_11870_11876 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_11870_11876 < _repeatcount_11870_11876; _index_11870_11876++) {
       placeHcounter = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, placeHcounter), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("PLACE-COUNTER", placeHcounter);
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
@@ -366,7 +366,7 @@ ProcedurePrims.defineCommand("visualize-agents", 16255, 17273, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("wind-initial-dna-into-bundle", 17612, 17685, (function() {
-  for (let _index_17643_17649 = 0, _repeatcount_17643_17649 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_17643_17649 < _repeatcount_17643_17649; _index_17643_17649++){
+  for (let _index_17643_17649 = 0, _repeatcount_17643_17649 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_17643_17649 < _repeatcount_17643_17649; _index_17643_17649++) {
     var R = ProcedurePrims.callCommand("wind-dna"); if (R === DeathInterrupt) { return R; }
   }
 }))

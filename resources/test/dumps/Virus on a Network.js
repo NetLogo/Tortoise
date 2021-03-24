@@ -98,7 +98,7 @@ ProcedurePrims.defineCommand("setup-spatially-clustered-network", 709, 1192, (fu
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
-  for (let _index_1097_1103 = 0, _repeatcount_1097_1103 = StrictMath.floor(10); _index_1097_1103 < _repeatcount_1097_1103; _index_1097_1103++){
+  for (let _index_1097_1103 = 0, _repeatcount_1097_1103 = StrictMath.floor(10); _index_1097_1103 < _repeatcount_1097_1103; _index_1097_1103++) {
     LayoutManager.layoutSpring(world.turtles(), world.links(), 0.3, PrimChecks.math.div(world.topology.width, PrimChecks.math.sqrt(PrimChecks.validator.checkArg('SQRT', 1, world.observer.getGlobal("number-of-nodes")))), 1);
   }
 }))

@@ -134,7 +134,7 @@ ProcedurePrims.defineCommand("setup-control-rods", 1028, 2107, (function() {
       rodHx = PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, rodHx), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("ROD-X", rodHx);
     }
   }
-  for (let _index_1937_1943 = 0, _repeatcount_1937_1943 = StrictMath.floor(world.observer.getGlobal("n-rods")); _index_1937_1943 < _repeatcount_1937_1943; _index_1937_1943++){
+  for (let _index_1937_1943 = 0, _repeatcount_1937_1943 = StrictMath.floor(world.observer.getGlobal("n-rods")); _index_1937_1943 < _repeatcount_1937_1943; _index_1937_1943++) {
     var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), rodHx); }), function() { SelfManager.self().setPatchVariable("rod?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     rodHx = PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, rodHx), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("rod-spacing"))), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("ROD-X", rodHx);
   }

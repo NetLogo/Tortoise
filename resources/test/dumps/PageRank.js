@@ -78,7 +78,7 @@ ProcedurePrims.defineCommand("setup", 242, 902, (function() {
     SelfManager.self().setVariable("label-color", 0);
     var R = ProcedurePrims.callCommand("update-page-appearance"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(300); _index_827_833 < _repeatcount_827_833; _index_827_833++){
+  for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(300); _index_827_833 < _repeatcount_827_833; _index_827_833++) {
     var R = ProcedurePrims.callCommand("do-layout"); if (R === DeathInterrupt) { return R; }
   }
   var R = ProcedurePrims.ask(world.links(), function() { SelfManager.self().setVariable("shape", "curved"); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -160,7 +160,7 @@ ProcedurePrims.defineCommand("link-preferentially", 2210, 3891, (function(nodese
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, node), function() {
       let tempHneighborHlist = neighborHchoiceHlist; ProcedurePrims.stack().currentContext().registerStringRunVar("TEMP-NEIGHBOR-LIST", tempHneighborHlist);
-      for (let _index_3056_3062 = 0, _repeatcount_3056_3062 = StrictMath.floor(k); _index_3056_3062 < _repeatcount_3056_3062; _index_3056_3062++){
+      for (let _index_3056_3062 = 0, _repeatcount_3056_3062 = StrictMath.floor(k); _index_3056_3062 < _repeatcount_3056_3062; _index_3056_3062++) {
         let neighbor = PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, tempHneighborHlist)); ProcedurePrims.stack().currentContext().registerStringRunVar("NEIGHBOR", neighbor);
         tempHneighborHlist = PrimChecks.list.remove(neighbor, PrimChecks.validator.checkArg('REMOVE', 12, tempHneighborHlist)); ProcedurePrims.stack().currentContext().updateStringRunVar("TEMP-NEIGHBOR-LIST", tempHneighborHlist);
         neighborHchoiceHlist = PrimChecks.list.fput(neighbor, PrimChecks.validator.checkArg('FPUT', 8, neighborHchoiceHlist)); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
