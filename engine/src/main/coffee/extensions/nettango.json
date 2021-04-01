@@ -56,6 +56,20 @@
         ],
         "returnType": "unit"
       }, {
+        "name": "highlight-blocks",
+        "actionName": "highlight-blocks",
+        "argTypes": [
+          "wildcard"
+        ],
+        "returnType": "unit"
+      }, {
+        "name": "highlight-blocks-except",
+        "actionName": "highlight-blocks-except",
+        "argTypes": [
+          "wildcard"
+        ],
+        "returnType": "unit"
+      }, {
         "name": "switch-program",
         "actionName": "switch-program",
         "argTypes": [

@@ -7,7 +7,7 @@ getTortugaSession = () =>
     return null
 
 module.exports = {
-  init: (nettango) =>
+  init: (workspace) =>
 
     # (Number) => Unit
     activate = (id) ->
@@ -64,6 +64,22 @@ module.exports = {
       else
         workspace.printPrims.print("Hide NetTango blocks except #{tags}")
       return
+      
+    # (String|List) => Unit
+    highlightBlocks = (tags) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue({ Type: "NetTango", Action: "HighlightBlocks", Value: tags })
+      else
+        workspace.printPrims.print("Highlight NetTango blocks #{tags}")
+      return
+      
+    # (String|List) => Unit
+    highlightBlocksExcept = (tags) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue({ Type: "NetTango", Action: "HighlightBlocksExcept", Value: tags })
+      else
+        workspace.printPrims.print("Highlight NetTango blocks except #{tags}")
+      return
 
     # () => Unit
     recompile = () ->
@@ -85,13 +101,15 @@ module.exports = {
       name: "nettango"
     , prims: {
                   "ACTIVATE": activate
-      ,               "SHOW": show
-      ,               "HIDE": hide
-      ,        "SHOW-BLOCKS": showBlocks
-      , "SHOW-BLOCKS-EXCEPT": showBlocksExcept
-      ,        "HIDE-BLOCKS": hideBlocks
-      , "HIDE-BLOCKS-EXCEPT": hideBlocksExcept
-      ,     "SWITCH-PROGRAM": switchProgram
+      ,                    "SHOW": show
+      ,                    "HIDE": hide
+      ,             "SHOW-BLOCKS": showBlocks
+      ,      "SHOW-BLOCKS-EXCEPT": showBlocksExcept
+      ,             "HIDE-BLOCKS": hideBlocks
+      ,      "HIDE-BLOCKS-EXCEPT": hideBlocksExcept
+      ,        "HIGHLIGHT-BLOCKS": highlightBlocks
+      , "HIGHLIGHT-BLOCKS-EXCEPT": highlightBlocksExcept
+      ,          "SWITCH-PROGRAM": switchProgram
       }
     }
 }

@@ -16,10 +16,13 @@ module.exports = {
     # (String, Boolean*, Any*) => Unit
     showDialog = (name, minimized) ->
       if tortugaSession = getTortugaSession()
-        if typeof(minimized) is 'boolean'
-          tortugaSession.ShowDialog(name, minimized)
+        if name of tortugaSession.Tutorial.Dialogs
+          if typeof(minimized) is 'boolean'
+            tortugaSession.ShowDialog(name, minimized)
+          else
+            tortugaSession.ShowDialog(name, false)
         else
-          tortugaSession.ShowDialog(name, false)
+          throw new Error("Dialog #{name} is not defined in the tutorial")
       else
         workspace.printPrims.print("Show dialog #{name} in #{if minimized then "minimized" else "full"} status")
       return
@@ -122,6 +125,12 @@ module.exports = {
           throw new Error("Section #{sectionName} is not defined in the tutorial")
       else false
 
+    # () -> List
+    getActivated = () ->
+      if tortugaSession = getTortugaSession()
+         tortugaSession.GetActiveSections().map((Section) -> Section.Name)
+      else []
+
     # (String) -> Unit
     go = (sectionName) ->
       if tortugaSession = getTortugaSession()
@@ -186,6 +195,7 @@ module.exports = {
       ,              "GO": go
       ,        "ACTIVATE": activate
       ,      "DEACTIVATE": deactivate
+      ,   "GET-ACTIVATED": getActivated
       ,   "IS-ACTIVATED?": isActivated
       ,         "FORWARD": forward
       ,            "BACK": back

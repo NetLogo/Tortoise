@@ -63,6 +63,11 @@
       ],
       "returnType": "unit"
     }, {
+      "name": "get-activated",
+      "actionName": "get-activated",
+      "argTypes": [ ],
+      "returnType": "boolean"
+    }, {
       "name": "is-activated?",
       "actionName": "is-activated?",
       "argTypes": [
