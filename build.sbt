@@ -4,9 +4,9 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDepe
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 import org.scalastyle.sbt.ScalastylePlugin.projectSettings
 
-val nlDependencyVersion       = "6.2.0-4a3a035"
+val nlDependencyVersion       = "6.2.0-d27b502"
 
-val parserJsDependencyVersion = "0.3.0-50a3068"
+val parserJsDependencyVersion = "0.3.0-d27b502"
 
 val scalazVersion             = "7.2.29"
 
@@ -21,7 +21,7 @@ val commonSettings =
     scalacOptions ++=
       "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
     // Dependencies
-    resolvers           += sbt.Resolver.bintrayRepo("netlogo", "NetLogoHeadless"),
+    resolvers     += "netlogoheadless" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/",
     libraryDependencies ++= Seq(
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
@@ -41,8 +41,7 @@ val commonSettings =
     resourceDirectory in Test    := (baseDirectory in root).value / "resources" / "test",
     // Build and publication settings
     isSnapshot                   := true, // Used by the publish-versioned plugin
-    bintrayRepository            := "TortoiseAux",
-    bintrayOrganization          := Option("netlogo"),
+    publishTo                    := { Some("Cloudsmith API" at "https://maven.cloudsmith.io/netlogo/tortoise/") },
     // Logging and Output settings
     ivyLoggingLevel              := UpdateLogging.Quiet, // only log problems plz
     onLoadMessage                := "",
