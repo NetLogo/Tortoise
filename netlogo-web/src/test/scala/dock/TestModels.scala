@@ -128,7 +128,7 @@ class TestModels extends DockingSuite {
 
     // Just check the patch size (not the image base64) --JAB (2/12/19)
     val transformDrawing =
-      (str: String) => str.lines.toSeq.init.mkString("\n")
+      (str: String) => (str: scala.collection.immutable.StringOps).lines.toSeq.init.mkString("\n")
 
     // Trim off plot bounds --JAB (1/3/18)
     val transformPlots =

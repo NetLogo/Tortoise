@@ -2,6 +2,11 @@
 
 package org.nlogo.tortoise.compiler
 
+// All of these type casts to `StringOps` are a workaround for dealing with
+// this: https://github.com/scala/bug/issues/11125
+// --JAB (4/10/20)
+import scala.collection.immutable.StringOps
+
 object JsOps {
   // Intended to take in a NetLogo identifier (e.g. breed names, varnames, `turtles-own` varnames) and give back a
   // string for use in JavaScript.  We cannot simply wrap the string in single quotes, since single quotes are
@@ -29,7 +34,7 @@ object JsOps {
     val jsArgs = args.mkString("(", ", ", ")")
     if (body.length == 0)
       s"function$jsArgs {}"
-    else if (body.lines.length < 2 && body.length < 100)
+    else if ((body: StringOps).lines.length < 2 && body.length < 100)
       s"function$jsArgs { $body }"
     else
       s"""|function$jsArgs {
@@ -44,5 +49,5 @@ object JsOps {
     if (str.nonEmpty) jsFunction(body = s"return $str;") else jsFunction()
 
   def indented(s: String): String =
-    s.lines.map("  " + _).mkString("\n")
+    (s: StringOps).lines.map("  " + _).mkString("\n")
 }
