@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ checks }        = require('engine/core/typechecker')
-{ StopInterrupt } = require('util/interrupts')
+{ checks }                        = require('engine/core/typechecker')
+{ DeathInterrupt, StopInterrupt } = require('util/interrupts')
 
 class ProcedureChecks
 
@@ -30,7 +30,7 @@ class ProcedureChecks
         @validator.error('stop', 'STOP is not allowed inside TO-REPORT.')
 
     else
-      if not @procedurePrims.stack().currentContext().isReportAllowed()
+      if value isnt DeathInterrupt and not @procedurePrims.stack().currentContext().isReportAllowed()
         @validator.error('report', 'REPORT can only be used inside TO-REPORT.')
 
     value
