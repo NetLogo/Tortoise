@@ -20,6 +20,7 @@ import org.nlogo.core.model.ModelReader
 
 import org.nlogo.parse.CompilerUtilities
 
+import scala.collection.immutable.ListMap
 import scala.reflect.ClassTag
 
 import scala.scalajs.js
@@ -124,6 +125,63 @@ class BrowserCompiler {
     val overridingSeq: Seq[String] = overriding.map(_.toUpperCase)
     val results: CompiledStringV   = lastCompiledModel.compileProceduresIncremental(command, overridingSeq)
     JsonLibrary.toNative(compileResult2Json.apply(results))
+  }
+
+  @JSExport
+  def listGlobalVars(): NativeJson = {
+
+    val program     = lastCompiledModel.compilation.program
+    val interfaceGs = program.interfaceGlobals.map((g) => (g,               "interface"))
+    val      userGs = program.     userGlobals.map((g) => (g.toLowerCase,        "user"))
+
+    val json =
+      JsArray(
+        (interfaceGs ++ userGs).map {
+          case (name, typ) =>
+            JsObject(
+              ListMap( "name" -> JsString(name)
+                     , "type" -> JsString(typ)
+                     )
+            )
+        }
+      )
+
+    JsonLibrary.toNative(json)
+
+  }
+
+  @JSExport
+  def listProcedures(): NativeJson = {
+
+    val procedures = lastCompiledModel.compilation.procedures.values
+
+    val json =
+      JsArray(
+        procedures.map(
+          (proc) =>
+            JsObject(
+              ListMap( "argCount"            -> JsInt   (proc.argTokens.length)
+                     , "isReporter"          -> JsBool  (proc.isReporter)
+                     , "isUseableByObserver" -> JsBool  (proc.agentClassString(0) == 'O')
+                     , "isUseableByTurtles"  -> JsBool  (proc.agentClassString(1) == 'T')
+                     , "name"                -> JsString(proc.name.toLowerCase)
+                     )
+            )
+        ).toSeq
+      )
+
+    JsonLibrary.toNative(json)
+
+  }
+
+  @JSExport
+  def listVarsForBreed(breedName: String): NativeJson = {
+    val program    = lastCompiledModel.compilation.program
+    val commonVars = program.turtleVars.keys
+    val breedVars  = program.breeds.get(breedName.toUpperCase).fold(Seq[String]())(_.owns)
+    val jsonify    = ((x: String) => x.toLowerCase) andThen JsString.apply
+    val json       = JsArray((commonVars ++ breedVars).map(jsonify).toSeq)
+    JsonLibrary.toNative(json)
   }
 
   private def transformErrorsAndUpdateModel(
