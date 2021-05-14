@@ -26,7 +26,7 @@ class ProcedurePrims
     @_reporters.set(name, new Reporter(name, start, end, reporter))
     return
 
-  # (Agentset, () => Any, Boolean) => Unit | DeathInterrupt
+  # (Agent|AgentSet, () => Any, Boolean) => Unit | DeathInterrupt
   ask: (agents, f, shuffle) ->
     @_stack.currentContext().startAsk()
     try
