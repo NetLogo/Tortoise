@@ -2,38 +2,33 @@
 
 package org.nlogo.tortoise.compiler
 
-import
-  CompiledModel.CompileResult
+import CompiledModel.CompileResult
 
-import
-  json.{ JsonLibrary, JsonReader, JsonWritable, JsonWriter, TortoiseJson },
-    JsonLibrary.{ Native => NativeJson, toTortoise },
-    JsonWriter.string2TortoiseJs,
-    TortoiseJson._
+import json.JsonLibrary
+import json.JsonLibrary.{ Native => NativeJson, toTortoise }
+import json.JsonReader
+import json.JsonWritable
+import json.JsonWriter
+import json.JsonWriter.string2TortoiseJs
+import json.TortoiseJson
+import json.TortoiseJson._
 
-import
-  org.nlogo.tortoise.macros.json.Jsonify
+import org.nlogo.tortoise.macros.json.Jsonify
 
-import
-  org.nlogo.core.{ CompilerException, model },
-    model.ModelReader
+import org.nlogo.core.CompilerException
+import org.nlogo.core.model.ModelReader
 
 import org.nlogo.parse.CompilerUtilities
 
-import
-  scala.reflect.ClassTag
+import scala.reflect.ClassTag
 
-import
-  scala.scalajs.js
+import scala.scalajs.js
+import scala.scalajs.js.annotation.{ JSExport, JSExportTopLevel }
 
-import
-  scala.scalajs.js.annotation.{ JSExport, JSExportTopLevel }
-
-import
-  scalaz.{ NonEmptyList, Scalaz, std, Validation, ValidationNel },
-    std.list._,
-    Scalaz.ToValidationOps,
-    Validation.FlatMap.ValidationFlatMapRequested
+import scalaz.{ NonEmptyList, Validation, ValidationNel }
+import scalaz.std.list._
+import scalaz.Scalaz.ToValidationOps
+import scalaz.Validation.FlatMap.ValidationFlatMapRequested
 
 @JSExportTopLevel("BrowserCompiler")
 class BrowserCompiler {
