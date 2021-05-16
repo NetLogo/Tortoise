@@ -270,7 +270,6 @@ class DockingFixture extends Fixture {
     mode: any,
     mungeActual: (s: string) => string
   ) {
-    debugger;
     if (!this.opened) this.declare(Model());
     this.netLogoCode += `${reporter.reporterSync()}`;
     const compiledJS =
@@ -423,8 +422,12 @@ class DockingFixture extends Fixture {
     // TODO waiting for proper engine impl
     // /*
     // const processJSON = ((x: String) => Json.parse(x))// andThen render andThen compact
-    this.engine.vm.sandbox.expectedUpdates = JSON.parse(expectedJson);
-    this.engine.vm.sandbox.actualUpdates = JSON.parse(actualJson);
+    
+    // this.engine.vm.sandbox.expectedUpdates = JSON.parse(expectedJson);
+    // this.engine.vm.sandbox.actualUpdates = JSON.parse(actualJson);
+    this.engine.nodeVm.expectedUpdates = JSON.parse(expectedJson);
+    this.engine.nodeVm.actualUpdates = JSON.parse(actualJson);
+    
     // this.engine.eval(s"expectedUpdates = JSON.parse('${processJSON(expectedJson)}');")
     // this.engine.eval(s"actualUpdates   = JSON.parse('${processJSON(actualJson)}');")
     this.engine.eval("expectedUpdates = globalThis.expectedUpdates");

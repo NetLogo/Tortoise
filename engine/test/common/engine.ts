@@ -2,17 +2,12 @@
  * Impl of Tortoise's test engine implemetned in Node
  */
 
-import { VM } from "vm2";
-import fs from "fs";
-import os from "os";
-// const { NodeVm } = require("vm2");
+// import fs from "fs";
+// import os from "os";
+import vm from "vm";
 // const fs = require("fs");
 // import "../../dist/tortoise-engine";
 // import "../../dist/tortoise-compiler";
-// let tortoise_engine = fs.readFileSync("./dist/tortoise-engine.js", {
-//   encoding: "utf-8",
-// });
-// let init = fs.readFileSync("./script-0.js", { encoding: "utf-8" });
 // const vm = require("vm");
 // require("../../dist/tortoise-engine");
 // require("../../dist/tortoise-compiler");
@@ -41,38 +36,24 @@ function sleep(millis: number) {
 }
 
 class Engine {
-  vm: VM;
+  // vm: VM;
+  nodeVm: vm.Context;
   private constructor() {
-    this.vm = new VM({
-      sandbox: {
-        tortoise_require: globalThis.tortoise_require,
-      },
-      //   require: {
-      //     external: {
-      //       transitive: true,
-      //       modules: ["*"]
-      //     },
-      //     context: "sandbox",
-      //     builtin: ["*"],
-      //   },
-      //   wrapper: "none",
+    this.nodeVm = vm.createContext({
+      tortoise_require: globalThis.tortoise_require,
     });
-    // this.vm.run("let window = { }");
+    // this.vm = new VM({
+    //   sandbox: {
+    //     tortoise_require: globalThis.tortoise_require,
+    //   },
+    // });
 
-    // this.vm.run(tortoise_engine);
-    // this.vm.runFile("./dist/tortoise-engine.js");
-    // const lines = fs.readFileSync('./script-0.js', {encoding: 'utf-8'}).split(os.EOL);
-    // lines.forEach((code, n) => {
-    //   try {
-
-    //     this.vm.run(code);
-    //   }
-    //   catch (e)  {
-    //     console.error(`error on line: ${n}: ${code}. ${e}`);
-    //   }
-    // })
     // this.vm.runFile("./script-0.js");
-    // this.vm.run("const tortoise_require = globalThis.tortoise_require");
+    // vm.runInContext(
+    //   fs.readFileSync("./script-0.js", { encoding: "utf-8" }),
+    //   this.nodeVm,
+    //   "./script-0-.js"
+    // );
 
     // this.context.tortoise = { ...globalThis.tortoise };
     // this.context.run(
@@ -95,22 +76,27 @@ class Engine {
     return new Engine();
   }
   eval(src: string): any {
-    fs.writeFileSync(`./errlog/eval-script-${counter++}.js`, src);
-    return this.vm.run(src);
+    // fs.writeFileSync(`./errlog/eval-script-${counter++}.js`, src);
+    // return this.vm.run(src);
+    return vm.runInContext(src, this.nodeVm);
   }
   run(src: string): [string, string] {
-    fs.writeFileSync(`./errlog/run-script-${counter++}.js`, src);
-    const runResult = this.vm.run(`${src}`);
+    // fs.writeFileSync(`./errlog/run-script-${counter++}.js`, src);
+    // const runResult = this.vm.run(`${src}`);
+    const runResult = vm.runInContext(src, this.nodeVm);
 
     return [
       // this.vm.run(`(function() {${src}})()`).toString(),
       runResult ? runResult.toString() : "",
-      JSON.stringify(this.vm.run("Updater.collectUpdates()")),
+      // JSON.stringify(this.vm.run("Updater.collectUpdates()")),
+      JSON.stringify(vm.runInContext("Updater.collectUpdates()", this.nodeVm)),
     ];
   }
   evalAndDump(src: string): string {
-    let result = this.vm.run(src);
-    return this.vm.run(`workspace.dump(${result})`);
+    // let result = this.vm.run(src);
+    // return this.vm.run(`workspace.dump(${result})`);
+    let result = vm.runInContext(src, this.nodeVm);
+    return vm.runInContext(`workspace.dump(${result})`, this.nodeVm);
   }
 }
 

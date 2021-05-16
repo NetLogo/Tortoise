@@ -18,9 +18,21 @@ class Random {
 
   nextGaussian = (): number => this.rng.next_gaussian();
 
-  nextInt = (limit: number): number => this.rng.next_int_range(limit);
+  nextInt = (limit?: number): number => {
+    if (limit) {
+      return this.rng.next_int_range(limit);
+    } else {
+      return this.rng.next_int();
+    }
+  };
 
-  nextLong = (limit: number): number => this.rng.next_long_range(limit);
+  nextLong = (limit: number): number => {
+    if (!(limit > 0)) {
+      throw Error("limit must be positive when generating random Long");
+    } else {
+      return this.rng.next_long_range(limit);
+    }
+  };
 
   nextDouble = (): number => this.rng.next_double();
 
