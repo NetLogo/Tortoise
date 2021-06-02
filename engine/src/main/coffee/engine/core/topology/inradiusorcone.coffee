@@ -3,6 +3,8 @@
 NLMath     = require('util/nlmath')
 { checks } = require('../typechecker')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 # This `in-radius` code looks pretty weird, huh?  That is for a few reasons:
 
 # 1. We need to match how NetLogo desktop handles in-radius, especially for
@@ -506,7 +508,7 @@ inRadius = (topology, x, y, agentset, radius) ->
   switch agentset._agentTypeName
     when "turtles" then filterTurtlesInRadius(topology, x, y, agentset, radius)
     when "patches" then filterPatchesInRadius(topology, x, y, agentset, radius)
-    else throw new Error("Cannot use `in-radius` on this agentset type.")
+    else throw exceptions.internal("Cannot use `in-radius` on this agentset type.")
 
 ###
 
@@ -588,7 +590,7 @@ inCone = (x, y, turtleHeading, agents, distance, angle) ->
       return
 
   else
-    throw new Error("Cannot use `in-cone` on this agentset type.")
+    throw exceptions.internal("Cannot use `in-cone` on this agentset type.")
 
   searchPatches(this, pxcor, pycor, distance, checkAgentsHere)
   agents.copyWithNewAgents(results)

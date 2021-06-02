@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ HaltInterrupt } = require('util/exception')
+{ exceptionFactory: exceptions } = require('util/exception')
 
 module.exports.Config =
   class UserDialogConfig
@@ -16,12 +16,12 @@ module.exports.Prims =
     # (String) => Unit
     confirm: (msg) ->
       if not @_confirm(msg)
-        throw new HaltInterrupt
+        throw exceptions.halt()
 
     # (String) => String
     input: (msg) ->
-      @_input(msg) ? throw new HaltInterrupt
+      @_input(msg) ? throw exceptions.halt()
 
     # (String) => Boolean
     yesOrNo: (msg) ->
-      @_yesOrNo(msg) ? throw new HaltInterrupt
+      @_yesOrNo(msg) ? throw exceptions.halt()

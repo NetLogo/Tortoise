@@ -40,6 +40,8 @@
 
 ExtensionsHandler = require('./extensionshandler')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { difference, find, isEmpty, toObject } = require('brazierjs/array')
 { id, tee }                             = require('brazierjs/function')
 { fold, maybe, None }                   = require('brazierjs/maybe')
@@ -61,7 +63,7 @@ exportColor = (color) ->
     else
       new ExportedRGB(r, g, b)
   else
-    throw new Error("Unrecognized color format: #{JSON.stringify(color)}")
+    throw exceptions.internal("Unrecognized color format: #{JSON.stringify(color)}")
 
 # (String) => BreedReference
 exportBreedReference = (breedName) ->
@@ -92,7 +94,7 @@ exportAgentReference = (agent) ->
   else if checks.isTurtle(agent)
     exportTurtleReference(agent)
   else
-    throw new Error("Cannot make agent reference out of: #{JSON.stringify(agent)}")
+    throw exceptions.internal("Cannot make agent reference out of: #{JSON.stringify(agent)}")
 
 # (Agent, ExtensionsExporter) => (String) => Any
 exportWildcardVar = (agent, extensionExporter) -> (varName) ->
@@ -177,7 +179,7 @@ exportPlot = (plot) ->
 exportRawPlot = (plotName) ->
   desiredPlotMaybe  = find((x) -> x.name is plotName)(@_plotManager.getPlots())
   exporter          = (plot) -> exportPlot(plot)
-  plot              = fold(-> throw new Error("no such plot: \"#{plotName}\""))(exporter)(desiredPlotMaybe)
+  plot              = fold(-> throw exceptions.runtime("no such plot: \"#{plotName}\""))(exporter)(desiredPlotMaybe)
 
 # (ExtensionExports) => ExportedPlotManager
 exportPlotManager = (extensions) ->

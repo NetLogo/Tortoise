@@ -5,6 +5,8 @@ ColorModel = require('engine/core/colormodel')
 
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 # In this file: `this.type` is `Link`
 
 # (String) => Unit
@@ -24,7 +26,7 @@ setBreed = (breed) ->
       if specialName? and @world.breedManager.get(specialName).isLinky()
         @world.breedManager.get(specialName)
       else
-        throw new Error("You can't set BREED to a non-link-breed agentset.")
+        throw exceptions.runtime("You can't set BREED to a non-link-breed agentset.", "set")
     else
       breed
 

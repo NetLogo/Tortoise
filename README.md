@@ -22,3 +22,7 @@ There are several sbt builds within the Tortoise project.
 * `macrosJS/JVM` contain macros used by Tortoise in widget serialization/deserialization.
 
 For more information see the [Tortoise architecture wiki page](https://github.com/NetLogo/Tortoise/wiki/Architecture)
+
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
+
+Package repository hosting is graciously provided by [Cloudsmith](https://cloudsmith.com).

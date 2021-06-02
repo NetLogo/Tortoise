@@ -1,12 +1,12 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ HaltInterrupt } = require('util/exception')
+{ exceptionFactory: exceptions } = require('util/exception')
 
 { item }               = require('brazierjs/array')
 { flip, id, pipeline } = require('brazierjs/function')
 { fold }               = require('brazierjs/maybe')
 
-halt = -> throw new HaltInterrupt
+halt = -> throw exceptions.halt()
 
 module.exports = {
 
@@ -24,11 +24,11 @@ module.exports = {
 
     # (String, Array[Any], () => Unit) => Unit
     userOneOf = (message, choices, callback) ->
-      fullCallback = pipeline(flip(item)(choices), fold(-> throw new Error("Bad choice index"))(id), callback)
+      fullCallback = pipeline(flip(item)(choices), fold(-> throw exceptions.internal("Bad choice index"))(id), callback)
       if choices.length isnt 0
         prim((config) -> config.getChoice(message, choices.map((x) -> workspace.dump(x))))(fullCallback)
       else
-        throw new Error("Extension exception: List is empty.")
+        throw exceptions.extension("List is empty.")
       return
 
     # (String, (Boolean) => Unit) => Unit

@@ -4,6 +4,8 @@ NLMath     = require('util/nlmath')
 JSType     = require('util/jstype')
 StrictMath = require('shim/strictmath')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { foldl, map }  = require('brazierjs/array')
 { pipeline }    = require('brazierjs/function')
 { rangeUntil }  = require('brazierjs/number')
@@ -119,7 +121,7 @@ module.exports = {
     else if type.isString()
       @_nameToRGB(color)
     else
-      throw new Error("Unrecognized color format: #{color}")
+      throw exceptions.internal("Unrecognized color format: #{color}")
 
   # [T <: ColorNumber|RGB] @ (T) => HSB
   colorToHSB: (color) ->
@@ -130,7 +132,7 @@ module.exports = {
       else if type.isArray()
         color
       else
-        throw new Error("Unrecognized color format: #{color}")
+        throw exceptions.internal("Unrecognized color format: #{color}")
     @rgbToHSB(r, g, b)
 
   # (RGB...) => RGB

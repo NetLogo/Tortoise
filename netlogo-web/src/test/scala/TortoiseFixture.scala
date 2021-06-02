@@ -47,7 +47,7 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
     lazy val js = compiler.compileCommands(wrapCommand(command), procs, program)
     command.result match {
       case Success(_) =>
-        cautiously{ engine.run(js); () }
+        cautiously { engine.run(js); () }
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case RuntimeError(msg) =>
@@ -58,7 +58,7 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
   }
 
   override def runReporter(reporter: Reporter, mode: TestMode): Unit = {
-    lazy val js = "var letVars = { }; " + compiler.compileReporter(reporter.reporter, procs, program)
+    lazy val js = compiler.compileReporter(reporter.reporter, procs, program)
     reporter.result match {
       case Success(expectedResult) =>
         val actualResult = cautiously(engine.eval(js))
@@ -97,17 +97,22 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
     }
   }
 
+  private val AfterFirstColonRegex = "(?s)^.*?: (.*)".r
   private def expectRuntimeError(res: => Any, msg: String): Unit = {
     try {
       res
       fail(s"no RuntimeError occurred (expected '$msg')")
     }
     catch {
-      case ex: PolyglotException =>
-        val AfterFirstColonRegex        = "(?s)^.*?: (.*)".r
-        val AfterFirstColonRegex(exMsg) = ex.getMessage
+      case ex: PolyglotException if AfterFirstColonRegex.findFirstIn(ex.getMessage).isDefined =>
+        val AfterFirstColonRegex(exMessage) = ex.getMessage
         val message = msg.replaceAll("\\\\n", "\n")
-        assertResult(message)(exMsg)
+        assertResult(message)(exMessage)
+        ()
+      case ex: PolyglotException if ex.getGuestObject != null && ex.getGuestObject.hasMember("message") && ex.getGuestObject.getMember("message") != null =>
+        val exMessage = ex.getGuestObject.getMember("message").toString
+        val message = msg.replaceAll("\\\\n", "\n")
+        assertResult(message)(exMessage)
         ()
       case e: TestFailedException => throw e
       case e: TestPendingException => throw e

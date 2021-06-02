@@ -25,6 +25,8 @@ ExtensionsHandler = require('./extensionshandler')
 , TurtleReference
 } = require('serialize/exportstructures')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { fold } = require('brazier/maybe')
 
 # ( (Number) => Agent
@@ -64,19 +66,19 @@ reifyExported = (getTurtle, getPatch, getLink, getAllPatches, getBreed, world, e
       turtles = x.references.map(({ id }) -> getTurtle(id))
       new TurtleSet(turtles, world)
     else if x instanceof ExportedCommandLambda
-      fn = (-> throw new Error("Importing and then running lambdas is not supported!"))
+      fn = (-> throw exceptions.internal("Importing and then running lambdas is not supported!"))
       fn.isReporter = false
       fn.nlogoBody  = x.source
       fn
     else if x instanceof ExportedReporterLambda
-      fn = (-> throw new Error("Importing and then running lambdas is not supported!"))
+      fn = (-> throw exceptions.internal("Importing and then running lambdas is not supported!"))
       fn.isReporter = true
       fn.nlogoBody  = x.source
       fn
     else if extensionImporter.canHandle(x)
       extensionImporter.importObject(x, helper)
     else
-      throw new Error("Unknown item for reification: #{JSON.stringify(x)}")
+      throw exceptions.internal("Unknown item for reification: #{JSON.stringify(x)}")
 
 # (WorldState) => Unit
 module.exports.importWorld = (
@@ -135,12 +137,12 @@ module.exports.importWorld = (
       else if color instanceof ExportedRGBA
         [color.r, color.g, color.b, color.a]
       else
-        throw new Error("Unknown color: #{JSON.stringify(color)}")
+        throw exceptions.internal("Unknown color: #{JSON.stringify(color)}")
 
     patchFinishFs =
       patches.map(
         ({ pxcor, pycor, pcolor, plabel, plabelColor, patchesOwns }) =>
-          patch = @patchAtCoords(pxcor, pycor)
+          patch = @getPatchAt(pxcor, pycor)
           patch.setVariable('pcolor'      , extractColor(pcolor     ))
           patch.setVariable('plabel-color', extractColor(plabelColor))
           (->

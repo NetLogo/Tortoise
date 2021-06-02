@@ -5,6 +5,9 @@ Patch     = require('./core/patch')
 Turtle    = require('./core/turtle')
 World     = require('./core/world')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+{ ifInterrupt }                  = require('util/interrupts')
+
 { Perspective: { perspectiveToNum }, Observer } = require('./core/observer')
 
 ignored = ["", -> ""]
@@ -113,7 +116,7 @@ module.exports =
         else if obj instanceof Observer
           [update.observer, @_observerMap()]
         else
-          throw new Error("Unrecognized update type")
+          throw exceptions.internal("Unrecognized update type")
 
       entryUpdate = entry[obj.id] ? {}
 
@@ -130,7 +133,7 @@ module.exports =
             entryUpdate[varName] = getter(obj)
             entry[obj.id]        = entryUpdate
         else
-          throw new Error("Unknown #{obj.constructor.name} variable for update: #{v}")
+          throw exceptions.internal("Unknown #{obj.constructor.name} variable for update: #{v}")
 
       return
 
@@ -168,7 +171,7 @@ module.exports =
       color:         ["COLOR",       (link) -> link._color]
       end1:          ["END1",        (link) -> link.end1.id]
       end2:          ["END2",        (link) -> link.end2.id]
-      heading:       ["HEADING",     (link) -> (try link.getHeading() catch _ then 0)]
+      heading:       ["HEADING",     (link) -> ifInterrupt(link.getHeading(), 0)]
       'hidden?':     ["HIDDEN?",     (link) -> link._isHidden]
       id:            ["ID",          (link) -> link.id]
       'directed?':   ["DIRECTED?",   (link) -> link.isDirected]

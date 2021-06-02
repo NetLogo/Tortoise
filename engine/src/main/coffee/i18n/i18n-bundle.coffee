@@ -2,6 +2,8 @@
 
 EN_US = require('./en_us')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 # At the moment this doesn't do much but it'd be a good place to add
 # the ability to swap the current locale as needed.
 # -Jeremy B November 2020
@@ -19,7 +21,7 @@ class I18nBundle
     else if @_current isnt EN_US and EN_US.hasOwnProperty(key)
       EN_US
     else
-      throw new Error("Could not find a message for this key: #{key}")
+      throw exceptions.internal("Could not find a message for this key: #{key}")
 
     message = bundle[key]
     message(args...)

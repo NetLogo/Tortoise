@@ -19,6 +19,8 @@
 
 # }
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 # (ExtensionPorter, Any) => Boolean
 canHandleCheck = (p, x) ->
   p.canHandle(x)
@@ -35,7 +37,7 @@ eitherCheck = (p, x) ->
 makeCanHandle = (extensionPorters, check) -> (x) ->
   applicablePorters = extensionPorters.filter( (p) -> check(p, x) )
   if applicablePorters.length > 1
-    throw new Error("Multiple extensions claim to know how to handle this object type: #{JSON.stringify(x)}")
+    throw exceptions.internal("Multiple extensions claim to know how to handle this object type: #{JSON.stringify(x)}")
   (applicablePorters.length is 1)
 
 # (Array[ExtensionPorter], (ExtensionPorter, Any, (Any) => Any) => Any) => ExtensionsHandler
@@ -55,7 +57,7 @@ makeTraverse = (extensionPorters, objectHandler, check) ->
     else
       extensionObject = extensionReferences.get(x)
       if extensionObject is inProgressMarker
-        throw new Error("Circular references within extension objects are not supported.")
+        throw exceptions.internal("Circular references within extension objects are not supported.")
       extensionObject
 
   {
@@ -189,9 +191,9 @@ makeReader = (extensionPorters) ->
 
       possiblePorters = extensionPorters.filter( (porter) -> porter.extensionName is extensionName )
       if possiblePorters.length is 0
-        throw new Error("No extension porter found for this thing?")
+        throw exceptions.internal("No extension porter found for this thing?")
       if possiblePorters.length > 1
-        throw new Error("Multiple extension porters found for this thing?")
+        throw exceptions.internal("Multiple extension porters found for this thing?")
 
       porter       = possiblePorters[0]
       section      = porterSections[extensionName]

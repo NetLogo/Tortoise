@@ -1,9 +1,10 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-StrictMath                   = require('shim/strictmath')
-formatFloat                  = require('util/formatfloat')
-{ checks, getTypeOf, types } = require('engine/core/typechecker')
-{ getTypesFromSyntax }       = require('engine/prim-checks/syntax')
+StrictMath                       = require('shim/strictmath')
+formatFloat                      = require('util/formatfloat')
+{ checks, getTypeOf, types }     = require('engine/core/typechecker')
+{ getTypesFromSyntax }           = require('engine/prim-checks/syntax')
+{ exceptionFactory: exceptions } = require('util/exception')
 
 class Validator
 
@@ -28,23 +29,23 @@ class Validator
       boolean: @makeValueTypeCheck(boolean...)
     }
 
-  # (Boolean, String, Array[Any]) => Unit
-  error: (messageKey, messageValues...) ->
+  # (String, Boolean, String, Array[Any]) => Unit
+  error: (prim, messageKey, messageValues...) ->
     message = @bundle.get(messageKey, messageValues.map( (val) -> if typeof(val) is "function" then val() else val )...)
-    throw new Error(message)
+    throw exceptions.runtime(message, prim)
 
-  # (Number) => Number
-  checkLong: (value) ->
+  # (String, Number) => Number
+  checkLong: (prim, value) ->
     if value > 9007199254740992 or value < -9007199254740992
-      @error('_ is too large to be represented exactly as an integer in NetLogo', formatFloat(value))
+      @error(prim, '_ is too large to be represented exactly as an integer in NetLogo', formatFloat(value))
     value
 
-  # (Number) => Number
-  checkNumber: (result) ->
+  # (String, Number) => Number
+  checkNumber: (prim, result) ->
     if Number.isNaN(result)
-      @error('math operation produced a non-number')
+      @error(prim, 'math operation produced a non-number')
     if result is Infinity
-      @error('math operation produced a number too large for NetLogo')
+      @error(prim, 'math operation produced a number too large for NetLogo')
 
     result
 
@@ -79,7 +80,7 @@ class Validator
 
   # (String, Any, Array[NLType]) => Unit
   throwTypeError: (prim, value, expectedTypes...) ->
-    throw new Error(@typeError(prim, value, expectedTypes))
+    throw exceptions.runtime(@typeError(prim, value, expectedTypes), prim)
     return
 
   # (Array[Array[NLType]]) => (String, Array[Any]) => Unit

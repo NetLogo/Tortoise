@@ -1,8 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ DeathInterrupt, ignoring } = require('util/exception')
-
-ignorantly = ignoring(DeathInterrupt)
+{ exceptionFactory: exceptions } = require('util/exception')
 
 module.exports =
   class SelfManager
@@ -26,7 +24,7 @@ module.exports =
       if @_myself isnt 0
         @_myself
       else
-        throw new Error("There is no agent for MYSELF to refer to.")
+        throw exceptions.runtime("There is no agent for MYSELF to refer to.", "myself")
 
     # Switch from letting CoffeeScript bind "this" to handling it manually to avoid creating extra anonymous functions
     # They add GC pressure, causing runtime slowdown - JMB 07/2017
@@ -40,7 +38,7 @@ module.exports =
         at._myself = at._self
         at._self   = agent
 
-        try ignorantly(f)
+        try f()
         finally
           at._self   = oldAgent
           at._myself = oldMyself

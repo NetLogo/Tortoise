@@ -8,7 +8,8 @@ StrictMath = require('shim/strictmath')
 { fold, isSomething, maybe }                            = require('brazierjs/maybe')
 { lookup, values }                                      = require('brazierjs/object')
 
-{ StopInterrupt: Stop } = require('util/exception')
+{ exceptionFactory: exceptions } = require('util/exception')
+{ StopInterrupt }                = require('util/interrupts')
 
 module.exports = class Plot
 
@@ -18,7 +19,7 @@ module.exports = class Plot
 
   name: undefined # String
 
-  # (String, Array[Pen], PlotOps, String, String, Boolean, Number, Number, Number, Number, () => (Unit | Stop), () => (Unit | Stop)) => Plot
+  # (String, Array[Pen], PlotOps, String, String, Boolean, Number, Number, Number, Number, () => (Unit | StopInterrupt), () => (Unit | StopInterrupt)) => Plot
   constructor: (@name, pens = [], @_ops, @xLabel, @yLabel, @isLegendEnabled = true, @isAutoplotting = true, @xMin = 0, @xMax = 10, @yMin = 0, @yMax = 10, @_setupThis = (->), @_updateThis = (->)) ->
     toName            = (p) -> p.name.toUpperCase()
     @_currentPenMaybe = maybe(pens[0])
@@ -69,7 +70,7 @@ module.exports = class Plot
           pen.drawHistogramFrom(list, @xMin, @xMax)
           @_verifyHistogramSize(pen)
         else
-          throw new Error("You cannot histogram with a plot-pen-interval of #{pen.interval}.")
+          throw exceptions.runtime("You cannot histogram with a plot-pen-interval of #{pen.interval}.", "histogram")
     )
     return
 
@@ -135,7 +136,7 @@ module.exports = class Plot
     if isSomething(penMaybe)
       @_currentPenMaybe = penMaybe
     else
-      throw new Error("There is no pen named \"#{name}\" in the current plot")
+      throw exceptions.runtime("There is no pen named \"#{name}\" in the current plot", "set-current-plot-pen")
     return
 
   # (Number) => Unit
@@ -146,7 +147,7 @@ module.exports = class Plot
           interval = (@xMax - @xMin) / num
           pen.setInterval(interval)
         else
-          throw new Error("You cannot make a histogram with #{num} bars.")
+          throw exceptions.runtime("You cannot make a histogram with #{num} bars.", "set-histogram-num-bars")
     )
     return
 
@@ -163,14 +164,14 @@ module.exports = class Plot
   # () => Unit
   setup: ->
     setupResult = @_setupThis()
-    if not (setupResult instanceof Stop)
+    if not (setupResult is StopInterrupt)
       @getPens().forEach((pen) -> pen.setup())
     return
 
   # (Number, Number) => Unit
   setXRange: (min, max) ->
     if min >= max
-      throw new Error("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}")
+      throw exceptions.runtime("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}", "set-plot-x-range")
     @xMin = min
     @xMax = max
     @_resize()
@@ -179,7 +180,7 @@ module.exports = class Plot
   # (Number, Number) => Unit
   setYRange: (min, max) ->
     if min >= max
-      throw new Error("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}")
+      throw exceptions.runtime("the minimum must be less than the maximum, but #{min} is greater than or equal to #{max}", "set-plot-y-range")
     @yMin = min
     @yMax = max
     @_resize()
@@ -188,7 +189,7 @@ module.exports = class Plot
   # () => Unit
   update: ->
     updateResult = @_updateThis()
-    if not (updateResult instanceof Stop)
+    if not (updateResult is StopInterrupt)
       @getPens().forEach((pen) -> pen.update())
     return
 
@@ -277,4 +278,4 @@ module.exports = class Plot
 
   # [T] @ ((Pen) => T) => T
   _withPen: (f) ->
-    fold(-> throw new Error("Plot '#{@name}' has no pens!"))(f)(@_currentPenMaybe)
+    fold(-> throw exceptions.runtime("Plot '#{@name}' has no pens!", "plot"))(f)(@_currentPenMaybe)

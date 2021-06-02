@@ -9,7 +9,7 @@ abstractMethod = require('util/abstractmethoderror')
 { filter, unique } = require('brazierjs/array')
 { pipeline }       = require('brazierjs/function')
 
-{ AgentException, TopologyInterrupt } = require('util/exception')
+{ TopologyInterrupt, TowardsInterrupt } = require('util/interrupts')
 
 module.exports =
   class Topology
@@ -149,7 +149,7 @@ module.exports =
       else
         Math.min(@distanceXY(x1, y1, xcor, ycor), @distanceXY(x2, y2, xcor, ycor))
 
-    # (Number, Number, Number, Number) => Number
+    # (Number, Number, Number, Number) => Number | TowardsInterrupt
     towards: (x1, y1, x2, y2) ->
       @_towards(x1, y1, x2, y2, @_shortestX, @_shortestY)
 
@@ -219,7 +219,7 @@ module.exports =
     _shortestYWrapped: (cor1, cor2) ->
       @_shortestWrapped(cor1, cor2, @height)
 
-    # (Number, Number, Number, Number, (Number, Number) => Number, (Number, Number) => Number) => Number
+    # (Number, Number, Number, Number, (Number, Number) => Number, (Number, Number) => Number) => Number | TowardsInterrupt
     _towards: (x1, y1, x2, y2, findXDist, findYDist) ->
       if (x1 isnt x2) or (y1 isnt y2)
         dx = findXDist(x1, x2)
@@ -231,9 +231,9 @@ module.exports =
         else
           (270 + StrictMath.toDegrees(StrictMath.PI() + StrictMath.atan2(-dy, dx))) % 360
       else
-        throw new AgentException("No heading is defined from a point (#{x1},#{x2}) to that same point.")
+        TowardsInterrupt
 
-    # (Number, Number, Number, Number) => Number
+    # (Number, Number, Number, Number) => Number | TowardsInterrupt
     _towardsNotWrapped: (x1, y1, x2, y2) ->
       @_towards(x1, y1, x2, y2, @_shortestNotWrapped, @_shortestNotWrapped)
 
@@ -250,7 +250,7 @@ module.exports =
       else
         pos
 
-    # (Number) => Number
+    # (Number) => Number | TopologyInterrupt
     _wrapXCautiously: (pos) ->
       @_wrapCautiously(@minPxcor, @maxPxcor, pos)
 
@@ -258,7 +258,7 @@ module.exports =
     _wrapXLeniently: (pos) ->
       @_wrapLeniently(@minPxcor, @maxPxcor, pos)
 
-    # (Number) => Number
+    # (Number) => Number | TopologyInterrupt
     _wrapYCautiously: (pos) ->
       @_wrapCautiously(@minPycor, @maxPycor, pos)
 
@@ -266,20 +266,20 @@ module.exports =
     _wrapYLeniently: (pos) ->
       @_wrapLeniently(@minPycor, @maxPycor, pos)
 
-    # (Number, Number, Number) => Number
+    # (Number, Number, Number) => Number | TopologyInterrupt
     _wrapCautiously: (minCor, maxCor, pos) ->
       min = minCor - 0.5
       max = maxCor + 0.5
       if min <= pos < max
         pos
       else
-        throw new TopologyInterrupt("Cannot move turtle beyond the world's edge.")
+        TopologyInterrupt
 
     # (Number, Number, Number) => Number
     _wrapLeniently:  (minCor, maxCor, pos) ->
       @_wrap(pos, minCor - 0.5, maxCor + 0.5)
 
-    # (Number) => Number
+    # (Number) => Number | TopologyInterrupt
     wrapX: (pos) -> abstractMethod('Topology.wrapX')
     wrapY: (pos) -> abstractMethod('Topology.wrapY')
 

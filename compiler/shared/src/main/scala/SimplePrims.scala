@@ -127,6 +127,19 @@ object SimplePrims {
         case _: prim._count         => "PrimChecks.agentset.count"
         case _: prim.etc._turtleson => "PrimChecks.agentset.turtlesOn"
 
+        // Turtle
+        case _: prim.etc._towards   => "PrimChecks.turtle.towards"
+        case _: prim.etc._towardsxy => "PrimChecks.turtle.towardsXY"
+
+        // Patch
+        case _: prim.etc._patch => "world.getPatchAt"
+
+        // Link
+        case _: prim.etc._linkheading => "PrimChecks.link.linkHeading"
+
+        // Other
+        case _: prim.etc._readfromstring => "ProcedurePrims.readFromString"
+
       }
   }
 
@@ -135,7 +148,6 @@ object SimplePrims {
       PartialFunction.condOpt(r) {
 
         // SelfPrims
-        case _: prim.etc._linkheading => "SelfPrims.linkHeading"
         case _: prim.etc._linklength  => "SelfPrims.linkLength"
         case _: prim._other           => "SelfPrims.other"
 
@@ -160,8 +172,6 @@ object SimplePrims {
         case _: prim.etc._patchleftandahead          => "SelfManager.self().patchLeftAndAhead"
         case _: prim.etc._patchrightandahead         => "SelfManager.self().patchRightAndAhead"
         case _: prim.etc._self                       => "SelfManager.self"
-        case _: prim.etc._towards                    => "SelfManager.self().towards"
-        case _: prim.etc._towardsxy                  => "SelfManager.self().towardsXY"
         case _: prim.etc._turtlesat                  => "SelfManager.self().turtlesAt"
         case _: prim.etc._turtleshere                => "SelfManager.self().turtlesHere"
         case _: prim.etc._incone                     => "SelfManager.self().inCone"
@@ -212,7 +222,6 @@ object SimplePrims {
         case _: prim.etc._wrapcolor      => "ColorModel.wrapColor"
 
         case _: prim._turtle             => "world.turtleManager.getTurtle"
-        case _: prim.etc._patch          => "world.getPatchAt"
         case _: prim._equal              => "Prims.equality"
         case _: prim._notequal           => "!Prims.equality"
         case _: prim._turtles            => "world.turtles"
@@ -228,14 +237,13 @@ object SimplePrims {
         case _: prim.etc._greaterorequal => "Prims.gte"
         case _: prim.etc._lessorequal    => "Prims.lte"
         case _: prim.etc._link           => "world.linkManager.getLink"
-        case _: prim.etc._applyresult    => "Tasks.apply"
+        case _: prim.etc._applyresult    => "Tasks.apply(\"__apply-result\")"
         case _: prim.etc._boom           => "Prims.boom"
         case _: prim.etc._subject        => "world.observer.subject"
         case _: prim.etc._dateandtime    => "Prims.dateAndTime"
         case _: prim.etc._nanotime       => "Prims.nanoTime"
         case _: prim.etc._useryesorno    => "UserDialogPrims.yesOrNo"
         case _: prim.etc._userinput      => "UserDialogPrims.input"
-        case _: prim.etc._readfromstring => "Prims.readFromString"
 
       }
   }
@@ -268,14 +276,15 @@ object SimplePrims {
       PartialFunction.condOpt(c) {
 
         case _: prim._done             => ""
-        case _: prim._stop             => "throw new Exception.StopInterrupt"
+        case _: prim._stop             => "return PrimChecks.procedure.stop()"
+        case _: prim.etc._die          => "return SelfManager.self().die()"
         case _: prim.etc._observercode => ""
-        case _: prim.etc._hideturtle   => "SelfManager.self().hideTurtle(true);"
-        case _: prim.etc._showturtle   => "SelfManager.self().hideTurtle(false);"
+        case _: prim.etc._hideturtle   => "SelfManager.self().hideTurtle(true)"
+        case _: prim.etc._showturtle   => "SelfManager.self().hideTurtle(false)"
 
-        case _: prim.etc._importpatchcolors => "Errors.imperfectImport('import-pcolors')"
-        case _: prim.etc._importpcolorsrgb  => "Errors.imperfectImport('import-pcolors-rgb')"
-        case _: prim.etc._importworld       => "Errors.imperfectImport('import-world')"
+        case _: prim.etc._importpatchcolors => "PrimChecks.imperfectImport('import-pcolors')"
+        case _: prim.etc._importpcolorsrgb  => "PrimChecks.imperfectImport('import-pcolors-rgb')"
+        case _: prim.etc._importworld       => "PrimChecks.imperfectImport('import-world')"
 
       }
   }
@@ -283,6 +292,11 @@ object SimplePrims {
   object CheckedCommand {
     def unapply(c: Command): Option[String] =
       PartialFunction.condOpt(c) {
+
+        // Turtle
+        case _: prim.etc._setxy  => "PrimChecks.turtle.setXY"
+        case _: prim.etc._face   => "SelfManager.self().face"
+        case _: prim.etc._facexy => "SelfManager.self().faceXY"
 
         // Random
         case _: prim.etc._randomseed => "PrimChecks.math.randomSeed"
@@ -314,9 +328,6 @@ object SimplePrims {
         // SelfManager
         case _: prim._fd             => "SelfManager.self().fd"
         case _: prim._jump           => "SelfManager.self().jumpIfAble"
-        case _: prim.etc._die        => "SelfManager.self().die"
-        case _: prim.etc._face       => "SelfManager.self().face"
-        case _: prim.etc._facexy     => "SelfManager.self().faceXY"
         case _: prim.etc._followme   => "SelfManager.self().followMe"
         case _: prim.etc._home       => "SelfManager.self().goHome"
         case _: prim.etc._moveto     => "SelfManager.self().moveTo"
@@ -325,7 +336,6 @@ object SimplePrims {
         case _: prim.etc._penup      => "SelfManager.self().penManager.raisePen"
         case _: prim.etc._rideme     => "SelfManager.self().rideMe"
         case _: prim.etc._right      => "SelfManager.self().right"
-        case _: prim.etc._setxy      => "SelfManager.self().setXY"
         case _: prim.etc._stamp      => "SelfManager.self().stamp"
         case _: prim.etc._stamperase => "SelfManager.self().stampErase"
         case _: prim.etc._tie        => "SelfManager.self().tie"
@@ -383,7 +393,7 @@ object SimplePrims {
         case _: prim.etc._layoutradial     => "LayoutManager.layoutRadial"
         case _: prim.etc._layouttutte      => "LayoutManager.layoutTutte"
         case _: prim.etc._changetopology   => "world.changeTopology"
-        case _: prim.etc._apply            => "Tasks.apply"
+        case _: prim.etc._apply            => "Tasks.apply(\"__apply\")"
         case _: prim.etc._stdout           => "Prims.stdout"
         case _: prim.etc._usermessage      => "UserDialogPrims.confirm"
         case _: prim.etc._exportoutput     => "ImportExportPrims.exportOutput"

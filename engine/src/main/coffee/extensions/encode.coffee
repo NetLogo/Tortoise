@@ -2,6 +2,8 @@
 
 { checks } = require('../engine/core/typechecker')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { all, map }   = require('brazier/array')
 { pipeline }   = require('brazier/function')
 { rangeUntil } = require('brazier/number')
@@ -18,7 +20,7 @@ module.exports = {
       if all(isLegit)(bytes)
         f(bytes)
       else
-        throw new Error("Extension exception: All elements of the list argument to 'encode:#{primName}' must be numbers between -128 and 127")
+        throw exceptions.extension("All elements of the list argument to 'encode:#{primName}' must be numbers between -128 and 127")
 
     # (String) => Array[Number]
     base64ToBytes = (base64) ->

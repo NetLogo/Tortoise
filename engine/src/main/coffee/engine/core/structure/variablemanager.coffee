@@ -4,15 +4,22 @@
 
 { ExtraVariableSpec, ImmutableVariableSpec, MutableVariableSpec } = require('./variablespec')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 module.exports =
   class VariableManager
 
-    _names: undefined # Array[String]
+    _names:           undefined # Array[String]
+    _validitySetters: new Map() # Map[String, (Any) => Boolean]
 
     # (Agent, Array[VariableSpec[_]]) => VariableManager
     constructor: (@agent, varSpecs) ->
       @_addVarsBySpec(varSpecs)
       @_names = (name for { name } in varSpecs)
+
+    # (String, Any) => Boolean
+    setIfValid: (name, value) ->
+      @_validitySetters.get(name).call(@agent, value)
 
     # () => Array[String]
     names: ->
@@ -20,7 +27,7 @@ module.exports =
 
     # (Array[String], Array[String]) => Unit
     refineBy: (oldNames, newNames) ->
-      invalidatedSetter = (name) -> (value) -> throw new Error("#{name} is no longer a valid variable.")
+      invalidatedSetter = (name) -> (value) -> throw exceptions.internal("#{name} is no longer a valid variable.")
 
       obsoletedNames = difference(oldNames)(newNames)
       freshNames     = difference(newNames)(oldNames)
@@ -47,12 +54,13 @@ module.exports =
             { configurable: true, value: 0, writable: true }
           else if spec instanceof MutableVariableSpec
             get = do (spec) -> (-> spec.get.call(@agent))
-            set = do (spec) -> ((x) -> spec.set.call(@agent, x))
+            set = do (spec) -> ((v) -> spec.set.call(@agent, v))
+            @_validitySetters.set(spec.name, spec.setIfValid)
             { configurable: true, get, set }
           else if spec instanceof ImmutableVariableSpec
             { value: spec.get.call(@agent), writable: false }
           else
-            throw new Error("Non-exhaustive spec type match: #{typeof(spec)}!")
+            throw exceptions.internal("Non-exhaustive spec type match: #{typeof(spec)}!")
         @_defineProperty(spec.name, obj)
       return
 

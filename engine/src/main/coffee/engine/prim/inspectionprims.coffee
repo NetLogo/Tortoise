@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 module.exports.Config =
   class InspectionConfig
     # ((Agent) => Unit, (Agent) => Unit, () => Unit) => InspectionConfig
@@ -13,4 +15,4 @@ module.exports.Prims =
         if not agent.isDead()
           inspect(agent)
         else
-          throw new Error("That #{agent.getBreedNameSingular()} is dead.")
+          throw exceptions.runtime("That #{agent.getBreedNameSingular()} is dead.", "inspect")

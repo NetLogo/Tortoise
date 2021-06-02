@@ -1,3 +1,7 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
+{ exceptionFactory: exceptions } = require('util/exception')
+
 module.exports = {
   init: (workspace) ->
     synth = null
@@ -10,7 +14,7 @@ module.exports = {
       if regex.test(note)
         synth.triggerAttackRelease(note, duration, undefined, velocity)
       else
-        throw new Error("Extension exception: " + note + " is not a valid note!")
+        throw exceptions.extension("#{note} is not a valid note!")
     {
       name: "sound",
       prims: {

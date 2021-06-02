@@ -53,9 +53,11 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
     workspaceDeclare("world"),
     workspaceDeclare("PrimChecks"),
     workspaceDeclare("RandomPrims"),
+    workspaceDeclare("ProcedurePrims"),
+
+    JsRequire("{ DeathInterrupt, StopInterrupt }", "util/interrupts"),
 
     JsRequire("Exception",      "util/exception"),
-    JsRequire("Errors",         "util/errors"),
     JsRequire("NLMath",         "util/nlmath"),
     JsRequire("notImplemented", "util/notimplemented"),
     JsRequire("ColorModel",     "engine/core/colormodel"),

@@ -108,7 +108,7 @@ object Optimizer {
 
   abstract class _patchatreporter extends Reporter {
     override def syntax: Syntax =
-      Syntax.reporterSyntax(right = List(Syntax.NumberType, Syntax.NumberType), ret = Syntax.AgentType)
+      Syntax.reporterSyntax(right = List(Syntax.NumberType, Syntax.NumberType), ret = Syntax.AgentType | Syntax.NobodyType)
   }
 
   class _patchhereinternal extends _patchatreporter {}
@@ -208,7 +208,7 @@ object Optimizer {
 
   class _oneofwith extends Reporter {
     override def syntax: Syntax =
-      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentType)
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentType | Syntax.NobodyType)
   }
 
   object OneOfWithTransformer extends AstTransformer {
@@ -223,7 +223,7 @@ object Optimizer {
 
   class _otherwith extends Reporter {
     override def syntax: Syntax =
-      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentsetType)
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentsetType | Syntax.NobodyType)
   }
 
   object OtherWithTransformer extends AstTransformer {

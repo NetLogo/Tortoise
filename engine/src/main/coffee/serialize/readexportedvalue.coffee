@@ -13,6 +13,8 @@
 , TurtleReference
 } = require('./exportstructures')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { fold, isSomething, map: mapMaybe, maybe, None } = require('brazier/maybe')
 
 # (String) => Number
@@ -54,7 +56,7 @@ parseList = ->
               placeholder = strUntil(index + 1)
               placeholderMatch = extensionReader.matchesPlaceholder(placeholder)
               if not placeholderMatch?
-                throw new Error("This looks like an extension object, but it's not?")
+                throw exceptions.internal("This looks like an extension object, but it's not?")
               recurse(tempered(index), extensionReader.readPlaceholder(placeholderMatch))
             else
               index = strIndex('}')
@@ -70,12 +72,12 @@ parseList = ->
             else
               recurse(spaceIndex + 1, readValue(strUntil(spaceIndex)))
       else
-        throw new Error("Importing a list of anonymous procedures?  Not happening!")
+        throw exceptions.internal("Importing a list of anonymous procedures?  Not happening!")
 
     if list[0] is '['
       parseInner(list.slice(1))
     else
-      throw new Error("Not a valid list: #{list}")
+      throw exceptions.internal("Not a valid list: #{list}")
 
   parseListHelper(arguments...)[0]
 
@@ -85,7 +87,7 @@ match = (regex, str) ->
   if result?
     result
   else
-    throw new Error("Could not match regex #{regex} with this string: #{str}")
+    throw exceptions.internal("Could not match regex #{regex} with this string: #{str}")
 
 # (String) => Boolean
 module.exports.parseBool = (x) ->
@@ -104,7 +106,7 @@ parseBreedMaybe = (x) ->
 
 # (String) => BreedReference
 module.exports.parseBreed = (x) ->
-  fold(-> throw new Error("Cannot parse as breed: #{x}"))((x) -> x)(parseBreedMaybe(x))
+  fold(-> throw exceptions.internal("Cannot parse as breed: #{x}"))((x) -> x)(parseBreedMaybe(x))
 
 # (String) => String
 module.exports.parseString = (str) ->
@@ -190,7 +192,7 @@ readAgenty = (singularToPlural, pluralToSingular) -> (x) ->
             ]
 
   parsedMaybe = tryParsers(parsers)(lowerCased)
-  fold(-> throw new Error("You supplied #{x}, and I don't know what the heck that is!"))((x) -> x)(parsedMaybe)
+  fold(-> throw exceptions.internal("You supplied #{x}, and I don't know what the heck that is!"))((x) -> x)(parsedMaybe)
 
 
 # ((String) => String, (String) => String, ExtensionsReader) => (String) => Any

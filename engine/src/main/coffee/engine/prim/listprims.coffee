@@ -7,9 +7,10 @@ Turtle           = require('../core/turtle')
 { checks }       = require('../core/typechecker')
 StrictMath       = require('shim/strictmath')
 Comparator       = require('util/comparator')
-Exception        = require('util/exception')
 NLMath           = require('util/nlmath')
 stableSort       = require('util/stablesort')
+
+{ exceptionFactory: exceptions } = require('util/exception')
 
 { all, exists, filter, find, findIndex, foldl, isEmpty, length: arrayLength, last, sortBy, tail } = require('brazierjs/array')
 { id, pipeline }                                                                                  = require('brazierjs/function')
@@ -291,7 +292,7 @@ module.exports =
         when Number then filteredItems.sort((x, y) -> Comparator.numericCompare(x, y).toInt)
         when String then filteredItems.sort()
         when Agent  then stableSort(filteredItems)((x, y) -> x.compare(y).toInt)
-        else             throw new Error("We don't know how to sort your kind here!")
+        else             throw exceptions.internal("We don't know how to sort your kind here!")
 
     # ((Agent, Agent) => Boolean, AbstractAgentSet) => Array[Agent]
     sortByAgentSet: (task, agentSet) ->

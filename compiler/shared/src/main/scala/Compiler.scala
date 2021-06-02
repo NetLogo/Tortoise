@@ -82,7 +82,7 @@ class Compiler {
     TortoiseLoader.integrateSymbols(
          init
       ++ plotConfig
-      ++ procedures
+      :+ procedures
       :+ globalModelConfig
       :+ resolveModelConfig
       :+ interfaceInit
@@ -190,6 +190,33 @@ class Compiler {
     }
   }
 
+  def compileRunProcedure(code: String, oldProcedures: ProceduresMap, program: Program, isReporter: Boolean)
+    (implicit compilerFlags: CompilerFlags): String = {
+
+    val (defs, _) =
+      frontEnd.frontEnd(
+          code
+        , oldProcedures    = oldProcedures
+        , program          = program
+        , extensionManager = extensionManager
+      )
+
+    val pd =
+      if (compilerFlags.optimizationsEnabled)
+        Optimizer(defs.head)
+      else
+        defs.head
+
+    implicit val context     = new CompilerContext(code)
+    implicit val procContext = ProcedureContext(false, Seq())
+    if (isReporter) {
+      handlers.reporter(pd.statements.stmts(0).args(0))
+    } else {
+      handlers.commands(pd.statements)
+    }
+
+  }
+
   // How this works:
   // - the header/footer stuff wraps the code in `to` or `to-report`
   // - the compile returns a Seq, whose head is a ProcedureDefinition
@@ -228,7 +255,7 @@ class Compiler {
         defs.head
 
     if (commands)
-      handlers.commands(pd.statements, true, !raw)
+      handlers.commands(pd.statements)
     else
       handlers.reporter(pd.statements.stmts(1).args(0))
 

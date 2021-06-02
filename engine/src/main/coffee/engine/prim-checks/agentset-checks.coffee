@@ -26,34 +26,34 @@ class AgentSetChecks
     () =>
       result = f()
       if not checks.isBoolean(result)
-        @validator.error('_ expected a true/false value from _, but got _ instead.', prim, @getSelf(), @dumper(result))
+        @validator.error(prim, '_ expected a true/false value from _, but got _ instead.', prim, @getSelf(), @dumper(result))
       result
 
   # I think it's a little strange that there are three different error messages for the `*-set` agentset creation prims having bad arguments,
   # but at the moment it doesn't seem worth changing desktop to unify them.  -Jeremy B February 2021
 
   # (PatchType | TurtleType | LinkType, PatchSetType | TurtleSetType | LinkSetType, Array[Any]) => Unit
-  setCreationListCheck: (agentType, agentSetType, list) ->
+  setCreationListCheck: (prim, agentType, agentSetType, list) ->
     list.forEach( (value) =>
       if checks.isList(value)
-        @setCreationListCheck(agentType, agentSetType, value)
+        @setCreationListCheck(prim, agentType, agentSetType, value)
 
       else if not agentType.isOfType(value) and not agentSetType.isOfType(value) and not checks.isNobody(value)
         if checks.isAgentSet(value)
-          @validator.error('List inputs to _-SET must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.', agentType.niceName().toUpperCase(), agentType.niceName(), @dumper(list), @dumper(value))
+          @validator.error(prim, 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.', prim.toUpperCase(), agentType.niceName(), @dumper(list), @dumper(value))
         else
-          @validator.error('List inputs to _-SET must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.', agentType.niceName().toUpperCase(), agentType.niceName(), @dumper(list), @dumper(value))
+          @validator.error(prim, 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.', prim.toUpperCase(), agentType.niceName(), @dumper(list), @dumper(value))
 
     )
 
   # (PatchType | TurtleType | LinkType, PatchSetType | TurtleSetType | LinkSetType, Array[Any]) => Unit
-  setCreationArgsCheck: (agentType, agentSetType, values) ->
+  setCreationArgsCheck: (prim, agentType, agentSetType, values) ->
     values.forEach( (value) =>
       if checks.isList(value)
-        @setCreationListCheck(agentType, agentSetType, value)
+        @setCreationListCheck(prim, agentType, agentSetType, value)
 
       else if not agentType.isOfType(value) and not agentSetType.isOfType(value) and not checks.isNobody(value)
-        @validator.error('_-SET expected input to be a _ agentset or _ but got _ instead.', agentType.niceName().toUpperCase(), agentType.niceName(), @validator.valueToString(value))
+        @validator.error(prim, '_ expected input to be a _ agentset or _ but got _ instead.', prim.toUpperCase(), agentType.niceName(), @validator.valueToString(value))
     )
 
   # (AgentSet[T]) => Boolean
@@ -77,7 +77,7 @@ class AgentSetChecks
   # (AgentSet[T], Array[Array[Number]]) => AgentSet
   atPoints: (agentset, coords) ->
     if not AgentSetChecks.isListOfPoints(coords)
-      @validator.error('Invalid list of points: _', @dumper(coords))
+      @validator.error('at-points', 'Invalid list of points: _', @dumper(coords))
 
     agentset.atPoints(coords)
 
@@ -108,15 +108,15 @@ class AgentSetChecks
 
   # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
   linkSet: (values...) ->
-    @setCreationArgsCheck(types.Link, types.LinkSet, values)
+    @setCreationArgsCheck('link-set', types.Link, types.LinkSet, values)
     @prims.linkSet(values)
 
   # (AgentSet[T], Number, (T) => Number) => AgentSet[T]
   maxNOf: (agentset, n, f) ->
     if n > agentset.size()
-      @validator.error('Requested _ random agents from a set of only _ agents.', n, agentset.size())
+      @validator.error('max-n-of', 'Requested _ random agents from a set of only _ agents.', n, agentset.size())
     if n < 0
-      @validator.error('First input to _ can_t be negative.', "MAX-N-OF")
+      @validator.error('max-n-of', 'First input to _ can_t be negative.', "MAX-N-OF")
 
     agentset.maxNOf(n, f)
 
@@ -127,9 +127,9 @@ class AgentSetChecks
   # (AgentSet[T], Number, (T) => Number) => AgentSet[T]
   minNOf: (agentset, n, f) ->
     if n > agentset.size()
-      @validator.error('Requested _ random agents from a set of only _ agents.', n, agentset.size())
+      @validator.error('min-n-of', 'Requested _ random agents from a set of only _ agents.', n, agentset.size())
     if n < 0
-      @validator.error('First input to _ can_t be negative.', "MIN-N-OF")
+      @validator.error('min-n-of', 'First input to _ can_t be negative.', "MIN-N-OF")
 
     agentset.minNOf(n, f)
 
@@ -158,7 +158,7 @@ class AgentSetChecks
 
   # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
   patchSet: (values...) ->
-    @setCreationArgsCheck(types.Patch, types.PatchSet, values)
+    @setCreationArgsCheck('patch-set', types.Patch, types.PatchSet, values)
     @prims.patchSet(values)
 
   # (AgentSet[T], () => Number | String | Agent) => AgentSet[T]
@@ -186,7 +186,7 @@ class AgentSetChecks
         name1 = @validator.addIndefiniteArticle(type1.niceName())
         name2 = @validator.addIndefiniteArticle(type2.niceName())
         # The order swap of `name1` and `name2` is intentional to get identical errors to desktop. -Jeremy B February 2021
-        @validator.error('SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _', name2, name1)
+        @validator.error('sort-on', 'SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _', name2, name1)
 
       compare(o1, o2)
 
@@ -201,7 +201,7 @@ class AgentSetChecks
 
   # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
   turtleSet: (values...) ->
-    @setCreationArgsCheck(types.Turtle, types.TurtleSet, values)
+    @setCreationArgsCheck('turtle-set', types.Turtle, types.TurtleSet, values)
     @prims.turtleSet(values)
 
   # (AgentSet[T], () => Boolean) => AgentSet[T]

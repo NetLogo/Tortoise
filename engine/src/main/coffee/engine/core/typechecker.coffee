@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-
 # There are three basic entry points here:
 
 # 1. The `nlTypes.checks.*` functions, that check if a value is of a given type.  These are appropriate to use
@@ -60,6 +59,8 @@ PatchSet         = require('./patchset')
 Turtle           = require('./turtle')
 TurtleSet        = require('./turtleset')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 isFunction       = (x) -> typeof(x) is "function"
 isCommandLambda  = (x) -> isFunction(x) and not x.isReporter
 isReporterLambda = (x) -> isFunction(x) and x.isReporter
@@ -99,7 +100,7 @@ isValidDirectedLink   = (x) -> isValidLink(x) and x.isDirected
 isValidUndirectedLink = (x) -> isValidLink(x) and not x.isDirected
 
 unimplemented = () ->
-  throw new Error("Unimplemented abstract method!")
+  throw exceptions.internal("Unimplemented abstract method!")
 
 class CommandLambdaType extends NLType
   isOfType: isCommandLambda

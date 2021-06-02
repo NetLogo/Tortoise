@@ -1,7 +1,11 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 { types, NLType } = require('engine/core/typechecker')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 class UnknownType extends NLType
-  isOfType: (x) -> throw new Error("should we be checking this?")
+  isOfType: (x) -> throw exceptions.internal("should we be checking this?")
   niceName:     -> "unknown type we can't do anything with"
 
 unknown = new UnknownType()

@@ -9,8 +9,9 @@ Turtle                = require('../core/turtle')
 TurtleSet             = require('../core/turtleset')
 { checks, getTypeOf } = require('../core/typechecker')
 StrictMath            = require('shim/strictmath')
-Exception             = require('util/exception')
 Timer                 = require('util/timer')
+
+{ exceptionFactory: exceptions } = require('util/exception')
 
 { flatMap, flattenDeep, isEmpty, map } = require('brazierjs/array')
 
@@ -34,12 +35,12 @@ module.exports =
     _everyMap: undefined # Object[String, Timer]
 
     # (Dump, Hasher, RNG, World) => Prims
-    constructor: (@_dumper, @_hasher, @_rng, @_world, @_evalPrims) ->
+    constructor: (@_dumper, @_hasher, @_rng, @_world) ->
       @_everyMap = {}
 
     # () => Nothing
     boom: ->
-      throw new Error("boom!")
+      throw exceptions.runtime("boom!", "boom")
 
     # (String, Array[Patch]) -> TurtleSet
     breedOn: (breedName, patches) ->
@@ -63,13 +64,13 @@ module.exports =
       if checks.isBoolean(b)
         b
       else
-        throw new Error("#{primName} expected input to be a TRUE/FALSE but got the #{getTypeOf(b).niceName()} #{@_dumper(b)} instead.")
+        throw exceptions.runtime("#{primName} expected input to be a TRUE/FALSE but got the #{getTypeOf(b).niceName()} #{@_dumper(b)} instead.", primName)
 
     ifElseValueBooleanCheck: (b) ->
       @booleanCheck(b, "IFELSE-VALUE")
 
     ifElseValueMissingElse: () ->
-      throw new Error("IFELSE-VALUE found no true conditions and no else branch. If you don't wish to error when no conditions are true, add a final else branch.")
+      throw exceptions.runtime("IFELSE-VALUE found no true conditions and no else branch. If you don't wish to error when no conditions are true, add a final else branch.", "ifelse-value")
 
     # (Any, Any) => Boolean
     equality: (a, b) ->
@@ -89,7 +90,7 @@ module.exports =
               true
             subsumes(a.sort(), b.sort())))
       else
-        throw new Error("Checking equality on undefined is an invalid condition")
+        throw exceptions.internal("Checking equality on undefined is an invalid condition")
 
     # () => String
     dateAndTime: ->
@@ -148,7 +149,7 @@ module.exports =
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is GT
       else
-        throw new Error("Invalid operands to `gt`")
+        throw exceptions.internal("Invalid operands to `gt`")
 
     # (Any, Any) => Boolean
     gte: (a, b) ->
@@ -165,7 +166,7 @@ module.exports =
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is LT
       else
-        throw new Error("Invalid operands to `lt`")
+        throw exceptions.internal("Invalid operands to `lt`")
 
     # (Any, Any) => Boolean
     lte: (a, b) ->
@@ -214,22 +215,7 @@ module.exports =
       if stepSize isnt 0
         range(lowerBound, upperBound, stepSize)
       else
-        throw new Error("The step-size for range must be non-zero.")
-
-    # (String) => Any
-    readFromString: (str) ->
-      @_evalPrims.readFromString(str)
-
-    # (Boolean, JsObject, Array[Any]) => Unit|Any
-    runCode: (isRunResult, procVars, args...) ->
-      f = args[0]
-      if checks.isString(f)
-        if args.length is 1
-          @_evalPrims.runCode(f, isRunResult, procVars)
-        else
-          throw new Error("#{if isRunResult then "runresult" else "run"} doesn't accept further inputs if the first is a string")
-      else
-        f(args.slice(1)...)
+        throw exceptions.runtime("The step-size for range must be non-zero.", "range")
 
     # (Any) => Unit
     stdout: (x) ->
@@ -239,7 +225,7 @@ module.exports =
       else if print?
         print(dumpedX)
       else
-        throw new Error("We don't know how to output text on this platform.  \
+        throw exceptions.internal("We don't know how to output text on this platform.  \
                          But, if it helps you any, here's the thing you wanted to see: #{dumpedX}")
       return
 

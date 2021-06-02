@@ -88,17 +88,48 @@ bundle = {
   , '_ expected a true/false value from _, but got _ instead.': (prim, item, value) ->
     "#{prim} expected a true/false value from #{item}, but got #{value} instead."
 
-  , '_-SET expected input to be a _ agentset or _ but got _ instead.': (prim, agentType, value) ->
-    "#{prim}-SET expected input to be a #{agentType} agentset or #{agentType} but got #{value} instead."
+  , '_ expected input to be a _ agentset or _ but got _ instead.': (prim, agentType, value) ->
+    "#{prim} expected input to be a #{agentType} agentset or #{agentType} but got #{value} instead."
 
-  , 'List inputs to _-SET must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.': (prim, agentType, list, value) ->
-    "List inputs to #{prim}-SET must only contain #{agentType}, #{agentType} agentset, or list elements.  The list #{list} contained #{value} which is NOT a #{agentType} or #{agentType} agentset."
+  , 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.': (prim, agentType, list, value) ->
+    "List inputs to #{prim} must only contain #{agentType}, #{agentType} agentset, or list elements.  The list #{list} contained #{value} which is NOT a #{agentType} or #{agentType} agentset."
 
-  , 'List inputs to _-SET must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.': (prim, agentType, list, value) ->
-    "List inputs to #{prim}-SET must only contain #{agentType}, #{agentType} agentset, or list elements.  The list #{list} contained a different type agentset: #{value}."
+  , 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.': (prim, agentType, list, value) ->
+    "List inputs to #{prim} must only contain #{agentType}, #{agentType} agentset, or list elements.  The list #{list} contained a different type agentset: #{value}."
 
   , 'SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _': (type1, type2) ->
     "SORT-ON works on numbers, strings, or agents of the same type, but not on #{type1} and #{type2}"
+
+  , 'anonymous procedure expected _ input_, but only got _': (needed, given) ->
+    "anonymous procedure expected #{needed} input#{if needed > 1 then "s" else ""}, but only got #{given}"
+
+  , 'REPORT can only be used inside TO-REPORT.': () ->
+    "REPORT can only be used inside TO-REPORT."
+
+  , 'STOP is not allowed inside TO-REPORT.': () ->
+    "STOP is not allowed inside TO-REPORT."
+
+  , 'Reached end of reporter procedure without REPORT being called.': () ->
+    "Reached end of reporter procedure without REPORT being called."
+
+  , '_ doesn_t accept further inputs if the first is a string': (primName) ->
+    "#{primName} doesn't accept further inputs if the first is a string"
+
+  , 'Unfortunately, no perfect equivalent to `_` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.': (primName) ->
+    "Unfortunately, no perfect equivalent to `#{primName}` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web."
+
+  , 'The point [ _ , _ ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.': (x, y) ->
+    "The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions."
+
+  , 'Cannot move turtle beyond the world_s edge.': () ->
+    "Cannot move turtle beyond the world's edge."
+
+  , 'there is no heading of a link whose endpoints are in the same position': () ->
+    "there is no heading of a link whose endpoints are in the same position"
+
+  , 'No heading is defined from a point (_,_) to that same point.': (x, y) ->
+    "No heading is defined from a point (#{x},#{y}) to that same point."
+
 }
 
 module.exports = bundle

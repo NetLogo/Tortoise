@@ -126,7 +126,7 @@ object Benchmarker extends App {
             setupJS     <- model.compileRawCommand("setup")
             repeatJS    <- model.compileRawCommand(s"repeat $numTicks [ go ]")
             resultJS    <- model.compileReporter("timer")
-          } yield s"${model.compiledCode};$caJS;$seedJS;$timerJS;$setupJS;$repeatJS;$resultJS;"
+          } yield s"${model.compiledCode};$caJS;$seedJS;$timerJS;$setupJS;(function() { $repeatJS; })();$resultJS;"
         }
 
         val js = jsV valueOr { case NonEmptyList(head, _) => throw head }

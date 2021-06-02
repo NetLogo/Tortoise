@@ -2,6 +2,8 @@
 
 { checks } = require('../engine/core/typechecker')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 parse = require('csv-parse/lib/sync')
 
 boolNames = ["false", "true"]
@@ -88,7 +90,7 @@ module.exports = {
     # (Any | List[Any], String) => String
     guardedToRow = (maybeRow, delimiter) ->
       if (not checks.isList(maybeRow))
-        throw new Error("Extension exception: Expected a list of lists, but #{workspace.dump(maybeRow)} was one of the elements.")
+        throw exceptions.extension("Expected a list of lists, but #{workspace.dump(maybeRow)} was one of the elements.")
 
       toRow(maybeRow, delimiter)
 
@@ -108,11 +110,11 @@ module.exports = {
 
     # () => Unit
     fromFileNotSupported = () ->
-      throw new Error("Extension exception: Reading directly from a file is not supported in NetLogo Web.  Instead you can use the Fetch extension to asynchronously read in a text file.\n\nfetch:user-file-async [ file-contents -> show csv:from-string file-contents ]")
+      throw exceptions.extension("Reading directly from a file is not supported in NetLogo Web.  Instead you can use the Fetch extension to asynchronously read in a text file.\n\nfetch:user-file-async [ file-contents -> show csv:from-string file-contents ]")
 
     # () => Unit
     toFileNotSupported = () ->
-      throw new Error("Extension exception: Writing directly to a file is not supported in NetLogo Web.  Instead you can use the SendTo extension to download a text file of the user's choice.\n\nsend-to:file \"output.csv\" csv:to-string [[0 1 true \"hello\"][1 10 false \"goodbye\"][2 5 true \"...\"]]")
+      throw exceptions.extension("Writing directly to a file is not supported in NetLogo Web.  Instead you can use the SendTo extension to download a text file of the user's choice.\n\nsend-to:file \"output.csv\" csv:to-string [[0 1 true \"hello\"][1 10 false \"goodbye\"][2 5 true \"...\"]]")
 
     {
       name: "csv"

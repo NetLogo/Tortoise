@@ -77,14 +77,20 @@ class WidgetCompiler(
       def fail(kind: String): Nothing =
         throw new IllegalArgumentException(s"This type of agent cannot be asked: $kind")
 
-      def askBlock(agents: String)(logoAsk: String): String =
-        s"ask $agents [ $logoAsk ]"
+      def askBlock(agents: String, checkAllDead: Boolean)(logoAsk: String): String = {
+        val ask = s"ask $agents [ $logoAsk ]"
+        if (!checkAllDead) {
+          ask
+        } else {
+          s"ifelse count $agents = 0 [ stop ] [ $ask ]"
+        }
+      }
 
       val kindToAgentSetString = Map[String, String => String](
         "OBSERVER" -> identity _,
-        "TURTLE"   -> askBlock("turtles") _,
-        "PATCH"    -> askBlock("patches") _,
-        "LINK"     -> askBlock("links")   _)
+        "TURTLE"   -> askBlock("turtles", true)  _,
+        "PATCH"    -> askBlock("patches", false) _,
+        "LINK"     -> askBlock("links",   true)  _)
 
       kindToAgentSetString.getOrElse(kind, fail(kind)).apply(command)
     }
@@ -92,7 +98,9 @@ class WidgetCompiler(
     def sanitizeSource(s: String) =
       s.replace("\\n", "\n").replace("\\\\", "\\").replace("\\\"", "\"")
 
-    compileCommand(sanitizeSource(askWithKind(b.buttonKind.toString.toUpperCase)(b.source.getOrElse(""))))
+    val asked     = askWithKind(b.buttonKind.toString.toUpperCase)(b.source.getOrElse(""))
+    val sanitized = sanitizeSource(asked)
+    compileCommand(sanitized)
       .contextualizeError("button", b.display.orElse(b.source).getOrElse(""), "source")
       .map(SourceCompilation.apply _)
   }
@@ -124,14 +132,12 @@ class WidgetCompiler(
 
   private def compileInContext(code: String, plotNameRaw: String, penNameOpt: Option[String] = None): CompiledStringV = {
     val penName       = penNameOpt map (name => s"'$name'") getOrElse "undefined"
-    val inTempContext = (f: String) => s"plotManager.withTemporaryContext('$plotNameRaw', $penName)($f)"
-    val withCloneRNG  = (f: String) => s"workspace.rng.withClone($f)"
+    val inPlotContext = (f: String) => s"ProcedurePrims.runInPlotContext('$plotNameRaw', $penName, $f)"
     if (code.trim.isEmpty)
       thunkifyProcedure("").successNel
     else
       compileCommand(code) map thunkifyProcedure map
-        (inTempContext andThen thunkifyFunction) map
-        (withCloneRNG  andThen thunkifyFunction)
+        (inPlotContext andThen thunkifyFunction)
   }
 }
 

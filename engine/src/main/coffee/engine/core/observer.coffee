@@ -10,6 +10,8 @@ agentToInt      = require('./agenttoint')
 { checks }      = require('./typechecker')
 VariableManager = require('./structure/variablemanager')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { difference, forEach } = require('brazierjs/array')
 
 { ExtraVariableSpec } = require('./structure/variablespec')
@@ -20,7 +22,7 @@ perspectiveFromNum = (num) ->
     when 1 then Ride
     when 2 then Follow
     when 3 then Watch
-    else        throw new Error("Invalid perspective number: #{num}")
+    else        throw exceptions.internal("Invalid perspective number: #{num}")
 
 perspectiveToNum = (p) ->
   switch p
@@ -28,7 +30,7 @@ perspectiveToNum = (p) ->
     when Ride    then 1
     when Follow  then 2
     when Watch   then 3
-    else              throw new Error("Invalid perspective: #{p}")
+    else              throw exceptions.internal("Invalid perspective: #{p}")
 
 perspectiveFromString = (str) ->
   switch str
@@ -36,7 +38,7 @@ perspectiveFromString = (str) ->
     when 'ride'    then Ride
     when 'follow'  then Follow
     when 'watch'   then Watch
-    else                throw new Error("Invalid perspective string: #{str}")
+    else                throw exceptions.internal("Invalid perspective string: #{str}")
 
 perspectiveToString = (p) ->
   switch p
@@ -44,7 +46,7 @@ perspectiveToString = (p) ->
     when Ride    then 'ride'
     when Follow  then 'follow'
     when Watch   then 'watch'
-    else              throw new Error("Invalid perspective: #{p}")
+    else              throw exceptions.internal("Invalid perspective: #{p}")
 
 module.exports.Perspective = {
   Observe

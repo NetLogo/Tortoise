@@ -8,9 +8,11 @@ StrictMath = require('shim/strictmath')
 { isNumber }                      = require('brazierjs/type')
 ColorModel                        = require('engine/core/colormodel')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 # data PenMode =
-Up   = {}
-Down = {}
+Up   = Object.freeze({ _debugInfo: "UP" })
+Down = Object.freeze({ _debugInfo: "DOWN" })
 
 module.exports.PenMode = {
   Up,
@@ -19,9 +21,9 @@ module.exports.PenMode = {
 }
 
 # data DisplayMode =
-Line  = {}
-Bar   = {}
-Point = {}
+Line  = Object.freeze({ _debugInfo: "LINE" })
+Bar   = Object.freeze({ _debugInfo: "BAR" })
+Point = Object.freeze({ _debugInfo: "POINT" })
 
 # (Number) => DisplayMode
 displayModeFromNum = (num) ->
@@ -29,7 +31,7 @@ displayModeFromNum = (num) ->
     when 0 then Line
     when 1 then Bar
     when 2 then Point
-    else        throw new Error("Pen display mode expected `0` (line), `1` (bar), or `2` (point), but got `#{num}`")
+    else        throw exceptions.internal("Pen display mode expected `0` (line), `1` (bar), or `2` (point), but got `#{num}`")
 
 # (DisplayMode) => Number
 displayModeToNum = (mode) ->
@@ -37,7 +39,7 @@ displayModeToNum = (mode) ->
     when Line  then 0
     when Bar   then 1
     when Point then 2
-    else           throw new Error("Invalid display mode: #{mode}")
+    else           throw exceptions.internal("Invalid display mode: #{mode}")
 
 # (String) => DisplayMode
 displayModeFromString = (num) ->
@@ -45,7 +47,7 @@ displayModeFromString = (num) ->
     when 'line'  then Line
     when 'bar'   then Bar
     when 'point' then Point
-    else         throw new Error("Pen display mode expected 'line', 'bar', or 'point', but got `#{num}`")
+    else         throw exceptions.internal("Pen display mode expected 'line', 'bar', or 'point', but got `#{num}`")
 
 # (DisplayMode) => String
 displayModeToString = (mode) ->
@@ -53,7 +55,7 @@ displayModeToString = (mode) ->
     when Line  then 'line'
     when Bar   then 'bar'
     when Point then 'point'
-    else           throw new Error("Invalid display mode: #{mode}")
+    else           throw exceptions.internal("Invalid display mode: #{mode}")
 
 module.exports.DisplayMode = {
   Line

@@ -7,9 +7,10 @@ Comparator      = require('util/comparator')
 
 { filter, foldl } = require('brazierjs/array')
 
-{ DeathInterrupt: Death, TopologyInterrupt } = require('util/exception')
-{ Setters, VariableSpecs }                   = require('./patch/patchvariables')
-{ ExtraVariableSpec }                        = require('./structure/variablespec')
+{ exceptionFactory: exceptions } = require('util/exception')
+{ DeathInterrupt }               = require('util/interrupts')
+{ Setters, VariableSpecs }       = require('./patch/patchvariables')
+{ ExtraVariableSpec }            = require('./structure/variablespec')
 
 module.exports =
   class Patch
@@ -66,12 +67,12 @@ module.exports =
     distanceXY: (x, y) ->
       @world.topology.distanceXY(@pxcor, @pycor, x, y)
 
-    # (Turtle|Patch) => Number
+    # (Turtle|Patch) => Number | TowardsInterrupt
     towards: (agent) ->
       [x, y] = agent.getCoords()
       @towardsXY(x, y)
 
-    # (Number, Number) => Number
+    # (Number, Number) => Number | TowardsInterrupt
     towardsXY: (x, y) ->
       @world.topology.towards(@pxcor, @pycor, x, y)
 
@@ -83,7 +84,7 @@ module.exports =
     ask: (f) ->
       @world.selfManager.askAgent(f)(this)
       if @world.selfManager.self().isDead?()
-        throw new Death
+        return DeathInterrupt
       return
 
     # [Result] @ (() => Result) => Result
@@ -124,7 +125,7 @@ module.exports =
 
     # (Number, Number) => Agent
     patchAtCoords: (x, y) ->
-      @world.patchAtCoords(x, y)
+      @world.getPatchAt(x, y)
 
     # (Number, Number) => Agent
     patchAtHeadingAndDistance: (angle, distance) ->
@@ -181,7 +182,7 @@ module.exports =
         if checks.isNumber(x)
           acc + x
         else
-          throw new Exception("noSumOfListWithNonNumbers, #{x}")
+          throw exceptions.runtime("noSumOfListWithNonNumbers, #{x}", "sum")
       foldl(f)(0)(nbs.iterator().toArray())
 
     # (String) => Number

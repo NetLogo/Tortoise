@@ -204,13 +204,13 @@ object BrowserCompilerTest extends TestSuite {
         "apples"             -> """world.observer.getGlobal(\"apples\")""",
         "oranges"            -> """world.observer.getGlobal(\"oranges\")""",
         "3 + apples"         -> """PrimChecks.math.plus(3, PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal(\"apples\")))""",
-        "3 + (bananas 8 10)" -> """PrimChecks.math.plus(3, PrimChecks.validator.checkArg('+', 1, procedures[\"BANANAS\"](8,10)))""",
+        "3 + (bananas 8 10)" -> """PrimChecks.math.plus(3, PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter(\"bananas\", 8, 10)))""",
 
         "(3 / apples + (bananas 9001 3) > 0) or oranges" ->
-          """(Prims.gt(PrimChecks.math.plus(PrimChecks.math.div(3, PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal(\"apples\"))), PrimChecks.validator.checkArg('+', 1, procedures[\"BANANAS\"](9001,3))), 0) || PrimChecks.validator.checkArg('OR', 2, world.observer.getGlobal(\"oranges\")))""",
+          """(Prims.gt(PrimChecks.math.plus(PrimChecks.math.div(3, PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal(\"apples\"))), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter(\"bananas\", 9001, 3))), 0) || PrimChecks.validator.checkArg('OR', 2, world.observer.getGlobal(\"oranges\")))""",
 
         "sum [xcor] of turtles" ->
-          """PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable(\"xcor\"); })))""",
+          """PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(\"xcor\"); })))""",
 
         "any? turtles" -> "PrimChecks.agentset.any(world.turtles())",
         "any? apples"  -> """PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, world.observer.getGlobal(\"apples\")))""",
@@ -242,18 +242,16 @@ object BrowserCompilerTest extends TestSuite {
           """PrintPrims.show(SelfManager.self)(\"hello!\");""",
 
         "ask turtles [ fd apples ]" ->
-          """Errors.askNobodyCheck(world.turtles()).ask(function() { SelfManager.self().fd(world.observer.getGlobal(\"apples\")); }, true);""",
+          """var R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self().fd(world.observer.getGlobal(\"apples\")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }""",
 
         "clear-all reset-ticks create-turtles (bananas 2 3)" ->
-          """world.clearAll();\nworld.ticker.reset();\nworld.turtleManager.createTurtles(procedures[\"BANANAS\"](2,3), \"\");"""
+          """world.clearAll();\nworld.ticker.reset();\nworld.turtleManager.createTurtles(PrimChecks.procedure.callReporter(\"bananas\", 2, 3), \"\");"""
       )
 
       "with wrapped commands"-{
-        val wrapCommand = (c: String) => s"""try {\\n  var reporterContext = false;\\n  var letVars = { };\\n  ${c.replaceAll("\\\\n", "\\\\n  ")}\\n} catch (e) {\\n  return Errors.stopInCommandCheck(e)\\n}"""
-
         val results = commands.keys.map(code => (code, nativeToString(compiler.compileCommand(code))))
         results.foreach({ case (code, result) =>
-          val expected = makeSuccess(wrapCommand(commands.get(code).getOrElse("TEST KEY NOT FOUND?")))
+          val expected = makeSuccess(commands.get(code).getOrElse("TEST KEY NOT FOUND?"))
           assert(expected == result)
         })
       }
@@ -279,7 +277,7 @@ object BrowserCompilerTest extends TestSuite {
 
       val result = nativeToString(compiler.compileProceduresIncremental("to foo left 150 end", js.Array("foo")))
 
-      val expected = makeSuccess("""temp = (function() {\n  try {\n    var reporterContext = false;\n    var letVars = { };\n    SelfManager.self().right(-(150));\n  } catch (e) {\n    return Errors.stopInCommandCheck(e)\n  }\n});\nprocs[\"foo\"] = temp;\nprocs[\"FOO\"] = temp;""")
+      val expected = makeSuccess("""ProcedurePrims.defineCommand(\"foo\", 3, 16, (function() { SelfManager.self().right(-(150)); }))""")
       assert(expected == result)
     }
 

@@ -2,6 +2,8 @@
 
 JSType = require('util/jstype')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { flatMap, isEmpty, map, maxBy, toObject, unique } = require('brazierjs/array')
 { id, pipeline, tee }                              = require('brazierjs/function')
 { fold, map: mapMaybe, maybe }                     = require('brazierjs/maybe')
@@ -89,7 +91,7 @@ formatAgentRef = (ref) ->
   else if ref instanceof TurtleReference
     formatTurtleRef(ref)
   else
-    throw new Error("Unknown agent reference: #{JSON.stringify(ref)}")
+    throw exceptions.internal("Unknown agent reference: #{JSON.stringify(ref)}")
 
 # (Array[_], (Any) => String) => String
 formatList = (xs, formatter) ->
@@ -104,7 +106,7 @@ formatColor = (color) ->
   else if color instanceof ExportedRGBA
     formatPlain(formatList([color.r, color.g, color.b, color.a], formatFloat))
   else
-    throw new Error("Unknown color: #{JSON.stringify(color)}")
+    throw exceptions.internal("Unknown color: #{JSON.stringify(color)}")
 
 # (ExtensionsFormatter, Boolean) => (Any) => String
 formatAny = (extensionFormatter, isOuterValue = true) -> (any) ->
@@ -150,7 +152,7 @@ formatAny = (extensionFormatter, isOuterValue = true) -> (any) ->
     else if extensionFormatter.canHandle(x)
       extensionFormatter.formatPlaceholder(x, formatter)
     else
-      throw new Error("I don't know how to CSVify this: #{JSON.stringify(x)}")
+      throw exceptions.internal("I don't know how to CSVify this: #{JSON.stringify(x)}")
 
   if not any?
     ""
@@ -244,7 +246,7 @@ formatGlobals = ({ linkDirectedness, maxPxcor, maxPycor, minPxcor, minPycor, nex
         when 'ride'    then 1
         when 'follow'  then 2
         when 'watch'   then 3
-        else                throw new Error("Unknown perspective: #{JSON.stringify(x)}")
+        else                throw exceptions.internal("Unknown perspective: #{JSON.stringify(x)}")
     )
 
   formatDirectedness = pipeline(((s) -> s.toUpperCase()), formatString)
@@ -332,7 +334,7 @@ formatPensData = (pens) ->
         when 'line'  then 0
         when 'bar'   then 1
         when 'point' then 2
-        else              throw new Error("Unknown pen mode: #{JSON.stringify(x)}")
+        else              throw exceptions.internal("Unknown pen mode: #{JSON.stringify(x)}")
     )
 
   convertPen =

@@ -24,6 +24,8 @@ ExtensionsHandler = require('../engine/core/world/extensionshandler')
 , Metadata
 } = require('./exportstructures')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { foldl       } = require('brazierjs/array')
 { id          } = require('brazierjs/function')
 { fold, maybe } = require('brazierjs/maybe')
@@ -73,7 +75,7 @@ toExportedColor = (color) ->
     else
       new ExportedRGB(r, g, b)
   else
-    throw new Error("Unrecognized CSVified color: #{JSON.stringify(color)}")
+    throw exceptions.internal("Unrecognized CSVified color: #{JSON.stringify(color)}")
 
 # (Object[Any]) => ExportedGlobals
 toExportedGlobals = ({ directedLinks, maxPxcor, maxPycor, minPxcor, minPycor, nextIndex
@@ -123,7 +125,7 @@ identity = (x) ->
 
 # (String) => String|(Number, Number, Number)|(Number, Number, Number, Number)
 parseColor = (x) ->
-  unpossible = -> throw new Error("Why is this even getting called?  We shouldn't be parsing breed names where colors are expected.")
+  unpossible = -> throw exceptions.internal("Why is this even getting called?  We shouldn't be parsing breed names where colors are expected.")
   parseAny(unpossible, unpossible, { matchesPlaceholder: () -> false })(x)
 
 # (String) => Number
@@ -141,7 +143,7 @@ parsePenMode = (x) ->
     when 0 then 'line'
     when 1 then 'bar'
     when 2 then 'point'
-    else        throw new Error("Unknown pen mode: #{x}")
+    else        throw exceptions.internal("Unknown pen mode: #{x}")
 
 # (String) => String
 parsePerspective = (x) ->
@@ -150,7 +152,7 @@ parsePerspective = (x) ->
     when 1 then 'ride'
     when 2 then 'follow'
     when 3 then 'watch'
-    else        throw new Error("Unknown perspective number: #{x}")
+    else        throw exceptions.internal("Unknown perspective number: #{x}")
 
 # (String) => String
 parseVersion = (x) ->
@@ -158,7 +160,7 @@ parseVersion = (x) ->
 
 # [T] @ (String) => ((String) => Maybe[T]) => ((String) => T)
 parseAndExtract = (typeOfEntry) -> (f) -> (x) ->
-  fold((x) -> throw new Error("Unable to parse #{typeOfEntry}: #{JSON.stringify(x)}"))(id)(f(x))
+  fold((x) -> throw exceptions.internal("Unable to parse #{typeOfEntry}: #{JSON.stringify(x)}"))(id)(f(x))
 
 # ((String) => String, (String) => String, ExtensionsReader) => Object[Schema]
 nameToSchema = (singularToPlural, pluralToSingular, extensionReader) ->
@@ -318,7 +320,7 @@ extensionParse = (extensionNames) -> (csvBucket, schema) ->
 
   [first] = csvBucket[0]
   if not extensionNames.includes(first.toUpperCase())
-    throw new Error("Extension section must start with an extension name.")
+    throw exceptions.internal("Extension section must start with an extension name.")
 
   output        = {}
   current       = []
@@ -342,7 +344,7 @@ drawingParse = (csvBucket, schema) ->
     [[patchSizeStr], [base64Str]] = csvBucket
     [parseFloat(patchSizeStr), base64Str]
   else
-    throw new Error("NetLogo Web cannot parse `export-world` drawings from before NetLogo 6.1.")
+    throw exceptions.internal("NetLogo Web cannot parse `export-world` drawings from before NetLogo 6.1.")
 
 # ((String) => String, (String) => String, ExtensionsReader) => Object[Parser[Any]]
 buckets = (singularToPlural, pluralToSingular, extensionReader) -> {

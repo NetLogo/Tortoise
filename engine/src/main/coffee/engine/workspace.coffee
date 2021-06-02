@@ -4,26 +4,29 @@ class WorldConfig
   # (() => Unit) => WorldConfig
   constructor: (@resizeWorld = (->)) ->
 
-BreedManager  = require('./core/breedmanager')
-Dump          = require('./dump')
-EvalPrims     = require('./prim/evalprims')
-Hasher        = require('./hasher')
-I18nBundle    = require('i18n/i18n-bundle')
-importPColors = require('./prim/importpcolors')
-LayoutManager = require('./prim/layoutmanager')
-LinkPrims     = require('./prim/linkprims')
-ListPrims     = require('./prim/listprims')
-PlotManager   = require('./plot/plotmanager')
-Prims         = require('./prim/prims')
-RandomPrims   = require('./prim/randomprims')
-PrimChecks    = require('./prim-checks/checker')
-RNG           = require('util/rng')
-SelfManager   = require('./core/structure/selfmanager')
-SelfPrims     = require('./prim/selfprims')
-StringPrims   = require('./prim/stringprims')
-Timer         = require('util/timer')
-Updater       = require('./updater')
-World         = require('./core/world')
+BreedManager   = require('./core/breedmanager')
+Dump           = require('./dump')
+EvalPrims      = require('./prim/evalprims')
+Hasher         = require('./hasher')
+I18nBundle     = require('i18n/i18n-bundle')
+importPColors  = require('./prim/importpcolors')
+LayoutManager  = require('./prim/layoutmanager')
+LinkPrims      = require('./prim/linkprims')
+ListPrims      = require('./prim/listprims')
+PlotManager    = require('./plot/plotmanager')
+Prims          = require('./prim/prims')
+ProcedurePrims = require('./prim/procedureprims')
+RandomPrims    = require('./prim/randomprims')
+PrimChecks     = require('./prim-checks/checker')
+RNG            = require('util/rng')
+SelfManager    = require('./core/structure/selfmanager')
+SelfPrims      = require('./prim/selfprims')
+StringPrims    = require('./prim/stringprims')
+Timer          = require('util/timer')
+Updater        = require('./updater')
+World          = require('./core/world')
+
+{ exceptionFactory: exceptions } = require('util/exception')
 
 csvToWorldState = require('serialize/importcsv')
 
@@ -51,7 +54,7 @@ module.exports =
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
     asyncDialogConfig  = modelConfig?.asyncDialog       ? { getChoice: (-> -> None), getText: (-> -> None), getYesOrNo: (-> -> None), showMessage: (-> -> None) }
-    base64ToImageData  = modelConfig?.base64ToImageData ? (-> throw new Error("Sorry, no image data converter was provided."))
+    base64ToImageData  = modelConfig?.base64ToImageData ? (-> throw exceptions.internal("Sorry, no image data converter was provided."))
     dialogConfig       = modelConfig?.dialog            ? new UserDialogConfig
     importExportConfig = modelConfig?.importExport      ? new ImportExportConfig
     inspectionConfig   = modelConfig?.inspection        ? new InspectionConfig
@@ -89,13 +92,16 @@ module.exports =
     )
     layoutManager = new LayoutManager(world, rng.nextDouble)
 
-    evalPrims   = new EvalPrims(code, widgets)
-    prims       = new Prims(dump, Hasher, rng, world, evalPrims)
-    randomPrims = new RandomPrims(rng)
-    selfPrims   = new SelfPrims(selfManager.self)
-    linkPrims   = new LinkPrims(world)
-    listPrims   = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
-    stringPrims = new StringPrims()
+    evalPrims      = new EvalPrims(code, widgets)
+    procedurePrims = new ProcedurePrims(evalPrims, plotManager, rng)
+    prims          = new Prims(dump, Hasher, rng, world)
+    randomPrims    = new RandomPrims(rng)
+    selfPrims      = new SelfPrims(selfManager.self)
+    linkPrims      = new LinkPrims(world)
+    listPrims      = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
+    stringPrims    = new StringPrims()
+
+    exceptions.setProcecurePrims(procedurePrims)
 
     inspectionPrims = new InspectionPrims(inspectionConfig)
     mousePrims      = new MousePrims(mouseConfig)
@@ -104,13 +110,13 @@ module.exports =
     userDialogPrims = new UserDialogPrims(dialogConfig)
 
     i18nBundle = new I18nBundle()
-    primChecks = new PrimChecks(i18nBundle, dump, prims, listPrims, randomPrims, stringPrims, selfManager.self)
+    primChecks = new PrimChecks(i18nBundle, dump, prims, listPrims, randomPrims, stringPrims, procedurePrims, selfPrims, selfManager.self)
 
     importWorldFromCSV = (csvText) ->
 
       functionify = (obj) -> (x) ->
         msg = "Cannot find corresponding breed name for #{x}!"
-        fold(-> throw new Error(msg))(id)(lookup(x)(obj))
+        fold(-> throw exceptions.internal(msg))(id)(lookup(x)(obj))
 
       breedNamePairs   = values(breedManager.breeds()).map(({ name, singular }) -> [name, singular])
       ptsObject        = toObject(breedNamePairs)
@@ -151,6 +157,7 @@ module.exports =
       plotManager
       evalPrims
       prims
+      procedurePrims
       randomPrims
       primChecks
       printPrims

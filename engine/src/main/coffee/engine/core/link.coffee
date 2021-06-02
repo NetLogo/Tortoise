@@ -6,11 +6,12 @@ linkCompare      = require('./structure/linkcompare')
 VariableManager  = require('./structure/variablemanager')
 TurtleSet        = require('./turtleset')
 
-{ EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('util/comparator')
+{ EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT } = require('util/comparator')
+{ exceptionFactory: exceptions }                = require('util/exception')
 
-{ AgentException, DeathInterrupt: Death } = require('util/exception')
-{ Setters, VariableSpecs }                = require('./link/linkvariables')
-{ ExtraVariableSpec }                     = require('./structure/variablespec')
+{ ifInterrupt, DeathInterrupt } = require('util/interrupts')
+{ Setters, VariableSpecs }      = require('./link/linkvariables')
+{ ExtraVariableSpec }           = require('./structure/variablespec')
 
 class StampMode
   constructor: (@name) -> # (String) => StampMode
@@ -70,7 +71,7 @@ module.exports =
       @_varManager[varName] = value
       return
 
-    # () => Nothing
+    # () => DeathInterrupt
     die: ->
       @_breed.remove(this)
       if not @isDead()
@@ -79,7 +80,7 @@ module.exports =
         @_registerRemoval(this)
         @_seppuku()
         @id = -1
-      throw new Death("Call only from inside an askAgent block")
+      return DeathInterrupt
 
     # () => Unit
     stamp: ->
@@ -125,14 +126,9 @@ module.exports =
     getCoords: ->
       [@getMidpointX(), @getMidpointY()]
 
-    # () => Number
+    # () => Number | TowardsInterrupt
     getHeading: ->
-      try @world.topology.towards(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
-      catch error
-        if error instanceof AgentException
-          throw new Error("there is no heading of a link whose endpoints are in the same position")
-        else
-          throw error
+      @world.topology.towards(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
 
     # () => Number
     getMidpointX: ->
@@ -159,9 +155,9 @@ module.exports =
       if not @isDead()
         @world.selfManager.askAgent(f)(this)
         if @world.selfManager.self().isDead?()
-          throw new Death
+          return DeathInterrupt
       else
-        throw new Error("That #{@getBreedNameSingular()} is dead.")
+        throw exceptions.runtime("That #{@getBreedNameSingular()} is dead.", "ask")
       return
 
     # [Result] @ (() => Result) => Result
@@ -169,7 +165,7 @@ module.exports =
       if not @isDead()
         @world.selfManager.askAgent(f)(this)
       else
-        throw new Error("That #{@_breed.singular} is dead.")
+        throw exceptions.runtime("That #{@_breed.singular} is dead.", "of")
 
     # (Any) => { toInt: Number }
     compare: (x) ->
@@ -177,7 +173,7 @@ module.exports =
         when -1 then LT
         when  0 then EQ
         when  1 then GT
-        else throw new Error("Comparison should only yield an integer within the interval [-1,1]")
+        else exceptions.internal("Comparison should only yield an integer within the interval [-1,1]")
 
     # () => Array[String]
     varNames: ->
@@ -189,13 +185,7 @@ module.exports =
       { xcor: e1x, ycor: e1y } = @end1
       { xcor: e2x, ycor: e2y } = @end2
 
-      stampHeading =
-        try @world.topology.towards(e1x, e1y, e2x, e2y)
-        catch error
-          if error instanceof AgentException
-            0
-          else
-            throw error
+      stampHeading = ifInterrupt(@world.topology.towards(e1x, e1y, e2x, e2y), 0)
 
       color = ColorModel.colorToRGB(@_color)
       midX  = @getMidpointX()

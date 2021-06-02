@@ -5,6 +5,8 @@
 , ExportedSimpleExtension
 } = require('../../../serialize/exportstructures')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 porterStringRegEx = /{{(.+)\:(.*) (\d+)\:  ?(.+)}}/
 
 class SingleObjectExtensionPorter
@@ -42,7 +44,7 @@ class SingleObjectExtensionPorter
 
       match = porterString.match(porterStringRegEx)
       if not match?
-        throw new Error("Cannot read this extension object string: #{porterString}")
+        throw exceptions.internal("Cannot read this extension object string: #{porterString}")
 
       extensionName = match[1]
       subType       = match[2] # ignored for an extension with only a single object sub-type
@@ -50,7 +52,7 @@ class SingleObjectExtensionPorter
       formattedData = match[4]
 
       if @extensionName isnt extensionName
-        throw new Error("This extension porter (#{@extensionName}) does not match the extension object: #{porterString}")
+        throw exceptions.internal("This extension porter (#{@extensionName}) does not match the extension object: #{porterString}")
 
       porterObject = @readObject(formattedData, helper)
       porterObjects[index] = porterObject

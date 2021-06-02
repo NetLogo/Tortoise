@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 module.exports = {
 
   init: (workspace) ->
@@ -10,12 +12,12 @@ module.exports = {
       if Polyglot?
         workspace.ioConfig.importFile(filepath)(callback)
       else
-        throw new Error("'fetch:file-async' is not supported in NetLogo Web.  Use 'fetch:user-file-async' instead.")
+        throw exceptions.extension("'fetch:file-async' is not supported in NetLogo Web.  Use 'fetch:user-file-async' instead.")
       return
 
     # (String) => String
     fromFilepathSynchronously = (filepath, callback) ->
-      throw new Error("'fetch:file' is not supported in NetLogo Web.  Use 'fetch:user-file-async' instead.")
+      throw exceptions.extension("'fetch:file' is not supported in NetLogo Web.  Use 'fetch:user-file-async' instead.")
       return
 
     # (String, (String) => Unit) => Unit
@@ -34,7 +36,7 @@ module.exports = {
 
     # () => String
     fromFileDialogSynchronously = ->
-      throw new Error("'fetch:user-file' is not supported in NetLogo Web.  Use 'fetch:user-file-async' instead.")
+      throw exceptions.extension("'fetch:user-file' is not supported in NetLogo Web.  Use 'fetch:user-file-async' instead.")
       return
 
     {

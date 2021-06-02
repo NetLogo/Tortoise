@@ -2,6 +2,8 @@
 
 SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensionporter')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 # (Any) => Boolean
 isArray = (x) ->
   x.type is "ext_array"
@@ -45,39 +47,39 @@ module.exports = {
     # (ExtArray) => Number|List[Any]
     toList = (extArray) ->
       if not isArray(extArray)
-        throw new Error(notArrayException(extArray))
+        throw exceptions.extension(notArrayException(extArray))
       extArray.items.slice(0)
 
     # (ExtArray) => Number
     length = (extArray) ->
       if not isArray(extArray)
-        throw new Error(notArrayException(extArray))
+        throw exceptions.extension(notArrayException(extArray))
       extArray.items.length
 
     # (ExtArray, Number) => Any
     item = (extArray, index) ->
       if not isArray(extArray)
-        throw new Error(notArrayException(extArray))
+        throw exceptions.extension(notArrayException(extArray))
       extArray.items[index] ?
-        throw new Error(
+        throw exceptions.extension(
           invalidIndexException(extArray, index)
         )
 
     # (ExtArray, Number, Any) => Unit
     set = (extArray, index, value) ->
       if not isArray(extArray)
-        throw new Error(notArrayException(extArray))
+        throw exceptions.extension(notArrayException(extArray))
       if extArray.items[index]?
         extArray.items[index] = value
       else
-        throw new Error(invalidIndexException(extArray, index))
+        throw exceptions.extension(invalidIndexException(extArray, index))
       return
 
     notArrayException = (x) ->
-      "Extension exception: not an array: #{workspace.dump(x, true)}"
+      "not an array: #{workspace.dump(x, true)}"
 
     invalidIndexException = (extArray, index) ->
-      "Extension exception: #{index} is not a valid index into an array of length #{length(extArray)}"
+      "#{index} is not a valid index into an array of length #{length(extArray)}"
 
     {
       name: extensionName

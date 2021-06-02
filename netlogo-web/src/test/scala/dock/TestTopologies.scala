@@ -55,10 +55,20 @@ class TestTopologies extends DockingSuite {
     testCommand("crt 20")
     for (i <- 0 to 19)
       testCommand(s"ask turtle $i [ setxy (random 30 - 15) (random 30 - 15) ]")
+  }
+
+  inAllTopologies("set xcor wraps") {
+    implicit fixture => import fixture._
+    testCommand("crt 20")
     for (i <- 0 to 19)
       testCommand(s"ask turtle $i [ set xcor (random 30 - 15) ]")
+  }
+
+  inAllTopologies("set ycor wraps") {
+    implicit fixture => import fixture._
+    testCommand("crt 20")
     for (i <- 0 to 19)
-      testCommand(s"ask turtle $i [ set xcor random 30 - 15 ]")
+      testCommand(s"ask turtle $i [ set ycor (random 30 - 15) ]")
   }
 
   inAllTopologies("edge wrapping") {
@@ -89,14 +99,24 @@ class TestTopologies extends DockingSuite {
     testCommand("""ask turtles [ ask neighbors4 [ output-print self ]]""")
   }
 
-  inAllTopologies("face", baseView = View.square(4)) {
+  inAllTopologies("face turtle", baseView = View.square(4)) {
     implicit fixture => import fixture._
     testCommand("ask patches [ sprout 1 ]")
     for (i <- 1 to 80)
       testCommand(s"ask turtles [ face turtle $i ]")
+  }
+
+  inAllTopologies("face patch", baseView = View.square(4)) {
+    implicit fixture => import fixture._
+    testCommand("ask patches [ sprout 1 ]")
     for (x <- -4 to 4)
       for (y <- -4 to 4)
         testCommand(s"ask turtles [ face patch $x $y ]")
+  }
+
+  inAllTopologies("facexy", baseView = View.square(4)) {
+    implicit fixture => import fixture._
+    testCommand("ask patches [ sprout 1 ]")
     for (_ <- 0 to 10)
       testCommand("ask turtles [ facexy ((random 8) / ((random 8) + 1) - 4) ((random 8) / ((random 8) + 1) - 4) ]")
   }

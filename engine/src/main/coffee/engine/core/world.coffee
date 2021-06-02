@@ -8,6 +8,8 @@ Ticker          = require('./world/ticker')
 TurtleManager   = require('./world/turtlemanager')
 NLMath          = require('util/nlmath')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { filter, flatMap } = require('brazier/array')
 { pipeline }        = require('brazier/function')
 { values }          = require('brazier/object')
@@ -15,7 +17,7 @@ NLMath          = require('util/nlmath')
 { Observer                                                       } = require('./observer')
 { linkBuiltins, patchBuiltins, turtleBuiltins                    } = require('./structure/builtins')
 { allPlotsDataToCSV, plotDataToCSV, rawPlotToCSV, worldDataToCSV } = require('serialize/exportcsv')
-{ TopologyInterrupt                                              } = require('util/exception')
+{ TopologyInterrupt                                              } = require('util/interrupts')
 
 { exportWorld, exportPlot, exportRawPlot, exportAllPlots } = require('./world/export')
 { importWorld                                            } = require('./world/import')
@@ -118,7 +120,7 @@ module.exports =
     _resizeHelper: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
 
       if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
-        throw new Error("You must include the point (0, 0) in the world.")
+        throw exceptions.runtime("You must include the point (0, 0) in the world.", "resize-world")
 
       if (minPxcor isnt @topology?.minPxcor or minPycor isnt @topology?.minPycor or
           maxPxcor isnt @topology?.maxPxcor or maxPycor isnt @topology?.maxPycor)
@@ -142,34 +144,22 @@ module.exports =
       @_updater.updated(this)("wrappingAllowedInX", "wrappingAllowedInY")
       return
 
-    # (Number, Number) => Agent
+    # (Number, Number) => Patch | Nobody
     getPatchAt: (x, y) =>
-      try
-        roundedX  = @_roundXCor(x)
-        roundedY  = @_roundYCor(y)
-        index     = (@topology.maxPycor - roundedY) * @topology.width + (roundedX - @topology.minPxcor)
+      roundedX = @_roundXCor(x)
+      roundedY = @_roundYCor(y)
+      if roundedX is TopologyInterrupt or roundedY is TopologyInterrupt
+        Nobody
+      else
+        index = (@topology.maxPycor - roundedY) * @topology.width + (roundedX - @topology.minPxcor)
         @_patches[index]
-      catch error
-        if error instanceof TopologyInterrupt
-          Nobody
-        else
-          throw error
-
-    # (Number, Number) => Agent
-    patchAtCoords: (x, y) ->
-      try
-        newX = @topology.wrapX(x)
-        newY = @topology.wrapY(y)
-        @getPatchAt(newX, newY)
-      catch error
-        if error instanceof TopologyInterrupt then Nobody else throw error
 
     # (Number, Number, Number, Number) => Agent
     patchAtHeadingAndDistanceFrom: (angle, distance, x, y) ->
       heading = NLMath.normalizeHeading(angle)
       targetX = x + distance * NLMath.squash(NLMath.sin(heading))
       targetY = y + distance * NLMath.squash(NLMath.cos(heading))
-      @patchAtCoords(targetX, targetY)
+      @getPatchAt(targetX, targetY)
 
     # (Number) => Unit
     setPatchSize: (@patchSize) ->
@@ -279,30 +269,13 @@ module.exports =
 
     # (Number) => Number
     _roundXCor: (x) ->
-      wrappedX = @_wrapC(x, @_thisWrapX)
+      wrappedX = @_thisWrapX(x)
       @_roundCoordinate(wrappedX)
 
     # (Number) => Number
     _roundYCor: (y) ->
-      wrappedY = @_wrapC(y, @_thisWrapY)
+      wrappedY = @_thisWrapY(y)
       @_roundCoordinate(wrappedY)
-
-    # Similarly, using try/catch as an expression creates extra anon funcs, so we get
-    # this value manually as well.  -JMB 07/2017
-
-    # (Number, (Number) => Number) => Number
-    _wrapC: (c, wrapper) ->
-      wrappedC = undefined
-      try
-        wrappedC = wrapper(c)
-      catch error
-        trueError =
-          if error instanceof TopologyInterrupt
-            new TopologyInterrupt("Cannot access patches beyond the limits of current world.")
-          else
-            error
-        throw trueError
-      wrappedC
 
     # Boy, oh, boy!  Headless has only this to say about this code: "floor() is slow so we
     # don't use it".  I have a lot more to say!  This code is kind of nuts, but we can't
@@ -315,7 +288,9 @@ module.exports =
     # --JAB (12/6/14)
     # (Number) => Number
     _roundCoordinate: (wrappedC) ->
-      if wrappedC > 0
+      if wrappedC is TopologyInterrupt
+        wrappedC
+      else if wrappedC > 0
         (wrappedC + 0.5) | 0
       else
         integral   = wrappedC | 0

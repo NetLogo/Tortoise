@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 class ObjectStorage
   constructor: () ->
     @store = { name : "", data: {} }
@@ -24,10 +26,10 @@ class ObjectStorage
   # (String) => Unit
   deleteStore: (name) =>
     if (name is "" or name is "Default Store")
-      throw new Error("Extension exception: Cannot delete the default store, but you can clear it if you want.")
+      throw exceptions.extension("Cannot delete the default store, but you can clear it if you want.")
 
     if (@store.name is name)
-      throw new Error("Extension exception: Cannot delete the current store, switch to another store first.")
+      throw exceptions.extension("Cannot delete the current store, switch to another store first.")
 
     @stores = @stores.filter( (store) -> store.name isnt name )
     return
@@ -36,7 +38,7 @@ class ObjectStorage
   getItem: (key, callback) =>
     @hasKey(key, (isValidKey) =>
       if (not isValidKey)
-        throw new Error("Extension exception: Could not find a value for key: '#{key}'.")
+        throw exceptions.extension("Could not find a value for key: '#{key}'.")
       callback(@store.data[key])
     )
     return
@@ -76,7 +78,7 @@ class ForageStorage
   constructor: (@localforage, reportErrors) ->
 
     @reportError = (error) ->
-      reportErrors(["Extension exception: Unable to process your store request.", "", error.message])
+      reportErrors(["Unable to process your store request.", "", error.message])
 
     @_setCurrentStorage("Default Store", "default")
 
@@ -135,10 +137,10 @@ class ForageStorage
   # (String) => Unit
   deleteStore: (name) =>
     if (name is "" or name is "Default Store")
-      throw new Error("Extension exception: Cannot delete the default store, but you can clear it if you want.")
+      throw exceptions.extension("Cannot delete the default store, but you can clear it if you want.")
 
     if (@currentStorage._config.name is name)
-      throw new Error("Extension exception: Cannot delete the current store, switch to another store first.")
+      throw exceptions.extension("Cannot delete the current store, switch to another store first.")
 
     @storesInstance.removeItem(name)
 
@@ -160,7 +162,7 @@ class ForageStorage
   getItem: (key, callback) =>
     @hasKey(key, (isValidKey) =>
       if (not isValidKey)
-        throw new Error("Could not find a value for key: '#{key}'.")
+        throw exceptions.extension("Could not find a value for key: '#{key}'.")
       @currentStorage.getItem(key)
         .then(callback)
         .catch(@reportError)

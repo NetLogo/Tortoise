@@ -10,15 +10,15 @@ makePenLines      = require('./turtle/makepenlines')
 Comparator        = require('util/comparator')
 NLMath            = require('util/nlmath')
 
+{ exceptionFactory: exceptions } = require('util/exception')
+
 { foldl, forEach, map, uniqueBy } = require('brazierjs/array')
 { rangeUntil }                    = require('brazierjs/number')
 
-{ PenManager, PenStatus: { Down, Erase } }             = require('./structure/penmanager')
-{ ExtraVariableSpec }                                  = require('./structure/variablespec')
-{ DeathInterrupt: Death, ignoring, TopologyInterrupt } = require('util/exception')
-{ Setters, VariableSpecs }                             = require('./turtle/turtlevariables')
-
-ignorantly = ignoring(TopologyInterrupt)
+{ PenManager, PenStatus: { Down, Erase } } = require('./structure/penmanager')
+{ ExtraVariableSpec }                      = require('./structure/variablespec')
+{ DeathInterrupt, TopologyInterrupt }      = require('util/interrupts')
+{ Setters, VariableSpecs }                 = require('./turtle/turtlevariables')
 
 class StampMode
   constructor: (@name) -> # (String) => StampMode
@@ -95,12 +95,12 @@ module.exports =
     getCoords: ->
       [@xcor, @ycor]
 
-    # (Turtle|Patch) => Number
+    # (Turtle|Patch) => Number | TowardsInterrupt
     towards: (agent) ->
       [x, y] = agent.getCoords()
       @towardsXY(x, y)
 
-    # (Number, Number) => Number
+    # (Number, Number) => Number | TowardsInterrupt
     towardsXY: (x, y) ->
       @world.topology.towards(@xcor, @ycor, x, y)
 
@@ -119,11 +119,11 @@ module.exports =
     # [T] @ (AbstractAgentSet[T], Number, Number) => AbstractAgentSet[T]
     inCone: (agents, distance, angle) ->
       if distance < 0
-        throw new Error("IN-CONE cannot take a negative radius.")
+        throw exceptions.runtime("IN-CONE cannot take a negative radius.", "in-cone")
       else if angle < 0
-        throw new Error("IN-CONE cannot take a negative angle.")
+        throw exceptions.runtime("IN-CONE cannot take a negative angle.", "in-cone")
       else if angle > 360
-        throw new Error("IN-CONE cannot take an angle greater than 360.")
+        throw exceptions.runtime("IN-CONE cannot take an angle greater than 360.", "in-cone")
       else
         @world.topology.inCone(@xcor, @ycor, NLMath.normalizeHeading(@_heading), agents, distance, angle)
 
@@ -133,7 +133,7 @@ module.exports =
 
     # (Number, Number) => Patch
     patchAt: (dx, dy) =>
-      @world.patchAtCoords(@xcor + dx, @ycor + dy)
+      @world.getPatchAt(@xcor + dx, @ycor + dy)
 
     # (Number, Number) => TurtleSet
     turtlesAt: (dx, dy) ->
@@ -171,9 +171,9 @@ module.exports =
       if not @isDead()
         @world.selfManager.askAgent(f)(this)
         if @world.selfManager.self().isDead?()
-          throw new Death
+          return DeathInterrupt
       else
-        throw new Error("That #{@getBreedNameSingular()} is dead.")
+        throw exceptions.runtime("That #{@getBreedNameSingular()} is dead.", "ask")
       return
 
     # [Result] @ (() => Result) => Result
@@ -181,7 +181,7 @@ module.exports =
       if not @isDead()
         @world.selfManager.askAgent(f)(this)
       else
-        throw new Error("That #{@_breed.singular} is dead.")
+        throw exceptions.runtime("That #{@_breed.singular} is dead.", "of")
 
     # Unfortunately, further attempts to streamline this code are very likely to lead to
     # floating point arithmetic mismatches with JVM NetLogo....  Beware. --JAB (7/28/14)
@@ -247,15 +247,14 @@ module.exports =
     setXY: (x, y, seenTurtlesSet = {}) ->
       origXcor = @xcor
       origYcor = @ycor
-      try
-        @_setXandY(x, y, seenTurtlesSet)
-        @_drawSetLine(origXcor, origYcor, x, y)
-      catch error
+      result = @_setXandY(x, y, seenTurtlesSet)
+
+      if result is TopologyInterrupt
         @_setXandY(origXcor, origYcor, seenTurtlesSet)
-        if error instanceof TopologyInterrupt
-          throw new TopologyInterrupt("The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.")
-        else
-          throw error
+        return TopologyInterrupt
+
+      @_drawSetLine(origXcor, origYcor, x, y)
+
       return
 
     # Handy for when your turtles are drunk --JAB (8/18/15)
@@ -277,7 +276,7 @@ module.exports =
     isDead: ->
       @id is -1
 
-    # () => Nothing
+    # () => DeathInterrupt
     die: ->
       @_breed.remove(this)
       if not @isDead()
@@ -287,7 +286,7 @@ module.exports =
         @id = -1
         @getPatchHere().untrackTurtle(this)
         @world.observer.unfocus(this)
-      throw new Death("Call only from inside an askAgent block")
+      return DeathInterrupt
 
     # (String) => Any
     getVariable: (varName) ->
@@ -297,6 +296,10 @@ module.exports =
     setVariable: (varName, value) ->
       @_varManager[varName] = value
       return
+
+    # (String, Any) => Boolean
+    setIfValid: (varName, value) ->
+      @_varManager.setIfValid(varName, value)
 
     # () => Patch
     getPatchHere: ->
@@ -511,8 +514,11 @@ module.exports =
       xcor        = @world.topology.wrapX(newX)
       ycor        = @world.topology.wrapY(newY)
 
+      if xcor is TopologyInterrupt or ycor is TopologyInterrupt
+        return TopologyInterrupt
+
       # DO NOT SET `xcor` AND `ycor` DIRECTLY FROM `wrap*`.  `wrap*` can throw a `TopologyException`.
-      # If we set only one of the coordinates and then bail with an exception (and without generating the View update),
+      # If we set only one of the coordinates and then bail with an interrupt (and without generating the View update),
       # it causes all sorts of bonkers stuff to happen. --JAB (10/17/17)
       @xcor = xcor
       @ycor = ycor
@@ -528,7 +534,7 @@ module.exports =
       # Using those will cause floating point arithmetic discrepancies. --JAB (10/22/15)
       dx = newX - oldX
       dy = newY - oldY
-      f  = (seenTurtles) => (turtle) => ignorantly(() => turtle._setXandY(turtle.xcor + dx, turtle.ycor + dy, seenTurtles))
+      f  = (seenTurtles) => (turtle) => turtle._setXandY(turtle.xcor + dx, turtle.ycor + dy, seenTurtles)
       @_withEachTiedTurtle(f, seenTurtlesSet)
 
       return

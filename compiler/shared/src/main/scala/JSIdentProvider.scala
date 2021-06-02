@@ -4,42 +4,42 @@ package org.nlogo.tortoise.compiler
 
 object JSIdentProvider {
 
-  def apply(ident: String): String =
-    (performCamelCasing _ andThen sanitizeInvalidChars andThen sanitizeKeywords andThen sanitizePrefixes)(ident)
-
-  private def performCamelCasing(ident: String): String = {
-    val performTitleCasing = (s: String) => s.toLowerCase.split('-').map(_.capitalize).mkString
-    val lowercaseFirstChar = (s: String) => s.head.toLower + s.tail
-    (performTitleCasing andThen lowercaseFirstChar)(ident)
+  def apply(ident: String): String = {
+    // NetLogo identifiers are *almost* a superset of JavaScript's, which makes it very hard to avoid
+    // collisions in the JS-valid names.  But thankfully NetLogo's identifiers are case insensitive.
+    // So it's easiest to ensure unique, safe, JS identifiers by making the NetLogo versions lower case,
+    // then munging with upper-case characters to differentiate them.  -Jeremy B March 2021
+    val lowerCase = (s: String) => s.toLowerCase
+    (lowerCase andThen sanitizeInvalidChars andThen sanitizeKeywords andThen sanitizePrefixes)(ident)
   }
 
   private def sanitizeInvalidChars(ident: String): String =
     InvalidCharToValid.foldLeft(ident) { case (id, (char, replacement)) => id.replaceAll(char, replacement) }
 
   private def sanitizeKeywords(ident: String): String =
-    Keywords.foldLeft(ident) { case (id, kw) => if (id != kw) id else s"_${id}_" }
-
+    Keywords.foldLeft(ident) { case (id, kw) => if (id != kw) id else s"_${id.toUpperCase}_" }
 
   private def sanitizePrefixes(ident: String): String =
-    RiskyPrefixes.foldLeft(ident) { case (s, pat) => pat.r.replaceAllIn(s, m => s"${m.group(1)}_${m.group(2)}") }
+    RiskyPrefixes.foldLeft(ident) { case (s, pat) => pat.r.replaceAllIn(s, m => s"${m.group(1).toUpperCase}_${m.group(2)}") }
 
   private val InvalidCharToValid = Map(
-    "!" -> "_exclamation_",
-    "#" -> "_pound_",
-    "\\$" -> "_dollar_",
-    "%" -> "_percent_",
-    "\\^" -> "_caret_",
-    "\\&" -> "_ampersand_",
-    "\\*" -> "_asterisk_",
-    "<" -> "_lessthan_",
-    ">" -> "_greaterthan_",
-    "/" -> "_slash_",
-    "\\." -> "_dot_",
-    "\\?" -> "_p",
-    "=" -> "_eq",
-    "\\+" -> "_plus_",
-    ":" -> "_colon_",
-    "'" -> "_prime_"
+    "-" -> "H",
+    "!" -> "_EXC_",
+    "#" -> "_POU_",
+    "\\$" -> "_DOL_",
+    "%" -> "_PER_",
+    "\\^" -> "_CAR_",
+    "\\&" -> "_AMP_",
+    "\\*" -> "_AST_",
+    "<" -> "_LT_",
+    ">" -> "_GT_",
+    "/" -> "_SL_",
+    "\\." -> "_DOT_",
+    "\\?" -> "_Q",
+    "=" -> "_EQ",
+    "\\+" -> "_PLU_",
+    ":" -> "_COL_",
+    "'" -> "_PRI_"
   )
 
   private val RiskyPrefixes = Seq(
