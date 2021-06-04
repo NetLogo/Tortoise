@@ -87,7 +87,7 @@ lazy val compiler = CrossProject("compiler", file("compiler"))(JSPlatform, JVMPl
     name                                 := "CompilerJS",
     artifactPath in (Compile, fullOptJS) := ((crossTarget in (Compile, fullOptJS)).value / "tortoise-compiler.js"),
     skip in packageJSDependencies        := false, // bundles all dependencies in with generated JS
-    testFrameworks                       += new TestFramework("utest.runner.Framework"),
+    testFrameworks                       := List(new TestFramework("utest.runner.Framework")),
     libraryDependencies                  ++= {
       import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.toScalaJSGroupID
       Seq(

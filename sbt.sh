@@ -25,15 +25,4 @@ ln -s "$NODE_HOME/npm" "node_links/npm"
 
 export PATH=$PWD/node_links:$JAVA_HOME/bin:$PATH
 
-if [ ! -z $JENKINS_URL ] ; then
-  export SBT_OPTS="-Dsbt.log.noformat=true"
-  echo $NODE_HOME
-  node --version
-  echo $JAVA_HOME
-  which java
-  java -version
-  which javac
-  javac -version
-fi
-
 sbt "$@"
