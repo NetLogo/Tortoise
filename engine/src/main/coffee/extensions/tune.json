@@ -1,0 +1,102 @@
+{
+  "name": "tune",
+  "prims": [
+    {
+      "name": "drums",
+      "argTypes": [],
+      "returnType": "list"
+    },
+    {
+      "name": "instruments",
+      "argTypes": [],
+      "returnType": "list"
+    },
+    {
+      "name": "use",
+      "argTypes": [
+        "wildcard"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "tempo",
+      "argTypes": [
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "note",
+      "argTypes": [
+        { "type": "number", "isRepeatable": true }
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "rest",
+      "argTypes": [
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "loop",
+      "argTypes": [
+        { "type": "wildcard", "isRepeatable": true }
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "once",
+      "argTypes": [
+        { "type": "wildcard", "isRepeatable": true }
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "who",
+      "argTypes": [],
+      "returnType": "number"
+    },
+    {
+      "name": "volume",
+      "argTypes": [
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "moveto",
+      "argTypes": [
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "rewind",
+      "argTypes": [
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "forward",
+      "argTypes": [
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "clear",
+      "argTypes": [],
+      "returnType": "unit"
+    },
+    {
+      "name": "stop",
+      "argTypes": [
+        "number"
+      ],
+      "returnType": "unit"
+    }
+  ]
+}

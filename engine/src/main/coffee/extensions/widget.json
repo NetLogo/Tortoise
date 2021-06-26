@@ -2,6 +2,13 @@
   "name": "widget",
   "prims": [
     {
+      "name": "toast",
+      "actionName": "toast",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
       "name": "show",
       "actionName": "show",
       "argTypes": [

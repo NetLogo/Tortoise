@@ -10,6 +10,16 @@ module.exports = {
   init: (workspace) =>
 
     # (String) => Unit
+    toast = (text) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.MessageQueue.Enqueue(
+          { Type: "Toast", Message: text }
+        )
+      else
+        workspace.printPrims.print("Show toast #{text}")
+      return
+
+    # (String) => Unit
     show = (name) ->
       if tortugaSession = getTortugaSession()
         tortugaSession.MessageQueue.Enqueue(
@@ -146,8 +156,9 @@ module.exports = {
     {
       name: "widget"
     , prims: {
-                   "SHOW": show
-                   "HIDE": hide
+                  "TOAST": toast
+      ,            "SHOW": show
+      ,            "HIDE": hide
       ,            "MOVE": move
       ,       "SET-TITLE": setTitle
       ,       "SET-GROUP": setGroup
