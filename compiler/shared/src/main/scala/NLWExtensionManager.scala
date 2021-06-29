@@ -169,8 +169,20 @@ class NLWExtensionManager extends ExtensionManager {
 
   override def readExtensionObject(extensionName: String, typeName: String, value: String): org.nlogo.core.ExtensionObject = ???
 
+  // This is a workaround for `Compiler.compileProceduresIncremental()`.  The parser calls `startFullCompilation()`
+  // when it runs, but when compiling individual procedures we won't have the `extensions` declaration in the code.
+  // This gives us a simple way to keep extensions loaded when using that function, without needing to dive into
+  // the parser code to provide some way to skip the `startFullCompilation` step.  -Jeremy B June 2021
+  private var shouldRetainExtensions = false
+  def retainExtensionsOnNextCompile(): Unit =
+    shouldRetainExtensions = true
+
   override def startFullCompilation(): Unit = {
-    primNameToPrimMap.clear()
+    if (shouldRetainExtensions) {
+      shouldRetainExtensions = false
+    } else {
+      primNameToPrimMap.clear()
+    }
   }
 
   private def throwCompilerError(cause: String) =

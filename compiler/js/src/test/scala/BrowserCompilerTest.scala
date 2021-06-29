@@ -281,6 +281,31 @@ object BrowserCompilerTest extends TestSuite {
       assert(expected == result)
     }
 
+    "compileProceduresIncremental with extensions succeeds"-{
+      val code = """extensions [ table ]
+        to foo fd 1 end
+        to-report bananas [x y] report x * y end
+      """
+      val compReq  =
+        toNative(JsObject(fields(
+          "code"    -> JsString(code)
+        , "widgets" -> JsArray(widgetyModel.widgets.map(widget2Json(_).toJsonObj))
+        )))
+      val compiler = new BrowserCompiler
+      compiler.fromModel(compReq)
+
+      val newCode = "to foo let x table:make end"
+      val innerRes = compiler.compileProceduresIncremental(newCode, js.Array("foo"))
+      val result = nativeToString(innerRes)
+
+      val expectedJS =
+        """|ProcedurePrims.defineCommand(\"foo\", 3, 24, (function() {
+           |  let x = Extensions[\"TABLE\"].prims[\"MAKE\"](); ProcedurePrims.stack().currentContext().registerStringRunVar(\"X\", x);
+           |}))""".stripMargin.replaceAll("\n", "\\\\n")
+      val expected = makeSuccess(expectedJS)
+      assert(expected == result)
+    }
+
   }
 
   private def makeSuccess(code: String): String =
