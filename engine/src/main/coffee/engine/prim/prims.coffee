@@ -10,6 +10,7 @@ TurtleSet             = require('../core/turtleset')
 { checks, getTypeOf } = require('../core/typechecker')
 StrictMath            = require('shim/strictmath')
 Timer                 = require('util/timer')
+notImplemented        = require('util/notimplemented')
 
 { exceptionFactory: exceptions } = require('util/exception')
 
@@ -35,7 +36,7 @@ module.exports =
     _everyMap: undefined # Object[String, Timer]
 
     # (Dump, Hasher, RNG, World) => Prims
-    constructor: (@_dumper, @_hasher, @_rng, @_world) ->
+    constructor: (@_dumper, @_hasher, @_rng, @_world, @_printPrims) ->
       @_everyMap = {}
 
     # () => Nothing
@@ -242,11 +243,14 @@ module.exports =
       turtles = flatMap((agent) -> agent.turtlesHere().toArray())(agents.iterator().toArray())
       new TurtleSet(turtles, @_world)
 
+    _hasWaited: false
+
     # (Number) => Unit
     wait: (seconds) ->
-      startTime = @nanoTime()
-      while ((@nanoTime() - startTime) / 1e9) < seconds
-        ; # Just chill out
+      if not @_hasWaited
+        @_hasWaited = true
+        @_printPrims.print('NOTE: This model uses the `wait` primitive, but it is not yet properly implemented.\nUsing `wait` will not cause time to pass but the model will run normally.')
+        notImplemented('wait', undefined)
       return
 
     # (String) => Unit
