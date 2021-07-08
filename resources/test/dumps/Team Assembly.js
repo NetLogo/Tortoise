@@ -227,7 +227,7 @@ ProcedurePrims.defineCommand("color-collaborations", 3496, 4092, (function() {
 ProcedurePrims.defineCommand("layout", 4150, 4233, (function() {
   for (let _index_4159_4165 = 0, _repeatcount_4159_4165 = StrictMath.floor(12); _index_4159_4165 < _repeatcount_4159_4165; _index_4159_4165++) {
     LayoutManager.layoutSpring(world.turtles(), world.links(), 0.18, 0.01, 1.2);
-    notImplemented('display', undefined)();
+    Prims.display();
   }
 }))
 ProcedurePrims.defineCommand("find-all-components", 4416, 5176, (function() {

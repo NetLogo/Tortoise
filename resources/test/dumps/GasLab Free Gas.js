@@ -181,7 +181,7 @@ ProcedurePrims.defineCommand("go", 790, 1114, (function() {
     plotManager.updatePlots();
   }
   var R = ProcedurePrims.callCommand("calculate-tick-delta"); if (R === DeathInterrupt) { return R; }
-  notImplemented('display', undefined)();
+  Prims.display();
 }))
 ProcedurePrims.defineCommand("update-variables", 1122, 1524, (function() {
   world.observer.setGlobal("medium", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }));

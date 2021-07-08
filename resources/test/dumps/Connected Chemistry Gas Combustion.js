@@ -177,7 +177,7 @@ ProcedurePrims.defineCommand("go", 4274, 4737, (function() {
   world.ticker.tickAdvance(world.observer.getGlobal("tick-advance-amount"));
   var R = ProcedurePrims.callCommand("update-flash-visualization"); if (R === DeathInterrupt) { return R; }
   plotManager.updatePlots();
-  notImplemented('display', undefined)();
+  Prims.display();
 }))
 ProcedurePrims.defineCommand("update-variables", 4746, 5295, (function() {
   if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"))) {

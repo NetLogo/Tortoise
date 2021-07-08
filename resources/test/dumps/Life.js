@@ -101,7 +101,7 @@ ProcedurePrims.defineCommand("draw-cells", 989, 1204, (function() {
         var R = ProcedurePrims.callCommand("cell-birth"); if (R === DeathInterrupt) { return R; }
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    notImplemented('display', undefined)();
+    Prims.display();
   }
 }))
 world.observer.setGlobal("initial-density", 35);

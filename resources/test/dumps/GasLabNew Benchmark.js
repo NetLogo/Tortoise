@@ -169,7 +169,7 @@ ProcedurePrims.defineCommand("go", 2265, 2990, (function() {
     SelfManager.self().setPatchVariable("pcolor", 45);
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  notImplemented('display', undefined)();
+  Prims.display();
 }))
 ProcedurePrims.defineCommand("calculate-tick-length", 2998, 3150, (function() {
   if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {

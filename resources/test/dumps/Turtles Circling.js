@@ -77,7 +77,7 @@ ProcedurePrims.defineCommand("setup-circle", 60, 268, (function(r, n) {
 }))
 ProcedurePrims.defineCommand("all-circle", 276, 313, (function() {
   var R = ProcedurePrims.callCommand("circle", world.observer.getGlobal("radius")); if (R === DeathInterrupt) { return R; }
-  notImplemented('display', undefined)();
+  Prims.display();
 }))
 ProcedurePrims.defineCommand("circle", 321, 398, (function(r) {
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("move-along-circle", r); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -94,7 +94,7 @@ ProcedurePrims.defineCommand("zero-circle", 487, 572, (function() {
     SelfManager.self().penManager.lowerPen();
     var R = ProcedurePrims.callCommand("move-along-circle", world.observer.getGlobal("radius")); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  notImplemented('display', undefined)();
+  Prims.display();
 }))
 ProcedurePrims.defineCommand("draw-circle", 580, 732, (function() {
   world.clearDrawing();

@@ -113,7 +113,7 @@ ProcedurePrims.defineCommand("go", 1763, 2202, (function() {
   }
   if (Prims.equality(world.observer.getGlobal("row"), world.topology.minPycor)) {
     if (world.observer.getGlobal("auto-continue?")) {
-      notImplemented('display', undefined)();
+      Prims.display();
       var R = ProcedurePrims.callCommand("setup-continue"); if (R === DeathInterrupt) { return R; }
     }
     else {

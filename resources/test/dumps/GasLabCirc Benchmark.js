@@ -120,7 +120,7 @@ ProcedurePrims.defineCommand("go", 1442, 3434, (function() {
   world.ticker.tickAdvance(world.observer.getGlobal("tick-length"));
   if (world.observer.getGlobal("manage-view-updates?")) {
     if (Prims.gt(PrimChecks.math.minus(world.ticker.tickCount(), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("last-view-update"))), world.observer.getGlobal("view-update-rate"))) {
-      notImplemented('display', undefined)();
+      Prims.display();
       world.observer.setGlobal("last-view-update", world.ticker.tickCount());
     }
   }

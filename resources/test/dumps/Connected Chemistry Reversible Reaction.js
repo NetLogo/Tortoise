@@ -197,7 +197,7 @@ ProcedurePrims.defineCommand("go", 6487, 6938, (function() {
   world.ticker.tickAdvance(world.observer.getGlobal("tick-advance-amount"));
   var R = ProcedurePrims.callCommand("recalculate-wall-color"); if (R === DeathInterrupt) { return R; }
   plotManager.updatePlots();
-  notImplemented('display', undefined)();
+  Prims.display();
 }))
 ProcedurePrims.defineCommand("calculate-tick-advance-amount", 6947, 7180, (function() {
   if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); })) {

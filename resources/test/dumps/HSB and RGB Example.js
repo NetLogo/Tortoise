@@ -59,7 +59,7 @@ ProcedurePrims.defineCommand("go", 53, 439, (function() {
     SelfManager.self().setPatchVariable("pcolor", ListPrims.list(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", 1, -1)), function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("rgb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  notImplemented('display', undefined)();
+  Prims.display();
 }))
 ProcedurePrims.defineReporter("quadrant", 454, 542, (function(x, y) {
   return PrimChecks.procedure.report(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.procedure.callReporter("patch-quadrant"), ListPrims.list(x, y)); }));

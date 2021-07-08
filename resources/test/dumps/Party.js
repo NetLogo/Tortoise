@@ -120,7 +120,7 @@ ProcedurePrims.defineCommand("leave-if-unhappy", 1373, 1549, (function() {
   }
 }))
 ProcedurePrims.defineCommand("find-new-groups", 1557, 1777, (function() {
-  notImplemented('display', undefined)();
+  Prims.display();
   let malcontents = PrimChecks.agentset.with(world.turtles(), function() {
     return PrimChecks.math.not(PrimChecks.list.member(SelfManager.self().getPatchHere(), PrimChecks.validator.checkArg('MEMBER?', 124, world.observer.getGlobal("group-sites"))));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("MALCONTENTS", malcontents);

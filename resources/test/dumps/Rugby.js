@@ -94,7 +94,7 @@ ProcedurePrims.defineCommand("setup-balls", 1970, 2176, (function() {
 ProcedurePrims.defineCommand("go", 2184, 2345, (function() {
   while (PrimChecks.agentset.any(world.turtles())) {
     var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    notImplemented('display', undefined)();
+    Prims.display();
   }
   world.observer.setGlobal("kicks", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("kicks")), PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 112, world.observer.getGlobal("try-line")))));
   world.observer.setGlobal("goals", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.observer.getGlobal("try-line")), function() { return SelfManager.self().getPatchVariable("score"); }))));

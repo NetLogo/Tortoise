@@ -107,7 +107,7 @@ ProcedurePrims.defineCommand("draw-cells", 1987, 2190, (function() {
         var R = ProcedurePrims.callCommand("draw"); if (R === DeathInterrupt) { return R; }
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    notImplemented('display', undefined)();
+    Prims.display();
   }
 }))
 ProcedurePrims.defineCommand("draw", 2233, 2434, (function() {
