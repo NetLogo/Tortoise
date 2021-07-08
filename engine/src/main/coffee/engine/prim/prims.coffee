@@ -48,19 +48,23 @@ module.exports =
       turtles = flatMap((p) -> p.breedHereArray(breedName))(patches)
       new TurtleSet(turtles, @_world)
 
-    # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
+    # (String, Patch) => TurtleSet
     breedOnPatch: (breedName, patch) ->
       @breedOn(breedName, [patch])
 
+    # (String, Turtle) => TurtleSet
     breedOnTurtle: (breedName, turtle) ->
       @breedOn(breedName, [turtle.getPatchHere()])
 
+    # (String, PatchSet) => TurtleSet
     breedOnPatchSet: (breedName, patchSet) ->
       @breedOn(breedName, patchSet.toArray())
 
+    # (String, TurtleSet) => TurtleSet
     breedOnTurtleSet: (breedName, turtleSet) ->
       @breedOn(breedName, map((t) -> t.getPatchHere())(turtleSet.iterator().toArray()))
 
+    # (Any, String) => Boolean
     booleanCheck: (b, primName) ->
       if checks.isBoolean(b)
         b
@@ -75,9 +79,11 @@ module.exports =
         @_hasDisplayed = true
         notImplemented('display', undefined)
 
+    # (Any) => Boolean
     ifElseValueBooleanCheck: (b) ->
       @booleanCheck(b, "IFELSE-VALUE")
 
+    # () => Unit
     ifElseValueMissingElse: () ->
       throw exceptions.runtime("IFELSE-VALUE found no true conditions and no else branch. If you don't wish to error when no conditions are true, add a final else branch.", "ifelse-value")
 
