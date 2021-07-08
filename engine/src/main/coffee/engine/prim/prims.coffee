@@ -67,6 +67,14 @@ module.exports =
       else
         throw exceptions.runtime("#{primName} expected input to be a TRUE/FALSE but got the #{getTypeOf(b).niceName()} #{@_dumper(b)} instead.", primName)
 
+    _hasDisplayed: false
+
+    # () => Unit
+    display: () ->
+      if not @_hasDisplayed
+        @_hasDisplayed = true
+        notImplemented('display', undefined)
+
     ifElseValueBooleanCheck: (b) ->
       @booleanCheck(b, "IFELSE-VALUE")
 
