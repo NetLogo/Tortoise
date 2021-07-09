@@ -88,7 +88,7 @@ object BrowserCompilerTest extends TestSuite {
     "TestModelWithBadExtension"-{
       val compiledModel = compileModel(validModel.copy(code = "to go nodap:init [->] end " + validModel.code))
       assert(isSuccess(compiledModel) == false)
-      assert(compiledModel.apply[JsObject]("model").apply[JsArray]("result").apply[JsObject](0).apply[String]("message") == "No such primitive: NODAP:INIT")
+      assert(compiledModel.apply[JsObject]("model").apply[JsArray]("result").apply[JsObject](0).apply[String]("message") == "Nothing named NODAP:INIT has been defined.")
     }
 
     "testCompilesCommands"-{

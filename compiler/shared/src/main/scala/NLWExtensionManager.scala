@@ -159,12 +159,9 @@ class NLWExtensionManager extends ExtensionManager {
   override def replaceIdentifier(name: String): Primitive =
     primNameToPrimMap.getOrElse(
       name,
-      if (name.contains(":"))
-        throwCompilerError(s"No such primitive: $name")
-      else
-        // scalastyle:off null
-        null
-        // scalastyle:on null
+      // scalastyle:off null
+      null
+      // scalastyle:on null
     )
 
   override def readExtensionObject(extensionName: String, typeName: String, value: String): org.nlogo.core.ExtensionObject = ???
