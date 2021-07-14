@@ -33,6 +33,7 @@ module.exports = {
         workspace.printPrims.print("Hide NetTango workspace #{id}")
       return
 
+    # NetTango.workspaces.get("ntb-defs-0-canvas").menu.hideBlocks("")
     # (String|List) => Unit
     showBlocks = (tags) ->
       if tortugaSession = getTortugaSession()

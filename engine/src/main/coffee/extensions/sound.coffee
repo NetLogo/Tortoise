@@ -26,7 +26,7 @@ module.exports = {
         throw new Error("Drum #{drum} is not available!")
       else
         if MIDI = getMIDI()
-          MIDI.PlayDrum(drumIndex, velocity)
+          MIDI.PlayDrum(35 + drumIndex, velocity)
         else
           workspace.printPrims.print("Play drum #{drum} at velocity #{velocity}")
       return
