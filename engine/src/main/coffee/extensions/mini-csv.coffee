@@ -23,6 +23,11 @@ module.exports = {
       , "FROM-ROW": deprecatePrim("mini-csv:from-row", "csv:from-row", core.prims["FROM-ROW"])
       , "TO-STRING": deprecatePrim("mini-csv:to-string", "csv:to-string", core.prims["TO-STRING"])
       , "TO-ROW": deprecatePrim("mini-csv:to-row", "csv:to-row", core.prims["TO-ROW"])
+      # These are non-functional prims just to test our extension format parsing/loading.
+      # At the moment there is no easy way to add a "test only" extension, so they get
+      # put here.  -Jeremy B July 2021
+      , "__T-CONTEXT-REPORTER": (() -> 100)
+      , "__O-CONTEXT-COMMAND": (->)
       }
     }
 

@@ -44,11 +44,14 @@ private object CreateExtension {
 
   private def convertToExtensionPrim(jsPrim: JsValue): ExtensionPrim = {
 
-    val returnType      = (jsPrim \ "returnType").asOpt[String].getOrElse("unit")
-    val isReporter      = (returnType != "unit")
-    val args            = jsPrim("argTypes").as[JsArray].value.map(convertArgToTypeInt)
-    val returnInt       = typeNameToTypeInt(returnType)
-    val defaultArgCount = (jsPrim \ "defaultArgCount").asOpt[Int]
+    val returnType            = (jsPrim \ "returnType").asOpt[String].getOrElse("unit")
+    val isReporter            = (returnType != "unit")
+    val args                  = jsPrim("argTypes").as[JsArray].value.map(convertArgToTypeInt)
+    val returnInt             = typeNameToTypeInt(returnType)
+    val defaultArgCount       = (jsPrim \ "defaultArgCount").asOpt[Int]
+    val minimumArgCount       = (jsPrim \ "minimumArgCount").asOpt[Int]
+    val agentClassString      = (jsPrim \ "agentClassString").asOpt[String].getOrElse("OTPL")
+    val blockAgentClassString = (jsPrim \ "blockAgentClassString").asOpt[String]
 
     val prim =
       if (isReporter) {
@@ -58,16 +61,25 @@ private object CreateExtension {
         val precedence       = NormalPrecedence + precedenceOffset
         new PrimitiveReporter {
           override def getSyntax: Syntax = Syntax.reporterSyntax(
-            left          = left,
-            right         = right.toList,
-            ret           = returnInt,
-            precedence    = precedence,
-            defaultOption = defaultArgCount
+            left                  = left
+          , right                 = right.toList
+          , ret                   = returnInt
+          , precedence            = precedence
+          , defaultOption         = defaultArgCount
+          , minimumOption         = minimumArgCount
+          , agentClassString      = agentClassString
+          , blockAgentClassString = blockAgentClassString
           )
         }
       } else {
         new PrimitiveCommand {
-          override def getSyntax: Syntax = Syntax.commandSyntax(right = args.toList, defaultOption = defaultArgCount)
+          override def getSyntax: Syntax = Syntax.commandSyntax(
+            right                 = args.toList
+          , defaultOption         = defaultArgCount
+          , minimumOption         = minimumArgCount
+          , agentClassString      = agentClassString
+          , blockAgentClassString = blockAgentClassString
+          )
         }
       }
 

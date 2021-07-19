@@ -21,6 +21,16 @@
       "argTypes":        ["list", { "type": "string", "isRepeatable": true }],
       "defaultArgCount": 1,
       "returnType":      "string"
+    }, {
+      "name":             "__t-context-reporter",
+      "argTypes":         [],
+      "returnType":       "number",
+      "agentClassString": "-T--"
+    }, {
+      "name":             "__o-context-command",
+      "argTypes":         [],
+      "returnType":       "unit",
+      "agentClassString": "O---"
     }
   ]
 }

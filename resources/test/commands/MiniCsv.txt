@@ -33,3 +33,17 @@ MiniCsvExtensionRows
   O> set temp [ pxcor ] of turtles
   mini-csv:to-row temp => "-3,-4,-5"
   mini-csv:from-row mini-csv:to-row temp => [-3 -4 -5]
+
+TurtleContextReporter
+  extensions [mini-csv]
+  globals [x]
+  O> create-turtles 1
+  O> ask turtles [ set x mini-csv:__t-context-reporter ]
+  x => 100
+  O> __ignore mini-csv:__t-context-reporter => COMPILER ERROR You can't use MINI-CSV:__T-CONTEXT-REPORTER in an observer context, because MINI-CSV:__T-CONTEXT-REPORTER is turtle-only.
+
+ObserverContextCommand
+  extensions [mini-csv]
+  O> create-turtles 1
+  O> mini-csv:__o-context-command
+  T> mini-csv:__o-context-command => COMPILER ERROR You can't use MINI-CSV:__O-CONTEXT-COMMAND in a turtle context, because MINI-CSV:__O-CONTEXT-COMMAND is observer-only.
