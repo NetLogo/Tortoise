@@ -22,6 +22,7 @@ class TestEngine extends FunSuite {
     jsRuntime.setupTortoise
     jsRuntime.eval("""var workspace = tortoise_require('engine/workspace')({})([])([], [])('')({})([])([], [], [], -1, 1, -1, 1, 1, true, true);
                    |var SelfManager = workspace.selfManager;
+                   |var Extensions  = {};
                    |var world       = workspace.world;""".stripMargin)
     jsRuntime.eval("world.clearAll()")
     assertResult(Double.box(9)) {

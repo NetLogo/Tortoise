@@ -16,8 +16,20 @@ module.exports = {
         workspace.printPrims.print("#{oldName} is deprecated and will be removed in a future NetLogo Web release.  Please switch to using #{newName} instead.")
         f.apply(null, arguments)
 
+    testValue = 100
+
+    decrementValue = () ->
+      testValue = (testValue - 1)
+
+    reportValue = () ->
+      testValue
+
+    incrementValue = () ->
+      testValue = (testValue + 1)
+
     {
       name: "mini-csv"
+    , clearAll: decrementValue
     , prims: {
         "FROM-STRING": deprecatePrim("mini-csv:from-string", "csv:from-string", core.prims["FROM-STRING"])
       , "FROM-ROW": deprecatePrim("mini-csv:from-row", "csv:from-row", core.prims["FROM-ROW"])
@@ -26,8 +38,8 @@ module.exports = {
       # These are non-functional prims just to test our extension format parsing/loading.
       # At the moment there is no easy way to add a "test only" extension, so they get
       # put here.  -Jeremy B July 2021
-      , "__T-CONTEXT-REPORTER": (() -> 100)
-      , "__O-CONTEXT-COMMAND": (->)
+      , "__T-CONTEXT-REPORTER": reportValue
+      , "__O-CONTEXT-COMMAND":  incrementValue
       }
     }
 

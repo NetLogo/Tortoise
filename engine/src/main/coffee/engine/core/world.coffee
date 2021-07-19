@@ -204,6 +204,11 @@ module.exports =
       @_plotManager.clearAllPlots()
       @_outputClear()
       @clearDrawing()
+      # Depending on global state for `Extensions` is not great, but Extensions depends on the workspace
+      # and the workspace makes the world when it is created.  -Jeremy B July 19th
+      Object.keys(Extensions).forEach( (extensionName) ->
+        Extensions[extensionName].clearAll?()
+      )
       return
 
     # () => Unit

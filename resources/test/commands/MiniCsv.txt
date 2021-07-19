@@ -47,3 +47,11 @@ ObserverContextCommand
   O> create-turtles 1
   O> mini-csv:__o-context-command
   T> mini-csv:__o-context-command => COMPILER ERROR You can't use MINI-CSV:__O-CONTEXT-COMMAND in a turtle context, because MINI-CSV:__O-CONTEXT-COMMAND is observer-only.
+
+ExtensionClearsAll
+  extensions [mini-csv]
+  globals [x]
+  O> clear-all
+  O> create-turtles 1
+  O> ask turtles [ set x mini-csv:__t-context-reporter ]
+  x => 99
