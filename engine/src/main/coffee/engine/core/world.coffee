@@ -44,15 +44,39 @@ module.exports =
     _outputClear: undefined # () => Unit
 
     # Optimization-related variables
-    _patchesAllBlack:          undefined # Boolean
-    _patchesWithLabels:        undefined # Number
+    _patchesAllBlack:   undefined # Boolean
+    _patchesWithLabels: undefined # Number
 
-    # (MiniWorkspace, WorldConfig, () => String, () => Unit, () => String, (Any) => String, (String) => Unit, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
-    constructor: (miniWorkspace, @_config, @_getViewBase64, @_outputClear, @_getOutput, @_setOutput, @extensionPorters, globalNames, interfaceGlobalNames
-                , @patchesOwnNames, minPxcor, maxPxcor, minPycor , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY
-                , @turtleShapeMap, @linkShapeMap, onTickFunction) ->
-      { selfManager: @selfManager, updater: @_updater, rng: @rng
-      , breedManager: @breedManager, plotManager: @_plotManager } = miniWorkspace
+    constructor: (
+      miniWorkspace        # MiniWorkspace
+    , @_config             # WorldConfig
+    , @_getViewBase64      # () => String
+    , @_outputClear        # () => Unit
+    , @_getOutput          # () => String
+    , @_setOutput          # (Any) => String
+    , @extensionPorters    # Array[ExtensionPorter]
+    , globalNames          # Array[String]
+    , interfaceGlobalNames # Array[String]
+    , @patchesOwnNames     # Array[String]
+    , minPxcor             # Number
+    , maxPxcor             # Number
+    , minPycor             # Number
+    , maxPycor             # Number
+    , @patchSize           # Number
+    , wrappingAllowedInX   # Boolean
+    , wrappingAllowedInY   # Boolean
+    , @turtleShapeMap      # ShapeMap
+    , @linkShapeMap        # ShapeMap
+    , onTickFunction       # () => Unit
+    ) ->
+
+      {
+        selfManager:  @selfManager
+      , updater:      @_updater
+      , rng:          @rng
+      , breedManager: @breedManager
+      , plotManager:  @_plotManager
+      } = miniWorkspace
 
       @_patchesAllBlack   = true
       @_patchesWithLabels = 0
