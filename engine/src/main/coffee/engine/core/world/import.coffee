@@ -215,6 +215,7 @@ module.exports.importWorld = (
     @_plotManager.importState(plotManager)
     @ticker.importTicks(ticks)
     @rng.importState(randomState)
+    extensionImporter.importState()
 
     fold(->)(
       ([patchSize, drawing]) =>
