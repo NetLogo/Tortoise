@@ -14,7 +14,10 @@ time ./sbt.sh \
   compilerJVM/test:compile \
   compilerJVM/test:test \
   netLogoWeb/test:compile \
-  "netLogoWeb/testOnly *TestEngine *TestEngineType *TestMersenneTwister *TestAgents *TestBasics *TestBooleans *TestBreeds *TestColors *TestControl *TestLabels *TestLists *TestMath *TestProcedures" \
+  "netLogoWeb/testOnly *TestEngine *TestEngineType *TestMersenneTwister" \
+  "netLogoWeb/testOnly *TestAgents *TestBasics *TestBooleans" \
+  "netLogoWeb/testOnly *TestBreeds *TestColors *TestControl" \
+  "netLogoWeb/testOnly *TestLabels *TestLists *TestMath *TestProcedures" \
   "netLogoWeb/testOnly *TestReporters -- -z List -z Number -z String" \
   "netLogoWeb/testOnly *TestCommands -- -z Agentset -z ControlStructures" \
   "netLogoWeb/testOnly *ModelDumpTests -- -z \"Wolf Sheep Predation\"" \

@@ -115,7 +115,7 @@ ProcedurePrims.defineCommand("send-messenger-to-its-column", 3442, 4252, (functi
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, it));
     while (Prims.gt(SelfManager.self().distance(it), 3)) {
       SelfManager.self()._optimalFdOne();
-      notImplemented('display', undefined)();
+      Prims.display();
     }
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }

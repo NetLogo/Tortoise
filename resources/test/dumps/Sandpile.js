@@ -158,7 +158,7 @@ ProcedurePrims.defineCommand("go", 2054, 2822, (function() {
       var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
       var R = ProcedurePrims.ask(SelfManager.self().getNeighbors4(), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    notImplemented('display', undefined)();
+    Prims.display();
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, avalancheHpatches), function() {
       SelfManager.self().setPatchVariable("base-color", world.observer.getGlobal("default-color"));
       var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
@@ -184,7 +184,7 @@ ProcedurePrims.defineCommand("explore", 2830, 3367, (function() {
       SelfManager.self().setPatchVariable("base-color", world.observer.getGlobal("selected-color"));
       var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    notImplemented('display', undefined)();
+    Prims.display();
   }
   else {
     if (!Prims.equality(world.observer.getGlobal("selected-patch"), Nobody)) {
@@ -219,7 +219,7 @@ ProcedurePrims.defineReporter("stabilize", 3485, 4862, (function(animate_Q) {
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     if (animate_Q) {
-      notImplemented('display', undefined)();
+      Prims.display();
     }
     avalancheHpatches = PrimChecks.agentset.patchSet(avalancheHpatches, overloadedHpatches); ProcedurePrims.stack().currentContext().updateStringRunVar("AVALANCHE-PATCHES", avalancheHpatches);
     activeHpatches = PrimChecks.agentset.patchSet(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, overloadedHpatches), function() { return SelfManager.self().getNeighbors4(); })); ProcedurePrims.stack().currentContext().updateStringRunVar("ACTIVE-PATCHES", activeHpatches);

@@ -131,7 +131,7 @@ ProcedurePrims.defineCommand("layout", 1904, 2762, (function() {
   for (let _index_2025_2031 = 0, _repeatcount_2025_2031 = StrictMath.floor(3); _index_2025_2031 < _repeatcount_2025_2031; _index_2025_2031++) {
     let factor = PrimChecks.math.sqrt(PrimChecks.agentset.count(world.turtles())); ProcedurePrims.stack().currentContext().registerStringRunVar("FACTOR", factor);
     LayoutManager.layoutSpring(world.turtles(), world.links(), PrimChecks.math.div(1, PrimChecks.validator.checkArg('/', 1, factor)), PrimChecks.math.div(7, PrimChecks.validator.checkArg('/', 1, factor)), PrimChecks.math.div(1, PrimChecks.validator.checkArg('/', 1, factor)));
-    notImplemented('display', undefined)();
+    Prims.display();
   }
   let xHoffset = PrimChecks.math.plus(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("xcor"); }))), PrimChecks.list.min(PrimChecks.validator.checkArg('MIN', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("xcor"); })))); ProcedurePrims.stack().currentContext().registerStringRunVar("X-OFFSET", xHoffset);
   let yHoffset = PrimChecks.math.plus(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("ycor"); }))), PrimChecks.list.min(PrimChecks.validator.checkArg('MIN', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("ycor"); })))); ProcedurePrims.stack().currentContext().registerStringRunVar("Y-OFFSET", yHoffset);

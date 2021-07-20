@@ -1,0 +1,89 @@
+name: build-and-test
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  GRAAL_HOME: /home/runner/.jabba/jdk/graalvm@20.0.0
+  SBT_OPTS: -Dsbt.log.noformat=true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v2
+
+      - uses: olafurpg/setup-scala@v10
+        with:
+          java-version: graalvm@20.0.0
+
+      # Node.js setup should come after GraalVM setup as GraalVM includes a conflicting `node` binary
+      # and we want the "regular" node version to "win".  -Jeremy B June 2021
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Environment Info
+        run: |
+          ./sbt.sh version
+          echo $PATH
+          readlink -f `which node`
+          node --version
+          echo $JAVA_HOME
+          readlink -f `which java`
+          java -version
+          readlink -f `which javac`
+          javac -version
+
+      - name: Lint
+        run: |
+          ./sbt.sh netLogoWeb/scalastyle compilerCore/scalastyle compilerJVM/scalastyle compilerJS/scalastyle macrosCore/scalastyle
+          cd engine; yarn install; grunt coffeelint
+
+      - name: Compiler JVM Tests
+        run: |
+          git submodule update --init --recursive
+          ./sbt.sh compilerJVM/test:compile
+          ./sbt.sh compilerJVM/test:test
+          ./sbt.sh compilerJVM/depend
+
+      - name: Compiler JS Tests
+        run: |
+          ./sbt.sh compilerJS/test:compile
+          ./sbt.sh compilerJS/test:test
+
+      - name: NetLogo Web Tests
+        run: |
+          ./sbt.sh netLogoWeb/test:compile
+          ./sbt.sh "netLogoWeb/test:runMain org.nlogo.tortoise.nlw.ExtensionsUpdater"
+          ./sbt.sh netLogoWeb/test:fast
+          ./sbt.sh netLogoWeb/test:language
+
+      - name: Model JS Dumps
+        run: |
+          ./sbt.sh "netLogoWeb/testOnly *ModelDumpTests"
+
+      - name: Model Docking Tests 0 + 1
+        run: ./sbt.sh "netLogoWeb/testOnly *TestModels -- -z 0 -z 1"
+      - name: Model Docking Tests 2
+        run: ./sbt.sh "netLogoWeb/testOnly *TestModels -- -z 2"
+      - name: Model Docking Tests 3
+        run: ./sbt.sh "netLogoWeb/testOnly *TestModels -- -z 3"
+      - name: Model Docking Tests 4
+        run: ./sbt.sh "netLogoWeb/testOnly *TestModels -- -z 4"
+      - name: Model Docking Tests 5
+        run: ./sbt.sh "netLogoWeb/testOnly *TestModels -- -z 5"
+      - name: Model Docking Tests 6
+        run: ./sbt.sh "netLogoWeb/testOnly *TestModels -- -z 6"
+      - name: Model Docking Tests 7
+        run: ./sbt.sh "netLogoWeb/testOnly *TestModels -- -z 7"
+      - name: Model Docking Tests 8
+        run: ./sbt.sh "netLogoWeb/testOnly *TestModels -- -z 8"
+      - name: Model Docking Tests 9
+        run: ./sbt.sh "netLogoWeb/testOnly *TestModels -- -z 9"

@@ -406,7 +406,7 @@ object SimplePrims {
         case _: prim.etc._importdrawing => "ImportExportPrims.importDrawing"
 
         // Unimplemented
-        case _: prim.etc._display => "notImplemented('display', undefined)"
+        case _: prim.etc._display => "Prims.display"
 
       }
   }

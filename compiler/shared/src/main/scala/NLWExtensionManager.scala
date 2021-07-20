@@ -44,11 +44,14 @@ private object CreateExtension {
 
   private def convertToExtensionPrim(jsPrim: JsValue): ExtensionPrim = {
 
-    val returnType      = (jsPrim \ "returnType").asOpt[String].getOrElse("unit")
-    val isReporter      = (returnType != "unit")
-    val args            = jsPrim("argTypes").as[JsArray].value.map(convertArgToTypeInt)
-    val returnInt       = typeNameToTypeInt(returnType)
-    val defaultArgCount = (jsPrim \ "defaultArgCount").asOpt[Int]
+    val returnType            = (jsPrim \ "returnType").asOpt[String].getOrElse("unit")
+    val isReporter            = (returnType != "unit")
+    val args                  = jsPrim("argTypes").as[JsArray].value.map(convertArgToTypeInt)
+    val returnInt             = typeNameToTypeInt(returnType)
+    val defaultArgCount       = (jsPrim \ "defaultArgCount").asOpt[Int]
+    val minimumArgCount       = (jsPrim \ "minimumArgCount").asOpt[Int]
+    val agentClassString      = (jsPrim \ "agentClassString").asOpt[String].getOrElse("OTPL")
+    val blockAgentClassString = (jsPrim \ "blockAgentClassString").asOpt[String]
 
     val prim =
       if (isReporter) {
@@ -58,16 +61,25 @@ private object CreateExtension {
         val precedence       = NormalPrecedence + precedenceOffset
         new PrimitiveReporter {
           override def getSyntax: Syntax = Syntax.reporterSyntax(
-            left          = left,
-            right         = right.toList,
-            ret           = returnInt,
-            precedence    = precedence,
-            defaultOption = defaultArgCount
+            left                  = left
+          , right                 = right.toList
+          , ret                   = returnInt
+          , precedence            = precedence
+          , defaultOption         = defaultArgCount
+          , minimumOption         = minimumArgCount
+          , agentClassString      = agentClassString
+          , blockAgentClassString = blockAgentClassString
           )
         }
       } else {
         new PrimitiveCommand {
-          override def getSyntax: Syntax = Syntax.commandSyntax(right = args.toList, defaultOption = defaultArgCount)
+          override def getSyntax: Syntax = Syntax.commandSyntax(
+            right                 = args.toList
+          , defaultOption         = defaultArgCount
+          , minimumOption         = minimumArgCount
+          , agentClassString      = agentClassString
+          , blockAgentClassString = blockAgentClassString
+          )
         }
       }
 
@@ -159,18 +171,27 @@ class NLWExtensionManager extends ExtensionManager {
   override def replaceIdentifier(name: String): Primitive =
     primNameToPrimMap.getOrElse(
       name,
-      if (name.contains(":"))
-        throwCompilerError(s"No such primitive: $name")
-      else
-        // scalastyle:off null
-        null
-        // scalastyle:on null
+      // scalastyle:off null
+      null
+      // scalastyle:on null
     )
 
   override def readExtensionObject(extensionName: String, typeName: String, value: String): org.nlogo.core.ExtensionObject = ???
 
+  // This is a workaround for `Compiler.compileProceduresIncremental()`.  The parser calls `startFullCompilation()`
+  // when it runs, but when compiling individual procedures we won't have the `extensions` declaration in the code.
+  // This gives us a simple way to keep extensions loaded when using that function, without needing to dive into
+  // the parser code to provide some way to skip the `startFullCompilation` step.  -Jeremy B June 2021
+  private var shouldRetainExtensions = false
+  def retainExtensionsOnNextCompile(): Unit =
+    shouldRetainExtensions = true
+
   override def startFullCompilation(): Unit = {
-    primNameToPrimMap.clear()
+    if (shouldRetainExtensions) {
+      shouldRetainExtensions = false
+    } else {
+      primNameToPrimMap.clear()
+    }
   }
 
   private def throwCompilerError(cause: String) =

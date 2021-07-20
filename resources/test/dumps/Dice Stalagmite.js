@@ -121,7 +121,7 @@ ProcedurePrims.defineCommand("go", 1319, 1772, (function() {
   while ((PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("SINGLE-DICE")) || PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("PAIRED-DICE")))) {
     var R = ProcedurePrims.callCommand("move-paired-dice"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("move-single-dice"); if (R === DeathInterrupt) { return R; }
-    notImplemented('display', undefined)();
+    Prims.display();
   }
   world.ticker.tick();
 }))

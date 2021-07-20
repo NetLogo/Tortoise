@@ -118,6 +118,8 @@ class Compiler {
     overriding:    Seq[String]   = Seq()
   )(implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String = {
 
+    extensionManager.retainExtensionsOnNextCompile
+
     val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
       frontEnd.frontEnd(
           logo

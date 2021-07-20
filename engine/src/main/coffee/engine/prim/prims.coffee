@@ -10,6 +10,7 @@ TurtleSet             = require('../core/turtleset')
 { checks, getTypeOf } = require('../core/typechecker')
 StrictMath            = require('shim/strictmath')
 Timer                 = require('util/timer')
+notImplemented        = require('util/notimplemented')
 
 { exceptionFactory: exceptions } = require('util/exception')
 
@@ -35,7 +36,7 @@ module.exports =
     _everyMap: undefined # Object[String, Timer]
 
     # (Dump, Hasher, RNG, World) => Prims
-    constructor: (@_dumper, @_hasher, @_rng, @_world) ->
+    constructor: (@_dumper, @_hasher, @_rng, @_world, @_printPrims) ->
       @_everyMap = {}
 
     # () => Nothing
@@ -47,28 +48,42 @@ module.exports =
       turtles = flatMap((p) -> p.breedHereArray(breedName))(patches)
       new TurtleSet(turtles, @_world)
 
-    # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
+    # (String, Patch) => TurtleSet
     breedOnPatch: (breedName, patch) ->
       @breedOn(breedName, [patch])
 
+    # (String, Turtle) => TurtleSet
     breedOnTurtle: (breedName, turtle) ->
       @breedOn(breedName, [turtle.getPatchHere()])
 
+    # (String, PatchSet) => TurtleSet
     breedOnPatchSet: (breedName, patchSet) ->
       @breedOn(breedName, patchSet.toArray())
 
+    # (String, TurtleSet) => TurtleSet
     breedOnTurtleSet: (breedName, turtleSet) ->
       @breedOn(breedName, map((t) -> t.getPatchHere())(turtleSet.iterator().toArray()))
 
+    # (Any, String) => Boolean
     booleanCheck: (b, primName) ->
       if checks.isBoolean(b)
         b
       else
         throw exceptions.runtime("#{primName} expected input to be a TRUE/FALSE but got the #{getTypeOf(b).niceName()} #{@_dumper(b)} instead.", primName)
 
+    _hasDisplayed: false
+
+    # () => Unit
+    display: () ->
+      if not @_hasDisplayed
+        @_hasDisplayed = true
+        notImplemented('display', undefined)
+
+    # (Any) => Boolean
     ifElseValueBooleanCheck: (b) ->
       @booleanCheck(b, "IFELSE-VALUE")
 
+    # () => Unit
     ifElseValueMissingElse: () ->
       throw exceptions.runtime("IFELSE-VALUE found no true conditions and no else branch. If you don't wish to error when no conditions are true, add a final else branch.", "ifelse-value")
 
@@ -242,11 +257,14 @@ module.exports =
       turtles = flatMap((agent) -> agent.turtlesHere().toArray())(agents.iterator().toArray())
       new TurtleSet(turtles, @_world)
 
+    _hasWaited: false
+
     # (Number) => Unit
     wait: (seconds) ->
-      startTime = @nanoTime()
-      while ((@nanoTime() - startTime) / 1e9) < seconds
-        ; # Just chill out
+      if not @_hasWaited
+        @_hasWaited = true
+        @_printPrims.print('NOTE: This model uses the `wait` primitive, but it is not yet properly implemented.\nUsing `wait` will not cause time to pass but the model will run normally.')
+        notImplemented('wait', undefined)
       return
 
     # (String) => Unit

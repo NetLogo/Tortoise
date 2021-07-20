@@ -92,9 +92,15 @@ module.exports =
     )
     layoutManager = new LayoutManager(world, rng.nextDouble)
 
+    inspectionPrims = new InspectionPrims(inspectionConfig)
+    mousePrims      = new MousePrims(mouseConfig)
+    outputPrims     = new OutputPrims(outputConfig, ((x) -> outputStore += x), (-> outputStore = ""), dump)
+    printPrims      = new PrintPrims(printConfig, dump)
+    userDialogPrims = new UserDialogPrims(dialogConfig)
+
     evalPrims      = new EvalPrims(code, widgets)
     procedurePrims = new ProcedurePrims(evalPrims, plotManager, rng)
-    prims          = new Prims(dump, Hasher, rng, world)
+    prims          = new Prims(dump, Hasher, rng, world, printPrims)
     randomPrims    = new RandomPrims(rng)
     selfPrims      = new SelfPrims(selfManager.self)
     linkPrims      = new LinkPrims(world)
@@ -102,12 +108,6 @@ module.exports =
     stringPrims    = new StringPrims()
 
     exceptions.setProcecurePrims(procedurePrims)
-
-    inspectionPrims = new InspectionPrims(inspectionConfig)
-    mousePrims      = new MousePrims(mouseConfig)
-    outputPrims     = new OutputPrims(outputConfig, ((x) -> outputStore += x), (-> outputStore = ""), dump)
-    printPrims      = new PrintPrims(printConfig, dump)
-    userDialogPrims = new UserDialogPrims(dialogConfig)
 
     i18nBundle = new I18nBundle()
     primChecks = new PrimChecks(i18nBundle, dump, prims, listPrims, randomPrims, stringPrims, procedurePrims, selfPrims, selfManager.self)

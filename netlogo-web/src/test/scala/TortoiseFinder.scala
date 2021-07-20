@@ -139,9 +139,10 @@ private[tortoise] object Freebies {
     , "ImportWorld::RoundTripWithUTF8Chars"
     )
 
-  private val awaitingFixStr = "Known issue waiting on a proper fix"
+  private val awaitingFixStr = "Known issue waiting on a proper fix or implementation"
   private val awaitingFixNames =
     Seq(
+      "Timer::Timer1"
     )
 
 }

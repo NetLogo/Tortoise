@@ -380,7 +380,7 @@ ProcedurePrims.defineCommand("unwind-dna", 17693, 18048, (function() {
       SelfManager.self().right(-(world.observer.getGlobal("wind-angle")));
       SelfManager.self().setVariable("unwound?", true);
       SelfManager.self().setVariable("color", world.observer.getGlobal("unwound-dna-color"));
-      notImplemented('display', undefined)();
+      Prims.display();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))

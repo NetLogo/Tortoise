@@ -88,7 +88,7 @@ object BrowserCompilerTest extends TestSuite {
     "TestModelWithBadExtension"-{
       val compiledModel = compileModel(validModel.copy(code = "to go nodap:init [->] end " + validModel.code))
       assert(isSuccess(compiledModel) == false)
-      assert(compiledModel.apply[JsObject]("model").apply[JsArray]("result").apply[JsObject](0).apply[String]("message") == "No such primitive: NODAP:INIT")
+      assert(compiledModel.apply[JsObject]("model").apply[JsArray]("result").apply[JsObject](0).apply[String]("message") == "Nothing named NODAP:INIT has been defined.")
     }
 
     "testCompilesCommands"-{
@@ -278,6 +278,31 @@ object BrowserCompilerTest extends TestSuite {
       val result = nativeToString(compiler.compileProceduresIncremental("to foo left 150 end", js.Array("foo")))
 
       val expected = makeSuccess("""ProcedurePrims.defineCommand(\"foo\", 3, 16, (function() { SelfManager.self().right(-(150)); }))""")
+      assert(expected == result)
+    }
+
+    "compileProceduresIncremental with extensions succeeds"-{
+      val code = """extensions [ table ]
+        to foo fd 1 end
+        to-report bananas [x y] report x * y end
+      """
+      val compReq  =
+        toNative(JsObject(fields(
+          "code"    -> JsString(code)
+        , "widgets" -> JsArray(widgetyModel.widgets.map(widget2Json(_).toJsonObj))
+        )))
+      val compiler = new BrowserCompiler
+      compiler.fromModel(compReq)
+
+      val newCode = "to foo let x table:make end"
+      val innerRes = compiler.compileProceduresIncremental(newCode, js.Array("foo"))
+      val result = nativeToString(innerRes)
+
+      val expectedJS =
+        """|ProcedurePrims.defineCommand(\"foo\", 3, 24, (function() {
+           |  let x = Extensions[\"TABLE\"].prims[\"MAKE\"](); ProcedurePrims.stack().currentContext().registerStringRunVar(\"X\", x);
+           |}))""".stripMargin.replaceAll("\n", "\\\\n")
+      val expected = makeSuccess(expectedJS)
       assert(expected == result)
     }
 

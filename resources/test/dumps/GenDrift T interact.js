@@ -159,7 +159,7 @@ ProcedurePrims.defineCommand("place-wall", 1698, 2202, (function() {
       SelfManager.self().setPatchVariable("pcolor", 9.9);
       var R = ProcedurePrims.ask(SelfManager.self().turtlesHere(), function() { var R = ProcedurePrims.callCommand("move-off-wall"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    notImplemented('display', undefined)();
+    Prims.display();
   }
 }))
 ProcedurePrims.defineCommand("remove-wall", 2210, 2332, (function() {
@@ -167,7 +167,7 @@ ProcedurePrims.defineCommand("remove-wall", 2210, 2332, (function() {
     var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() {
       return Prims.equality(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.round(MousePrims.getY()));
     }), function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    notImplemented('display', undefined)();
+    Prims.display();
   }
 }))
 ProcedurePrims.defineCommand("remove-all-walls", 2340, 2373, (function() { world.clearPatches(); }))
