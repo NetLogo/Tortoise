@@ -4,17 +4,152 @@
       {
         "name": "update",
         "argTypes": ["number"],
-        "returnType": "unit"
+        "returnType": "unit",
+        "agentClassString": "O---"
       },
       {
         "name": "set-gravity",
         "argTypes": ["number", "number"],
-        "returnType": "unit"
+        "returnType": "unit",
+        "agentClassString": "O---"
+      },
+      {
+        "name": "is-physical?",
+        "argTypes": ["boolean"],
+        "returnType": "unit",
+        "agentClassString": "-TPL"
       },
       {
         "name": "set-physical",
         "argTypes": ["boolean"],
-        "returnType": "unit"
+        "returnType": "unit",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "get-friction",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "set-friction",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "get-restitution",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "set-restitution",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "get-mass",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "set-mass",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "get-density",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "set-density",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "get-v",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "get-vx",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "get-vy",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "set-v",
+        "argTypes": ["number", "number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "get-angular-v",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "set-angular-v",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "get-linear-damping",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "set-linear-damping",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "get-angular-damping",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "set-angular-damping",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "push",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "apply-force",
+        "argTypes": ["number", "number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "apply-torque",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
       }
     ]
   }

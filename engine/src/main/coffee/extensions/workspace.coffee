@@ -60,7 +60,7 @@ module.exports = {
     # () => Unit
     clearCommands = () ->
       if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue({ Type: "CommandCenter", Action: "Clear" })
+        tortugaSession.MessageQueue.Enqueue({ Type: "Print", Action: "Clear" })
       else
         workspace.printPrims.print("Clear Command Center")
       return
@@ -68,7 +68,7 @@ module.exports = {
     # (String) => Unit
     executeCommand = (Command) ->
       if tortugaSession = getTortugaSession()
-        tortugaSession.MessageQueue.Enqueue({ Type: "CommandCenter", Action: "Execute", Value: Command })
+        tortugaSession.MessageQueue.Enqueue({ Type: "Print", Action: "Execute", Value: Command })
       else
         workspace.printPrims.print("Execute a command: " + Command)
       return
