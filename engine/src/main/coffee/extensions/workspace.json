@@ -1,0 +1,54 @@
+{
+  "name": "workspace",
+  "prims": [
+    {
+      "name": "pause",
+      "actionName": "pause",
+      "argTypes": [],
+      "returnType": "unit"
+    }, {
+      "name": "play",
+      "actionName": "play",
+      "argTypes": [],
+      "returnType": "unit"
+    }, {
+      "name": "show",
+      "actionName": "show",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "hide",
+      "actionName": "hide",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "set-speed",
+      "actionName": "set-speed",
+      "argTypes": [
+        "number"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "recompile",
+      "actionName": "recompile",
+      "argTypes": [],
+      "returnType": "unit"
+    }, {
+      "name": "clear-commands",
+      "actionName": "clear-commands",
+      "argTypes": [],
+      "returnType": "unit"
+    }, {
+      "name": "execute-command",
+      "actionName": "execute-command",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }
+  ]
+}

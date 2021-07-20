@@ -1,10 +1,73 @@
 {
   "name": "sound",
   "prims": [
-	{
-      "name" :       "play-tone",
-      "argTypes" :   ["string", "number", "number"],
-      "returnType" : "unit"
-	}
+    {
+      "name": "drums",
+      "argTypes": [],
+      "returnType": "list"
+    },
+    {
+      "name": "instruments",
+      "argTypes": [],
+      "returnType": "list"
+    },
+    {
+      "name": "play-drum",
+      "argTypes": [
+        "string",
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "play-note",
+      "argTypes": [
+        "string",
+        "number",
+        "number",
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "play-note-later",
+      "argTypes": [
+        "number",
+        "string",
+        "number",
+        "number",
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "start-note",
+      "argTypes": [
+        "string",
+        "number",
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "stop-note",
+      "argTypes": [
+        "string",
+        "number"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "stop-instrument",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "stop-music",
+      "argTypes": [],
+      "returnType": "unit"
+    }
   ]
 }

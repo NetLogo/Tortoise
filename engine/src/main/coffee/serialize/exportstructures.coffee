@@ -173,6 +173,12 @@ module.exports.ExportedSimpleExtension =
     # (String, Array[ExportedExtensionObject])
     constructor: (extensionName, @objects) ->
       super(extensionName)
+      
+module.exports.ExportedStatedExtension =
+  class extends ExportedExtension
+    # (String, Any, Array[ExportedExtensionObject])
+    constructor: (extensionName, @state, @objects) ->
+      super(extensionName)
 
 module.exports.ExportedExtensionObject =
   class

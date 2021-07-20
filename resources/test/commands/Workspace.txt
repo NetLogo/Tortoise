@@ -1,0 +1,9 @@
+Tutorial_WorkspaceExtension
+  extensions [workspace]
+  O> workspace:play
+  O> workspace:pause
+  O> workspace:show "example"
+  O> workspace:hide "example"
+  O> workspace:set-speed 100
+  O> workspace:recompile
+  O> workspace:recompile-nt

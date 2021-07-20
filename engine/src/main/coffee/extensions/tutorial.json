@@ -1,0 +1,116 @@
+{
+  "name": "tutorial",
+  "prims": [
+    {
+      "name": "show-dialog",
+      "actionName": "show-dialog",
+      "argTypes": [
+        "string",
+        { "type": "boolean", "isRepeatable": true }
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "minimize-dialog",
+      "actionName": "minimize-dialog",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "hide-dialog",
+      "actionName": "hide-dialog",
+      "argTypes": [
+        { "type": "string", "isRepeatable": true }
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "back-dialog",
+      "actionName": "back-dialog",
+      "argTypes": [ ],
+      "returnType": "unit"
+    }, {
+      "name": "submit-input",
+      "actionName": "submit-input",
+      "argTypes": [ "boolean" ],
+      "returnType": "unit"
+    }, {
+      "name": "set",
+      "actionName": "set",
+      "argTypes": [
+        "string",
+        "wildcard"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "get",
+      "actionName": "get",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "wildcard"
+    }, {
+      "name": "activate",
+      "actionName": "activate",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "deactivate",
+      "actionName": "deactivate",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "get-activated",
+      "actionName": "get-activated",
+      "argTypes": [ ],
+      "returnType": "boolean"
+    }, {
+      "name": "is-activated?",
+      "actionName": "is-activated?",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "boolean"
+    }, {
+      "name": "go",
+      "actionName": "go",
+      "argTypes": [
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "forward",
+      "actionName": "forward",
+      "argTypes": [ ],
+      "returnType": "unit"
+    }, {
+      "name": "back",
+      "actionName": "back",
+      "argTypes": [ ],
+      "returnType": "unit"
+    }, {
+      "name": "survey",
+      "actionName": "survey",
+      "argTypes": [ 
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "trigger",
+      "actionName": "trigger",
+      "argTypes": [ 
+        "string",
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "in-tutorial?",
+      "actionName": "in-tutorial?",
+      "argTypes": [ ],
+      "returnType": "boolean"
+    }
+  ]
+}
