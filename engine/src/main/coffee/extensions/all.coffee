@@ -3,7 +3,7 @@
 extensionPaths = [
   'array', 'codap', 'csv', 'encode', 'dialog', 'export-the', 'fetch', 'http-req', 'import-a', 'logging', 'matrix', 'mini-csv', 'nlmap', 'nt', 'send-to', 'sound', 'store', 'table',
   # Followings are Turtle Universe extensions
-  'plot', 'tutorial', 'widget', 'workspace', 'nettango', 'sensor', 'tune'
+  'plot', 'tutorial', 'widget', 'workspace', 'nettango', 'sensor', 'tune', 'phys'
 ]
 
 module.exports = {

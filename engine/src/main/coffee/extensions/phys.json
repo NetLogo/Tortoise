@@ -1,0 +1,21 @@
+{
+    "name": "phys",
+    "prims": [
+      {
+        "name": "update",
+        "argTypes": ["number"],
+        "returnType": "unit"
+      },
+      {
+        "name": "set-gravity",
+        "argTypes": ["number", "number"],
+        "returnType": "unit"
+      },
+      {
+        "name": "set-physical",
+        "argTypes": ["boolean"],
+        "returnType": "unit"
+      }
+    ]
+  }
+  

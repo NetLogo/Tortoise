@@ -164,13 +164,13 @@ makeImporter = (extensionPorters, extensionExports) ->
       importedObjects.set(placeholder, importedObject)
       importedObject
 
-  importState = (porter, extensionStates) ->
-    porter.importState(extensionStates.get(porter), extensionObjects.get(porter) ? [])
+  importState = (porter) ->
+    porter.import(extensionExports.get(porter) ? {})
 
   {
     canHandle:    makeCanHandle(extensionPorters, placeholderCheck)
     importObject: makeTraverse(extensionPorters, importObject, placeholderCheck).traverse
-    importState:  importState
+    importState:  () => extensionPorters.forEach(importState)
   }
 
 placeholderRegEx = /{{(.+)\:(.*) (\d+)}}/

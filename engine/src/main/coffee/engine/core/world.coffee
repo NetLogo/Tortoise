@@ -89,6 +89,7 @@ module.exports =
       @turtleManager = new TurtleManager(this, @breedManager, @_updater, @rng.nextInt)
 
       @_patches = []
+      @_patchGeneration = 0
 
       @_resizeHelper(minPxcor, maxPxcor, minPycor, maxPycor, wrappingAllowedInX, wrappingAllowedInY)
 
@@ -306,11 +307,15 @@ module.exports =
             new Patch(id, x, y, this, @_updater.updated, @_declarePatchesNotAllBlack, @_decrementPatchLabelCount, @_incrementPatchLabelCount)
 
       @_patches = [].concat(nested...)
+      @_patchGeneration = @_patchGeneration + 1
 
       for patch in @_patches
         @_updater.updated(patch)("pxcor", "pycor", "pcolor", "plabel", "plabel-color")
 
       return
+
+    # () => Number
+    getPatchGeneration: -> @_patchGeneration
 
     # (Number) => PatchSet
     _optimalPatchCol: (xcor) ->

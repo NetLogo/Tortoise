@@ -222,6 +222,8 @@ module.exports.importWorld = (
         @importDrawing(drawing)
     )(drawingDataMaybe)
 
+    extensionImporter.importState()
+
     if output?
       @_setOutput(output)
 
