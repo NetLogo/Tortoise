@@ -14,10 +14,10 @@ exportGlobal = () ->
         physics.ExportState()
         
 formatGlobal = (exported) ->
-    JSON.stringify(exported)
+    JSON.stringify(exported).replace(/,/g, "`")
 
 readGlobal = (line) ->
-    JSON.parse(line)
+    JSON.parse(line[0].replace(/`/g, ","))
     
 importGlobal = (state, objects) ->
     if physics = getPhysics()

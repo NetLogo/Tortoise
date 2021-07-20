@@ -167,8 +167,7 @@ makeImporter = (extensionPorters, extensionExports) ->
   importExt = () ->
     extensionPorters.forEach( (porter) ->
       state   = extensionExports.get(porter)
-      objects = Array.from(importedObjects.values()).filter( (eo) -> eo.extensionName is porter.extensionName )
-      porter.import(state, objects)
+      porter.import(state)
     )
 
   {
