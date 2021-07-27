@@ -1,0 +1,166 @@
+{
+  "name": "palette",
+  "prims": [
+    {
+      "name": "alpha-of",
+      "argTypes": ["wildcard"],
+      "returnType": "number"
+    }, {
+      "name": "transparency-of",
+      "argTypes": ["wildcard"],
+      "returnType": "number"
+    }, {
+      "name": "with-alpha",
+      "argTypes": ["wildcard", "number"],
+      "returnType": "list",
+      "isInfix": true,
+      "precedenceOffset": -2
+    }, {
+      "name": "alpha",
+      "argTypes": [],
+      "returnType": "number"
+    }, {
+      "name": "transparency",
+      "argTypes": [],
+      "returnType": "number"
+    }, {
+      "name": "set-alpha",
+      "argTypes": ["number"],
+      "returnType": "unit"
+    }, {
+      "name": "set-transparency",
+      "argTypes": ["number"],
+      "returnType": "unit"
+    }, {
+      "name": "with-transparency",
+      "argTypes": ["wildcard", "number"],
+      "returnType": "list",
+      "isInfix": true,
+      "precedenceOffset": -2
+    }, {
+      "name": "hue-of",
+      "argTypes": ["wildcard"],
+      "returnType": "number"
+    }, {
+      "name": "saturation-of",
+      "argTypes": ["wildcard"],
+      "returnType": "number"
+    }, {
+      "name": "brightness-of",
+      "argTypes": ["wildcard"],
+      "returnType": "number"
+    }, {
+      "name": "with-hue",
+      "argTypes": ["wildcard", "number"],
+      "returnType": "list",
+      "isInfix": true,
+      "precedenceOffset": -2
+    }, {
+      "name": "with-saturation",
+      "argTypes": ["wildcard", "number"],
+      "returnType": "list",
+      "isInfix": true,
+      "precedenceOffset": -2
+    }, {
+      "name": "with-brightness",
+      "argTypes": ["wildcard", "number"],
+      "returnType": "list",
+      "isInfix": true,
+      "precedenceOffset": -2
+    }, {
+      "name": "hue",
+      "argTypes": [],
+      "returnType": "number"
+    }, {
+      "name": "saturation",
+      "argTypes": [],
+      "returnType": "number"
+    }, {
+      "name": "brightness",
+      "argTypes": [],
+      "returnType": "number"
+    }, {
+      "name": "set-hue",
+      "argTypes": ["number"],
+      "returnType": "unit"
+    }, {
+      "name": "set-saturation",
+      "argTypes": ["number"],
+      "returnType": "unit"
+    }, {
+      "name": "set-brightness",
+      "argTypes": ["number"],
+      "returnType": "unit"
+    }, {
+      "name": "R-of",
+      "argTypes": ["wildcard"],
+      "returnType": "number"
+    }, {
+      "name": "G-of",
+      "argTypes": ["wildcard"],
+      "returnType": "number"
+    }, {
+      "name": "B-of",
+      "argTypes": ["wildcard"],
+      "returnType": "number"
+    }, {
+      "name": "with-R",
+      "argTypes": ["wildcard", "number"],
+      "returnType": "list",
+      "isInfix": true,
+      "precedenceOffset": -2
+    }, {
+      "name": "with-G",
+      "argTypes": ["wildcard", "number"],
+      "returnType": "list",
+      "isInfix": true,
+      "precedenceOffset": -2
+    }, {
+      "name": "with-B",
+      "argTypes": ["wildcard", "number"],
+      "returnType": "list",
+      "isInfix": true,
+      "precedenceOffset": -2
+    }, {
+      "name": "R",
+      "argTypes": [],
+      "returnType": "number"
+    }, {
+      "name": "G",
+      "argTypes": [],
+      "returnType": "number"
+    }, {
+      "name": "B",
+      "argTypes": [],
+      "returnType": "number"
+    }, {
+      "name": "set-R",
+      "argTypes": ["number"],
+      "returnType": "unit"
+    }, {
+      "name": "set-G",
+      "argTypes": ["number"],
+      "returnType": "unit"
+    }, {
+      "name": "set-B",
+      "argTypes": ["number"],
+      "returnType": "unit"
+    }, {
+      "name": "scale-gradient-hsb",
+      "argTypes": ["list", "number", "number", "number"],
+      "returnType": "list"
+    }, {
+      "name": "scale-gradient",
+      "argTypes": ["list", "number", "number", "number"],
+      "returnType": "list"
+    }, {
+      "name": "scale-scheme",
+      "argTypes": ["string", "string", "number", "number", "number", "number"],
+      "returnType": "list"
+    }, {
+      "name": "scheme-colors",
+      "argTypes": ["string", "string", "number"],
+      "returnType": "list"
+    }
+  ]
+}
