@@ -4,6 +4,8 @@
 
 Color = require('../engine/core/colormodel')
 
+Patch = require('../engine/core/patch')
+
 ColorSchemes = require('./palette-color-schemes')
 # MAIN FUNCTIONS #
 
@@ -15,6 +17,7 @@ validateRGB = (color) ->
 
 isValidRGBList = (color) ->
   valid = (true)
+
   color = toColorList(color)
   if (color.length < 3 or color.length > 4)
     return false
@@ -64,6 +67,8 @@ extractHSB = (color, index) ->
 
 hsbUpdated = (color, value, index) ->
   newList = toColorList(color)
+  if(newList is undefined)
+    throw exceptions.extension("undefined color error")
   validateRGB(newList)
   alpha = 255
   re_add = false
@@ -164,12 +169,14 @@ modDouble = (number, limit) ->
     number -= limit
   while number < 0
     number += limit
+  return number
 
 toColorList = (color) ->
   if (typeof color is "number")
     color = Color.colorToRGB(color)
     if (color.length is 4) # sometimes gives an alpha of 0
       color.pop()
+  return color
 
 module.exports = {
 
