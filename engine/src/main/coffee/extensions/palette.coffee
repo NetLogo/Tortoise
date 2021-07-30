@@ -67,8 +67,6 @@ extractHSB = (color, index) ->
 
 hsbUpdated = (color, value, index) ->
   newList = toColorList(color)
-  if(newList is undefined)
-    throw exceptions.extension("undefined color error")
   validateRGB(newList)
   alpha = 255
   re_add = false
