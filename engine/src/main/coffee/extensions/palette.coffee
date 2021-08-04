@@ -81,7 +81,8 @@ hsbUpdated = (color, value, index) ->
   newList
 
 #GRADIENTS AND COLOR SCHEMES
-getIndex = (number, min, max, colorListLength, SIZE) ->
+#interestingly, the index calculation varies for scale gradient and scale schemes
+getIndexGradient = (number, min, max, colorListLength, SIZE) ->
   perc = 0
   if (min > max)
     if (number < max)
@@ -101,11 +102,32 @@ getIndex = (number, min, max, colorListLength, SIZE) ->
       else
        perc = (number - min) / (max - min)
   index = 0
-  gradientArray = [[],[]]
+
   if (colorListLength < 3)
     index = Math.round(perc * (SIZE - 1))
   else
     index = Math.round(perc * ( (SIZE - 1) + (SIZE) * (colorListLength - 2) ))
+
+getIndexScheme = (number, min, max, SIZE) ->
+  perc = 0
+  if (min > max)
+    if (number < max)
+      perc = SIZE - 1
+    else if (number > min)
+      perc = 0
+    else
+      perc = Math.floor((min - number) / ((min - max) / SIZE))
+  else
+    if (number > max)
+      perc = SIZE - 1
+    else if (number < min)
+      perc = 0
+    else
+      if (max is min)
+        perc = 0
+      else
+        perc = Math.floor((number - min) / ((max - min) / SIZE))
+  index = Math.min(perc, SIZE - 1)
 
 colorHSBArray = (startColor, endColor, width) -> # input colors in HSB form
   width--
@@ -307,7 +329,7 @@ module.exports = {
       for color in colorList
         validateHSB(color)
 
-      index = getIndex(number, min, max, colorList.length, SIZE)
+      index = getIndexGradient(number, min, max, colorList.length, SIZE)
       gradientArray = [[],[]]
 
       for x in [0...colorList.length - 1]
@@ -323,7 +345,7 @@ module.exports = {
       for color in colorList
         validateRGB(color)
 
-      index = getIndex(number, min, max, colorList.length, SIZE)
+      index = getIndexGradient(number, min, max, colorList.length, SIZE)
       gradientArray = [[],[]]
 
       for x in [0...colorList.length - 1]
@@ -335,7 +357,7 @@ module.exports = {
       gradientArray[index]
 
     scaleScheme = (schemename, legendname, size, number, min, max) ->
-      index = getIndex(number, min, max, 0, size)
+      index = getIndexScheme(number, min, max, size)
       legend = ColorSchemes.getRGBArray(schemename, legendname, size)
       legend[index]
 
