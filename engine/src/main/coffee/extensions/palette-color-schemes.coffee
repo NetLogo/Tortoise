@@ -1,3 +1,5 @@
+{ exceptionFactory: exceptions } = require('util/exception')
+
 class ColorSchemes
 
   @getRGBArray: (schemeName, legendName, legendSize) ->
@@ -10,7 +12,7 @@ class ColorSchemes
       else if schemeName is "Qualitative"
         selectedClass = Qualitative.class
       else
-        throw exceptions.exception("1 Your Scheme Type name was " + schemeName + " your argument can only be : Sequential, Divergent or Qualitative")
+        throw exceptions.extension("1 Your Scheme Type name was " + schemeName + " your argument can only be : Sequential, Divergent or Qualitative")
       try
         fields = selectedClass.getDeclaredFields()
         for i in [0 ... fields.length]
@@ -50,6 +52,9 @@ class ColorSchemes
       while i < colorScheme.length and (colorScheme[i].length isnt legendSize)
         i++
 
+      if(i is colorScheme.length)
+        throw exceptions.extension(legendName + " has a maximum of " + i + " colors, but you have requested " + legendSize +  ".")
+
       if i < colorScheme.length
         colorLegend = [[],[]]
         colorLegend = colorScheme[i]
@@ -82,8 +87,8 @@ class ColorSchemes
   @getMaximumLegendSize: (schemeType) ->
     colorschemes = getRGBArray(schemeType)
     max = 0
-    for i in [0...colorschemes.length - 1]
-      max = Math.max(colorschemes[i].length, colorschemes[i + 1].length)
+    for i in [0...colorschemes.length]
+      max = Math.max(colorschemes[i].length, max)
     max + 2
 
 class Divergent extends ColorSchemes

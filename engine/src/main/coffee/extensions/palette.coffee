@@ -104,9 +104,9 @@ getIndexGradient = (number, min, max, colorListLength, SIZE) ->
   index = 0
 
   if (colorListLength < 3)
-    index = Math.round(perc * (SIZE - 1))
+    index = Math.floor(perc * (SIZE - 1))
   else
-    index = Math.round(perc * ( (SIZE - 1) + (SIZE) * (colorListLength - 2) ))
+    index = Math.floor(perc * ( (SIZE - 1) + (SIZE) * (colorListLength - 2) ))
 
 getIndexScheme = (number, min, max, SIZE) ->
   perc = 0
@@ -165,21 +165,28 @@ colorHSBArray = (startColor, endColor, width) -> # input colors in HSB form
   gradientHSBarray
 
 colorRGBArray = (startColor, endColor, width) ->
-  width--
-  inc = startColor.slice()
-  inc[0] = (endColor[0] - startColor[0]) / width
-  inc[1] = (endColor[1] - startColor[1]) / width
-  inc[2] = (endColor[2] - startColor[2]) / width
-  width++
+
+  startColorList = toColorList(startColor)
+  endColorList = toColorList(endColor)
+  inc = startColorList.slice()
+  inc[0] = (endColorList[0] - startColorList[0]) / width
+  inc[1] = (endColorList[1] - startColorList[1]) / width
+  inc[2] = (endColorList[2] - startColorList[2]) / width
+
 
   gradientRGBArray = [[],[]]
-  gradientRGBArray[0] = startColor.slice()
+  gradientRGBArray[0] = startColorList.slice()
 
   for i in [1...width]
-    gradientRGBArray[i] = startColor.slice() # just to avoid errors – all values will be over written
+    gradientRGBArray[i] = startColorList.slice() # just to avoid errors – all values will be over written
     for j in [0..2]
       gradientRGBArray[i][j] = gradientRGBArray[i - 1][j] + inc[j]
       gradientRGBArray[i][j] = Math.min(255, Math.max(0, gradientRGBArray[i][j]))
+
+  for i in [1...width]
+    for j in [0..2]
+      gradientRGBArray[i][j] = Math.floor(gradientRGBArray[i][j])
+
   gradientRGBArray
 
 
