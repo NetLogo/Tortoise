@@ -2,18 +2,47 @@
 
 package org.nlogo.tortoise.compiler
 
-import
-  org.nlogo.core.{
-    ErrorSource, ExtensionManager, Primitive, PrimitiveCommand, PrimitiveReporter,
-    Syntax
-  }, Syntax.{
-    NormalPrecedence, AgentsetType, AgentType, BooleanBlockType, BooleanType,
-    BracketedType, CodeBlockType, CommandBlockType, CommandType, LinksetType,
-    LinkType, ListType, NobodyType, NumberBlockType, NumberType, OptionalType,
-    OtherBlockType, PatchsetType, PatchType, ReadableType, ReferenceType,
-    RepeatableType, ReporterBlockType, ReporterType, StringType, SymbolType,
-    TurtlesetType, TurtleType, WildcardType, VoidType
-  }
+import org.nlogo.core.{
+  ErrorSource
+, ExtensionManager
+, Primitive
+, PrimitiveCommand
+, PrimitiveReporter
+, Syntax
+}
+
+import org.nlogo.core.Syntax.{
+  NormalPrecedence
+, AgentsetType
+, AgentType
+, BooleanBlockType
+, BooleanType
+, BracketedType
+, CodeBlockType
+, CommandBlockType
+, CommandType
+, LinksetType
+, LinkType
+, ListType
+, NobodyType
+, NumberBlockType
+, NumberType
+, OptionalType
+, OtherBlockType
+, PatchsetType
+, PatchType
+, ReadableType
+, ReferenceType
+, RepeatableType
+, ReporterBlockType
+, ReporterType
+, StringType
+, SymbolType
+, TurtlesetType
+, TurtleType
+, WildcardType
+, VoidType
+}
 
 case class ExtensionPrim(primitive: Primitive, name: String)
 
