@@ -3,15 +3,15 @@
   "prims": [
     {
       "name": "alpha-of",
-      "argTypes": ["wildcard"],
+      "argTypes": [{ "types": ["list", "number"] }],
       "returnType": "number"
     }, {
       "name": "transparency-of",
-      "argTypes": ["wildcard"],
+      "argTypes": [{ "types": ["list", "number"] }],
       "returnType": "number"
     }, {
       "name": "with-alpha",
-      "argTypes": ["wildcard", "number"],
+      "argTypes": [{ "types": ["list", "number"] }, "number"],
       "returnType": "list",
       "isInfix": true,
       "precedenceOffset": -2
@@ -33,37 +33,37 @@
       "returnType": "unit"
     }, {
       "name": "with-transparency",
-      "argTypes": ["wildcard", "number"],
+      "argTypes": [{ "types": ["list", "number"] }, "number"],
       "returnType": "list",
       "isInfix": true,
       "precedenceOffset": -2
     }, {
       "name": "hue-of",
-      "argTypes": ["wildcard"],
+      "argTypes": [{ "types": ["list", "number"] }],
       "returnType": "number"
     }, {
       "name": "saturation-of",
-      "argTypes": ["wildcard"],
+      "argTypes": [{ "types": ["list", "number"] }],
       "returnType": "number"
     }, {
       "name": "brightness-of",
-      "argTypes": ["wildcard"],
+      "argTypes": [{ "types": ["list", "number"] }],
       "returnType": "number"
     }, {
       "name": "with-hue",
-      "argTypes": ["wildcard", "number"],
+      "argTypes": [{ "types": ["list", "number"] }, "number"],
       "returnType": "list",
       "isInfix": true,
       "precedenceOffset": -2
     }, {
       "name": "with-saturation",
-      "argTypes": ["wildcard", "number"],
+      "argTypes": [{ "types": ["list", "number"] }, "number"],
       "returnType": "list",
       "isInfix": true,
       "precedenceOffset": -2
     }, {
       "name": "with-brightness",
-      "argTypes": ["wildcard", "number"],
+      "argTypes": [{ "types": ["list", "number"] }, "number"],
       "returnType": "list",
       "isInfix": true,
       "precedenceOffset": -2
@@ -93,31 +93,31 @@
       "returnType": "unit"
     }, {
       "name": "R-of",
-      "argTypes": ["wildcard"],
+      "argTypes": [{ "types": ["list", "number"] }],
       "returnType": "number"
     }, {
       "name": "G-of",
-      "argTypes": ["wildcard"],
+      "argTypes": [{ "types": ["list", "number"] }],
       "returnType": "number"
     }, {
       "name": "B-of",
-      "argTypes": ["wildcard"],
+      "argTypes": [{ "types": ["list", "number"] }],
       "returnType": "number"
     }, {
       "name": "with-R",
-      "argTypes": ["wildcard", "number"],
+      "argTypes": [{ "types": ["list", "number"] }, "number"],
       "returnType": "list",
       "isInfix": true,
       "precedenceOffset": -2
     }, {
       "name": "with-G",
-      "argTypes": ["wildcard", "number"],
+      "argTypes": [{ "types": ["list", "number"] }, "number"],
       "returnType": "list",
       "isInfix": true,
       "precedenceOffset": -2
     }, {
       "name": "with-B",
-      "argTypes": ["wildcard", "number"],
+      "argTypes": [{ "types": ["list", "number"] }, "number"],
       "returnType": "list",
       "isInfix": true,
       "precedenceOffset": -2
