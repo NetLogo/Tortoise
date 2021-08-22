@@ -8,6 +8,8 @@ getSensor = () =>
 
 module.exports = {
   init: (workspace) =>
+    # () => Unit
+    clearAll = () -> clear()
 
     # () => Unit
     clear = () ->

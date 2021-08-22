@@ -29,6 +29,11 @@ module.exports = {
   )
 
   init: (workspace) ->
+    # () => Unit
+    clearAll = () ->
+      if physics = getPhysics()
+        physics.Reset()
+      return
 
     # (Number) => Unit
     update = (delta) ->
@@ -38,12 +43,88 @@ module.exports = {
         workspace.printPrims.print("Update the physics by #{delta} seconds")
       return
 
+    # (Any) => Unit
+    onContact = (callback) ->
+      if physics = getPhysics()
+        physics.OnContact(Callback)
+      return
+
+    # (Any) => Unit
+    onCollide = (callback) ->
+      if physics = getPhysics()
+        physics.OnCollide(Callback)
+      return
+
+    # (Any) => Unit
+    filterContact = (callback) ->
+      if physics = getPhysics()
+        physics.FilterContact(Callback)
+      return
+
+    # (Number, Number, Number, Number) => AgentSet
+    raycast = (X1, Y1, X2, Y2) ->
+      if physics = getPhysics()
+        physics.Raycast(X1, Y1, X2, Y2)
+      else
+        return new TurtleSet({}, world)
+        
+    # (Number, Number, Number, Number) => AgentSet
+    query = (X1, Y1, X2, Y2) ->
+      if physics = getPhysics()
+        physics.Query(X1, Y1, X2, Y2)
+      else
+        return new TurtleSet({}, world)
+        
+    # (Number) => AgentSet
+    turtlesAround = (Radius) ->
+      if physics = getPhysics()
+        physics.GetTurtlesAround(SelfManager.self(), Radius)
+      else
+        return new TurtleSet({}, world)
+
+    # () => List
+    getGravity = () ->
+      if physics = getPhysics()
+        physics.GetGravity()
+      else
+        [0, 0]
+
     # (Number, Number) => Unit
     setGravity = (x, y) ->
       if physics = getPhysics()
         physics.SetGravity(x, y)
       else
         workspace.printPrims.print("Set the gravity of the world to be (#{x}, #{y})")
+      return
+
+    # () => Number
+    getType = () ->
+      if physics = getPhysics()
+        physics.GetType(SelfManager.self())
+      else
+        [0, 0]
+
+    # (Number) => Unit
+    setType = (type) ->
+      if physics = getPhysics()
+        physics.SetType(SelfManager.self(), type)
+      else
+        workspace.printPrims.print("Set the type of the agent to be #{type}")
+      return
+
+    # () => Number
+    getGroup = () ->
+      if physics = getPhysics()
+        physics.GetGroup(SelfManager.self())
+      else
+        [0, 0]
+
+    # (Number) => Unit
+    setGroup = (Group) ->
+      if physics = getPhysics()
+        physics.SetGroup(SelfManager.self(), Group)
+      else
+        workspace.printPrims.print("Set the group of the agent to be #{Group}")
       return
 
     # (Boolean) => Unit
@@ -60,15 +141,13 @@ module.exports = {
         physics.IsPhysical(SelfManager.self())
       else
         false
-      return
     
     # () => Number
     getFriction = () ->
       if physics = getPhysics()
         physics.GetFriction(SelfManager.self())
       else
-        false
-      return
+        0
       
     # (Number) => Unit
     setFriction = (value) ->
@@ -83,8 +162,7 @@ module.exports = {
       if physics = getPhysics()
         physics.GetRestitution(SelfManager.self())
       else
-        false
-      return
+        0
       
     # (Number) => Unit
     setRestitution = (value) ->
@@ -99,8 +177,7 @@ module.exports = {
       if physics = getPhysics()
         physics.GetMass(SelfManager.self())
       else
-        false
-      return
+        0
       
     # (Number) => Unit
     setMass = (value) ->
@@ -115,8 +192,7 @@ module.exports = {
       if physics = getPhysics()
         physics.GetDensity(SelfManager.self())
       else
-        false
-      return
+        0
       
     # (Number) => Unit
     setDensity = (value) ->
@@ -126,14 +202,19 @@ module.exports = {
         workspace.printPrims.show(SelfManager.self)("Set the density to be #{value}")
       return
     
-    # () => Number
+    # () => [Number, Number]
     getV = () ->
       if physics = getPhysics()
-        velocity = physics.GetVelocity(SelfManager.self())
-        Math.sqrt(velocity[0] * velocity[0] + velocity[1] * velocity[1])
+        physics.GetVelocity(SelfManager.self())
       else
-        false
-      return
+        [0, 0]
+    
+    # () => [Number, Number]
+    getA = () ->
+      if physics = getPhysics()
+        physics.GetAcceleration(SelfManager.self())
+      else
+        [0, 0]
     
     # () => Number
     getVx = () ->
@@ -141,7 +222,6 @@ module.exports = {
         physics.GetVelocity(SelfManager.self())[0]
       else
         false
-      return
     
     # () => Number
     getVy = () ->
@@ -149,7 +229,6 @@ module.exports = {
         physics.GetVelocity(SelfManager.self())[1]
       else
         false
-      return
       
     # (Number) => Unit
     setV = (x, y) ->
@@ -164,8 +243,7 @@ module.exports = {
       if physics = getPhysics()
         physics.GetAngularVelocity(SelfManager.self())
       else
-        false
-      return
+        0
       
     # (Number) => Unit
     setAngularV = (value) ->
@@ -180,8 +258,7 @@ module.exports = {
       if physics = getPhysics()
         physics.GetLinearDamping(SelfManager.self())
       else
-        false
-      return
+        0
       
     # (Number) => Unit
     setLinearDamping = (value) ->
@@ -196,8 +273,7 @@ module.exports = {
       if physics = getPhysics()
         physics.GetAngularDamping(SelfManager.self())
       else
-        false
-      return
+        0
       
     # (Number) => Unit
     setAngularDamping = (value) ->
@@ -218,7 +294,7 @@ module.exports = {
     # (Number, Number) => Unit
     applyForce = (x, y) ->
       if physics = getPhysics()
-        physics.Push(SelfManager.self(), value)
+        physics.Push(SelfManager.self(), x, y)
       else
         workspace.printPrims.show(SelfManager.self)("Apply a force on the agent with #{x}N (x) and #{y}N (y)")
       return
@@ -231,11 +307,173 @@ module.exports = {
         workspace.printPrims.show(SelfManager.self)("Apply a torque on the agent with #{value}N·m")
       return
 
+    # (Boolean, Number) => Unit
+    makeCircle = (filled, radius) ->
+      if physics = getPhysics()
+        physics.MakeCircle(SelfManager.self(), filled, radius)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the shape as a circle with radius #{radius}, filled: #{filled}")
+      return
+
+    # (Boolean, Number, Number) => Unit
+    makeBox = (filled, x, y) ->
+      if physics = getPhysics()
+        physics.MakeBox(SelfManager.self(), filled, x, y)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the shape as a #{x}x#{y} box, filled: #{filled}")
+      return
+
+    # (Boolean, List) => Unit
+    makePolygon = (filled, vertexes) ->
+      if physics = getPhysics()
+        physics.MakePolygon(SelfManager.self(), filled, vertexes)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the shape as a polygon with #{vertexes.length} vertexes, filled: #{filled}")
+      return
+
+    # (Boolean, List) => Unit
+    makeEdges = (filled, vertexes) ->
+      if physics = getPhysics()
+        physics.MakeEdges(SelfManager.self(), looping, vertexes)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the shape as edges with #{vertexes.length} vertexes, loop: #{looping}")
+      return
+
+    # (Number, Number, Number, Number) => Unit
+    distanceJoint = (x1, y1, x2, y2) ->
+      x1 ?= 0
+      y1 ?= 0
+      x2 ?= 0
+      y2 ?= 0
+      if physics = getPhysics()
+        physics.DistanceJoint(SelfManager.self(), x1, y1, x2, y2)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the link as a distance joint with (#{x1}, #{y1}) as anchor1, and (#{x2}, #{y2}) as anchor2")
+      return
+
+    # () => Unit
+    mouseJoint = () ->
+      if physics = getPhysics()
+        physics.MouseJoint(SelfManager.self())
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the link as a mouse joint")
+      return
+
+    # () => Unit
+    detachJoint = () ->
+      if physics = getPhysics()
+        physics.DetachJoint(SelfManager.self())
+      else
+        workspace.printPrims.show(SelfManager.self)("Detach the joint from the link")
+      return
+      
+    # () => Unit
+    getLength = () ->
+      if physics = getPhysics()
+        physics.GetLength(SelfManager.self())
+      else
+        0
+      
+    # () => Unit
+    setLength = (resting, minimum, maximum) ->
+      minimum ?= resting
+      maximum ?= resting
+      if physics = getPhysics()
+        physics.SetLength(SelfManager.self(), resting, minimum, maximum)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the length of the joint to be #{resting}, min #{minimum}, max #{maximum}")
+      return
+      
+    # () => Number
+    getDamping = () ->
+      if physics = getPhysics()
+        physics.GetDamping(SelfManager.self())
+      else
+        0
+      
+    # (Number) => Unit
+    setDamping = (value) ->
+      if physics = getPhysics()
+        physics.SetDamping(SelfManager.self(), value)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the damping of the joint to be #{value}")
+      return
+      
+    # () => Number
+    getStiffness = () ->
+      if physics = getPhysics()
+        physics.GetStiffness(SelfManager.self())
+      else
+        0
+      
+    # (Number) => Unit
+    setStiffness = (value) ->
+      if physics = getPhysics()
+        physics.SetStiffness(SelfManager.self(), value)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the stiffness of the joint to be #{value}")
+      return
+      
+    # () => Number
+    getMaxForce = () ->
+      if physics = getPhysics()
+        physics.GetMaxForce(SelfManager.self())
+      else
+        0
+      
+    # (Number) => Unit
+    setMaxForce = (value) ->
+      if physics = getPhysics()
+        physics.SetMaxForce(SelfManager.self(), value)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the maximum force of the joint to be #{value}")
+      return
+      
+    # () => Number
+    getMaxTorque = () ->
+      if physics = getPhysics()
+        physics.GetMaxTorque(SelfManager.self())
+      else
+        0
+      
+    # (Number) => Unit
+    setMaxTorque = (value) ->
+      if physics = getPhysics()
+        physics.SetMaxTorque(SelfManager.self(), value)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the maximum torque of the joint to be #{value}")
+      return
+      
+    # () => [Number, Number]
+    getForce = () ->
+      if physics = getPhysics()
+        physics.GetReactionaryForce(SelfManager.self())
+      else
+        [0, 0]
+      
+    # () => Number
+    getTorque = () ->
+      if physics = getPhysics()
+        physics.GetReactionaryTorque(SelfManager.self())
+      else
+        0
+
     {
       name: "phys"
     , prims: {
         "UPDATE": update,
+        "RAYCAST": raycast,
+        "QUERY": query,
+        "TURTLES-AROUND": turtlesAround,
+        "GET-TYPE": getType,
+        "SET-TYPE": setType,
+        "GET-GROUP": getGroup,
+        "SET-GROUP": setGroup,
+        "GET-GRAVITY": getGravity,
         "SET-GRAVITY": setGravity,
+        "ON-CONTACT": onContact,
+        "ON-COLLIDE": onCollide,
+        "FILTER-CONTACT": filterContact,
         "IS-PHYSICAL?": isPhysical,
         "SET-PHYSICAL": setPhysical,
         "GET-FRICTION": getFriction,
@@ -249,6 +487,7 @@ module.exports = {
         "GET-V": getV,
         "GET-VX": getVx,
         "GET-VY": getVy,
+        "GET-A": getA,
         "SET-V": setV,
         "GET-ANGULAR-V": getAngularV,
         "SET-ANGULAR-V": setAngularV,
@@ -259,6 +498,27 @@ module.exports = {
         "PUSH": push,
         "APPLY-FORCE": applyForce,
         "APPLY-TORQUE": applyTorque,
+        "MAKE-BOX": makeBox,
+        "MAKE-CIRCLE": makeCircle,
+        "MAKE-POLYGON": makePolygon,
+        "MAKE-EDGES": makeEdges,
+        "DETACH-JOINT": detachJoint,
+        "DISTANCE-JOINT": distanceJoint,
+        "DISTANCE-JOINT-ANCHORED": distanceJoint,
+        "MOUSE-JOINT": mouseJoint,
+        "GET-LENGTH": getLength,
+        "SET-LENGTH": setLength,
+        "SET-LENGTHS": setLength,
+        "SET-DAMPING": setDamping,
+        "GET-DAMPING": getDamping,
+        "GET-STIFFNESS": getStiffness,
+        "SET-STIFFNESS": setStiffness,
+        "GET-MAX-FORCE": getMaxForce,
+        "SET-MAX-FORCE": setMaxForce,
+        "GET-MAX-TORQUE": getMaxTorque,
+        "SET-MAX-TORQUE": setMaxTorque,
+        "GET-FORCE": getForce,
+        "GET-TORQUE": getTorque
       }
     }
 }

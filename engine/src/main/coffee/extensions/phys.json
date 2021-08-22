@@ -8,10 +8,76 @@
         "agentClassString": "O---"
       },
       {
+        "name": "raycast",
+        "argTypes": ["number", "number", "number", "number"],
+        "returnType": "agentset",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "query",
+        "argTypes": ["number", "number", "number", "number"],
+        "returnType": "agentset",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "turtles-around",
+        "argTypes": ["number"],
+        "returnType": "agentset",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "on-contact",
+        "argTypes": ["wildcard"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "on-collide",
+        "argTypes": ["wildcard"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "filter-contact",
+        "argTypes": ["wildcard"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "get-type",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "set-type",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "get-group",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "set-group",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "get-gravity",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "OTPL"
+      },
+      {
         "name": "set-gravity",
         "argTypes": ["number", "number"],
         "returnType": "unit",
-        "agentClassString": "O---"
+        "agentClassString": "OTPL"
       },
       {
         "name": "is-physical?",
@@ -76,7 +142,7 @@
       {
         "name": "get-v",
         "argTypes": [],
-        "returnType": "number",
+        "returnType": "list",
         "agentClassString": "-T--"
       },
       {
@@ -89,6 +155,12 @@
         "name": "get-vy",
         "argTypes": [],
         "returnType": "number",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "get-a",
+        "argTypes": [],
+        "returnType": "list",
         "agentClassString": "-T--"
       },
       {
@@ -150,6 +222,132 @@
         "argTypes": ["number"],
         "returnType": "unit",
         "agentClassString": "-T--"
+      },
+      {
+        "name": "make-circle",
+        "argTypes": ["number", "boolean"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "make-box",
+        "argTypes": ["number", "number", "boolean"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "make-polygon",
+        "argTypes": ["list", "boolean"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "make-edges",
+        "argTypes": ["list", "boolean"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "detach-joint",
+        "argTypes": [],
+        "returnType": "unit",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "distance-joint",
+        "argTypes": [],
+        "returnType": "unit",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "distance-joint-anchored",
+        "argTypes": ["number", "number", "number", "number"],
+        "returnType": "unit",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "mouse-joint",
+        "argTypes": [],
+        "returnType": "unit",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "get-length",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "set-length",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "set-lengths",
+        "argTypes": ["number", "number", "number"],
+        "returnType": "unit",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "set-damping",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "get-damping",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "set-stiffness",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "get-stiffness",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "set-max-force",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "get-max-force",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "set-max-torque",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "get-max-torque",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "get-force",
+        "argTypes": [],
+        "returnType": "list",
+        "agentClassString": "---L"
+      },
+      {
+        "name": "get-torque",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "---L"
       }
     ]
   }
