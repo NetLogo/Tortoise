@@ -245,7 +245,7 @@ module.exports = {
       else
         if number > max
           1.0
-        else if number < min
+        else if number <= min
           0.0
         else
           tempval = number - min
