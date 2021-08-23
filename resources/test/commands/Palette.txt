@@ -28,6 +28,9 @@ Gradient-Scale5
   palette:scale-gradient [[215 50 41] [52 93 169]] 255 0 100 => [52 92 168]
   palette:scale-gradient [[215 50 41] [52 93 169]] 100 100 0 => [215 50 41]
   palette:scale-gradient [[215 50 41] [52 93 169]] 255 100 0 => [215 50 41]
+  palette:scale-gradient [[100 100 100] [50 50 50]] 0 1 1 => [100 100 100]
+  palette:scale-gradient [[100 100 100] [50 50 50]] 1 1 1 => [100 100 100]
+  palette:scale-gradient [[100 100 100] [50 50 50]] 2 1 1 => [50 50 50]
 
 Scale-Gradient-HSB
   extensions [palette]
@@ -43,6 +46,10 @@ Scale-Gradient-HSB
   palette:scale-gradient-hsb [[180 57 77] [60 79 93]] 175 0 100 => [237 237 50]
   palette:scale-gradient-hsb [[180 57 77] [60 79 93]] 100 100 0 => [84 196 196]
   palette:scale-gradient-hsb [[180 57 77] [60 79 93]] 175 100 0 => [84 196 196]
+  palette:scale-gradient-hsb [[30 100 0] [120 0 0]] 0 1 1 => [0 0 0]
+  palette:scale-gradient-hsb [[30 100 10] [120 10 10]] 0 1 1 => [26 13 0]
+  palette:scale-gradient-hsb [[30 100 10] [120 10 10]] 1 1 1 => [26 13 0]
+  palette:scale-gradient-hsb [[30 100 10] [120 10 10]] 7 1 1 => [23 26 23]
 
 Scale-Scheme1
   extensions [palette]
@@ -68,6 +75,9 @@ Scale-Scheme3
   palette:scale-scheme "Divergent" "BrBG" 4 -2 40  0 => [1 133 113]
   palette:scale-scheme "Divergent" "BrBG" 9 3 10 0 => [128 205 193]
   palette:scale-scheme "Divergent" "BrBG" 9 3 0 10 => [223 194 125]
+  palette:scale-scheme "Qualitative" "Set3" 7 0 1 1 => [141 211 199]
+  palette:scale-scheme "Qualitative" "Set3" 7 1 1 1 => [141 211 199]
+  palette:scale-scheme "Qualitative" "Set3" 7 2 1 1 => [179 222 105]
 
 Scale-Scheme4
   extensions [palette]
@@ -75,7 +85,7 @@ Scale-Scheme4
 
 Scale-Scheme5
   extensions [palette]
-  palette:scale-scheme "Divergent" "BrBG" 314 5 0 10 => ERROR Extension exception: BrBG has a maximum of 9 colors, but you have requested 314.
+  palette:scale-scheme "Divergent" "BrBG" 314 5 0 10 => ERROR Extension exception: BrBG has a maximum of 9 colors, but you have requested 314
 
 Alpha-Of
   extensions [palette]
@@ -86,10 +96,10 @@ Alpha-Of
 
 Alpha-Of-Errors
   extensions [palette]
-  palette:alpha-of [100 100 100 -1] => ERROR Extension exception: Color must have a valid RGB list.
-  palette:alpha-of [100 100] => ERROR Extension exception: Color must have a valid RGB list.
-  palette:alpha-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB list.
-  palette:alpha-of ["a" "b" 100 100] => ERROR Extension exception: Color must have a valid RGB list.
+  palette:alpha-of [100 100 100 -1] => ERROR Extension exception: Color must have a valid RGB List.
+  palette:alpha-of [100 100] => ERROR Extension exception: Color must have a valid RGB List.
+  palette:alpha-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB List.
+  palette:alpha-of ["a" "b" 100 100] => ERROR Extension exception: Color must have a valid RGB List.
 
 Alpha
   extensions [palette]
@@ -107,7 +117,16 @@ Alpha
   [palette:alpha] of link 0 1 = 26 => true
   L> set color [123 34 56]
   [palette:alpha] of link 0 1 = 255 => true
+
+Alpha_2D
+  extensions [palette]
   [palette:alpha] of patch 0 0 = 255 => true
+
+Alpha_3D
+  extensions [palette]
+  [palette:alpha] of patch 0 0 0 = 0 => true
+  O> ask patch 0 0 0 [palette:set-alpha 200]
+  [palette:alpha] of patch 0 0 0 = 200 => true
 
 Set-Alpha
   extensions [palette]
@@ -128,7 +147,17 @@ Set-Alpha-Errors
   O> crt 1 [set color red]
   T> palette:set-alpha 400 => ERROR Extension exception: Alpha must be in the range from 0 to 255.
   T> palette:set-alpha -100 => ERROR Extension exception: Alpha must be in the range from 0 to 255.
-  P> palette:set-alpha 100 => ERROR Extension exception: The alpha/transparency of patches cannot be changed.
+
+
+Set-Alpha-Errors_2D
+  extensions [palette]
+  P> palette:set-alpha 100 => ERROR Extension exception: Alpha for 2D patches cannot be changed.
+
+Set-Alpha_3D
+  extensions [palette]
+  O> ask patch 0 0 0 [set pcolor red]
+  O> ask patch 0 0 0 [palette:set-alpha 100]
+  [pcolor] of patch 0 0 0 => [215 50 41 100]
 
 With-Alpha
   extensions [palette]
@@ -142,7 +171,7 @@ Transparency-Of
   extensions [palette]
   palette:transparency-of [100 100 100] => 0
   palette:transparency-of [100 100 100 100] => 60.7843137254902
-  palette:transparency-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB list.
+  palette:transparency-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB List.
 
 Set-Transparency
   extensions [palette]
@@ -155,12 +184,21 @@ Set-Transparency
   L> palette:set-transparency 27
   [color] of link 0 1 => [215 50 41 186.15]
 
+Set-Transparency_3D
+    extensions [palette]
+    O> ask patch 0 0 0 [set pcolor red]
+    O> ask patch 0 0 0 [palette:set-transparency 100]
+    [pcolor] of patch 0 0 0 => [215 50 41 0]
+
 Set-Transparency-Errors
   extensions [palette]
   O> crt 1 [set color red]
   T> palette:set-transparency 400 => ERROR Extension exception: Transparency must be in the range from 0 to 100.
   T> palette:set-transparency -100 => ERROR Extension exception: Transparency must be in the range from 0 to 100.
-  P> palette:set-transparency 100 => ERROR Extension exception: The alpha/transparency of patches cannot be changed.
+
+Set-Transparency-Errors_2D
+  extensions [palette]
+  P> palette:set-transparency 100 => ERROR Extension exception: Transparency for 2D patches cannot be changed.
 
 With-Transparency
   extensions [palette]
@@ -176,8 +214,8 @@ Hue-Of
   palette:hue-of [160 160 160] => 0
   palette:hue-of [160 100 160 100] => 300
   palette:hue-of red => 3.103
-  palette:hue-of [100 100] => ERROR Extension exception: Color must have a valid RGB list.
-  palette:hue-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB list.
+  palette:hue-of [100 100] => ERROR Extension exception: Color must have a valid RGB List.
+  palette:hue-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB List.
 
 Saturation-Of
   extensions [palette]
@@ -185,8 +223,8 @@ Saturation-Of
   palette:saturation-of [160 160 160] => 0
   palette:saturation-of [160 100 160 100] => 37.5
   palette:saturation-of red => 80.93
-  palette:saturation-of [100 100] => ERROR Extension exception: Color must have a valid RGB list.
-  palette:saturation-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB list.
+  palette:saturation-of [100 100] => ERROR Extension exception: Color must have a valid RGB List.
+  palette:saturation-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB List.
 
 Brightness-Of
   extensions [palette]
@@ -194,32 +232,32 @@ Brightness-Of
   palette:brightness-of [160 160 160] => 62.745
   palette:brightness-of [160 100 160 100] => 62.745
   palette:brightness-of red => 84.314
-  palette:brightness-of [100 100] => ERROR Extension exception: Color must have a valid RGB list.
-  palette:brightness-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB list.
+  palette:brightness-of [100 100] => ERROR Extension exception: Color must have a valid RGB List.
+  palette:brightness-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB List.
 
 Extract-Red
   extensions [palette]
   palette:R-of [160 100 160] => 160
   palette:R-of [160 100 160 100] => 160
   palette:R-of red => 215
-  palette:R-of [100 100] => ERROR Extension exception: Color must have a valid RGB list.
-  palette:R-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB list.
+  palette:R-of [100 100] => ERROR Extension exception: Color must have a valid RGB List.
+  palette:R-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB List.
 
 Green-Of
   extensions [palette]
   palette:G-of [160 100 160] => 100
   palette:G-of [160 100 160 100] => 100
   palette:G-of red => 50
-  palette:G-of [100 100] => ERROR Extension exception: Color must have a valid RGB list.
-  palette:G-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB list.
+  palette:G-of [100 100] => ERROR Extension exception: Color must have a valid RGB List.
+  palette:G-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB List.
 
 Blue-Of
   extensions [palette]
   palette:B-of [160 100 160] => 160
   palette:B-of [160 100 160 100] => 160
   palette:B-of red => 41
-  palette:B-of [100 100] => ERROR Extension exception: Color must have a valid RGB list.
-  palette:B-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB list.
+  palette:B-of [100 100] => ERROR Extension exception: Color must have a valid RGB List.
+  palette:B-of [100 100 100 100 100] => ERROR Extension exception: Color must have a valid RGB List.
 
 With-Hue
   extensions [palette]
@@ -228,8 +266,8 @@ With-Hue
   [215 50 41 100] palette:with-hue blue => [85 215 41 100]
   red palette:with-hue 400 => [215 157 41]
   red palette:with-hue -1 => [215 41 44]
-  [100 100] palette:with-hue blue => ERROR Extension exception: Color must have a valid RGB list.
-  [100 100 100 100 100] palette:with-hue blue => ERROR Extension exception: Color must have a valid RGB list.
+  [100 100] palette:with-hue blue => ERROR Extension exception: Color must have a valid RGB List.
+  [100 100 100 100 100] palette:with-hue blue => ERROR Extension exception: Color must have a valid RGB List.
 
 With-Saturation
   extensions [palette]
@@ -237,8 +275,8 @@ With-Saturation
   [215 50 41] palette:with-saturation blue => [215 11 0]
   [215 50 41 100] palette:with-saturation blue => [215 11 0 100]
   red palette:with-saturation 50 => [215 113 108]
-  [100 100] palette:with-saturation blue => ERROR Extension exception: Color must have a valid RGB list.
-  [100 100 100 100 100] palette:with-saturation blue => ERROR Extension exception: Color must have a valid RGB list.
+  [100 100] palette:with-saturation blue => ERROR Extension exception: Color must have a valid RGB List.
+  [100 100 100 100 100] palette:with-saturation blue => ERROR Extension exception: Color must have a valid RGB List.
 
 With-Brightness
   extensions [palette]
@@ -247,8 +285,8 @@ With-Brightness
   [215 50 41 100] palette:with-brightness 50 => [128 30 24 100]
   red palette:with-brightness -1 => [0 0 0]
   red palette:with-brightness 101 => [255 59 49]
-  [100 100] palette:with-brightness blue => ERROR Extension exception: Color must have a valid RGB list.
-  [100 100 100 100 100] palette:with-brightness blue => ERROR Extension exception: Color must have a valid RGB list.
+  [100 100] palette:with-brightness blue => ERROR Extension exception: Color must have a valid RGB List.
+  [100 100 100 100 100] palette:with-brightness blue => ERROR Extension exception: Color must have a valid RGB List.
 
 With-Red
   extensions [palette]
@@ -257,8 +295,8 @@ With-Red
   [215 50 41 100] palette:with-R 255 => [255 50 41 100]
   red palette:with-R -1 => ERROR Extension exception: Value must be in the range from 0 to 255.
   red palette:with-R 256 => ERROR Extension exception: Value must be in the range from 0 to 255.
-  [100 100] palette:with-R blue => ERROR Extension exception: Color must have a valid RGB list.
-  [100 100 100 100 100] palette:with-R blue => ERROR Extension exception: Color must have a valid RGB list.
+  [100 100] palette:with-R blue => ERROR Extension exception: Color must have a valid RGB List.
+  [100 100 100 100 100] palette:with-R blue => ERROR Extension exception: Color must have a valid RGB List.
 
 With-Green
   extensions [palette]
@@ -267,8 +305,8 @@ With-Green
   [215 50 41 100] palette:with-G 255 => [215 255 41 100]
   red palette:with-G -1 => ERROR Extension exception: Value must be in the range from 0 to 255.
   red palette:with-G 256 => ERROR Extension exception: Value must be in the range from 0 to 255.
-  [100 100] palette:with-G blue => ERROR Extension exception: Color must have a valid RGB list.
-  [100 100 100 100 100] palette:with-G blue => ERROR Extension exception: Color must have a valid RGB list.
+  [100 100] palette:with-G blue => ERROR Extension exception: Color must have a valid RGB List.
+  [100 100 100 100 100] palette:with-G blue => ERROR Extension exception: Color must have a valid RGB List.
 
 With-Blue
   extensions [palette]
@@ -277,8 +315,8 @@ With-Blue
   [215 50 41 100] palette:with-B 255 => [215 50 255 100]
   red palette:with-B -1 => ERROR Extension exception: Value must be in the range from 0 to 255.
   red palette:with-B 256 => ERROR Extension exception: Value must be in the range from 0 to 255.
-  [100 100] palette:with-B blue => ERROR Extension exception: Color must have a valid RGB list.
-  [100 100 100 100 100] palette:with-B blue => ERROR Extension exception: Color must have a valid RGB list.
+  [100 100] palette:with-B blue => ERROR Extension exception: Color must have a valid RGB List.
+  [100 100 100 100 100] palette:with-B blue => ERROR Extension exception: Color must have a valid RGB List.
 
 Hue
   extensions [palette]
@@ -289,10 +327,15 @@ Hue
   [palette:hue] of turtle 0 => 3.103
   [palette:hue] of link 0 1 => 3.103
 
-Hue-Patch
+Hue-Patch_2D
   extensions [palette]
   O> ask patch 0 0 [set pcolor red]
   [palette:hue] of patch 0 0 => 3.103
+
+Hue-Patch_3D
+  extensions [palette]
+  O> ask patch 0 0 0 [set pcolor red]
+  [palette:hue] of patch 0 0 0 => 3.103
 
 Saturation
   extensions [palette]
@@ -302,8 +345,16 @@ Saturation
   P> set pcolor red
   [palette:saturation] of turtle 0 => 80.93
   [palette:saturation] of link 0 1 => 80.93
+
+Saturation_2D
+  extensions [palette]
   P> set pcolor red
   [palette:saturation] of patch 0 0 => 80.93
+
+Saturation_3D
+  extensions [palette]
+  P> set pcolor red
+  [palette:saturation] of patch 0 0 0 => 80.93
 
 Brightness
   extensions [palette]
@@ -313,8 +364,16 @@ Brightness
   P> set pcolor red
   [palette:brightness] of turtle 0 => 84.314
   [palette:brightness] of link 0 1 => 84.314
+
+Brightness_2D
+  extensions [palette]
   P> set pcolor red
   [palette:brightness] of patch 0 0 => 84.314
+
+Brightness_3D
+  extensions [palette]
+  P> set pcolor red
+  [palette:brightness] of patch 0 0 0 => 84.314
 
 Red
   extensions [palette]
@@ -323,8 +382,16 @@ Red
   L> set color red
   [palette:R] of turtle 0 => 215
   [palette:R] of link 0 1 => 215
+
+Red_2D
+  extensions [palette]
   P> set pcolor red
   [palette:R] of patch 0 0 => 215
+
+Red_3D
+  extensions [palette]
+  P> set pcolor red
+  [palette:R] of patch 0 0 0 => 215
 
 Green
   extensions [palette]
@@ -333,8 +400,16 @@ Green
   L> set color red
   [palette:G] of turtle 0 => 50
   [palette:G] of link 0 1 => 50
+
+Green_2D
+  extensions [palette]
   P> set pcolor red
   [palette:G] of patch 0 0 => 50
+
+Green_3D
+  extensions [palette]
+  P> set pcolor red
+  [palette:G] of patch 0 0 0 => 50
 
 Blue
   extensions [palette]
@@ -343,8 +418,16 @@ Blue
   L> set color red
   [palette:B] of turtle 0 => 41
   [palette:B] of link 0 1 => 41
+
+Blue_2D
+  extensions [palette]
   P> set pcolor red
   [palette:B] of patch 0 0 => 41
+
+Blue_3D
+  extensions [palette]
+  P> set pcolor red
+  [palette:B] of patch 0 0 0 => 41
 
 Set-Hue
   extensions [palette]
@@ -367,9 +450,17 @@ Set-Hue
   T> palette:set-hue -260 => ERROR Extension exception: Hue must be in the range from 0 to 360.
   T> palette:set-hue 400 => ERROR Extension exception: Hue must be in the range from 0 to 360.
 
+Set-Hue_2D
+  extensions [palette]
   P> set pcolor red
   P> palette:set-hue 100
   [pcolor] of patch 0 0 => [99 215 41]
+
+Set-Hue_3D
+  extensions [palette]
+  P> set pcolor red
+  P> palette:set-hue 100
+  [pcolor] of patch 0 0 0 => [99 215 41]
 
 Set-Saturation
   extensions [palette]
@@ -393,9 +484,17 @@ Set-Saturation
   T> palette:set-saturation -260 => ERROR Extension exception: Saturation must be in the range from 0 to 100.
   T> palette:set-saturation 400 => ERROR Extension exception: Saturation must be in the range from 0 to 100.
 
+Set-Saturation_2D
+  extensions [palette]
   P> set pcolor red
   P> palette:set-saturation 50
   [pcolor] of patch 0 0 => [215 113 108]
+
+Set-Saturation_3D
+  extensions [palette]
+  P> set pcolor red
+  P> palette:set-saturation 50
+  [pcolor] of patch 0 0 0 => [215 113 108]
 
 Set-Brightness
   extensions [palette]
@@ -417,9 +516,17 @@ Set-Brightness
   T> palette:set-brightness -260 => ERROR Extension exception: Brightness must be in the range from 0 to 100.
   T> palette:set-brightness 400 => ERROR Extension exception: Brightness must be in the range from 0 to 100.
 
+Set-Brightness_2D
+  extensions [palette]
   P> set pcolor red
   P> palette:set-brightness 50
   [pcolor] of patch 0 0 => [128 30 24]
+
+Set-Brightness_3D
+  extensions [palette]
+  P> set pcolor red
+  P> palette:set-brightness 50
+  [pcolor] of patch 0 0 0 => [128 30 24]
 
 
 Set-Red
@@ -442,9 +549,17 @@ Set-Red
   T> palette:set-R -260 => ERROR Extension exception: Value must be in the range from 0 to 255.
   T> palette:set-R 400 => ERROR Extension exception: Value must be in the range from 0 to 255.
 
+Set-Red_2D
+  extensions [palette]
   P> set pcolor red
   P> palette:set-R 255
   [pcolor] of patch 0 0 => [255 50 41]
+
+Set-Red_3D
+  extensions [palette]
+  P> set pcolor red
+  P> palette:set-R 255
+  [pcolor] of patch 0 0 0 => [255 50 41]
 
 Set-Green
   extensions [palette]
@@ -466,9 +581,17 @@ Set-Green
   T> palette:set-G -260 => ERROR Extension exception: Value must be in the range from 0 to 255.
   T> palette:set-G 400 => ERROR Extension exception: Value must be in the range from 0 to 255.
 
+Set-Green_2D
+  extensions [palette]
   P> set pcolor red
   P> palette:set-G 255
   [pcolor] of patch 0 0 => [215 255 41]
+
+Set-Green_3D
+  extensions [palette]
+  P> set pcolor red
+  P> palette:set-G 255
+  [pcolor] of patch 0 0 0 => [215 255 41]
 
 Set-Blue
   extensions [palette]
@@ -490,6 +613,14 @@ Set-Blue
   T> palette:set-B -260 => ERROR Extension exception: Value must be in the range from 0 to 255.
   T> palette:set-B 400 => ERROR Extension exception: Value must be in the range from 0 to 255.
 
+Set-Blue_2D
+  extensions [palette]
   P> set pcolor red
   P> palette:set-B 255
   [pcolor] of patch 0 0 => [215 50 255]
+
+Set-Blue_3D
+  extensions [palette]
+  P> set pcolor red
+  P> palette:set-B 255
+  [pcolor] of patch 0 0 0 => [215 50 255]

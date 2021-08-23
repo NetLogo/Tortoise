@@ -53,7 +53,7 @@ class ColorSchemes
         i++
 
       if(i is colorScheme.length)
-        throw exceptions.extension(legendName + " has a maximum of " + i + " colors, but you have requested " + legendSize +  ".")
+        throw exceptions.extension(legendName + " has a maximum of " + i + " colors, but you have requested " + legendSize)
 
       if i < colorScheme.length
         colorLegend = [[],[]]

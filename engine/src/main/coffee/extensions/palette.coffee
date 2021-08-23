@@ -12,7 +12,7 @@ ColorSchemes = require('./palette-color-schemes')
 #RGBList
 validateRGB = (color) ->
   if (not isValidRGBList(color))
-    throw exceptions.extension("Color must have a valid RGB list.")
+    throw exceptions.extension("Color must have a valid RGB List.")
   return
 
 isValidRGBList = (color) ->
@@ -269,7 +269,7 @@ module.exports = {
       self = workspace.selfManager.self()
       mycolor = self.getVariable("color")
       if (self instanceof Patch)
-        throw exceptions.extension("The alpha/transparency of patches cannot be changed.")
+        throw exceptions.extension("Alpha for 2D patches cannot be changed.")
       setMyColor(withAlpha(mycolor, newVal))
       return
 
@@ -277,7 +277,7 @@ module.exports = {
       self = workspace.selfManager.self()
       mycolor = self.getVariable("color")
       if (self instanceof Patch)
-        throw exceptions.extension("The alpha/transparency of patches cannot be changed.")
+        throw exceptions.extension("Transparency for 2D patches cannot be changed.")
       setMyColor(withTransparency(mycolor, newVal))
 
     #HSB
