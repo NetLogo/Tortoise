@@ -252,6 +252,13 @@ module.exports = {
       else
         workspace.printPrims.show(SelfManager.self)("Set the angular velocity to be #{value}")
       return
+      
+    # () => Number
+    getAngularA = () ->
+      if physics = getPhysics()
+        physics.GetAngularAcceleration(SelfManager.self())
+      else
+        0
     
     # () => Number
     getLinearDamping = () ->
@@ -384,6 +391,14 @@ module.exports = {
         workspace.printPrims.show(SelfManager.self)("Set the length of the joint to be #{resting}, min #{minimum}, max #{maximum}")
       return
       
+    # (Number, Number) => Unit
+    setLinearStiffness = (frequency, damping) ->
+      if physics = getPhysics()
+        physics.SetLinearStiffness(SelfManager.self(), frequency, damping)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the stiffness and damping of the joint to be based on frequency #{frequency} and damping ratio #{damping}")
+      return
+      
     # () => Number
     getDamping = () ->
       if physics = getPhysics()
@@ -491,6 +506,7 @@ module.exports = {
         "SET-V": setV,
         "GET-ANGULAR-V": getAngularV,
         "SET-ANGULAR-V": setAngularV,
+        "GET-ANGULAR-A": getAngularA,
         "GET-LINEAR-DAMPING": getLinearDamping,
         "SET-LINEAR-DAMPING": setLinearDamping,
         "GET-ANGULAR-DAMPING": getAngularDamping,
@@ -509,6 +525,7 @@ module.exports = {
         "GET-LENGTH": getLength,
         "SET-LENGTH": setLength,
         "SET-LENGTHS": setLength,
+        "SET-LINEAR-STIFFNESS": setLinearStiffness,
         "SET-DAMPING": setDamping,
         "GET-DAMPING": getDamping,
         "GET-STIFFNESS": getStiffness,
