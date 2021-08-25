@@ -122,7 +122,7 @@ module.exports.importWorld = (
 
     @clearAll()
 
-    if directedLinks is "DIRECTED"
+    if directedLinks.toUpperCase() is "DIRECTED"
       @_setUnbreededLinksDirected()
     else
       @_setUnbreededLinksUndirected()

@@ -11,7 +11,7 @@ import
 import
   scala.io.Source
 
-class TestExtensionWorldState extends SimpleSuite {
+class TestWorldStateExportImport extends SimpleSuite {
 
   private lazy val model = {
     val input = Source.fromFile("resources/test/models/ExtensionStateTest.nlogo")
@@ -122,6 +122,27 @@ class TestExtensionWorldState extends SimpleSuite {
     val nlm33 = s"""{{nlmap:  ["gold" ${arr33}] ["silver" 100] ["bronze" false]}}"""
     assert(arr33 == evalReporter("(word arr)"))
     assert(nlm33 == evalReporter("(word nlm)"))
+  }
+
+  test("directed links survive state export and import") { fixture =>
+    val linkCode = """
+to test-directed-link
+  clear-all
+  create-turtles 2
+  ask turtle 1 [ create-link-to turtle 0 ]
+end
+"""
+    val linkModel = Model(code = linkCode, widgets = List(View.square(1)))
+    val compiledModel = CompiledModel.fromModel(linkModel, compiler) valueOr
+      ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
+    fixture.eval(compiledModel.compiledCode)
+    evalModel("test-directed-link", compiledModel.compileRawCommand)
+    assert("(link 1 0)" == evalModel("(word one-of links)", compiledModel.compileReporter))
+
+    fixture.eval("var state = workspace.world.exportState()")
+    fixture.eval("workspace.world.clearAll()")
+    fixture.eval("workspace.world.importState(state)")
+    assert("(link 1 0)" == evalModel("(word one-of links)", compiledModel.compileReporter))
   }
 
   private def evalCommand(netlogo: String): AnyRef =

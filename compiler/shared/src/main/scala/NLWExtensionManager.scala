@@ -2,29 +2,58 @@
 
 package org.nlogo.tortoise.compiler
 
-import
-  org.nlogo.core.{
-    ErrorSource, ExtensionManager, Primitive, PrimitiveCommand, PrimitiveReporter,
-    Syntax
-  }, Syntax.{
-    NormalPrecedence, AgentsetType, AgentType, BooleanBlockType, BooleanType,
-    BracketedType, CodeBlockType, CommandBlockType, CommandType, LinksetType,
-    LinkType, ListType, NobodyType, NumberBlockType, NumberType, OptionalType,
-    OtherBlockType, PatchsetType, PatchType, ReadableType, ReferenceType,
-    RepeatableType, ReporterBlockType, ReporterType, StringType, SymbolType,
-    TurtlesetType, TurtleType, WildcardType, VoidType
-  }
+import org.nlogo.core.{
+  ErrorSource
+, ExtensionManager
+, Primitive
+, PrimitiveCommand
+, PrimitiveReporter
+, Syntax
+}
+
+import org.nlogo.core.Syntax.{
+  NormalPrecedence
+, AgentsetType
+, AgentType
+, BooleanBlockType
+, BooleanType
+, BracketedType
+, CodeBlockType
+, CommandBlockType
+, CommandType
+, LinksetType
+, LinkType
+, ListType
+, NobodyType
+, NumberBlockType
+, NumberType
+, OptionalType
+, OtherBlockType
+, PatchsetType
+, PatchType
+, ReadableType
+, ReferenceType
+, RepeatableType
+, ReporterBlockType
+, ReporterType
+, StringType
+, SymbolType
+, TurtlesetType
+, TurtleType
+, WildcardType
+, VoidType
+}
 
 case class ExtensionPrim(primitive: Primitive, name: String)
 
-private trait Extension {
+trait Extension {
   def getName : String
   def getPrims: Seq[ExtensionPrim]
 }
 
-private object CreateExtension {
+object CreateExtension {
 
-  import play.api.libs.json.{ JsValue, Json, JsArray, JsError, JsSuccess }
+  import play.api.libs.json.{ JsValue, Json, JsArray, JsObject, JsString }
 
   def apply(json: String): Extension = {
     val jsExt = Json.parse(json)
@@ -88,21 +117,26 @@ private object CreateExtension {
   }
 
   private def convertArgToTypeInt(jsArg: JsValue): Int = {
-    (jsArg \ "type").validate[String] match {
-      case JsError(_) =>
-        typeNameToTypeInt(jsArg.as[String])
-      case JsSuccess(typeName, _) => {
+    jsArg match {
+      case s: JsString => typeNameToTypeInt(s.value)
+      case o: JsObject => {
 
         val isRepeatable = (jsArg \ "isRepeatable").asOpt[Boolean].getOrElse(false)
         val isOptional   = (jsArg \ "isOptional"  ).asOpt[Boolean].getOrElse(false)
 
-        val primaryMask      = typeNameToTypeInt(typeName)
+        val primaryMask = if (o.keys.contains("type")) {
+          typeNameToTypeInt((o \ "type").as[String])
+        } else {
+          val typeMasks = (o \ "types").as[JsArray].value.map( (typeName) => typeNameToTypeInt(typeName.as[String]) )
+          typeMasks.fold(0)( (a, b) => a | b )
+        }
         val isRepeatableMask = if (isRepeatable) RepeatableType else 0
         val isOptionalMask   = if (isOptional)   OptionalType   else 0
 
         primaryMask | isRepeatableMask | isOptionalMask
 
       }
+      case _ => throw new Exception("Primitive argument types must be a string value or an object with the necessary fields.")
     }
   }
 
