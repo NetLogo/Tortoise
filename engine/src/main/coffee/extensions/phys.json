@@ -231,25 +231,25 @@
       },
       {
         "name": "make-circle",
-        "argTypes": ["number", "boolean"],
+        "argTypes": ["boolean", "number"],
         "returnType": "unit",
         "agentClassString": "-T--"
       },
       {
         "name": "make-box",
-        "argTypes": ["number", "number", "boolean"],
+        "argTypes": ["boolean", "number", "number"],
         "returnType": "unit",
         "agentClassString": "-T--"
       },
       {
         "name": "make-polygon",
-        "argTypes": ["list", "boolean"],
+        "argTypes": ["boolean", "list"],
         "returnType": "unit",
         "agentClassString": "-T--"
       },
       {
         "name": "make-edges",
-        "argTypes": ["list", "boolean"],
+        "argTypes": ["boolean", "list"],
         "returnType": "unit",
         "agentClassString": "-T--"
       },
