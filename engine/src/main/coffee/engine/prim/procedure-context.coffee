@@ -7,9 +7,10 @@ class ProcedureContext
   _taskDepth: 0 # Int
 
   # Map[String, Any]
-  _stringRunLetVars: new Map()
+  _stringRunLetVars: null
 
   constructor: (@name) ->
+    @_stringRunLetVars = new Map()
 
   # This is for procedure arguments only, so as to skip the ask/task checks.  -Jeremy B March 2021
   # (String, Any) => Unit
