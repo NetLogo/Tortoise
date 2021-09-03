@@ -14,6 +14,18 @@
         "agentClassString": "OTPL"
       },
       {
+        "name": "raycast-all",
+        "argTypes": ["number", "number", "number", "number", "wildcard"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "pointcast",
+        "argTypes": ["number", "number"],
+        "returnType": "agentset",
+        "agentClassString": "OTPL"
+      },
+      {
         "name": "query",
         "argTypes": ["number", "number", "number", "number"],
         "returnType": "agentset",
@@ -26,13 +38,37 @@
         "agentClassString": "-TP-"
       },
       {
-        "name": "on-contact",
+        "name": "turtles-here",
+        "argTypes": [],
+        "returnType": "agentset",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "contacts",
+        "argTypes": [],
+        "returnType": "agentset",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "all-contacts",
+        "argTypes": ["wildcard"],
+        "returnType": "agentset",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "contact-end",
         "argTypes": ["wildcard"],
         "returnType": "unit",
         "agentClassString": "OTPL"
       },
       {
-        "name": "on-collide",
+        "name": "contact-begin",
+        "argTypes": ["wildcard"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "contact-end",
         "argTypes": ["wildcard"],
         "returnType": "unit",
         "agentClassString": "OTPL"
@@ -249,6 +285,30 @@
       },
       {
         "name": "make-edges",
+        "argTypes": ["boolean", "list"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "add-circle",
+        "argTypes": ["boolean", "number", "number", "number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "add-box",
+        "argTypes": ["boolean", "number", "number", "number", "number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "add-polygon",
+        "argTypes": ["boolean", "list"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "add-edges",
         "argTypes": ["boolean", "list"],
         "returnType": "unit",
         "agentClassString": "-T--"

@@ -44,43 +44,76 @@ module.exports = {
       return
 
     # (Any) => Unit
-    onContact = (callback) ->
+    contactBegin = (callback) ->
       if physics = getPhysics()
-        physics.OnContact(Callback)
+        physics.ContactBegin(callback)
       return
-
+      
     # (Any) => Unit
-    onCollide = (callback) ->
+    contactEnd = (callback) ->
       if physics = getPhysics()
-        physics.OnCollide(Callback)
+        physics.ContactEnd(callback)
+      return
+    
+    # (Any) => Unit
+    contactStay = (callback) ->
+      if physics = getPhysics()
+        physics.ContactStay(callback)
       return
 
     # (Any) => Unit
     filterContact = (callback) ->
       if physics = getPhysics()
-        physics.FilterContact(Callback)
+        physics.FilterContact(callback)
       return
+
+    # () => AgentSet
+    contacts = () ->
+      if physics = getPhysics()
+        return new TurtleSet(physics.GetContacts(SelfManager.self()), world)
+      
+    # (Any) => Unit
+    allContacts = (callback) ->
+      if physics = getPhysics()
+        physics.GetAllContacts(SelfManager.self(), callback)
+        return
 
     # (Number, Number, Number, Number) => AgentSet
     raycast = (X1, Y1, X2, Y2) ->
       if physics = getPhysics()
-        physics.Raycast(X1, Y1, X2, Y2)
+        return new TurtleSet(physics.Raycast(X1, Y1, X2, Y2), world)
+      else
+        return new TurtleSet({}, world)
+
+    # () => List
+    raycastAll = (X1, Y1, X2, Y2, callback) ->
+      if physics = getPhysics()
+        physics.RaycastAll(X1, Y1, X2, Y2, callback)
+      return
+        
+    # () => AgentSet
+    pointcast = (X, Y) ->
+      if physics = getPhysics()
+        return new TurtleSet(physics.Pointcast(X, Y), world)
       else
         return new TurtleSet({}, world)
         
     # (Number, Number, Number, Number) => AgentSet
     query = (X1, Y1, X2, Y2) ->
       if physics = getPhysics()
-        physics.Query(X1, Y1, X2, Y2)
+        return new TurtleSet(physics.Query(X1, Y1, X2, Y2), world)
       else
         return new TurtleSet({}, world)
         
     # (Number) => AgentSet
     turtlesAround = (Radius) ->
-      if physics = getPhysics()
-        physics.GetTurtlesAround(SelfManager.self(), Radius)
-      else
-        return new TurtleSet({}, world)
+      self = SelfManager.self()
+      return query(self.xcor + Radius, self.ycor + Radius, self.xcor - Radius, self.ycor - Radius)
+        
+    # (Number) => AgentSet
+    turtlesHere = (Radius) ->
+      self = SelfManager.self()
+      return pointcast(self.xcor, self.ycor)
 
     # () => List
     getGravity = () ->
@@ -322,12 +355,28 @@ module.exports = {
         workspace.printPrims.show(SelfManager.self)("Set the shape as a circle with radius #{radius}, filled: #{filled}")
       return
 
+    # (Boolean, Number) => Unit
+    addCircle = (filled, radius, xAnchor, yAnchor) ->
+      if physics = getPhysics()
+        physics.MakeCircle(SelfManager.self(), filled, radius, true, xAnchor, yAnchor)
+      else
+        workspace.printPrims.show(SelfManager.self)("Add a circle with radius #{radius} into the shape, anchor: #{xAnchor},#{yAnchor}, filled: #{filled}")
+      return
+
     # (Boolean, Number, Number) => Unit
     makeBox = (filled, x, y) ->
       if physics = getPhysics()
         physics.MakeBox(SelfManager.self(), filled, x, y)
       else
         workspace.printPrims.show(SelfManager.self)("Set the shape as a #{x}x#{y} box, filled: #{filled}")
+      return
+
+    # (Boolean, Number, Number, Number, Number) => Unit
+    addBox = (filled, x, y, xAnchor, yAnchor) ->
+      if physics = getPhysics()
+        physics.MakeBox(SelfManager.self(), filled, x, y, true, xAnchor, yAnchor)
+      else
+        workspace.printPrims.show(SelfManager.self)("Add a #{x}x#{y} box into the shape, anchor: #{xAnchor},#{yAnchor}, filled: #{filled}")
       return
 
     # (Boolean, List) => Unit
@@ -339,11 +388,27 @@ module.exports = {
       return
 
     # (Boolean, List) => Unit
+    addPolygon = (filled, vertexes) ->
+      if physics = getPhysics()
+        physics.MakePolygon(SelfManager.self(), filled, vertexes, true)
+      else
+        workspace.printPrims.show(SelfManager.self)("Add a polygon with #{vertexes.length} vertexes into the shape, filled: #{filled}")
+      return
+
+    # (Boolean, List) => Unit
     makeEdges = (filled, vertexes) ->
       if physics = getPhysics()
         physics.MakeEdges(SelfManager.self(), looping, vertexes)
       else
         workspace.printPrims.show(SelfManager.self)("Set the shape as edges with #{vertexes.length} vertexes, loop: #{looping}")
+      return
+
+    # (Boolean, List) => Unit
+    addEdges = (filled, vertexes) ->
+      if physics = getPhysics()
+        physics.MakeEdges(SelfManager.self(), looping, vertexes, true)
+      else
+        workspace.printPrims.show(SelfManager.self)("Add edges with #{vertexes.length} vertexes into the shape, loop: #{looping}")
       return
 
     # (Number, Number, Number, Number) => Unit
@@ -478,16 +543,22 @@ module.exports = {
     , prims: {
         "UPDATE": update,
         "RAYCAST": raycast,
+        "POINTCAST": pointcast,
+        "RAYCAST-ALL": raycastAll,
         "QUERY": query,
+        "TURTLES-HERE": turtlesHere,
         "TURTLES-AROUND": turtlesAround,
+        "CONTACTS": contacts,
+        "ALL-CONTACTS": allContacts,
         "GET-TYPE": getType,
         "SET-TYPE": setType,
         "GET-GROUP": getGroup,
         "SET-GROUP": setGroup,
         "GET-GRAVITY": getGravity,
         "SET-GRAVITY": setGravity,
-        "ON-CONTACT": onContact,
-        "ON-COLLIDE": onCollide,
+        "CONTACT-STAY": contactStay,
+        "CONTACT-BEGIN": contactBegin,
+        "CONTACT-END": contactEnd,
         "FILTER-CONTACT": filterContact,
         "IS-PHYSICAL?": isPhysical,
         "SET-PHYSICAL": setPhysical,
@@ -518,6 +589,10 @@ module.exports = {
         "MAKE-CIRCLE": makeCircle,
         "MAKE-POLYGON": makePolygon,
         "MAKE-EDGES": makeEdges,
+        "ADD-BOX": addBox,
+        "ADD-CIRCLE": addCircle,
+        "ADD-POLYGON": addPolygon,
+        "ADD-EDGES": addEdges,
         "DETACH-JOINT": detachJoint,
         "DISTANCE-JOINT": distanceJoint,
         "DISTANCE-JOINT-ANCHORED": distanceJoint,
