@@ -114,7 +114,10 @@ class RawContext extends ProcedureContext
 
 class ProcedureStack
   # Array[ProcedureContext]
-  _stack: [new RawContext()]
+  _stack: null
+
+  constructor: () ->
+    @_stack = [new RawContext()]
 
   # () => Array[{ type: "command" | "reporter" | "plot" | "raw", name: String }]
   trace: () ->

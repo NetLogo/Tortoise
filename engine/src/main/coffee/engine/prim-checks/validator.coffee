@@ -9,9 +9,10 @@ formatFloat                      = require('util/formatfloat')
 class Validator
 
   # Map[Int, Array[NLType]]
-  _cachedRuntimeTypes: new Map()
+  _cachedRuntimeTypes: null
 
   constructor: (@bundle, @dumper) ->
+    @_cachedRuntimeTypes = new Map()
     # These arrays of types and the common checks below are pre-computed so that all prims
     # can share them without making loads of extra array instances and extra functions.
     # -Jeremy B December 2020
