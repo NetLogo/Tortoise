@@ -1,5 +1,5 @@
 {
-  "name": "Tortoise",
+  "name": "tortoise",
   "description": "A JavaScript-based implementation of the NetLogo simulation engine",
   "repository": "https://github.com/NetLogo/Tortoise",
   "version": "0.0.1",
