@@ -52,7 +52,7 @@
       {
         "name": "all-contacts",
         "argTypes": ["wildcard"],
-        "returnType": "agentset",
+        "returnType": "unit",
         "agentClassString": "-TP-"
       },
       {
