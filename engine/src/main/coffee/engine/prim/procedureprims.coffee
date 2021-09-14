@@ -76,7 +76,15 @@ class ProcedurePrims
 
   # (String, Boolean) => Any
   runString: (str, isRunResult) ->
-    @evalPrims.runCode(str, isRunResult, @_stack.currentContext().stringRunVars())
+    if isRunResult
+      @_stack.startStringReporterTask()
+    else
+      @_stack.startStringCommandTask()
+
+    try
+      @evalPrims.runCode(str, isRunResult, @_stack.currentContext().stringRunVars())
+    finally
+      @_stack.endCall()
 
   # (() => Any, Array[Any]) => Any
   runFunction: (f, args...) ->
