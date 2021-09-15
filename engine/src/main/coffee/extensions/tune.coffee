@@ -166,6 +166,7 @@ module.exports = {
     
     {
       name: "tune",
+      clearAll: clearAll,
       prims: {
         "DRUMS": drums,
         "INSTRUMENTS": instruments,

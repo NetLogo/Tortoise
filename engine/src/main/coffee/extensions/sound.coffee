@@ -103,6 +103,7 @@ module.exports = {
     
     {
       name: "sound",
+      clearAll: clearAll,
       prims: {
         "DRUMS": drums,
         "INSTRUMENTS": instruments,

@@ -413,10 +413,6 @@ module.exports = {
 
     # (Number, Number, Number, Number) => Unit
     distanceJoint = (x1, y1, x2, y2) ->
-      x1 ?= 0
-      y1 ?= 0
-      x2 ?= 0
-      y2 ?= 0
       if physics = getPhysics()
         physics.DistanceJoint(SelfManager.self(), x1, y1, x2, y2)
       else
@@ -540,6 +536,7 @@ module.exports = {
 
     {
       name: "phys"
+    , clearAll: clearAll
     , prims: {
         "UPDATE": update,
         "RAYCAST": raycast,

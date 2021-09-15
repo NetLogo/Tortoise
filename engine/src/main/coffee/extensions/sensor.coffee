@@ -96,6 +96,7 @@ module.exports = {
 
     {
       name: "sensor"
+    , clearAll: clearAll
     , prims: {
                   "CLEAR": clear
       ,    "BIND-GESTURE": bindGesture

@@ -153,6 +153,8 @@ module.exports =
       size:          ["SIZE",        (turtle) -> turtle._size]
       xcor:          ["XCOR",        (turtle) -> turtle.xcor]
       ycor:          ["YCOR",        (turtle) -> turtle.ycor]
+      xorigin:       ["XORIGIN",     (turtle) -> turtle._xorigin]
+      yorigin:       ["YORIGIN",     (turtle) -> turtle._yorigin]
     }
 
     # (Patch) => Object[EngineKey, (Key, Getter)]
