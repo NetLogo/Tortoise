@@ -15,7 +15,7 @@ def taggedTest(name: String): Def.Initialize[InputTask[Unit]] =
     val scalaTestArgs =
       if (args.isEmpty) ""
       else args.mkString(" -- -n \"", " ", "\"")
-    (testOnly in Test).toTask(" " + name + scalaTestArgs)
+    (Test / testOnly).toTask(" " + name + scalaTestArgs)
   }
 
 inConfig(Test)(

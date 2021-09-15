@@ -51,21 +51,21 @@ jobs:
       - name: Compiler JVM Tests
         run: |
           git submodule update --init --recursive
-          ./sbt.sh compilerJVM/test:compile
-          ./sbt.sh compilerJVM/test:test
-          ./sbt.sh compilerJVM/depend
+          ./sbt.sh "compilerJVM / Test / compile"
+          ./sbt.sh "compilerJVM / Test / test"
+          ./sbt.sh "compilerJVM / depend"
 
       - name: Compiler JS Tests
         run: |
-          ./sbt.sh compilerJS/test:compile
-          ./sbt.sh compilerJS/test:test
+          ./sbt.sh "compilerJS / Test / compile"
+          ./sbt.sh "compilerJS / Test / test"
 
       - name: NetLogo Web Tests
         run: |
-          ./sbt.sh netLogoWeb/test:compile
-          ./sbt.sh "netLogoWeb/test:runMain org.nlogo.tortoise.nlw.ExtensionsUpdater"
-          ./sbt.sh netLogoWeb/test:fast
-          ./sbt.sh netLogoWeb/test:language
+          ./sbt.sh "netLogoWeb / Test / compile"
+          ./sbt.sh "netLogoWeb / Test / runMain org.nlogo.tortoise.nlw.ExtensionsUpdater"
+          ./sbt.sh "netLogoWeb / Test / fast"
+          ./sbt.sh "netLogoWeb / Test / language"
 
       - name: Model JS Dumps
         run: |
