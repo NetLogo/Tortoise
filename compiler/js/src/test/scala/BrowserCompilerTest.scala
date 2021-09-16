@@ -5,19 +5,20 @@ package org.nlogo.tortoise.compiler
 import org.nlogo.core.{ Slider }
 import org.nlogo.core.model.ModelReader
 
-import json.JsonLibrary.{ toNative, nativeToString }
+import json.JsonLibrary.{ toNative, nativeToString, toTortoise }
 import json.JsonReader.{ jsObject2RichJsObject, jsArray2RichJsArray }
-import json.TortoiseJson.{ fields, JsArray, JsObject, JsString }
+import json.TortoiseJson.{ fields, JsArray, JsBool, JsInt, JsObject, JsString }
 import json.WidgetToJson.widget2Json
 
 import scala.scalajs.js
+import scala.collection.immutable.ListMap
 
 import utest._
 
-import org.nlogo.tortoise.compiler.TestUtilities.{ 
+import org.nlogo.tortoise.compiler.TestUtilities.{
   assertErrorMessage
 , compiledJs
-, compileModel 
+, compileModel
 , isSuccess
 , makeSuccess
 , modelToCompilationRequest
@@ -309,6 +310,119 @@ object BrowserCompilerTest extends TestSuite {
            |}))""".stripMargin.replaceAll("\n", "\\\\n")
       val expected = makeSuccess(expectedJS)
       assert(expected == result)
+    }
+
+    "introspection works"-{
+       val code = """
+        globals [ eggs hams ]
+        turtles-own [ gourds ]
+        patches-own [ mites ]
+        breed [ wolves wolf ]
+        breed [ birds bird ]
+        wolves-own [ rings ]
+        birds-own [ necklaces ]
+        directed-link-breed [ streets street ]
+        undirected-link-breed [ friendships friendship ]
+        streets-own [ material-type ]
+        friendships-own [ age ]
+        to turtle-proc fd 1 set eggs 100 end
+        to obs-proc ask turtles [ fd 1 ] set hams 100 end
+        to-report luck-proc [x y] report (x + y) * eggs * hams end
+      """
+      val compReq =
+        toNative(JsObject(fields(
+          "code"    -> JsString(code)
+        , "widgets" -> JsArray(widgetyModel.widgets.map(widget2Json(_).toJsonObj))
+        )))
+      val compiler      = new BrowserCompiler
+      val compiledModel = compiler.fromModel(compReq)
+      val compiledJs    = toTortoise(compiledModel).asInstanceOf[JsObject]
+
+      assert(isSuccess(compiledJs))
+
+      val globalVars = toTortoise(compiler.listGlobalVars())
+      val expectedGlobalVars = Seq(
+        JsObject(ListMap("name" -> JsString("apples"), "type" -> JsString("interface")))
+      , JsObject(ListMap("name" -> JsString("oranges"), "type" -> JsString("interface")))
+      , JsObject(ListMap("name" -> JsString("eggs"), "type" -> JsString("user")))
+      , JsObject(ListMap("name" -> JsString("hams"), "type" -> JsString("user")))
+      )
+      assert(JsArray(expectedGlobalVars) == globalVars)
+
+      val turtleVars = toTortoise(compiler.listTurtleVars())
+      val expectedTurtleVars = Seq("gourds", "who", "ycor", "breed", "xcor", "size", "label-color"
+      , "pen-size", "color", "shape", "label", "hidden?", "heading", "pen-mode").map(JsString.apply)
+      assert(JsArray(expectedTurtleVars) == turtleVars)
+
+      val patchVars = toTortoise(compiler.listPatchVars())
+      val expectedPatchVars = Seq("pxcor", "plabel-color", "pcolor", "mites", "plabel", "pycor").map(JsString.apply)
+      assert(JsArray(expectedPatchVars) == patchVars)
+
+      val wolvesOwnVars = toTortoise(compiler.listOwnVarsForBreed("wolves"))
+      val expectedWolvesOwnVars = Seq("rings").map(JsString.apply)
+      assert(JsArray(expectedWolvesOwnVars) == wolvesOwnVars)
+      val birdsOwnVars = toTortoise(compiler.listOwnVarsForBreed("birds"))
+      val expectedBirdsOwnVars = Seq("necklaces").map(JsString.apply)
+      assert(JsArray(expectedBirdsOwnVars) == birdsOwnVars)
+
+      val wolvesVars = toTortoise(compiler.listVarsForBreed("wolves"))
+      val expectedWolvesVars = Seq("rings").map(JsString.apply)
+      assert(JsArray(expectedTurtleVars ++ expectedWolvesVars) == wolvesVars)
+      val birdsVars = toTortoise(compiler.listVarsForBreed("birds"))
+      val expectedBirdsVars = Seq("necklaces").map(JsString.apply)
+      assert(JsArray(expectedTurtleVars ++ expectedBirdsVars) == birdsVars)
+
+      val linkVars = toTortoise(compiler.listLinkVars())
+      val expectedLinkVars = Seq("breed", "label-color", "thickness", "color", "shape", "label"
+      , "hidden?", "tie-mode", "end1", "end2").map(JsString.apply)
+      assert(JsArray(expectedLinkVars) == linkVars)
+
+      val streetsOwnVars = toTortoise(compiler.listLinkOwnVarsForBreed("streets"))
+      val expectedStreetsOwnVars = Seq("material-type").map(JsString.apply)
+      assert(JsArray(expectedStreetsOwnVars) == streetsOwnVars)
+      val friendshipsOwnVars = toTortoise(compiler.listLinkOwnVarsForBreed("friendships"))
+      val expectedFriendshipsOwnVars = Seq("age").map(JsString.apply)
+      assert(JsArray(expectedFriendshipsOwnVars) == friendshipsOwnVars)
+
+      val streetsVars = toTortoise(compiler.listLinkVarsForBreed("streets"))
+      val expectedStreetsVars = Seq("material-type").map(JsString.apply)
+      assert(JsArray(expectedLinkVars ++ expectedStreetsVars) == streetsVars)
+      val friendshipsVars = toTortoise(compiler.listLinkVarsForBreed("friendships"))
+      val expectedFriendshipsVars = Seq("age").map(JsString.apply)
+      assert(JsArray(expectedLinkVars ++ expectedFriendshipsVars) == friendshipsVars)
+
+      val procs = toTortoise(compiler.listProcedures())
+      val expectedProcs = JsArray(Seq(
+        JsObject(
+          ListMap(
+            "argCount"            -> JsInt   (0)
+          , "isReporter"          -> JsBool  (false)
+          , "isUseableByObserver" -> JsBool  (false)
+          , "isUseableByTurtles"  -> JsBool  (true)
+          , "name"                -> JsString("turtle-proc")
+          )
+        )
+      , JsObject(
+          ListMap(
+            "argCount"            -> JsInt   (0)
+          , "isReporter"          -> JsBool  (false)
+          , "isUseableByObserver" -> JsBool  (true)
+          , "isUseableByTurtles"  -> JsBool  (true)
+          , "name"                -> JsString("obs-proc")
+          )
+        )
+      , JsObject(
+          ListMap(
+            "argCount"            -> JsInt   (2)
+          , "isReporter"          -> JsBool  (true)
+          , "isUseableByObserver" -> JsBool  (true)
+          , "isUseableByTurtles"  -> JsBool  (true)
+          , "name"                -> JsString("luck-proc")
+          )
+        )
+      ))
+      assert(expectedProcs == procs)
+
     }
 
   }
