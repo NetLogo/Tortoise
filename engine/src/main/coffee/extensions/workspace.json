@@ -33,6 +33,11 @@
       ],
       "returnType": "unit"
     }, {
+      "name": "get-platform",
+      "actionName": "get-platform",
+      "argTypes": [],
+      "returnType": "string"
+    }, {
       "name": "recompile",
       "actionName": "recompile",
       "argTypes": [],

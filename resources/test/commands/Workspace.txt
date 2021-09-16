@@ -6,4 +6,5 @@ Tutorial_WorkspaceExtension
   O> workspace:hide "example"
   O> workspace:set-speed 100
   O> workspace:recompile
-  O> workspace:recompile-nt
+  O> workspace:clear-commands
+  O> workspace:execute-command "help"

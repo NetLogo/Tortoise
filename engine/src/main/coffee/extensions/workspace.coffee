@@ -57,6 +57,13 @@ module.exports = {
         workspace.printPrims.print("Recompile NetLogo code")
       return
 
+    # () => String
+    getPlatform = () ->
+      if window?.TortugaSession?
+        window.TortugaSession.Platform
+      else
+        "web"
+
     # () => Unit
     clearCommands = () ->
       if tortugaSession = getTortugaSession()
@@ -81,6 +88,7 @@ module.exports = {
       ,         "SHOW": show
       ,         "HIDE": hide
       ,    "SET-SPEED": setSpeed
+      , "GET-PLATFORM": getPlatform
     ,"EXECUTE-COMMAND": executeCommand
      ,"CLEAR-COMMANDS": clearCommands
       ,    "RECOMPILE": recompile
