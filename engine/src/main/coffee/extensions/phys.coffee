@@ -78,6 +78,30 @@ module.exports = {
         physics.GetAllContacts(SelfManager.self(), callback)
         return
 
+    # (Color, Number, Number) => Unit
+    showVector = (color, x, y) ->
+      if physics = getPhysics()
+        physics.ShowVector(SelfManager.self(), x, y)
+      return
+
+    # (Color, Number, Number, Boolean) => Unit
+    showOrthogonal = (color, x, y, align) ->
+      if physics = getPhysics()
+        physics.ShowVector(SelfManager.self(), x, y, align)
+      return
+
+    # () => Unit
+    hideVectors = () ->
+      if physics = getPhysics()
+        physics.HideVectors(SelfManager.self())
+      return
+
+    # () => Unit
+    clearVectors = () ->
+      if physics = getPhysics()
+        physics.ClearVectors()
+      return
+
     # (Number, Number, Number, Number) => AgentSet
     raycast = (X1, Y1, X2, Y2) ->
       if physics = getPhysics()
@@ -233,6 +257,21 @@ module.exports = {
         physics.SetDensity(SelfManager.self(), value)
       else
         workspace.printPrims.show(SelfManager.self)("Set the density to be #{value}")
+      return
+    
+    # () => [Number, Number]
+    getOrigin = () ->
+      if physics = getPhysics()
+        physics.GetOrigin(SelfManager.self())
+      else
+        [SelfManager.self().xcor, SelfManager.self().ycor]
+      
+    # (Number) => Unit
+    setOrigin = (x, y) ->
+      if physics = getPhysics()
+        physics.SetOrigin(SelfManager.self(), x, y)
+      else
+        workspace.printPrims.show(SelfManager.self)("Set the origin position to be #{x}, #{y}")
       return
     
     # () => [Number, Number]
@@ -395,16 +434,16 @@ module.exports = {
         workspace.printPrims.show(SelfManager.self)("Add a polygon with #{vertexes.length} vertexes into the shape, filled: #{filled}")
       return
 
-    # (Boolean, List) => Unit
-    makeEdges = (filled, vertexes) ->
+    # (Boolean, Width, List) => Unit
+    makeEdges = (looping, vertexes) ->
       if physics = getPhysics()
         physics.MakeEdges(SelfManager.self(), looping, vertexes)
       else
         workspace.printPrims.show(SelfManager.self)("Set the shape as edges with #{vertexes.length} vertexes, loop: #{looping}")
       return
 
-    # (Boolean, List) => Unit
-    addEdges = (filled, vertexes) ->
+    # (Boolean, Width, List) => Unit
+    addEdges = (looping, vertexes) ->
       if physics = getPhysics()
         physics.MakeEdges(SelfManager.self(), looping, vertexes, true)
       else
@@ -557,6 +596,10 @@ module.exports = {
         "CONTACT-BEGIN": contactBegin,
         "CONTACT-END": contactEnd,
         "FILTER-CONTACT": filterContact,
+        "SHOW-VECTOR": showVector,
+        "SHOW-ORTHOGONAL": showOrthogonal,
+        "HIDE-VECTORS": hideVectors,
+        "CLEAR-VECTORS": clearVectors,
         "IS-PHYSICAL?": isPhysical,
         "SET-PHYSICAL": setPhysical,
         "GET-FRICTION": getFriction,
@@ -567,6 +610,8 @@ module.exports = {
         "SET-MASS": setMass,
         "GET-DENSITY": getDensity,
         "SET-DENSITY": setDensity,
+        "GET-ORIGIN": getOrigin,
+        "SET-ORIGIN": setOrigin,
         "GET-V": getV,
         "GET-VX": getVx,
         "GET-VY": getVy,

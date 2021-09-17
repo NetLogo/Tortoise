@@ -15,7 +15,7 @@
       },
       {
         "name": "raycast-all",
-        "argTypes": ["number", "number", "number", "number", "wildcard"],
+        "argTypes": ["number", "number", "number", "number", { "types": ["string", "command"] }],
         "returnType": "unit",
         "agentClassString": "OTPL"
       },
@@ -51,31 +51,61 @@
       },
       {
         "name": "all-contacts",
-        "argTypes": ["wildcard"],
+        "argTypes": [{ "types": ["string", "command"] }],
         "returnType": "unit",
         "agentClassString": "-TP-"
       },
       {
         "name": "contact-end",
-        "argTypes": ["wildcard"],
+        "argTypes": [{ "types": ["string", "command"] }],
         "returnType": "unit",
         "agentClassString": "OTPL"
       },
       {
         "name": "contact-begin",
-        "argTypes": ["wildcard"],
+        "argTypes": [{ "types": ["string", "command"] }],
         "returnType": "unit",
         "agentClassString": "OTPL"
       },
       {
         "name": "contact-end",
-        "argTypes": ["wildcard"],
+        "argTypes": [{ "types": ["string", "command"] }],
         "returnType": "unit",
         "agentClassString": "OTPL"
       },
       {
         "name": "filter-contact",
-        "argTypes": ["wildcard"],
+        "argTypes": [{ "types": ["string", "command"] }],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "show-vector",
+        "argTypes": [
+          { "types": ["number", "list"] },
+          "number", "number"
+        ],
+        "returnType": "unit",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "show-orthogonal",
+        "argTypes": [
+          { "types": ["number", "list"] },
+          "number", "number", "boolean"
+        ],
+        "returnType": "unit",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "hide-vectors",
+        "argTypes": [],
+        "returnType": "unit",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "clear-vectors",
+        "argTypes": [],
         "returnType": "unit",
         "agentClassString": "OTPL"
       },
@@ -172,6 +202,18 @@
       {
         "name": "set-density",
         "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "get-origin",
+        "argTypes": [],
+        "returnType": "list",
+        "agentClassString": "-T--"
+      },
+      {
+        "name": "set-origin",
+        "argTypes": ["number", "number"],
         "returnType": "unit",
         "agentClassString": "-T--"
       },

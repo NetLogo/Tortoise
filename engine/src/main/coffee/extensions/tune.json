@@ -14,7 +14,7 @@
     {
       "name": "use",
       "argTypes": [
-        "wildcard"
+        { "types": ["string", "number"] }
       ],
       "returnType": "unit"
     },
@@ -41,15 +41,25 @@
     },
     {
       "name": "loop",
-      "argTypes": [
-        { "type": "wildcard", "isRepeatable": true }
-      ],
+      "argTypes": [],
       "returnType": "unit"
     },
     {
       "name": "once",
+      "argTypes": [],
+      "returnType": "unit"
+    },
+    {
+      "name": "loop-then",
       "argTypes": [
-        { "type": "wildcard", "isRepeatable": true }
+        { "types": ["string", "command"] }
+      ],
+      "returnType": "unit"
+    },
+    {
+      "name": "once-then",
+      "argTypes": [
+        { "types": ["string", "command"] }
       ],
       "returnType": "unit"
     },

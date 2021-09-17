@@ -81,20 +81,14 @@ module.exports = {
     # (Number) => Unit
     playLoop = (callback) ->
       if MIDI = getMIDI()
-        if not callback? or typeof(callback) is 'string' or typeof(callback) is 'function'
-          MIDI.Play(true, callback)
-        else
-          throw new Error("Callback should be the name of a procedure, or an anonymous procedure")
+        MIDI.Play(true, callback)
       else
         workspace.printPrims.print("Play the series indefinitely.")
     
     # (Number) => Unit
     playOnce = (callback) ->
       if MIDI = getMIDI()
-        if not callback? or typeof(callback) is 'string' or typeof(callback) is 'function'
-          MIDI.Play(false, callback)
-        else
-          throw new Error("Callback should be the name of a procedure, or an anonymous procedure")
+        MIDI.Play(false, callback)
       else
         workspace.printPrims.print("Play the series only once.")
     
@@ -176,6 +170,8 @@ module.exports = {
         "REST": rest,
         "LOOP": playLoop,
         "ONCE": playOnce,
+        "LOOP-THEN": playLoop,
+        "ONCE-THEN": playOnce,
         "WHO": who,
         "VOLUME": volume,
         "MOVETO": moveTo,
