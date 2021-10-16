@@ -28,7 +28,9 @@ runFromString = (code, widgets, runString, isRunResult, procVars) ->
       turtleShapes: [],
       linkShapes:   []
     }
-    js  = Converter.compileRunString(compileParams, runString, isRunResult, varNames)
+    js  = try Converter.compileRunString(compileParams, runString, isRunResult, varNames)
+    catch ex
+      throw exceptions.runtime(ex.message, if isRunResult then 'runresult' else 'run')
     fun = globalEval(js)
     evalCache[runKey] = fun
     fun

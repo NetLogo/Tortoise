@@ -7,9 +7,10 @@ class ProcedureContext
   _taskDepth: 0 # Int
 
   # Map[String, Any]
-  _stringRunLetVars: new Map()
+  _stringRunLetVars: null
 
   constructor: (@name) ->
+    @_stringRunLetVars = new Map()
 
   # This is for procedure arguments only, so as to skip the ask/task checks.  -Jeremy B March 2021
   # (String, Any) => Unit
@@ -21,7 +22,7 @@ class ProcedureContext
   registerStringRunVar: (name, value) ->
     # `run` with strings only sees proc args and let vars, not those defined inside `ask`
     # blocks or anonymous procedures.  -Jeremy B March 2021
-    if @_askDepth is 0 and @_taskDepth is 0
+    if not (@isInsideAsk() or @isInsideTask())
       @_stringRunLetVars.set(name, value)
     return
 
@@ -33,10 +34,10 @@ class ProcedureContext
 
   # () => Map[String, Any]
   stringRunVars: () ->
-    if @_taskDepth is 0
-      new Map(@_stringRunLetVars)
-    else
+    if @isInsideTask()
       new Map()
+    else
+      new Map(@_stringRunLetVars)
 
   # () => Unit
   startAsk: () ->
@@ -97,6 +98,32 @@ class PlotContext extends ProcedureContext
   registerStringRunVar: () -> return
   updateStringRunVar:   () -> return
 
+class StringTaskContext extends ProcedureContext
+  constructor: (outerContext) ->
+    super("")
+    @_askDepth = outerContext._askDepth
+    @_taskDepth = outerContext._taskDepth
+    @_stringRunLetVars = new Map(outerContext._stringRunLetVars)
+    return
+
+class StringCommandTaskContext extends StringTaskContext
+  isReportAllowed: () -> false
+  isStopAllowed:   () -> true
+
+  trace: () ->
+    { type: "run" }
+
+class StringReporterTaskContext extends StringTaskContext
+  isReportAllowed: () -> false
+  isStopAllowed:   () -> false
+
+  trace: () ->
+    { type: "runresult" }
+
+  # String reporter should be a single expression, no lets allowed.  -Jeremy B September 2021
+  registerStringRunVar: () -> return
+  updateStringRunVar:   () -> return
+
 class RawContext extends ProcedureContext
   constructor: () ->
     super("")
@@ -113,9 +140,12 @@ class RawContext extends ProcedureContext
 
 class ProcedureStack
   # Array[ProcedureContext]
-  _stack: [new RawContext()]
+  _stack: null
 
-  # () => Array[{ type: "command" | "reporter" | "plot" | "raw", name: String }]
+  constructor: () ->
+    @_stack = [new RawContext()]
+
+  # () => Array[{ type: "command" | "reporter" | "run" | "runresult" | "plot" | "raw", name: String }]
   trace: () ->
     @_stack.map( (context) -> context.trace() ).filter( (frame) -> frame.type isnt "raw" ).reverse()
 
@@ -136,6 +166,14 @@ class ProcedureStack
   # (String) => Unit
   startPlot: (name) ->
     @_stack.push(new PlotContext(name))
+    return
+
+  startStringCommandTask: () ->
+    @_stack.push(new StringCommandTaskContext(@currentContext()))
+    return
+
+  startStringReporterTask: () ->
+    @_stack.push(new StringReporterTaskContext(@currentContext()))
     return
 
   # () => Unit

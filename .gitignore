@@ -4,6 +4,7 @@ target/
 tmp/
 node_modules/
 node_links/
+.bsp/
 
 # common filenames
 .DS_Store

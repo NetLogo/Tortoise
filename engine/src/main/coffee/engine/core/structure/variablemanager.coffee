@@ -10,10 +10,11 @@ module.exports =
   class VariableManager
 
     _names:           undefined # Array[String]
-    _validitySetters: new Map() # Map[String, (Any) => Boolean]
+    _validitySetters: null      # Map[String, (Any) => Boolean]
 
     # (Agent, Array[VariableSpec[_]]) => VariableManager
     constructor: (@agent, varSpecs) ->
+      @_validitySetters = new Map()
       @_addVarsBySpec(varSpecs)
       @_names = (name for { name } in varSpecs)
 

@@ -29,7 +29,7 @@ watchSources += packageJson.value
 lazy val grunt = taskKey[Unit]("Runs `grunt` from within SBT")
 
 grunt := {
-  val targetJS = (classDirectory in Compile).value / "js" / "tortoise-engine.js"
+  val targetJS = (Compile / classDirectory).value / "js" / "tortoise-engine.js"
   val log = streams.value.log
   installGrunt.value
   if (allJSSources.value exists (_.newerThan(targetJS)))
@@ -76,7 +76,7 @@ lazy val scalaJSSources = Def.task[Seq[File]] {
 }
 
 lazy val gruntSources = Def.task[Seq[File]] {
-  listFilesRecursively((classDirectory in Compile).value / "js")
+  listFilesRecursively((Compile / classDirectory).value / "js")
 }
 
 def listFilesRecursively(f: File): Seq[File] = {

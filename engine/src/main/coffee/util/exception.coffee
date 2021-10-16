@@ -51,7 +51,7 @@ class ExceptionFactory
         when "command"  then "called by procedure #{frame.name.toUpperCase()}"
         when "reporter" then "called by procedure #{frame.name.toUpperCase()}"
         when "plot"     then "called by plot #{frame.name}"
-        else                 "called by unknown"
+        else                 "called by #{frame.type}"
     )
     stack = messages.join("\n")
     if stack isnt "" then "#{start}\n#{stack}" else start

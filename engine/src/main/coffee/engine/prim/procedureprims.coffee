@@ -5,12 +5,14 @@
 { StopInterrupt }     = require('util/interrupts')
 
 class ProcedurePrims
-  _commands:  new Map()
-  _reporters: new Map()
-
-  _stack: new ProcedureStack()
+  _commands:  null # Map[String, Reporter]
+  _reporters: null # Map[String, Command]
+  _stack:     null # ProcedureStack
 
   constructor: (@evalPrims, @plotManager, @rng) ->
+    @_commands  = new Map()
+    @_reporters = new Map()
+    @_stack     = new ProcedureStack()
 
   # () => ProcedureStack
   stack: () ->
@@ -74,7 +76,15 @@ class ProcedurePrims
 
   # (String, Boolean) => Any
   runString: (str, isRunResult) ->
-    @evalPrims.runCode(str, isRunResult, @_stack.currentContext().stringRunVars())
+    if isRunResult
+      @_stack.startStringReporterTask()
+    else
+      @_stack.startStringCommandTask()
+
+    try
+      @evalPrims.runCode(str, isRunResult, @_stack.currentContext().stringRunVars())
+    finally
+      @_stack.endCall()
 
   # (() => Any, Array[Any]) => Any
   runFunction: (f, args...) ->

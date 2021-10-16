@@ -37,8 +37,8 @@ val commonSettings =
       // Bring in headless test code/framework for our tests
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     // Path Management
-    resourceDirectory in Compile := (baseDirectory in root).value / "resources" / "main",
-    resourceDirectory in Test    := (baseDirectory in root).value / "resources" / "test",
+    Compile / resourceDirectory := (root / baseDirectory).value / "resources" / "main",
+    Test    / resourceDirectory := (root / baseDirectory).value / "resources" / "test",
     // Build and publication settings
     isSnapshot                   := true, // Used by the publish-versioned plugin
     publishTo                    := { Some("Cloudsmith API" at "https://maven.cloudsmith.io/netlogo/tortoise/") },
@@ -47,28 +47,28 @@ val commonSettings =
     onLoadMessage                := "",
     // show test failures again at end, after all tests complete.
     // T gives truncated stack traces; change to G if you need full.
-    testOptions in Test += Tests.Argument("-oT"),
-    scalacOptions in Compile in console := scalacOptions.value.filterNot(_ == "-Xlint"))
+    Test / testOptions += Tests.Argument("-oT"),
+    Compile / console / scalacOptions := scalacOptions.value.filterNot(_ == "-Xlint"))
 
 lazy val stylecheck = taskKey[Unit]("Run all sub-project scalastyle checks.")
 
 stylecheck := {
-  (scalastyle in Compile in compilerCore).toTask("").value
-  (scalastyle in Compile in macrosCore  ).toTask("").value
-  (scalastyle in Compile in compilerJVM ).toTask("").value
-  (scalastyle in Compile in compilerJS  ).toTask("").value
-  (scalastyle in Compile in netLogoWeb  ).toTask("").value
-  (scalastyle in Compile in engine      ).toTask("").value
+  (compilerCore / Compile / scalastyle).toTask("").value
+  (macrosCore   / Compile / scalastyle).toTask("").value
+  (compilerJVM  / Compile / scalastyle).toTask("").value
+  (compilerJS   / Compile / scalastyle).toTask("").value
+  (netLogoWeb   / Compile / scalastyle).toTask("").value
+  (engine       / Compile / scalastyle).toTask("").value
 }
 
 lazy val root = (project in file("."))
 
 // These projects are just for scalastyle on shared sources
 lazy val compilerCore = (project in file("compiler/shared")).
-  settings(skip in (Compile, compile) := true)
+  settings(Compile / compile / skip := true)
 
 lazy val macrosCore = (project in file("macros")).
-  settings(skip in (Compile, compile) := true)
+  settings(Compile / compile / skip := true)
 
 lazy val compiler = CrossProject("compiler", file("compiler"))(JSPlatform, JVMPlatform).crossType(CrossType.Full).
   dependsOn(macros % "compile-internal->compile;test-internal->test").
@@ -78,15 +78,15 @@ lazy val compiler = CrossProject("compiler", file("compiler"))(JSPlatform, JVMPl
   jvmSettings(
     name :=  "CompilerJVM",
     // this ensures that generated test reports are updated each run
-    (test in Test) := ((test in Test).dependsOn {
+    (Test / test) := ((Test / test).dependsOn {
       Def.task[Unit] {
         sbt.IO.delete(target.value / "last-test-run-reports")
       }
     }).value
   ).jsSettings(
     name                                 := "CompilerJS",
-    artifactPath in (Compile, fullOptJS) := ((crossTarget in (Compile, fullOptJS)).value / "tortoise-compiler.js"),
-    skip in packageJSDependencies        := false, // bundles all dependencies in with generated JS
+    Compile / fullOptJS / artifactPath := ((Compile / fullOptJS / crossTarget).value / "tortoise-compiler.js"),
+    packageJSDependencies / skip         := false, // bundles all dependencies in with generated JS
     testFrameworks                       := List(new TestFramework("utest.runner.Framework")),
     libraryDependencies                  ++= {
       import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.toScalaJSGroupID
@@ -105,15 +105,15 @@ lazy val compilerJVM = compiler.jvm
 lazy val recompileWhenExtensionsChange = taskKey[Unit]("Recompiles the macros when extension files change")
 
 recompileWhenExtensionsChange := {
-  val extensionsDir  = (baseDirectory in root).value / "engine" / "src" / "main" / "coffee" / "extensions"
+  val extensionsDir  = (root / baseDirectory).value / "engine" / "src" / "main" / "coffee" / "extensions"
   val extensionCache = streams.value.cacheStoreFactory.make("extensions_cache")
   val cleanMacros    = () => {
-    // I would love to just do a `(clean in macrosJVM).value`, but such things are evaluated independently
+    // I would love to just do a `(macrosJVM / clean).value`, but such things are evaluated independently
     // of the actual running of this anonymous function, meaning the clean happens every time.  Perhaps a
     // more skilled sbt-wrangler will come along and improve this, but for now this works.
     // -Jeremy B August 2020
-    IO.delete((baseDirectory in macrosJVM).value / "target" )
-    IO.delete((baseDirectory in macrosJS).value / "target" )
+    IO.delete((macrosJVM / baseDirectory).value / "target" )
+    IO.delete((macrosJS / baseDirectory).value / "target" )
   }
   val cacheCheck     = NonSourceCache.cached(extensionCache, FilesInfo.lastModified)(cleanMacros)
   val extensionFiles = (extensionsDir ** "*.json").get
@@ -126,7 +126,7 @@ lazy val macros = CrossProject("macros", file("macros"))(JSPlatform, JVMPlatform
     libraryDependencies ++= Seq(
       "org.scala-lang" %  "scala-reflect" % scalaVersion.value,
       "org.scalaz"     %% "scalaz-core"   % scalazVersion),
-    (compile in Compile) := ((compile in Compile) dependsOn (recompileWhenExtensionsChange in root)).value
+    (Compile / compile) := ((Compile / compile) dependsOn (root / recompileWhenExtensionsChange)).value
   )
 
 lazy val macrosJS  = macros.js
@@ -146,31 +146,31 @@ lazy val netLogoWeb: Project = (project in file("netlogo-web")).
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test"
     ),
     // these tasks force the regeneration of the tortoise.js source on each build
-    resourceGenerators in Compile += Def.task {
-      (fullOptJS in Compile in compilerJS).value
-      val tortoiseJsFile = (artifactPath in fullOptJS in Compile in compilerJS).value
+    Compile / resourceGenerators += Def.task {
+      (compilerJS / Compile / fullOptJS).value
+      val tortoiseJsFile = (compilerJS / Compile / fullOptJS / artifactPath).value
       val files          = Seq[File](tortoiseJsFile, tortoiseJsFile.getParentFile / (tortoiseJsFile.getName + ".map"))
       val copies         = files.map((f: File) => (f, resourceManaged.value / f.getName))
       IO.copy(copies)
       copies.map(_._2)
     }.taskValue,
-    resourceGenerators in Compile += Def.task {
-      (build in Compile in engine).value
-      val sourceFile = (classDirectory in Compile in engine).value / "js" / "tortoise" / "shim" / "engine-scala.js"
-      val destFile   = (classDirectory in Compile).value / "engine-scala.js"
+    Compile / resourceGenerators += Def.task {
+      (engine / Compile / build).value
+      val sourceFile = (engine / Compile / classDirectory).value / "js" / "tortoise" / "shim" / "engine-scala.js"
+      val destFile   = (Compile / classDirectory).value / "engine-scala.js"
       IO.copyFile(sourceFile, destFile)
-      val engineSource = (classDirectory in Compile in engine).value / "js" / "tortoise-engine.js"
-      val engineDest   = (classDirectory in Compile).value / "tortoise-engine.js"
+      val engineSource = (engine / Compile / classDirectory).value / "js" / "tortoise-engine.js"
+      val engineDest   = (Compile / classDirectory).value / "tortoise-engine.js"
       IO.copyFile(engineSource, engineDest)
       Seq()
     }.taskValue,
     cleanGeneratedSources := { IO.delete(resourceManaged.value) },
     cleanFiles            += resourceManaged.value,
-    compile               := ((compile in Compile).dependsOn(
+    compile               := ((Compile / compile).dependsOn(
       cleanGeneratedSources,
-      managedResources in Compile,
-      clean in compilerJS,
-      fullOptJS in Compile in compilerJS)).value)
+      Compile / managedResources,
+      compilerJS / clean,
+      compilerJS / Compile / fullOptJS)).value)
 
 lazy val build = taskKey[Unit]("Does a full build of the engine Javascript artifact.")
 
@@ -186,8 +186,8 @@ lazy val engine: Project =
     name := "EngineScalaJS",
     libraryDependencies += "org.nlogo" % "parser-js" % parserJsDependencyVersion cross ScalaJSCrossVersion.binary,
     build := {
-      val engineFile  = (artifactPath in fullOptJS in Compile).value
-      val destFile    = (classDirectory in Compile).value / "js" / "tortoise" / "shim" / "engine-scala.js"
+      val engineFile  = (Compile / fullOptJS / artifactPath).value
+      val destFile    = (Compile / classDirectory).value / "js" / "tortoise" / "shim" / "engine-scala.js"
       IO.copyFile(engineFile, destFile)
       val oldContents = IO.read(destFile)
       val newContents =
@@ -201,6 +201,6 @@ lazy val engine: Project =
            |}).call(this);""".stripMargin
       IO.write(destFile, newContents)
     },
-    build := build.dependsOn(fullOptJS in Compile).value,
+    build := build.dependsOn(Compile / fullOptJS).value,
     build := grunt.dependsOn(build).value
   )

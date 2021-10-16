@@ -4,10 +4,12 @@
 
 class TurtleChecks
 
-  _getterChecks: new Map()
-  _setterChecks: new Map()
+  _getterChecks: null
+  _setterChecks: null
 
   constructor: (@validator, @getSelf) ->
+    @_getterChecks = new Map()
+    @_setterChecks = new Map()
     @_setterChecks.set("xcor", @makeCheckedSetter("xcor", 'Cannot move turtle beyond the world_s edge.'))
     @_setterChecks.set("ycor", @makeCheckedSetter("ycor", 'Cannot move turtle beyond the world_s edge.'))
 

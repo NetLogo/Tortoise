@@ -17,11 +17,11 @@ object Depend {
 
   private lazy val dependTask =
     depend := {
-      val _ = (compile in Test).value
+      val _ = (Test / compile).value
       val s = streams.value
       lock.synchronized {
-        val classes = (classDirectory in Compile).value.toString
-        val testClasses = (classDirectory in Test).value.toString
+        val classes = (Compile / classDirectory).value.toString
+        val testClasses = (Test / classDirectory).value.toString
         s.log.info("begin depend: " + thisProject.value.id)
         IO.write(file(".") / "target" / "depend.ddf", ddfContents)
         import classycle.dependency.DependencyChecker

@@ -2,25 +2,31 @@
 
 package org.nlogo.tortoise.compiler
 
-import ExportRequest.NlogoFileVersion
+import org.nlogo.core.{ Slider }
+import org.nlogo.core.model.ModelReader
 
-import
-  org.nlogo.core.{ model, Model => CModel, Slider, Switch, View },
-    model.ModelReader
-
-import
-  json.{ JsonLibrary, JsonLinkLine, JsonLinkShape, JsonReader, JsonVectorShape, ShapeToJsonConverters, TortoiseJson, WidgetToJson },
-    JsonLibrary.{ Native => NativeJson, toNative, nativeToString },
-    JsonReader.{ jsObject2RichJsObject, jsArray2RichJsArray },
-    ShapeToJsonConverters.shape2Json,
-    TortoiseJson.{ fields, JsArray, JsObject, JsString },
-    WidgetToJson.widget2Json
-
-import scala.collection.immutable.ListMap
+import json.JsonLibrary.{ toNative, nativeToString, toTortoise }
+import json.JsonReader.{ jsObject2RichJsObject, jsArray2RichJsArray }
+import json.TortoiseJson.{ fields, JsArray, JsBool, JsInt, JsObject, JsString }
+import json.WidgetToJson.widget2Json
 
 import scala.scalajs.js
+import scala.collection.immutable.ListMap
 
 import utest._
+
+import org.nlogo.tortoise.compiler.TestUtilities.{
+  assertErrorMessage
+, compiledJs
+, compileModel
+, isSuccess
+, makeSuccess
+, modelToCompilationRequest
+, validModel
+, widgetyModel
+, withBrowserCompiler
+, withWidget
+}
 
 object BrowserCompilerTest extends TestSuite {
   def tests = TestSuite {
@@ -306,83 +312,119 @@ object BrowserCompilerTest extends TestSuite {
       assert(expected == result)
     }
 
-  }
+    "introspection works"-{
+       val code = """
+        globals [ eggs hams ]
+        turtles-own [ gourds ]
+        patches-own [ mites ]
+        breed [ wolves wolf ]
+        breed [ birds bird ]
+        wolves-own [ rings ]
+        birds-own [ necklaces ]
+        directed-link-breed [ streets street ]
+        undirected-link-breed [ friendships friendship ]
+        streets-own [ material-type ]
+        friendships-own [ age ]
+        to turtle-proc fd 1 set eggs 100 end
+        to obs-proc ask turtles [ fd 1 ] set hams 100 end
+        to-report luck-proc [x y] report (x + y) * eggs * hams end
+      """
+      val compReq =
+        toNative(JsObject(fields(
+          "code"    -> JsString(code)
+        , "widgets" -> JsArray(widgetyModel.widgets.map(widget2Json(_).toJsonObj))
+        )))
+      val compiler      = new BrowserCompiler
+      val compiledModel = compiler.fromModel(compReq)
+      val compiledJs    = toTortoise(compiledModel).asInstanceOf[JsObject]
 
-  private def makeSuccess(code: String): String =
-    s"""{"success":true,"result":"${code}"}"""
+      assert(isSuccess(compiledJs))
 
-  private def isSuccess(compiledModel: JsObject): Boolean =
-    compiledModel[JsObject]("model").apply[Boolean]("success")
+      val globalVars = toTortoise(compiler.listGlobalVars())
+      val expectedGlobalVars = Seq(
+        JsObject(ListMap("name" -> JsString("apples"), "type" -> JsString("interface")))
+      , JsObject(ListMap("name" -> JsString("oranges"), "type" -> JsString("interface")))
+      , JsObject(ListMap("name" -> JsString("eggs"), "type" -> JsString("user")))
+      , JsObject(ListMap("name" -> JsString("hams"), "type" -> JsString("user")))
+      )
+      assert(JsArray(expectedGlobalVars) == globalVars)
 
-  private def compiledJs(compiledModel: JsObject): String =
-    compiledModel[JsObject]("model").apply[String]("result")
+      val turtleVars = toTortoise(compiler.listTurtleVars())
+      val expectedTurtleVars = Seq("gourds", "who", "ycor", "breed", "xcor", "size", "label-color"
+      , "pen-size", "color", "shape", "label", "hidden?", "heading", "pen-mode").map(JsString.apply)
+      assert(JsArray(expectedTurtleVars) == turtleVars)
 
-  private def modelToCompilationRequest(model: CModel): NativeJson =
-    modelToCompilationRequest(model, fields())
+      val patchVars = toTortoise(compiler.listPatchVars())
+      val expectedPatchVars = Seq("pxcor", "plabel-color", "pcolor", "mites", "plabel", "pycor").map(JsString.apply)
+      assert(JsArray(expectedPatchVars) == patchVars)
 
-  private def modelToCompilationRequest(model: CModel, additionalFields: ListMap[String, TortoiseJson]): NativeJson = {
-    val reqObj = JsObject(
-      fields(
-        "code"         -> JsString(model.code),
-        "info"         -> JsString(model.info),
-        "version"      -> JsString(model.version),
-        "linkShapes"   -> JsArray(model.linkShapes.map(_.toJsonObj)),
-        "turtleShapes" -> JsArray(model.turtleShapes.map(_.toJsonObj)),
-        "widgets"      -> JsArray(model.widgets.map(widget2Json(_).toJsonObj))) ++
-      additionalFields)
-    toNative(reqObj)
-  }
+      val wolvesOwnVars = toTortoise(compiler.listOwnVarsForBreed("wolves"))
+      val expectedWolvesOwnVars = Seq("rings").map(JsString.apply)
+      assert(JsArray(expectedWolvesOwnVars) == wolvesOwnVars)
+      val birdsOwnVars = toTortoise(compiler.listOwnVarsForBreed("birds"))
+      val expectedBirdsOwnVars = Seq("necklaces").map(JsString.apply)
+      assert(JsArray(expectedBirdsOwnVars) == birdsOwnVars)
 
-  private val validModel: CModel = {
-    val vectorShape = JsonVectorShape("custom", false, 0, Seq())
-    val linkLine  = JsonLinkLine(0.0, true, Seq(0.0f, 1.0f))
-    val linkShape = JsonLinkShape("custom2", 1.0, Seq(linkLine, linkLine, linkLine), vectorShape)
-    CModel(
-      code         = "to foo fd 1 end",
-      widgets      = List(View()),
-      info         = "some model info here",
-      version      = NlogoFileVersion,
-      linkShapes   = CModel.defaultLinkShapes :+ linkShape,
-      turtleShapes = CModel.defaultShapes :+ vectorShape)
-  }
+      val wolvesVars = toTortoise(compiler.listVarsForBreed("wolves"))
+      val expectedWolvesVars = Seq("rings").map(JsString.apply)
+      assert(JsArray(expectedTurtleVars ++ expectedWolvesVars) == wolvesVars)
+      val birdsVars = toTortoise(compiler.listVarsForBreed("birds"))
+      val expectedBirdsVars = Seq("necklaces").map(JsString.apply)
+      assert(JsArray(expectedTurtleVars ++ expectedBirdsVars) == birdsVars)
 
-  private val widgetyModel: CModel =
-    validModel.copy(widgets = validModel.widgets :+ Slider(variable = Option("apples")) :+ Switch(variable = Option("oranges")))
+      val linkVars = toTortoise(compiler.listLinkVars())
+      val expectedLinkVars = Seq("breed", "label-color", "thickness", "color", "shape", "label"
+      , "hidden?", "tie-mode", "end1", "end2").map(JsString.apply)
+      assert(JsArray(expectedLinkVars) == linkVars)
 
-  private def assertErrorMessage(compiledModel: JsObject, message: String): Unit =
-    assert(
-      compiledModel[JsObject]("model")
-        .apply[JsArray]("result")
-        .apply[JsObject](0)
-        .apply[String]("message") == message)
+      val streetsOwnVars = toTortoise(compiler.listLinkOwnVarsForBreed("streets"))
+      val expectedStreetsOwnVars = Seq("material-type").map(JsString.apply)
+      assert(JsArray(expectedStreetsOwnVars) == streetsOwnVars)
+      val friendshipsOwnVars = toTortoise(compiler.listLinkOwnVarsForBreed("friendships"))
+      val expectedFriendshipsOwnVars = Seq("age").map(JsString.apply)
+      assert(JsArray(expectedFriendshipsOwnVars) == friendshipsOwnVars)
 
-  private def withWidget(compiledModel: JsObject, widgetType: String, f: JsObject => Unit): Unit = {
-    // this song and dance is to turn a string with Javascript Objects containing functions
-    // into TortoiseJson objects
-    val widgetsString = compiledModel[String]("widgets")
-    val widgetsJson = JsonLibrary.toTortoise(js.eval(widgetsString))
+      val streetsVars = toTortoise(compiler.listLinkVarsForBreed("streets"))
+      val expectedStreetsVars = Seq("material-type").map(JsString.apply)
+      assert(JsArray(expectedLinkVars ++ expectedStreetsVars) == streetsVars)
+      val friendshipsVars = toTortoise(compiler.listLinkVarsForBreed("friendships"))
+      val expectedFriendshipsVars = Seq("age").map(JsString.apply)
+      assert(JsArray(expectedLinkVars ++ expectedFriendshipsVars) == friendshipsVars)
 
-    widgetsJson match {
-      case JsArray(elems) =>
-        val compiledWidgets = elems.collect { case jo : JsObject => jo }
-        val selectedWidget  = ((widget: JsObject) => widget[String]("type") == widgetType)
-        assert(compiledWidgets.exists(selectedWidget))
-        f(compiledWidgets.find(selectedWidget).get)
-      case _ => throw new Exception(s"Invalid widget set $widgetsString")
+      val procs = toTortoise(compiler.listProcedures())
+      val expectedProcs = JsArray(Seq(
+        JsObject(
+          ListMap(
+            "argCount"            -> JsInt   (0)
+          , "isReporter"          -> JsBool  (false)
+          , "isUseableByObserver" -> JsBool  (false)
+          , "isUseableByTurtles"  -> JsBool  (true)
+          , "name"                -> JsString("turtle-proc")
+          )
+        )
+      , JsObject(
+          ListMap(
+            "argCount"            -> JsInt   (0)
+          , "isReporter"          -> JsBool  (false)
+          , "isUseableByObserver" -> JsBool  (true)
+          , "isUseableByTurtles"  -> JsBool  (true)
+          , "name"                -> JsString("obs-proc")
+          )
+        )
+      , JsObject(
+          ListMap(
+            "argCount"            -> JsInt   (2)
+          , "isReporter"          -> JsBool  (true)
+          , "isUseableByObserver" -> JsBool  (true)
+          , "isUseableByTurtles"  -> JsBool  (true)
+          , "name"                -> JsString("luck-proc")
+          )
+        )
+      ))
+      assert(expectedProcs == procs)
+
     }
+
   }
-
-  private def compileModel(s: String): JsObject =
-    withBrowserCompiler(_.fromNlogo(s))
-
-  private def compileModel(m: CModel, commands: Seq[String] = Seq()): JsObject =
-    withBrowserCompiler { b =>
-      val formattedModel    = ModelReader.formatModel(m)
-      val formattedCommands = toNative(JsArray(commands.map(s => JsString(s))))
-      b.fromNlogo(formattedModel, formattedCommands)
-    }
-
-  private def withBrowserCompiler(f: BrowserCompiler => JsonLibrary.Native): JsObject =
-    JsonLibrary.toTortoise(f(new BrowserCompiler)).asInstanceOf[JsObject]
 
 }

@@ -174,14 +174,76 @@ class BrowserCompiler {
 
   }
 
-  @JSExport
-  def listVarsForBreed(breedName: String): NativeJson = {
+  def jsonify(x: String): JsString = JsString(x.toLowerCase)
+
+  def listTurtleVarsInt(): JsArray = {
     val program    = lastCompiledModel.compilation.program
     val commonVars = program.turtleVars.keys
-    val breedVars  = program.breeds.get(breedName.toUpperCase).fold(Seq[String]())(_.owns)
-    val jsonify    = ((x: String) => x.toLowerCase) andThen JsString.apply
-    val json       = JsArray((commonVars ++ breedVars).map(jsonify).toSeq)
+    JsArray(commonVars.map(jsonify).toSeq)
+  }
+
+  @JSExport
+  def listTurtleVars(): NativeJson = {
+    val json = listTurtleVarsInt()
     JsonLibrary.toNative(json)
+  }
+
+  def listOwnVarsForBreedInt(breedName: String): JsArray = {
+    val program   = lastCompiledModel.compilation.program
+    val breedVars = program.breeds.get(breedName.toUpperCase).fold(Seq[String]())(_.owns)
+    JsArray(breedVars.map(jsonify).toSeq)
+  }
+
+  @JSExport
+  def listOwnVarsForBreed(breedName: String): NativeJson = {
+    val json = listOwnVarsForBreedInt(breedName)
+    JsonLibrary.toNative(json)
+  }
+
+  @JSExport
+  def listVarsForBreed(breedName: String): NativeJson = {
+    val commonJson = listTurtleVarsInt()
+    val breedJson  = listOwnVarsForBreedInt(breedName)
+    JsonLibrary.toNative(JsArray(commonJson.elems ++ breedJson.elems))
+  }
+
+  @JSExport
+  def listPatchVars(): NativeJson = {
+    val program    = lastCompiledModel.compilation.program
+    val commonVars = program.patchVars.keys
+    val json       = JsArray(commonVars.map(jsonify).toSeq)
+    JsonLibrary.toNative(json)
+  }
+
+  def listLinkVarsInt(): JsArray = {
+    val program    = lastCompiledModel.compilation.program
+    val commonVars = program.linkVars.keys
+    JsArray(commonVars.map(jsonify).toSeq)
+  }
+
+  @JSExport
+  def listLinkVars(): NativeJson = {
+    val json = listLinkVarsInt()
+    JsonLibrary.toNative(json)
+  }
+
+  def listLinkOwnVarsForBreedInt(breedName: String): JsArray = {
+    val program   = lastCompiledModel.compilation.program
+    val breedVars = program.linkBreeds.get(breedName.toUpperCase).fold(Seq[String]())(_.owns)
+    JsArray(breedVars.map(jsonify).toSeq)
+  }
+
+  @JSExport
+  def listLinkOwnVarsForBreed(breedName: String): NativeJson = {
+    val json = listLinkOwnVarsForBreedInt(breedName)
+    JsonLibrary.toNative(json)
+  }
+
+  @JSExport
+  def listLinkVarsForBreed(breedName: String): NativeJson = {
+    val commonJson = listLinkVarsInt()
+    val breedJson  = listLinkOwnVarsForBreedInt(breedName)
+    JsonLibrary.toNative(JsArray(commonJson.elems ++ breedJson.elems))
   }
 
   private def transformErrorsAndUpdateModel(
