@@ -13,6 +13,7 @@ import
     , Program
     , SourceWrapping
     , StructureResults
+    , Widget
     },
       FrontEndInterface.{ ProceduresMap, NoProcedures },
     parse.FrontEnd
@@ -134,6 +135,18 @@ class Compiler {
 
     ProcedureCompiler.formatProcedureBodies(compiledProcedures)
 
+  }
+
+  def compileWidget(
+    widget:        Widget,
+    procedures:    ProceduresMap = NoProcedures,
+    program:       Program       = Program.empty()
+  )(implicit compilerFlags: CompilerFlags = CompilerFlags.Default): CompiledWidget = {
+    val flags             = compilerFlags.copy(propagationStyle = WidgetPropagation)
+    val compileStoppableV = validate(s => compileCommands(s, procedures, program)(flags)) _ andThen (_.leftMap(_.map(ex => ex: Exception)))
+    val compileReporterV  = validate(s => compileReporter(s, procedures, program))        _ andThen (_.leftMap(_.map(ex => ex: Exception)))
+    
+    new WidgetCompiler(compileStoppableV, compileReporterV).compileWidget(widget)
   }
 
   def compileMoreProcedures(

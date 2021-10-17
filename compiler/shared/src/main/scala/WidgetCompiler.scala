@@ -37,7 +37,7 @@ class WidgetCompiler(
     widgets.map(compileWidget)
   }
 
-  private def compileWidget(w: Widget): CompiledWidget =
+  def compileWidget(w: Widget): CompiledWidget =
     w match {
       case p: Plot    =>
         val cleanDisplay = sanitizeNil(p.display.getOrElse(""))
@@ -153,9 +153,12 @@ object WidgetCompiler {
     "compiledStep" -> "getStep")
 
   def formatWidgets(cws: Seq[CompiledWidget]): String =
-    jsArrayString(cws.map(formatWidget(_).toJsString), "\n")
+    jsArrayString(cws.map(formatWidgetInternal(_).toJsString), "\n")
 
-  def formatWidget(compiledWidget: CompiledWidget): JavascriptObject = {
+  def formatWidget(compiledWidget: CompiledWidget): String = 
+    formatWidgetInternal(compiledWidget).toJsString
+
+  private def formatWidgetInternal(compiledWidget: CompiledWidget): JavascriptObject = {
       val javascriptObject =
         new JavascriptObject().addObjectProperties(compiledWidget.toJsonObj.asInstanceOf[JsObject])
 

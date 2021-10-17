@@ -12,6 +12,7 @@ import json.JsonWriter
 import json.JsonWriter.string2TortoiseJs
 import json.TortoiseJson
 import json.TortoiseJson._
+import json.WidgetToJson
 
 import org.nlogo.tortoise.macros.json.Jsonify
 
@@ -101,6 +102,15 @@ class BrowserCompiler {
       , this.lastCompiledModel.compilation.procedures
       , compiler.extensionManager
     )
+
+  @JSExport
+  def compileWidget(widgetJson: NativeJson): NativeJson = {
+    val widgetObj     = readNative[JsObject](widgetJson).getOrElse(null)
+    val parsedWidget  = WidgetToJson.read(widgetObj).getOrElse(null)
+    val compiled      = lastCompiledModel.compileWidget(parsedWidget)
+
+    JsonLibrary.toNative(compiledWidget2JsonString.apply(compiled))
+  }
 
   @JSExport
   def compileCommand(command: String): NativeJson = {
@@ -315,6 +325,11 @@ object BrowserCompiler {
 
   implicit object compiledCommands2Json extends JsonWriter[Seq[CompiledStringV]] {
     def apply(l: Seq[CompiledStringV]): TortoiseJson = JsArray(l.map(compileResult2Json))
+  }
+
+  implicit object compiledWidget2JsonString extends JsonWriter[CompiledWidget] {
+    def apply(widget: CompiledWidget): TortoiseJson =
+      JsString(WidgetCompiler.formatWidget(widget))
   }
 
   implicit object compiledWidgets2JsonString extends JsonWriter[Seq[CompiledWidget]] {

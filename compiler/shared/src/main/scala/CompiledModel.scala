@@ -4,7 +4,7 @@ package org.nlogo.tortoise.compiler
 
 import
   org.nlogo.{ core, parse },
-    core.{ model, CompilerException, Model, View },
+    core.{ model, CompilerException, Model, View, Widget },
     model.ModelReader,
     parse.CompilerUtilities
 
@@ -40,6 +40,10 @@ case class CompiledModel(
 
   def compileProceduresIncremental(logo: String, overriding: Seq[String]): CompileResult[String] = validate {
     _.compileProceduresIncremental(logo, procedures, program, overriding)
+  }
+
+  def compileWidget(widget: Widget): CompiledWidget = {
+    compiler.compileWidget(widget, procedures, program)
   }
 
   private val validate: (Compiler => String) => CompileResult[String] = CompiledModel.validate(compiler)
