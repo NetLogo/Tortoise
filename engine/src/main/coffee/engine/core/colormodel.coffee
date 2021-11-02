@@ -117,7 +117,7 @@ module.exports = {
     if type.isNumber()
       RGBCache[StrictMath.floor(@wrapColor(color) * 10)]
     else if type.isArray()
-      color.map(StrictMath.round)
+      color.slice(0, 3).map( (c) -> StrictMath.round(c) )
     else if type.isString()
       @_nameToRGB(color)
     else
