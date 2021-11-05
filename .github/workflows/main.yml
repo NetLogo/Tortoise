@@ -56,6 +56,7 @@ jobs:
           ./sbt.sh "compilerJVM / Test / compile"
           ./sbt.sh "compilerJS / Test / compile"
           ./sbt.sh "netLogoWeb / Test / compile"
+          ./sbt.sh "netLogoWeb / Test / runMain org.nlogo.tortoise.nlw.ExtensionsUpdater"
 
       - uses: actions/cache@v2
         id: restore-build
@@ -86,7 +87,7 @@ jobs:
         run: |
           ./sbt.sh "compilerJS / Test / test"
 
-  test-web:
+  test-web-fast:
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -100,11 +101,28 @@ jobs:
         with:
           java-version: graalvm@20.0.0
 
-      - name: NetLogo Web Tests
+      - name: NetLogo Web Fast Tests
         run: |
-          ./sbt.sh "netLogoWeb / Test / runMain org.nlogo.tortoise.nlw.ExtensionsUpdater"
           ./sbt.sh "netLogoWeb / Test / fast"
-          ./sbt.sh "netLogoWeb / Test / language"
+          ./sbt.sh "netLogoWeb / testOnly *TestReporters"
+
+  test-web-commands:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/cache@v2
+        id: restore-build
+        with:
+          path: ./*
+          key: ${{ github.sha }}
+
+      - uses: olafurpg/setup-scala@v13
+        with:
+          java-version: graalvm@20.0.0
+
+      - name: NetLogo Web Command Tests
+        run: |
+          ./sbt.sh "netLogoWeb / testOnly *TestCommands"
 
   test-dumps:
     runs-on: ubuntu-latest
@@ -122,7 +140,7 @@ jobs:
 
       - name: Model JS Dumps
         run: |
-          ./sbt.sh "netLogoWeb/testOnly *ModelDumpTests"
+          ./sbt.sh "netLogoWeb / testOnly *ModelDumpTests"
 
   test-models:
     runs-on: ubuntu-latest
@@ -131,7 +149,7 @@ jobs:
       fail-fast: false
       matrix:
         test: ["-z 0 -z 1", "-z 2", "-z 3", "-z 4", "-z 5", "-z 6", "-z 7", "-z 8", "-z 9"]
-          
+
     steps:
       - uses: actions/cache@v2
         id: restore-build
@@ -144,4 +162,4 @@ jobs:
           java-version: graalvm@20.0.0
 
       - name: Model Docking Tests ${{ matrix.test }}
-        run: ./sbt.sh "netLogoWeb/testOnly *TestModels -- ${{ matrix.test }}"
+        run: ./sbt.sh "netLogoWeb / testOnly *TestModels -- ${{ matrix.test }}"
