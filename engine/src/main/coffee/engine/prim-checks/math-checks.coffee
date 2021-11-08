@@ -159,7 +159,19 @@ class MathChecks
 
   # (Number) => Number
   tan: (d) ->
-    NLMath.tan(d)
+    mod = d % 180
+    if mod is 90 or mod is -90
+      @validator.raiseInfinityError('tan')
+    # This `mod is 0` logic should technically be in the NLMath implementation, but
+    # this saves us from re-calculating the modulo there as well.  We could
+    # just send the `mod` in as the argument, but that will make small
+    # differences with the existing results from NetLogo due to floating
+    # point arithmetic in the degrees to radians conversions.
+    # -Jeremy B November 2021
+    if mod is 0
+      0
+    else
+      NLMath.tan(d)
 
   # (Number) => Number
   unaryminus: (a) ->

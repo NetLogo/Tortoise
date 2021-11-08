@@ -46,9 +46,11 @@ class Validator
     if Number.isNaN(result)
       @error(prim, 'math operation produced a non-number')
     if result is Infinity
-      @error(prim, 'math operation produced a number too large for NetLogo')
-
+      @raiseInfinityError(prim)
     result
+
+  raiseInfinityError: (prim) ->
+    @error(prim, 'math operation produced a number too large for NetLogo')
 
   # (String) => String
   addIndefiniteArticle: (text) ->
