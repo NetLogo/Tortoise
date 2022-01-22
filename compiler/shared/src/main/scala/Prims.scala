@@ -385,7 +385,7 @@ trait CommandPrims extends PrimUtils {
       case p: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith",  p.breedName)
       case p: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith", p.breedName)
       case _: prim.etc._every            => generateEvery(s)
-      case _: prim.etc._error            => s"throw new Error(${arg(0)});"
+      case _: prim.etc._error            => s"Prims.error(${arg(0)});"
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case h: Optimizer._hatchfast       => optimalGenerateHatch(s, h.breedName)
       case _: prim._bk                   => s"SelfManager.self().fd(-(${arg(0)}));"

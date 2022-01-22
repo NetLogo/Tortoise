@@ -95,6 +95,7 @@ private[tortoise] object Freebies {
 
   private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
   private val incErrorDetectReporterNames = Seq(
+    "Color::ExtractRGB"
   )
   private val incErrorDetectCommandNames = Seq(
     "Ask::AskAllTurtles",

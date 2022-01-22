@@ -78,6 +78,12 @@ module.exports =
       if not @_hasDisplayed
         @_hasDisplayed = true
         notImplemented('display', undefined)
+      return
+
+    # (String) => Unit
+    error: (message) ->
+      throw exceptions.runtime(message, "error")
+      return
 
     # (Any) => Boolean
     ifElseValueBooleanCheck: (b) ->
