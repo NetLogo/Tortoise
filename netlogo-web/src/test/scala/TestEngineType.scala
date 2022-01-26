@@ -3,9 +3,9 @@
 package org.nlogo.tortoise.nlw
 
 import jsengine.GraalJS
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class TestEngineType extends FunSuite {
+class TestEngineType extends AnyFunSuite {
 
   test("engine name") {
     assert((new GraalJS).jsRuntime.getEngine.getImplementationName.startsWith("Graal"))

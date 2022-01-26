@@ -11,9 +11,9 @@ import
     TortoiseJson.{ fields, JsObject, JsString }
 
 import
-  org.scalatest.FunSuite
+  org.scalatest.funsuite.AnyFunSuite
 
-class JavascriptObjectTest extends FunSuite {
+class JavascriptObjectTest extends AnyFunSuite {
   val jsObject   = JsObject(fields("foo" -> JsString("bar")))
   val jsObject2  = JsObject(fields("baz" -> JsString("qux")))
   val jsFunction = JavascriptObject.JsFunction(Seq(), Seq("return 2;"))

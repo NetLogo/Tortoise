@@ -6,7 +6,7 @@ import
   JsonLibrary.{ toTortoise, toNative }
 
 import
-  org.scalatest.FunSuite
+  org.scalatest.funsuite.AnyFunSuite
 
 import
   scalaz.Scalaz.ToValidationOps
@@ -20,7 +20,7 @@ import
 import
   WidgetToJson._
 
-class WidgetToJsonTest extends FunSuite {
+class WidgetToJsonTest extends AnyFunSuite {
 
   (widgetJsons zip testWidgets).foreach {
     case ((name, json), (_, widget)) =>

@@ -12,10 +12,10 @@ import
     io.Source,
     util.Try
 
-import
-  org.scalatest.{ FunSuite, Tag }
+import org.scalatest.Tag
+import org.scalatest.funsuite.AnyFunSuite
 
-class TestPlotting extends FunSuite with PlottingHelpers {
+class TestPlotting extends AnyFunSuite with PlottingHelpers {
 
   testPlotting("`testPlotting` helper doesn't passively explode") { (engine) =>
     assertResult(Double.box(0))(engine.eval("0"))
@@ -509,7 +509,7 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
 trait PlottingHelpers {
 
-  self: FunSuite =>
+  self: AnyFunSuite =>
 
   private val compiler = new org.nlogo.tortoise.compiler.Compiler()
 

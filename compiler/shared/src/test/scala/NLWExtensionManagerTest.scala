@@ -2,11 +2,11 @@
 
 package org.nlogo.tortoise.compiler
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
 import org.nlogo.core.{ PrimitiveReporter, Syntax }
 
-class NLWExtensionManagerTest extends FunSuite {
+class NLWExtensionManagerTest extends AnyFunSuite {
 
   test("basic extension with no prims works") {
     val json = """{ "name": "smoke", "prims": [] }"""

@@ -3,12 +3,12 @@
 package org.nlogo.tortoise.nlw
 
 import jsengine.GraalJS
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
 // just basic smoke tests that basic Tortoise engine functionality is there,
 // without involving the Tortoise compiler
 
-class TestEngine extends FunSuite {
+class TestEngine extends AnyFunSuite {
 
   test("can eval a number literal") {
     assertResult(Double.box(2)) {
