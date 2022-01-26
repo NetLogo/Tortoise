@@ -8,6 +8,11 @@ getTortugaSession = () =>
 
 module.exports = {
   init: (workspace) =>
+    # () -> Unit
+    clearAll = () ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.EventRegistry.UnregisterUserHandlers()
+      return
 
     # (String) => Unit
     toast = (text) ->
@@ -47,6 +52,27 @@ module.exports = {
         )
       else
         workspace.printPrims.print("Move the widget #{name} to the place #{index} in its group")
+      return
+
+    # (Number, String, Bool, String | Function) -> Unit
+    bind = (source, name, repeated, callback) ->
+      if tortugaSession = getTortugaSession()
+        if typeof(callback) is 'string' or typeof(callback) is 'function'
+          handler = tortugaSession.EventRegistry.BuildHandler(2, source, name, repeated, callback)
+          tortugaSession.EventRegistry.UnregisterHandlers(2, source, name, true)
+          tortugaSession.EventRegistry.RegisterHandler(handler)
+        else
+          throw new Error("Callback should be the name of a procedure, or an anonymous procedure")
+      else
+        workspace.printPrims.print("Bind widget event #{source} #{name} with callback #{callback}, repeated = #{repeated}")
+      return
+
+    # (Number, String) -> Unit
+    unbind = (source, name) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.EventRegistry.UnregisterHandlers(2, source, name, true)
+      else
+        workspace.printPrims.print("Unbind widget event #{source} #{name}")
       return
 
     # (String, String) => Unit
@@ -155,11 +181,14 @@ module.exports = {
 
     {
       name: "widget"
+    , clearAll: clearAll
     , prims: {
                   "TOAST": toast
       ,            "SHOW": show
       ,            "HIDE": hide
       ,            "MOVE": move
+      ,            "BIND": bind
+      ,          "UNBIND": unbind
       ,       "SET-TITLE": setTitle
       ,       "SET-GROUP": setGroup
       ,      "SHOW-GROUP": showGroup

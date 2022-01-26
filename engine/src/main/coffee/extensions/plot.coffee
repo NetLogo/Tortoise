@@ -8,6 +8,11 @@ getTortugaSession = () =>
 
 module.exports = {
   init: (workspace) =>
+    # () -> Unit
+    clearAll = () ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.EventRegistry.UnregisterUserHandlers()
+      return
 
     # (String) => Unit
     show = (name) ->
@@ -59,14 +64,38 @@ module.exports = {
         workspace.printPrims.print("Set plot #{name} with title #{title}")
       return
 
+    # (Number, String, Bool, String | Function) -> Unit
+    bind = (source, name, repeated, callback) ->
+      if tortugaSession = getTortugaSession()
+        if typeof(callback) is 'string' or typeof(callback) is 'function'
+          handler = tortugaSession.EventRegistry.BuildHandler(3, source, name, repeated, callback)
+          tortugaSession.EventRegistry.UnregisterHandlers(3, source, name, true)
+          tortugaSession.EventRegistry.RegisterHandler(handler)
+        else
+          throw new Error("Callback should be the name of a procedure, or an anonymous procedure")
+      else
+        workspace.printPrims.print("Bind widget event #{source} #{name} with callback #{callback}, repeated = #{repeated}")
+      return
+
+    # (Number, String) -> Unit
+    unbind = (source, name) ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.EventRegistry.UnregisterHandlers(3, source, name, true)
+      else
+        workspace.printPrims.print("Unbind widget event #{source} #{name}")
+      return
+
     {
       name: "plot"
+    , clearAll: clearAll
     , prims: {
                "SHOW": show
                "HIDE": hide
       ,    "ACTIVATE": activate
       ,        "MOVE": move
       ,   "SET-TITLE": setTitle
+      ,        "BIND": bind
+      ,      "UNBIND": unbind
       }
     }
 }

@@ -165,15 +165,7 @@ module.exports = {
         tortugaSession.MessageQueue.Enqueue({ Type: "Tutorial", Action: "Survey", Value: triggerName })
       else
         workspace.printPrims.print("Trigger survey #{triggerName}")
-        
-    # (String, String) -> Unit
-    trigger = (source, type) ->
-      if tortugaSession = getTortugaSession()
-        tortugaSession.EventRegistry.HandleEvent({ Category: 0, Source: source, Type: type, Fields: {} })
-      else
-        workspace.printPrims.print("Trigger event #{type} from #{source}")
 
-      return
     # () -> Boolean
     inTutorial = () ->
       if tortugaSession = getTortugaSession()
@@ -200,7 +192,6 @@ module.exports = {
       ,         "FORWARD": forward
       ,            "BACK": back
       ,          "SURVEY": survey
-      ,         "TRIGGER": trigger
       ,    "IN-TUTORIAL?": inTutorial
       }
     }

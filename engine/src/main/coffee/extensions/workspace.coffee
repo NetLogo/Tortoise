@@ -8,6 +8,8 @@ getTortugaSession = () =>
 
 module.exports = {
   init: (workspace) =>
+    # () => Unit
+    clearAll = () -> unbindAll()
 
     # () => Unit
     play = () ->
@@ -63,6 +65,53 @@ module.exports = {
         window.TortugaSession.Platform
       else
         "web"
+        
+    # (String, List | Map) -> Unit
+    trigger = (name, data) ->
+      if tortugaSession = getTortugaSession()
+        if Array.IsArray(data) or data instanceof Map
+          event = tortugaSession.EventRegistry.BuildEvent(11, null, name, data)
+          tortugaSession.EventRegistry.HandleEvent(event)
+        else
+          throw new Error("Data has to be a list of key-value pairs, or a map")
+      else
+        workspace.printPrims.print("Trigger event #{type} #{name} with data #{workspace.dump(data, true)}")
+      return
+
+    # (Number | String, String, Bool, String | Function) -> Unit
+    bind = (type, name, repeated, callback) ->
+      if tortugaSession = getTortugaSession()
+        if typeof(callback) is 'string' or typeof(callback) is 'function'
+          handler = tortugaSession.EventRegistry.BuildHandler(type, null, name, repeated, callback)
+          if handler is null
+            throw new Error("Failed to build an event handler based on the input")
+          tortugaSession.EventRegistry.UnregisterHandlers(handler.Category, null, name, true)
+          tortugaSession.EventRegistry.RegisterHandler(handler)
+        else
+          throw new Error("Callback should be the name of a procedure, or an anonymous procedure")
+      else
+        workspace.printPrims.print("Bind event #{type} #{name} with callback #{callback}, repeated = #{repeated}")
+      return
+
+    # (Number | String, String) -> Unit
+    unbind = (type, name) ->
+      if tortugaSession = getTortugaSession()
+        category = tortugaSession.EventRegistry.ReifyCategory(type)
+        if category?
+          tortugaSession.EventRegistry.UnregisterHandlers(category, null, name, true)
+        else
+          throw new Error("The category input is invalid")
+      else
+        workspace.printPrims.print("Unbind event #{type} #{name}")
+      return
+
+    # () -> Unit
+    unbindAll = () ->
+      if tortugaSession = getTortugaSession()
+        tortugaSession.EventRegistry.UnregisterUserHandlers()
+      else
+        workspace.printPrims.print("Unbind all event handlers")
+      return
 
     # () => Unit
     clearCommands = () ->
@@ -82,6 +131,7 @@ module.exports = {
 
     {
       name: "workspace"
+    , clearAll: clearAll
     , prims: {
                 "PLAY": play
       ,        "PAUSE": pause
@@ -92,6 +142,10 @@ module.exports = {
     ,"EXECUTE-COMMAND": executeCommand
      ,"CLEAR-COMMANDS": clearCommands
       ,    "RECOMPILE": recompile
+      ,      "TRIGGER": trigger
+      ,         "BIND": bind
+      ,       "UNBIND": unbind
+      ,   "UNBIND-ALL": unbindAll
       }
     }
 }

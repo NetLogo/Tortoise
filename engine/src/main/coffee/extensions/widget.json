@@ -39,6 +39,22 @@
       ],
       "returnType": "unit"
     }, {
+      "name": "bind",
+      "argTypes": [ 
+        "string",
+        "string",
+        "boolean",
+        { "types": ["string", "command"] }
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "unbind",
+      "argTypes": [ 
+        "string",
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
       "name": "set-group",
       "actionName": "set-group",
       "argTypes": [

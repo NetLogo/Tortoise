@@ -3,53 +3,72 @@
   "prims": [
     {
       "name": "pause",
-      "actionName": "pause",
       "argTypes": [],
       "returnType": "unit"
     }, {
       "name": "play",
-      "actionName": "play",
       "argTypes": [],
       "returnType": "unit"
     }, {
       "name": "show",
-      "actionName": "show",
       "argTypes": [
         "string"
       ],
       "returnType": "unit"
     }, {
       "name": "hide",
-      "actionName": "hide",
       "argTypes": [
         "string"
       ],
       "returnType": "unit"
     }, {
       "name": "set-speed",
-      "actionName": "set-speed",
       "argTypes": [
         "number"
       ],
       "returnType": "unit"
     }, {
       "name": "get-platform",
-      "actionName": "get-platform",
       "argTypes": [],
       "returnType": "string"
     }, {
       "name": "recompile",
-      "actionName": "recompile",
+      "argTypes": [],
+      "returnType": "unit"
+    }, {
+      "name": "trigger",
+      "argTypes": [
+        { "types": ["string", "number"] },
+        "string",
+        "wildcard"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "bind",
+      "argTypes": [ 
+        { "types": ["string", "number"] },
+        "string",
+        "boolean",
+        { "types": ["string", "command"] }
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "unbind",
+      "argTypes": [ 
+        { "types": ["string", "number"] },
+        "string"
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "unbind-all",
       "argTypes": [],
       "returnType": "unit"
     }, {
       "name": "clear-commands",
-      "actionName": "clear-commands",
       "argTypes": [],
       "returnType": "unit"
     }, {
       "name": "execute-command",
-      "actionName": "execute-command",
       "argTypes": [
         "string"
       ],

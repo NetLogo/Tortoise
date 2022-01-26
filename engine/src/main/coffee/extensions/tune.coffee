@@ -32,7 +32,7 @@ module.exports = {
         else
           instrumentIndex = allInstruments.indexOf(instrument.toUpperCase())
       # Check availability
-      if instrumentIndex >= 128 or instrumentIndex < 0
+      if instrumentIndex > 128 or instrumentIndex < 0
         throw new Error("Instrument #{instrument} is not available!")
       else if MIDI = getMIDI()
         if MIDI.Instrument isnt instrumentIndex

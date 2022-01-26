@@ -26,6 +26,22 @@
       "actionName": "set-title",
       "argTypes": ["string", "string"],
       "returnType": "unit"
+    }, {
+      "name": "bind",
+      "argTypes": [ 
+        "string",
+        "string",
+        "boolean",
+        { "types": ["string", "command"] }
+      ],
+      "returnType": "unit"
+    }, {
+      "name": "unbind",
+      "argTypes": [ 
+        "string",
+        "string"
+      ],
+      "returnType": "unit"
     }
   ]
 }

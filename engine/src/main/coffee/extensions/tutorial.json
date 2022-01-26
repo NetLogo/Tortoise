@@ -99,14 +99,6 @@
       ],
       "returnType": "unit"
     }, {
-      "name": "trigger",
-      "actionName": "trigger",
-      "argTypes": [ 
-        "string",
-        "string"
-      ],
-      "returnType": "unit"
-    }, {
       "name": "in-tutorial?",
       "actionName": "in-tutorial?",
       "argTypes": [ ],
