@@ -83,6 +83,36 @@ importTable = (exportedObj, reify) ->
     return
   )
   map
+  
+reifyTable = (jsonObj) ->
+  if not Array.isArray(jsonObj)
+    map = new Map()
+    Object.keys(jsonObj).forEach( (key) ->
+      value = jsonObj[key]
+      if (typeof(value) is "object")
+        value = reifyTable(value)
+      map.set(key, value)
+      return
+    )
+    map
+  else
+    jsonObj.map( (item) ->
+      if (typeof(item) is "object")
+        reifyTable(item)
+      else
+        item
+    )
+
+convertObject = (map) ->
+  result = Object.fromEntries(map)
+  Object.keys(result).forEach( (key) ->
+    value = result[key]
+    if (value instanceof Map)
+      result[key] = convertObject(value)
+    else if (Array.isArray(value))
+      result[key] = value.map( (item) -> convertObject(item) )
+  )
+  result
 
 module.exports = {
 
@@ -103,6 +133,17 @@ module.exports = {
     toList = (table) ->
       checkInput({table: table})
       Array.from(table).slice(0)
+
+    # (String) => Table
+    fromJson = (source) ->
+      table = reifyTable(JSON.parse(source))
+      checkInput({table: table})
+      table
+      
+    # (Table) => String
+    toJson = (table) ->
+      checkInput({table: table})
+      JSON.stringify(convertObject(table))
 
     # (Table) => Unit
     clear = (table) ->
@@ -241,6 +282,8 @@ module.exports = {
       ,            "PUT": put
       ,         "REMOVE": remove
       ,        "TO-LIST": toList
+      ,        "TO-JSON": toJson
+      ,      "FROM-JSON": fromJson
       ,         "VALUES": values
       ,      "IS-TABLE?": isTable
       }
