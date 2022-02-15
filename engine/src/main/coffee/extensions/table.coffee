@@ -85,15 +85,23 @@ importTable = (exportedObj, reify) ->
   map
   
 reifyTable = (jsonObj) ->
-  map = new Map()
-  Object.keys(jsonObj).forEach( (key) ->
-    value = jsonObj[key]
-    if (typeof(value) is "object" and not Array.isArray(value))
-      value = reifyTable(value)
-    map.set(key, value)
-    return
-  )
-  map
+  if not Array.isArray(jsonObj)
+    map = new Map()
+    Object.keys(jsonObj).forEach( (key) ->
+      value = jsonObj[key]
+      if (typeof(value) is "object")
+        value = reifyTable(value)
+      map.set(key, value)
+      return
+    )
+    map
+  else
+    jsonObj.map( (item) ->
+      if (typeof(item) is "object")
+        reifyTable(item)
+      else
+        item
+    )
 
 convertObject = (map) ->
   result = Object.fromEntries(map)
@@ -101,6 +109,8 @@ convertObject = (map) ->
     value = result[key]
     if (value instanceof Map)
       result[key] = convertObject(value)
+    else if (Array.isArray(value))
+      result[key] = value.map( (item) -> convertObject(item) )
   )
   result
 
