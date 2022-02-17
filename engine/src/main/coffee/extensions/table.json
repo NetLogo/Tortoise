@@ -66,6 +66,14 @@
       "name": "values",
       "argTypes": ["wildcard"],
       "returnType": "list"
+    }, {
+      "name": "to-json",
+      "argTypes": ["wildcard"],
+      "returnType": "string"
+    }, {
+      "name": "from-json",
+      "argTypes": ["string"],
+      "returnType": "wildcard"
     }
   ]
 }

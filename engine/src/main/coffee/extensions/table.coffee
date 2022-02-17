@@ -84,35 +84,39 @@ importTable = (exportedObj, reify) ->
   )
   map
   
-reifyTable = (jsonObj) ->
-  if not Array.isArray(jsonObj)
+jsonObjectToTable = (jsonObj) ->
+  if Array.isArray(jsonObj)
+    jsonObj.map( (item) ->
+      if (typeof(item) is "object")
+        jsonObjectToTable(item)
+      else
+        item
+    )
+  else if (typeof(jsonObj) is "object")
     map = new Map()
     Object.keys(jsonObj).forEach( (key) ->
       value = jsonObj[key]
       if (typeof(value) is "object")
-        value = reifyTable(value)
+        value = jsonObjectToTable(value)
       map.set(key, value)
       return
     )
     map
   else
-    jsonObj.map( (item) ->
-      if (typeof(item) is "object")
-        reifyTable(item)
-      else
-        item
-    )
+    jsonObj
 
-convertObject = (map) ->
-  result = Object.fromEntries(map)
-  Object.keys(result).forEach( (key) ->
-    value = result[key]
-    if (value instanceof Map)
-      result[key] = convertObject(value)
-    else if (Array.isArray(value))
-      result[key] = value.map( (item) -> convertObject(item) )
-  )
-  result
+tableToJsonObject = (target) ->
+  if Array.isArray(target)
+    target.map( (item) -> tableToJsonObject(item) )
+  else if (typeof(target) is "object")
+    result = Object.fromEntries(target)
+    Object.keys(result).forEach( (key) ->
+      value = result[key]
+      result[key] = tableToJsonObject(value)
+    )
+    result
+  else
+    target
 
 module.exports = {
 
@@ -136,14 +140,14 @@ module.exports = {
 
     # (String) => Table
     fromJson = (source) ->
-      table = reifyTable(JSON.parse(source))
+      table = jsonObjectToTable(JSON.parse(source))
       checkInput({table: table})
       table
       
     # (Table) => String
     toJson = (table) ->
       checkInput({table: table})
-      JSON.stringify(convertObject(table))
+      JSON.stringify(tableToJsonObject(table))
 
     # (Table) => Unit
     clear = (table) ->
