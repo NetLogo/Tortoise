@@ -10,14 +10,14 @@ import
 import
   jsengine.GraalJS
 
-import
-  org.scalatest.{ FunSuite, OneInstancePerTest }
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funsuite.AnyFunSuite
 
 import
   scalaz.{ NonEmptyList, Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
-class PlotCompilerTest extends FunSuite with OneInstancePerTest {
+class PlotCompilerTest extends AnyFunSuite with OneInstancePerTest {
   class FakeDialog {
     var alertsReceived = Seq[String]()
 

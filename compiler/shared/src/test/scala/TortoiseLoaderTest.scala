@@ -9,7 +9,7 @@ import
   org.scalacheck.Gen
 
 import
-  org.scalatest.FunSuite
+  org.scalatest.funsuite.AnyFunSuite
 
 import
   org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
@@ -27,7 +27,7 @@ import
 // The first test gives a feel for the behavior of the class and tests rendering different
 // types of symbols. The second is a verifies that dependencies are ordered by dependency
 // within the given compilation. -- RG 6/9/2015
-class TortoiseLoaderTest extends FunSuite {
+class TortoiseLoaderTest extends AnyFunSuite {
   test("renders out a compilation unit with no dependencies") {
     testCompile("var AgentModel = tortoise_require('agentmodel');",
       JsRequire("AgentModel", "agentmodel"))
@@ -74,7 +74,7 @@ class TortoiseLoaderTest extends FunSuite {
   }
 }
 
-class TortoiseLoaderPropertyTests extends FunSuite with ScalaCheckDrivenPropertyChecks {
+class TortoiseLoaderPropertyTests extends AnyFunSuite with ScalaCheckDrivenPropertyChecks {
   test("Sorts simple disjointed dependency sets") {
     forAll(declarationAndRequireSets) { (s) =>
       assertSorted(dependencySorted(s), s)

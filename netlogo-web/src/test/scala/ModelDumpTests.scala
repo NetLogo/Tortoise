@@ -14,9 +14,8 @@ import jsengine.GraalJS
 
 import org.graalvm.polyglot.Value
 
-import
-  org.scalatest.{ exceptions, FunSuite },
-    exceptions.TestFailedException
+import org.scalatest.exceptions.TestFailedException
+import org.scalatest.funsuite.AnyFunSuite
 
 import org.nlogo.tortoise.tags.SlowTest
 
@@ -25,7 +24,7 @@ import
     io.Source,
     util.matching.Regex
 
-class ModelDumpTests extends FunSuite {
+class ModelDumpTests extends AnyFunSuite {
 
   def graalValueToSequence(value: Value): Seq[Value] = {
     0l.to(value.getArraySize - 1).map( value.getArrayElement )

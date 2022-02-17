@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.compiler
 
 import
-  org.scalatest.FunSuite
+  org.scalatest.funsuite.AnyFunSuite
 
 import
   scalaz.NonEmptyList
@@ -14,7 +14,7 @@ import
 import
   CompiledModel.CompileResult
 
-class CompiledModelTest extends FunSuite {
+class CompiledModelTest extends AnyFunSuite {
 
   private val compiler = new Compiler()
 

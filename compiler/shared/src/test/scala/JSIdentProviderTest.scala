@@ -2,9 +2,9 @@
 
 package org.nlogo.tortoise.compiler
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class JSIdentProviderTest extends FunSuite {
+class JSIdentProviderTest extends AnyFunSuite {
 
   test("lowercases identifiers") {
     "netLogo" manglesTo "netlogo"

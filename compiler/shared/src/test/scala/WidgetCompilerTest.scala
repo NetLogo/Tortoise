@@ -19,7 +19,7 @@ import
   org.nlogo.core.{ CompilerException, Widget }
 
 import
-  org.scalatest.FunSuite
+  org.scalatest.funsuite.AnyFunSuite
 
 import
   scalaz.{ NonEmptyList, Scalaz, std, ValidationNel },
@@ -32,7 +32,7 @@ import
 import
   WidgetCompiler.formatWidget
 
-class WidgetCompilerTest extends FunSuite {
+class WidgetCompilerTest extends AnyFunSuite {
   val commandMap = Map(
       "foobar" -> "foobar()"
     , "setup"  -> "procedures.setup()"

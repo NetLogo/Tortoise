@@ -12,7 +12,7 @@ import
   org.scalacheck.Gen
 
 import
-  org.scalatest.FunSuite
+  org.scalatest.funsuite.AnyFunSuite
 
 import
   org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
@@ -29,7 +29,7 @@ import
 import
   TortoiseJson.{ fields, JsArray, JsBool, JsInt, JsObject, JsString }
 
-class JsonShapeConversionTest extends FunSuite with ScalaCheckDrivenPropertyChecks {
+class JsonShapeConversionTest extends AnyFunSuite with ScalaCheckDrivenPropertyChecks {
   val genBoolean = Gen.oneOf(true, false)
 
   val genPoint = for {

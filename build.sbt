@@ -4,7 +4,7 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDepe
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 import org.scalastyle.sbt.ScalastylePlugin.projectSettings
 
-val nlDependencyVersion       = "6.2.1"
+val nlDependencyVersion       = "6.2.2"
 
 val parserJsDependencyVersion = "0.3.0-d27b502"
 
@@ -25,14 +25,14 @@ val commonSettings =
     libraryDependencies ++= Seq(
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
-      "com.lihaoyi"       %% "scalatags"       % "0.7.0"  % "test",
-      "org.scalatest"     %% "scalatest"       % "3.0.8"  % "test",
-      "org.skyscreamer"   %  "jsonassert"      % "1.5.0"  % "test",
-      "org.reflections"   %  "reflections"     % "0.9.11" % "test",
+      "com.lihaoyi"       %% "scalatags"       % "0.7.0"    % "test",
+      "org.scalatest"     %% "scalatest"       % "3.2.10"   % "test",
+      "org.scalatestplus" %% "scalacheck-1-15" % "3.2.10.0" % Test,
+      "org.skyscreamer"   %  "jsonassert"      % "1.5.0"    % "test",
+      "org.reflections"   %  "reflections"     % "0.9.11"   % "test",
       // Do not update scalacheck to 1.14.1+ until the fix for the below issue is released.
       // It breaks JsonShapeConversiontTest.scala -Jeremy B November 2019
       // https://github.com/typelevel/scalacheck/issues/577
-      "org.scalacheck"    %% "scalacheck"      % "1.14.0" % "test",
       "com.typesafe.play" %% "play-json"       % "2.7.4",
       // Bring in headless test code/framework for our tests
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),

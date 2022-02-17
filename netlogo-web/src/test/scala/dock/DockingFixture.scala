@@ -27,12 +27,13 @@ import
   org.skyscreamer.jsonassert.JSONAssert
 
 import
-  org.scalatest.{ Assertions, exceptions, fixture },
+  org.scalatest.{ Assertions, exceptions },
     Assertions._,
-    exceptions.TestFailedException,
-    fixture.FunSuite
+    exceptions.TestFailedException
 
-trait DockingSuite extends FunSuite with TestLogger {
+import org.scalatest.funsuite.FixtureAnyFunSuite
+
+trait DockingSuite extends FixtureAnyFunSuite with TestLogger {
   type FixtureParam = DockingFixture
 
   override def withFixture(test: OneArgTest) = {

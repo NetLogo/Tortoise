@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.nlw
 
 import
-  org.scalatest.fixture.FunSuite
+  org.scalatest.funsuite.FixtureAnyFunSuite
 
 import
   org.nlogo.core.{ FrontEndInterface, Model, Program },
@@ -15,7 +15,7 @@ import
 import
   org.nlogo.tortoise.compiler.{ Compiler, Compilation }
 
-trait SimpleSuite extends FunSuite with TestLogger {
+trait SimpleSuite extends FixtureAnyFunSuite with TestLogger {
 
   val compiler = new Compiler()
 

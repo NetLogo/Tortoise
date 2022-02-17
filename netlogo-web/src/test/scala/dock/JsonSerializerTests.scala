@@ -10,9 +10,10 @@ import
       ShapeList.shapesToMap,
     tortoise.compiler.json.JsonSerializer
 
-import org.scalatest.{ FunSuite, Matchers }
+import org.scalatest.matchers.should._
+import org.scalatest.funsuite.AnyFunSuite
 
-class JsonSerializerTests extends FunSuite with Matchers {
+class JsonSerializerTests extends AnyFunSuite with Matchers {
 
   test("JsonSerializer shapes") {
 
