@@ -205,12 +205,12 @@ TableDoesNotLeak
 JsonConversion
   extensions [ table ]
   globals [ls glob1]
-  O> set ls [["boots" [10 20 30]] ["slippers" [40 50 60]]]
+  O> set ls [["boots" [10 20 30]] ["slippers" []]]
   O> set glob1 table:from-list ls
-  table:to-json glob1 => "{\"boots\":[10,20,30],\"slippers\":[40,50,60]}"
+  table:to-json glob1 => "{\"boots\":[10,20,30],\"slippers\":[]}"
 
 JsonParse
   extensions [ table ]
   globals [glob1]
-  O> set glob1 table:from-json "{\"boots\":[10,20,30],\"slippers\":[40,50,60]}"
-  table:to-json glob1 => "{\"boots\":[10,20,30],\"slippers\":[40,50,60]}"
+  O> set glob1 table:from-json "{\"boots\":{\"size\":10,\"color\":\"red\",\"arr\":[10,20,30]},\"slippers\":{},\"hats\":{\"hat1\":[],\"hat2\":{\"hat3\":[]}}}"
+  table:to-json glob1 => "{\"boots\":{\"size\":10,\"color\":\"red\",\"arr\":[10,20,30]},\"slippers\":{},\"hats\":{\"hat1\":[],\"hat2\":{\"hat3\":[]}}}"

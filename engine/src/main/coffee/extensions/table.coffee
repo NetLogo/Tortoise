@@ -87,17 +87,12 @@ importTable = (exportedObj, reify) ->
 jsonObjectToTable = (jsonObj) ->
   if Array.isArray(jsonObj)
     jsonObj.map( (item) ->
-      if (typeof(item) is "object")
-        jsonObjectToTable(item)
-      else
-        item
+      jsonObjectToTable(item)
     )
   else if (typeof(jsonObj) is "object")
     map = new Map()
     Object.keys(jsonObj).forEach( (key) ->
-      value = jsonObj[key]
-      if (typeof(value) is "object")
-        value = jsonObjectToTable(value)
+      value = jsonObjectToTable(jsonObj[key])
       map.set(key, value)
       return
     )
