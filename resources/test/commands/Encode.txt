@@ -11,6 +11,9 @@ BytesAndStrings
   encode:bytes-to-string [10 20 30 -201 40] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-string' must be numbers between -128 and 127
   encode:bytes-to-string [10 20 30 201 40] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-string' must be numbers between -128 and 127
 
+  encode:string-to-bytes "My fav UTF-8 char: „" => [77 121 32 102 97 118 32 85 84 70 45 56 32 99 104 97 114 58 32 -30 -128 -98]
+  encode:bytes-to-string (encode:string-to-bytes "My fav UTF-8 char: „") => "My fav UTF-8 char: „"
+
   encode:string-to-bytes (encode:bytes-to-string [89 79 85 39 82 69 32 87 73 78 78 69 82 33]) => [89 79 85 39 82 69 32 87 73 78 78 69 82 33]
   encode:bytes-to-string (encode:string-to-bytes (encode:bytes-to-string [89 79 85 39 82 69 32 87 73 78 78 69 82 33])) => "YOU'RE WINNER!"
 
