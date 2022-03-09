@@ -317,15 +317,15 @@ module.exports.exportWorld = ->
   extensionExporter = ExtensionsHandler.makeExporter(@extensionPorters)
   agentExporters    = createAgentExporters(extensionExporter)
 
-  metadata     = exportMetadata.call(this)
-  randomState  = @rng.exportState()
-  globals      = exportGlobals.call(this, extensionExporter)
-  patches      =               @patches().toArray().map(agentExporters.patchExport)
-  turtles      = @turtleManager.turtles().toArray().map(agentExporters.turtleExport)
-  links        =     @linkManager.links().toArray().map(agentExporters.linkExport)
-  drawingM     = if not @_updater.drawingWasJustCleared() then maybe([@patchSize, @_getViewBase64()]) else None
-  output       = @_getOutput()
-  plotManager  = exportPlotManager.call(this, extensionExporter)
-  extensions   = extensionExporter.export()
+  metadata    = exportMetadata.call(this)
+  randomState = @rng.exportState()
+  globals     = exportGlobals.call(this, extensionExporter)
+  patches     =               @patches().toArray().map(agentExporters.patchExport)
+  turtles     = @turtleManager.turtles().toArray().map(agentExporters.turtleExport)
+  links       =     @linkManager.links().toArray().map(agentExporters.linkExport)
+  drawingM    = if not @_updater.drawingWasJustCleared() then maybe([@patchSize, @_getViewBase64()]) else None
+  output      = @_getOutput()
+  plotManager = exportPlotManager.call(this, extensionExporter)
+  extensions  = extensionExporter.export()
 
   new ExportWorldData(metadata, randomState, globals, patches, turtles, links, drawingM, output, plotManager, extensions)
