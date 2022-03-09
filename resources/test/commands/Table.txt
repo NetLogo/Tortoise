@@ -209,8 +209,20 @@ JsonConversion
   O> set glob1 table:from-list ls
   table:to-json glob1 => "{\"boots\":[10,20,30],\"slippers\":[]}"
 
+JsonConversion-Failure
+  extensions [ table ]
+  globals [glob1]
+  O> glob1 table:from-json "Not a json"
+  table:to-json glob1 => ERROR Extension exception: Unexpected token N in JSON at position 0
+
 JsonParse
   extensions [ table ]
   globals [glob1]
   O> set glob1 table:from-json "{\"boots\":{\"size\":10,\"color\":\"red\",\"arr\":[10,20,30]},\"slippers\":{},\"hats\":{\"hat1\":[],\"hat2\":{\"hat3\":[]}}}"
   table:to-json glob1 => "{\"boots\":{\"size\":10,\"color\":\"red\",\"arr\":[10,20,30]},\"slippers\":{},\"hats\":{\"hat1\":[],\"hat2\":{\"hat3\":[]}}}"
+  
+JsonParse-Failure
+  extensions [ table ]
+  globals [glob1]
+  O> glob1 table:to-json 0
+  table:to-json glob1 => ERROR Extension exception: 0 is not a table
