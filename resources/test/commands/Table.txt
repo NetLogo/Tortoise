@@ -224,5 +224,5 @@ JsonParse
 JsonParse-Failure
   extensions [ table ]
   globals [glob1]
-  O> glob1 table:to-json 0
+  O> set glob1 table:to-json 0
   table:to-json glob1 => ERROR Extension exception: 0 is not a table
