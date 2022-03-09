@@ -252,9 +252,6 @@ createAgentExporters = (extensionExporter) ->
   makeMappings = (builtins) -> (mapper) ->
     builtins.map(tee(id)(mapper))
 
-  labelExporter = (varName) => (agent) =>
-    exportWildcardVar(agent, extensionExporter)(varName)
-
   patchMapper = (varName) ->
     switch varName
       when "pcolor", "plabel-color" then (color) -> exportColor(color)
