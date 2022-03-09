@@ -43,7 +43,7 @@ checkIsValidList = (list) ->
 # (Any, String|Boolean|Number|List) ->
 checkInput = ({table, key}) ->
   if not isTable(table)
-    throw exceptions.extension("not a table #{workspace.dump(table, true)}")
+    throw exceptions.extension("#{workspace.dump(table, true)} is not a table")
 
   if key? and not isValidKey(key)
       throw exceptions.extension("" +
