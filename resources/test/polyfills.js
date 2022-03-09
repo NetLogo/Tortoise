@@ -193,6 +193,64 @@ if (typeof Polyglot !== "undefined") {
     return Base64.getEncoder().encodeToString(Compiler.getBytes(str));
   }
 
+  global.TextDecoder = class {
+    decode(bytes) {
+
+      // http://www.onicos.com/staff/iz/amuse/javascript/expert/utf.txt
+
+      /* utf.js - UTF-8 <=> UTF-16 convertion
+       *
+       * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
+       * Version: 1.0
+       * This library is free.  You can redistribute it and/or modify it.
+       */
+
+      let out = "";
+      let i   = 0;
+
+      while (i < bytes.length) {
+
+        const char1 = bytes[i++];
+
+        switch (char1 >> 4) {
+          case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7: {
+            // 0xxxxxxx
+            out += String.fromCharCode(char1);
+            break;
+          }
+          case 12: case 13: {
+            // 110x xxxx   10xx xxxx
+            const char2 = bytes[i++];
+            const code  = ((char1 & 0x1F) << 6) |
+                          ((char2 & 0x3F) << 0)
+            out += String.fromCharCode(code);
+            break;
+          }
+          case 14: {
+            // 1110 xxxx  10xx xxxx  10xx xxxx
+            const char2 = bytes[i++];
+            const char3 = bytes[i++];
+            const code  = ((char1 & 0x0F) << 12) |
+                          ((char2 & 0x3F) <<  6) |
+                          ((char3 & 0x3F) <<  0)
+            out += String.fromCharCode(code);
+            break;
+          }
+        }
+
+      }
+
+      return out;
+
+    }
+  }
+
+  global.TextEncoder = class {
+    encode(str) {
+      return Compiler.getBytes(str);
+    }
+  }
+
   global.modelConfig =
     { asyncDialog:       asyncDialog
     , base64ToImageData: base64ToImageData

@@ -8,6 +8,9 @@
 { pipeline }   = require('brazier/function')
 { rangeUntil } = require('brazier/number')
 
+decoder = new TextDecoder()
+encoder = new TextEncoder()
+
 module.exports = {
 
   init: (workspace) ->
@@ -33,11 +36,11 @@ module.exports = {
 
     # Array[Number] => String
     bytesToString = (bytes) ->
-      _reportFromBytes(bytes, "bytes-to-string")((bytes) -> String.fromCharCode(bytes...))
+      _reportFromBytes(bytes, "bytes-to-string")((bytes) -> decoder.decode(new Uint8Array(bytes)))
 
     # (String) => Array[Number]
     stringToBytes = (str) ->
-      pipeline(rangeUntil(0), map((n) -> str.codePointAt(n)))(str.length)
+      Array.from(encoder.encode(str))
 
     {
       name: "encode"

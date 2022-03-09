@@ -96,9 +96,7 @@ exportAgentReference = (agent) ->
   else
     throw exceptions.internal("Cannot make agent reference out of: #{JSON.stringify(agent)}")
 
-# (Agent, ExtensionsExporter) => (String) => Any
-exportWildcardVar = (agent, extensionExporter) -> (varName) ->
-
+createExportWildcardValue = (extensionExporter) ->
   exportWildcardValue = (value) ->
     if checks.isAgent(value) or checks.isNobody(value)
       exportAgentReference(value)
@@ -121,6 +119,11 @@ exportWildcardVar = (agent, extensionExporter) -> (varName) ->
     else
       value
 
+  exportWildcardValue
+
+# (Agent, ExtensionsExporter) => (String) => Any
+exportWildcardVar = (agent, extensionExporter) -> (varName) ->
+  exportWildcardValue = createExportWildcardValue(extensionExporter)
   exportWildcardValue(agent.getVariable(varName))
 
 # () => Object[Any]
@@ -244,16 +247,10 @@ module.exports.exportPlot = (plotName) ->
 
   new ExportPlotData(metadata, miniGlobals, plot)
 
-# () => ExportWorldData
-module.exports.exportWorld = ->
-
+# (ExtensionExports) => AgentExports
+createAgentExporters = (extensionExporter) ->
   makeMappings = (builtins) -> (mapper) ->
     builtins.map(tee(id)(mapper))
-
-  extensionExporter = ExtensionsHandler.makeExporter(@extensionPorters)
-
-  labelExporter = (varName) => (agent) =>
-    exportWildcardVar(agent, extensionExporter)(varName)
 
   patchMapper = (varName) ->
     switch varName
@@ -273,18 +270,59 @@ module.exports.exportWorld = ->
       when "end1", "end2"         then (end)   -> exportTurtleReference(end)
       else                             id
 
-  metadata     = exportMetadata.call(this)
-  randomState  = @rng.exportState()
-  globals      = exportGlobals.call(this, extensionExporter)
   patchExport  = exportAgent(ExportedPatch , makeMappings( patchBuiltins)( patchMapper), "plabel", extensionExporter)
   turtleExport = exportAgent(ExportedTurtle, makeMappings(turtleBuiltins)(turtleMapper), "label",  extensionExporter)
   linkExport   = exportAgent(ExportedLink  , makeMappings(  linkBuiltins)(  linkMapper), "llabel", extensionExporter)
-  patches      =               @patches().toArray().map( patchExport)
-  turtles      = @turtleManager.turtles().toArray().map(turtleExport)
-  links        =     @linkManager.links().toArray().map(  linkExport)
-  drawingM     = if not @_updater.drawingWasJustCleared() then maybe([@patchSize, @_getViewBase64()]) else None
-  output       = @_getOutput()
-  plotManager  = exportPlotManager.call(this, extensionExporter)
-  extensions   = extensionExporter.export()
+
+  {
+    patchExport
+  , turtleExport
+  , linkExport
+  }
+
+# (World) => (Any) => JSON
+module.exports.createExportValue = (world) ->
+  extensionExporter   = ExtensionsHandler.makeExporter(world.extensionPorters)
+  agentExporters      = createAgentExporters(extensionExporter)
+  exportWildcardValue = createExportWildcardValue(extensionExporter)
+
+  exportAgentOrWildcard = (maybeAgent) ->
+    if checks.isLink(maybeAgent)
+      agentExporters.linkExport(maybeAgent)
+    else if checks.isPatch(maybeAgent)
+      agentExporters.patchExport(maybeAgent)
+    else if checks.isTurtle(maybeAgent)
+      agentExporters.turtleExport(maybeAgent)
+    else
+      exportWildcardValue(maybeAgent)
+
+  (value) ->
+    if checks.isLinkSet(value)
+      value.toArray().map(agentExporters.linkExport)
+    else if checks.isPatchSet(value)
+      value.toArray().map(agentExporters.patchExport)
+    else if checks.isTurtleSet(value)
+      value.toArray().map(agentExporters.turtleExport)
+    else if checks.isList(value)
+      value.map(exportAgentOrWildcard)
+    else
+      exportAgentOrWildcard(value)
+
+# () => ExportWorldData
+module.exports.exportWorld = ->
+
+  extensionExporter = ExtensionsHandler.makeExporter(@extensionPorters)
+  agentExporters    = createAgentExporters(extensionExporter)
+
+  metadata    = exportMetadata.call(this)
+  randomState = @rng.exportState()
+  globals     = exportGlobals.call(this, extensionExporter)
+  patches     =               @patches().toArray().map(agentExporters.patchExport)
+  turtles     = @turtleManager.turtles().toArray().map(agentExporters.turtleExport)
+  links       =     @linkManager.links().toArray().map(agentExporters.linkExport)
+  drawingM    = if not @_updater.drawingWasJustCleared() then maybe([@patchSize, @_getViewBase64()]) else None
+  output      = @_getOutput()
+  plotManager = exportPlotManager.call(this, extensionExporter)
+  extensions  = extensionExporter.export()
 
   new ExportWorldData(metadata, randomState, globals, patches, turtles, links, drawingM, output, plotManager, extensions)
