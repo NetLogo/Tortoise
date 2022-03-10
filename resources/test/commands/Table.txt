@@ -212,7 +212,7 @@ JsonConversion
 JsonConversion-Failure
   extensions [ table ]
   globals [glob1]
-  O> glob1 table:from-json "Not a json"
+  O> set glob1 table:from-json "Not a json"
   table:to-json glob1 => ERROR Extension exception: Unexpected token N in JSON at position 0
 
 JsonParse
