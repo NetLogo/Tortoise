@@ -130,16 +130,16 @@ TableGroupAgents
 
 TableException_isTable
   extensions [ table ]
-  table:to-list [1] => ERROR Extension exception: not a table [1]
-  O> table:clear [1] => ERROR Extension exception: not a table [1]
-  table:get [1] 1 => ERROR Extension exception: not a table [1]
-  table:has-key? [1] 1 => ERROR Extension exception: not a table [1]
-  table:keys [] => ERROR Extension exception: not a table []
-  table:values [] => ERROR Extension exception: not a table []
-  table:length [[1]] => ERROR Extension exception: not a table [[1]]
-  O> table:put [1 2 3] 1 1 => ERROR Extension exception: not a table [1 2 3]
-  O> table:remove [1 2 3] 1 => ERROR Extension exception: not a table [1 2 3]
-  table:get-or-default [1 2 3] 2 3 => ERROR Extension exception: not a table [1 2 3]
+  table:to-list [1] => ERROR Extension exception: [1] is not a table
+  O> table:clear [1] => ERROR Extension exception: [1] is not a table
+  table:get [1] 1 => ERROR Extension exception: [1] is not a table
+  table:has-key? [1] 1 => ERROR Extension exception: [1] is not a table
+  table:keys [] => ERROR Extension exception: [] is not a table
+  table:values [] => ERROR Extension exception: [] is not a table
+  table:length [[1]] => ERROR Extension exception: [[1]] is not a table
+  O> table:put [1 2 3] 1 1 => ERROR Extension exception: [1 2 3] is not a table
+  O> table:remove [1 2 3] 1 => ERROR Extension exception: [1 2 3] is not a table
+  table:get-or-default [1 2 3] 2 3 => ERROR Extension exception: [1 2 3] is not a table
 
 TableException_isValidList
   extensions [ table ]
