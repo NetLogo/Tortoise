@@ -130,16 +130,16 @@ TableGroupAgents
 
 TableException_isTable
   extensions [ table ]
-  table:to-list [1] => ERROR Extension exception: not a table [1]
-  O> table:clear [1] => ERROR Extension exception: not a table [1]
-  table:get [1] 1 => ERROR Extension exception: not a table [1]
-  table:has-key? [1] 1 => ERROR Extension exception: not a table [1]
-  table:keys [] => ERROR Extension exception: not a table []
-  table:values [] => ERROR Extension exception: not a table []
-  table:length [[1]] => ERROR Extension exception: not a table [[1]]
-  O> table:put [1 2 3] 1 1 => ERROR Extension exception: not a table [1 2 3]
-  O> table:remove [1 2 3] 1 => ERROR Extension exception: not a table [1 2 3]
-  table:get-or-default [1 2 3] 2 3 => ERROR Extension exception: not a table [1 2 3]
+  table:to-list [1] => ERROR Extension exception: [1] is not a table
+  O> table:clear [1] => ERROR Extension exception: [1] is not a table
+  table:get [1] 1 => ERROR Extension exception: [1] is not a table
+  table:has-key? [1] 1 => ERROR Extension exception: [1] is not a table
+  table:keys [] => ERROR Extension exception: [] is not a table
+  table:values [] => ERROR Extension exception: [] is not a table
+  table:length [[1]] => ERROR Extension exception: [[1]] is not a table
+  O> table:put [1 2 3] 1 1 => ERROR Extension exception: [1 2 3] is not a table
+  O> table:remove [1 2 3] 1 => ERROR Extension exception: [1 2 3] is not a table
+  table:get-or-default [1 2 3] 2 3 => ERROR Extension exception: [1 2 3] is not a table
 
 TableException_isValidList
   extensions [ table ]
@@ -201,3 +201,27 @@ TableDoesNotLeak
   O> table:remove glob1 3
   table:to-list glob1 => [[1 1] [2 2]]
   ls => [[1 1] [2 2] [3 3]]
+
+JsonConversion
+  extensions [ table ]
+  globals [ls glob1]
+  O> set ls [["boots" [10 20 30]] ["slippers" []]]
+  O> set glob1 table:from-list ls
+  table:to-json glob1 => "{\"boots\":[10,20,30],\"slippers\":[]}"
+
+JsonConversion-Failure
+  extensions [ table ]
+  globals [glob1 actual-error expected-error]
+  O> set glob1 table:from-json "Not a json" => ERROR Extension exception: The string given to FROM-JSON was not valid.  Invalid JSON: <json>:1:0 Expected json literal but found N\nNot a json\n^
+
+JsonParse
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 table:from-json "{\"boots\":{\"size\":10,\"color\":\"red\",\"arr\":[10,20,30]},\"slippers\":{},\"hats\":{\"hat1\":[],\"hat2\":{\"hat3\":[]}}}"
+  table:to-json glob1 => "{\"boots\":{\"size\":10,\"color\":\"red\",\"arr\":[10,20,30]},\"slippers\":{},\"hats\":{\"hat1\":[],\"hat2\":{\"hat3\":[]}}}"
+
+JsonParse-Failure
+  extensions [ table ]
+  globals [glob1]
+  O> set glob1 0
+  table:to-json glob1 => ERROR Extension exception: 0 is not a table

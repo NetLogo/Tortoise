@@ -43,7 +43,8 @@ checkIsValidList = (list) ->
 # (Any, String|Boolean|Number|List) ->
 checkInput = ({table, key}) ->
   if not isTable(table)
-    throw exceptions.extension("not a table #{workspace.dump(table, true)}")
+
+    throw exceptions.extension("#{workspace.dump(table, true)} is not a table")
 
   if key? and not isValidKey(key)
       throw exceptions.extension("" +
@@ -84,6 +85,35 @@ importTable = (exportedObj, reify) ->
   )
   map
 
+jsonObjectToTable = (jsonObj) ->
+  if Array.isArray(jsonObj)
+    jsonObj.map( (item) ->
+      jsonObjectToTable(item)
+    )
+  else if (typeof(jsonObj) is "object")
+    map = new Map()
+    Object.keys(jsonObj).forEach( (key) ->
+      value = jsonObjectToTable(jsonObj[key])
+      map.set(key, value)
+      return
+    )
+    map
+  else
+    jsonObj
+
+tableToJsonObject = (target) ->
+  if Array.isArray(target)
+    target.map( (item) -> tableToJsonObject(item) )
+  else if (typeof(target) is "object")
+    result = Object.fromEntries(target)
+    Object.keys(result).forEach( (key) ->
+      value = result[key]
+      result[key] = tableToJsonObject(value)
+    )
+    result
+  else
+    target
+
 module.exports = {
 
   porter: new SingleObjectExtensionPorter(extensionName, isTable, dumpTable, exportTable, formatTable, readTable, importTable)
@@ -103,6 +133,22 @@ module.exports = {
     toList = (table) ->
       checkInput({table: table})
       Array.from(table).slice(0)
+
+    # (String) => Table
+    fromJson = (source) ->
+      json = try
+        JSON.parse(source)
+      catch ex
+        throw exceptions.extension("The string given to FROM-JSON was not valid.  #{ex.message}")
+
+      table = jsonObjectToTable(json)
+      checkInput({table: table})
+      table
+
+    # (Table) => String
+    toJson = (table) ->
+      checkInput({table: table})
+      JSON.stringify(tableToJsonObject(table))
 
     # (Table) => Unit
     clear = (table) ->
@@ -241,6 +287,8 @@ module.exports = {
       ,            "PUT": put
       ,         "REMOVE": remove
       ,        "TO-LIST": toList
+      ,        "TO-JSON": toJson
+      ,      "FROM-JSON": fromJson
       ,         "VALUES": values
       ,      "IS-TABLE?": isTable
       }
