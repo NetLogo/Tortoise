@@ -27,7 +27,7 @@ module.exports =
 
       for { coll, typeCanDie, updates } in [turtleBundle, patchBundle, linkBundle]
         for id, varUpdates of updates
-          if typeCanDie and varUpdates.WHO is -1
+          if typeCanDie and (varUpdates.WHO is -1 or varUpdates.who is -1)
             delete coll[id]
           else
             mergeObjectInto(varUpdates, @_itemById(coll, id))

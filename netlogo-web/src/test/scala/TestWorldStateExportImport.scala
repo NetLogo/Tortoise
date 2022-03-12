@@ -21,6 +21,46 @@ class TestWorldStateExportImport extends SimpleSuite {
       ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
   }
 
+  test("exportValue works for the basics") { fixture =>
+    val exportValueCode  = """
+      globals [a b c x y z]
+      to setup-turtles
+        create-turtles 10 [ fd 100 set color one-of [red blue green] ]
+      end
+    """
+    val exportValueModel = Model(code = exportValueCode, widgets = List(View.square(1)))
+    val compiledModel = CompiledModel.fromModel(exportValueModel, compiler) valueOr
+      ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
+    fixture.eval(compiledModel.compiledCode)
+
+    val evalCmd = (command) =>
+      evalModel(command, compiledModel.compileRawCommand)
+
+    evalCmd("random-seed 90210")
+    evalCmd("setup-turtles")
+    evalCmd("set a 154")
+    evalCmd("set b \"154\"")
+    evalCmd("set c [10 20 30 40 50]")
+    evalCmd("set x one-of turtles")
+    evalCmd("set y sort turtles with [color = blue]")
+    evalCmd("set z [other turtles-here] of turtles with [color = green]")
+
+    fixture.eval("var createExportValue = tortoise_require('engine/core/world/export').createExportValue")
+    fixture.eval("var exportValue       = createExportValue(workspace.world)")
+    val expectedGlobals = Map(
+      "a" -> "154"
+    , "b" -> """"154""""
+    , "c" -> """[10,20,30,40,50]"""
+    , "x" -> """{"agentType":"turtle","who":2,"color":{"value":15},"heading":205,"xcor":-0.2618261740699275,"ycor":-0.6307787036650048,"shape":"default","label":"","labelColor":{"value":9.9},"breed":{"breedName":"turtles"},"isHidden":false,"size":1,"penSize":1,"penMode":"up","breedsOwns":{}}"""
+    , "y" -> """[{"agentType":"turtle","who":6,"color":{"value":105},"heading":224,"xcor":-0.46583704589973585,"ycor":0.06601996613489192,"shape":"default","label":"","labelColor":{"value":9.9},"breed":{"breedName":"turtles"},"isHidden":false,"size":1,"penSize":1,"penMode":"up","breedsOwns":{}},{"agentType":"turtle","who":9,"color":{"value":105},"heading":27,"xcor":0.3990499739546749,"ycor":-0.8993475811632083,"shape":"default","label":"","labelColor":{"value":9.9},"breed":{"breedName":"turtles"},"isHidden":false,"size":1,"penSize":1,"penMode":"up","breedsOwns":{}}]"""
+    , "z" -> """[{"agentSetType":"turtleset","references":[{"referenceType":"turtle","breed":{"singular":"turtle","plural":"turtles"},"id":6}]},{"agentSetType":"turtleset","references":[{"referenceType":"turtle","breed":{"singular":"turtle","plural":"turtles"},"id":8}]},{"agentSetType":"turtleset","references":[]}]"""
+    )
+    expectedGlobals.foreach({ case (global, expected) =>
+      val actual = fixture.eval(s"JSON.stringify(exportValue(workspace.world.observer.getGlobal('$global')))")
+      assert(expected == actual, s"testing global $global")
+    })
+  }
+
   test("array-only objects don't blow up") { fixture =>
     val arrayModel = Model(code = "extensions [array export-the import-a] globals [x y z]", widgets = List(View.square(1)))
     val compiledModel = CompiledModel.fromModel(arrayModel, compiler) valueOr
