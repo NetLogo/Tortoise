@@ -31,6 +31,14 @@ module.exports = (grunt) ->
         ]
       }
     },
+    copy: {
+      js: {
+        expand: true,
+        cwd: 'src/main/coffee',
+        src: '**/*.js',
+        dest: 'target/classes/js/tortoise/'
+      }
+    }
     browserify: {
       main: {
         src: ['target/classes/js/tortoise/bootstrap.js'],
@@ -65,4 +73,4 @@ module.exports = (grunt) ->
     return
   )
 
-  grunt.registerTask('default', ['coffeelint', 'coffee', 'gen_aliases', 'browserify', 'fix_require'])
+  grunt.registerTask('default', ['coffeelint', 'coffee', 'copy:js', 'gen_aliases', 'browserify', 'fix_require'])
