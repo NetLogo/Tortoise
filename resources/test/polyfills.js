@@ -247,7 +247,18 @@ if (typeof Polyglot !== "undefined") {
 
   global.TextEncoder = class {
     encode(str) {
-      return Compiler.getBytes(str);
+
+      // Java does signed bytes, but we want unsigned bytes. --Jason B. (3/16/22)
+      const jBytes = Compiler.getBytes(str);
+
+      const out = [];
+
+      for (let i = 0; i < jBytes.length; i++) {
+        out[i] = jBytes[i] & 0xFF;
+      }
+
+      return out;
+
     }
   }
 
