@@ -7,11 +7,11 @@ BytesAndStrings
   encode:bytes-to-string [] => ""
   encode:bytes-to-string [89 79 85 39 82 69 32 87 73 78 78 69 82 33] => "YOU'RE WINNER!"
   encode:bytes-to-string [40 50 60 70] => "(2<F"
-  encode:bytes-to-string ["apples"] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-string' must be numbers between -128 and 127
-  encode:bytes-to-string [10 20 30 -201 40] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-string' must be numbers between -128 and 127
-  encode:bytes-to-string [10 20 30 201 40] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-string' must be numbers between -128 and 127
+  encode:bytes-to-string ["apples"] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-string' must be numbers between 0 and 255
+  encode:bytes-to-string [10 20 30 -1 40] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-string' must be numbers between 0 and 255
+  encode:bytes-to-string [10 20 30 261 40] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-string' must be numbers between 0 and 255
 
-  encode:string-to-bytes "My fav UTF-8 char: „" => [77 121 32 102 97 118 32 85 84 70 45 56 32 99 104 97 114 58 32 -30 -128 -98]
+  encode:string-to-bytes "My fav UTF-8 char: „" => [77 121 32 102 97 118 32 85 84 70 45 56 32 99 104 97 114 58 32 226 128 158]
   encode:bytes-to-string (encode:string-to-bytes "My fav UTF-8 char: „") => "My fav UTF-8 char: „"
 
   encode:string-to-bytes (encode:bytes-to-string [89 79 85 39 82 69 32 87 73 78 78 69 82 33]) => [89 79 85 39 82 69 32 87 73 78 78 69 82 33]
@@ -26,9 +26,9 @@ BytesAndBase64
   encode:bytes-to-base64 [] => ""
   encode:bytes-to-base64 (encode:string-to-bytes "YOU'RE WINNER!") => "WU9VJ1JFIFdJTk5FUiE="
   encode:bytes-to-base64 [10 20 30 40] => "ChQeKA=="
-  encode:bytes-to-base64 ["apples"] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-base64' must be numbers between -128 and 127
-  encode:bytes-to-base64 [10 20 30 -201 40] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-base64' must be numbers between -128 and 127
-  encode:bytes-to-base64 [10 20 30 201 40] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-base64' must be numbers between -128 and 127
+  encode:bytes-to-base64 ["apples"] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-base64' must be numbers between 0 and 255
+  encode:bytes-to-base64 [10 20 30 -1 40] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-base64' must be numbers between 0 and 255
+  encode:bytes-to-base64 [10 20 30 261 40] => ERROR Extension exception: All elements of the list argument to 'encode:bytes-to-base64' must be numbers between 0 and 255
 
   encode:base64-to-bytes (encode:bytes-to-base64 (encode:string-to-bytes "YOU'RE WINNER!")) => [89 79 85 39 82 69 32 87 73 78 78 69 82 33]
   encode:bytes-to-base64 (encode:base64-to-bytes (encode:bytes-to-base64 (encode:string-to-bytes "YOU'RE WINNER!"))) => "WU9VJ1JFIFdJTk5FUiE="
