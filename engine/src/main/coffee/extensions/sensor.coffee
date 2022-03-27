@@ -38,6 +38,29 @@ module.exports = {
         workspace.printPrims.print("Unbind gesture #{name}")
       return
 
+    # () => List
+    touches = () ->
+      if sensor = getSensor()
+        sensor.GetTouches()
+      else
+        []
+        
+    # () => Number
+    touchSize = () ->
+      if sensor = getSensor()
+        sensor.GetTouches().length
+      else
+        []
+
+    # (Number) => List
+    touch = (ID) ->
+      if sensor = getSensor()
+        if ID >= touchSize() or ID < 0
+          throw new Error("Specific touch does not exist")
+        sensor.GetTouches()[ID]
+      else
+        []
+
     # (String) => Unit
     open = (name) ->
       if sensor = getSensor()
@@ -101,6 +124,9 @@ module.exports = {
                   "CLEAR": clear
       ,    "BIND-GESTURE": bindGesture
       ,  "UNBIND-GESTURE": unbindGesture
+      ,         "TOUCHES": touches
+      ,      "TOUCH-SIZE": touchSize
+      ,           "TOUCH": touch
       ,            "OPEN": open
       ,           "CLOSE": close
       ,       "ON-CHANGE": onChange
