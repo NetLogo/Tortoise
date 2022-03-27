@@ -18,12 +18,12 @@ module.exports = {
     # [T] @ (Array[Number], String) => ((Array[Number]) => T) => T
     _reportFromBytes = (bytes, primName) -> (f) ->
 
-      isLegit = (x) -> checks.isNumber(x) and (x >= -128) and (x <= 127)
+      isLegit = (x) -> checks.isNumber(x) and (x >= 0) and (x <= 255)
 
       if all(isLegit)(bytes)
         f(bytes)
       else
-        throw exceptions.extension("All elements of the list argument to 'encode:#{primName}' must be numbers between -128 and 127")
+        throw exceptions.extension("All elements of the list argument to 'encode:#{primName}' must be numbers between 0 and 255")
 
     # (String) => Array[Number]
     base64ToBytes = (base64) ->

@@ -43,6 +43,7 @@ checkIsValidList = (list) ->
 # (Any, String|Boolean|Number|List) ->
 checkInput = ({table, key}) ->
   if not isTable(table)
+
     throw exceptions.extension("#{workspace.dump(table, true)} is not a table")
 
   if key? and not isValidKey(key)
@@ -83,7 +84,7 @@ importTable = (exportedObj, reify) ->
     return
   )
   map
-  
+
 jsonObjectToTable = (jsonObj) ->
   if Array.isArray(jsonObj)
     jsonObj.map( (item) ->
@@ -135,10 +136,15 @@ module.exports = {
 
     # (String) => Table
     fromJson = (source) ->
-      table = jsonObjectToTable(JSON.parse(source))
+      json = try
+        JSON.parse(source)
+      catch ex
+        throw exceptions.extension("The string given to FROM-JSON was not valid.  #{ex.message}")
+
+      table = jsonObjectToTable(json)
       checkInput({table: table})
       table
-      
+
     # (Table) => String
     toJson = (table) ->
       checkInput({table: table})
