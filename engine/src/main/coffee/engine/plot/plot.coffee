@@ -89,7 +89,7 @@ module.exports = class Plot
 
   # (String) => Boolean
   hasPenWithName: (name) ->
-    pipeline(@_getPenMaybeByName.bind(this), isSomething)(name)
+    pipeline(@_getPenMaybeByName, isSomething)(name)
 
   # (ExportedPlot) => Unit
   importState: ({ currentPenNameOrNull, @isAutoplotting, isLegendOpen: @isLegendEnabled, pens
@@ -213,10 +213,10 @@ module.exports = class Plot
       @_penMap[pen.name.toUpperCase()] = pen
       @_ops.registerPen(pen)
       pen
-    pipeline(@_getPenMaybeByName.bind(this), fold(makeNew)(id))(name)
+    pipeline(@_getPenMaybeByName, fold(makeNew)(id))(name)
 
-  # (String) => Pen
-  _getPenMaybeByName: (name) ->
+  # (String) => Maybe[Pen]
+  _getPenMaybeByName: (name) =>
     if not name?
       maybe.None
     else
