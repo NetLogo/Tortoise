@@ -5,7 +5,7 @@ StrictMath = require('shim/strictmath')
 
 { filter, forEach, isEmpty, map, maxBy, toObject, zip } = require('brazierjs/array')
 { flip, id, pipeline }                                  = require('brazierjs/function')
-{ fold, isSomething, maybe }                            = require('brazierjs/maybe')
+{ flatMap: flatMapMaybe, fold, isSomething, maybe }     = require('brazierjs/maybe')
 { lookup, values }                                      = require('brazierjs/object')
 
 { exceptionFactory: exceptions } = require('util/exception')
@@ -217,10 +217,7 @@ module.exports = class Plot
 
   # (String) => Maybe[Pen]
   _getPenMaybeByName: (name) =>
-    if not name?
-      maybe.None
-    else
-      lookup(name.toUpperCase())(@_penMap)
+    flatMapMaybe((name) => lookup(name.toUpperCase())(@_penMap))(maybe(name))
 
   # (Number, Number, Number, Number) => Unit
   _resize: ->
