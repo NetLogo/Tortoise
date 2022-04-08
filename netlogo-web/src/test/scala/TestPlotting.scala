@@ -22,6 +22,13 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
     ()
   }
 
+  testPlotting("Nully calls don't explode") { (engine) =>
+    implicit val e = engine
+    setPlot(Plots.ClassHistogram.name)
+    assertResult(false)(evalJS(s"$pathToPlot.hasPenWithName(undefined)"))
+    ()
+  }
+
   testPlotting("Default plot pen is the first one") { (engine) =>
     implicit val e = engine
     setPlot(Plots.ClassPlot.name)

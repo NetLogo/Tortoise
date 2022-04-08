@@ -5,7 +5,7 @@ StrictMath = require('shim/strictmath')
 
 { filter, forEach, isEmpty, map, maxBy, toObject, zip } = require('brazierjs/array')
 { flip, id, pipeline }                                  = require('brazierjs/function')
-{ fold, isSomething, maybe }                            = require('brazierjs/maybe')
+{ flatMap: flatMapMaybe, fold, isSomething, maybe }     = require('brazierjs/maybe')
 { lookup, values }                                      = require('brazierjs/object')
 
 { exceptionFactory: exceptions } = require('util/exception')
@@ -89,7 +89,7 @@ module.exports = class Plot
 
   # (String) => Boolean
   hasPenWithName: (name) ->
-    pipeline(@_getPenMaybeByName.bind(this), isSomething)(name)
+    pipeline(@_getPenMaybeByName, isSomething)(name)
 
   # (ExportedPlot) => Unit
   importState: ({ currentPenNameOrNull, @isAutoplotting, isLegendOpen: @isLegendEnabled, pens
@@ -213,14 +213,11 @@ module.exports = class Plot
       @_penMap[pen.name.toUpperCase()] = pen
       @_ops.registerPen(pen)
       pen
-    pipeline(@_getPenMaybeByName.bind(this), fold(makeNew)(id))(name)
+    pipeline(@_getPenMaybeByName, fold(makeNew)(id))(name)
 
-  # (String) => Pen
-  _getPenMaybeByName: (name) ->
-    if not name?
-      maybe.None
-    else
-      lookup(name.toUpperCase())(@_penMap)
+  # (String) => Maybe[Pen]
+  _getPenMaybeByName: (name) =>
+    flatMapMaybe((name) => lookup(name.toUpperCase())(@_penMap))(maybe(name))
 
   # (Number, Number, Number, Number) => Unit
   _resize: ->
