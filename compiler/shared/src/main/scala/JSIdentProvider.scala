@@ -161,6 +161,7 @@ object JSIdentProvider {
     "while",
     "window",
     "with",
+    "world",
     "yield"
   )
 
