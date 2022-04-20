@@ -54,7 +54,9 @@ object JSIdentProvider {
 
   private val Keywords = Seq(
     "alert",
+    "async",
     "atob",
+    "await",
     "break",
     "blur",
     "btoa",
@@ -153,6 +155,7 @@ object JSIdentProvider {
     "var",
     "void",
     "window",
+    "workspace",
     "world",
     "yield"
   )
