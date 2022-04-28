@@ -175,6 +175,10 @@ module.exports =
         when  1 then GT
         else exceptions.internal("Comparison should only yield an integer within the interval [-1,1]")
 
+    # () => Boolean
+    hasVariable: (varName) ->
+      @_varManager.has(varName)
+
     # () => Array[String]
     varNames: ->
       @_varManager.names()

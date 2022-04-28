@@ -22,6 +22,10 @@ module.exports =
     setIfValid: (name, value) ->
       @_validitySetters.get(name).call(@agent, value)
 
+    # () => Boolean
+    has: (varName) ->
+      @_names.has(varName)
+
     # () => Array[String]
     names: ->
       Array.from(@_names)
