@@ -16,12 +16,23 @@ class LinkChecks
   # (String, Any) => Unit
   setVariable: (name, value) ->
     link = @getSelf()
-    link.setVariable(name, value)
+    if not link.hasVariable(name)
+      msgKey    = "_ breed does not own variable _"
+      upperName = name.toUpperCase()
+      @validator.error('set', msgKey, link.getBreedName(), upperName)
+    else
+      link.setVariable(name, value)
+
     return
 
   # (String) => Any
   getVariable: (name) ->
     link = @getSelf()
-    link.getVariable(name)
+    if not link.hasVariable(name)
+      msgKey    = "_ breed does not own variable _"
+      upperName = name.toUpperCase()
+      @validator.error(upperName, msgKey, link.getBreedName(), upperName)
+    else
+      link.getVariable(name)
 
 module.exports = LinkChecks
