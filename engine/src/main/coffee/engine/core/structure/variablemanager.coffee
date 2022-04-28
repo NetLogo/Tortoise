@@ -9,14 +9,14 @@
 module.exports =
   class VariableManager
 
-    _names:           undefined # Array[String]
+    _names:           undefined # Set[String]
     _validitySetters: null      # Map[String, (Any) => Boolean]
 
     # (Agent, Array[VariableSpec[_]]) => VariableManager
     constructor: (@agent, varSpecs) ->
       @_validitySetters = new Map()
       @_addVarsBySpec(varSpecs)
-      @_names = (name for { name } in varSpecs)
+      @_names = new Set(name for { name } in varSpecs)
 
     # (String, Any) => Boolean
     setIfValid: (name, value) ->
@@ -24,7 +24,7 @@ module.exports =
 
     # () => Array[String]
     names: ->
-      @_names
+      Array.from(@_names)
 
     # (Array[String], Array[String]) => Unit
     refineBy: (oldNames, newNames) ->
@@ -38,7 +38,7 @@ module.exports =
         @_defineProperty(name, { get: undefined, set: invalidatedSetter(name), configurable: true })
 
       @_addVarsBySpec(specs)
-      @_names = difference(@_names)(obsoletedNames).concat(freshNames)
+      @_names = new Set(difference(@names())(obsoletedNames).concat(freshNames))
 
       return
 
