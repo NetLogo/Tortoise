@@ -402,6 +402,10 @@ module.exports =
       else
         "nobody"
 
+    # () => Boolean
+    hasVariable: (varName) ->
+      @_varManager.has(varName)
+
     # () => Array[String]
     varNames: ->
       @_varManager.names()
