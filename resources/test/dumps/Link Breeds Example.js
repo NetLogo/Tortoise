@@ -58,8 +58,8 @@ ProcedurePrims.defineCommand("setup", 245, 813, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(5, world.turtles())), function() {
     var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.list.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS"), function() {
       SelfManager.self().setVariable("color", 105);
-      SelfManager.self().setVariable("weight", RandomPrims.randomLong(10));
-      SelfManager.self().setVariable("label", SelfManager.self().getVariable("weight"));
+      PrimChecks.link.setVariable("weight", RandomPrims.randomLong(10));
+      SelfManager.self().setVariable("label", PrimChecks.link.getVariable("weight"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getSpecialName(), "curved link")

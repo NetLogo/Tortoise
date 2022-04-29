@@ -141,7 +141,7 @@ ProcedurePrims.defineCommand("roll-dice", 1835, 2601, (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   let total = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { return PrimChecks.turtle.getVariable("die-value"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL", total);
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { SelfManager.self().setVariable("pair-sum", total); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { PrimChecks.turtle.setVariable("pair-sum", total); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("pair-outcomes", PrimChecks.list.lput(total, PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("pair-outcomes"))));
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() {
     world.observer.setGlobal("single-outcomes", PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, PrimChecks.turtle.getVariable("die-value")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("single-outcomes"))));
@@ -149,7 +149,7 @@ ProcedurePrims.defineCommand("roll-dice", 1835, 2601, (function() {
 }))
 ProcedurePrims.defineCommand("move-paired-dice", 2609, 3010, (function() {
   if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() {
-    return !Prims.equality(SelfManager.self().getVariable("pair-sum"), SelfManager.self().getPatchVariable("column"));
+    return !Prims.equality(PrimChecks.turtle.getVariable("pair-sum"), SelfManager.self().getPatchVariable("column"));
   })) {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
@@ -221,7 +221,7 @@ ProcedurePrims.defineCommand("paired-die-check-visible", 4494, 4873, (function()
   }, "[ outcome -> outcome = mode ]"), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-TALLEST-COLUMN", heightHofHtallestHcolumn);
   let heightHofHmyHcolumn = PrimChecks.list.length(PrimChecks.list.filter(Tasks.reporterTask(function(outcome) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
-    return Prims.equality(outcome, SelfManager.self().getVariable("pair-sum"));
+    return Prims.equality(outcome, PrimChecks.turtle.getVariable("pair-sum"));
   }, "[ outcome -> outcome = pair-sum ]"), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-MY-COLUMN", heightHofHmyHcolumn);
   if (Prims.gte(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, heightHofHtallestHcolumn), PrimChecks.validator.checkArg('-', 1, heightHofHmyHcolumn)), PrimChecks.math.minus(world.topology.height, 2))) {
     return SelfManager.self().die();

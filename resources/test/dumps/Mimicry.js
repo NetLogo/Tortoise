@@ -85,7 +85,7 @@ ProcedurePrims.defineCommand("setup-turtles", 1344, 1839, (function() {
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("VICEROYS").getSpecialName(), "butterfly viceroy")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-birds"), "BIRDS"), function() {
     SelfManager.self().setVariable("color", 0);
-    SelfManager.self().setVariable("memory", []);
+    PrimChecks.turtle.setVariable("memory", []);
     SelfManager.self().setVariable("shape", PrimChecks.list.oneOf(["bird 1", "bird 2"]));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-monarchs"), "MONARCHS"), function() { SelfManager.self().setVariable("color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -148,24 +148,24 @@ ProcedurePrims.defineReporter("color-in-memory?", 3120, 3232, (function(c) {
     if (Prims.equality(PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, i)), c)) {
       return PrimChecks.procedure.report(true);
     }
-  }, "[ i -> if item 0 i = c [ report true ] ]"), SelfManager.self().getVariable("memory")); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ i -> if item 0 i = c [ report true ] ]"), PrimChecks.turtle.getVariable("memory")); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   return PrimChecks.procedure.report(false);
 }))
 ProcedurePrims.defineCommand("remember-color", 3280, 3747, (function(c) {
-  if (Prims.gte(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, SelfManager.self().getVariable("memory"))), world.observer.getGlobal("memory-size"))) {
-    SelfManager.self().setVariable("memory", PrimChecks.list.butFirst('but-first', PrimChecks.validator.checkArg('BUT-FIRST', 12, SelfManager.self().getVariable("memory"))));
+  if (Prims.gte(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.turtle.getVariable("memory"))), world.observer.getGlobal("memory-size"))) {
+    PrimChecks.turtle.setVariable("memory", PrimChecks.list.butFirst('but-first', PrimChecks.validator.checkArg('BUT-FIRST', 12, PrimChecks.turtle.getVariable("memory"))));
   }
-  SelfManager.self().setVariable("memory", PrimChecks.list.lput(ListPrims.list(c, 0), PrimChecks.validator.checkArg('LPUT', 8, SelfManager.self().getVariable("memory"))));
+  PrimChecks.turtle.setVariable("memory", PrimChecks.list.lput(ListPrims.list(c, 0), PrimChecks.validator.checkArg('LPUT', 8, PrimChecks.turtle.getVariable("memory"))));
 }))
 ProcedurePrims.defineCommand("birds-forget", 3855, 4128, (function() {
-  SelfManager.self().setVariable("memory", Tasks.map(Tasks.reporterTask(function(i) {
+  PrimChecks.turtle.setVariable("memory", Tasks.map(Tasks.reporterTask(function(i) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     return ListPrims.list(PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, i)), PrimChecks.math.plus(1, PrimChecks.validator.checkArg('+', 1, PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, i)))));
-  }, "[ i -> list item 0 i 1 + item 1 i ]"), SelfManager.self().getVariable("memory")));
-  SelfManager.self().setVariable("memory", PrimChecks.list.filter(Tasks.reporterTask(function(i) {
+  }, "[ i -> list item 0 i 1 + item 1 i ]"), PrimChecks.turtle.getVariable("memory")));
+  PrimChecks.turtle.setVariable("memory", PrimChecks.list.filter(Tasks.reporterTask(function(i) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     return Prims.lte(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, i)), world.observer.getGlobal("memory-duration"));
-  }, "[ i -> item 1 i <= memory-duration ]"), PrimChecks.validator.checkArg('FILTER', 8, SelfManager.self().getVariable("memory"))));
+  }, "[ i -> item 1 i <= memory-duration ]"), PrimChecks.validator.checkArg('FILTER', 8, PrimChecks.turtle.getVariable("memory"))));
 }))
 ProcedurePrims.defineCommand("butterflies-reproduce", 4258, 4533, (function() {
   if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
