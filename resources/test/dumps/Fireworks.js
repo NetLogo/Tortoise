@@ -76,7 +76,7 @@ ProcedurePrims.defineCommand("init-rockets", 1267, 1665, (function() {
     PrimChecks.turtle.setVariable("col", PrimChecks.list.oneOf(ColorModel.BASE_COLORS));
     SelfManager.self().setVariable("color", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("col")), 2));
     PrimChecks.turtle.setVariable("size", 2);
-    SelfManager.self().setVariable("terminal-y-vel", PrimChecks.math.randomFloat(4));
+    PrimChecks.turtle.setVariable("terminal-y-vel", PrimChecks.math.randomFloat(4));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("projectile-motion", 1820, 2171, (function() {
@@ -88,7 +88,7 @@ ProcedurePrims.defineCommand("projectile-motion", 1820, 2171, (function() {
   }
   SelfManager.self().fd(PrimChecks.math.sqrt(PrimChecks.math.plus(PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, PrimChecks.turtle.getVariable("x-vel")), 2), PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, PrimChecks.turtle.getVariable("y-vel")), 2))));
   if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("ROCKETS"))) {
-    if (Prims.lt(PrimChecks.turtle.getVariable("y-vel"), SelfManager.self().getVariable("terminal-y-vel"))) {
+    if (Prims.lt(PrimChecks.turtle.getVariable("y-vel"), PrimChecks.turtle.getVariable("terminal-y-vel"))) {
       var R = ProcedurePrims.callCommand("explode"); if (R === DeathInterrupt) { return R; }
       return SelfManager.self().die();
     }
@@ -99,7 +99,7 @@ ProcedurePrims.defineCommand("projectile-motion", 1820, 2171, (function() {
 }))
 ProcedurePrims.defineCommand("explode", 2296, 2569, (function() {
   var R = ProcedurePrims.ask(SelfManager.self().hatch(world.observer.getGlobal("fragments"), "FRAGS"), function() {
-    SelfManager.self().setVariable("dim", 0);
+    PrimChecks.turtle.setVariable("dim", 0);
     SelfManager.self().right(RandomPrims.randomLong(360));
     PrimChecks.turtle.setVariable("size", 1);
     PrimChecks.turtle.setVariable("x-vel", PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("x-vel")), 0.5), SelfManager.self().dx()), PrimChecks.math.randomFloat(2)), 1));
@@ -113,8 +113,8 @@ ProcedurePrims.defineCommand("explode", 2296, 2569, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("fade", 2692, 2822, (function() {
-  SelfManager.self().setVariable("dim", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("dim")), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("fade-amount")), 10)));
-  SelfManager.self().setVariable("color", ColorModel.scaleColor(PrimChecks.turtle.getVariable("col"), SelfManager.self().getVariable("dim"), -5, 0.5));
+  PrimChecks.turtle.setVariable("dim", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("dim")), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("fade-amount")), 10)));
+  SelfManager.self().setVariable("color", ColorModel.scaleColor(PrimChecks.turtle.getVariable("col"), PrimChecks.turtle.getVariable("dim"), -5, 0.5));
   if (Prims.lt(SelfManager.self().getVariable("color"), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("col")), 3.5))) {
     return SelfManager.self().die();
   }

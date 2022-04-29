@@ -146,7 +146,7 @@ ProcedurePrims.defineCommand("go", 1456, 2009, (function() {
     SelfManager.self().setVariable("color", PrimChecks.math.minus(5, 1.5));
     PrimChecks.turtle.setVariable("size", 0.9);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.links(), function() { SelfManager.self().setVariable("new-collaboration?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.links(), function() { PrimChecks.link.setVariable("new-collaboration?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("pick-team-members"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("tie-collaborators"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("color-collaborations"); if (R === DeathInterrupt) { return R; }
@@ -197,21 +197,21 @@ ProcedurePrims.defineCommand("pick-team-members", 2056, 3026, (function() {
 ProcedurePrims.defineCommand("tie-collaborators", 3104, 3343, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtles(), function() { return PrimChecks.turtle.getVariable("in-team?"); }), function() {
     var R = ProcedurePrims.ask(LinkPrims.createLinksWith(PrimChecks.agentset.otherWith(world.turtles(), function() { return PrimChecks.turtle.getVariable("in-team?"); }), "LINKS"), function() {
-      SelfManager.self().setVariable("new-collaboration?", true);
-      SelfManager.self().setVariable("thickness", 0.3);
+      PrimChecks.link.setVariable("new-collaboration?", true);
+      PrimChecks.link.setVariable("thickness", 0.3);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("color-collaborations", 3496, 4092, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.links(), function() {
-    return (PrimChecks.validator.checkArg('AND', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("end1")), function() { return PrimChecks.turtle.getVariable("in-team?"); })) && PrimChecks.validator.checkArg('AND', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("end2")), function() { return PrimChecks.turtle.getVariable("in-team?"); })));
+    return (PrimChecks.validator.checkArg('AND', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.link.getVariable("end1")), function() { return PrimChecks.turtle.getVariable("in-team?"); })) && PrimChecks.validator.checkArg('AND', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.link.getVariable("end2")), function() { return PrimChecks.turtle.getVariable("in-team?"); })));
   }), function() {
-    if (SelfManager.self().getVariable("new-collaboration?")) {
-      if ((PrimChecks.validator.checkArg('AND', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("end1")), function() { return PrimChecks.turtle.getVariable("incumbent?"); })) && PrimChecks.validator.checkArg('AND', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("end2")), function() { return PrimChecks.turtle.getVariable("incumbent?"); })))) {
+    if (PrimChecks.link.getVariable("new-collaboration?")) {
+      if ((PrimChecks.validator.checkArg('AND', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.link.getVariable("end1")), function() { return PrimChecks.turtle.getVariable("incumbent?"); })) && PrimChecks.validator.checkArg('AND', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.link.getVariable("end2")), function() { return PrimChecks.turtle.getVariable("incumbent?"); })))) {
         SelfManager.self().setVariable("color", 45);
       }
       else {
-        if ((PrimChecks.validator.checkArg('OR', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("end1")), function() { return PrimChecks.turtle.getVariable("incumbent?"); })) || PrimChecks.validator.checkArg('OR', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, SelfManager.self().getVariable("end2")), function() { return PrimChecks.turtle.getVariable("incumbent?"); })))) {
+        if ((PrimChecks.validator.checkArg('OR', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.link.getVariable("end1")), function() { return PrimChecks.turtle.getVariable("incumbent?"); })) || PrimChecks.validator.checkArg('OR', 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.link.getVariable("end2")), function() { return PrimChecks.turtle.getVariable("incumbent?"); })))) {
           SelfManager.self().setVariable("color", 75);
         }
         else {
