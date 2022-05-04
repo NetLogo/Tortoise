@@ -240,8 +240,8 @@ ProcedurePrims.defineCommand("create-initial-gene-pool", 5393, 6132, (function()
   var R = ProcedurePrims.callCommand("make-initial-alleles-for-gene", 5, "Y", "X", world.observer.getGlobal("initial-#-males")); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("create-initial-fish", 6141, 6636, (function() {
-  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-#-males"), "SOMATIC-CELLS"), function() { SelfManager.self().setVariable("sex", "male"); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-#-females"), "SOMATIC-CELLS"), function() { SelfManager.self().setVariable("sex", "female"); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-#-males"), "SOMATIC-CELLS"), function() { PrimChecks.turtle.setVariable("sex", "male"); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-#-females"), "SOMATIC-CELLS"), function() { PrimChecks.turtle.setVariable("sex", "female"); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SOMATIC-CELLS"), function() {
     var R = ProcedurePrims.callCommand("setup-new-somatic-cell-attributes"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -268,19 +268,19 @@ ProcedurePrims.defineCommand("distribute-fish-in-tank", 6980, 7143, (function() 
 ProcedurePrims.defineCommand("make-initial-alleles-for-gene", 7152, 8023, (function(geneHnumber, alleleH1, alleleH2, numHbigHalleles) {
   let initialHnumberHfish = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("initial-#-males")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("initial-#-females"))); ProcedurePrims.stack().currentContext().registerStringRunVar("INITIAL-NUMBER-FISH", initialHnumberHfish);
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, initialHnumberHfish)), "ALLELES"), function() {
-    SelfManager.self().setVariable("gene", geneHnumber);
+    PrimChecks.turtle.setVariable("gene", geneHnumber);
     SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("gene-") + workspace.dump(geneHnumber)));
     PrimChecks.turtle.setVariable("heading", 0);
-    SelfManager.self().setVariable("owned-by-fish?", false);
-    SelfManager.self().setVariable("value", alleleH2);
+    PrimChecks.turtle.setVariable("owned-by-fish?", false);
+    PrimChecks.turtle.setVariable("value", alleleH2);
     SelfManager.self().setVariable("color", [0, 0, 0, 255]);
     SelfManager.self().setVariable("label-color", SelfManager.self().getVariable("color"));
-    SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(SelfManager.self().getVariable("value")) + workspace.dump("     ")));
+    SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(PrimChecks.turtle.getVariable("value")) + workspace.dump("     ")));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(PrimChecks.validator.checkArg('N-OF', 1, numHbigHalleles), PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("gene"), geneHnumber); }))), function() {
-    SelfManager.self().setVariable("value", alleleH1);
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(PrimChecks.validator.checkArg('N-OF', 1, numHbigHalleles), PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("gene"), geneHnumber); }))), function() {
+    PrimChecks.turtle.setVariable("value", alleleH1);
     SelfManager.self().setVariable("color", [220, 220, 220, 255]);
-    SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(SelfManager.self().getVariable("value")) + workspace.dump("     ")));
+    SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(PrimChecks.turtle.getVariable("value")) + workspace.dump("     ")));
     SelfManager.self().setVariable("label-color", SelfManager.self().getVariable("color"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
@@ -295,36 +295,36 @@ ProcedurePrims.defineCommand("distribute-gene-pool-to-somatic-cells", 8033, 9515
       var R = ProcedurePrims.callCommand("position-and-link-alleles", SelfManager.self(), n, "right"); if (R === DeathInterrupt) { return R; }
     }, "[ n -> position-and-link-alleles self n \"left\" position-and-link-alleles self n \"right\" ]"), [1, 2, 3, 4]); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.oneOfWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() {
-      return ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getVariable("owned-by-fish?"))) && Prims.equality(SelfManager.self().getVariable("gene"), 5)) && Prims.equality(SelfManager.self().getVariable("value"), "X"));
+      return ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("owned-by-fish?"))) && Prims.equality(PrimChecks.turtle.getVariable("gene"), 5)) && Prims.equality(PrimChecks.turtle.getVariable("value"), "X"));
     })), function() {
-      SelfManager.self().setVariable("owned-by-fish?", true);
+      PrimChecks.turtle.setVariable("owned-by-fish?", true);
       PrimChecks.turtle.setVariable("size", 1.2);
       PrimChecks.turtle.setVariable("xcor", PrimChecks.math.plus(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("inter-chromosome-pair-spacing")), 4), 0.1));
       PrimChecks.turtle.setVariable("ycor", -0.4);
-      SelfManager.self().setVariable("side", "left");
+      PrimChecks.turtle.setVariable("side", "left");
       var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHsomaticHcell, "LINKS"), function() {
         SelfManager.self().setVariable("hidden?", true);
-        SelfManager.self().setVariable("tie-mode", "fixed");
+        PrimChecks.link.setVariable("tie-mode", "fixed");
         SelfManager.self().tie();
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    if (Prims.equality(SelfManager.self().getVariable("sex"), "male")) {
+    if (Prims.equality(PrimChecks.turtle.getVariable("sex"), "male")) {
       lastHsexHallele = "Y"; ProcedurePrims.stack().currentContext().updateStringRunVar("LAST-SEX-ALLELE", lastHsexHallele);
     }
     else {
       lastHsexHallele = "X"; ProcedurePrims.stack().currentContext().updateStringRunVar("LAST-SEX-ALLELE", lastHsexHallele);
     }
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.oneOfWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() {
-      return ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getVariable("owned-by-fish?"))) && Prims.equality(SelfManager.self().getVariable("gene"), 5)) && Prims.equality(SelfManager.self().getVariable("value"), lastHsexHallele));
+      return ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("owned-by-fish?"))) && Prims.equality(PrimChecks.turtle.getVariable("gene"), 5)) && Prims.equality(PrimChecks.turtle.getVariable("value"), lastHsexHallele));
     })), function() {
-      SelfManager.self().setVariable("owned-by-fish?", true);
+      PrimChecks.turtle.setVariable("owned-by-fish?", true);
       PrimChecks.turtle.setVariable("size", 1.2);
       PrimChecks.turtle.setVariable("xcor", PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("inter-chromosome-pair-spacing")), 4), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("intra-chromosome-pair-spacing"))), 0.1));
       PrimChecks.turtle.setVariable("ycor", -0.4);
-      SelfManager.self().setVariable("side", "right");
+      PrimChecks.turtle.setVariable("side", "right");
       var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHsomaticHcell, "LINKS"), function() {
         SelfManager.self().setVariable("hidden?", true);
-        SelfManager.self().setVariable("tie-mode", "fixed");
+        PrimChecks.link.setVariable("tie-mode", "fixed");
         SelfManager.self().tie();
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -341,16 +341,16 @@ ProcedurePrims.defineCommand("position-and-link-alleles", 9524, 10352, (function
   }
   pairHshiftHright = PrimChecks.math.minus(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("inter-chromosome-pair-spacing")), PrimChecks.validator.checkArg('*', 1, geneHnumber)), 0.45); ProcedurePrims.stack().currentContext().updateStringRunVar("PAIR-SHIFT-RIGHT", pairHshiftHright);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.oneOfWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() {
-    return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getVariable("owned-by-fish?"))) && Prims.equality(SelfManager.self().getVariable("gene"), geneHnumber));
+    return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("owned-by-fish?"))) && Prims.equality(PrimChecks.turtle.getVariable("gene"), geneHnumber));
   })), function() {
-    SelfManager.self().setVariable("owned-by-fish?", true);
-    SelfManager.self().setVariable("side", whichHside);
+    PrimChecks.turtle.setVariable("owned-by-fish?", true);
+    PrimChecks.turtle.setVariable("side", whichHside);
     PrimChecks.turtle.setVariable("size", 1.2);
     PrimChecks.turtle.setVariable("xcor", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, thisHsomaticHcell), function() { return PrimChecks.turtle.getVariable("xcor"); })), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, pairHshiftHright), PrimChecks.validator.checkArg('+', 1, sideHshift))));
     PrimChecks.turtle.setVariable("ycor", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, thisHsomaticHcell), function() { return PrimChecks.turtle.getVariable("ycor"); })), 0.4));
     var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHsomaticHcell, "LINKS"), function() {
       SelfManager.self().setVariable("hidden?", true);
-      SelfManager.self().setVariable("tie-mode", "fixed");
+      PrimChecks.link.setVariable("tie-mode", "fixed");
       SelfManager.self().tie();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -418,10 +418,10 @@ ProcedurePrims.defineCommand("convert-zygote-into-somatic-cell", 12064, 13746, (
   let thisHsomaticHcell = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-SOMATIC-CELL", thisHsomaticHcell);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("FISH-ZYGOTES"), function() {
     maleHgamete = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("GAMETE-CELLS"), function() {
-      return (LinkPrims.isOutLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(SelfManager.self().getVariable("sex"), "male"));
+      return (LinkPrims.isOutLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(PrimChecks.turtle.getVariable("sex"), "male"));
     }); ProcedurePrims.stack().currentContext().updateStringRunVar("MALE-GAMETE", maleHgamete);
     femaleHgamete = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("GAMETE-CELLS"), function() {
-      return (LinkPrims.isOutLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(SelfManager.self().getVariable("sex"), "female"));
+      return (LinkPrims.isOutLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(PrimChecks.turtle.getVariable("sex"), "female"));
     }); ProcedurePrims.stack().currentContext().updateStringRunVar("FEMALE-GAMETE", femaleHgamete);
     if ((PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, maleHgamete)) && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, femaleHgamete)))) {
       if ((Prims.lte(SelfManager.self().distance(PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, maleHgamete))), 0.01) && Prims.lte(SelfManager.self().distance(PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, femaleHgamete))), 0.01))) {
@@ -438,19 +438,19 @@ ProcedurePrims.defineCommand("convert-zygote-into-somatic-cell", 12064, 13746, (
         var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, maleHsexHcellHalleles), function() {
           var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHsomaticHcell, "LINKS"), function() {
             SelfManager.self().setVariable("hidden?", true);
-            SelfManager.self().setVariable("tie-mode", "fixed");
+            PrimChecks.link.setVariable("tie-mode", "fixed");
             SelfManager.self().tie();
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, femaleHsexHcellHalleles), function() {
           var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHsomaticHcell, "LINKS"), function() {
             SelfManager.self().setVariable("hidden?", true);
-            SelfManager.self().setVariable("tie-mode", "fixed");
+            PrimChecks.link.setVariable("tie-mode", "fixed");
             SelfManager.self().tie();
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         var R = ProcedurePrims.callCommand("align-alleles-for-this-somatic-cell", thisHsomaticHcell); if (R === DeathInterrupt) { return R; }
-        SelfManager.self().setVariable("sex", PrimChecks.procedure.callReporter("sex-phenotype"));
+        PrimChecks.turtle.setVariable("sex", PrimChecks.procedure.callReporter("sex-phenotype"));
         var R = ProcedurePrims.callCommand("grow-fish-parts-from-somatic-cell"); if (R === DeathInterrupt) { return R; }
         world.observer.setGlobal("num-fish-born", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("num-fish-born")), 1));
       }
@@ -462,21 +462,21 @@ ProcedurePrims.defineCommand("align-alleles-for-this-somatic-cell", 13755, 14568
   var R = Tasks.forEach(Tasks.commandTask(function(thisHgene) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     if (Prims.gt(PrimChecks.agentset.countWith(allHalleles, function() {
-      return (Prims.equality(SelfManager.self().getVariable("gene"), thisHgene) && Prims.equality(SelfManager.self().getVariable("side"), "left"));
+      return (Prims.equality(PrimChecks.turtle.getVariable("gene"), thisHgene) && Prims.equality(PrimChecks.turtle.getVariable("side"), "left"));
     }), 1)) {
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.oneOfWith(allHalleles, function() { return Prims.equality(SelfManager.self().getVariable("gene"), thisHgene); })), function() {
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.oneOfWith(allHalleles, function() { return Prims.equality(PrimChecks.turtle.getVariable("gene"), thisHgene); })), function() {
         PrimChecks.turtle.setVariable("heading", 90);
         SelfManager.self().fd(world.observer.getGlobal("intra-chromosome-pair-spacing"));
-        SelfManager.self().setVariable("side", "right");
+        PrimChecks.turtle.setVariable("side", "right");
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }
     if (Prims.gt(PrimChecks.agentset.countWith(allHalleles, function() {
-      return (Prims.equality(SelfManager.self().getVariable("gene"), thisHgene) && Prims.equality(SelfManager.self().getVariable("side"), "right"));
+      return (Prims.equality(PrimChecks.turtle.getVariable("gene"), thisHgene) && Prims.equality(PrimChecks.turtle.getVariable("side"), "right"));
     }), 1)) {
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.oneOfWith(allHalleles, function() { return Prims.equality(SelfManager.self().getVariable("gene"), thisHgene); })), function() {
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.oneOfWith(allHalleles, function() { return Prims.equality(PrimChecks.turtle.getVariable("gene"), thisHgene); })), function() {
         PrimChecks.turtle.setVariable("heading", 90);
         SelfManager.self().fd(-(world.observer.getGlobal("intra-chromosome-pair-spacing")));
-        SelfManager.self().setVariable("side", "left");
+        PrimChecks.turtle.setVariable("side", "left");
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }
   }, "[ this-gene -> if count all-alleles with [ gene = this-gene and side = \"left\" ] > 1 [ ask one-of all-alleles with [ gene = this-gene ] [ set heading 90 forward intra-chromosome-pair-spacing set side \"right\" ] ] if count all-alleles with [ gene = this-gene and side = \"right\" ] > 1 [ ask one-of all-alleles with [ gene = this-gene ] [ set heading 90 back intra-chromosome-pair-spacing set side \"left\" ] ] ]"), [1, 2, 3, 4, 5]); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -488,8 +488,8 @@ ProcedurePrims.defineCommand("find-potential-mates", 14577, 15719, (function() {
   let turtlesHinHthisHregion = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("TURTLES-IN-THIS-REGION", turtlesHinHthisHregion);
   let potentialHmates = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("POTENTIAL-MATES", potentialHmates);
   let allHfishHandHfishHzygotes = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("ALL-FISH-AND-FISH-ZYGOTES", allHfishHandHfishHzygotes);
-  if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("SOMATIC-CELLS"), function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); })) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.oneOfWith(world.turtleManager.turtlesOfBreed("SOMATIC-CELLS"), function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); })), function() {
+  if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("SOMATIC-CELLS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("sex"), "male"); })) {
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.oneOfWith(world.turtleManager.turtlesOfBreed("SOMATIC-CELLS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("sex"), "male"); })), function() {
       dad = SelfManager.self(); ProcedurePrims.stack().currentContext().updateStringRunVar("DAD", dad);
       xcorHdad = PrimChecks.turtle.getVariable("xcor"); ProcedurePrims.stack().currentContext().updateStringRunVar("XCOR-DAD", xcorHdad);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -500,7 +500,7 @@ ProcedurePrims.defineCommand("find-potential-mates", 14577, 15719, (function() {
       return (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("FISH")) || Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("FISH-ZYGOTES")));
     }); ProcedurePrims.stack().currentContext().updateStringRunVar("ALL-FISH-AND-FISH-ZYGOTES", allHfishHandHfishHzygotes);
     potentialHmates = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, turtlesHinHthisHregion), function() {
-      return (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("SOMATIC-CELLS")) && Prims.equality(SelfManager.self().getVariable("sex"), "female"));
+      return (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("SOMATIC-CELLS")) && Prims.equality(PrimChecks.turtle.getVariable("sex"), "female"));
     }); ProcedurePrims.stack().currentContext().updateStringRunVar("POTENTIAL-MATES", potentialHmates);
     if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, potentialHmates))) {
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, potentialHmates))), function() { mom = SelfManager.self(); ProcedurePrims.stack().currentContext().updateStringRunVar("MOM", mom); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -536,7 +536,7 @@ ProcedurePrims.defineCommand("link-alleles-to-gametes-and-gametes-to-zygote", 16
     SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("GAMETE-CELLS"));
     PrimChecks.turtle.setVariable("heading", 0);
     var R = ProcedurePrims.ask(LinkPrims.createLinkTo(child, "LINKS"), function() { SelfManager.self().setVariable("hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    if (Prims.equality(SelfManager.self().getVariable("sex"), "male")) {
+    if (Prims.equality(PrimChecks.turtle.getVariable("sex"), "male")) {
       SelfManager.self().setVariable("shape", "cell-gamete-male");
     }
     else {
@@ -547,13 +547,13 @@ ProcedurePrims.defineCommand("link-alleles-to-gametes-and-gametes-to-zygote", 16
   var R = Tasks.forEach(Tasks.commandTask(function(thisHgene) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(1, PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() {
-      return (LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(SelfManager.self().getVariable("gene"), thisHgene));
+      return (LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(PrimChecks.turtle.getVariable("gene"), thisHgene));
     }))), function() {
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-        SelfManager.self().setVariable("owned-by-fish?", false);
+        PrimChecks.turtle.setVariable("owned-by-fish?", false);
         var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHnewHgameteHcell, "LINKS"), function() {
           SelfManager.self().setVariable("hidden?", true);
-          SelfManager.self().setVariable("tie-mode", "fixed");
+          PrimChecks.link.setVariable("tie-mode", "fixed");
           SelfManager.self().tie();
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -562,10 +562,10 @@ ProcedurePrims.defineCommand("link-alleles-to-gametes-and-gametes-to-zygote", 16
 }))
 ProcedurePrims.defineCommand("wander", 16769, 16964, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("FISH"), function() {
-    PrimChecks.turtle.setVariable("heading", SelfManager.self().getVariable("bearing"));
+    PrimChecks.turtle.setVariable("heading", PrimChecks.turtle.getVariable("bearing"));
     SelfManager.self().right(PrimChecks.math.randomFloat(70));
     SelfManager.self().right(-(PrimChecks.math.randomFloat(70)));
-    SelfManager.self().setVariable("bearing", PrimChecks.turtle.getVariable("heading"));
+    PrimChecks.turtle.setVariable("bearing", PrimChecks.turtle.getVariable("heading"));
     SelfManager.self().fd(world.observer.getGlobal("fish-forward-step"));
     PrimChecks.turtle.setVariable("heading", 0);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -587,7 +587,7 @@ ProcedurePrims.defineCommand("detect-and-move-fish-at-inside-tank-boundary", 171
       PrimChecks.turtle.setVariable("heading", PrimChecks.turtle.towards(PrimChecks.validator.checkArg('TOWARDS', 768, nearestHwaterHpatch)));
       SelfManager.self().fd(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("fish-forward-step")), 2));
       PrimChecks.turtle.setVariable("heading", 0);
-      SelfManager.self().setVariable("bearing", PrimChecks.math.randomFloat(360));
+      PrimChecks.turtle.setVariable("bearing", PrimChecks.math.randomFloat(360));
     }
     if (SelfManager.self().getPatchVariable("divider-here?")) {
       SelfManager.self().moveTo(nearestHwaterHpatch);
@@ -598,11 +598,11 @@ ProcedurePrims.defineCommand("clean-up-fish-bones", 17638, 18005, (function() {
   let boneHtransparency = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("BONE-TRANSPARENCY", boneHtransparency);
   let colorHlist = []; ProcedurePrims.stack().currentContext().registerStringRunVar("COLOR-LIST", colorHlist);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("FISH-BONES"), function() {
-    SelfManager.self().setVariable("countdown", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("countdown")), 1));
-    boneHtransparency = PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getVariable("countdown")), 255), 50); ProcedurePrims.stack().currentContext().updateStringRunVar("BONE-TRANSPARENCY", boneHtransparency);
+    PrimChecks.turtle.setVariable("countdown", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("countdown")), 1));
+    boneHtransparency = PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("countdown")), 255), 50); ProcedurePrims.stack().currentContext().updateStringRunVar("BONE-TRANSPARENCY", boneHtransparency);
     colorHlist = PrimChecks.list.lput(boneHtransparency, [255, 255, 255]); ProcedurePrims.stack().currentContext().updateStringRunVar("COLOR-LIST", colorHlist);
     SelfManager.self().setVariable("color", colorHlist);
-    if (Prims.lte(SelfManager.self().getVariable("countdown"), 0)) {
+    if (Prims.lte(PrimChecks.turtle.getVariable("countdown"), 0)) {
       return SelfManager.self().die();
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -612,7 +612,7 @@ ProcedurePrims.defineCommand("remove-this-fish", 18014, 18389, (function() {
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FISH-BONES"));
     SelfManager.self().setVariable("color", 9.9);
-    SelfManager.self().setVariable("countdown", 25);
+    PrimChecks.turtle.setVariable("countdown", 25);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
     var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -678,16 +678,16 @@ ProcedurePrims.defineCommand("detect-mouse-selection-event", 18398, 20126, (func
 }))
 ProcedurePrims.defineCommand("update-statistics", 20384, 21848, (function() {
   world.observer.setGlobal("num-fish-in-tank", PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("FISH")));
-  world.observer.setGlobal("#-big-b-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "B"); }));
-  world.observer.setGlobal("#-small-b-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "b"); }));
-  world.observer.setGlobal("#-big-t-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "T"); }));
-  world.observer.setGlobal("#-small-t-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "t"); }));
-  world.observer.setGlobal("#-big-f-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "F"); }));
-  world.observer.setGlobal("#-small-f-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "f"); }));
-  world.observer.setGlobal("#-big-g-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "G"); }));
-  world.observer.setGlobal("#-small-g-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "g"); }));
-  world.observer.setGlobal("#-y-chromosomes", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "Y"); }));
-  world.observer.setGlobal("#-x-chromosomes", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(SelfManager.self().getVariable("value"), "X"); }));
+  world.observer.setGlobal("#-big-b-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("value"), "B"); }));
+  world.observer.setGlobal("#-small-b-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("value"), "b"); }));
+  world.observer.setGlobal("#-big-t-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("value"), "T"); }));
+  world.observer.setGlobal("#-small-t-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("value"), "t"); }));
+  world.observer.setGlobal("#-big-f-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("value"), "F"); }));
+  world.observer.setGlobal("#-small-f-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("value"), "f"); }));
+  world.observer.setGlobal("#-big-g-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("value"), "G"); }));
+  world.observer.setGlobal("#-small-g-alleles", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("value"), "g"); }));
+  world.observer.setGlobal("#-y-chromosomes", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("value"), "Y"); }));
+  world.observer.setGlobal("#-x-chromosomes", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("value"), "X"); }));
   world.observer.setGlobal("#-of-green-dorsal-fins", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
     return Prims.equality(SelfManager.self().getVariable("color"), world.observer.getGlobal("green-dorsal-fin-color"));
   }));
@@ -712,8 +712,8 @@ ProcedurePrims.defineCommand("update-statistics", 20384, 21848, (function() {
   world.observer.setGlobal("#-of-no-forked-tails", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
     return Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("no-forked-tail-shape"));
   }));
-  world.observer.setGlobal("#-of-males", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("FISH"), function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); }));
-  world.observer.setGlobal("#-of-females", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("FISH"), function() { return Prims.equality(SelfManager.self().getVariable("sex"), "female"); }));
+  world.observer.setGlobal("#-of-males", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("FISH"), function() { return Prims.equality(PrimChecks.turtle.getVariable("sex"), "male"); }));
+  world.observer.setGlobal("#-of-females", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("FISH"), function() { return Prims.equality(PrimChecks.turtle.getVariable("sex"), "female"); }));
 }))
 ProcedurePrims.defineCommand("visualize-tank", 22108, 22536, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() {
@@ -776,20 +776,20 @@ ProcedurePrims.defineCommand("grow-fish-parts-from-somatic-cell", 23542, 25159, 
   let thisHfishHbody = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-FISH-BODY", thisHfishHbody);
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FISH"));
-    SelfManager.self().setVariable("bearing", PrimChecks.math.randomFloat(360));
+    PrimChecks.turtle.setVariable("bearing", PrimChecks.math.randomFloat(360));
     PrimChecks.turtle.setVariable("heading", 0);
     PrimChecks.turtle.setVariable("size", 1);
     thisHfishHbody = SelfManager.self(); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-FISH-BODY", thisHfishHbody);
-    if (Prims.equality(SelfManager.self().getVariable("sex"), "male")) {
+    if (Prims.equality(PrimChecks.turtle.getVariable("sex"), "male")) {
       SelfManager.self().setVariable("color", world.observer.getGlobal("male-color"));
     }
-    if (Prims.equality(SelfManager.self().getVariable("sex"), "female")) {
+    if (Prims.equality(PrimChecks.turtle.getVariable("sex"), "female")) {
       SelfManager.self().setVariable("color", world.observer.getGlobal("female-color"));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHfishHbody, "LINKS"), function() {
     SelfManager.self().setVariable("hidden?", true);
-    SelfManager.self().setVariable("tie-mode", "fixed");
+    PrimChecks.link.setVariable("tie-mode", "fixed");
     SelfManager.self().tie();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
@@ -802,7 +802,7 @@ ProcedurePrims.defineCommand("grow-fish-parts-from-somatic-cell", 23542, 25159, 
     SelfManager.self()._optimalFdLessThan1(0.4);
     var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHfishHbody, "LINKS"), function() {
       SelfManager.self().setVariable("hidden?", true);
-      SelfManager.self().setVariable("tie-mode", "fixed");
+      PrimChecks.link.setVariable("tie-mode", "fixed");
       SelfManager.self().tie();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -813,7 +813,7 @@ ProcedurePrims.defineCommand("grow-fish-parts-from-somatic-cell", 23542, 25159, 
     SelfManager.self().setVariable("color", PrimChecks.procedure.callReporter("dorsal-fin-color-phenotype"));
     var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHfishHbody, "LINKS"), function() {
       SelfManager.self().setVariable("hidden?", true);
-      SelfManager.self().setVariable("tie-mode", "fixed");
+      PrimChecks.link.setVariable("tie-mode", "fixed");
       SelfManager.self().tie();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -824,7 +824,7 @@ ProcedurePrims.defineCommand("grow-fish-parts-from-somatic-cell", 23542, 25159, 
     SelfManager.self().setVariable("color", [0, 0, 0, 255]);
     var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHfishHbody, "LINKS"), function() {
       SelfManager.self().setVariable("hidden?", true);
-      SelfManager.self().setVariable("tie-mode", "fixed");
+      PrimChecks.link.setVariable("tie-mode", "fixed");
       SelfManager.self().tie();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -832,7 +832,7 @@ ProcedurePrims.defineCommand("grow-fish-parts-from-somatic-cell", 23542, 25159, 
 ProcedurePrims.defineReporter("has-at-least-one-dominant-set-of-instructions-for", 25424, 25794, (function(dominantHallele) {
   let thisHsomaticHcell = SelfManager.self(); ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-SOMATIC-CELL", thisHsomaticHcell);
   let _POU_HofHdominantHalleles = PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() {
-    return (LinkPrims.isInLinkNeighbor("LINKS", thisHsomaticHcell) && Prims.equality(SelfManager.self().getVariable("value"), dominantHallele));
+    return (LinkPrims.isInLinkNeighbor("LINKS", thisHsomaticHcell) && Prims.equality(PrimChecks.turtle.getVariable("value"), dominantHallele));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("#-OF-DOMINANT-ALLELES", _POU_HofHdominantHalleles);
   if (Prims.gt(_POU_HofHdominantHalleles, 0)) {
     return PrimChecks.procedure.report(true);
@@ -933,8 +933,8 @@ ProcedurePrims.defineReporter("both-sexes-in-this-fishs-tank-region?", 29128, 29
   let fishHinHthisHregion = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, PrimChecks.procedure.callReporter("other-turtles-in-this-turtles-tank-region")), function() {
     return Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("FISH"));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("FISH-IN-THIS-REGION", fishHinHthisHregion);
-  let maleHfishHinHthisHregion = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, fishHinHthisHregion), function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MALE-FISH-IN-THIS-REGION", maleHfishHinHthisHregion);
-  let femaleHfishHinHthisHregion = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, fishHinHthisHregion), function() { return Prims.equality(SelfManager.self().getVariable("sex"), "female"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("FEMALE-FISH-IN-THIS-REGION", femaleHfishHinHthisHregion);
+  let maleHfishHinHthisHregion = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, fishHinHthisHregion), function() { return Prims.equality(PrimChecks.turtle.getVariable("sex"), "male"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MALE-FISH-IN-THIS-REGION", maleHfishHinHthisHregion);
+  let femaleHfishHinHthisHregion = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, fishHinHthisHregion), function() { return Prims.equality(PrimChecks.turtle.getVariable("sex"), "female"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("FEMALE-FISH-IN-THIS-REGION", femaleHfishHinHthisHregion);
   if ((PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, maleHfishHinHthisHregion)) && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, femaleHfishHinHthisHregion)))) {
     return PrimChecks.procedure.report(true);
   }

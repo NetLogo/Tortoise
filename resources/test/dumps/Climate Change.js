@@ -88,7 +88,7 @@ ProcedurePrims.defineCommand("setup-world", 676, 1134, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 1171, 1496, (function() {
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { SelfManager.self().fd(SelfManager.self().getVariable("cloud-speed")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { SelfManager.self().fd(PrimChecks.turtle.getVariable("cloud-speed")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("run-sunshine"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world._optimalPatchRow(world.observer.getGlobal("earth-top")), function() { var R = ProcedurePrims.callCommand("update-albedo"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("run-heat"); if (R === DeathInterrupt) { return R; }
@@ -106,11 +106,11 @@ ProcedurePrims.defineCommand("add-cloud", 1587, 2772, (function() {
   let x = RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor); ProcedurePrims.stack().currentContext().registerStringRunVar("X", x);
   let id = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("ID", id);
   if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("CLOUDS"))) {
-    id = PrimChecks.math.plus(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { return SelfManager.self().getVariable("cloud-id"); }))), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("ID", id);
+    id = PrimChecks.math.plus(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { return PrimChecks.turtle.getVariable("cloud-id"); }))), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("ID", id);
   }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(PrimChecks.math.plus(3, RandomPrims.randomLong(20)), "CLOUDS"), function() {
-    SelfManager.self().setVariable("cloud-speed", speed);
-    SelfManager.self().setVariable("cloud-id", id);
+    PrimChecks.turtle.setVariable("cloud-speed", speed);
+    PrimChecks.turtle.setVariable("cloud-id", id);
     PrimChecks.turtle.setXY(PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, x), RandomPrims.randomLong(9)), 4), PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, y), 2.5), PrimChecks.math.randomFloat(2)), PrimChecks.math.randomFloat(2)));
     SelfManager.self().setVariable("color", 9.9);
     PrimChecks.turtle.setVariable("size", PrimChecks.math.plus(2, RandomPrims.randomLong(2)));
@@ -119,8 +119,8 @@ ProcedurePrims.defineCommand("add-cloud", 1587, 2772, (function() {
 }))
 ProcedurePrims.defineCommand("remove-cloud", 2780, 2995, (function() {
   if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("CLOUDS"))) {
-    let doomedHid = PrimChecks.list.oneOf(PrimChecks.list.removeDuplicates(PrimChecks.validator.checkArg('REMOVE-DUPLICATES', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { return SelfManager.self().getVariable("cloud-id"); })))); ProcedurePrims.stack().currentContext().registerStringRunVar("DOOMED-ID", doomedHid);
-    var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { return Prims.equality(SelfManager.self().getVariable("cloud-id"), doomedHid); }), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    let doomedHid = PrimChecks.list.oneOf(PrimChecks.list.removeDuplicates(PrimChecks.validator.checkArg('REMOVE-DUPLICATES', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { return PrimChecks.turtle.getVariable("cloud-id"); })))); ProcedurePrims.stack().currentContext().registerStringRunVar("DOOMED-ID", doomedHid);
+    var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("CLOUDS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("cloud-id"), doomedHid); }), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("run-sunshine", 3003, 3337, (function() {

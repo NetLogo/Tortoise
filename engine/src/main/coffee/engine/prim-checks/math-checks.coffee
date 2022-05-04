@@ -74,6 +74,9 @@ class MathChecks
 
   # (Number, Number) => Number
   mod: (p, q) ->
+    if q is 0
+      @validator.error('mod', 'Division by zero.')
+
     NLMath.mod(p, q)
 
   # (Number, Number) => Number

@@ -160,6 +160,10 @@ module.exports =
       Setters.setPlabelColor.call(this, 9.9)
       return
 
+    # () => Boolean
+    hasVariable: (varName) ->
+      @_varManager.has(varName)
+
     # () => Array[String]
     varNames: ->
       @_varManager.names()

@@ -32,7 +32,12 @@ module.exports = {
 
     # Array[Number] => String
     bytesToBase64 = (bytes) ->
-      _reportFromBytes(bytes, "bytes-to-base64")((bytes) -> btoa(String.fromCharCode(bytes...)))
+      _reportFromBytes(bytes, "bytes-to-base64")(
+        (bytes) ->
+          array  = new Uint8Array(bytes)
+          binary = array.reduce(((acc, x) -> acc + String.fromCharCode(x)), "")
+          btoa(binary)
+      )
 
     # Array[Number] => String
     bytesToString = (bytes) ->
