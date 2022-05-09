@@ -98,7 +98,7 @@ ProcedurePrims.defineCommand("setup-moths", 1397, 1594, (function() {
     PrimChecks.turtle.setVariable("size", 1.5);
     SelfManager.self().setVariable("color", PrimChecks.procedure.callReporter("random-color"));
     var R = ProcedurePrims.callCommand("moths-pick-shape"); if (R === DeathInterrupt) { return R; }
-    SelfManager.self().setVariable("age", RandomPrims.randomLong(3));
+    PrimChecks.turtle.setVariable("age", RandomPrims.randomLong(3));
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
@@ -116,7 +116,7 @@ ProcedurePrims.defineCommand("go", 1602, 1767, (function() {
   var R = ProcedurePrims.callCommand("update-monitors"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("moths-mate", 1830, 2461, (function() {
-  if ((Prims.equality(SelfManager.self().getVariable("age"), 2) || Prims.equality(SelfManager.self().getVariable("age"), 3))) {
+  if ((Prims.equality(PrimChecks.turtle.getVariable("age"), 2) || Prims.equality(PrimChecks.turtle.getVariable("age"), 3))) {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(2, ""), function() {
       if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("mutation"))) {
         if (Prims.equality(RandomPrims.randomLong(2), 0)) {
@@ -133,7 +133,7 @@ ProcedurePrims.defineCommand("moths-mate", 1830, 2461, (function() {
         }
       }
       var R = ProcedurePrims.callCommand("moths-pick-shape"); if (R === DeathInterrupt) { return R; }
-      SelfManager.self().setVariable("age", 0);
+      PrimChecks.turtle.setVariable("age", 0);
       SelfManager.self().right(PrimChecks.math.randomFloat(360));
       SelfManager.self()._optimalFdOne();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -155,7 +155,7 @@ ProcedurePrims.defineCommand("moths-grim-reaper", 2766, 2969, (function() {
   }
 }))
 ProcedurePrims.defineCommand("moths-age", 2977, 3025, (function() {
-  SelfManager.self().setVariable("age", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("age")), 1));
+  PrimChecks.turtle.setVariable("age", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("age")), 1));
 }))
 ProcedurePrims.defineCommand("moths-pick-shape", 3034, 3155, (function() {
   if (Prims.lt(SelfManager.self().getVariable("color"), 5)) {

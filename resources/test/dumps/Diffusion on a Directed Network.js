@@ -75,7 +75,7 @@ ProcedurePrims.defineCommand("setup", 775, 1674, (function() {
     PrimChecks.turtle.setVariable("val", 1);
     let neighborHnodes = PrimChecks.agentset.turtleSet(PrimChecks.agentset.of(SelfManager.self().getNeighbors4(), function() { return SelfManager.self().turtlesHere(); })); ProcedurePrims.stack().currentContext().registerStringRunVar("NEIGHBOR-NODES", neighborHnodes);
     var R = ProcedurePrims.ask(LinkPrims.createLinksTo(neighborHnodes, "ACTIVE-LINKS"), function() {
-      SelfManager.self().setVariable("current-flow", 0);
+      PrimChecks.link.setVariable("current-flow", 0);
       if (Prims.gt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("link-chance"))) {
         SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
         SelfManager.self().setVariable('hidden?', true)
@@ -99,7 +99,7 @@ ProcedurePrims.defineCommand("go", 1755, 2470, (function() {
       let valHincrement = PrimChecks.math.div(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("val")), PrimChecks.validator.checkArg('-', 1, valHtoHkeep)), PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 112, recipients))); ProcedurePrims.stack().currentContext().registerStringRunVar("VAL-INCREMENT", valHincrement);
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, recipients), function() {
         PrimChecks.turtle.setVariable("new-val", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("new-val")), PrimChecks.validator.checkArg('+', 1, valHincrement)));
-        var R = ProcedurePrims.ask(LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()), function() { SelfManager.self().setVariable("current-flow", valHincrement); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+        var R = ProcedurePrims.ask(LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()), function() { PrimChecks.link.setVariable("current-flow", valHincrement); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }
     else {
@@ -127,8 +127,8 @@ ProcedurePrims.defineCommand("update-globals", 2768, 2994, (function() {
   world.observer.setGlobal("total-val", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("val"); }))));
   world.observer.setGlobal("max-val", PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable("val"); }))));
   if (PrimChecks.agentset.any(world.linkManager.linksOfBreed("ACTIVE-LINKS"))) {
-    world.observer.setGlobal("max-flow", PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.linkManager.linksOfBreed("ACTIVE-LINKS"), function() { return SelfManager.self().getVariable("current-flow"); }))));
-    world.observer.setGlobal("mean-flow", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.linkManager.linksOfBreed("ACTIVE-LINKS"), function() { return SelfManager.self().getVariable("current-flow"); }))));
+    world.observer.setGlobal("max-flow", PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.linkManager.linksOfBreed("ACTIVE-LINKS"), function() { return PrimChecks.link.getVariable("current-flow"); }))));
+    world.observer.setGlobal("mean-flow", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.linkManager.linksOfBreed("ACTIVE-LINKS"), function() { return PrimChecks.link.getVariable("current-flow"); }))));
   }
 }))
 ProcedurePrims.defineCommand("update-visuals", 3002, 3104, (function() {
@@ -143,7 +143,7 @@ ProcedurePrims.defineCommand("update-node-appearance", 3112, 3241, (function() {
   PrimChecks.turtle.setVariable("size", PrimChecks.math.plus(0.1, PrimChecks.math.mult(5, PrimChecks.math.sqrt(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.turtle.getVariable("val")), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("total-val")))))));
 }))
 ProcedurePrims.defineCommand("update-link-appearance", 3249, 3437, (function() {
-  SelfManager.self().setVariable("color", ColorModel.scaleColor(5, PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, SelfManager.self().getVariable("current-flow")), PrimChecks.math.plus(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("mean-flow"))), 0.00001)), -0.4, 1));
+  SelfManager.self().setVariable("color", ColorModel.scaleColor(5, PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.link.getVariable("current-flow")), PrimChecks.math.plus(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("mean-flow"))), 0.00001)), -0.4, 1));
 }))
 world.observer.setGlobal("link-chance", 50);
 world.observer.setGlobal("grid-size", 9);

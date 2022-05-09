@@ -45,20 +45,30 @@ class TurtleChecks
 
   # (String, Any) => Unit
   setVariable: (name, value) ->
-    if @_setterChecks.has(name)
+    turtle = @getSelf()
+    if not turtle.hasVariable(name)
+      msgKey    = "_ breed does not own variable _"
+      upperName = name.toUpperCase()
+      @validator.error('set', msgKey, turtle.getBreedName(), upperName)
+    else if @_setterChecks.has(name)
       check = @_setterChecks.get(name)
       check(value)
     else
-      @getSelf().setVariable(name, value)
+      turtle.setVariable(name, value)
 
     return
 
   # (String) => Any
   getVariable: (name) ->
-    if @_getterChecks.has(name)
+    turtle = @getSelf()
+    if not turtle.hasVariable(name)
+      msgKey    = "_ breed does not own variable _"
+      upperName = name.toUpperCase()
+      @validator.error(upperName, msgKey, turtle.getBreedName(), upperName)
+    else if @_getterChecks.has(name)
       check = @_getterChecks.get(name)
       check(name)
     else
-      @getSelf().getVariable(name)
+      turtle.getVariable(name)
 
 module.exports = TurtleChecks

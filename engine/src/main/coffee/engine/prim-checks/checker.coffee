@@ -17,7 +17,7 @@ class Checker
     @math      = new MathChecks(@validator, randomPrims)
     @procedure = new ProcedureChecks(@validator, procedurePrims)
     @turtle    = new TurtleChecks(@validator, getSelf)
-    @link      = new LinkChecks(@validator, selfPrims)
+    @link      = new LinkChecks(@validator, getSelf, selfPrims)
 
   # (String) => Unit
   imperfectImport: (primName) ->

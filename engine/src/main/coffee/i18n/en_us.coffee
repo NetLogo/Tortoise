@@ -130,6 +130,9 @@ bundle = {
   , 'No heading is defined from a point (_,_) to that same point.': (x, y) ->
     "No heading is defined from a point (#{x},#{y}) to that same point."
 
+  , '_ breed does not own variable _': (breedName, varName) ->
+    "#{breedName} breed does not own variable #{varName}"
+
 }
 
 module.exports = bundle
