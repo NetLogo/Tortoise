@@ -69,7 +69,7 @@ module.exports = {
     # (String, List | Map) -> Unit
     trigger = (name, data) ->
       if tortugaSession = getTortugaSession()
-        if Array.IsArray(data) or data instanceof Map
+        if Array.isArray(data) or data instanceof Map
           event = tortugaSession.EventRegistry.BuildEvent(11, null, name, data)
           tortugaSession.EventRegistry.HandleEvent(event)
         else
