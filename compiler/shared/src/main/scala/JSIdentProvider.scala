@@ -54,12 +54,14 @@ object JSIdentProvider {
 
   private val Keywords = Seq(
     "alert",
+    "arguments",
     "async",
     "atob",
     "await",
     "break",
     "blur",
     "btoa",
+    "caller",
     "case",
     "catch",
     "class",
@@ -78,6 +80,7 @@ object JSIdentProvider {
     "debugger",
     "default",
     "delete",
+    "displayName",
     "do",
     "document",
     "dump",
