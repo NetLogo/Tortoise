@@ -412,7 +412,7 @@ module.exports =
 
     # (StampMode) => Unit
     _drawStamp: (mode) ->
-      @_registerTurtleStamp(@xcor, @ycor, @_size, @_heading, ColorModel.colorToRGB(@_color), @_getShape(), mode.name)
+      @_registerTurtleStamp(@xcor, @ycor, @_size, @_heading, ColorModel.colorToList(@_color), @_getShape(), mode.name)
       return
 
     # (Number, Number, Number) => Unit
@@ -430,7 +430,7 @@ module.exports =
         wrappedY = oldY + @world.topology._shortestY(oldY, newY)
         { minPxcor, maxPxcor, minPycor, maxPycor } = @world.topology
         if (minPxcor < wrappedX and wrappedX < maxPxcor and minPycor < wrappedY and wrappedY < maxPycor)
-          @_registerLineDraw(oldX, oldY, wrappedX, wrappedY, ColorModel.colorToRGB(@_color), @penManager.getSize(), @penManager.getMode().toString())
+          @_registerLineDraw(oldX, oldY, wrappedX, wrappedY, ColorModel.colorToList(@_color), @penManager.getSize(), @penManager.getMode().toString())
         else
           jumpDist = NLMath.sqrt(NLMath.pow(oldX - wrappedX, 2) + NLMath.pow(oldY - wrappedY, 2))
           jumpHead = @world.topology.towards(oldX, oldY, wrappedX, wrappedY)
@@ -439,7 +439,7 @@ module.exports =
 
     # (Number, Number, Number) => Unit
     _drawLines: (x, y, dist, head) ->
-      color = ColorModel.colorToRGB(@_color)
+      color = ColorModel.colorToList(@_color)
       size  = @penManager.getSize()
       mode  = @penManager.getMode().toString()
       { minPxcor, maxPxcor, minPycor, maxPycor } = @world.topology
