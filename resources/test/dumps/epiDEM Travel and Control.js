@@ -381,13 +381,13 @@ ProcedurePrims.defineCommand("hospitalize", 9265, 9473, (function() {
   SelfManager.self().setPatchVariable("pcolor", 9.9);
 }))
 ProcedurePrims.defineCommand("infect", 9698, 10414, (function() {
-  let caller = SelfManager.self(); ProcedurePrims.stack().currentContext().registerStringRunVar("CALLER", caller);
+  let _CALLER_ = SelfManager.self(); ProcedurePrims.stack().currentContext().registerStringRunVar("CALLER", _CALLER_);
   let nearbyHuninfected = PrimChecks.agentset.with(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), function() {
     return ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("infected?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("cured?")))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("inoculated?"))));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("NEARBY-UNINFECTED", nearbyHuninfected);
   if (!Prims.equality(nearbyHuninfected, Nobody)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, nearbyHuninfected), function() {
-      if (LinkPrims.isLinkNeighbor("LINKS", caller)) {
+      if (LinkPrims.isLinkNeighbor("LINKS", _CALLER_)) {
         if (Prims.lt(RandomPrims.randomLong(100), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("infection-chance")), 2))) {
           PrimChecks.turtle.setVariable("infected?", true);
           PrimChecks.turtle.setVariable("nb-infected", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("nb-infected")), 1));
