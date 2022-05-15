@@ -494,6 +494,10 @@ object Model {
     Model(
       path = "test/models/ImportATest.nlogo",
       repetitions = 9
+    ),
+    Model(
+      path = "test/models/ColorsAndTransparency.nlogo",
+      repetitions = 8
     )
   )
 }
