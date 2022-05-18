@@ -71,7 +71,7 @@ class TestReporters extends ReporterTests with TortoiseFinder {
   import Freebies._
   override val freebies = Map(
     "Version::Version_2D" -> "Assumes JVM NetLogo version numbers"
-  ) ++ incErrorDetectReporters
+  ) ++ incErrorDetectReporters ++ awaitingFixReporters
 }
 
 class TestCommands extends CommandTests with TortoiseFinder {
@@ -87,9 +87,10 @@ private[tortoise] object Freebies {
   def incErrorDetectCommands     = asFreebieMap(  incErrorDetectCommandNames, incErrorDetectStr)
   def lameCommands               = asFreebieMap(            lameCommandNames, lameCommandStr)
   def preferExtensionsCommands   = asFreebieMap(preferExtensionsCommandNames, preferExtensionsStr)
-  def awaitingFixCommands        = asFreebieMap(            awaitingFixNames, awaitingFixStr)
+  def awaitingFixCommands        = asFreebieMap(     awaitingFixCommandNames, awaitingFixStr)
 
-  def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames, incErrorDetectStr)
+  def incErrorDetectReporters    = asFreebieMap( incErrorDetectReporterNames, incErrorDetectStr)
+  def awaitingFixReporters       = asFreebieMap(    awaitingFixReporterNames, awaitingFixStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
@@ -123,7 +124,8 @@ private[tortoise] object Freebies {
     "Turtles::Turtles1a",
     "TypeChecking::AgentClassChecking1",
     "TypeChecking::AgentClassChecking3a",
-    "TypeChecking::AgentClassChecking3b"
+    "TypeChecking::AgentClassChecking3b",
+    "TypeChecking::RunRetainsAgentContext"
   )
 
   private val lameCommandStr = "This test is LAME!"
@@ -140,9 +142,15 @@ private[tortoise] object Freebies {
     )
 
   private val awaitingFixStr = "Known issue waiting on a proper fix or implementation"
-  private val awaitingFixNames =
+  private val awaitingFixCommandNames =
     Seq(
       "Timer::Timer1"
+    , "Lists::ForeachWithConciseVariadicCommand"
+    )
+  private val awaitingFixReporterNames =
+    Seq(
+      "Lists::MapDoublyVariadic"
+    , "Lists::MapWithMinArgs"
     )
 
 }
