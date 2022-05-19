@@ -196,7 +196,7 @@ trait ReporterPrims extends PrimUtils {
       case call: prim._callreport          => s"""PrimChecks.procedure.callReporter(${ReporterPrims.callArgs(call.name, args)})"""
 
       // Blarg
-      case _: prim._word               => ("''" +: args).map(arg => s"workspace.dump($arg)").mkString("(", " + ", ")")
+      case _: prim._word               => s"StringPrims.word($commaArgs)"
       case _: prim.etc._ifelsevalue    => generateIfElseValue(r.args)
       case _: prim.etc._nvalues        => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"

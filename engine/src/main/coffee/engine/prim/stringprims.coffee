@@ -2,6 +2,8 @@
 
 class StringPrims
 
+  constructor: (@_dump) ->
+
   # (Number, String, String) => String
   insertItem: (n, xs, x) ->
     chars = xs.split('')
@@ -44,5 +46,9 @@ class StringPrims
   # (String, Number, Number) => String
   substring: (text, n1, n2) ->
     text.substr(n1, n2 - n1)
+
+  # (Array[Any]) => String
+  word: (values...) ->
+    values.map( (value) => @_dump(value) ).join('')
 
 module.exports = StringPrims
