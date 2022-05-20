@@ -30,8 +30,9 @@ object TestUtilities {
   def withWidget(compiledModel: JsObject, widgetType: String, f: JsObject => Unit): Unit = {
     // this song and dance is to turn a string with Javascript Objects containing functions
     // into TortoiseJson objects
-    val widgetsString = compiledModel[String]("widgets")
-    val widgetsJson = JsonLibrary.toTortoise(js.eval(widgetsString))
+    val widgetsString: String = compiledModel[String]("widgets")
+    val widgetObj:     js.Any = new js.Object(js.eval(widgetsString))
+    val widgetsJson           = JsonLibrary.toTortoise(widgetObj)
 
     widgetsJson match {
       case JsArray(elems) =>

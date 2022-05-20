@@ -1,12 +1,10 @@
 import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import sbtcrossproject.CrossProject
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
-import org.scalastyle.sbt.ScalastylePlugin.projectSettings
 
 val nlDependencyVersion       = "6.2.2-2f651c5"
 
-val parserJsDependencyVersion = "0.3.0-d27b502"
+val parserJsDependencyVersion = "0.3.0-2f651c5"
 
 val scalazVersion             = "7.2.31"
 
@@ -86,11 +84,10 @@ lazy val compiler = CrossProject("compiler", file("compiler"))(JSPlatform, JVMPl
     packageJSDependencies / skip         := false, // bundles all dependencies in with generated JS
     testFrameworks                       := List(new TestFramework("utest.runner.Framework")),
     libraryDependencies                  ++= {
-      import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.toScalaJSGroupID
       Seq(
         "com.lihaoyi"       %   "utest"       % "0.7.11" cross ScalaJSCrossVersion.binary,
         "org.nlogo"         %   "parser-js"   % parserJsDependencyVersion cross ScalaJSCrossVersion.binary,
-        "com.typesafe.play" %%% "play-json"   % "2.8.2",
+        "com.typesafe.play" %%% "play-json"   % "2.9.2",
         "org.scalaz"        %%% "scalaz-core" % scalazVersion)
     }
   )
