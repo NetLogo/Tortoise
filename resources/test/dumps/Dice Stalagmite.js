@@ -79,6 +79,7 @@ var ProcedurePrims = workspace.procedurePrims;
 var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
+var StringPrims = workspace.stringPrims;
 var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
@@ -130,7 +131,7 @@ ProcedurePrims.defineCommand("roll-dice", 1835, 2601, (function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "PAIRED-DICE"), function() {
       SelfManager.self().setVariable("color", 9.9);
       PrimChecks.turtle.setVariable("die-value", PrimChecks.math.plus(1, RandomPrims.randomLong(6)));
-      SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("die ") + workspace.dump(PrimChecks.turtle.getVariable("die-value"))));
+      SelfManager.self().setVariable("shape", StringPrims.word("die ", PrimChecks.turtle.getVariable("die-value")));
       PrimChecks.turtle.setVariable("heading", 90);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }

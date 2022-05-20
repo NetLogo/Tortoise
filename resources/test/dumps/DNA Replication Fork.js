@@ -45,6 +45,7 @@ var ProcedurePrims = workspace.procedurePrims;
 var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
+var StringPrims = workspace.stringPrims;
 var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
@@ -124,7 +125,7 @@ ProcedurePrims.defineCommand("initialize-length-of-time", 9227, 9567, (function(
 ProcedurePrims.defineCommand("make-a-nucleoside", 9575, 9994, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "NUCLEOSIDES"), function() {
     PrimChecks.turtle.setVariable("value", PrimChecks.procedure.callReporter("random-base-letter"));
-    SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("nucleoside-tri-") + workspace.dump(PrimChecks.turtle.getVariable("value"))));
+    SelfManager.self().setVariable("shape", StringPrims.word("nucleoside-tri-", PrimChecks.turtle.getVariable("value")));
     SelfManager.self().setVariable("color", world.observer.getGlobal("nucleoside-color"));
     var R = ProcedurePrims.callCommand("attach-nucleo-tag", 0, 0); if (R === DeathInterrupt) { return R; }
     PrimChecks.turtle.setXY(RandomPrims.randomInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomInRange(world.topology.minPycor, world.topology.maxPycor));
@@ -210,7 +211,7 @@ ProcedurePrims.defineCommand("make-initial-dna-strip", 11571, 13381, (function()
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
         PrimChecks.turtle.setVariable("value", PrimChecks.procedure.callReporter("random-base-letter"));
         firstHbaseHpairHvalue = PrimChecks.turtle.getVariable("value"); ProcedurePrims.stack().currentContext().updateStringRunVar("FIRST-BASE-PAIR-VALUE", firstHbaseHpairHvalue);
-        SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("nucleotide-") + workspace.dump(PrimChecks.turtle.getVariable("value"))));
+        SelfManager.self().setVariable("shape", StringPrims.word("nucleotide-", PrimChecks.turtle.getVariable("value")));
         PrimChecks.turtle.setVariable("heading", 0);
         PrimChecks.turtle.setVariable("class", "original-dna-top");
         PrimChecks.turtle.setVariable("unwound?", true);
@@ -232,7 +233,7 @@ ProcedurePrims.defineCommand("make-initial-dna-strip", 11571, 13381, (function()
         var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
           SelfManager.self().right(180);
           PrimChecks.turtle.setVariable("value", PrimChecks.procedure.callReporter("complementary-base", firstHbaseHpairHvalue));
-          SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("nucleotide-") + workspace.dump(PrimChecks.turtle.getVariable("value"))));
+          SelfManager.self().setVariable("shape", StringPrims.word("nucleotide-", PrimChecks.turtle.getVariable("value")));
           PrimChecks.turtle.setVariable("class", "original-dna-bottom");
           var R = ProcedurePrims.ask(LinkPrims.createLinkWith(lastHnucleotideHtopHstrand, "OLD-STAIRS"), function() { SelfManager.self().setVariable("hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
           var R = ProcedurePrims.callCommand("attach-nucleo-tag", 175, 0.7); if (R === DeathInterrupt) { return R; }
@@ -302,7 +303,7 @@ ProcedurePrims.defineCommand("go", 14461, 15852, (function() {
       world.observer.setGlobal("final-time", workspace.timer.elapsed());
     }
     var R = ProcedurePrims.callCommand("calculate-mutations"); if (R === DeathInterrupt) { return R; }
-    UserDialogPrims.confirm((workspace.dump('') + workspace.dump("You have cued the cell division.  Let's see how you did in replicating ") + workspace.dump("an exact copy of the DNA.")));
+    UserDialogPrims.confirm(StringPrims.word("You have cued the cell division.  Let's see how you did in replicating ", "an exact copy of the DNA."));
     UserDialogPrims.confirm(PrimChecks.procedure.callReporter("user-message-string-for-mutations"));
     world.observer.setGlobal("cell-message-shown?", true);
   }
@@ -311,7 +312,7 @@ ProcedurePrims.defineCommand("go", 14461, 15852, (function() {
       world.observer.setGlobal("final-time", world.observer.getGlobal("length-of-simulation"));
     }
     var R = ProcedurePrims.callCommand("calculate-mutations"); if (R === DeathInterrupt) { return R; }
-    UserDialogPrims.confirm((workspace.dump('') + workspace.dump("The timer has expired.  Let's see how you did in replicating ") + workspace.dump("an exact copy of it.")));
+    UserDialogPrims.confirm(StringPrims.word("The timer has expired.  Let's see how you did in replicating ", "an exact copy of it."));
     UserDialogPrims.confirm(PrimChecks.procedure.callReporter("user-message-string-for-mutations"));
     world.observer.setGlobal("timer-message-shown?", true);
   }
@@ -521,7 +522,7 @@ ProcedurePrims.defineCommand("lock-polymerase-to-one-nucleotide", 22304, 25777, 
           var R = ProcedurePrims.ask(LinkPrims.myInLinks("CURSOR-DRAGS"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
           var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
-          SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("nucleotide-") + workspace.dump(PrimChecks.turtle.getVariable("value"))));
+          SelfManager.self().setVariable("shape", StringPrims.word("nucleotide-", PrimChecks.turtle.getVariable("value")));
           PrimChecks.turtle.setVariable("unwound?", true);
           if (Prims.equality(targetHclass, "original-dna-top")) {
             PrimChecks.turtle.setVariable("heading", 180);
@@ -803,10 +804,10 @@ ProcedurePrims.defineReporter("are-previous-nucleotides-unzipped?", 33363, 33812
 }))
 ProcedurePrims.defineReporter("user-message-string-for-mutations", 33827, 34503, (function() {
   let duplicationHrate = PrimChecks.math.precision(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-bottom-strand"))), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("final-time"))), 4); ProcedurePrims.stack().currentContext().registerStringRunVar("DUPLICATION-RATE", duplicationHrate);
-  return PrimChecks.procedure.report((workspace.dump('') + workspace.dump("You had ") + workspace.dump(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-bottom-strand")))) + workspace.dump(" correct replications and ") + workspace.dump(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-substitution-mutations-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-substitution-mutations-bottom-strand")))) + workspace.dump(" substitutions and ") + workspace.dump(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-deletion-mutations-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-deletion-mutations-bottom-strand")))) + workspace.dump("  deletions.") + workspace.dump(" That replication process took you ") + workspace.dump(world.observer.getGlobal("final-time")) + workspace.dump(" seconds.  This was a rate of ") + workspace.dump(duplicationHrate) + workspace.dump(" correct nucleotides duplicated per second.")));
+  return PrimChecks.procedure.report(StringPrims.word("You had ", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-correct-duplications-bottom-strand"))), " correct replications and ", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-substitution-mutations-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-substitution-mutations-bottom-strand"))), " substitutions and ", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-deletion-mutations-top-strand")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-deletion-mutations-bottom-strand"))), "  deletions.", " That replication process took you ", world.observer.getGlobal("final-time"), " seconds.  This was a rate of ", duplicationHrate, " correct nucleotides duplicated per second."));
 }))
 ProcedurePrims.defineReporter("current-instruction-label", 34724, 34879, (function() {
-  return PrimChecks.procedure.report((Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : (workspace.dump('') + workspace.dump(world.observer.getGlobal("current-instruction")) + workspace.dump(" / ") + workspace.dump(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.procedure.callReporter("instructions")))))));
+  return PrimChecks.procedure.report((Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : StringPrims.word(world.observer.getGlobal("current-instruction"), " / ", PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.procedure.callReporter("instructions"))))));
 }))
 ProcedurePrims.defineCommand("next-instruction", 34887, 34947, (function() {
   var R = ProcedurePrims.callCommand("show-instruction", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("current-instruction")), 1)); if (R === DeathInterrupt) { return R; }

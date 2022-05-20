@@ -45,6 +45,7 @@ var ProcedurePrims = workspace.procedurePrims;
 var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
+var StringPrims = workspace.stringPrims;
 var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
@@ -64,7 +65,7 @@ ProcedurePrims.defineCommand("setup", 242, 902, (function() {
         var R = ProcedurePrims.callCommand("create-network-preferential", 100, 2); if (R === DeathInterrupt) { return R; }
       }
       else {
-        UserDialogPrims.confirm((workspace.dump('') + workspace.dump("Error: unknown network-choice: ") + workspace.dump(world.observer.getGlobal("network-choice"))));
+        UserDialogPrims.confirm(StringPrims.word("Error: unknown network-choice: ", world.observer.getGlobal("network-choice")));
       }
     }
   }
@@ -276,7 +277,7 @@ ProcedurePrims.defineCommand("update-globals", 6868, 6955, (function() {
 ProcedurePrims.defineCommand("update-page-appearance", 6963, 7177, (function() {
   PrimChecks.turtle.setVariable("size", PrimChecks.math.plus(0.2, PrimChecks.math.mult(4, PrimChecks.math.sqrt(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.turtle.getVariable("rank")), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("total-rank")))))));
   if (world.observer.getGlobal("show-page-ranks?")) {
-    SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(PrimChecks.math.precision(PrimChecks.validator.checkArg('PRECISION', 1, PrimChecks.turtle.getVariable("rank")), 3)) + workspace.dump("     ")));
+    SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.math.precision(PrimChecks.validator.checkArg('PRECISION', 1, PrimChecks.turtle.getVariable("rank")), 3), "     "));
   }
   else {
     SelfManager.self().setVariable("label", "");

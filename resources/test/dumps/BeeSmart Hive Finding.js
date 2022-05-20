@@ -86,6 +86,7 @@ var ProcedurePrims = workspace.procedurePrims;
 var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
+var StringPrims = workspace.stringPrims;
 var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
@@ -119,10 +120,10 @@ ProcedurePrims.defineCommand("setup-hives", 2642, 3564, (function() {
       SelfManager.self().setVariable("label", PrimChecks.turtle.getVariable("quality"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     plotManager.setCurrentPlot("on-site");
-    plotManager.createTemporaryPen((workspace.dump('') + workspace.dump("site") + workspace.dump(i)));
+    plotManager.createTemporaryPen(StringPrims.word("site", i));
     plotManager.setPenColor(PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, i), PrimChecks.validator.checkArg('ITEM', 12, world.observer.getGlobal("color-list"))));
     plotManager.setCurrentPlot("committed");
-    plotManager.createTemporaryPen((workspace.dump('') + workspace.dump("target") + workspace.dump(i)));
+    plotManager.createTemporaryPen(StringPrims.word("target", i));
     plotManager.setPenColor(PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, i), PrimChecks.validator.checkArg('ITEM', 12, world.observer.getGlobal("color-list"))));
     i = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, i), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("I", i);
   }
@@ -467,12 +468,12 @@ ProcedurePrims.defineCommand("plot-on-site-scouts", 18440, 18762, (function() {
   let i = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("I", i);
   for (let _index_18472_18478 = 0, _repeatcount_18472_18478 = StrictMath.floor(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SITES"))); _index_18472_18478 < _repeatcount_18472_18478; _index_18472_18478++) {
     plotManager.setCurrentPlot("on-site");
-    plotManager.setCurrentPen((workspace.dump('') + workspace.dump("site") + workspace.dump(i)));
+    plotManager.setCurrentPen(StringPrims.word("site", i));
     plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("SCOUTS"), function() {
       return (PrimChecks.validator.checkArg('AND', 2, PrimChecks.turtle.getVariable("on-site?")) && Prims.equality(PrimChecks.turtle.getVariable("target"), world.turtleManager.getTurtleOfBreed("SITES", i)));
     }));
     plotManager.setCurrentPlot("committed");
-    plotManager.setCurrentPen((workspace.dump('') + workspace.dump("target") + workspace.dump(i)));
+    plotManager.setCurrentPen(StringPrims.word("target", i));
     plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("SCOUTS"), function() {
       return Prims.equality(PrimChecks.turtle.getVariable("target"), world.turtleManager.getTurtleOfBreed("SITES", i));
     }));

@@ -97,6 +97,7 @@ var ProcedurePrims = workspace.procedurePrims;
 var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
+var StringPrims = workspace.stringPrims;
 var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
@@ -288,7 +289,7 @@ ProcedurePrims.defineCommand("cool", 11244, 11802, (function() {
   }
   if (Prims.lte(world.observer.getGlobal("outside-energy"), 0)) {
     world.observer.setGlobal("outside-energy", world.observer.getGlobal("min-outside-energy"));
-    UserDialogPrims.confirm((workspace.dump('') + workspace.dump("You are currently trying to cool the walls of the container below ") + workspace.dump("absolute zero (OK or -273C).  Absolute zero is the lowest theoretical ") + workspace.dump("temperature for all matter in the universe and has never been ") + workspace.dump("achieved in a real-world laboratory")));
+    UserDialogPrims.confirm(StringPrims.word("You are currently trying to cool the walls of the container below ", "absolute zero (OK or -273C).  Absolute zero is the lowest theoretical ", "temperature for all matter in the universe and has never been ", "achieved in a real-world laboratory"));
   }
   var R = ProcedurePrims.callCommand("recalculate-wall-color"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("heatable-walls")), function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -297,7 +298,7 @@ ProcedurePrims.defineCommand("heat", 11811, 12156, (function() {
   world.observer.setGlobal("outside-energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("outside-energy")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("energy-increment"))));
   if (Prims.gt(world.observer.getGlobal("outside-energy"), world.observer.getGlobal("max-outside-energy"))) {
     world.observer.setGlobal("outside-energy", world.observer.getGlobal("max-outside-energy"));
-    UserDialogPrims.confirm((workspace.dump('') + workspace.dump("You have reached the maximum allowable temperature for the walls of the container in this model.")));
+    UserDialogPrims.confirm(StringPrims.word("You have reached the maximum allowable temperature for the walls of the container in this model."));
   }
   var R = ProcedurePrims.callCommand("recalculate-wall-color"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("heatable-walls")), function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
