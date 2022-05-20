@@ -6,7 +6,9 @@ val nlDependencyVersion       = "6.2.2-2f651c5"
 
 val parserJsDependencyVersion = "0.3.0-2f651c5"
 
-val scalazVersion             = "7.2.31"
+val scalazVersion             = "7.2.34"
+
+val playJsonVersion           = "2.9.2"
 
 val commonSettings =
   Seq(
@@ -15,7 +17,7 @@ val commonSettings =
     version       := "1.0",
 
     crossPaths    := false, // we're not cross-building for different Scala versions
-    scalaVersion  := "2.12.11",
+    scalaVersion  := "2.12.15",
     scalacOptions ++=
       "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
 
@@ -23,7 +25,7 @@ val commonSettings =
     libraryDependencies ++= Seq(
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
-      "com.typesafe.play" %% "play-json"       % "2.9.2",
+      "com.typesafe.play" %% "play-json"       % playJsonVersion,
       "com.lihaoyi"       %% "scalatags"       % "0.11.1"   % "test",
       "org.scalatest"     %% "scalatest"       % "3.2.12"   % "test",
       "org.scalatestplus" %% "scalacheck-1-15" % "3.2.11.0" % "test",
@@ -87,7 +89,7 @@ lazy val compiler = CrossProject("compiler", file("compiler"))(JSPlatform, JVMPl
       Seq(
         "com.lihaoyi"       %   "utest"       % "0.7.11" cross ScalaJSCrossVersion.binary,
         "org.nlogo"         %   "parser-js"   % parserJsDependencyVersion cross ScalaJSCrossVersion.binary,
-        "com.typesafe.play" %%% "play-json"   % "2.9.2",
+        "com.typesafe.play" %%% "play-json"   % playJsonVersion,
         "org.scalaz"        %%% "scalaz-core" % scalazVersion)
     }
   )
