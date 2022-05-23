@@ -66,6 +66,7 @@ var ProcedurePrims = workspace.procedurePrims;
 var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
+var StringPrims = workspace.stringPrims;
 var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
@@ -84,7 +85,7 @@ ProcedurePrims.defineCommand("setup-road", 181, 262, (function() {
 }))
 ProcedurePrims.defineCommand("setup-cars", 270, 914, (function() {
   if (Prims.gt(world.observer.getGlobal("number-of-cars"), world.topology.width)) {
-    UserDialogPrims.confirm((workspace.dump('') + workspace.dump("There are too many cars for the amount of road. ") + workspace.dump("Please decrease the NUMBER-OF-CARS slider to below ") + workspace.dump(PrimChecks.math.plus(world.topology.width, 1)) + workspace.dump(" and press the SETUP button again. ") + workspace.dump("The setup has stopped.")));
+    UserDialogPrims.confirm(StringPrims.word("There are too many cars for the amount of road. ", "Please decrease the NUMBER-OF-CARS slider to below ", PrimChecks.math.plus(world.topology.width, 1), " and press the SETUP button again. ", "The setup has stopped."));
     return PrimChecks.procedure.stop();
   }
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")

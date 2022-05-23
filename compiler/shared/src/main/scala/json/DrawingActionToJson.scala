@@ -3,8 +3,9 @@
 package org.nlogo.tortoise.compiler.json
 
 import
-  org.nlogo.{ api, drawing },
+  org.nlogo.{ api, core, drawing },
     api.Color,
+    core.LogoList,
     drawing.{ DrawingAction, LinkStamp, TurtleStamp },
       DrawingAction.{ ClearDrawing, CreateDrawing, DrawLine, ImportDrawing, MarkClean, MarkDirty, ReadImage
                     , RescaleDrawing, SendPixels, SetColors, StampImage }
@@ -20,8 +21,20 @@ sealed trait DrawingActionConverter[T <: DrawingAction] extends JsonConverter[T]
     JsObject(fields("type" -> JsString(`type`)))
 
   protected def colorList(c: AnyRef): List[Int] = {
+
+    val hasTransparency =
+      c match {
+        case ll: LogoList if ll.length == 4 => true
+        case _                              => false
+      }
+
     val awtColor = Color.getColor(c)
-    List(awtColor.getRed, awtColor.getGreen, awtColor.getBlue)
+
+    if (hasTransparency)
+      List(awtColor.getRed, awtColor.getGreen, awtColor.getBlue, awtColor.getAlpha)
+    else
+      List(awtColor.getRed, awtColor.getGreen, awtColor.getBlue)
+
   }
 
 }

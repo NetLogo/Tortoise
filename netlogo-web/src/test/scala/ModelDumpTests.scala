@@ -45,8 +45,11 @@ class ModelDumpTests extends AnyFunSuite {
     (compilation, widgets)
   }
 
-  for (model <- Model.models) {
-    test(s"compiled model javascript tests for ${model.name}", SlowTest) {
+  case class SimpleModel(path: String, filename: String)
+
+  val uniqueModels = Model.models.map( (m) => new SimpleModel(m.path, m.filename) ).toSet
+  for (model <- uniqueModels) {
+    test(s"compiled model javascript tests for ${model.filename}", SlowTest) {
       println(model.path)
       try {
         import scala.collection.JavaConverters.mapAsScalaMap

@@ -80,6 +80,7 @@ var ProcedurePrims = workspace.procedurePrims;
 var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
+var StringPrims = workspace.stringPrims;
 var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
@@ -92,7 +93,7 @@ ProcedurePrims.defineCommand("setup", 2026, 2945, (function() {
   var R = ProcedurePrims.callCommand("label-current"); if (R === DeathInterrupt) { return R; }
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")
   if (Prims.gt(world.observer.getGlobal("num-cars"), PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 112, world.observer.getGlobal("roads"))))) {
-    UserDialogPrims.confirm((workspace.dump('') + workspace.dump("There are too many cars for the amount of ") + workspace.dump("road.  Either increase the amount of roads ") + workspace.dump("by increasing the GRID-SIZE-X or ") + workspace.dump("GRID-SIZE-Y sliders, or decrease the ") + workspace.dump("number of cars by lowering the NUMBER slider. ") + workspace.dump("The setup has stopped.")));
+    UserDialogPrims.confirm(StringPrims.word("There are too many cars for the amount of ", "road.  Either increase the amount of roads ", "by increasing the GRID-SIZE-X or ", "GRID-SIZE-Y sliders, or decrease the ", "number of cars by lowering the NUMBER slider. ", "The setup has stopped."));
     return PrimChecks.procedure.stop();
   }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-cars"), ""), function() {

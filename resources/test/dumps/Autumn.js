@@ -125,6 +125,7 @@ var ProcedurePrims = workspace.procedurePrims;
 var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
+var StringPrims = workspace.stringPrims;
 var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
@@ -246,7 +247,7 @@ ProcedurePrims.defineCommand("move-water", 4775, 5983, (function() {
 ProcedurePrims.defineCommand("show-intensity", 6336, 6575, (function() {
   SelfManager.self().setVariable("color", ColorModel.scaleColor(45, world.observer.getGlobal("sun-intensity"), 0, 150));
   PrimChecks.turtle.setVariable("size", PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("sun-intensity")), 10));
-  SelfManager.self().setVariable("label", (workspace.dump('') + workspace.dump(world.observer.getGlobal("sun-intensity")) + workspace.dump("%")));
+  SelfManager.self().setVariable("label", StringPrims.word(world.observer.getGlobal("sun-intensity"), "%"));
   if (Prims.lt(world.observer.getGlobal("sun-intensity"), 50)) {
     SelfManager.self().setVariable("label-color", 45);
   }

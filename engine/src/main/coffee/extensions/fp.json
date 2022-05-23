@@ -1,0 +1,68 @@
+{
+  "name": "fp",
+  "prims": [
+    {
+      "name": "take"
+    , "argTypes": ["number", "list"]
+    , "returnType": "list"
+    }
+    , {
+      "name": "drop"
+    , "argTypes": ["number", "list"]
+    , "returnType": "list"
+    }
+    , {
+      "name": "scan"
+    , "argTypes": ["reporter", "list"]
+    , "returnType": "list"
+    }
+    , {
+      "name": "compose"
+    , "argTypes": ["reporter", "reporter", { "type": "reporter", "isRepeatable": true }]
+    , "returnType": "reporter"
+    , "defaultArgCount": 2
+    , "minimumArgCount": 2
+    }
+    , {
+      "name": "pipe"
+    , "argTypes": ["reporter", "reporter", { "type": "reporter", "isRepeatable": true }]
+    , "returnType": "reporter"
+    , "defaultArgCount": 2
+    , "minimumArgCount": 2
+    }
+    , {
+      "name": "curry"
+    , "argTypes": ["reporter", { "type": "wildcard", "isRepeatable": true }]
+    , "returnType": "reporter"
+    , "defaultArgCount": 2
+    , "minimumArgCount": 2
+    }
+    , {
+      "name": "find-indices"
+    , "argTypes": ["reporter", "list"]
+    , "returnType": "list"
+    }
+    , {
+      "name": "find"
+    , "argTypes": ["reporter", "list"]
+    , "returnType": "wildcard"
+    }
+    , {
+      "name": "zip"
+    , "argTypes": ["list", { "type": "list", "isRepeatable": true }]
+    , "returnType": "list"
+    , "defaultArgCount": 2
+    , "minimumArgCount": 1
+    }
+    , {
+      "name": "unzip"
+    , "argTypes": ["list"]
+    , "returnType": "list"
+    }
+    , {
+      "name": "flatten"
+    , "argTypes": ["list"]
+    , "returnType": "list"
+    }
+  ]
+}

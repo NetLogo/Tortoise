@@ -27,29 +27,8 @@ var modelConfig =
     {}
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
-modelConfig.plots = [(function() {
-  var name    = 'Populations';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(15, 1, PenBundle.DisplayMode.Line), function() {}, function() {
-    return ProcedurePrims.runInPlotContext('Populations', 'default', function() {
-      plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }));;
-    });
-  }),
-  new PenBundle.Pen('pen-1', plotOps.makePenOps, false, new PenBundle.State(55, 1, PenBundle.DisplayMode.Line), function() {}, function() {
-    return ProcedurePrims.runInPlotContext('Populations', 'pen-1', function() {
-      plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }));;
-    });
-  }),
-  new PenBundle.Pen('pen-2', plotOps.makePenOps, false, new PenBundle.State(105, 1, PenBundle.DisplayMode.Line), function() {}, function() {
-    return ProcedurePrims.runInPlotContext('Populations', 'pen-2', function() {
-      plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105); }));;
-    });
-  })];
-  var setup   = function() {};
-  var update  = function() {};
-  return new Plot(name, pens, plotOps, "", "", false, true, 0, 10, 0, 10, setup, update);
-})()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   ask patches [     ; Start populations at roughly even levels.     set pcolor one-of [ red green blue black ]   ]   reset-ticks end  to go   ; This model uses an event-based approach. It calculates how many events of each type   ; should occur each tick and then executes those events in a random order. Event type   ; could be signified by any constant. Here, we use a the numbers 0, 1, and 2 to signify   ; event type, but then store those numbers in variables with clear names for readability.   let swap-event 0   let reproduce-event 1   let select-event 2    ; Note that we have to compute the number of global events rather than the number of   ; actions that each individual patch performs since the execution of those events has   ; to be random between the patches. That is, a single patch can\'t perform all of their   ; actions in one go: suppose they end up executing 5 swaps in one tick. The swaps would   ; be shuffling things around locally rather than allowing for an organism to travel   ; multiple steps.   ; Hence, this code creates a list with an entry for each event type that should occur   ; this tick, then shuffles that list so that the events are in a random order. We then   ; iterate through the list, and random neighboring patches run the corresponding event.   let repetitions count patches / 3 ; At default settings, there will be an average of 1 event per patch.   let events shuffle (sentence     n-values random-poisson (repetitions * swap-rate)      [ swap-event ]     n-values random-poisson (repetitions * reproduce-rate) [ reproduce-event ]     n-values random-poisson (repetitions * select-rate)    [ select-event ]   )    foreach events [ event ->     ask one-of patches [       let target one-of neighbors4       if event = swap-event      [ swap target ]       if event = reproduce-event [ reproduce target ]       if event = select-event    [ select target ]     ]   ]   tick end  ; Patch procedures  ; Swap PCOLOR with TARGET. to swap [ target ]   let old-color pcolor   set pcolor [ pcolor ] of target   ask target [ set pcolor old-color ] end  ; Compete with TARGET. The loser becomes blank. to select [ target ]   ifelse beat? target [     ask target [ set pcolor black ]   ] [     if [ beat? myself ] of target [       set pcolor black     ]   ] end  ; If TARGET is blank, reproduce on that patch. If I\'m blank, TARGET reproduces on my patch. to reproduce [ target ]   ifelse [ pcolor ] of target = black [     ask target [       set pcolor [ pcolor ] of myself     ]   ] [     if pcolor = black [       set pcolor [ pcolor ] of target     ]   ] end  ; Determine whether or not I beat TARGET to-report beat? [ target ]   report (pcolor = red   and [ pcolor ] of target = green) or          (pcolor = green and [ pcolor ] of target = blue) or          (pcolor = blue  and [ pcolor ] of target = red) end  ; Utility procedures  to-report rate-from-exponent [ exponent ]   report 10 ^ exponent end  to-report swap-rate   report rate-from-exponent swap-rate-exponent end  to-report reproduce-rate   report rate-from-exponent reproduce-rate-exponent end  to-report select-rate   report rate-from-exponent select-rate-exponent end  ; Convert the given rate to a percentage of how much that action happens to-report percentage [ rate ]   report 100 * rate / (swap-rate + reproduce-rate + select-rate) end   ; Copyright 2017 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":310,"top":10,"right":771,"bottom":472,"dimensions":{"minPxcor":-75,"maxPxcor":75,"minPycor":-75,"maxPycor":75,"patchSize":3,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":5,"top":10,"right":100,"bottom":43,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go ","left":115,"top":10,"right":210,"bottom":43,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-1","compiledMax":"1","compiledStep":"0.1","variable":"swap-rate-exponent","left":5,"top":55,"right":210,"bottom":88,"display":"swap-rate-exponent","min":"-1","max":"1","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-1","compiledMax":"1","compiledStep":"0.1","variable":"reproduce-rate-exponent","left":5,"top":100,"right":210,"bottom":133,"display":"reproduce-rate-exponent","min":"-1","max":"1","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"-1","compiledMax":"1","compiledStep":"0.1","variable":"select-rate-exponent","left":5,"top":145,"right":210,"bottom":178,"display":"select-rate-exponent","min":"-1","max":"1","default":0,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Populations', 'default', function() {     plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 15); }));;   }); }","display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = red ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Populations', 'pen-1', function() {     plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 55); }));;   }); }","display":"pen-1","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = green ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Populations', 'pen-2', function() {     plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 105); }));;   }); }","display":"pen-2","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = blue ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Populations","left":5,"top":190,"right":305,"bottom":470,"xmin":0,"xmax":10,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = red ]","type":"pen"},{"display":"pen-1","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = green ]","type":"pen"},{"display":"pen-2","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [ pcolor = blue ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"PrimChecks.procedure.callReporter(\"percentage\", PrimChecks.procedure.callReporter(\"swap-rate\"))","source":"percentage swap-rate","left":215,"top":50,"right":305,"bottom":95,"display":"swap-%","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"PrimChecks.procedure.callReporter(\"percentage\", PrimChecks.procedure.callReporter(\"reproduce-rate\"))","source":"percentage reproduce-rate","left":215,"top":95,"right":305,"bottom":140,"display":"reproduce-%","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"PrimChecks.procedure.callReporter(\"percentage\", PrimChecks.procedure.callReporter(\"select-rate\"))","source":"percentage select-rate","left":215,"top":140,"right":305,"bottom":185,"display":"select-%","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["swap-rate-exponent", "reproduce-rate-exponent", "select-rate-exponent"], ["swap-rate-exponent", "reproduce-rate-exponent", "select-rate-exponent"], [], -75, 75, -75, 75, 3, true, true, turtleShapes, linkShapes, function(){});
+modelConfig.plots = [];
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup   clear-all   reset-ticks end  to go   (ifelse (ticks = 0) [     test-literal   ] (ticks = 1) [     test-number   ] (ticks = 2) [     test-rgb   ] (ticks = 3) [     test-rgba-opaque   ] (ticks = 4) [     test-rgba-transparent   ] (ticks = 5) [     test-rgba-swap-to-blue   ] (ticks = 6) [     test-rgba-swap-to-transparent   ] (ticks = 7) [     test-rgba-swap-to-opaque   ])   tick end  to clear   clear-drawing   clear-turtles end  to test-literal   clear   create-turtles 1 [     set size 15     set heading 45     set color red     stamp     forward 10   ] end  to test-number   clear   create-turtles 1 [     set size 15     set heading 45     set color 15     stamp     forward 10   ] end  to test-rgb   clear   create-turtles 1 [     set size 15     set heading 45     set color [215 50 41]     stamp     forward 10   ] end  to test-rgba-opaque   clear   create-turtles 1 [     set size 15     set heading 45     set color [215 50 41 255]     stamp     forward 10   ] end  to test-rgba-transparent   clear   create-turtles 1 [     set size 15     set heading 45     set color [215 50 41 0]     stamp     forward 10   ] end  to test-rgba-swap-to-blue   clear   create-turtles 1 [     set size 15     set heading 45     set color [215 50 41 255]     stamp     set color [41 50 215 255]     forward 10   ] end  to test-rgba-swap-to-transparent   clear   create-turtles 1 [     set size 15     set heading 45     set color [215 50 41 255]     stamp     set color [215 50 41 100]     forward 10   ] end  to test-rgba-swap-to-opaque   clear   create-turtles 1 [     set size 15     set heading 45     set color [215 50 41 100]     stamp     set color [215 50 41 255]     forward 10   ] end')([{"left":288,"top":20,"right":725,"bottom":458,"dimensions":{"minPxcor":-16,"maxPxcor":16,"minPycor":-16,"maxPycor":16,"patchSize":13,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"Continuous","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"test-literal\"); if (R === StopInterrupt) { return R; }","source":"test-literal","left":20,"top":20,"right":260,"bottom":80,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"test-number\"); if (R === StopInterrupt) { return R; }","source":"test-number","left":20,"top":90,"right":260,"bottom":150,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"test-rgb\"); if (R === StopInterrupt) { return R; }","source":"test-rgb","left":20,"top":160,"right":260,"bottom":220,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"test-rgba-opaque\"); if (R === StopInterrupt) { return R; }","source":"test-rgba-opaque","left":20,"top":230,"right":260,"bottom":290,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"test-rgba-transparent\"); if (R === StopInterrupt) { return R; }","source":"test-rgba-transparent","left":20,"top":300,"right":260,"bottom":360,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"test-rgba-swap-to-blue\"); if (R === StopInterrupt) { return R; }","source":"test-rgba-swap-to-blue","left":20,"top":370,"right":260,"bottom":430,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"test-rgba-swap-to-transparent\"); if (R === StopInterrupt) { return R; }","source":"test-rgba-swap-to-transparent","left":20,"top":440,"right":260,"bottom":500,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"test-rgba-swap-to-opaque\"); if (R === StopInterrupt) { return R; }","source":"test-rgba-swap-to-opaque","left":20,"top":510,"right":260,"bottom":570,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())([], [], [], -16, 16, -16, 16, 13, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -71,79 +50,115 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-ProcedurePrims.defineCommand("setup", 3, 150, (function() {
+ProcedurePrims.defineCommand("setup", 3, 35, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.oneOf([15, 55, 105, 0])); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-ProcedurePrims.defineCommand("go", 158, 1941, (function() {
-  let swapHevent = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("SWAP-EVENT", swapHevent);
-  let reproduceHevent = 1; ProcedurePrims.stack().currentContext().registerStringRunVar("REPRODUCE-EVENT", reproduceHevent);
-  let selectHevent = 2; ProcedurePrims.stack().currentContext().registerStringRunVar("SELECT-EVENT", selectHevent);
-  let repetitions = PrimChecks.math.div(PrimChecks.agentset.count(world.patches()), 3); ProcedurePrims.stack().currentContext().registerStringRunVar("REPETITIONS", repetitions);
-  let events = PrimChecks.list.shuffle(ListPrims.sentence(Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, PrimChecks.procedure.callReporter("swap-rate")))), Tasks.reporterTask(function() { return swapHevent; }, "[ swap-event ]")), Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, PrimChecks.procedure.callReporter("reproduce-rate")))), Tasks.reporterTask(function() { return reproduceHevent; }, "[ reproduce-event ]")), Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, PrimChecks.procedure.callReporter("select-rate")))), Tasks.reporterTask(function() { return selectHevent; }, "[ select-event ]")))); ProcedurePrims.stack().currentContext().registerStringRunVar("EVENTS", events);
-  var R = Tasks.forEach(Tasks.commandTask(function(_EVENT_) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.patches())), function() {
-      let target = PrimChecks.list.oneOf(SelfManager.self().getNeighbors4()); ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET", target);
-      if (Prims.equality(_EVENT_, swapHevent)) {
-        var R = ProcedurePrims.callCommand("swap", target); if (R === DeathInterrupt) { return R; }
-      }
-      if (Prims.equality(_EVENT_, reproduceHevent)) {
-        var R = ProcedurePrims.callCommand("reproduce", target); if (R === DeathInterrupt) { return R; }
-      }
-      if (Prims.equality(_EVENT_, selectHevent)) {
-        var R = ProcedurePrims.callCommand("select", target); if (R === DeathInterrupt) { return R; }
-      }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, "[ event -> ask one-of patches [ let one-of neighbors4 if event = swap-event [ swap target ] if event = reproduce-event [ reproduce target ] if event = select-event [ select target ] ] ]"), events); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+ProcedurePrims.defineCommand("go", 43, 391, (function() {
+  if (Prims.equality(world.ticker.tickCount(), 0)) {
+    var R = ProcedurePrims.callCommand("test-literal"); if (R === DeathInterrupt) { return R; }
+  } else if (Prims.equality(world.ticker.tickCount(), 1)) {
+    var R = ProcedurePrims.callCommand("test-number"); if (R === DeathInterrupt) { return R; }
+  } else if (Prims.equality(world.ticker.tickCount(), 2)) {
+    var R = ProcedurePrims.callCommand("test-rgb"); if (R === DeathInterrupt) { return R; }
+  } else if (Prims.equality(world.ticker.tickCount(), 3)) {
+    var R = ProcedurePrims.callCommand("test-rgba-opaque"); if (R === DeathInterrupt) { return R; }
+  } else if (Prims.equality(world.ticker.tickCount(), 4)) {
+    var R = ProcedurePrims.callCommand("test-rgba-transparent"); if (R === DeathInterrupt) { return R; }
+  } else if (Prims.equality(world.ticker.tickCount(), 5)) {
+    var R = ProcedurePrims.callCommand("test-rgba-swap-to-blue"); if (R === DeathInterrupt) { return R; }
+  } else if (Prims.equality(world.ticker.tickCount(), 6)) {
+    var R = ProcedurePrims.callCommand("test-rgba-swap-to-transparent"); if (R === DeathInterrupt) { return R; }
+  } else if (Prims.equality(world.ticker.tickCount(), 7)) {
+    var R = ProcedurePrims.callCommand("test-rgba-swap-to-opaque"); if (R === DeathInterrupt) { return R; }
+  }
+  
   world.ticker.tick();
 }))
-ProcedurePrims.defineCommand("swap", 1996, 2107, (function(target) {
-  let oldHcolor = SelfManager.self().getPatchVariable("pcolor"); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-COLOR", oldHcolor);
-  SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, target), function() { SelfManager.self().setPatchVariable("pcolor", oldHcolor); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+ProcedurePrims.defineCommand("clear", 399, 437, (function() {
+  world.clearDrawing();
+  world.turtleManager.clearTurtles();
 }))
-ProcedurePrims.defineCommand("select", 2163, 2316, (function(target) {
-  if (PrimChecks.procedure.callReporter("beat?", target)) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, target), function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }
-  else {
-    if (PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return PrimChecks.procedure.callReporter("beat?", SelfManager.myself()); })) {
-      SelfManager.self().setPatchVariable("pcolor", 0);
-    }
-  }
+ProcedurePrims.defineCommand("test-literal", 445, 569, (function() {
+  var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
+    PrimChecks.turtle.setVariable("size", 15);
+    PrimChecks.turtle.setVariable("heading", 45);
+    SelfManager.self().setVariable("color", 15);
+    SelfManager.self().stamp();
+    SelfManager.self().fd(10);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("reproduce", 2416, 2616, (function(target) {
-  if (Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 0)) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, target), function() {
-      SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }
-  else {
-    if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
-      SelfManager.self().setPatchVariable("pcolor", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }));
-    }
-  }
+ProcedurePrims.defineCommand("test-number", 577, 699, (function() {
+  var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
+    PrimChecks.turtle.setVariable("size", 15);
+    PrimChecks.turtle.setVariable("heading", 45);
+    SelfManager.self().setVariable("color", 15);
+    SelfManager.self().stamp();
+    SelfManager.self().fd(10);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("beat?", 2672, 2869, (function(target) {
-  return PrimChecks.procedure.report((((Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15) && Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 55)) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55) && Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 105))) || (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105) && Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, target), function() { return SelfManager.self().getPatchVariable("pcolor"); }), 15))));
+ProcedurePrims.defineCommand("test-rgb", 707, 835, (function() {
+  var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
+    PrimChecks.turtle.setVariable("size", 15);
+    PrimChecks.turtle.setVariable("heading", 45);
+    SelfManager.self().setVariable("color", [215, 50, 41]);
+    SelfManager.self().stamp();
+    SelfManager.self().fd(10);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("rate-from-exponent", 2906, 2961, (function(exponent) {
-  return PrimChecks.procedure.report(PrimChecks.math.pow(10, PrimChecks.validator.checkArg('^', 1, exponent)));
+ProcedurePrims.defineCommand("test-rgba-opaque", 843, 983, (function() {
+  var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
+    PrimChecks.turtle.setVariable("size", 15);
+    PrimChecks.turtle.setVariable("heading", 45);
+    SelfManager.self().setVariable("color", [215, 50, 41, 255]);
+    SelfManager.self().stamp();
+    SelfManager.self().fd(10);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("swap-rate", 2976, 3033, (function() {
-  return PrimChecks.procedure.report(PrimChecks.procedure.callReporter("rate-from-exponent", world.observer.getGlobal("swap-rate-exponent")));
+ProcedurePrims.defineCommand("test-rgba-transparent", 991, 1134, (function() {
+  var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
+    PrimChecks.turtle.setVariable("size", 15);
+    PrimChecks.turtle.setVariable("heading", 45);
+    SelfManager.self().setVariable("color", [215, 50, 41, 0]);
+    SelfManager.self().stamp();
+    SelfManager.self().fd(10);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("reproduce-rate", 3048, 3115, (function() {
-  return PrimChecks.procedure.report(PrimChecks.procedure.callReporter("rate-from-exponent", world.observer.getGlobal("reproduce-rate-exponent")));
+ProcedurePrims.defineCommand("test-rgba-swap-to-blue", 1142, 1318, (function() {
+  var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
+    PrimChecks.turtle.setVariable("size", 15);
+    PrimChecks.turtle.setVariable("heading", 45);
+    SelfManager.self().setVariable("color", [215, 50, 41, 255]);
+    SelfManager.self().stamp();
+    SelfManager.self().setVariable("color", [41, 50, 215, 255]);
+    SelfManager.self().fd(10);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("select-rate", 3130, 3191, (function() {
-  return PrimChecks.procedure.report(PrimChecks.procedure.callReporter("rate-from-exponent", world.observer.getGlobal("select-rate-exponent")));
+ProcedurePrims.defineCommand("test-rgba-swap-to-transparent", 1326, 1509, (function() {
+  var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
+    PrimChecks.turtle.setVariable("size", 15);
+    PrimChecks.turtle.setVariable("heading", 45);
+    SelfManager.self().setVariable("color", [215, 50, 41, 255]);
+    SelfManager.self().stamp();
+    SelfManager.self().setVariable("color", [215, 50, 41, 100]);
+    SelfManager.self().fd(10);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineReporter("percentage", 3279, 3364, (function(rate) {
-  return PrimChecks.procedure.report(PrimChecks.math.div(PrimChecks.math.mult(100, PrimChecks.validator.checkArg('*', 1, rate)), PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("swap-rate")), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("reproduce-rate"))), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("select-rate")))));
+ProcedurePrims.defineCommand("test-rgba-swap-to-opaque", 1517, 1695, (function() {
+  var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
+    PrimChecks.turtle.setVariable("size", 15);
+    PrimChecks.turtle.setVariable("heading", 45);
+    SelfManager.self().setVariable("color", [215, 50, 41, 100]);
+    SelfManager.self().stamp();
+    SelfManager.self().setVariable("color", [215, 50, 41, 255]);
+    SelfManager.self().fd(10);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-world.observer.setGlobal("swap-rate-exponent", 0);
-world.observer.setGlobal("reproduce-rate-exponent", 0);
-world.observer.setGlobal("select-rate-exponent", 0);

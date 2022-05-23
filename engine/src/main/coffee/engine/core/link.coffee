@@ -191,7 +191,7 @@ module.exports =
 
       stampHeading = ifInterrupt(@world.topology.towards(e1x, e1y, e2x, e2y), 0)
 
-      color = ColorModel.colorToRGB(@_color)
+      color = ColorModel.colorToList(@_color)
       midX  = @getMidpointX()
       midY  = @getMidpointY()
 
