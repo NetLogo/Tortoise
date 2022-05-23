@@ -45,6 +45,7 @@ var ProcedurePrims = workspace.procedurePrims;
 var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
+var StringPrims = workspace.stringPrims;
 var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
@@ -118,13 +119,13 @@ ProcedurePrims.defineCommand("setup-dna-string", 6109, 7532, (function() {
   if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (short strand)")) {
     let initialHlengthHdna = 12; ProcedurePrims.stack().currentContext().registerStringRunVar("INITIAL-LENGTH-DNA", initialHlengthHdna);
     for (let _index_6358_6364 = 0, _repeatcount_6358_6364 = StrictMath.floor(initialHlengthHdna); _index_6358_6364 < _repeatcount_6358_6364; _index_6358_6364++) {
-      world.observer.setGlobal("original-dna-string", (workspace.dump('') + workspace.dump(world.observer.getGlobal("original-dna-string")) + workspace.dump(PrimChecks.procedure.callReporter("random-base-letter-dna"))));
+      world.observer.setGlobal("original-dna-string", StringPrims.word(world.observer.getGlobal("original-dna-string"), PrimChecks.procedure.callReporter("random-base-letter-dna")));
     }
   }
   if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (long strand)")) {
     let initialHlengthHdna = 56; ProcedurePrims.stack().currentContext().registerStringRunVar("INITIAL-LENGTH-DNA", initialHlengthHdna);
     for (let _index_6550_6556 = 0, _repeatcount_6550_6556 = StrictMath.floor(initialHlengthHdna); _index_6550_6556 < _repeatcount_6550_6556; _index_6550_6556++) {
-      world.observer.setGlobal("original-dna-string", (workspace.dump('') + workspace.dump(world.observer.getGlobal("original-dna-string")) + workspace.dump(PrimChecks.procedure.callReporter("random-base-letter-dna"))));
+      world.observer.setGlobal("original-dna-string", StringPrims.word(world.observer.getGlobal("original-dna-string"), PrimChecks.procedure.callReporter("random-base-letter-dna")));
     }
   }
   if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "no genes (short strand)")) {
@@ -181,7 +182,7 @@ ProcedurePrims.defineCommand("make-a-nucleotide-chain-for-dna-string", 8031, 869
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
         PrimChecks.turtle.setVariable("strand", strandHtype);
         PrimChecks.turtle.setVariable("value", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, placeHcounter), PrimChecks.validator.checkArg('ITEM', 12, dnaHstring)));
-        SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("nucleotide-") + workspace.dump(PrimChecks.turtle.getVariable("value"))));
+        SelfManager.self().setVariable("shape", StringPrims.word("nucleotide-", PrimChecks.turtle.getVariable("value")));
         PrimChecks.turtle.setVariable("heading", 0);
         PrimChecks.turtle.setVariable("place", placeHcounter);
         var R = ProcedurePrims.callCommand("attach-tag", 5, 0.5, PrimChecks.turtle.getVariable("value"), world.observer.getGlobal("nucleo-tag-color")); if (R === DeathInterrupt) { return R; }
@@ -206,7 +207,7 @@ ProcedurePrims.defineCommand("build-genes-from-dna", 8704, 10555, (function(stra
     lastHlastHitem = lastHitem; ProcedurePrims.stack().currentContext().updateStringRunVar("LAST-LAST-ITEM", lastHlastHitem);
     lastHitem = thisHitem; ProcedurePrims.stack().currentContext().updateStringRunVar("LAST-ITEM", lastHitem);
     thisHitem = firstHitem; ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-ITEM", thisHitem);
-    triplet = (workspace.dump('') + workspace.dump(lastHlastHitem) + workspace.dump(lastHitem) + workspace.dump(thisHitem)); ProcedurePrims.stack().currentContext().updateStringRunVar("TRIPLET", triplet);
+    triplet = StringPrims.word(lastHlastHitem, lastHitem, thisHitem); ProcedurePrims.stack().currentContext().updateStringRunVar("TRIPLET", triplet);
     if (Prims.equality(triplet, "ATG")) {
       var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "GENES"), function() {
         SelfManager.self().setVariable("hidden?", true);
@@ -221,7 +222,7 @@ ProcedurePrims.defineCommand("build-genes-from-dna", 8704, 10555, (function(stra
         }
         PrimChecks.turtle.setVariable("start-position", itemHposition);
         PrimChecks.turtle.setVariable("end-position", PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("original-dna-string"))));
-        PrimChecks.turtle.setVariable("code", (workspace.dump('') + workspace.dump(triplet) + workspace.dump(PrimChecks.list.substring(PrimChecks.validator.checkArg('SUBSTRING', 4, dnaHstring), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, itemHposition), 1), PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring))))));
+        PrimChecks.turtle.setVariable("code", StringPrims.word(triplet, PrimChecks.list.substring(PrimChecks.validator.checkArg('SUBSTRING', 4, dnaHstring), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, itemHposition), 1), PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring)))));
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }
     itemHposition = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, itemHposition), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("ITEM-POSITION", itemHposition);
@@ -231,7 +232,7 @@ ProcedurePrims.defineCommand("build-genes-from-dna", 8704, 10555, (function(stra
     let tripletHcounter = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TRIPLET-COUNTER", tripletHcounter);
     let newHcode = PrimChecks.turtle.getVariable("code"); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-CODE", newHcode);
     for (let _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.turtle.getVariable("code"))), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++) {
-      let thisHtriplet = (workspace.dump('') + workspace.dump(PrimChecks.list.item(PrimChecks.math.plus(0, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code")))) + workspace.dump(PrimChecks.list.item(PrimChecks.math.plus(1, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code")))) + workspace.dump(PrimChecks.list.item(PrimChecks.math.plus(2, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-TRIPLET", thisHtriplet);
+      let thisHtriplet = StringPrims.word(PrimChecks.list.item(PrimChecks.math.plus(0, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code"))), PrimChecks.list.item(PrimChecks.math.plus(1, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code"))), PrimChecks.list.item(PrimChecks.math.plus(2, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code")))); ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-TRIPLET", thisHtriplet);
       if ((((Prims.equality(thisHtriplet, "TAG") || Prims.equality(thisHtriplet, "TGA")) || Prims.equality(thisHtriplet, "TAA")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, endHofHgene_Q)))) {
         PrimChecks.turtle.setVariable("end-position", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3));
         newHcode = PrimChecks.list.substring(PrimChecks.validator.checkArg('SUBSTRING', 4, PrimChecks.turtle.getVariable("code")), 0, PrimChecks.validator.checkArg('SUBSTRING', 1, PrimChecks.turtle.getVariable("end-position"))); ProcedurePrims.stack().currentContext().updateStringRunVar("NEW-CODE", newHcode);
@@ -261,7 +262,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
       SelfManager.self().setVariable("color", geneHcolorHwithHtransparency);
       PrimChecks.turtle.setVariable("size", 3);
       SelfManager.self().setVariable("hidden?", false);
-      var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, (workspace.dump('') + workspace.dump("start:") + workspace.dump(PrimChecks.turtle.getVariable("gene-number"))), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
+      var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, StringPrims.word("start:", PrimChecks.turtle.getVariable("gene-number")), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
       var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHgene, "BACKBONES"), function() {
         SelfManager.self().setVariable("hidden?", true);
         PrimChecks.link.setVariable("tie-mode", "fixed");
@@ -270,7 +271,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TERMINATORS"));
         SelfManager.self().fd(PrimChecks.math.mult(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, thisHcode)), 0.45));
-        var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, (workspace.dump('') + workspace.dump("end:") + workspace.dump(PrimChecks.turtle.getVariable("gene-number"))), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
+        var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, StringPrims.word("end:", PrimChecks.turtle.getVariable("gene-number")), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
         var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHgene, "BACKBONES"), function() {
           SelfManager.self().setVariable("hidden?", true);
           PrimChecks.link.setVariable("tie-mode", "fixed");
@@ -306,7 +307,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
           var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
             SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES"));
             PrimChecks.turtle.setVariable("value", PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, codeHtoHtranscribe)));
-            SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("mrna-") + workspace.dump(PrimChecks.turtle.getVariable("value"))));
+            SelfManager.self().setVariable("shape", StringPrims.word("mrna-", PrimChecks.turtle.getVariable("value")));
             PrimChecks.turtle.setVariable("heading", 180);
             var R = ProcedurePrims.callCommand("attach-tag", 175, 0.9, PrimChecks.turtle.getVariable("value"), world.observer.getGlobal("nucleo-tag-color")); if (R === DeathInterrupt) { return R; }
             var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHmrna, "BACKBONES"), function() {
@@ -330,7 +331,7 @@ ProcedurePrims.defineCommand("build-protein-from-mrna", 12909, 13543, (function(
     let thisHtriplet = ""; ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-TRIPLET", thisHtriplet);
     let tripletHcounter = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TRIPLET-COUNTER", tripletHcounter);
     for (let _index_13127_13133 = 0, _repeatcount_13127_13133 = StrictMath.floor(numberHofHtripletsHinHlist); _index_13127_13133 < _repeatcount_13127_13133; _index_13127_13133++) {
-      thisHtriplet = (workspace.dump('') + workspace.dump(PrimChecks.procedure.callReporter("complementary-mrna-base", PrimChecks.list.item(PrimChecks.math.plus(0, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code"))))) + workspace.dump(PrimChecks.procedure.callReporter("complementary-mrna-base", PrimChecks.list.item(PrimChecks.math.plus(1, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code"))))) + workspace.dump(PrimChecks.procedure.callReporter("complementary-mrna-base", PrimChecks.list.item(PrimChecks.math.plus(2, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code")))))); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-TRIPLET", thisHtriplet);
+      thisHtriplet = StringPrims.word(PrimChecks.procedure.callReporter("complementary-mrna-base", PrimChecks.list.item(PrimChecks.math.plus(0, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code")))), PrimChecks.procedure.callReporter("complementary-mrna-base", PrimChecks.list.item(PrimChecks.math.plus(1, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code")))), PrimChecks.procedure.callReporter("complementary-mrna-base", PrimChecks.list.item(PrimChecks.math.plus(2, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, tripletHcounter), 3)), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.turtle.getVariable("code"))))); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-TRIPLET", thisHtriplet);
       var R = ProcedurePrims.callCommand("build-trna-for-this-triplet", thisHtriplet, tripletHcounter); if (R === DeathInterrupt) { return R; }
       tripletHcounter = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, tripletHcounter), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("TRIPLET-COUNTER", tripletHcounter);
     }
@@ -347,7 +348,7 @@ ProcedurePrims.defineCommand("build-trna-for-this-triplet", 13553, 14956, (funct
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("AMINO-ACIDS"));
       PrimChecks.turtle.setVariable("value", PrimChecks.procedure.callReporter("which-protein-for-this-codon", thisHtriplet));
-      SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("amino-") + workspace.dump(PrimChecks.turtle.getVariable("value"))));
+      SelfManager.self().setVariable("shape", StringPrims.word("amino-", PrimChecks.turtle.getVariable("value")));
       PrimChecks.turtle.setVariable("heading", 0);
       PrimChecks.turtle.setVariable("size", 2);
       SelfManager.self()._optimalFdOne();
@@ -360,7 +361,7 @@ ProcedurePrims.defineCommand("build-trna-for-this-triplet", 13553, 14956, (funct
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
-      SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("trna-") + workspace.dump(PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet)))));
+      SelfManager.self().setVariable("shape", StringPrims.word("trna-", PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet))));
       PrimChecks.turtle.setVariable("heading", -155);
       SelfManager.self().fd(1.1);
       PrimChecks.turtle.setVariable("heading", 0);
@@ -371,7 +372,7 @@ ProcedurePrims.defineCommand("build-trna-for-this-triplet", 13553, 14956, (funct
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
-        SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("trna-") + workspace.dump(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet)))));
+        SelfManager.self().setVariable("shape", StringPrims.word("trna-", PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet))));
         PrimChecks.turtle.setVariable("heading", 90);
         SelfManager.self()._optimalFdLessThan1(0.45);
         PrimChecks.turtle.setVariable("heading", 0);
@@ -383,7 +384,7 @@ ProcedurePrims.defineCommand("build-trna-for-this-triplet", 13553, 14956, (funct
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
-        SelfManager.self().setVariable("shape", (workspace.dump('') + workspace.dump("trna-") + workspace.dump(PrimChecks.list.item(2, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet)))));
+        SelfManager.self().setVariable("shape", StringPrims.word("trna-", PrimChecks.list.item(2, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet))));
         PrimChecks.turtle.setVariable("heading", 90);
         SelfManager.self()._optimalFdLessThan1(0.9);
         PrimChecks.turtle.setVariable("heading", 0);
@@ -571,7 +572,7 @@ ProcedurePrims.defineCommand("make-protein", 19229, 19848, (function(strandHtype
   let orderedHaminoHacids = PrimChecks.agentset.sortOn(PrimChecks.validator.checkArg('SORT-ON', 112, theseHaminoHacids), function() { return PrimChecks.turtle.getVariable("who"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("ORDERED-AMINO-ACIDS", orderedHaminoHacids);
   var R = Tasks.forEach(Tasks.commandTask(function(theHaminoHacid) {
     PrimChecks.procedure.runArgCountCheck(1, arguments.length);
-    thisHproteinHvalue = (workspace.dump('') + workspace.dump(thisHproteinHvalue) + workspace.dump("-") + workspace.dump(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, theHaminoHacid), function() { return PrimChecks.turtle.getVariable("value"); }))); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-PROTEIN-VALUE", thisHproteinHvalue);
+    thisHproteinHvalue = StringPrims.word(thisHproteinHvalue, "-", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, theHaminoHacid), function() { return PrimChecks.turtle.getVariable("value"); })); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-PROTEIN-VALUE", thisHproteinHvalue);
   }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" [ value ] of the-amino-acid ]"), orderedHaminoHacids); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   if (PrimChecks.math.not(PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PROTEINS"), function() {
     return (Prims.equality(PrimChecks.turtle.getVariable("strand"), strandHtype) && Prims.equality(PrimChecks.turtle.getVariable("value"), thisHproteinHvalue));
@@ -675,20 +676,20 @@ ProcedurePrims.defineCommand("show-protein-production", 22434, 23188, (function(
   OutputPrims.clear();
   let originalHproteins = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PROTEINS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("strand"), "original"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("ORIGINAL-PROTEINS", originalHproteins);
   OutputPrims.print("Proteins Produced");
-  OutputPrims.print((workspace.dump('') + workspace.dump("from original DNA  = ") + workspace.dump(PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 112, originalHproteins)))));
+  OutputPrims.print(StringPrims.word("from original DNA  = ", PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 112, originalHproteins))));
   OutputPrims.print("::::::::::::::::::");
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, originalHproteins), function() {
-    OutputPrims.print((workspace.dump('') + workspace.dump("Orig.Gene #") + workspace.dump(PrimChecks.turtle.getVariable("gene-number")) + workspace.dump(" > Protein:")));
+    OutputPrims.print(StringPrims.word("Orig.Gene #", PrimChecks.turtle.getVariable("gene-number"), " > Protein:"));
     OutputPrims.print(PrimChecks.turtle.getVariable("value"));
     OutputPrims.print("");
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   OutputPrims.print("==================");
   let duplicateHproteins = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PROTEINS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("strand"), "duplicate"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("DUPLICATE-PROTEINS", duplicateHproteins);
   OutputPrims.print("Proteins Produced");
-  OutputPrims.print((workspace.dump('') + workspace.dump("from copy of DNA = ") + workspace.dump(PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 112, duplicateHproteins)))));
+  OutputPrims.print(StringPrims.word("from copy of DNA = ", PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 112, duplicateHproteins))));
   OutputPrims.print("::::::::::::::::::");
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, duplicateHproteins), function() {
-    OutputPrims.print((workspace.dump('') + workspace.dump("Copy.Gene #") + workspace.dump(PrimChecks.turtle.getVariable("gene-number")) + workspace.dump(" > Protein:")));
+    OutputPrims.print(StringPrims.word("Copy.Gene #", PrimChecks.turtle.getVariable("gene-number"), " > Protein:"));
     OutputPrims.print(PrimChecks.turtle.getVariable("value"));
     OutputPrims.print("");
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -716,9 +717,9 @@ ProcedurePrims.defineCommand("make-duplicate-dna-string", 23434, 24783, (functio
   }
   if (Prims.equality(world.observer.getGlobal("mutation-type"), "insertion")) {
     for (let _index_24503_24509 = 0, _repeatcount_24503_24509 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24503_24509 < _repeatcount_24503_24509; _index_24503_24509++) {
-      dnaHatHandHafterHtarget = (workspace.dump('') + workspace.dump(PrimChecks.procedure.callReporter("random-base-letter-dna")) + workspace.dump(dnaHatHandHafterHtarget)); ProcedurePrims.stack().currentContext().updateStringRunVar("DNA-AT-AND-AFTER-TARGET", dnaHatHandHafterHtarget);
+      dnaHatHandHafterHtarget = StringPrims.word(PrimChecks.procedure.callReporter("random-base-letter-dna"), dnaHatHandHafterHtarget); ProcedurePrims.stack().currentContext().updateStringRunVar("DNA-AT-AND-AFTER-TARGET", dnaHatHandHafterHtarget);
     }
-    mutatingHcopyHofHdnaHstring = (workspace.dump('') + workspace.dump(dnaHbeforeHtarget) + workspace.dump(dnaHatHandHafterHtarget)); ProcedurePrims.stack().currentContext().updateStringRunVar("MUTATING-COPY-OF-DNA-STRING", mutatingHcopyHofHdnaHstring);
+    mutatingHcopyHofHdnaHstring = StringPrims.word(dnaHbeforeHtarget, dnaHatHandHafterHtarget); ProcedurePrims.stack().currentContext().updateStringRunVar("MUTATING-COPY-OF-DNA-STRING", mutatingHcopyHofHdnaHstring);
   }
   world.observer.setGlobal("duplicate-dna-string", mutatingHcopyHofHdnaHstring);
 }))
@@ -832,7 +833,7 @@ ProcedurePrims.defineReporter("replace-non-nucleotide-character", 29582, 29900, 
   return PrimChecks.procedure.report(characterHtoHreturn);
 }))
 ProcedurePrims.defineReporter("current-instruction-label", 30172, 30328, (function() {
-  return PrimChecks.procedure.report((Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : (workspace.dump('') + workspace.dump(world.observer.getGlobal("current-instruction")) + workspace.dump(" of ") + workspace.dump(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.procedure.callReporter("instructions")))))));
+  return PrimChecks.procedure.report((Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : StringPrims.word(world.observer.getGlobal("current-instruction"), " of ", PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.procedure.callReporter("instructions"))))));
 }))
 ProcedurePrims.defineCommand("next-instruction", 30337, 30397, (function() {
   var R = ProcedurePrims.callCommand("show-instruction", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("current-instruction")), 1)); if (R === DeathInterrupt) { return R; }

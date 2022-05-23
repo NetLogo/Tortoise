@@ -15,6 +15,7 @@ StrictMath = require('shim/strictmath')
 # type ColorName   = String
 # type HSB         = (Number, Number, Number)
 # type RGB         = (Number, Number, Number)
+# type RGBA        = (Number, Number, Number, Number)
 
 # (Number, Number) => (Number) => Number
 attenuate =
@@ -110,6 +111,14 @@ module.exports = {
   # (ColorNumber, ColorNumber) => Boolean
   areRelatedByShade: (color1, color2) ->
     @_colorIntegral(color1) is @_colorIntegral(color2)
+
+  # [T <: ColorNumber|RGB|RGBA|ColorName] @ (T) => RGB|RGBA
+  colorToList: (color) ->
+    [r, g, b] = @colorToRGB(color)
+    if color.length is 4
+      [r, g, b, color[3]]
+    else
+      [r, g, b]
 
   # [T <: ColorNumber|RGB|ColorName] @ (T) => RGB
   colorToRGB: (color) ->

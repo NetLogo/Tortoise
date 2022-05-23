@@ -1,54 +1,51 @@
 import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import sbtcrossproject.CrossProject
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
-import org.scalastyle.sbt.ScalastylePlugin.projectSettings
 
-val nlDependencyVersion       = "6.2.2"
+val nlDependencyVersion       = "6.2.2-2f651c5"
 
-val parserJsDependencyVersion = "0.3.0-d27b502"
+val parserJsDependencyVersion = "0.3.0-2f651c5"
 
-val scalazVersion             = "7.2.29"
+val scalazVersion             = "7.2.34"
+
+val playJsonVersion           = "2.9.2"
 
 val commonSettings =
   Seq(
     organization  := "org.nlogo",
     licenses      += ("GPL-2.0", url("http://opensource.org/licenses/GPL-2.0")),
     version       := "1.0",
-    // Compilation settings
+
     crossPaths    := false, // we're not cross-building for different Scala versions
-    scalaVersion  := "2.12.10",
+    scalaVersion  := "2.12.15",
     scalacOptions ++=
       "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
-    // Dependencies
+
     resolvers     += "netlogoheadless" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/",
     libraryDependencies ++= Seq(
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
-      "com.lihaoyi"       %% "scalatags"       % "0.7.0"    % "test",
-      "org.scalatest"     %% "scalatest"       % "3.2.10"   % "test",
-      "org.scalatestplus" %% "scalacheck-1-15" % "3.2.10.0" % Test,
+      "com.typesafe.play" %% "play-json"       % playJsonVersion,
+      "com.lihaoyi"       %% "scalatags"       % "0.11.1"   % "test",
+      "org.scalatest"     %% "scalatest"       % "3.2.12"   % "test",
+      "org.scalatestplus" %% "scalacheck-1-15" % "3.2.11.0" % "test",
       "org.skyscreamer"   %  "jsonassert"      % "1.5.0"    % "test",
-      "org.reflections"   %  "reflections"     % "0.9.11"   % "test",
-      // Do not update scalacheck to 1.14.1+ until the fix for the below issue is released.
-      // It breaks JsonShapeConversiontTest.scala -Jeremy B November 2019
-      // https://github.com/typelevel/scalacheck/issues/577
-      "com.typesafe.play" %% "play-json"       % "2.7.4",
-      // Bring in headless test code/framework for our tests
-      "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
-    // Path Management
+      "org.reflections"   %  "reflections"     % "0.9.12"   % "test",
+      "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"
+    ),
+
     Compile / resourceDirectory := (root / baseDirectory).value / "resources" / "main",
     Test    / resourceDirectory := (root / baseDirectory).value / "resources" / "test",
-    // Build and publication settings
-    isSnapshot                   := true, // Used by the publish-versioned plugin
-    publishTo                    := { Some("Cloudsmith API" at "https://maven.cloudsmith.io/netlogo/tortoise/") },
-    // Logging and Output settings
-    ivyLoggingLevel              := UpdateLogging.Quiet, // only log problems plz
-    onLoadMessage                := "",
-    // show test failures again at end, after all tests complete.
-    // T gives truncated stack traces; change to G if you need full.
+
+    isSnapshot := true, // Used by the publish-versioned plugin
+    publishTo  := { Some("Cloudsmith API" at "https://maven.cloudsmith.io/netlogo/tortoise/") },
+
+    ivyLoggingLevel := UpdateLogging.Quiet, // only log problems plz
+    onLoadMessage   := "",
+
     Test / testOptions += Tests.Argument("-oT"),
-    Compile / console / scalacOptions := scalacOptions.value.filterNot(_ == "-Xlint"))
+    Compile / console / scalacOptions := scalacOptions.value.filterNot(_ == "-Xlint")
+  )
 
 lazy val stylecheck = taskKey[Unit]("Run all sub-project scalastyle checks.")
 
@@ -89,11 +86,10 @@ lazy val compiler = CrossProject("compiler", file("compiler"))(JSPlatform, JVMPl
     packageJSDependencies / skip         := false, // bundles all dependencies in with generated JS
     testFrameworks                       := List(new TestFramework("utest.runner.Framework")),
     libraryDependencies                  ++= {
-      import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.toScalaJSGroupID
       Seq(
-        "com.lihaoyi"       %   "utest"       % "0.4.8" cross ScalaJSCrossVersion.binary,
+        "com.lihaoyi"       %   "utest"       % "0.7.11" cross ScalaJSCrossVersion.binary,
         "org.nlogo"         %   "parser-js"   % parserJsDependencyVersion cross ScalaJSCrossVersion.binary,
-        "com.typesafe.play" %%% "play-json"   % "2.6.11",
+        "com.typesafe.play" %%% "play-json"   % playJsonVersion,
         "org.scalaz"        %%% "scalaz-core" % scalazVersion)
     }
   )

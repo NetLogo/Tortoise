@@ -45,6 +45,7 @@ var ProcedurePrims = workspace.procedurePrims;
 var RandomPrims = workspace.randomPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
+var StringPrims = workspace.stringPrims;
 var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
@@ -58,7 +59,7 @@ ProcedurePrims.defineCommand("setup", 237, 880, (function() {
   if (PrimChecks.agentset.anyWith(world.patches(), function() {
     return PrimChecks.agentset.optimizeCount(SelfManager.self().getPatchVariable("outer-neighbors"), 0, (a, b) => a === b);
   })) {
-    UserDialogPrims.confirm((workspace.dump('') + workspace.dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + workspace.dump(" Please reset the sliders and press Setup again.")));
+    UserDialogPrims.confirm(StringPrims.word("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ", " Please reset the sliders and press Setup again."));
     return PrimChecks.procedure.stop();
   }
   else {

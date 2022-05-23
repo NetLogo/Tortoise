@@ -53,6 +53,7 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
     workspaceDeclare("world"),
     workspaceDeclare("PrimChecks"),
     workspaceDeclare("RandomPrims"),
+    workspaceDeclare("StringPrims"),
     workspaceDeclare("ProcedurePrims"),
 
     JsRequire("{ DeathInterrupt, StopInterrupt }", "util/interrupts"),

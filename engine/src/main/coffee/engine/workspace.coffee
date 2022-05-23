@@ -105,7 +105,7 @@ module.exports =
     selfPrims      = new SelfPrims(selfManager.self)
     linkPrims      = new LinkPrims(world)
     listPrims      = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
-    stringPrims    = new StringPrims()
+    stringPrims    = new StringPrims(dump)
 
     exceptions.setProcecurePrims(procedurePrims)
 
@@ -163,6 +163,7 @@ module.exports =
       printPrims
       rng
       selfPrims
+      stringPrims
       timer
       updater
       userDialogPrims
