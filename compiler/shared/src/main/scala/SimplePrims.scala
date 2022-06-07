@@ -181,11 +181,6 @@ object SimplePrims {
         case _: prim._neighbors4                     => "SelfManager.self().getNeighbors4"
         case _: prim._patchat                        => "SelfManager.self().patchAt"
 
-        // Agentset
-        case _: prim.etc._linkset   => "PrimChecks.agentset.linkSet"
-        case _: prim.etc._patchset  => "PrimChecks.agentset.patchSet"
-        case _: prim.etc._turtleset => "PrimChecks.agentset.turtleSet"
-
         // Plotting
         case _: prim.etc._autoplot      => "plotManager.isAutoplotting"
         case _: prim.etc._plotname      => "plotManager.getPlotName"

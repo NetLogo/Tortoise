@@ -271,6 +271,11 @@ trait ReporterPrims extends PrimUtils {
       case _: Optimizer._anywith        => s"PrimChecks.agentset.anyWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
       case o: Optimizer._optimizecount  => s"PrimChecks.agentset.optimizeCount(${arg(0)}, ${o.checkValue}, ${o.operator})"
 
+      // agentset creators do their own, weird runtime checking with unique error messages, so we don't check their args.
+      case ls: prim.etc._linkset   => s"PrimChecks.agentset.linkSet(${if (useCompileArgs) { commaArgs } else { "...arguments" }})"
+      case ps: prim.etc._patchset  => s"PrimChecks.agentset.patchSet(${if (useCompileArgs) { commaArgs } else { "...arguments" }})"
+      case ts: prim.etc._turtleset => s"PrimChecks.agentset.turtleSet(${if (useCompileArgs) { commaArgs } else { "...arguments" }})"
+
       case ns: Optimizer._nsum => generateOptimalNSum(r, ns.varName)
       case ns: Optimizer._nsum4 => generateOptimalNSum4(r, ns.varName)
 
@@ -296,10 +301,8 @@ trait ReporterPrims extends PrimUtils {
       // List prims
       case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}', $commaCheckedArgs)"
       case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.token.text}', $commaCheckedArgs)"
-
-      // ListPrims
-      case l: prim._list     => s"ListPrims.list(${maybeConciseVarArgs("LIST", l.syntax)})"
-      case s: prim._sentence => s"ListPrims.sentence(${maybeConciseVarArgs("SENTENCE", s.syntax)})"
+      case l: prim._list                  => s"ListPrims.list(${maybeConciseVarArgs("LIST", l.syntax)})"
+      case s: prim._sentence              => s"ListPrims.sentence(${maybeConciseVarArgs("SENTENCE", s.syntax)})"
 
       // Link finding
       case p: prim.etc._inlinkfrom       => s"LinkPrims.inLinkFrom(${jsString(fixBN(p.breedName))}, ${arg(0)})"
