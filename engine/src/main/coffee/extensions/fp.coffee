@@ -34,7 +34,8 @@ reduceReporters = (rs) ->
     rs.slice(1).reduce( (resultSoFar, reporter) ->
       reporter(resultSoFar)
     , firstResult)
-  reduced.isReporter = true
+  reduced.isReporter  = true
+  reduced.minArgCount = rs[0].minArgCount
   reduced
 
 # (Array[Reporter]) => Reporter
@@ -51,7 +52,8 @@ curry = (r, leftArgs...) ->
   curried = (rightArgs...) ->
     args = leftArgs.concat(rightArgs)
     r(args...)
-  curried.isReporter = true
+  curried.isReporter  = true
+  curried.minArgCount = (r.minArgCount - leftArgs.length)
   curried
 
 # ((Any) => Boolean, Array[Any]) => Array[Int]

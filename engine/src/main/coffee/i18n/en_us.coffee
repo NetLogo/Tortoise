@@ -101,7 +101,7 @@ bundle = {
     "SORT-ON works on numbers, strings, or agents of the same type, but not on #{type1} and #{type2}"
 
   , 'anonymous procedure expected _ input_, but only got _': (needed, given) ->
-    "anonymous procedure expected #{needed} input#{if needed > 1 then "s" else ""}, but only got #{given}"
+    "anonymous procedure expected #{needed} input#{if needed isnt 1 then "s" else ""}, but only got #{given}"
 
   , 'REPORT can only be used inside TO-REPORT.': () ->
     "REPORT can only be used inside TO-REPORT."
@@ -132,6 +132,9 @@ bundle = {
 
   , '_ breed does not own variable _': (breedName, varName) ->
     "#{breedName} breed does not own variable #{varName}"
+
+  , 'All the list arguments to _ must be the same length.': (primName) ->
+    "All the list arguments to #{primName} must be the same length."
 
 }
 

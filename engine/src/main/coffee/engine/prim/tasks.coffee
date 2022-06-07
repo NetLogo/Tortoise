@@ -8,18 +8,6 @@
 
 module.exports = {
 
-  # (Function, String) => Function
-  commandTask: (fn, body) ->
-    fn.isReporter = false
-    fn.nlogoBody = body
-    fn
-
-  # (Function, String) => Function
-  reporterTask: (fn, body) ->
-    fn.isReporter = true
-    fn.nlogoBody = body
-    fn
-
   # [Result] @ (Product => Result, Array[Any]) => Result
   apply: (primName) -> (fn, args) ->
     if args.length >= fn.length
@@ -29,16 +17,20 @@ module.exports = {
       throw exceptions.runtime("anonymous procedure expected #{fn.length} input#{pluralStr}, but only got #{args.length}", primName)
 
   # [Result] @ (Product => Result, Array[Any]*) => Array[Result]
-  map: (fn, lists...) ->
-    @_processLists(fn, lists, "map")
+  map: (fn, lists) ->
+    @_processLists(fn, lists)
 
-  # [Result] @ (Number, (Number) => Result) => Array[Result]
+  # [Result] @ (Number, () => Result | (Number) => Result) => Array[Result]
   nValues: (n, fn) ->
-    map(fn)(rangeUntil(0)(n))
+    if fn.minArgCount is 0
+      (new Array(n)).fill(0).map( () -> fn() )
+    else
+      # if the length is greater than 1, we rely on the task itself to throw the mismatched args error.
+      map(fn)(rangeUntil(0)(n))
 
   # [Result] @ (Product => Result, Array[Any]*) => Any
-  forEach: (fn, lists...) ->
-    return @_processLists(fn, lists, "foreach")
+  forEach: (fn, lists) ->
+    return @_processLists(fn, lists)
 
   # [Result] @ (Product => Result, Array[Array[Any]], String) => Array[Result]
   _processLists: (fn, lists, primName) ->
@@ -46,14 +38,17 @@ module.exports = {
     head     = lists[0]
     if numLists is 1
       if fn.isReporter
-        map(fn)(head)
+        # beware ye terse-nics tempted to enshorten this to `head.map(fn)`
+        # for variadic concise prims be lurking
+        # what require the `arguments` set in this way
+        head.map( (v) -> fn(v) )
       else
         for x in head
           res = fn(x)
           if res?
             return res
         return
-    else if all((l) -> l.length is head.length)(lists)
+    else
       if fn.isReporter
         for i in [0...head.length]
           fn(map((list) -> list[i])(lists)...)
@@ -62,7 +57,5 @@ module.exports = {
           res = fn(map((list) -> list[i])(lists)...)
           if res?
             return res
-    else
-      throw exceptions.runtime("All the list arguments to #{primName.toUpperCase()} must be the same length.", primName)
 
 }

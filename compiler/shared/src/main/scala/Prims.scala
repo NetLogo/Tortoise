@@ -8,12 +8,22 @@ import
 import
   JsOps.{ indented, jsString, jsStringEscaped }
 
-import
-  org.nlogo.core.{
-    Application, AstNode, CommandBlock, CompilerException,
-    Expression, Instruction, prim, Reporter, ReporterApp,
-    ReporterBlock, Statement, Syntax, Token
-  }
+import org.nlogo.core.{
+  Application
+, AstNode
+, CommandBlock
+, CompilerException
+, Expression
+, Instruction
+, prim
+, Reporter
+, ReporterApp
+, ReporterBlock
+, Statement
+, Syntax
+, Token
+}
+import org.nlogo.core.prim.Lambda
 
 // The Prim traits are split apart as follows
 //                  JsOps
@@ -109,22 +119,45 @@ object ReporterPrims {
     types.filter( (t) => !isSupported(allowed, t) && isSupported(actual, t) ).isEmpty
 
   def makeCheckedArgOps(a: Application, ops: Seq[String]): String = {
-    // TODO: Handle `Syntax.RepeatableType` arguments. -Jeremy B February 2021
-    val syntax        = a.instruction.syntax
-    val allAllowed    = if (syntax.isInfix) List(syntax.left) ++ syntax.right else syntax.right
-    val argsWithTypes = allAllowed.zip(a.args).zip(ops)
+    val syntax     = a.instruction.syntax
+    val allAllowed = if (syntax.isInfix) {
+      List(syntax.left) ++ syntax.right
+    } else if (!syntax.isVariadic || (a.args.length <= syntax.right.length)) {
+      syntax.right
+    } else {
+      val varStartIndex = syntax.right.indexWhere( (s) => Syntax.compatible(s, Syntax.RepeatableType) )
+      val varEndIndex   = a.args.length - (syntax.right.length - varStartIndex)
+      val varCount      = varEndIndex - varStartIndex + 1
+      val varSyntax     = syntax.right(varStartIndex)
+      val varAllowed    = removeRepeatable(varSyntax)
+      a.args.zipWithIndex.map( { case (_, argIndex) =>
+        if (argIndex < varStartIndex) {
+          syntax.right(argIndex)
+        } else if (argIndex < (varEndIndex + 1)) {
+          varAllowed
+        } else {
+          syntax.right(argIndex - varCount + 1)
+        }
+      })
+    }
 
-    val argOps = argsWithTypes.map( { case ((allowed: Int, exp: Expression), op: String) =>
+    val argsWithTypes = allAllowed.zip(a.args).zip(ops)
+    val checkedArgs   = argsWithTypes.map( { case ((allowed: Int, exp: Expression), op: String) =>
       ReporterPrims.makeCheckedOp(a.instruction.token.text, allowed, exp.reportedType(), op)
     })
-    argOps.mkString(", ")
+    checkedArgs.mkString(", ")
+  }
+
+  def removeRepeatable(t: Int) = {
+    t - (t & Syntax.RepeatableType)
   }
 
   def makeCheckedOp(prim: String, allowed: Int, actual: Int, op: String): String = {
     if (ReporterPrims.allTypesAllowed(allowed, actual)) {
       op
     } else {
-      s"PrimChecks.validator.checkArg('${prim.toUpperCase()}', $allowed, $op)"
+      // at runtime, don't consider repeatable as its own real type
+      s"PrimChecks.validator.checkArg('${prim.toUpperCase()}', ${removeRepeatable(allowed)}, $op)"
     }
   }
 
@@ -148,12 +181,17 @@ object ReporterPrims {
     if (argsString == "") "" else s", $argsString"
   }
 
+  def conciseVarArgs(primName: String, syntax: Syntax): String = {
+    // assumes variadic prims cannot be infix with a `left` value
+    s"...PrimChecks.task.checkVarArgs('$primName', [${syntax.right.mkString(", ")}], ...arguments)"
+  }
+
 }
 
 trait ReporterPrims extends PrimUtils {
   // scalastyle:off method.length
   // scalastyle:off cyclomatic.complexity
-  def reporter(r: ReporterApp)
+  def reporter(r: ReporterApp, useCompileArgs: Boolean = true)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
 
     def arg(i: Int) =
@@ -181,6 +219,14 @@ trait ReporterPrims extends PrimUtils {
       s"($left $op $right)"
     }
 
+    def maybeConciseVarArgs(primName: String, syntax: Syntax): String = {
+      if (useCompileArgs) {
+        checkedArgs
+      } else {
+        ReporterPrims.conciseVarArgs(primName, syntax)
+      }
+    }
+
     r.reporter match {
 
       // Basics stuff
@@ -196,9 +242,9 @@ trait ReporterPrims extends PrimUtils {
       case call: prim._callreport          => s"""PrimChecks.procedure.callReporter(${ReporterPrims.callArgs(call.name, args)})"""
 
       // Blarg
-      case _: prim._word               => s"StringPrims.word($commaArgs)"
+      case w: prim._word               => s"StringPrims.word(${maybeConciseVarArgs("WORD", w.syntax)})"
       case _: prim.etc._ifelsevalue    => generateIfElseValue(r.args)
-      case _: prim.etc._nvalues        => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
+      case _: prim.etc._nvalues        => s"Tasks.nValues($checkedArgs)"
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
 
       // Boolean
@@ -251,6 +297,10 @@ trait ReporterPrims extends PrimUtils {
       case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}', $checkedArgs)"
       case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.token.text}', $checkedArgs)"
 
+      // ListPrims
+      case l: prim._list     => s"ListPrims.list(${maybeConciseVarArgs("LIST", l.syntax)})"
+      case s: prim._sentence => s"ListPrims.sentence(${maybeConciseVarArgs("SENTENCE", s.syntax)})"
+
       // Link finding
       case p: prim.etc._inlinkfrom       => s"LinkPrims.inLinkFrom(${jsString(fixBN(p.breedName))}, ${arg(0)})"
       case p: prim.etc._inlinkneighbor   => s"LinkPrims.isInLinkNeighbor(${jsString(fixBN(p.breedName))}, ${arg(0)})"
@@ -265,18 +315,16 @@ trait ReporterPrims extends PrimUtils {
       case p: prim.etc._outlinkneighbors => s"LinkPrims.outLinkNeighbors(${jsString(fixBN(p.breedName))})"
       case p: prim.etc._outlinkto        => s"LinkPrims.outLinkTo(${jsString(fixBN(p.breedName))}, ${arg(0)})"
 
-      case _: prim.etc._runresult        =>
-        val run = s"PrimChecks.procedure.runResult(${makeCheckedOp(0)}${ReporterPrims.optionalArgs(args.drop(1))})"
+      case u: prim.etc._runresult        =>
+        val argString = maybeConciseVarArgs("RUNRESULT", u.syntax)
+        val run = s"PrimChecks.procedure.runResult($argString)"
         maybeStoreProcedureArgsForRunResult(r.args(0).reportedType(), procContext, run)
 
-      case l: prim._reporterlambda => {
-        val task = generateTask(r.args(0), true, l.argumentNames.map(JSIdentProvider.apply), l.source)
-        s"Tasks.reporterTask($task)"
-      }
-      case l: prim._commandlambda  => {
-        val task = generateTask(r.args(0), false, l.argumentNames.map(JSIdentProvider.apply), l.source)
-        s"Tasks.commandTask($task)"
-      }
+      case l: prim._reporterlambda =>
+        generateTask(l, r.args(0), true, l.source)
+
+      case l: prim._commandlambda  =>
+        generateTask(l, r.args(0), false, l.source)
 
       case x: prim._externreport =>
         val ExtensionPrimRegex = """_externreport\(([^:]+):([^)]+)\)""".r
@@ -296,9 +344,13 @@ trait ReporterPrims extends PrimUtils {
   // scalastyle:on method.length
   // scalastyle:on cyclomatic.complexity
 
-  private def generateTask(node: AstNode, isReporter: Boolean, args: Seq[String], source: Option[String])
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
-    s"${handlers.task(node, isReporter, args)}, ${jsStringEscaped(source.getOrElse(""))}"
+  private def generateTask(lambda: Lambda, node: AstNode, isReporter: Boolean, source: Option[String])
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
+    val task       = handlers.task(lambda, node)
+    val body       = jsStringEscaped(source.getOrElse(""))
+    val isVariadic = lambda.arguments.isVariadic
+    s"PrimChecks.task.checked($task, $body, $isReporter, $isVariadic)"
+  }
 
   def generateIfElseValue(args: Seq[Expression])
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
@@ -335,7 +387,7 @@ trait ReporterPrims extends PrimUtils {
 trait CommandPrims extends PrimUtils {
   // scalastyle:off cyclomatic.complexity
   // scalastyle:off method.length
-  def generateCommand(s: Statement)
+  def generateCommand(s: Statement, useCompileArgs: Boolean = true)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
 
     def arg(i: Int) =
@@ -358,6 +410,14 @@ trait CommandPrims extends PrimUtils {
 
     def makeCheckedOp(i: Int) =
       ReporterPrims.makeCheckedOp(s.instruction, i, arg(i), s.args(i).reportedType())
+
+    def maybeConciseVarArgs(primName: String, syntax: Syntax): String = {
+      if (useCompileArgs || !syntax.isVariadic) {
+        checkedArgs
+      } else {
+        ReporterPrims.conciseVarArgs(primName, syntax)
+      }
+    }
 
     s.command match {
       case SimplePrims.SimpleCommand(op)  => if (op.isEmpty) "" else s"$op;"
@@ -402,31 +462,37 @@ trait CommandPrims extends PrimUtils {
       case call: prim._call              => generateCall(call, args)
       case _: prim._report               => s"return PrimChecks.procedure.report(${arg(0)});"
       case _: prim.etc._ignore           => s"${arg(0)};"
+
       case l: prim._let                  =>
         l.let.map(inner => {
           val name = JSIdentProvider(inner.name)
           s"""let $name = ${arg(0)}; ProcedurePrims.stack().currentContext().registerStringRunVar("${inner.name}", $name);"""
         }).getOrElse("")
+
       case _: prim.etc._withlocalrandomness =>
         s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
 
       case r: prim._run =>
-        val run = s"var R = PrimChecks.procedure.run(${makeCheckedOp(0)}${ReporterPrims.optionalArgs(args.drop(1))}); if (R !== undefined) { return R; }"
+        val argString = maybeConciseVarArgs("RUN", r.syntax)
+        val run       = s"var R = PrimChecks.procedure.run($argString); if (R !== undefined) { return R; }"
         maybeStoreProcedureArgsForRun(s.args(0).reportedType(), procContext, run)
 
       case fe: prim.etc._foreach =>
-        val lists = args.init.mkString(", ")
-        val code  = s"Tasks.forEach(${arg(s.args.size - 1)}, $lists)"
+        val argString = maybeConciseVarArgs("FOREACH", fe.syntax)
+        val code      = s"PrimChecks.task.forEach($argString)"
         addReturn(code)
 
       case x: prim._extern =>
         val ExtensionPrimRegex = """_extern\(([^:]+):([^)]+)\)""".r
         val ExtensionPrimRegex(extName, primName) = x.toString
         s"Extensions[${jsString(extName)}].prims[${jsString(primName)}]($commaArgs);"
+
       case _ if compilerFlags.generateUnimplemented =>
         s"${generateNotImplementedStub(s.command.getClass.getName.drop(1))};"
+
       case _                                        =>
         failCompilation(s"unimplemented primitive: ${s.instruction.token.text}", s.instruction.token)
+
     }
   }
   // scalastyle:on method.length

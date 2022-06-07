@@ -278,8 +278,8 @@ module.exports = {
     # ((Number* => Number), Matrix, Matrix*) => Matrix
     matrixMap = (reporter, matrix, rest...) ->
 
-      if reporter.length > rest.length + 1
-        throw exceptions.extension("Task expected #{reporter.length} matrix inputs but only got #{rest.length + 1}.")
+      if reporter.minArgCount > rest.length + 1
+        throw exceptions.extension("Task expected #{reporter.minArgCount} matrix inputs but only got #{rest.length + 1}.")
 
       for m in rest
         if not arrayEquals(matrix.shape)(m.shape)

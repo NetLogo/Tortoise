@@ -139,6 +139,7 @@ object SimplePrims {
 
         // Other
         case _: prim.etc._readfromstring => "ProcedurePrims.readFromString"
+        case _: prim.etc._map            => "PrimChecks.task.map"
 
       }
   }
@@ -180,14 +181,7 @@ object SimplePrims {
         case _: prim._neighbors4                     => "SelfManager.self().getNeighbors4"
         case _: prim._patchat                        => "SelfManager.self().patchAt"
 
-        // ListPrims
-        case _: prim._list     => "ListPrims.list"
-        case _: prim._sentence => "ListPrims.sentence"
-
         // Agentset
-        // In theory these should be able to be made standard `CheckedReporters`, but in practice
-        // their errors are weird enough that I'm going to leave them as custom.
-        // -Jeremy B February 2021
         case _: prim.etc._linkset   => "PrimChecks.agentset.linkSet"
         case _: prim.etc._patchset  => "PrimChecks.agentset.patchSet"
         case _: prim.etc._turtleset => "PrimChecks.agentset.turtleSet"
@@ -229,7 +223,6 @@ object SimplePrims {
         case _: prim._patches            => "world.patches"
         case _: prim.etc._ticks          => "world.ticker.tickCount"
         case _: prim.etc._timer          => "workspace.timer.elapsed"
-        case _: prim.etc._map            => "Tasks.map"
         case _: prim.etc._newseed        => "Prims.generateNewSeed"
         case _: prim.etc._randomstate    => "Random.save"
         case _: prim._greaterthan        => "Prims.gt"

@@ -7,6 +7,7 @@ MathChecks      = require('./math-checks')
 ProcedureChecks = require('./procedure-checks')
 TurtleChecks    = require('./turtle-checks')
 LinkChecks      = require('./link-checks')
+TaskChecks      = require('./task-checks')
 
 class Checker
 
@@ -18,6 +19,7 @@ class Checker
     @procedure = new ProcedureChecks(@validator, procedurePrims)
     @turtle    = new TurtleChecks(@validator, getSelf)
     @link      = new LinkChecks(@validator, getSelf, selfPrims)
+    @task      = new TaskChecks(@validator)
 
   # (String) => Unit
   imperfectImport: (primName) ->

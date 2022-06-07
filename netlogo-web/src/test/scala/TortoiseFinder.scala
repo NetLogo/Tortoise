@@ -145,12 +145,9 @@ private[tortoise] object Freebies {
   private val awaitingFixCommandNames =
     Seq(
       "Timer::Timer1"
-    , "Lists::ForeachWithConciseVariadicCommand"
     )
   private val awaitingFixReporterNames =
     Seq(
-      "Lists::MapDoublyVariadic"
-    , "Lists::MapWithMinArgs"
     )
 
 }

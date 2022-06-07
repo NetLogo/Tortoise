@@ -2,15 +2,16 @@
 
 { checks }                        = require('engine/core/typechecker')
 { DeathInterrupt, StopInterrupt } = require('util/interrupts')
+{ removeRepeatable }              = require('engine/prim-checks/syntax')
 
 class ProcedureChecks
 
   constructor: (@validator, @procedurePrims) ->
 
-  # (Number, Number) => Unit
-  runArgCountCheck: (needed, given) ->
+  # (String, Number, Number) => Unit
+  runArgCountCheck: (primName, needed, given) ->
     if (given < needed)
-      @validator.error('run', 'anonymous procedure expected _ input_, but only got _', needed, given)
+      @validator.error(primName, 'anonymous procedure expected _ input_, but only got _', needed, given)
 
     return
 
