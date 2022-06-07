@@ -172,6 +172,23 @@ class ListChecks
 
     @listPrims.reduce(f, list)
 
+  # (Number...) => Array[Number]
+  rangeVariadic: (args...) ->
+    if args.length > 3
+      @validator.error('range', 'range expects at most three arguments')
+
+    switch args.length
+      when 1 then @listPrims.rangeUnary(args[0])
+      when 2 then @listPrims.rangeBinary(args[0], args[1])
+      else        @rangeTernary(args[0], args[1], args[2])
+
+  # (Number, Number, Number) => Array[Number]
+  rangeTernary: (lowerBound, upperBound, stepSize) ->
+    if stepSize is 0
+      @validator.error('range', 'The step-size for range must be non-zero.')
+
+    @listPrims.range(lowerBound, upperBound, stepSize)
+
   # (Any | String, Array[Any] | String) => Array[Any] | String
   remove: (item, listOrString) ->
     if checks.isString(listOrString)

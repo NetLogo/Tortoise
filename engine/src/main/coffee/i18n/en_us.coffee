@@ -136,6 +136,12 @@ bundle = {
   , 'All the list arguments to _ must be the same length.': (primName) ->
     "All the list arguments to #{primName} must be the same length."
 
+  , 'The step-size for range must be non-zero.': () ->
+    "The step-size for range must be non-zero."
+
+  , 'range expects at most three arguments': () ->
+    "range expects at most three arguments"
+
 }
 
 module.exports = bundle

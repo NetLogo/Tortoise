@@ -34,28 +34,37 @@ module.exports = {
 
   # [Result] @ (Product => Result, Array[Array[Any]], String) => Array[Result]
   _processLists: (fn, lists, primName) ->
-    numLists = lists.length
     head     = lists[0]
-    if numLists is 1
-      if fn.isReporter
-        # beware ye terse-nics tempted to enshorten this to `head.map(fn)`
-        # for variadic concise prims be lurking
-        # what require the `arguments` set in this way
-        head.map( (v) -> fn(v) )
-      else
-        for x in head
-          res = fn(x)
+    switch lists.length
+      when 0
+        if fn.isReporter
+          fn()
+        else
+          res = fn()
           if res?
             return res
-        return
-    else
-      if fn.isReporter
-        for i in [0...head.length]
-          fn(map((list) -> list[i])(lists)...)
+
+      when 1
+        if fn.isReporter
+          # beware ye terse-nics tempted to enshorten this to `head.map(fn)`
+          # for variadic concise prims be lurking
+          # what require the `arguments` set in this way
+          head.map( (v) -> fn(v) )
+        else
+          for x in head
+            res = fn(x)
+            if res?
+              return res
+          return
+
       else
-        for i in [0...head.length]
-          res = fn(map((list) -> list[i])(lists)...)
-          if res?
-            return res
+        if fn.isReporter
+          for i in [0...head.length]
+            fn(map((list) -> list[i])(lists)...)
+        else
+          for i in [0...head.length]
+            res = fn(map((list) -> list[i])(lists)...)
+            if res?
+              return res
 
 }

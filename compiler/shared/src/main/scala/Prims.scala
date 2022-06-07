@@ -118,7 +118,7 @@ object ReporterPrims {
   def allTypesAllowed(allowed: Int, actual: Int): Boolean =
     types.filter( (t) => !isSupported(allowed, t) && isSupported(actual, t) ).isEmpty
 
-  def makeCheckedArgOps(a: Application, ops: Seq[String]): String = {
+  def makeCheckedArgOps(a: Application, ops: Seq[String]): Seq[String] = {
     val syntax     = a.instruction.syntax
     val allAllowed = if (syntax.isInfix) {
       List(syntax.left) ++ syntax.right
@@ -145,7 +145,7 @@ object ReporterPrims {
     val checkedArgs   = argsWithTypes.map( { case ((allowed: Int, exp: Expression), op: String) =>
       ReporterPrims.makeCheckedOp(a.instruction.token.text, allowed, exp.reportedType(), op)
     })
-    checkedArgs.mkString(", ")
+    checkedArgs
   }
 
   def removeRepeatable(t: Int): Int = {
@@ -198,16 +198,16 @@ trait ReporterPrims extends PrimUtils {
       handlers.reporter(r.args(i))
 
     def commaArgs =
-      argsSep(", ")
+      args.mkString(", ")
 
     def args =
       r.args.collect { case x: ReporterApp => handlers.reporter(x) }
 
-    def argsSep(sep: String) =
-      args.mkString(sep)
-
     def checkedArgs =
       ReporterPrims.makeCheckedArgOps(r, args)
+
+    def commaCheckedArgs =
+      checkedArgs.mkString(", ")
 
     def makeCheckedOp(i: Int) =
       ReporterPrims.makeCheckedOp(r.instruction, i, arg(i), r.args(i).reportedType())
@@ -220,8 +220,8 @@ trait ReporterPrims extends PrimUtils {
     }
 
     def maybeConciseVarArgs(primName: String, syntax: Syntax): String = {
-      if (useCompileArgs) {
-        checkedArgs
+      if (useCompileArgs || !syntax.isVariadic) {
+        commaCheckedArgs
       } else {
         ReporterPrims.conciseVarArgs(primName, syntax)
       }
@@ -232,7 +232,7 @@ trait ReporterPrims extends PrimUtils {
       // Basics stuff
       case SimplePrims.SimpleReporter(op)  => op
       case SimplePrims.NormalReporter(op)  => s"$op($commaArgs)"
-      case SimplePrims.CheckedReporter(op) => s"$op($checkedArgs)"
+      case SimplePrims.CheckedReporter(op) => s"$op($commaCheckedArgs)"
       case SimplePrims.TypeCheck(check)    => s"NLType.checks.$check${arg(0)})"
       case VariableReporter(op)            => op
       case p: prim._const                  => handlers.literal(p.value)
@@ -244,7 +244,7 @@ trait ReporterPrims extends PrimUtils {
       // Blarg
       case w: prim._word               => s"StringPrims.word(${maybeConciseVarArgs("WORD", w.syntax)})"
       case _: prim.etc._ifelsevalue    => generateIfElseValue(r.args)
-      case _: prim.etc._nvalues        => s"Tasks.nValues($checkedArgs)"
+      case _: prim.etc._nvalues        => s"Tasks.nValues($commaCheckedArgs)"
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
 
       // Boolean
@@ -294,8 +294,8 @@ trait ReporterPrims extends PrimUtils {
       case b: prim.etc._breedon           => s"PrimChecks.agentset.breedOn(${jsString(b.breedName)}, ${makeCheckedOp(0)})"
 
       // List prims
-      case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}', $checkedArgs)"
-      case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.token.text}', $checkedArgs)"
+      case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}', $commaCheckedArgs)"
+      case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.token.text}', $commaCheckedArgs)"
 
       // ListPrims
       case l: prim._list     => s"ListPrims.list(${maybeConciseVarArgs("LIST", l.syntax)})"
@@ -331,11 +331,12 @@ trait ReporterPrims extends PrimUtils {
         val ExtensionPrimRegex(extName, primName) = x.toString
         s"Extensions[${jsString(extName)}].prims[${jsString(primName)}]($commaArgs)"
 
-      case _: prim.etc._range =>
-        generateRange(args)
+      case ra: prim.etc._range =>
+        generateRange(useCompileArgs, checkedArgs, ra.syntax)
 
       case _ if compilerFlags.generateUnimplemented =>
         generateNotImplementedStub(r.reporter.getClass.getName.drop(1))
+
       case _                                        =>
         failCompilation(s"unimplemented primitive: ${r.instruction.token.text}", r.instruction.token)
 
@@ -374,12 +375,16 @@ trait ReporterPrims extends PrimUtils {
   // The engine has this to say on the matter (with me acting as ventriloquist):
   // "Call with me with the correct number of arguments or GTFO."
   // I will open a can of whoop-ass on anyone who thinks differently. --Stone Cold J. Bertsche (3/16/17)
-  def generateRange(args: Seq[String]): String =
-    args match {
-      case Seq(a)       => s"Prims.rangeUnary($a)"
-      case Seq(a, b)    => s"Prims.rangeBinary($a, $b)"
-      case Seq(a, b, c) => s"Prims.rangeTernary($a, $b, $c)"
-      case _            => throw new IllegalArgumentException("range expects at most three arguments")
+  def generateRange(useCompileArgs: Boolean, args: Seq[String], syntax: Syntax): String =
+    if (useCompileArgs) {
+      args match {
+        case Seq(a)       => s"ListPrims.rangeUnary($a)"
+        case Seq(a, b)    => s"ListPrims.rangeBinary($a, $b)"
+        case Seq(a, b, c) => s"PrimChecks.list.rangeTernary($a, $b, $c)"
+        case _            => throw new IllegalArgumentException("range expects at most three arguments")
+      }
+    } else {
+      s"PrimChecks.list.rangeVariadic(${ReporterPrims.conciseVarArgs("RANGE", syntax)})"
     }
 
 }
@@ -393,27 +398,27 @@ trait CommandPrims extends PrimUtils {
     def arg(i: Int) =
       handlers.reporter(s.args(i))
 
-    def commaArgs =
-      argsSep(", ")
-
     def args =
       s.args.collect {
         case x: ReporterApp  => handlers.reporter(x)
         case z: CommandBlock => s"() => { ${handlers.commands(z)} }"
       }
 
-    def argsSep(sep: String) =
-      args.mkString(sep)
+    def commaArgs =
+      args.mkString(", ")
 
     def checkedArgs =
       ReporterPrims.makeCheckedArgOps(s, args)
+
+    def commaCheckedArgs =
+      checkedArgs.mkString(", ")
 
     def makeCheckedOp(i: Int) =
       ReporterPrims.makeCheckedOp(s.instruction, i, arg(i), s.args(i).reportedType())
 
     def maybeConciseVarArgs(primName: String, syntax: Syntax): String = {
       if (useCompileArgs || !syntax.isVariadic) {
-        checkedArgs
+        commaCheckedArgs
       } else {
         ReporterPrims.conciseVarArgs(primName, syntax)
       }
@@ -422,7 +427,7 @@ trait CommandPrims extends PrimUtils {
     s.command match {
       case SimplePrims.SimpleCommand(op)  => if (op.isEmpty) "" else s"$op;"
       case SimplePrims.NormalCommand(op)  => s"$op($commaArgs);"
-      case SimplePrims.CheckedCommand(op) => s"$op($checkedArgs);"
+      case SimplePrims.CheckedCommand(op) => s"$op($commaCheckedArgs);"
 
       case _: prim._set                  => generateSet(s)
       case _: prim.etc._loop             => generateLoop(s)
