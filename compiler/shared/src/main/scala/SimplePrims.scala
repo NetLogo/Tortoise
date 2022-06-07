@@ -140,6 +140,7 @@ object SimplePrims {
         // Other
         case _: prim.etc._readfromstring => "ProcedurePrims.readFromString"
         case _: prim.etc._map            => "PrimChecks.task.map"
+        case _: prim.etc._applyresult    => "Tasks.apply"
 
       }
   }
@@ -225,7 +226,6 @@ object SimplePrims {
         case _: prim.etc._greaterorequal => "Prims.gte"
         case _: prim.etc._lessorequal    => "Prims.lte"
         case _: prim.etc._link           => "world.linkManager.getLink"
-        case _: prim.etc._applyresult    => "Tasks.apply(\"__apply-result\")"
         case _: prim.etc._boom           => "Prims.boom"
         case _: prim.etc._subject        => "world.observer.subject"
         case _: prim.etc._dateandtime    => "Prims.dateAndTime"
@@ -288,6 +288,9 @@ object SimplePrims {
 
         // Random
         case _: prim.etc._randomseed => "PrimChecks.math.randomSeed"
+
+        // Task
+        case _: prim.etc._apply => "Tasks.apply"
 
       }
   }
@@ -381,7 +384,6 @@ object SimplePrims {
         case _: prim.etc._layoutradial     => "LayoutManager.layoutRadial"
         case _: prim.etc._layouttutte      => "LayoutManager.layoutTutte"
         case _: prim.etc._changetopology   => "world.changeTopology"
-        case _: prim.etc._apply            => "Tasks.apply(\"__apply\")"
         case _: prim.etc._stdout           => "Prims.stdout"
         case _: prim.etc._usermessage      => "UserDialogPrims.confirm"
         case _: prim.etc._exportoutput     => "ImportExportPrims.exportOutput"

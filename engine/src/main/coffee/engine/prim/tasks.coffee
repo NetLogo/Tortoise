@@ -9,12 +9,8 @@
 module.exports = {
 
   # [Result] @ (Product => Result, Array[Any]) => Result
-  apply: (primName) -> (fn, args) ->
-    if args.length >= fn.length
-      fn.apply(fn, args)
-    else
-      pluralStr = if fn.length is 1 then "" else "s"
-      throw exceptions.runtime("anonymous procedure expected #{fn.length} input#{pluralStr}, but only got #{args.length}", primName)
+  apply: (fn, args) ->
+    fn.apply(fn, args)
 
   # [Result] @ (Product => Result, Array[Any]*) => Array[Result]
   map: (fn, lists) ->
