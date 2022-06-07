@@ -148,7 +148,7 @@ object ReporterPrims {
     checkedArgs.mkString(", ")
   }
 
-  def removeRepeatable(t: Int) = {
+  def removeRepeatable(t: Int): Int = {
     t - (t & Syntax.RepeatableType)
   }
 

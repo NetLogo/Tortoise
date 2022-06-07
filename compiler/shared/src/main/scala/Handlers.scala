@@ -49,7 +49,7 @@ trait Handlers extends EveryIDProvider {
   // the brackets are irrelevant.  So when we see a block we just immediately recurse into it.
 
   def commands(node: AstNode, useCompileArgs: Boolean = true)
-              (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
     incrementingContext { context =>
       node match {
         case block: CommandBlock =>
@@ -63,7 +63,8 @@ trait Handlers extends EveryIDProvider {
       }
     }
 
-  def reporter(node: AstNode, useCompileArgs: Boolean = true)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
+  def reporter(node: AstNode, useCompileArgs: Boolean = true)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
     incrementingContext { context =>
       node match {
         case block: ReporterBlock =>
