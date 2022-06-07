@@ -247,7 +247,7 @@ ProcedurePrims.defineCommand("move-water", 4775, 5983, (function() {
 ProcedurePrims.defineCommand("show-intensity", 6336, 6575, (function() {
   SelfManager.self().setVariable("color", ColorModel.scaleColor(45, world.observer.getGlobal("sun-intensity"), 0, 150));
   PrimChecks.turtle.setVariable("size", PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("sun-intensity")), 10));
-  SelfManager.self().setVariable("label", StringPrims.word(world.observer.getGlobal("sun-intensity"), "%"));
+  SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.validator.checkArg('WORD', 8191, world.observer.getGlobal("sun-intensity")), "%"));
   if (Prims.lt(world.observer.getGlobal("sun-intensity"), 50)) {
     SelfManager.self().setVariable("label-color", 45);
   }
@@ -303,7 +303,7 @@ ProcedurePrims.defineCommand("fall-if-necessary", 9308, 9556, (function() {
   if (Prims.gt(PrimChecks.turtle.getVariable("ycor"), world.observer.getGlobal("bottom-line"))) {
     let targetHxcor = PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("xcor")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("wind-factor")))), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("wind-factor")))); ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET-XCOR", targetHxcor);
     SelfManager.self().faceXY(PrimChecks.validator.checkArg('FACEXY', 1, targetHxcor), PrimChecks.validator.checkArg('FACEXY', 1, world.observer.getGlobal("bottom-line")));
-    SelfManager.self().fd(PrimChecks.math.randomFloat(PrimChecks.math.mult(0.7, PrimChecks.list.max(ListPrims.list(world.observer.getGlobal("wind-factor"), 0.5)))));
+    SelfManager.self().fd(PrimChecks.math.randomFloat(PrimChecks.math.mult(0.7, PrimChecks.list.max(ListPrims.list(PrimChecks.validator.checkArg('LIST', 8191, world.observer.getGlobal("wind-factor")), 0.5)))));
   }
 }))
 ProcedurePrims.defineCommand("change-color", 9742, 10788, (function() {

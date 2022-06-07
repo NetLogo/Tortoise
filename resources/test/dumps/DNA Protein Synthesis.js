@@ -119,13 +119,13 @@ ProcedurePrims.defineCommand("setup-dna-string", 6109, 7532, (function() {
   if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (short strand)")) {
     let initialHlengthHdna = 12; ProcedurePrims.stack().currentContext().registerStringRunVar("INITIAL-LENGTH-DNA", initialHlengthHdna);
     for (let _index_6358_6364 = 0, _repeatcount_6358_6364 = StrictMath.floor(initialHlengthHdna); _index_6358_6364 < _repeatcount_6358_6364; _index_6358_6364++) {
-      world.observer.setGlobal("original-dna-string", StringPrims.word(world.observer.getGlobal("original-dna-string"), PrimChecks.procedure.callReporter("random-base-letter-dna")));
+      world.observer.setGlobal("original-dna-string", StringPrims.word(PrimChecks.validator.checkArg('WORD', 8191, world.observer.getGlobal("original-dna-string")), PrimChecks.procedure.callReporter("random-base-letter-dna")));
     }
   }
   if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (long strand)")) {
     let initialHlengthHdna = 56; ProcedurePrims.stack().currentContext().registerStringRunVar("INITIAL-LENGTH-DNA", initialHlengthHdna);
     for (let _index_6550_6556 = 0, _repeatcount_6550_6556 = StrictMath.floor(initialHlengthHdna); _index_6550_6556 < _repeatcount_6550_6556; _index_6550_6556++) {
-      world.observer.setGlobal("original-dna-string", StringPrims.word(world.observer.getGlobal("original-dna-string"), PrimChecks.procedure.callReporter("random-base-letter-dna")));
+      world.observer.setGlobal("original-dna-string", StringPrims.word(PrimChecks.validator.checkArg('WORD', 8191, world.observer.getGlobal("original-dna-string")), PrimChecks.procedure.callReporter("random-base-letter-dna")));
     }
   }
   if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "no genes (short strand)")) {
@@ -182,7 +182,7 @@ ProcedurePrims.defineCommand("make-a-nucleotide-chain-for-dna-string", 8031, 869
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
         PrimChecks.turtle.setVariable("strand", strandHtype);
         PrimChecks.turtle.setVariable("value", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, placeHcounter), PrimChecks.validator.checkArg('ITEM', 12, dnaHstring)));
-        SelfManager.self().setVariable("shape", StringPrims.word("nucleotide-", PrimChecks.turtle.getVariable("value")));
+        SelfManager.self().setVariable("shape", StringPrims.word("nucleotide-", PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("value"))));
         PrimChecks.turtle.setVariable("heading", 0);
         PrimChecks.turtle.setVariable("place", placeHcounter);
         var R = ProcedurePrims.callCommand("attach-tag", 5, 0.5, PrimChecks.turtle.getVariable("value"), world.observer.getGlobal("nucleo-tag-color")); if (R === DeathInterrupt) { return R; }
@@ -262,7 +262,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
       SelfManager.self().setVariable("color", geneHcolorHwithHtransparency);
       PrimChecks.turtle.setVariable("size", 3);
       SelfManager.self().setVariable("hidden?", false);
-      var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, StringPrims.word("start:", PrimChecks.turtle.getVariable("gene-number")), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
+      var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, StringPrims.word("start:", PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("gene-number"))), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
       var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHgene, "BACKBONES"), function() {
         SelfManager.self().setVariable("hidden?", true);
         PrimChecks.link.setVariable("tie-mode", "fixed");
@@ -271,7 +271,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TERMINATORS"));
         SelfManager.self().fd(PrimChecks.math.mult(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, thisHcode)), 0.45));
-        var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, StringPrims.word("end:", PrimChecks.turtle.getVariable("gene-number")), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
+        var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, StringPrims.word("end:", PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("gene-number"))), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
         var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHgene, "BACKBONES"), function() {
           SelfManager.self().setVariable("hidden?", true);
           PrimChecks.link.setVariable("tie-mode", "fixed");
@@ -307,7 +307,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
           var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
             SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES"));
             PrimChecks.turtle.setVariable("value", PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, codeHtoHtranscribe)));
-            SelfManager.self().setVariable("shape", StringPrims.word("mrna-", PrimChecks.turtle.getVariable("value")));
+            SelfManager.self().setVariable("shape", StringPrims.word("mrna-", PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("value"))));
             PrimChecks.turtle.setVariable("heading", 180);
             var R = ProcedurePrims.callCommand("attach-tag", 175, 0.9, PrimChecks.turtle.getVariable("value"), world.observer.getGlobal("nucleo-tag-color")); if (R === DeathInterrupt) { return R; }
             var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHmrna, "BACKBONES"), function() {
@@ -348,7 +348,7 @@ ProcedurePrims.defineCommand("build-trna-for-this-triplet", 13553, 14956, (funct
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("AMINO-ACIDS"));
       PrimChecks.turtle.setVariable("value", PrimChecks.procedure.callReporter("which-protein-for-this-codon", thisHtriplet));
-      SelfManager.self().setVariable("shape", StringPrims.word("amino-", PrimChecks.turtle.getVariable("value")));
+      SelfManager.self().setVariable("shape", StringPrims.word("amino-", PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("value"))));
       PrimChecks.turtle.setVariable("heading", 0);
       PrimChecks.turtle.setVariable("size", 2);
       SelfManager.self()._optimalFdOne();
@@ -570,10 +570,10 @@ ProcedurePrims.defineCommand("make-protein", 19229, 19848, (function(strandHtype
     return ((Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")) && Prims.equality(strandHtype, PrimChecks.turtle.getVariable("strand"))) && Prims.equality(PrimChecks.turtle.getVariable("gene-number"), thisHgeneHnumber));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("THESE-AMINO-ACIDS", theseHaminoHacids);
   let orderedHaminoHacids = PrimChecks.agentset.sortOn(PrimChecks.validator.checkArg('SORT-ON', 112, theseHaminoHacids), function() { return PrimChecks.turtle.getVariable("who"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("ORDERED-AMINO-ACIDS", orderedHaminoHacids);
-  var R = Tasks.forEach(Tasks.commandTask(function(theHaminoHacid) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, orderedHaminoHacids), PrimChecks.task.checked(function(theHaminoHacid) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     thisHproteinHvalue = StringPrims.word(thisHproteinHvalue, "-", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, theHaminoHacid), function() { return PrimChecks.turtle.getVariable("value"); })); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-PROTEIN-VALUE", thisHproteinHvalue);
-  }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" [ value ] of the-amino-acid ]"), orderedHaminoHacids); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" [ value ] of the-amino-acid ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   if (PrimChecks.math.not(PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PROTEINS"), function() {
     return (Prims.equality(PrimChecks.turtle.getVariable("strand"), strandHtype) && Prims.equality(PrimChecks.turtle.getVariable("value"), thisHproteinHvalue));
   }))) {
@@ -679,7 +679,7 @@ ProcedurePrims.defineCommand("show-protein-production", 22434, 23188, (function(
   OutputPrims.print(StringPrims.word("from original DNA  = ", PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 112, originalHproteins))));
   OutputPrims.print("::::::::::::::::::");
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, originalHproteins), function() {
-    OutputPrims.print(StringPrims.word("Orig.Gene #", PrimChecks.turtle.getVariable("gene-number"), " > Protein:"));
+    OutputPrims.print(StringPrims.word("Orig.Gene #", PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("gene-number")), " > Protein:"));
     OutputPrims.print(PrimChecks.turtle.getVariable("value"));
     OutputPrims.print("");
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -689,7 +689,7 @@ ProcedurePrims.defineCommand("show-protein-production", 22434, 23188, (function(
   OutputPrims.print(StringPrims.word("from copy of DNA = ", PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 112, duplicateHproteins))));
   OutputPrims.print("::::::::::::::::::");
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, duplicateHproteins), function() {
-    OutputPrims.print(StringPrims.word("Copy.Gene #", PrimChecks.turtle.getVariable("gene-number"), " > Protein:"));
+    OutputPrims.print(StringPrims.word("Copy.Gene #", PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("gene-number")), " > Protein:"));
     OutputPrims.print(PrimChecks.turtle.getVariable("value"));
     OutputPrims.print("");
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -744,10 +744,10 @@ ProcedurePrims.defineCommand("initialize-codon-to-amino-acid-key", 25658, 26888,
   world.observer.setGlobal("codon-to-amino-acid-key", [["UUU", "Phe"], ["UUC", "Phe"], ["UUA", "Leu"], ["UUG", "Leu"], ["CUU", "Leu"], ["CUC", "Leu"], ["CUA", "Leu"], ["CUG", "Leu"], ["AUU", "Ile"], ["AUC", "Ile"], ["AUA", "Ile"], ["AUG", "Met"], ["GUU", "Val"], ["GUC", "Val"], ["GUA", "Val"], ["GUG", "Val"], ["UCU", "Ser"], ["UCC", "Ser"], ["UCA", "Ser"], ["UCG", "Ser"], ["CCU", "Pro"], ["CCC", "Pro"], ["CCA", "Pro"], ["CCG", "Pro"], ["ACU", "Thr"], ["ACC", "Thr"], ["ACA", "Thr"], ["ACG", "Thr"], ["GCU", "Ala"], ["GCC", "Ala"], ["GCA", "Ala"], ["GCG", "Ala"], ["UAU", "Tyr"], ["UAC", "Tyr"], ["UAA", "Stop"], ["UAG", "Stop"], ["CAU", "His"], ["CAC", "His"], ["CAA", "Gln"], ["CAG", "Gln"], ["AAU", "Asn"], ["AAC", "Asn"], ["AAA", "Lys"], ["AAG", "Lys"], ["GAU", "Asp"], ["GAC", "Asp"], ["GAA", "Glu"], ["GAG", "Glu"], ["UGU", "Cys"], ["UGC", "Cys"], ["UGA", "Stop"], ["UGG", "Trp"], ["CGU", "Arg"], ["CGC", "Arg"], ["CGA", "Arg"], ["CGG", "Arg"], ["AGU", "Ser"], ["AGC", "Ser"], ["AGA", "Arg"], ["AGG", "Arg"], ["GGU", "Gly"], ["GGC", "Gly"], ["GGA", "Gly"], ["GGG", "Gly"]]);
 }))
 ProcedurePrims.defineReporter("which-protein-for-this-codon", 27188, 27321, (function(thisHcodon) {
-  return PrimChecks.procedure.report(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.list.item(0, PrimChecks.list.filter(Tasks.reporterTask(function(pair) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  return PrimChecks.procedure.report(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.list.item(0, PrimChecks.list.filter(PrimChecks.task.checked(function(pair) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
     return Prims.equality(PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, pair)), thisHcodon);
-  }, "[ pair -> first pair = this-codon ]"), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("codon-to-amino-acid-key")))))));
+  }, "[ pair -> first pair = this-codon ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("codon-to-amino-acid-key")))))));
 }))
 ProcedurePrims.defineReporter("random-base-letter-dna", 27386, 27630, (function() {
   let r = RandomPrims.randomLong(4); ProcedurePrims.stack().currentContext().registerStringRunVar("R", r);
@@ -833,7 +833,7 @@ ProcedurePrims.defineReporter("replace-non-nucleotide-character", 29582, 29900, 
   return PrimChecks.procedure.report(characterHtoHreturn);
 }))
 ProcedurePrims.defineReporter("current-instruction-label", 30172, 30328, (function() {
-  return PrimChecks.procedure.report((Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : StringPrims.word(world.observer.getGlobal("current-instruction"), " of ", PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.procedure.callReporter("instructions"))))));
+  return PrimChecks.procedure.report((Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : StringPrims.word(PrimChecks.validator.checkArg('WORD', 8191, world.observer.getGlobal("current-instruction")), " of ", PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.procedure.callReporter("instructions"))))));
 }))
 ProcedurePrims.defineCommand("next-instruction", 30337, 30397, (function() {
   var R = ProcedurePrims.callCommand("show-instruction", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("current-instruction")), 1)); if (R === DeathInterrupt) { return R; }
@@ -845,10 +845,10 @@ ProcedurePrims.defineCommand("show-instruction", 30479, 30665, (function(i) {
   if ((Prims.gte(i, 1) && Prims.lte(i, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.procedure.callReporter("instructions")))))) {
     world.observer.setGlobal("current-instruction", i);
     OutputPrims.clear();
-    var R = Tasks.forEach(Tasks.commandTask(function(_0) {
-      PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+    var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("current-instruction")), 1), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.procedure.callReporter("instructions")))), PrimChecks.task.checked(function(_0) {
+      PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
       OutputPrims.print(_0);
-    }, "output-print"), PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("current-instruction")), 1), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.procedure.callReporter("instructions")))); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, "output-print", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
 ProcedurePrims.defineReporter("instructions", 30681, 33242, (function() {

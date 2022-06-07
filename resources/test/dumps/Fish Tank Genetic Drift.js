@@ -276,12 +276,12 @@ ProcedurePrims.defineCommand("make-initial-alleles-for-gene", 7152, 8023, (funct
     PrimChecks.turtle.setVariable("value", alleleH2);
     SelfManager.self().setVariable("color", [0, 0, 0, 255]);
     SelfManager.self().setVariable("label-color", SelfManager.self().getVariable("color"));
-    SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.turtle.getVariable("value"), "     "));
+    SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("value")), "     "));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(PrimChecks.validator.checkArg('N-OF', 1, numHbigHalleles), PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("gene"), geneHnumber); }))), function() {
     PrimChecks.turtle.setVariable("value", alleleH1);
     SelfManager.self().setVariable("color", [220, 220, 220, 255]);
-    SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.turtle.getVariable("value"), "     "));
+    SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("value")), "     "));
     SelfManager.self().setVariable("label-color", SelfManager.self().getVariable("color"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
@@ -290,11 +290,11 @@ ProcedurePrims.defineCommand("distribute-gene-pool-to-somatic-cells", 8033, 9515
   let lastHsexHallele = ""; ProcedurePrims.stack().currentContext().registerStringRunVar("LAST-SEX-ALLELE", lastHsexHallele);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SOMATIC-CELLS"), function() {
     thisHsomaticHcell = SelfManager.self(); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-SOMATIC-CELL", thisHsomaticHcell);
-    var R = Tasks.forEach(Tasks.commandTask(function(n) {
-      PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+    var R = PrimChecks.task.forEach([1, 2, 3, 4], PrimChecks.task.checked(function(n) {
+      PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
       var R = ProcedurePrims.callCommand("position-and-link-alleles", SelfManager.self(), n, "left"); if (R === DeathInterrupt) { return R; }
       var R = ProcedurePrims.callCommand("position-and-link-alleles", SelfManager.self(), n, "right"); if (R === DeathInterrupt) { return R; }
-    }, "[ n -> position-and-link-alleles self n \"left\" position-and-link-alleles self n \"right\" ]"), [1, 2, 3, 4]); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, "[ n -> position-and-link-alleles self n \"left\" position-and-link-alleles self n \"right\" ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.oneOfWith(world.turtleManager.turtlesOfBreed("ALLELES"), function() {
       return ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("owned-by-fish?"))) && Prims.equality(PrimChecks.turtle.getVariable("gene"), 5)) && Prims.equality(PrimChecks.turtle.getVariable("value"), "X"));
     })), function() {
@@ -460,8 +460,8 @@ ProcedurePrims.defineCommand("convert-zygote-into-somatic-cell", 12064, 13746, (
 }))
 ProcedurePrims.defineCommand("align-alleles-for-this-somatic-cell", 13755, 14568, (function(thisHzygote) {
   let allHalleles = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", thisHzygote); }); ProcedurePrims.stack().currentContext().registerStringRunVar("ALL-ALLELES", allHalleles);
-  var R = Tasks.forEach(Tasks.commandTask(function(thisHgene) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach([1, 2, 3, 4, 5], PrimChecks.task.checked(function(thisHgene) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     if (Prims.gt(PrimChecks.agentset.countWith(allHalleles, function() {
       return (Prims.equality(PrimChecks.turtle.getVariable("gene"), thisHgene) && Prims.equality(PrimChecks.turtle.getVariable("side"), "left"));
     }), 1)) {
@@ -480,7 +480,7 @@ ProcedurePrims.defineCommand("align-alleles-for-this-somatic-cell", 13755, 14568
         PrimChecks.turtle.setVariable("side", "left");
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }
-  }, "[ this-gene -> if count all-alleles with [ gene = this-gene and side = \"left\" ] > 1 [ ask one-of all-alleles with [ gene = this-gene ] [ set heading 90 forward intra-chromosome-pair-spacing set side \"right\" ] ] if count all-alleles with [ gene = this-gene and side = \"right\" ] > 1 [ ask one-of all-alleles with [ gene = this-gene ] [ set heading 90 back intra-chromosome-pair-spacing set side \"left\" ] ] ]"), [1, 2, 3, 4, 5]); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ this-gene -> if count all-alleles with [ gene = this-gene and side = \"left\" ] > 1 [ ask one-of all-alleles with [ gene = this-gene ] [ set heading 90 forward intra-chromosome-pair-spacing set side \"right\" ] ] if count all-alleles with [ gene = this-gene and side = \"right\" ] > 1 [ ask one-of all-alleles with [ gene = this-gene ] [ set heading 90 back intra-chromosome-pair-spacing set side \"left\" ] ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("find-potential-mates", 14577, 15719, (function() {
   let mom = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("MOM", mom);
@@ -545,8 +545,8 @@ ProcedurePrims.defineCommand("link-alleles-to-gametes-and-gametes-to-zygote", 16
     }
     thisHnewHgameteHcell = SelfManager.self(); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-NEW-GAMETE-CELL", thisHnewHgameteHcell);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = Tasks.forEach(Tasks.commandTask(function(thisHgene) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach([1, 2, 3, 4, 5], PrimChecks.task.checked(function(thisHgene) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(1, PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() {
       return (LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(PrimChecks.turtle.getVariable("gene"), thisHgene));
     }))), function() {
@@ -559,7 +559,7 @@ ProcedurePrims.defineCommand("link-alleles-to-gametes-and-gametes-to-zygote", 16
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, "[ this-gene -> ask n-of 1 alleles with [ in-link-neighbor? myself and gene = this-gene ] [ hatch 1 [ set owned-by-fish? false create-link-from this-new-gamete-cell [ set hidden? true set tie-mode \"fixed\" tie ] ] ] ]"), [1, 2, 3, 4, 5]); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ this-gene -> ask n-of 1 alleles with [ in-link-neighbor? myself and gene = this-gene ] [ hatch 1 [ set owned-by-fish? false create-link-from this-new-gamete-cell [ set hidden? true set tie-mode \"fixed\" tie ] ] ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("wander", 16769, 16964, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("FISH"), function() {

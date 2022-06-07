@@ -143,13 +143,13 @@ ProcedurePrims.defineCommand("meet", 742, 973, (function() {
 }))
 ProcedurePrims.defineCommand("find-top-species", 981, 1282, (function() {
   let winningHamount = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("WINNING-AMOUNT", winningHamount);
-  var R = Tasks.forEach(Tasks.commandTask(function(c) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(ColorModel.BASE_COLORS, PrimChecks.task.checked(function(c) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     let howHmany = PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("color"), c); }); ProcedurePrims.stack().currentContext().registerStringRunVar("HOW-MANY", howHmany);
     if (Prims.gt(howHmany, winningHamount)) {
       winningHamount = howHmany; ProcedurePrims.stack().currentContext().updateStringRunVar("WINNING-AMOUNT", winningHamount);
     }
-  }, "[ c -> let count turtles with [ color = c ] if how-many > winning-amount [ set winning-amount how-many ] ]"), ColorModel.BASE_COLORS); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ c -> let count turtles with [ color = c ] if how-many > winning-amount [ set winning-amount how-many ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("max-percent", PrimChecks.math.div(PrimChecks.math.mult(100, PrimChecks.validator.checkArg('*', 1, winningHamount)), PrimChecks.agentset.count(world.turtles())));
 }))
 ProcedurePrims.defineCommand("place-wall", 1698, 2202, (function() {

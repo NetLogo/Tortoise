@@ -183,10 +183,10 @@ ProcedurePrims.defineCommand("calculate-tick-length", 2998, 3150, (function() {
 ProcedurePrims.defineCommand("calculate-pressure", 4224, 4733, (function() {
   world.observer.setGlobal("pressure", PrimChecks.math.mult(15, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable("momentum-difference"); })))));
   world.observer.setGlobal("pressure-history", PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("pressure")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("pressure-history"))));
-  world.observer.setGlobal("zero-pressure-count", PrimChecks.list.length(PrimChecks.list.filter(Tasks.reporterTask(function(p) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  world.observer.setGlobal("zero-pressure-count", PrimChecks.list.length(PrimChecks.list.filter(PrimChecks.task.checked(function(p) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
     return Prims.equality(p, 0);
-  }, "[ [p] -> p = 0 ]"), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("pressure-history")))));
+  }, "[ [p] -> p = 0 ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("pressure-history")))));
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { PrimChecks.turtle.setVariable("momentum-difference", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("bounce", 4741, 6490, (function() {

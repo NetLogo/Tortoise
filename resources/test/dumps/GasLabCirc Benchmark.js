@@ -86,10 +86,10 @@ ProcedurePrims.defineCommand("rebuild-collision-list", 1290, 1433, (function() {
 }))
 ProcedurePrims.defineCommand("go", 1442, 3434, (function() {
   if (NLType.checks.isValidTurtle(world.observer.getGlobal("colliding-particle-2"))) {
-    world.observer.setGlobal("colliding-particles", PrimChecks.list.filter(Tasks.reporterTask(function(collision) {
-      PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+    world.observer.setGlobal("colliding-particles", PrimChecks.list.filter(PrimChecks.task.checked(function(collision) {
+      PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
       return (((!Prims.equality(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, collision)), world.observer.getGlobal("colliding-particle-1")) && !Prims.equality(PrimChecks.list.item(2, PrimChecks.validator.checkArg('ITEM', 12, collision)), world.observer.getGlobal("colliding-particle-1"))) && !Prims.equality(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, collision)), world.observer.getGlobal("colliding-particle-2"))) && !Prims.equality(PrimChecks.list.item(2, PrimChecks.validator.checkArg('ITEM', 12, collision)), world.observer.getGlobal("colliding-particle-2")));
-    }, "[ [collision] -> item 1 collision != colliding-particle-1 and item 2 collision != colliding-particle-1 and item 1 collision != colliding-particle-2 and item 2 collision != colliding-particle-2 ]"), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("colliding-particles"))));
+    }, "[ [collision] -> item 1 collision != colliding-particle-1 and item 2 collision != colliding-particle-1 and item 1 collision != colliding-particle-2 and item 2 collision != colliding-particle-2 ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("colliding-particles"))));
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("colliding-particle-2")), function() {
       var R = ProcedurePrims.callCommand("check-for-wall-collision"); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -98,10 +98,10 @@ ProcedurePrims.defineCommand("go", 1442, 3434, (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
   else {
-    world.observer.setGlobal("colliding-particles", PrimChecks.list.filter(Tasks.reporterTask(function(collision) {
-      PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+    world.observer.setGlobal("colliding-particles", PrimChecks.list.filter(PrimChecks.task.checked(function(collision) {
+      PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
       return (!Prims.equality(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, collision)), world.observer.getGlobal("colliding-particle-1")) && !Prims.equality(PrimChecks.list.item(2, PrimChecks.validator.checkArg('ITEM', 12, collision)), world.observer.getGlobal("colliding-particle-1")));
-    }, "[ [collision] -> item 1 collision != colliding-particle-1 and item 2 collision != colliding-particle-1 ]"), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("colliding-particles"))));
+    }, "[ [collision] -> item 1 collision != colliding-particle-1 and item 2 collision != colliding-particle-1 ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("colliding-particles"))));
   }
   if (!Prims.equality(world.observer.getGlobal("colliding-particle-1"), Nobody)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("colliding-particle-1")), function() {
@@ -221,10 +221,10 @@ ProcedurePrims.defineCommand("assign-colliding-wall", 13055, 13589, (function(ti
   world.observer.setGlobal("colliding-particles", PrimChecks.list.fput(collidingHpair, PrimChecks.validator.checkArg('FPUT', 8, world.observer.getGlobal("colliding-particles"))));
 }))
 ProcedurePrims.defineCommand("sort-collisions", 13598, 15397, (function() {
-  world.observer.setGlobal("colliding-particles", PrimChecks.list.filter(Tasks.reporterTask(function(collision) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  world.observer.setGlobal("colliding-particles", PrimChecks.list.filter(PrimChecks.task.checked(function(collision) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
     return (!Prims.equality(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, collision)), world.observer.getGlobal("colliding-particle-1")) || !Prims.equality(PrimChecks.list.item(2, PrimChecks.validator.checkArg('ITEM', 12, collision)), world.observer.getGlobal("colliding-particle-2")));
-  }, "[ [collision] -> item 1 collision != colliding-particle-1 or item 2 collision != colliding-particle-2 ]"), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("colliding-particles"))));
+  }, "[ [collision] -> item 1 collision != colliding-particle-1 or item 2 collision != colliding-particle-2 ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("colliding-particles"))));
   world.observer.setGlobal("colliding-particle-1", Nobody);
   world.observer.setGlobal("colliding-particle-2", Nobody);
   world.observer.setGlobal("tick-length", world.observer.getGlobal("original-tick-length"));
@@ -232,12 +232,12 @@ ProcedurePrims.defineCommand("sort-collisions", 13598, 15397, (function() {
     return PrimChecks.procedure.stop();
   }
   let winner = PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, world.observer.getGlobal("colliding-particles"))); ProcedurePrims.stack().currentContext().registerStringRunVar("WINNER", winner);
-  var R = Tasks.forEach(Tasks.commandTask(function(collision) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, world.observer.getGlobal("colliding-particles")), PrimChecks.task.checked(function(collision) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     if (Prims.lt(PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, collision)), PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, winner)))) {
       winner = collision; ProcedurePrims.stack().currentContext().updateStringRunVar("WINNER", winner);
     }
-  }, "[ [collision] -> if first collision < first winner [ set winner collision ] ]"), world.observer.getGlobal("colliding-particles")); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ [collision] -> if first collision < first winner [ set winner collision ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   let dt = PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, winner)); ProcedurePrims.stack().currentContext().registerStringRunVar("DT", dt);
   if (Prims.gt(dt, 0)) {
     if (Prims.lte(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, dt), world.ticker.tickCount()), 1)) {

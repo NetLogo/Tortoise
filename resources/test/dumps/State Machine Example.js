@@ -61,7 +61,7 @@ ProcedurePrims.defineCommand("setup", 211, 587, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number"), ""), function() {
     SelfManager.self().setVariable("color", 9.9);
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-    PrimChecks.turtle.setVariable("next-task", Tasks.commandTask(function() { var R = ProcedurePrims.callCommand("search-for-chip"); if (R === DeathInterrupt) { return R; } }, "[ -> search-for-chip ]"));
+    PrimChecks.turtle.setVariable("next-task", PrimChecks.task.checked(function() { var R = ProcedurePrims.callCommand("search-for-chip"); if (R === DeathInterrupt) { return R; } }, "[ -> search-for-chip ]", false, false));
     PrimChecks.turtle.setVariable("size", 5);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
@@ -88,12 +88,12 @@ ProcedurePrims.defineCommand("search-for-chip", 804, 1012, (function() {
     SelfManager.self().setPatchVariable("pcolor", 0);
     SelfManager.self().setVariable("color", 25);
     PrimChecks.turtle.setVariable("steps", 20);
-    PrimChecks.turtle.setVariable("next-task", Tasks.commandTask(function() { var R = ProcedurePrims.callCommand("find-new-pile"); if (R === DeathInterrupt) { return R; } }, "[ -> find-new-pile ]"));
+    PrimChecks.turtle.setVariable("next-task", PrimChecks.task.checked(function() { var R = ProcedurePrims.callCommand("find-new-pile"); if (R === DeathInterrupt) { return R; } }, "[ -> find-new-pile ]", false, false));
   }
 }))
 ProcedurePrims.defineCommand("find-new-pile", 1020, 1146, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45)) {
-    PrimChecks.turtle.setVariable("next-task", Tasks.commandTask(function() { var R = ProcedurePrims.callCommand("put-down-chip"); if (R === DeathInterrupt) { return R; } }, "[ -> put-down-chip ]"));
+    PrimChecks.turtle.setVariable("next-task", PrimChecks.task.checked(function() { var R = ProcedurePrims.callCommand("put-down-chip"); if (R === DeathInterrupt) { return R; } }, "[ -> put-down-chip ]", false, false));
   }
 }))
 ProcedurePrims.defineCommand("put-down-chip", 1154, 1341, (function() {
@@ -101,12 +101,12 @@ ProcedurePrims.defineCommand("put-down-chip", 1154, 1341, (function() {
     SelfManager.self().setPatchVariable("pcolor", 45);
     SelfManager.self().setVariable("color", 9.9);
     PrimChecks.turtle.setVariable("steps", 20);
-    PrimChecks.turtle.setVariable("next-task", Tasks.commandTask(function() { var R = ProcedurePrims.callCommand("get-away"); if (R === DeathInterrupt) { return R; } }, "[ -> get-away ]"));
+    PrimChecks.turtle.setVariable("next-task", PrimChecks.task.checked(function() { var R = ProcedurePrims.callCommand("get-away"); if (R === DeathInterrupt) { return R; } }, "[ -> get-away ]", false, false));
   }
 }))
 ProcedurePrims.defineCommand("get-away", 1349, 1470, (function() {
   if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
-    PrimChecks.turtle.setVariable("next-task", Tasks.commandTask(function() { var R = ProcedurePrims.callCommand("search-for-chip"); if (R === DeathInterrupt) { return R; } }, "[ -> search-for-chip ]"));
+    PrimChecks.turtle.setVariable("next-task", PrimChecks.task.checked(function() { var R = ProcedurePrims.callCommand("search-for-chip"); if (R === DeathInterrupt) { return R; } }, "[ -> search-for-chip ]", false, false));
   }
 }))
 world.observer.setGlobal("number", 400);

@@ -81,9 +81,9 @@ ProcedurePrims.defineCommand("go", 158, 1941, (function() {
   let reproduceHevent = 1; ProcedurePrims.stack().currentContext().registerStringRunVar("REPRODUCE-EVENT", reproduceHevent);
   let selectHevent = 2; ProcedurePrims.stack().currentContext().registerStringRunVar("SELECT-EVENT", selectHevent);
   let repetitions = PrimChecks.math.div(PrimChecks.agentset.count(world.patches()), 3); ProcedurePrims.stack().currentContext().registerStringRunVar("REPETITIONS", repetitions);
-  let events = PrimChecks.list.shuffle(ListPrims.sentence(Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, PrimChecks.procedure.callReporter("swap-rate")))), Tasks.reporterTask(function() { return swapHevent; }, "[ swap-event ]")), Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, PrimChecks.procedure.callReporter("reproduce-rate")))), Tasks.reporterTask(function() { return reproduceHevent; }, "[ reproduce-event ]")), Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, PrimChecks.procedure.callReporter("select-rate")))), Tasks.reporterTask(function() { return selectHevent; }, "[ select-event ]")))); ProcedurePrims.stack().currentContext().registerStringRunVar("EVENTS", events);
-  var R = Tasks.forEach(Tasks.commandTask(function(_EVENT_) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  let events = PrimChecks.list.shuffle(ListPrims.sentence(Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, PrimChecks.procedure.callReporter("swap-rate")))), PrimChecks.task.checked(function() { return swapHevent; }, "[ swap-event ]", true, false)), Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, PrimChecks.procedure.callReporter("reproduce-rate")))), PrimChecks.task.checked(function() { return reproduceHevent; }, "[ reproduce-event ]", true, false)), Tasks.nValues(PrimChecks.math.randomPoisson(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, repetitions), PrimChecks.validator.checkArg('*', 1, PrimChecks.procedure.callReporter("select-rate")))), PrimChecks.task.checked(function() { return selectHevent; }, "[ select-event ]", true, false)))); ProcedurePrims.stack().currentContext().registerStringRunVar("EVENTS", events);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, events), PrimChecks.task.checked(function(_EVENT_) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.patches())), function() {
       let target = PrimChecks.list.oneOf(SelfManager.self().getNeighbors4()); ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET", target);
       if (Prims.equality(_EVENT_, swapHevent)) {
@@ -96,7 +96,7 @@ ProcedurePrims.defineCommand("go", 158, 1941, (function() {
         var R = ProcedurePrims.callCommand("select", target); if (R === DeathInterrupt) { return R; }
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, "[ event -> ask one-of patches [ let one-of neighbors4 if event = swap-event [ swap target ] if event = reproduce-event [ reproduce target ] if event = select-event [ select target ] ] ]"), events); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ event -> ask one-of patches [ let one-of neighbors4 if event = swap-event [ swap target ] if event = reproduce-event [ reproduce target ] if event = select-event [ select target ] ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("swap", 1996, 2107, (function(target) {

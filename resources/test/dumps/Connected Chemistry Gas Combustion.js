@@ -269,7 +269,7 @@ ProcedurePrims.defineCommand("calculate-pressure", 8164, 8667, (function() {
 }))
 ProcedurePrims.defineCommand("calculate-tick-advance-amount", 8675, 9388, (function() {
   if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.gt(PrimChecks.turtle.getVariable("speed"), 0); })) {
-    world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable("speed"); }))))), world.observer.getGlobal("max-tick-advance-amount"))));
+    world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable("speed"); }))))), PrimChecks.validator.checkArg('LIST', 8191, world.observer.getGlobal("max-tick-advance-amount")))));
   }
   else {
     world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));

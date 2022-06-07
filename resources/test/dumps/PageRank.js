@@ -65,7 +65,7 @@ ProcedurePrims.defineCommand("setup", 242, 902, (function() {
         var R = ProcedurePrims.callCommand("create-network-preferential", 100, 2); if (R === DeathInterrupt) { return R; }
       }
       else {
-        UserDialogPrims.confirm(StringPrims.word("Error: unknown network-choice: ", world.observer.getGlobal("network-choice")));
+        UserDialogPrims.confirm(StringPrims.word("Error: unknown network-choice: ", PrimChecks.validator.checkArg('WORD', 8191, world.observer.getGlobal("network-choice"))));
       }
     }
   }
@@ -146,19 +146,19 @@ ProcedurePrims.defineCommand("link-preferentially", 2210, 3891, (function(nodese
   let nodeHlist = PrimChecks.list.sort(PrimChecks.validator.checkArg('SORT', 120, nodeset)); ProcedurePrims.stack().currentContext().registerStringRunVar("NODE-LIST", nodeHlist);
   let neighborHchoiceHlist = PrimChecks.list.sublist(PrimChecks.validator.checkArg('SUBLIST', 8, nodeHlist), 0, PrimChecks.validator.checkArg('SUBLIST', 1, k)); ProcedurePrims.stack().currentContext().registerStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, k), PrimChecks.validator.checkArg('ITEM', 12, nodeHlist))), function() {
-    var R = Tasks.forEach(Tasks.commandTask(function(neighbor) {
-      PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+    var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, neighborHchoiceHlist), PrimChecks.task.checked(function(neighbor) {
+      PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
         var R = ProcedurePrims.ask(LinkPrims.createLinkTo(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       }
       else {
         var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       }
-    }, "[ neighbor -> ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ]"), neighborHchoiceHlist); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    neighborHchoiceHlist = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() { return SelfManager.self(); }, "[ self ]")), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
+    }, "[ neighbor -> ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    neighborHchoiceHlist = ListPrims.sentence(Tasks.nValues(PrimChecks.validator.checkArg('N-VALUES', 1, k), PrimChecks.task.checked(function() { return SelfManager.self(); }, "[ self ]", true, false)), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = Tasks.forEach(Tasks.commandTask(function(node) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.list.sublist(PrimChecks.validator.checkArg('SUBLIST', 8, nodeHlist), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, k), 1), PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, nodeHlist))), PrimChecks.task.checked(function(node) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, node), function() {
       let tempHneighborHlist = neighborHchoiceHlist; ProcedurePrims.stack().currentContext().registerStringRunVar("TEMP-NEIGHBOR-LIST", tempHneighborHlist);
       for (let _index_3056_3062 = 0, _repeatcount_3056_3062 = StrictMath.floor(k); _index_3056_3062 < _repeatcount_3056_3062; _index_3056_3062++) {
@@ -172,9 +172,9 @@ ProcedurePrims.defineCommand("link-preferentially", 2210, 3891, (function(nodese
           var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         }
       }
-      neighborHchoiceHlist = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() { return SelfManager.self(); }, "[ self ]")), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
+      neighborHchoiceHlist = ListPrims.sentence(Tasks.nValues(PrimChecks.validator.checkArg('N-VALUES', 1, k), PrimChecks.task.checked(function() { return SelfManager.self(); }, "[ self ]", true, false)), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]"), PrimChecks.list.sublist(PrimChecks.validator.checkArg('SUBLIST', 8, nodeHlist), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, k), 1), PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, nodeHlist)))); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("do-layout", 3899, 3969, (function() {
   LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, PrimChecks.math.div(20, PrimChecks.math.sqrt(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("PAGES")))), 0.5);

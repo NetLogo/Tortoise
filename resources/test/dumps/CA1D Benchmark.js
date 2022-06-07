@@ -97,10 +97,10 @@ ProcedurePrims.defineCommand("setup-continue", 1204, 1672, (function() {
   if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("gone?")))) {
     return PrimChecks.procedure.stop();
   }
-  on_QHlist = Tasks.map(Tasks.reporterTask(function(p) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  on_QHlist = PrimChecks.task.map(PrimChecks.task.checked(function(p) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
     return PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p), function() { return SelfManager.self().getPatchVariable("on?"); });
-  }, "[ [p] -> [ on? ] of p ]"), PrimChecks.list.sort(world._optimalPatchRow(world.observer.getGlobal("row")))); ProcedurePrims.stack().currentContext().updateStringRunVar("ON?-LIST", on_QHlist);
+  }, "[ [p] -> [ on? ] of p ]", true, false), PrimChecks.list.sort(world._optimalPatchRow(world.observer.getGlobal("row")))); ProcedurePrims.stack().currentContext().updateStringRunVar("ON?-LIST", on_QHlist);
   var R = ProcedurePrims.callCommand("setup-general"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world._optimalPatchRow(world.observer.getGlobal("row")), function() {
     SelfManager.self().setPatchVariable("on?", PrimChecks.list.item(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pxcor")), world.topology.maxPxcor), PrimChecks.validator.checkArg('ITEM', 12, on_QHlist)));

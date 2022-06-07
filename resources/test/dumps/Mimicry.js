@@ -144,12 +144,12 @@ ProcedurePrims.defineCommand("butterflies-get-eaten", 2735, 3020, (function() {
   }
 }))
 ProcedurePrims.defineReporter("color-in-memory?", 3120, 3232, (function(c) {
-  var R = Tasks.forEach(Tasks.commandTask(function(i) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, PrimChecks.turtle.getVariable("memory")), PrimChecks.task.checked(function(i) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     if (Prims.equality(PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, i)), c)) {
       return PrimChecks.procedure.report(true);
     }
-  }, "[ i -> if item 0 i = c [ report true ] ]"), PrimChecks.turtle.getVariable("memory")); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ i -> if item 0 i = c [ report true ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   return PrimChecks.procedure.report(false);
 }))
 ProcedurePrims.defineCommand("remember-color", 3280, 3747, (function(c) {
@@ -159,14 +159,14 @@ ProcedurePrims.defineCommand("remember-color", 3280, 3747, (function(c) {
   PrimChecks.turtle.setVariable("memory", PrimChecks.list.lput(ListPrims.list(c, 0), PrimChecks.validator.checkArg('LPUT', 8, PrimChecks.turtle.getVariable("memory"))));
 }))
 ProcedurePrims.defineCommand("birds-forget", 3855, 4128, (function() {
-  PrimChecks.turtle.setVariable("memory", Tasks.map(Tasks.reporterTask(function(i) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  PrimChecks.turtle.setVariable("memory", PrimChecks.task.map(PrimChecks.task.checked(function(i) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
     return ListPrims.list(PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, i)), PrimChecks.math.plus(1, PrimChecks.validator.checkArg('+', 1, PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, i)))));
-  }, "[ i -> list item 0 i 1 + item 1 i ]"), PrimChecks.turtle.getVariable("memory")));
-  PrimChecks.turtle.setVariable("memory", PrimChecks.list.filter(Tasks.reporterTask(function(i) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  }, "[ i -> list item 0 i 1 + item 1 i ]", true, false), PrimChecks.validator.checkArg('MAP', 8, PrimChecks.turtle.getVariable("memory"))));
+  PrimChecks.turtle.setVariable("memory", PrimChecks.list.filter(PrimChecks.task.checked(function(i) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
     return Prims.lte(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, i)), world.observer.getGlobal("memory-duration"));
-  }, "[ i -> item 1 i <= memory-duration ]"), PrimChecks.validator.checkArg('FILTER', 8, PrimChecks.turtle.getVariable("memory"))));
+  }, "[ i -> item 1 i <= memory-duration ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, PrimChecks.turtle.getVariable("memory"))));
 }))
 ProcedurePrims.defineCommand("butterflies-reproduce", 4258, 4533, (function() {
   if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {

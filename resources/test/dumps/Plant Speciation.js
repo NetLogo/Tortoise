@@ -269,10 +269,10 @@ ProcedurePrims.defineCommand("do-reproduction", 4405, 6519, (function() {
       potentialHmates = PrimChecks.list.sort(PrimChecks.list.nOf(10, PrimChecks.validator.checkArg('N-OF', 120, nearbyHturtles))); ProcedurePrims.stack().currentContext().updateStringRunVar("POTENTIAL-MATES", potentialHmates);
       potentialHmates = PrimChecks.list.fput(SelfManager.self(), PrimChecks.validator.checkArg('FPUT', 8, potentialHmates)); ProcedurePrims.stack().currentContext().updateStringRunVar("POTENTIAL-MATES", potentialHmates);
     }
-    let compatibilities = Tasks.map(Tasks.reporterTask(function(potentialHmate) {
-      PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+    let compatibilities = PrimChecks.task.map(PrimChecks.task.checked(function(potentialHmate) {
+      PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
       return PrimChecks.procedure.callReporter("compatibility", SelfManager.self(), potentialHmate);
-    }, "[ potential-mate -> compatibility self potential-mate ]"), potentialHmates); ProcedurePrims.stack().currentContext().registerStringRunVar("COMPATIBILITIES", compatibilities);
+    }, "[ potential-mate -> compatibility self potential-mate ]", true, false), PrimChecks.validator.checkArg('MAP', 8, potentialHmates)); ProcedurePrims.stack().currentContext().registerStringRunVar("COMPATIBILITIES", compatibilities);
     let mate = PrimChecks.procedure.callReporter("pick-weighted", potentialHmates, compatibilities); ProcedurePrims.stack().currentContext().registerStringRunVar("MATE", mate);
     var R = ProcedurePrims.ask(SelfManager.self().hatch(PrimChecks.math.randomPoisson(PrimChecks.validator.checkArg('RANDOM-POISSON', 1, world.observer.getGlobal("average-number-offspring"))), ""), function() {
       PrimChecks.turtle.setVariable("seedling?", true);
@@ -390,21 +390,21 @@ ProcedurePrims.defineCommand("visualize-bloom", 10672, 11062, (function() {
 }))
 ProcedurePrims.defineReporter("pick-weighted", 11502, 11806, (function(options, weights) {
   let wsum = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("WSUM", wsum);
-  var R = Tasks.forEach(Tasks.commandTask(function(weight) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, weights), PrimChecks.task.checked(function(weight) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     wsum = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, wsum), PrimChecks.validator.checkArg('+', 1, weight)); ProcedurePrims.stack().currentContext().updateStringRunVar("WSUM", wsum);
-  }, "[ weight -> set wsum wsum + weight ]"), weights); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ weight -> set wsum wsum + weight ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   let wret = PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, wsum), PrimChecks.math.randomFloat(1)); ProcedurePrims.stack().currentContext().registerStringRunVar("WRET", wret);
   let ret = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("RET", ret);
   wsum = 0; ProcedurePrims.stack().currentContext().updateStringRunVar("WSUM", wsum);
-  var R = Tasks.forEach(Tasks.commandTask(function(weight) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, weights), PrimChecks.task.checked(function(weight) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     wsum = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, wsum), PrimChecks.validator.checkArg('+', 1, weight)); ProcedurePrims.stack().currentContext().updateStringRunVar("WSUM", wsum);
     if (Prims.gt(wsum, wret)) {
       return PrimChecks.procedure.report(PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, ret), PrimChecks.validator.checkArg('ITEM', 12, options)));
     }
     ret = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, ret), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("RET", ret);
-  }, "[ weight -> set wsum wsum + weight if wsum > wret [ report item ret options ] set ret ret + 1 ]"), weights); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ weight -> set wsum wsum + weight if wsum > wret [ report item ret options ] set ret ret + 1 ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineReporter("compatibility", 12017, 12181, (function(t1, t2) {
   let diff = PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, t1), function() { return PrimChecks.turtle.getVariable("flower-time"); })), PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, t2), function() { return PrimChecks.turtle.getVariable("flower-time"); })))); ProcedurePrims.stack().currentContext().registerStringRunVar("DIFF", diff);

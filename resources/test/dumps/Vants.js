@@ -61,23 +61,23 @@ ProcedurePrims.defineCommand("setup", 3, 203, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go-forward", 392, 484, (function() {
-  var R = Tasks.forEach(Tasks.commandTask(function(t) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.list.sort(world.turtles()), PrimChecks.task.checked(function(t) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, t), function() {
       SelfManager.self()._optimalFdOne();
       var R = ProcedurePrims.callCommand("turn"); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, "[ t -> ask t [ fd 1 turn ] ]"), PrimChecks.list.sort(world.turtles())); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ t -> ask t [ fd 1 turn ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("go-reverse", 492, 592, (function() {
-  var R = Tasks.forEach(Tasks.commandTask(function(t) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, PrimChecks.list.reverse(PrimChecks.list.sort(world.turtles()))), PrimChecks.task.checked(function(t) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, t), function() {
       var R = ProcedurePrims.callCommand("turn"); if (R === DeathInterrupt) { return R; }
       SelfManager.self().fd(-(1));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, "[ t -> ask t [ turn bk 1 ] ]"), PrimChecks.list.reverse(PrimChecks.list.sort(world.turtles()))); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ t -> ask t [ turn bk 1 ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("turn", 600, 703, (function() {

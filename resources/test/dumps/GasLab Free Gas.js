@@ -196,7 +196,7 @@ ProcedurePrims.defineCommand("update-variables", 1122, 1524, (function() {
 }))
 ProcedurePrims.defineCommand("calculate-tick-delta", 1534, 2142, (function() {
   if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.gt(PrimChecks.turtle.getVariable("speed"), 0); })) {
-    world.observer.setGlobal("tick-delta", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable("speed"); }))))), world.observer.getGlobal("max-tick-delta"))));
+    world.observer.setGlobal("tick-delta", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable("speed"); }))))), PrimChecks.validator.checkArg('LIST', 8191, world.observer.getGlobal("max-tick-delta")))));
   }
   else {
     world.observer.setGlobal("tick-delta", world.observer.getGlobal("max-tick-delta"));
