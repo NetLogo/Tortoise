@@ -29,6 +29,7 @@ syntaxToTypes = [
   , [             112, types.AgentSet,        9]
   , [             128, types.Nobody,         18]
   , [             256, types.Turtle,         13]
+  , [             512, types.Patch,          14]
   , [            1024, types.Link,           15]
   , [            1792, types.Agent,           4]
   , [            2048, types.CommandLambda,  17]
