@@ -247,7 +247,7 @@ ProcedurePrims.defineReporter("drop-patch", 5038, 5282, (function() {
   return PrimChecks.procedure.report(Nobody);
 }))
 ProcedurePrims.defineCommand("push-n", 5316, 5371, (function() {
-  SelfManager.self().setPatchVariable("n-stack", PrimChecks.list.fput(PrimChecks.validator.checkArg('FPUT', 8191, SelfManager.self().getPatchVariable("n")), PrimChecks.validator.checkArg('FPUT', 8, SelfManager.self().getPatchVariable("n-stack"))));
+  SelfManager.self().setPatchVariable("n-stack", PrimChecks.list.fput(SelfManager.self().getPatchVariable("n"), PrimChecks.validator.checkArg('FPUT', 8, SelfManager.self().getPatchVariable("n-stack"))));
 }))
 ProcedurePrims.defineCommand("pop-n", 5408, 5561, (function() {
   var R = ProcedurePrims.callCommand("update-n", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, SelfManager.self().getPatchVariable("n-stack")))), PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("n")))); if (R === DeathInterrupt) { return R; }

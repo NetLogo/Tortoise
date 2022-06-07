@@ -247,7 +247,7 @@ ProcedurePrims.defineCommand("find-all-components", 4416, 5176, (function() {
     if (Prims.gt(world.observer.getGlobal("component-size"), world.observer.getGlobal("giant-component-size"))) {
       world.observer.setGlobal("giant-component-size", world.observer.getGlobal("component-size"));
     }
-    world.observer.setGlobal("components", PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("component-size")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("components"))));
+    world.observer.setGlobal("components", PrimChecks.list.lput(world.observer.getGlobal("component-size"), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("components"))));
   };
 }))
 ProcedurePrims.defineCommand("explore", 5232, 5378, (function() {

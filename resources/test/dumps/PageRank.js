@@ -65,7 +65,7 @@ ProcedurePrims.defineCommand("setup", 242, 902, (function() {
         var R = ProcedurePrims.callCommand("create-network-preferential", 100, 2); if (R === DeathInterrupt) { return R; }
       }
       else {
-        UserDialogPrims.confirm(StringPrims.word("Error: unknown network-choice: ", PrimChecks.validator.checkArg('WORD', 8191, world.observer.getGlobal("network-choice"))));
+        UserDialogPrims.confirm(StringPrims.word("Error: unknown network-choice: ", world.observer.getGlobal("network-choice")));
       }
     }
   }

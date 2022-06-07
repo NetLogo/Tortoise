@@ -241,14 +241,14 @@ ProcedurePrims.defineCommand("print-block", 5431, 5663, (function(state) {
 }))
 ProcedurePrims.defineReporter("list-rules", 5678, 6244, (function() {
   let rules = []; ProcedurePrims.stack().currentContext().registerStringRunVar("RULES", rules);
-  rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("ooo")), [false, false, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
-  rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("ooi")), [false, false, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
-  rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("oio")), [false, true, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
-  rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("oii")), [false, true, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
-  rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("ioo")), [true, false, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
-  rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("ioi")), [true, false, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
-  rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("iio")), [true, true, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
-  rules = PrimChecks.list.lput(PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("iii")), [true, true, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
+  rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ooo"), [false, false, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
+  rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ooi"), [false, false, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
+  rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("oio"), [false, true, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
+  rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("oii"), [false, true, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
+  rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ioo"), [true, false, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
+  rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("ioi"), [true, false, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
+  rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("iio"), [true, true, false]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
+  rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("iii"), [true, true, true]), PrimChecks.validator.checkArg('LPUT', 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
   return PrimChecks.procedure.report(rules);
 }))
 world.observer.setGlobal("ooo", true);

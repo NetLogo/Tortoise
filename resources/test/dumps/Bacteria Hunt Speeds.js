@@ -126,7 +126,7 @@ ProcedurePrims.defineCommand("setup-predator", 2150, 2312, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("make-flagella", 2320, 2638, (function() {
-  let flagellaHshape = StringPrims.word("flagella-", PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("variation"))); ProcedurePrims.stack().currentContext().registerStringRunVar("FLAGELLA-SHAPE", flagellaHshape);
+  let flagellaHshape = StringPrims.word("flagella-", PrimChecks.turtle.getVariable("variation")); ProcedurePrims.stack().currentContext().registerStringRunVar("FLAGELLA-SHAPE", flagellaHshape);
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FLAGELLA"));
     SelfManager.self().setVariable("color", world.observer.getGlobal("bacteria-default-color"));
@@ -225,12 +225,12 @@ ProcedurePrims.defineCommand("check-caught", 4568, 5024, (function() {
 ProcedurePrims.defineCommand("visualize-bacteria", 5270, 5742, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BACTERIA"), function() {
     if (Prims.equality(world.observer.getGlobal("visualize-variation"), "# flagella as label")) {
-      SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("variation")), "     "));
+      SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.turtle.getVariable("variation"), "     "));
     }
     else {
       SelfManager.self().setVariable("label", "");
     }
-    if (PrimChecks.list.member(PrimChecks.validator.checkArg('MEMBER?', 8191, world.observer.getGlobal("visualize-variation")), ["flagella and color", "as color only"])) {
+    if (PrimChecks.list.member(world.observer.getGlobal("visualize-variation"), ["flagella and color", "as color only"])) {
       SelfManager.self().setVariable("color", PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("variation")), 1), [115, 105, 55, 35, 25, 15]));
     }
     else {
@@ -238,7 +238,7 @@ ProcedurePrims.defineCommand("visualize-bacteria", 5270, 5742, (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("FLAGELLA"), function() {
-    SelfManager.self().setVariable("hidden?", PrimChecks.list.member(PrimChecks.validator.checkArg('MEMBER?', 8191, world.observer.getGlobal("visualize-variation")), ["as color only", "# flagella as label", "none"]));
+    SelfManager.self().setVariable("hidden?", PrimChecks.list.member(world.observer.getGlobal("visualize-variation"), ["as color only", "# flagella as label", "none"]));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("visualize-removal-spots", 5750, 6001, (function() {

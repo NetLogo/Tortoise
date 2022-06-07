@@ -182,7 +182,7 @@ ProcedurePrims.defineCommand("calculate-tick-length", 2998, 3150, (function() {
 }))
 ProcedurePrims.defineCommand("calculate-pressure", 4224, 4733, (function() {
   world.observer.setGlobal("pressure", PrimChecks.math.mult(15, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable("momentum-difference"); })))));
-  world.observer.setGlobal("pressure-history", PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("pressure")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("pressure-history"))));
+  world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("pressure-history"))));
   world.observer.setGlobal("zero-pressure-count", PrimChecks.list.length(PrimChecks.list.filter(PrimChecks.task.checked(function(p) {
     PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
     return Prims.equality(p, 0);

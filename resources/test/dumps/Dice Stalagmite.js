@@ -131,7 +131,7 @@ ProcedurePrims.defineCommand("roll-dice", 1835, 2601, (function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "PAIRED-DICE"), function() {
       SelfManager.self().setVariable("color", 9.9);
       PrimChecks.turtle.setVariable("die-value", PrimChecks.math.plus(1, RandomPrims.randomLong(6)));
-      SelfManager.self().setVariable("shape", StringPrims.word("die ", PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("die-value"))));
+      SelfManager.self().setVariable("shape", StringPrims.word("die ", PrimChecks.turtle.getVariable("die-value")));
       PrimChecks.turtle.setVariable("heading", 90);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -145,7 +145,7 @@ ProcedurePrims.defineCommand("roll-dice", 1835, 2601, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { PrimChecks.turtle.setVariable("pair-sum", total); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("pair-outcomes", PrimChecks.list.lput(total, PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("pair-outcomes"))));
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() {
-    world.observer.setGlobal("single-outcomes", PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, PrimChecks.turtle.getVariable("die-value")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("single-outcomes"))));
+    world.observer.setGlobal("single-outcomes", PrimChecks.list.lput(PrimChecks.turtle.getVariable("die-value"), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("single-outcomes"))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("move-paired-dice", 2609, 3010, (function() {

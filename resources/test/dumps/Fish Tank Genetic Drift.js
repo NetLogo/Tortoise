@@ -276,12 +276,12 @@ ProcedurePrims.defineCommand("make-initial-alleles-for-gene", 7152, 8023, (funct
     PrimChecks.turtle.setVariable("value", alleleH2);
     SelfManager.self().setVariable("color", [0, 0, 0, 255]);
     SelfManager.self().setVariable("label-color", SelfManager.self().getVariable("color"));
-    SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("value")), "     "));
+    SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.turtle.getVariable("value"), "     "));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(PrimChecks.validator.checkArg('N-OF', 1, numHbigHalleles), PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable("gene"), geneHnumber); }))), function() {
     PrimChecks.turtle.setVariable("value", alleleH1);
     SelfManager.self().setVariable("color", [220, 220, 220, 255]);
-    SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.validator.checkArg('WORD', 8191, PrimChecks.turtle.getVariable("value")), "     "));
+    SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.turtle.getVariable("value"), "     "));
     SelfManager.self().setVariable("label-color", SelfManager.self().getVariable("color"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))

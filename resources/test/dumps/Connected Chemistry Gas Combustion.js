@@ -264,12 +264,12 @@ ProcedurePrims.defineCommand("move", 7647, 8155, (function() {
 }))
 ProcedurePrims.defineCommand("calculate-pressure", 8164, 8667, (function() {
   world.observer.setGlobal("pressure", PrimChecks.math.mult(100, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable("momentum-difference"); })))));
-  world.observer.setGlobal("pressure-history", PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("pressure")), PrimChecks.validator.checkArg('LPUT', 8, PrimChecks.list.butFirst('but-first', PrimChecks.validator.checkArg('BUT-FIRST', 12, world.observer.getGlobal("pressure-history"))))));
+  world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.validator.checkArg('LPUT', 8, PrimChecks.list.butFirst('but-first', PrimChecks.validator.checkArg('BUT-FIRST', 12, world.observer.getGlobal("pressure-history"))))));
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { PrimChecks.turtle.setVariable("momentum-difference", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("calculate-tick-advance-amount", 8675, 9388, (function() {
   if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.gt(PrimChecks.turtle.getVariable("speed"), 0); })) {
-    world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable("speed"); }))))), PrimChecks.validator.checkArg('LIST', 8191, world.observer.getGlobal("max-tick-advance-amount")))));
+    world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(ListPrims.list(PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable("speed"); }))))), world.observer.getGlobal("max-tick-advance-amount"))));
   }
   else {
     world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));

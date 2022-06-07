@@ -153,7 +153,7 @@ object ReporterPrims {
   }
 
   def makeCheckedOp(prim: String, allowed: Int, actual: Int, op: String): String = {
-    if (ReporterPrims.allTypesAllowed(allowed, actual)) {
+    if (ReporterPrims.allTypesAllowed(allowed, actual) || allowed == Syntax.WildcardType) {
       op
     } else {
       // at runtime, don't consider repeatable as its own real type
