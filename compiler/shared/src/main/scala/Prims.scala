@@ -244,7 +244,6 @@ trait ReporterPrims extends PrimUtils {
       // Blarg
       case w: prim._word               => s"StringPrims.word(${maybeConciseVarArgs("WORD", w.syntax)})"
       case _: prim.etc._ifelsevalue    => generateIfElseValue(r.args)
-      case _: prim.etc._nvalues        => s"Tasks.nValues($commaCheckedArgs)"
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
 
       // Boolean

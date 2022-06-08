@@ -141,6 +141,7 @@ object SimplePrims {
         case _: prim.etc._readfromstring => "ProcedurePrims.readFromString"
         case _: prim.etc._map            => "PrimChecks.task.map"
         case _: prim.etc._applyresult    => "Tasks.apply"
+        case _: prim.etc._nvalues        => "Tasks.nValues"
 
       }
   }
