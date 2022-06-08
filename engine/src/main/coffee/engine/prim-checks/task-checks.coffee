@@ -1,5 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+NLMath                            = require('util/nlmath')
 TaskPrims                         = require('../prim/tasks')
 { isRepeatable, removeRepeatable } = require('./syntax')
 
@@ -55,6 +56,12 @@ class TaskChecks
   map: (fn, lists...) ->
     @areListsSameLength('map', lists)
     Tasks.map(fn, lists)
+
+  nValues: (n, fn) ->
+    if n < 0
+      @validator.error("n-values", "_ cannot take a negative number.", "N-VALUES")
+
+    Tasks.nValues(NLMath.floor(n), fn)
 
   areListsSameLength: (primName, lists) ->
     head = lists[0]

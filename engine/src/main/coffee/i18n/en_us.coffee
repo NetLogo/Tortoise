@@ -142,6 +142,8 @@ bundle = {
   , 'range expects at most three arguments': () ->
     "range expects at most three arguments"
 
+  , '_ cannot take a negative number.': (primName) ->
+    "#{primName} cannot take a negative number."
 }
 
 module.exports = bundle

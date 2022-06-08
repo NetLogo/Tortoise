@@ -107,7 +107,7 @@ ProcedurePrims.defineReporter("calculate-region-boundaries", 2613, 3128, (functi
   }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]", true, false), PrimChecks.validator.checkArg('MAP', 8, PrimChecks.list.butLast('but-last', PrimChecks.validator.checkArg('BUT-LAST', 12, divisions))), PrimChecks.validator.checkArg('MAP', 8, PrimChecks.list.butFirst('but-first', PrimChecks.validator.checkArg('BUT-FIRST', 12, divisions)))));
 }))
 ProcedurePrims.defineReporter("region-divisions", 3143, 3457, (function(numHregions) {
-  return PrimChecks.procedure.report(Tasks.nValues(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, numHregions), 1), PrimChecks.task.checked(function(n) {
+  return PrimChecks.procedure.report(PrimChecks.task.nValues(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, numHregions), 1), PrimChecks.task.checked(function(n) {
     PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
     return PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.getPatchAt(PrimChecks.math.plus(world.topology.minPxcor, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, n), PrimChecks.math.div(PrimChecks.math.minus(world.topology.maxPxcor, world.topology.minPxcor), PrimChecks.validator.checkArg('/', 1, numHregions)))), 0)), function() { return SelfManager.self().getPatchVariable("pxcor"); });
   }, "[ n -> [ pxcor ] of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]", true, false)));

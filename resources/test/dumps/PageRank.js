@@ -155,7 +155,7 @@ ProcedurePrims.defineCommand("link-preferentially", 2210, 3891, (function(nodese
         var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       }
     }, "[ neighbor -> ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    neighborHchoiceHlist = ListPrims.sentence(Tasks.nValues(PrimChecks.validator.checkArg('N-VALUES', 1, k), PrimChecks.task.checked(function() { return SelfManager.self(); }, "[ self ]", true, false)), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
+    neighborHchoiceHlist = ListPrims.sentence(PrimChecks.task.nValues(PrimChecks.validator.checkArg('N-VALUES', 1, k), PrimChecks.task.checked(function() { return SelfManager.self(); }, "[ self ]", true, false)), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = PrimChecks.task.forEach(PrimChecks.list.sublist(PrimChecks.validator.checkArg('SUBLIST', 8, nodeHlist), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, k), 1), PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, nodeHlist))), PrimChecks.task.checked(function(node) {
     PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
@@ -172,7 +172,7 @@ ProcedurePrims.defineCommand("link-preferentially", 2210, 3891, (function(nodese
           var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         }
       }
-      neighborHchoiceHlist = ListPrims.sentence(Tasks.nValues(PrimChecks.validator.checkArg('N-VALUES', 1, k), PrimChecks.task.checked(function() { return SelfManager.self(); }, "[ self ]", true, false)), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
+      neighborHchoiceHlist = ListPrims.sentence(PrimChecks.task.nValues(PrimChecks.validator.checkArg('N-VALUES', 1, k), PrimChecks.task.checked(function() { return SelfManager.self(); }, "[ self ]", true, false)), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
