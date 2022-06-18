@@ -255,8 +255,8 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
       SelfManager.self()._optimalFdLessThan1(0.45);
     }
     let geneHcolor = PrimChecks.procedure.callReporter("next-gene-color"); ProcedurePrims.stack().currentContext().registerStringRunVar("GENE-COLOR", geneHcolor);
-    let geneHcolorHwithHtransparency = ListPrims.sentence(ColorModel.colorToRGB(geneHcolor), 110); ProcedurePrims.stack().currentContext().registerStringRunVar("GENE-COLOR-WITH-TRANSPARENCY", geneHcolorHwithHtransparency);
-    let geneHcolorHlabel = ListPrims.sentence(ColorModel.colorToRGB(geneHcolor), 250); ProcedurePrims.stack().currentContext().registerStringRunVar("GENE-COLOR-LABEL", geneHcolorHlabel);
+    let geneHcolorHwithHtransparency = ListPrims.sentence(PrimChecks.color.extractRGB(geneHcolor), 110); ProcedurePrims.stack().currentContext().registerStringRunVar("GENE-COLOR-WITH-TRANSPARENCY", geneHcolorHwithHtransparency);
+    let geneHcolorHlabel = ListPrims.sentence(PrimChecks.color.extractRGB(geneHcolor), 250); ProcedurePrims.stack().currentContext().registerStringRunVar("GENE-COLOR-LABEL", geneHcolorHlabel);
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PROMOTERS"));
       SelfManager.self().setVariable("color", geneHcolorHwithHtransparency);
