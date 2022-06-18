@@ -7,12 +7,13 @@ ColorModel = require('engine/core/colormodel')
 isProperlySized = (xs) ->
   xs.length is 3 or xs.length is 4
 
+# (Number) => Boolean
 isInRange = (comp) ->
   comp >= 0 and comp <= 255
 
 # (Any) => Boolean
 isValidColor = (color) ->
-  (checks.isNumber(color) and isInRange(color)) or
+  checks.isNumber(color) or
     (checks.isList(color) and isProperlySized(color) and color.every(isInRange))
 
 invalidColorMsg =
