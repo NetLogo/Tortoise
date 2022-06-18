@@ -68,10 +68,9 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
 }
 
 class TestReporters extends ReporterTests with TortoiseFinder {
-  import Freebies._
   override val freebies = Map(
     "Version::Version_2D" -> "Assumes JVM NetLogo version numbers"
-  ) ++ incErrorDetectReporters ++ awaitingFixReporters
+  )
 }
 
 class TestCommands extends CommandTests with TortoiseFinder {
@@ -89,15 +88,9 @@ private[tortoise] object Freebies {
   def preferExtensionsCommands   = asFreebieMap(preferExtensionsCommandNames, preferExtensionsStr)
   def awaitingFixCommands        = asFreebieMap(     awaitingFixCommandNames, awaitingFixStr)
 
-  def incErrorDetectReporters    = asFreebieMap( incErrorDetectReporterNames, incErrorDetectStr)
-  def awaitingFixReporters       = asFreebieMap(    awaitingFixReporterNames, awaitingFixStr)
-
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
   private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
-  private val incErrorDetectReporterNames = Seq(
-    "Color::ExtractRGB"
-  )
   private val incErrorDetectCommandNames = Seq(
     "Ask::AskAllTurtles",
     "Ask::AskAllPatches",
@@ -145,9 +138,6 @@ private[tortoise] object Freebies {
   private val awaitingFixCommandNames =
     Seq(
       "Timer::Timer1"
-    )
-  private val awaitingFixReporterNames =
-    Seq(
     )
 
 }

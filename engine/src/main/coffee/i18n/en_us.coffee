@@ -25,6 +25,13 @@ bundle = {
   , 'Can_t take logarithm of _.': (n) ->
       "Can't take logarithm of #{n}."
 
+  # Color Prims
+
+  , 'Color must be a number or a valid RGB/A color list with 3 - 4 numbers that have values between 0 and 255.': () ->
+      'Color must be a number or a valid RGB/A color list with 3 - 4 numbers that have values between 0 and 255.'
+
+  # Other Prims
+
   , 'random-normal_s second input can_t be negative.': () ->
       "random-normal's second input can't be negative."
 

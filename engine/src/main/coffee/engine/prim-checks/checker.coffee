@@ -2,6 +2,7 @@
 
 Validator       = require('./validator')
 AgentSetChecks  = require('./agentset-checks')
+ColorChecks     = require('./color-checks')
 ListChecks      = require('./list-checks')
 MathChecks      = require('./math-checks')
 ProcedureChecks = require('./procedure-checks')
@@ -14,6 +15,7 @@ class Checker
   constructor: (i18nBundle, dumper, miscPrims, listPrims, randomPrims, stringPrims, procedurePrims, selfPrims, getSelf) ->
     @validator = new Validator(i18nBundle, dumper)
     @agentset  = new AgentSetChecks(@validator, dumper, miscPrims, getSelf)
+    @color     = new ColorChecks(@validator)
     @list      = new ListChecks(@validator, dumper, listPrims, stringPrims)
     @math      = new MathChecks(@validator, randomPrims)
     @procedure = new ProcedureChecks(@validator, procedurePrims)
