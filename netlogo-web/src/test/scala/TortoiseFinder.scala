@@ -112,7 +112,6 @@ private[tortoise] object Freebies {
     "RGB::LinksRGBColor",
     "Random::OneOfWithAgentSets",
     "Sort::SortByBadReporter",
-    "Turtles::Turtles1a",
     "TypeChecking::AgentClassChecking1",
     "TypeChecking::AgentClassChecking3a",
     "TypeChecking::AgentClassChecking3b",

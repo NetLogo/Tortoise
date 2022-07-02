@@ -140,6 +140,9 @@ bundle = {
   , '_ is not an integer': (x) ->
     "#{x} is not an integer"
 
+  , '_ is not a _': (breed1, breed2) ->
+    "#{breed1} is not a #{breed2}"
+
   , '_ breed does not own variable _': (breedName, varName) ->
     "#{breedName} breed does not own variable #{varName}"
 

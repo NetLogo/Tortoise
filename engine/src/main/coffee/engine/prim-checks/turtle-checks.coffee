@@ -27,6 +27,17 @@ class TurtleChecks
       @validator.error('turtle', '_ is not an integer', id)
     @turtleManager.getTurtle(id)
 
+  # (String, Number) => Agent
+  getTurtleOfBreed: (breedName, id) ->
+    agent   = @getTurtle(id)
+    isValid = agent.id isnt -1
+    if isValid and agent.getBreedName().toUpperCase() isnt breedName.toUpperCase()
+      lowerName      = breedName.toLowerCase()
+      targetSingular = @breedManager.get(breedName).singular.toUpperCase()
+      turtleStr      = "#{agent.getBreedNameSingular()} #{agent.id}"
+      @validator.error(lowerName, '_ is not a _', turtleStr, targetSingular)
+    agent
+
   # (String) => Any
   getVariable: (name) ->
     turtle = @getSelf()
