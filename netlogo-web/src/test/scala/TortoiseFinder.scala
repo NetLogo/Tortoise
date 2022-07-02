@@ -78,15 +78,15 @@ class TestCommands extends CommandTests with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
-  ) ++ incErrorDetectCommands ++ preferExtensionsCommands ++ lameCommands ++ awaitingFixCommands
+  ) ++ incErrorDetectCommands ++ preferExtensionsCommands ++ headlessCommands ++ awaitingFixCommands
 }
 
 private[tortoise] object Freebies {
 
-  def incErrorDetectCommands     = asFreebieMap(  incErrorDetectCommandNames, incErrorDetectStr)
-  def lameCommands               = asFreebieMap(            lameCommandNames, lameCommandStr)
-  def preferExtensionsCommands   = asFreebieMap(preferExtensionsCommandNames, preferExtensionsStr)
-  def awaitingFixCommands        = asFreebieMap(     awaitingFixCommandNames, awaitingFixStr)
+  def incErrorDetectCommands   = asFreebieMap(  incErrorDetectCommandNames,   incErrorDetectStr)
+  def headlessCommands         = asFreebieMap(        headlessCommandNames,  headlessCommandStr)
+  def preferExtensionsCommands = asFreebieMap(preferExtensionsCommandNames, preferExtensionsStr)
+  def awaitingFixCommands      = asFreebieMap(     awaitingFixCommandNames,      awaitingFixStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
@@ -121,8 +121,8 @@ private[tortoise] object Freebies {
     "TypeChecking::RunRetainsAgentContext"
   )
 
-  private val lameCommandStr = "This test is LAME!"
-  private val lameCommandNames = Seq(
+  private val headlessCommandStr = "This test relies of behavior that only makes sense in Headless"
+  private val headlessCommandNames = Seq(
     "UserPrimitives::UserReporters_Headless"
   )
 
