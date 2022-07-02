@@ -95,8 +95,6 @@ private[tortoise] object Freebies {
     "Ask::AskAllTurtles",
     "Ask::AskAllPatches",
     "Breeds::SetBreedToNonBreed",
-    "CommandLambda::*WrongTypeOfTask1",
-    "CommandLambda::WrongTypeOfTask2",
     "ComparingAgents::ComparingLinks",
     "DeadTurtles::DeadTurtles1",
     "DeadTurtles::DeadTurtles5",
