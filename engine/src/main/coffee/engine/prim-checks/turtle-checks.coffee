@@ -20,6 +20,34 @@ class TurtleChecks
         @validator.error('set', error)
       return
 
+  # (String) => Any
+  getVariable: (name) ->
+    turtle = @getSelf()
+    if not turtle.hasVariable(name)
+      msgKey    = "_ breed does not own variable _"
+      upperName = name.toUpperCase()
+      @validator.error(upperName, msgKey, turtle.getBreedName(), upperName)
+    else if @_getterChecks.has(name)
+      check = @_getterChecks.get(name)
+      check(name)
+    else
+      turtle.getVariable(name)
+
+  # (String, Any) => Unit
+  setVariable: (name, value) ->
+    turtle = @getSelf()
+    if not turtle.hasVariable(name)
+      msgKey    = "_ breed does not own variable _"
+      upperName = name.toUpperCase()
+      @validator.error('set', msgKey, turtle.getBreedName(), upperName)
+    else if @_setterChecks.has(name)
+      check = @_setterChecks.get(name)
+      check(value)
+    else
+      turtle.setVariable(name, value)
+
+    return
+
   # (Number, Number) => Unit
   setXY: (x, y) ->
     result = @getSelf().setXY(x, y)
@@ -42,33 +70,5 @@ class TurtleChecks
     if heading is TowardsInterrupt
       @validator.error('towardsxy', 'No heading is defined from a point (_,_) to that same point.', x, y)
     heading
-
-  # (String, Any) => Unit
-  setVariable: (name, value) ->
-    turtle = @getSelf()
-    if not turtle.hasVariable(name)
-      msgKey    = "_ breed does not own variable _"
-      upperName = name.toUpperCase()
-      @validator.error('set', msgKey, turtle.getBreedName(), upperName)
-    else if @_setterChecks.has(name)
-      check = @_setterChecks.get(name)
-      check(value)
-    else
-      turtle.setVariable(name, value)
-
-    return
-
-  # (String) => Any
-  getVariable: (name) ->
-    turtle = @getSelf()
-    if not turtle.hasVariable(name)
-      msgKey    = "_ breed does not own variable _"
-      upperName = name.toUpperCase()
-      @validator.error(upperName, msgKey, turtle.getBreedName(), upperName)
-    else if @_getterChecks.has(name)
-      check = @_getterChecks.get(name)
-      check(name)
-    else
-      turtle.getVariable(name)
 
 module.exports = TurtleChecks
