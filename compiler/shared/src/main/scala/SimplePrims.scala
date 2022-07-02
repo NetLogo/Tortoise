@@ -214,7 +214,7 @@ object SimplePrims {
         case _: prim.etc._shadeof        => "ColorModel.areRelatedByShade"
         case _: prim.etc._wrapcolor      => "ColorModel.wrapColor"
 
-        case _: prim._turtle             => "world.turtleManager.getTurtle"
+        case _: prim._turtle             => "PrimChecks.turtle.getTurtle"
         case _: prim._equal              => "Prims.equality"
         case _: prim._notequal           => "!Prims.equality"
         case _: prim._turtles            => "world.turtles"

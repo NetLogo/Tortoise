@@ -7,7 +7,8 @@ class TurtleChecks
   _getterChecks: null
   _setterChecks: null
 
-  constructor: (@validator, @getSelf) ->
+  # (Validator, () => Agent, TurtleManager, BreedManager)
+  constructor: (@validator, @getSelf, @turtleManager, @breedManager) ->
     @_getterChecks = new Map()
     @_setterChecks = new Map()
     @_setterChecks.set("xcor", @makeCheckedSetter("xcor", 'Cannot move turtle beyond the world_s edge.'))
@@ -19,6 +20,12 @@ class TurtleChecks
       if not turtle.setIfValid(name, value)
         @validator.error('set', error)
       return
+
+  # (Number) => Agent
+  getTurtle: (id) ->
+    if not Number.isInteger(id)
+      @validator.error('turtle', '_ is not an integer', id)
+    @turtleManager.getTurtle(id)
 
   # (String) => Any
   getVariable: (name) ->

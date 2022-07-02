@@ -12,14 +12,19 @@ TaskChecks      = require('./task-checks')
 
 class Checker
 
-  constructor: (i18nBundle, dumper, miscPrims, listPrims, randomPrims, stringPrims, procedurePrims, selfPrims, getSelf) ->
+  constructor: ( i18nBundle, dumper, miscPrims, listPrims, randomPrims, stringPrims
+               , procedurePrims, selfPrims, world) ->
+
+    getSelf = world.selfManager.self
+
     @validator = new Validator(i18nBundle, dumper)
     @agentset  = new AgentSetChecks(@validator, dumper, miscPrims, getSelf)
     @color     = new ColorChecks(@validator)
     @list      = new ListChecks(@validator, dumper, listPrims, stringPrims)
     @math      = new MathChecks(@validator, randomPrims)
     @procedure = new ProcedureChecks(@validator, procedurePrims)
-    @turtle    = new TurtleChecks(@validator, getSelf)
+    @turtle    = new TurtleChecks( @validator, getSelf, world.turtleManager
+                                 , world.breedManager)
     @link      = new LinkChecks(@validator, getSelf, selfPrims)
     @task      = new TaskChecks(@validator)
 
