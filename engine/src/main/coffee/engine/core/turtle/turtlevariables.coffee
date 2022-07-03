@@ -7,25 +7,17 @@ NLMath     = require('util/nlmath')
 
 { exceptionFactory: exceptions } = require('util/exception')
 
-{ clone } = require('brazierjs/object')
+{ maybe, None, isSomething } = require('brazierjs/maybe')
+{ clone                    } = require('brazierjs/object')
 
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
 { TopologyInterrupt }                          = require('util/interrupts')
 
-###
- "Jason, this is craziness!", you say.  "Not quite," I say.  It _is_ kind of lame, but changing turtle members
- needs to be controlled, so that all changes cause updates to be triggered.  And since the `VariableManager` needs
- to know how to set all of the variables, we may as well declare the code for that in a place where it can be
- easily reused. --JAB (6/2/14, 8/28/15)
-###
-
-# In this file: `this.type` is `Turtle`
-
 # (Number) => Boolean
 setXcorIfValid = (newX) ->
-  setXcor.call(this, newX) isnt TopologyInterrupt
+  not isSomething(setXcor.call(this, newX))
 
-# (Number, IDSet) => Unit
+# (Number, IDSet) => Maybe[TopologyInterrupt]
 setXcor = (newX, seenTurtlesSet = {}) ->
 
   originPatch = @getPatchHere()
@@ -33,29 +25,30 @@ setXcor = (newX, seenTurtlesSet = {}) ->
   xcor        = @world.topology.wrapX(newX)
 
   if xcor is TopologyInterrupt
-    return TopologyInterrupt
+    maybe(TopologyInterrupt)
+  else
 
-  @xcor = xcor
-  @_updateVarsByName("xcor")
-  @_drawSetLine(oldX, @ycor, newX, @ycor)
+    @xcor = xcor
+    @_updateVarsByName("xcor")
+    @_drawSetLine(oldX, @ycor, newX, @ycor)
 
-  if originPatch isnt @getPatchHere()
-    originPatch.untrackTurtle(this)
-    @getPatchHere().trackTurtle(this)
+    if originPatch isnt @getPatchHere()
+      originPatch.untrackTurtle(this)
+      @getPatchHere().trackTurtle(this)
 
-  @linkManager._refresh()
+    @linkManager._refresh()
 
-  dx = newX - oldX
-  f  = (seenTurtles) => (turtle) => setXcor.call(turtle, turtle.xcor + dx, seenTurtles)
-  @_withEachTiedTurtle(f, seenTurtlesSet)
+    dx = newX - oldX
+    f  = (seenTurtles) => (turtle) => setXcor.call(turtle, turtle.xcor + dx, seenTurtles)
+    @_withEachTiedTurtle(f, seenTurtlesSet)
 
-  return
+    None
 
 # (Number) => Boolean
 setYcorIfValid = (newY) ->
-  setYcor.call(this, newY) isnt TopologyInterrupt
+  not isSomething(setYcor.call(this, newY))
 
-# (Number, IDSet) => Unit
+# (Number, IDSet) => Maybe[TopologyInterrupt]
 setYcor = (newY, seenTurtlesSet = {}) ->
 
   originPatch = @getPatchHere()
@@ -63,23 +56,23 @@ setYcor = (newY, seenTurtlesSet = {}) ->
   ycor        = @world.topology.wrapY(newY)
 
   if ycor is TopologyInterrupt
-    return TopologyInterrupt
+    maybe(TopologyInterrupt)
+  else
+    @ycor = ycor
+    @_updateVarsByName("ycor")
+    @_drawSetLine(@xcor, oldY, @xcor, newY)
 
-  @ycor = ycor
-  @_updateVarsByName("ycor")
-  @_drawSetLine(@xcor, oldY, @xcor, newY)
+    if originPatch isnt @getPatchHere()
+      originPatch.untrackTurtle(this)
+      @getPatchHere().trackTurtle(this)
 
-  if originPatch isnt @getPatchHere()
-    originPatch.untrackTurtle(this)
-    @getPatchHere().trackTurtle(this)
+    @linkManager._refresh()
 
-  @linkManager._refresh()
+    dy = newY - oldY
+    f  = (seenTurtles) => (turtle) => setYcor.call(turtle, turtle.ycor + dy, seenTurtles)
+    @_withEachTiedTurtle(f, seenTurtlesSet)
 
-  dy = newY - oldY
-  f  = (seenTurtles) => (turtle) => setYcor.call(turtle, turtle.ycor + dy, seenTurtles)
-  @_withEachTiedTurtle(f, seenTurtlesSet)
-
-  return
+    None
 
 # (String) => Unit
 setBreedShape = (shape) ->
@@ -201,9 +194,9 @@ _handleTiesForHeadingChange = (seenTurtlesSet, dh) ->
 
       r = @distance(turtle)
       if r isnt 0
-        theta = @towards(turtle) + dh
-        newX  = x + r * NLMath.squash(NLMath.sin(theta))
-        newY  = y + r * NLMath.squash(NLMath.cos(theta))
+        theta  = @towards(turtle) + dh
+        newX   = x + r * NLMath.squash(NLMath.sin(theta))
+        newY   = y + r * NLMath.squash(NLMath.cos(theta))
         result = turtle.setXY(newX, newY, clone(seenTurtlesSet))
 
       if mode is "fixed" and result isnt TopologyInterrupt
