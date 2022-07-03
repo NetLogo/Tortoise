@@ -72,6 +72,10 @@ module.exports =
       @_varManager[varName] = value
       return
 
+    # (String, Any) => Maybe[Any]
+    setIfValid: (varName, value) ->
+      @_varManager.setIfValid(varName, value)
+
     # () => DeathInterrupt
     die: ->
       @_breed.remove(this)
