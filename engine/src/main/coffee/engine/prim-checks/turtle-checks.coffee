@@ -4,16 +4,28 @@
 
 { TopologyInterrupt, TowardsInterrupt } = require('util/interrupts')
 
+# (() => Agent, Validator) => (String, Map[Any, String]) => (Any) => Unit
+genSetter = (getSelf, validator) -> (name, mappings) ->
+  (value) =>
+    turtle = getSelf()
+    fold(->)(
+      (error) =>
+        msg        = mappings.get(error)
+        defaultMsg = "An unknown error occurred when setting the '#{name}' of \
+'#{turtle}': #{error}"
+        validator.error('set', msg ? defaultMsg)
+    )(turtle.setIfValid(name, value))
+    return
+
 class TurtleChecks
 
-  _getterChecks: null
-  _setterChecks: null
+  _getterChecks: null # Map[String, (Any) => Unit]
+  _setterChecks: null # Map[String, (Any) => Unit]
 
   # (Validator, () => Agent, TurtleManager, BreedManager)
   constructor: (@validator, @getSelf, @turtleManager, @breedManager) ->
 
     @_getterChecks = new Map()
-    @_setterChecks = new Map()
 
     cannotMoveMsg       = "Cannot move turtle beyond the world_s edge."
     invalidRGBMsg       = "An rgb list must contain 3 or 4 numbers 0-255"
@@ -23,25 +35,17 @@ class TurtleChecks
     colorSetterMappings = new Map([ ["Invalid RGB format", invalidRGBMsg]
                                   , ["Invalid RGB number", invalidRGBNumberMsg]])
 
-    setter = @makeCheckedSetter.bind(this)
+    asSetter     = genSetter(@getSelf, @validator)
+    toSetterPair = ([varName, mappings]) -> [varName, asSetter(varName, mappings)]
 
-    @_setterChecks.set("xcor"       , setter("xcor"       ,   corSetterMappings))
-    @_setterChecks.set("ycor"       , setter("ycor"       ,   corSetterMappings))
-    @_setterChecks.set("color"      , setter("color"      , colorSetterMappings))
-    @_setterChecks.set("label-color", setter("label-color", colorSetterMappings))
-
-  # (String, Map[Any, String]) => (Any) => Unit
-  makeCheckedSetter: (name, mappings) ->
-    (value) =>
-      turtle = @getSelf()
-      fold(->)(
-        (error) =>
-          msg        = mappings.get(error)
-          defaultMsg = "An unknown error occurred when setting the '#{name}' of \
-'#{turtle}': #{error}"
-          @validator.error('set', msg ? defaultMsg)
-      )(turtle.setIfValid(name, value))
-      return
+    @_setterChecks =
+      new Map(
+        [ ["xcor"       ,   corSetterMappings]
+        , ["ycor"       ,   corSetterMappings]
+        , ["color"      , colorSetterMappings]
+        , ["label-color", colorSetterMappings]
+        ].map(toSetterPair)
+      )
 
   # (Number) => Agent
   getTurtle: (id) ->
