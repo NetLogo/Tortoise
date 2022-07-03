@@ -15,13 +15,20 @@ class TurtleChecks
     @_getterChecks = new Map()
     @_setterChecks = new Map()
 
-    cannotMoveMsg = "Cannot move turtle beyond the world_s edge."
+    cannotMoveMsg       = "Cannot move turtle beyond the world_s edge."
+    invalidRGBMsg       = "An rgb list must contain 3 or 4 numbers 0-255"
+    invalidRGBNumberMsg = "RGB values must be 0-255"
 
-    xSetterMappings = new Map([[TopologyInterrupt, cannotMoveMsg]])
-    ySetterMappings = new Map([[TopologyInterrupt, cannotMoveMsg]])
+    corSetterMappings   = new Map([ [TopologyInterrupt   , cannotMoveMsg]])
+    colorSetterMappings = new Map([ ["Invalid RGB format", invalidRGBMsg]
+                                  , ["Invalid RGB number", invalidRGBNumberMsg]])
 
-    @_setterChecks.set("xcor", @makeCheckedSetter("xcor", xSetterMappings))
-    @_setterChecks.set("ycor", @makeCheckedSetter("ycor", ySetterMappings))
+    setter = @makeCheckedSetter.bind(this)
+
+    @_setterChecks.set("xcor"       , setter("xcor"       ,   corSetterMappings))
+    @_setterChecks.set("ycor"       , setter("ycor"       ,   corSetterMappings))
+    @_setterChecks.set("color"      , setter("color"      , colorSetterMappings))
+    @_setterChecks.set("label-color", setter("label-color", colorSetterMappings))
 
   # (String, Map[Any, String]) => (Any) => Unit
   makeCheckedSetter: (name, mappings) ->

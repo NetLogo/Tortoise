@@ -13,6 +13,20 @@ NLMath     = require('util/nlmath')
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
 { TopologyInterrupt }                          = require('util/interrupts')
 
+# (Number|RGB|RGBA) => Maybe[String]
+validateColor = (color) ->
+
+  hasBadLength    = (xs) -> xs.length isnt 3 and xs.length isnt 4
+  isBadCompNumber = (x) -> not (0 <= x <= 255)
+  isBadCompType   = (x) -> not checks.isNumber(x)
+
+  if checks.isList(color) and (hasBadLength(color) or color.some(isBadCompType))
+    maybe("Invalid RGB format")
+  else if checks.isList(color) and (color.some(isBadCompNumber))
+    maybe("Invalid RGB number")
+  else
+    None
+
 # (Number, IDSet) => Maybe[TopologyInterrupt]
 setXcor = (newX, seenTurtlesSet = {}) ->
 
@@ -111,11 +125,16 @@ setBreed = (breed) ->
 
   return
 
-# (Number) => Unit
+# (Number|RGB|RGBA) => Maybe[String]
 setColor = (color) ->
-  @_color = ColorModel.wrapColor(color)
-  @_genVarUpdate("color")
-  return
+
+  errorMaybe = validateColor(color)
+
+  if not isSomething(errorMaybe)
+    @_color = ColorModel.wrapColor(color)
+    @_genVarUpdate("color")
+
+  errorMaybe
 
 # (Number, IDSet) => Unit
 setHeading = (heading, seenTurtlesSet = {}) ->
@@ -141,11 +160,16 @@ setLabel = (label) ->
   @_genVarUpdate("label")
   return
 
-# (Number) => Unit
+# (Number|RGB|RGBA) => Maybe[String]
 setLabelColor = (color) ->
-  @_labelcolor = ColorModel.wrapColor(color)
-  @_genVarUpdate("label-color")
-  return
+
+  errorMaybe = validateColor(color)
+
+  if not isSomething(errorMaybe)
+    @_labelcolor = ColorModel.wrapColor(color)
+    @_genVarUpdate("label-color")
+
+  errorMaybe
 
 # (String) => Unit
 setShape = (shape) ->
