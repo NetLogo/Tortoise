@@ -13,10 +13,6 @@ NLMath     = require('util/nlmath')
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
 { TopologyInterrupt }                          = require('util/interrupts')
 
-# (Number) => Boolean
-setXcorIfValid = (newX) ->
-  not isSomething(setXcor.call(this, newX))
-
 # (Number, IDSet) => Maybe[TopologyInterrupt]
 setXcor = (newX, seenTurtlesSet = {}) ->
 
@@ -43,10 +39,6 @@ setXcor = (newX, seenTurtlesSet = {}) ->
     @_withEachTiedTurtle(f, seenTurtlesSet)
 
     None
-
-# (Number) => Boolean
-setYcorIfValid = (newY) ->
-  not isSomething(setYcor.call(this, newY))
 
 # (Number, IDSet) => Maybe[TopologyInterrupt]
 setYcor = (newY, seenTurtlesSet = {}) ->
@@ -233,8 +225,8 @@ VariableSpecs = [
 , new MutableVariableSpec('pen-size',    (-> @penManager.getSize()),            ((x) -> @penManager.setSize(x)))
 , new MutableVariableSpec('shape',       (-> @_getShape()),                     setShape)
 , new MutableVariableSpec('size',        (-> @_size),                           setSize)
-, new MutableVariableSpec('xcor',        (-> @xcor),                            setXcor,                          setXcorIfValid)
-, new MutableVariableSpec('ycor',        (-> @ycor),                            setYcor,                          setYcorIfValid)
+, new MutableVariableSpec('xcor',        (-> @xcor),                            setXcor)
+, new MutableVariableSpec('ycor',        (-> @ycor),                            setYcor)
 ]
 
 module.exports = {

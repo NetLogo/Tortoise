@@ -297,7 +297,7 @@ module.exports =
       @_varManager[varName] = value
       return
 
-    # (String, Any) => Boolean
+    # (String, Any) => Maybe[Any]
     setIfValid: (varName, value) ->
       @_varManager.setIfValid(varName, value)
 

@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ fold } = require('brazierjs/maybe')
+
 { TopologyInterrupt, TowardsInterrupt } = require('util/interrupts')
 
 class TurtleChecks
@@ -9,16 +11,29 @@ class TurtleChecks
 
   # (Validator, () => Agent, TurtleManager, BreedManager)
   constructor: (@validator, @getSelf, @turtleManager, @breedManager) ->
+
     @_getterChecks = new Map()
     @_setterChecks = new Map()
-    @_setterChecks.set("xcor", @makeCheckedSetter("xcor", 'Cannot move turtle beyond the world_s edge.'))
-    @_setterChecks.set("ycor", @makeCheckedSetter("ycor", 'Cannot move turtle beyond the world_s edge.'))
 
-  makeCheckedSetter: (name, error) ->
+    cannotMoveMsg = "Cannot move turtle beyond the world_s edge."
+
+    xSetterMappings = new Map([[TopologyInterrupt, cannotMoveMsg]])
+    ySetterMappings = new Map([[TopologyInterrupt, cannotMoveMsg]])
+
+    @_setterChecks.set("xcor", @makeCheckedSetter("xcor", xSetterMappings))
+    @_setterChecks.set("ycor", @makeCheckedSetter("ycor", ySetterMappings))
+
+  # (String, Map[Any, String]) => (Any) => Unit
+  makeCheckedSetter: (name, mappings) ->
     (value) =>
       turtle = @getSelf()
-      if not turtle.setIfValid(name, value)
-        @validator.error('set', error)
+      fold(->)(
+        (error) =>
+          msg        = mappings.get(error)
+          defaultMsg = "An unknown error occurred when setting the '#{name}' of \
+'#{turtle}': #{error}"
+          @validator.error('set', msg ? defaultMsg)
+      )(turtle.setIfValid(name, value))
       return
 
   # (Number) => Agent
