@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ checks } = require('../core/typechecker')
+
 Validator       = require('./validator')
 AgentSetChecks  = require('./agentset-checks')
 ColorChecks     = require('./color-checks')
@@ -27,6 +29,15 @@ class Checker
                                  , world.breedManager)
     @link      = new LinkChecks(@validator, getSelf, selfPrims)
     @task      = new TaskChecks(@validator)
+
+    @turtleOrLink = {
+      getVariable: (name) =>
+        bundle = if checks.isTurtle(getSelf()) then @turtle else @link
+        bundle.getVariable(name)
+      setVariable: (name, value) =>
+        bundle = if checks.isTurtle(getSelf()) then @turtle else @link
+        bundle.setVariable(name, value)
+    }
 
   # (String) => Unit
   imperfectImport: (primName) ->
