@@ -79,29 +79,29 @@ ProcedurePrims.defineCommand("setup", 379, 1576, (function() {
   }
   if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
     var R = ProcedurePrims.ask(world.patches(), function() {
-      SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.oneOf([55, 35]));
-      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
-        SelfManager.self().setPatchVariable("countdown", world.observer.getGlobal("grass-regrowth-time"));
+      PrimChecks.patch.setVariable("pcolor", PrimChecks.list.oneOf([55, 35]));
+      if (Prims.equality(PrimChecks.patch.getVariable("pcolor"), 55)) {
+        PrimChecks.patch.setVariable("countdown", world.observer.getGlobal("grass-regrowth-time"));
       }
       else {
-        SelfManager.self().setPatchVariable("countdown", PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("grass-regrowth-time"))));
+        PrimChecks.patch.setVariable("countdown", PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("grass-regrowth-time"))));
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
   else {
-    var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-sheep"), "SHEEP"), function() {
-    SelfManager.self().setVariable("shape", "sheep");
-    SelfManager.self().setVariable("color", 9.9);
+    PrimChecks.turtleOrLink.setVariable("shape", "sheep");
+    PrimChecks.turtleOrLink.setVariable("color", 9.9);
     PrimChecks.turtle.setVariable("size", 1.5);
-    SelfManager.self().setVariable("label-color", PrimChecks.math.minus(105, 2));
+    PrimChecks.turtleOrLink.setVariable("label-color", PrimChecks.math.minus(105, 2));
     PrimChecks.turtle.setVariable("energy", PrimChecks.math.random(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("sheep-gain-from-food")))));
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-wolves"), "WOLVES"), function() {
-    SelfManager.self().setVariable("shape", "wolf");
-    SelfManager.self().setVariable("color", 0);
+    PrimChecks.turtleOrLink.setVariable("shape", "wolf");
+    PrimChecks.turtleOrLink.setVariable("color", 0);
     PrimChecks.turtle.setVariable("size", 2);
     PrimChecks.turtle.setVariable("energy", PrimChecks.math.random(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("wolf-gain-from-food")))));
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
@@ -145,8 +145,8 @@ ProcedurePrims.defineCommand("move", 2766, 2828, (function() {
   SelfManager.self()._optimalFdOne();
 }))
 ProcedurePrims.defineCommand("eat-grass", 2836, 3033, (function() {
-  if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
-    SelfManager.self().setPatchVariable("pcolor", 35);
+  if (Prims.equality(PrimChecks.patch.getVariable("pcolor"), 55)) {
+    PrimChecks.patch.setVariable("pcolor", 35);
     PrimChecks.turtle.setVariable("energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("energy")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("sheep-gain-from-food"))));
   }
 }))
@@ -181,33 +181,33 @@ ProcedurePrims.defineCommand("death", 3986, 4110, (function() {
   }
 }))
 ProcedurePrims.defineCommand("grow-grass", 4118, 4371, (function() {
-  if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35)) {
-    if (Prims.lte(SelfManager.self().getPatchVariable("countdown"), 0)) {
-      SelfManager.self().setPatchVariable("pcolor", 55);
-      SelfManager.self().setPatchVariable("countdown", world.observer.getGlobal("grass-regrowth-time"));
+  if (Prims.equality(PrimChecks.patch.getVariable("pcolor"), 35)) {
+    if (Prims.lte(PrimChecks.patch.getVariable("countdown"), 0)) {
+      PrimChecks.patch.setVariable("pcolor", 55);
+      PrimChecks.patch.setVariable("countdown", world.observer.getGlobal("grass-regrowth-time"));
     }
     else {
-      SelfManager.self().setPatchVariable("countdown", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("countdown")), 1));
+      PrimChecks.patch.setVariable("countdown", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("countdown")), 1));
     }
   }
 }))
 ProcedurePrims.defineReporter("grass", 4386, 4500, (function() {
   if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
-    return PrimChecks.procedure.report(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }));
+    return PrimChecks.procedure.report(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable("pcolor"), 55); }));
   }
   else {
     return PrimChecks.procedure.report(0);
   }
 }))
 ProcedurePrims.defineCommand("display-labels", 4509, 4706, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self().setVariable("label", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtleOrLink.setVariable("label", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   if (world.observer.getGlobal("show-energy?")) {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("WOLVES"), function() {
-      SelfManager.self().setVariable("label", PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 1, PrimChecks.turtle.getVariable("energy"))));
+      PrimChecks.turtleOrLink.setVariable("label", PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 1, PrimChecks.turtle.getVariable("energy"))));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
       var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SHEEP"), function() {
-        SelfManager.self().setVariable("label", PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 1, PrimChecks.turtle.getVariable("energy"))));
+        PrimChecks.turtleOrLink.setVariable("label", PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 1, PrimChecks.turtle.getVariable("energy"))));
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }
   }

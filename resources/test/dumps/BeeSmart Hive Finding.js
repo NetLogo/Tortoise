@@ -104,20 +104,20 @@ ProcedurePrims.defineCommand("setup-hives", 2642, 3564, (function() {
   world.observer.setGlobal("color-list", [97.9, 94.5, 57.5, 63.8, 17.6, 14.9, 27.5, 25.1, 117.9, 114.4]);
   world.observer.setGlobal("quality-list", [100, 75, 50, 1, 54, 48, 40, 32, 24, 16]);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(PrimChecks.validator.checkArg('N-OF', 1, world.observer.getGlobal("hive-number")), PrimChecks.agentset.with(world.patches(), function() {
-    return ((Prims.gt(SelfManager.self().distanceXY(0, 0), 16) && Prims.lt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pxcor"))), PrimChecks.math.minus(world.topology.maxPxcor, 2))) && Prims.lt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pycor"))), PrimChecks.math.minus(world.topology.maxPycor, 2)));
+    return ((Prims.gt(SelfManager.self().distanceXY(0, 0), 16) && Prims.lt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, PrimChecks.patch.getVariable("pxcor"))), PrimChecks.math.minus(world.topology.maxPxcor, 2))) && Prims.lt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, PrimChecks.patch.getVariable("pycor"))), PrimChecks.math.minus(world.topology.maxPycor, 2)));
   }))), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "SITES"), function() {
-      SelfManager.self().setVariable("shape", "box");
+      PrimChecks.turtleOrLink.setVariable("shape", "box");
       PrimChecks.turtle.setVariable("size", 2);
-      SelfManager.self().setVariable("color", 5);
+      PrimChecks.turtleOrLink.setVariable("color", 5);
       PrimChecks.turtle.setVariable("discovered?", false);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   let i = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("I", i);
   for (let _index_3202_3208 = 0, _repeatcount_3202_3208 = StrictMath.floor(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SITES"))); _index_3202_3208 < _repeatcount_3202_3208; _index_3202_3208++) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.turtleManager.getTurtleOfBreed("SITES", i)), function() {
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.turtle.getTurtleOfBreed("SITES", i)), function() {
       PrimChecks.turtle.setVariable("quality", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, i), PrimChecks.validator.checkArg('ITEM', 12, world.observer.getGlobal("quality-list"))));
-      SelfManager.self().setVariable("label", PrimChecks.turtle.getVariable("quality"));
+      PrimChecks.turtleOrLink.setVariable("label", PrimChecks.turtle.getVariable("quality"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     plotManager.setCurrentPlot("on-site");
     plotManager.createTemporaryPen(StringPrims.word("site", i));
@@ -132,8 +132,8 @@ ProcedurePrims.defineCommand("setup-bees", 3572, 4206, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(100, "SCOUTS"), function() {
     SelfManager.self().fd(PrimChecks.math.randomFloat(4));
     PrimChecks.turtle.setVariable("my-home", SelfManager.self().getPatchHere());
-    SelfManager.self().setVariable("shape", "bee");
-    SelfManager.self().setVariable("color", 5);
+    PrimChecks.turtleOrLink.setVariable("shape", "bee");
+    PrimChecks.turtleOrLink.setVariable("color", 5);
     PrimChecks.turtle.setVariable("initial-scout?", false);
     PrimChecks.turtle.setVariable("target", Nobody);
     PrimChecks.turtle.setVariable("circle-switch", 1);
@@ -162,7 +162,7 @@ ProcedurePrims.defineCommand("watch-dance", 4439, 7166, (function() {
   world.observer.setGlobal("watch-dance-task", PrimChecks.task.checked(function() {
     if (PrimChecks.agentset.optimizeCount(SelfManager.self().inRadius(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { return PrimChecks.turtle.getVariable("piping?"); }), 3), 0, (a, b) => a > b)) {
       PrimChecks.turtle.setVariable("target", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.agentset.oneOfWith(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { return PrimChecks.turtle.getVariable("piping?"); })), function() { return PrimChecks.turtle.getVariable("target"); }));
-      SelfManager.self().setVariable("color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("target")), function() { return SelfManager.self().getVariable("color"); }));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("target")), function() { return PrimChecks.turtleOrLink.getVariable("color"); }));
       PrimChecks.turtle.setVariable("next-task", world.observer.getGlobal("pipe-task"));
       PrimChecks.turtle.setVariable("task-string", "piping");
       PrimChecks.turtle.setVariable("bee-timer", 20);
@@ -182,7 +182,7 @@ ProcedurePrims.defineCommand("watch-dance", 4439, 7166, (function() {
           if (Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, observed), function() { return PrimChecks.turtle.getVariable("next-task"); }), world.observer.getGlobal("dance-task"))) {
             if (Prims.lt(PrimChecks.math.random(PrimChecks.math.mult(PrimChecks.math.div(1, PrimChecks.validator.checkArg('/', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, observed), function() { return PrimChecks.turtle.getVariable("interest"); }))), 1000)), 1)) {
               PrimChecks.turtle.setVariable("target", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, observed), function() { return PrimChecks.turtle.getVariable("target"); }));
-              SelfManager.self().setVariable("color", 9.9);
+              PrimChecks.turtleOrLink.setVariable("color", 9.9);
               PrimChecks.turtle.setVariable("next-task", world.observer.getGlobal("re-visit-task"));
               PrimChecks.turtle.setVariable("task-string", "revisiting");
             }
@@ -207,10 +207,10 @@ ProcedurePrims.defineCommand("discover", 7292, 8833, (function() {
           PrimChecks.turtle.setVariable("target", tempHtarget);
           var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.turtle.getVariable("target")), function() {
             PrimChecks.turtle.setVariable("discovered?", true);
-            SelfManager.self().setVariable("color", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, PrimChecks.turtle.getVariable("who")), PrimChecks.validator.checkArg('ITEM', 12, world.observer.getGlobal("color-list"))));
+            PrimChecks.turtleOrLink.setVariable("color", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, PrimChecks.turtle.getVariable("who")), PrimChecks.validator.checkArg('ITEM', 12, world.observer.getGlobal("color-list"))));
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
           PrimChecks.turtle.setVariable("interest", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("target")), function() { return PrimChecks.turtle.getVariable("quality"); }));
-          SelfManager.self().setVariable("color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("target")), function() { return SelfManager.self().getVariable("color"); }));
+          PrimChecks.turtleOrLink.setVariable("color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("target")), function() { return PrimChecks.turtleOrLink.getVariable("color"); }));
           PrimChecks.turtle.setVariable("next-task", world.observer.getGlobal("inspect-hive-task"));
           PrimChecks.turtle.setVariable("task-string", "inspecting-hive");
           PrimChecks.turtle.setVariable("bee-timer", 100);
@@ -299,7 +299,7 @@ ProcedurePrims.defineCommand("dance", 12817, 14704, (function() {
       PrimChecks.turtle.setVariable("task-string", "piping");
       PrimChecks.turtle.setVariable("bee-timer", 20);
       PrimChecks.turtle.setVariable("target", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.agentset.oneOfWith(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { return PrimChecks.turtle.getVariable("piping?"); })), function() { return PrimChecks.turtle.getVariable("target"); }));
-      SelfManager.self().setVariable("color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("target")), function() { return SelfManager.self().getVariable("color"); }));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("target")), function() { return PrimChecks.turtleOrLink.getVariable("color"); }));
       PrimChecks.turtle.setVariable("piping?", true);
     }
     else {
@@ -316,7 +316,7 @@ ProcedurePrims.defineCommand("dance", 12817, 14704, (function() {
         PrimChecks.turtle.setVariable("target", Nobody);
         PrimChecks.turtle.setVariable("interest", 0);
         PrimChecks.turtle.setVariable("trips", 0);
-        SelfManager.self().setVariable("color", 5);
+        PrimChecks.turtleOrLink.setVariable("color", 5);
         PrimChecks.turtle.setVariable("bee-timer", 50);
       }
       if (Prims.lte(PrimChecks.turtle.getVariable("bee-timer"), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("interest")), PrimChecks.math.mult(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("trips")), 1), PrimChecks.math.plus(15, RandomPrims.randomLong(5)))))) {
@@ -353,7 +353,7 @@ ProcedurePrims.defineCommand("re-visit", 14829, 15429, (function() {
       if (Prims.lt(SelfManager.self().distance(PrimChecks.turtle.getVariable("target")), 1)) {
         if (Prims.equality(PrimChecks.turtle.getVariable("interest"), 0)) {
           PrimChecks.turtle.setVariable("interest", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("target")), function() { return PrimChecks.turtle.getVariable("quality"); }));
-          SelfManager.self().setVariable("color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("target")), function() { return SelfManager.self().getVariable("color"); }));
+          PrimChecks.turtleOrLink.setVariable("color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("target")), function() { return PrimChecks.turtleOrLink.getVariable("color"); }));
         }
         PrimChecks.turtle.setVariable("next-task", world.observer.getGlobal("inspect-hive-task"));
         PrimChecks.turtle.setVariable("task-string", "inspecting-hive");
@@ -470,12 +470,12 @@ ProcedurePrims.defineCommand("plot-on-site-scouts", 18440, 18762, (function() {
     plotManager.setCurrentPlot("on-site");
     plotManager.setCurrentPen(StringPrims.word("site", i));
     plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("SCOUTS"), function() {
-      return (PrimChecks.validator.checkArg('AND', 2, PrimChecks.turtle.getVariable("on-site?")) && Prims.equality(PrimChecks.turtle.getVariable("target"), world.turtleManager.getTurtleOfBreed("SITES", i)));
+      return (PrimChecks.validator.checkArg('AND', 2, PrimChecks.turtle.getVariable("on-site?")) && Prims.equality(PrimChecks.turtle.getVariable("target"), PrimChecks.turtle.getTurtleOfBreed("SITES", i)));
     }));
     plotManager.setCurrentPlot("committed");
     plotManager.setCurrentPen(StringPrims.word("target", i));
     plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("SCOUTS"), function() {
-      return Prims.equality(PrimChecks.turtle.getVariable("target"), world.turtleManager.getTurtleOfBreed("SITES", i));
+      return Prims.equality(PrimChecks.turtle.getVariable("target"), PrimChecks.turtle.getTurtleOfBreed("SITES", i));
     }));
     i = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, i), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("I", i);
   }

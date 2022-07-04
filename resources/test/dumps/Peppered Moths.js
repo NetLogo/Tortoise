@@ -92,12 +92,12 @@ ProcedurePrims.defineCommand("setup", 1163, 1241, (function() {
 ProcedurePrims.defineCommand("setup-world", 1249, 1389, (function() {
   world.observer.setGlobal("darkness", 0);
   world.observer.setGlobal("darkening?", true);
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.procedure.callReporter("env-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.procedure.callReporter("env-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-moths", 1397, 1594, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-moths"), "MOTHS"), function() {
     PrimChecks.turtle.setVariable("size", 1.5);
-    SelfManager.self().setVariable("color", PrimChecks.procedure.callReporter("random-color"));
+    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.procedure.callReporter("random-color"));
     var R = ProcedurePrims.callCommand("moths-pick-shape"); if (R === DeathInterrupt) { return R; }
     PrimChecks.turtle.setVariable("age", RandomPrims.randomLong(3));
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
@@ -121,15 +121,15 @@ ProcedurePrims.defineCommand("moths-mate", 1830, 2461, (function() {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(2, ""), function() {
       if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("mutation"))) {
         if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-          SelfManager.self().setVariable("color", PrimChecks.math.round(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getVariable("color")), PrimChecks.math.div(PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("mutation"))), 12.5))));
-          if (Prims.gte(SelfManager.self().getVariable("color"), 9)) {
-            SelfManager.self().setVariable("color", 9);
+          PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.round(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtleOrLink.getVariable("color")), PrimChecks.math.div(PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("mutation"))), 12.5))));
+          if (Prims.gte(PrimChecks.turtleOrLink.getVariable("color"), 9)) {
+            PrimChecks.turtleOrLink.setVariable("color", 9);
           }
         }
         else {
-          SelfManager.self().setVariable("color", PrimChecks.math.round(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("color")), PrimChecks.math.div(PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("mutation"))), 12.5))));
-          if ((Prims.lte(SelfManager.self().getVariable("color"), 1) || Prims.gte(SelfManager.self().getVariable("color"), 130))) {
-            SelfManager.self().setVariable("color", 1);
+          PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.round(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtleOrLink.getVariable("color")), PrimChecks.math.div(PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("mutation"))), 12.5))));
+          if ((Prims.lte(PrimChecks.turtleOrLink.getVariable("color"), 1) || Prims.gte(PrimChecks.turtleOrLink.getVariable("color"), 130))) {
+            PrimChecks.turtleOrLink.setVariable("color", 1);
           }
         }
       }
@@ -141,7 +141,7 @@ ProcedurePrims.defineCommand("moths-mate", 1830, 2461, (function() {
   }
 }))
 ProcedurePrims.defineCommand("moths-get-eaten", 2551, 2676, (function() {
-  if (Prims.lt(PrimChecks.math.randomFloat(1000), PrimChecks.math.plus(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("selection")), PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.procedure.callReporter("env-color")), PrimChecks.validator.checkArg('-', 1, SelfManager.self().getVariable("color"))))), 200))) {
+  if (Prims.lt(PrimChecks.math.randomFloat(1000), PrimChecks.math.plus(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("selection")), PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.procedure.callReporter("env-color")), PrimChecks.validator.checkArg('-', 1, PrimChecks.turtleOrLink.getVariable("color"))))), 200))) {
     return SelfManager.self().die();
   }
 }))
@@ -159,22 +159,22 @@ ProcedurePrims.defineCommand("moths-age", 2977, 3025, (function() {
   PrimChecks.turtle.setVariable("age", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("age")), 1));
 }))
 ProcedurePrims.defineCommand("moths-pick-shape", 3034, 3155, (function() {
-  if (Prims.lt(SelfManager.self().getVariable("color"), 5)) {
-    SelfManager.self().setVariable("shape", "moth dark");
+  if (Prims.lt(PrimChecks.turtleOrLink.getVariable("color"), 5)) {
+    PrimChecks.turtleOrLink.setVariable("shape", "moth dark");
   }
   else {
-    SelfManager.self().setVariable("shape", "moth light");
+    PrimChecks.turtleOrLink.setVariable("shape", "moth light");
   }
 }))
 ProcedurePrims.defineCommand("update-monitors", 3163, 3427, (function() {
-  world.observer.setGlobal("light-moths", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("MOTHS"), function() { return Prims.gte(SelfManager.self().getVariable("color"), 7); }));
-  world.observer.setGlobal("dark-moths", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("MOTHS"), function() { return Prims.lte(SelfManager.self().getVariable("color"), 3); }));
+  world.observer.setGlobal("light-moths", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("MOTHS"), function() { return Prims.gte(PrimChecks.turtleOrLink.getVariable("color"), 7); }));
+  world.observer.setGlobal("dark-moths", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("MOTHS"), function() { return Prims.lte(PrimChecks.turtleOrLink.getVariable("color"), 3); }));
   world.observer.setGlobal("medium-moths", PrimChecks.math.minus(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("MOTHS")), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("light-moths")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("dark-moths")))));
 }))
 ProcedurePrims.defineCommand("pollute-world", 3530, 3742, (function() {
   if (Prims.lte(world.observer.getGlobal("darkness"), PrimChecks.math.minus(8, PrimChecks.validator.checkArg('-', 1, PrimChecks.procedure.callReporter("delta-env"))))) {
     world.observer.setGlobal("darkness", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("darkness")), PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("delta-env"))));
-    var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.procedure.callReporter("env-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.procedure.callReporter("env-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
   else {
     world.observer.setGlobal("darkening?", false);
@@ -183,7 +183,7 @@ ProcedurePrims.defineCommand("pollute-world", 3530, 3742, (function() {
 ProcedurePrims.defineCommand("clean-up-world", 3848, 4054, (function() {
   if (Prims.gte(world.observer.getGlobal("darkness"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, PrimChecks.procedure.callReporter("delta-env"))))) {
     world.observer.setGlobal("darkness", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("darkness")), PrimChecks.validator.checkArg('-', 1, PrimChecks.procedure.callReporter("delta-env"))));
-    var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.procedure.callReporter("env-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.procedure.callReporter("env-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
   else {
     world.observer.setGlobal("darkening?", true);

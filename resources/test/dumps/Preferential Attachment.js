@@ -94,11 +94,11 @@ ProcedurePrims.defineCommand("setup", 79, 322, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.callCommand("make-node", Nobody); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.callCommand("make-node", world.turtleManager.getTurtle(0)); if (R === DeathInterrupt) { return R; }
+  var R = ProcedurePrims.callCommand("make-node", PrimChecks.turtle.getTurtle(0)); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 403, 638, (function() {
-  var R = ProcedurePrims.ask(world.links(), function() { SelfManager.self().setVariable("color", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.links(), function() { PrimChecks.turtleOrLink.setVariable("color", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("make-node", PrimChecks.procedure.callReporter("find-partner")); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
   if (world.observer.getGlobal("layout?")) {
@@ -107,9 +107,9 @@ ProcedurePrims.defineCommand("go", 403, 638, (function() {
 }))
 ProcedurePrims.defineCommand("make-node", 678, 920, (function(oldHnode) {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
-    SelfManager.self().setVariable("color", 15);
+    PrimChecks.turtleOrLink.setVariable("color", 15);
     if (!Prims.equality(oldHnode, Nobody)) {
-      var R = ProcedurePrims.ask(LinkPrims.createLinkWith(oldHnode, "LINKS"), function() { SelfManager.self().setVariable("color", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(LinkPrims.createLinkWith(oldHnode, "LINKS"), function() { PrimChecks.turtleOrLink.setVariable("color", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       SelfManager.self().moveTo(oldHnode);
       SelfManager.self().fd(8);
     }

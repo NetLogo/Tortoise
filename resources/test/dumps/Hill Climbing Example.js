@@ -52,14 +52,14 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 150, 504, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(100, world.patches())), function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(100, world.patches())), function() { PrimChecks.patch.setVariable("pcolor", 120); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   for (let _index_296_302 = 0, _repeatcount_296_302 = StrictMath.floor(20); _index_296_302 < _repeatcount_296_302; _index_296_302++) {
     world.topology.diffuse("pcolor", 1, false)
   }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(800, world.patches())), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "TURTLES"), function() {
       PrimChecks.turtle.setVariable("peak?", false);
-      SelfManager.self().setVariable("color", 15);
+      PrimChecks.turtleOrLink.setVariable("color", 15);
       SelfManager.self().penManager.lowerPen();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }

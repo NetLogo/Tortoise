@@ -114,31 +114,31 @@ ProcedurePrims.defineCommand("setup-globals", 3010, 3350, (function() {
 }))
 ProcedurePrims.defineCommand("setup-patches", 3501, 4221, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("intersection?", false);
-    SelfManager.self().setPatchVariable("auto?", false);
-    SelfManager.self().setPatchVariable("green-light-up?", true);
-    SelfManager.self().setPatchVariable("my-row", -1);
-    SelfManager.self().setPatchVariable("my-column", -1);
-    SelfManager.self().setPatchVariable("my-phase", -1);
-    SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(35, 3));
+    PrimChecks.patch.setVariable("intersection?", false);
+    PrimChecks.patch.setVariable("auto?", false);
+    PrimChecks.patch.setVariable("green-light-up?", true);
+    PrimChecks.patch.setVariable("my-row", -1);
+    PrimChecks.patch.setVariable("my-column", -1);
+    PrimChecks.patch.setVariable("my-phase", -1);
+    PrimChecks.patch.setVariable("pcolor", PrimChecks.math.plus(35, 3));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("roads", PrimChecks.agentset.with(world.patches(), function() {
-    return (Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pxcor")), world.topology.maxPxcor), PrimChecks.math.floor(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("grid-x-inc")), 1))), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("grid-x-inc")))), 0) || Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pycor")), world.topology.maxPycor), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("grid-y-inc")))), 0));
+    return (Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("pxcor")), world.topology.maxPxcor), PrimChecks.math.floor(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("grid-x-inc")), 1))), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("grid-x-inc")))), 0) || Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("pycor")), world.topology.maxPycor), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("grid-y-inc")))), 0));
   }));
   world.observer.setGlobal("intersections", PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, world.observer.getGlobal("roads")), function() {
-    return (Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pxcor")), world.topology.maxPxcor), PrimChecks.math.floor(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("grid-x-inc")), 1))), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("grid-x-inc")))), 0) && Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pycor")), world.topology.maxPycor), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("grid-y-inc")))), 0));
+    return (Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("pxcor")), world.topology.maxPxcor), PrimChecks.math.floor(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("grid-x-inc")), 1))), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("grid-x-inc")))), 0) && Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("pycor")), world.topology.maxPycor), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("grid-y-inc")))), 0));
   }));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("roads")), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("roads")), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("setup-intersections"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("setup-intersections", 4443, 4720, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("intersections")), function() {
-    SelfManager.self().setPatchVariable("intersection?", true);
-    SelfManager.self().setPatchVariable("green-light-up?", true);
-    SelfManager.self().setPatchVariable("my-phase", 0);
-    SelfManager.self().setPatchVariable("auto?", true);
-    SelfManager.self().setPatchVariable("my-row", PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pycor")), world.topology.maxPycor), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("grid-y-inc")))));
-    SelfManager.self().setPatchVariable("my-column", PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pxcor")), world.topology.maxPxcor), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("grid-x-inc")))));
+    PrimChecks.patch.setVariable("intersection?", true);
+    PrimChecks.patch.setVariable("green-light-up?", true);
+    PrimChecks.patch.setVariable("my-phase", 0);
+    PrimChecks.patch.setVariable("auto?", true);
+    PrimChecks.patch.setVariable("my-row", PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("pycor")), world.topology.maxPycor), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("grid-y-inc")))));
+    PrimChecks.patch.setVariable("my-column", PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("pxcor")), world.topology.maxPxcor), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("grid-x-inc")))));
     var R = ProcedurePrims.callCommand("set-signal-colors"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
@@ -146,7 +146,7 @@ ProcedurePrims.defineCommand("setup-cars", 4830, 5295, (function() {
   PrimChecks.turtle.setVariable("speed", 0);
   PrimChecks.turtle.setVariable("wait-time", 0);
   var R = ProcedurePrims.callCommand("put-on-empty-road"); if (R === DeathInterrupt) { return R; }
-  if (SelfManager.self().getPatchVariable("intersection?")) {
+  if (PrimChecks.patch.getVariable("intersection?")) {
     if (Prims.equality(RandomPrims.randomLong(2), 0)) {
       PrimChecks.turtle.setVariable("up-car?", true);
     }
@@ -155,7 +155,7 @@ ProcedurePrims.defineCommand("setup-cars", 4830, 5295, (function() {
     }
   }
   else {
-    if (Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pxcor")), world.topology.maxPxcor), PrimChecks.math.floor(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("grid-x-inc")), 1))), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("grid-x-inc")))), 0)) {
+    if (Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("pxcor")), world.topology.maxPxcor), PrimChecks.math.floor(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("grid-x-inc")), 1))), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("grid-x-inc")))), 0)) {
       PrimChecks.turtle.setVariable("up-car?", true);
     }
     else {
@@ -191,7 +191,7 @@ ProcedurePrims.defineCommand("choose-current", 6051, 6320, (function() {
   if (MousePrims.isDown()) {
     let xHmouse = MousePrims.getX(); ProcedurePrims.stack().currentContext().registerStringRunVar("X-MOUSE", xHmouse);
     let yHmouse = MousePrims.getY(); ProcedurePrims.stack().currentContext().registerStringRunVar("Y-MOUSE", yHmouse);
-    if (PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 1, xHmouse), PrimChecks.validator.checkArg('PATCH', 1, yHmouse))), function() { return SelfManager.self().getPatchVariable("intersection?"); })) {
+    if (PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 1, xHmouse), PrimChecks.validator.checkArg('PATCH', 1, yHmouse))), function() { return PrimChecks.patch.getVariable("intersection?"); })) {
       var R = ProcedurePrims.callCommand("update-current"); if (R === DeathInterrupt) { return R; }
       var R = ProcedurePrims.callCommand("unlabel-current"); if (R === DeathInterrupt) { return R; }
       var R = ProcedurePrims.callCommand("make-current", world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 1, xHmouse), PrimChecks.validator.checkArg('PATCH', 1, yHmouse))); if (R === DeathInterrupt) { return R; }
@@ -202,54 +202,54 @@ ProcedurePrims.defineCommand("choose-current", 6051, 6320, (function() {
 }))
 ProcedurePrims.defineCommand("make-current", 6388, 6528, (function(light) {
   world.observer.setGlobal("current-light", light);
-  world.observer.setGlobal("current-phase", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.observer.getGlobal("current-light")), function() { return SelfManager.self().getPatchVariable("my-phase"); }));
-  world.observer.setGlobal("current-auto?", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.observer.getGlobal("current-light")), function() { return SelfManager.self().getPatchVariable("auto?"); }));
+  world.observer.setGlobal("current-phase", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.observer.getGlobal("current-light")), function() { return PrimChecks.patch.getVariable("my-phase"); }));
+  world.observer.setGlobal("current-auto?", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.observer.getGlobal("current-light")), function() { return PrimChecks.patch.getVariable("auto?"); }));
 }))
 ProcedurePrims.defineCommand("update-current", 6582, 6682, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("current-light")), function() {
-    SelfManager.self().setPatchVariable("my-phase", world.observer.getGlobal("current-phase"));
-    SelfManager.self().setPatchVariable("auto?", world.observer.getGlobal("current-auto?"));
+    PrimChecks.patch.setVariable("my-phase", world.observer.getGlobal("current-phase"));
+    PrimChecks.patch.setVariable("auto?", world.observer.getGlobal("current-auto?"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("label-current", 6717, 6849, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("current-light")), function() {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorthWest()), function() {
-      SelfManager.self().setPatchVariable("plabel-color", 0);
-      SelfManager.self().setPatchVariable("plabel", "current");
+      PrimChecks.patch.setVariable("plabel-color", 0);
+      PrimChecks.patch.setVariable("plabel", "current");
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("unlabel-current", 6919, 7017, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("current-light")), function() {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorthWest()), function() { SelfManager.self().setPatchVariable("plabel", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorthWest()), function() { PrimChecks.patch.setVariable("plabel", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("set-signals", 7110, 7286, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, world.observer.getGlobal("intersections")), function() {
-    return (PrimChecks.validator.checkArg('AND', 2, SelfManager.self().getPatchVariable("auto?")) && Prims.equality(world.observer.getGlobal("phase"), PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("my-phase")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("ticks-per-cycle"))), 100))));
+    return (PrimChecks.validator.checkArg('AND', 2, PrimChecks.patch.getVariable("auto?")) && Prims.equality(world.observer.getGlobal("phase"), PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.patch.getVariable("my-phase")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("ticks-per-cycle"))), 100))));
   }), function() {
-    SelfManager.self().setPatchVariable("green-light-up?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getPatchVariable("green-light-up?"))));
+    PrimChecks.patch.setVariable("green-light-up?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.patch.getVariable("green-light-up?"))));
     var R = ProcedurePrims.callCommand("set-signal-colors"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("set-signal-colors", 7459, 7854, (function() {
   if (world.observer.getGlobal("power?")) {
-    if (SelfManager.self().getPatchVariable("green-light-up?")) {
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorth()), function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    if (PrimChecks.patch.getVariable("green-light-up?")) {
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable("pcolor", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorth()), function() { PrimChecks.patch.setVariable("pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }
     else {
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorth()), function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable("pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorth()), function() { PrimChecks.patch.setVariable("pcolor", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }
   }
   else {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorth()), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorth()), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("set-car-speed", 8006, 8153, (function() {
-  if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
+  if (Prims.equality(PrimChecks.patch.getVariable("pcolor"), 15)) {
     PrimChecks.turtle.setVariable("speed", 0);
   }
   else {
@@ -296,10 +296,10 @@ ProcedurePrims.defineCommand("speed-up", 9002, 9126, (function() {
 }))
 ProcedurePrims.defineCommand("set-car-color", 9225, 9341, (function() {
   if (Prims.lt(PrimChecks.turtle.getVariable("speed"), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("speed-limit")), 2))) {
-    SelfManager.self().setVariable("color", 105);
+    PrimChecks.turtleOrLink.setVariable("color", 105);
   }
   else {
-    SelfManager.self().setVariable("color", PrimChecks.math.minus(85, 2));
+    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.minus(85, 2));
   }
 }))
 ProcedurePrims.defineCommand("record-data", 9466, 9626, (function() {
@@ -313,7 +313,7 @@ ProcedurePrims.defineCommand("record-data", 9466, 9626, (function() {
 }))
 ProcedurePrims.defineCommand("change-current", 9634, 9745, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("current-light")), function() {
-    SelfManager.self().setPatchVariable("green-light-up?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, SelfManager.self().getPatchVariable("green-light-up?"))));
+    PrimChecks.patch.setVariable("green-light-up?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.patch.getVariable("green-light-up?"))));
     var R = ProcedurePrims.callCommand("set-signal-colors"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))

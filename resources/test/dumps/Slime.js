@@ -53,33 +53,33 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 27, 207, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("population"), ""), function() {
-    SelfManager.self().setVariable("color", 15);
+    PrimChecks.turtleOrLink.setVariable("color", 15);
     PrimChecks.turtle.setVariable("size", 2);
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("chemical", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("chemical", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 215, 807, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
+    if (Prims.gt(PrimChecks.patch.getVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
       var R = ProcedurePrims.callCommand("turn-toward-chemical"); if (R === DeathInterrupt) { return R; }
     }
     SelfManager.self().right(PrimChecks.math.plus(PrimChecks.math.minus(PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("wiggle-angle"))), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("wiggle-angle")))), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("wiggle-bias"))));
     SelfManager.self()._optimalFdOne();
-    SelfManager.self().setPatchVariable("chemical", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("chemical")), 2));
+    PrimChecks.patch.setVariable("chemical", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("chemical")), 2));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.topology.diffuse("chemical", 1, false)
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("chemical", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("chemical")), 0.9));
-    SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 3));
+    PrimChecks.patch.setVariable("chemical", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.patch.getVariable("chemical")), 0.9));
+    PrimChecks.patch.setVariable("pcolor", ColorModel.scaleColor(55, PrimChecks.patch.getVariable("chemical"), 0.1, 3));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("turn-toward-chemical", 815, 1279, (function() {
-  let ahead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("AHEAD", ahead);
-  let myright = PrimChecks.agentset.of(SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return SelfManager.self().getPatchVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MYRIGHT", myright);
-  let myleft = PrimChecks.agentset.of(SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return SelfManager.self().getPatchVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MYLEFT", myleft);
+  let ahead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return PrimChecks.patch.getVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("AHEAD", ahead);
+  let myright = PrimChecks.agentset.of(SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return PrimChecks.patch.getVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MYRIGHT", myright);
+  let myleft = PrimChecks.agentset.of(SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return PrimChecks.patch.getVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MYLEFT", myleft);
   if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
     SelfManager.self().right(world.observer.getGlobal("sniff-angle"));
   }

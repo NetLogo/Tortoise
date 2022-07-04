@@ -71,7 +71,7 @@ ProcedurePrims.defineCommand("become-alive", 1555, 1811, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.turtle.getVariable("hex-neighbors")), function() {
     PrimChecks.turtle.setVariable("live-neighbor-count", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("live-neighbor-count")), 1));
     if (Prims.equality(PrimChecks.turtle.getVariable("live-neighbor-count"), 6)) {
-      SelfManager.self().setVariable("color", 15);
+      PrimChecks.turtleOrLink.setVariable("color", 15);
     }
     var R = ProcedurePrims.callCommand("update-eligibility"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -84,7 +84,7 @@ ProcedurePrims.defineCommand("update-eligibility", 1819, 2428, (function() {
     }
   }
   else {
-    if ((PrimChecks.validator.checkArg('AND', 2, SelfManager.self().getVariable("hidden?")) && PrimChecks.list.member(PrimChecks.turtle.getVariable("live-neighbor-count"), PrimChecks.validator.checkArg('MEMBER?', 124, world.observer.getGlobal("switches"))))) {
+    if ((PrimChecks.validator.checkArg('AND', 2, PrimChecks.turtleOrLink.getVariable("hidden?")) && PrimChecks.list.member(PrimChecks.turtle.getVariable("live-neighbor-count"), PrimChecks.validator.checkArg('MEMBER?', 124, world.observer.getGlobal("switches"))))) {
       PrimChecks.turtle.setVariable("eligible?", true);
       world.observer.setGlobal("eligibles", PrimChecks.list.fput(SelfManager.self(), PrimChecks.validator.checkArg('FPUT', 8, world.observer.getGlobal("eligibles"))));
     }
@@ -111,7 +111,7 @@ ProcedurePrims.defineCommand("read-switches", 2526, 3022, (function() {
     world.observer.setGlobal("switches", PrimChecks.list.lput(6, PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("switches"))));
   }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CELLS"), function() {
-    PrimChecks.turtle.setVariable("eligible?", (PrimChecks.validator.checkArg('AND', 2, SelfManager.self().getVariable("hidden?")) && PrimChecks.list.member(PrimChecks.turtle.getVariable("live-neighbor-count"), PrimChecks.validator.checkArg('MEMBER?', 124, world.observer.getGlobal("switches")))));
+    PrimChecks.turtle.setVariable("eligible?", (PrimChecks.validator.checkArg('AND', 2, PrimChecks.turtleOrLink.getVariable("hidden?")) && PrimChecks.list.member(PrimChecks.turtle.getVariable("live-neighbor-count"), PrimChecks.validator.checkArg('MEMBER?', 124, world.observer.getGlobal("switches")))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("eligibles", PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("CELLS"), function() { return PrimChecks.turtle.getVariable("eligible?"); }), function() { return SelfManager.self(); }));
 }))
@@ -120,15 +120,15 @@ ProcedurePrims.defineCommand("setup-grid", 3079, 3663, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "CELLS"), function() {
       SelfManager.self().hideTurtle(true);
-      SelfManager.self().setVariable("color", 25);
+      PrimChecks.turtleOrLink.setVariable("color", 25);
       PrimChecks.turtle.setVariable("eligible?", false);
-      if (Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, SelfManager.self().getPatchVariable("pxcor")), 2), 0)) {
+      if (Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, PrimChecks.patch.getVariable("pxcor")), 2), 0)) {
         PrimChecks.turtle.setVariable("ycor", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ycor")), 0.5));
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CELLS"), function() {
-    if (Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, SelfManager.self().getPatchVariable("pxcor")), 2), 0)) {
+    if (Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, PrimChecks.patch.getVariable("pxcor")), 2), 0)) {
       PrimChecks.turtle.setVariable("hex-neighbors", PrimChecks.agentset.breedOn("CELLS", PrimChecks.validator.checkArg('CELLS-ON', 816, PrimChecks.agentset.atPoints(world.patches(), [[0, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]]))));
     }
     else {

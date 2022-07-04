@@ -70,7 +70,7 @@ ProcedurePrims.defineCommand("setup", 122, 234, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-cows"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("grass", world.observer.getGlobal("max-grass-height"));
+    PrimChecks.patch.setVariable("grass", world.observer.getGlobal("max-grass-height"));
     var R = ProcedurePrims.callCommand("color-grass"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
@@ -81,12 +81,12 @@ ProcedurePrims.defineCommand("setup-cows", 242, 598, (function() {
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
     PrimChecks.turtle.setVariable("energy", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("metabolism")), 4));
     if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("cooperative-probability"))) {
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"));
-      SelfManager.self().setVariable("color", PrimChecks.math.minus(15, 1.5));
+      PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.minus(15, 1.5));
     }
     else {
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("GREEDY-COWS"));
-      SelfManager.self().setVariable("color", PrimChecks.math.minus(95, 2));
+      PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("GREEDY-COWS"));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.minus(95, 2));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
@@ -109,22 +109,22 @@ ProcedurePrims.defineCommand("reproduce", 751, 879, (function() {
   }
 }))
 ProcedurePrims.defineCommand("grow-grass", 887, 1185, (function() {
-  if (Prims.gte(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
+  if (Prims.gte(PrimChecks.patch.getVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
     if (Prims.gte(world.observer.getGlobal("high-growth-chance"), PrimChecks.math.randomFloat(100))) {
-      SelfManager.self().setPatchVariable("grass", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("grass")), 1));
+      PrimChecks.patch.setVariable("grass", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("grass")), 1));
     }
   }
   else {
     if (Prims.gte(world.observer.getGlobal("low-growth-chance"), PrimChecks.math.randomFloat(100))) {
-      SelfManager.self().setPatchVariable("grass", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("grass")), 1));
+      PrimChecks.patch.setVariable("grass", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("grass")), 1));
     }
   }
-  if (Prims.gt(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("max-grass-height"))) {
-    SelfManager.self().setPatchVariable("grass", world.observer.getGlobal("max-grass-height"));
+  if (Prims.gt(PrimChecks.patch.getVariable("grass"), world.observer.getGlobal("max-grass-height"))) {
+    PrimChecks.patch.setVariable("grass", world.observer.getGlobal("max-grass-height"));
   }
 }))
 ProcedurePrims.defineCommand("color-grass", 1193, 1293, (function() {
-  SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(PrimChecks.math.minus(55, 1), SelfManager.self().getPatchVariable("grass"), 0, PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("max-grass-height")))));
+  PrimChecks.patch.setVariable("pcolor", ColorModel.scaleColor(PrimChecks.math.minus(55, 1), PrimChecks.patch.getVariable("grass"), 0, PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("max-grass-height")))));
 }))
 ProcedurePrims.defineCommand("move", 1301, 1419, (function() {
   SelfManager.self().right(RandomPrims.randomLong(360));
@@ -135,24 +135,24 @@ ProcedurePrims.defineCommand("move", 1301, 1419, (function() {
   }
 }))
 ProcedurePrims.defineCommand("eat", 1427, 1566, (function() {
-  if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"))) {
+  if (Prims.equality(PrimChecks.turtleOrLink.getVariable("breed"), world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"))) {
     var R = ProcedurePrims.callCommand("eat-cooperative"); if (R === DeathInterrupt) { return R; }
   }
   else {
-    if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("GREEDY-COWS"))) {
+    if (Prims.equality(PrimChecks.turtleOrLink.getVariable("breed"), world.turtleManager.turtlesOfBreed("GREEDY-COWS"))) {
       var R = ProcedurePrims.callCommand("eat-greedy"); if (R === DeathInterrupt) { return R; }
     }
   }
 }))
 ProcedurePrims.defineCommand("eat-cooperative", 1574, 1710, (function() {
-  if (Prims.gt(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
-    SelfManager.self().setPatchVariable("grass", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("grass")), 1));
+  if (Prims.gt(PrimChecks.patch.getVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
+    PrimChecks.patch.setVariable("grass", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("grass")), 1));
     PrimChecks.turtle.setVariable("energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("energy")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("grass-energy"))));
   }
 }))
 ProcedurePrims.defineCommand("eat-greedy", 1718, 1832, (function() {
-  if (Prims.gt(SelfManager.self().getPatchVariable("grass"), 0)) {
-    SelfManager.self().setPatchVariable("grass", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("grass")), 1));
+  if (Prims.gt(PrimChecks.patch.getVariable("grass"), 0)) {
+    PrimChecks.patch.setVariable("grass", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("grass")), 1));
     PrimChecks.turtle.setVariable("energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("energy")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("grass-energy"))));
   }
 }))

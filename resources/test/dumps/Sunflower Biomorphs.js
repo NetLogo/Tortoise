@@ -67,7 +67,7 @@ ProcedurePrims.defineCommand("setup", 1076, 1428, (function() {
 ProcedurePrims.defineCommand("arrange-spawners", 1436, 1810, (function() {
   let i = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("I", i);
   while (Prims.lt(i, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("rows")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("columns"))))) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.turtleManager.getTurtle(i)), function() {
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.turtle.getTurtle(i)), function() {
       let xHint = PrimChecks.math.div(world.topology.width, PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("columns"))); ProcedurePrims.stack().currentContext().registerStringRunVar("X-INT", xHint);
       let yHint = PrimChecks.math.div(world.topology.height, PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("rows"))); ProcedurePrims.stack().currentContext().registerStringRunVar("Y-INT", yHint);
       PrimChecks.turtle.setXY(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.math.mult(-1, world.topology.maxPxcor), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, xHint), 2)), PrimChecks.math.mult(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, i), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("columns"))), PrimChecks.validator.checkArg('*', 1, xHint))), PrimChecks.math.minus(PrimChecks.math.plus(world.topology.maxPycor, PrimChecks.math.div(world.topology.minPycor, PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("rows")))), PrimChecks.math.mult(PrimChecks.math.int(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, i), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("columns")))), PrimChecks.validator.checkArg('*', 1, yHint))));
@@ -79,7 +79,7 @@ ProcedurePrims.defineCommand("go", 1818, 2638, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, "PETALS"), function() {
       PrimChecks.turtle.setVariable("parent", SelfManager.myself());
-      SelfManager.self().setVariable("color", PrimChecks.math.plus(PrimChecks.math.mult(10, PrimChecks.math.mod(world.ticker.tickCount(), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("parent")), function() { return PrimChecks.turtle.getVariable("num-colors"); })), 1))), 15));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(PrimChecks.math.mult(10, PrimChecks.math.mod(world.ticker.tickCount(), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("parent")), function() { return PrimChecks.turtle.getVariable("num-colors"); })), 1))), 15));
       SelfManager.self().right(PrimChecks.math.mult(PrimChecks.math.mult(world.ticker.tickCount(), PrimChecks.validator.checkArg('*', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("parent")), function() { return PrimChecks.turtle.getVariable("turn-increment"); }))), 360));
       PrimChecks.turtle.setVariable("size", 0);
       SelfManager.self().hideTurtle(false);
@@ -145,13 +145,13 @@ ProcedurePrims.defineCommand("handle-mouse-down", 4131, 4953, (function() {
     if (!Prims.equality(world.observer.getGlobal("first-parent"), Nobody)) {
       var R = ProcedurePrims.callCommand("repopulate-from-two", world.observer.getGlobal("first-parent"), newHparent); if (R === DeathInterrupt) { return R; }
       world.observer.setGlobal("first-parent", Nobody);
-      var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }
     else {
       world.observer.setGlobal("first-parent", newHparent);
       var R = ProcedurePrims.ask(world.patches(), function() {
         if (PrimChecks.list.member(newHparent, PrimChecks.agentset.withMin(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return SelfManager.self().distance(SelfManager.myself()); }))) {
-          SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(5, 3));
+          PrimChecks.patch.setVariable("pcolor", PrimChecks.math.minus(5, 3));
         }
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }

@@ -73,9 +73,9 @@ ProcedurePrims.defineCommand("setup", 255, 740, (function() {
   world.observer.setGlobal("pot-offset", PrimChecks.math.unaryminus(PrimChecks.math.mult(4, PrimChecks.math.minus(PrimChecks.math.pow(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("diameter")), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("cutoff-dist"))), 12), PrimChecks.math.pow(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("diameter")), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("cutoff-dist"))), 6)))));
   world.observer.setGlobal("v-total", PrimChecks.procedure.callReporter("calc-v-total"));
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-atoms"), ""), function() {
-    SelfManager.self().setVariable("shape", "circle");
+    PrimChecks.turtleOrLink.setVariable("shape", "circle");
     PrimChecks.turtle.setVariable("size", world.observer.getGlobal("diameter"));
-    SelfManager.self().setVariable("color", 105);
+    PrimChecks.turtleOrLink.setVariable("color", 105);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("setup-atoms"); if (R === DeathInterrupt) { return R; }
 }))

@@ -79,7 +79,7 @@ ProcedurePrims.defineCommand("benchmark", 43, 131, (function() {
 ProcedurePrims.defineCommand("setup", 139, 246, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("n", 2);
+    PrimChecks.patch.setVariable("n", 2);
     var R = ProcedurePrims.callCommand("colorize"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("total", PrimChecks.math.mult(2, PrimChecks.agentset.count(world.patches())));
@@ -88,18 +88,18 @@ ProcedurePrims.defineCommand("setup", 139, 246, (function() {
 ProcedurePrims.defineCommand("go", 254, 739, (function() {
   let activeHpatches = PrimChecks.agentset.patchSet(PrimChecks.list.oneOf(world.patches())); ProcedurePrims.stack().currentContext().registerStringRunVar("ACTIVE-PATCHES", activeHpatches);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, activeHpatches), function() {
-    SelfManager.self().setPatchVariable("n", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("n")), 1));
+    PrimChecks.patch.setVariable("n", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("n")), 1));
     world.observer.setGlobal("total", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total")), 1));
     var R = ProcedurePrims.callCommand("colorize"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   while (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, activeHpatches))) {
-    let overloadedHpatches = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, activeHpatches), function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); }); ProcedurePrims.stack().currentContext().registerStringRunVar("OVERLOADED-PATCHES", overloadedHpatches);
+    let overloadedHpatches = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, activeHpatches), function() { return Prims.gt(PrimChecks.patch.getVariable("n"), 3); }); ProcedurePrims.stack().currentContext().registerStringRunVar("OVERLOADED-PATCHES", overloadedHpatches);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, overloadedHpatches), function() {
-      SelfManager.self().setPatchVariable("n", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("n")), 4));
+      PrimChecks.patch.setVariable("n", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("n")), 4));
       world.observer.setGlobal("total", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("total")), 4));
       var R = ProcedurePrims.callCommand("colorize"); if (R === DeathInterrupt) { return R; }
       var R = ProcedurePrims.ask(SelfManager.self().getNeighbors4(), function() {
-        SelfManager.self().setPatchVariable("n", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("n")), 1));
+        PrimChecks.patch.setVariable("n", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("n")), 1));
         world.observer.setGlobal("total", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total")), 1));
         var R = ProcedurePrims.callCommand("colorize"); if (R === DeathInterrupt) { return R; }
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -109,11 +109,11 @@ ProcedurePrims.defineCommand("go", 254, 739, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("colorize", 747, 855, (function() {
-  if (Prims.lte(SelfManager.self().getPatchVariable("n"), 3)) {
-    SelfManager.self().setPatchVariable("pcolor", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, SelfManager.self().getPatchVariable("n")), [83, 54, 45, 25]));
+  if (Prims.lte(PrimChecks.patch.getVariable("n"), 3)) {
+    PrimChecks.patch.setVariable("pcolor", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, PrimChecks.patch.getVariable("n")), [83, 54, 45, 25]));
   }
   else {
-    SelfManager.self().setPatchVariable("pcolor", 15);
+    PrimChecks.patch.setVariable("pcolor", 15);
   }
 }))
 world.observer.setGlobal("plot?", false);

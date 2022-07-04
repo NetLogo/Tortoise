@@ -98,10 +98,10 @@ ProcedurePrims.defineCommand("setup-people", 2064, 2648, (function() {
     PrimChecks.turtle.setVariable("coupled?", false);
     PrimChecks.turtle.setVariable("partner", Nobody);
     if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-      SelfManager.self().setVariable("shape", "person righty");
+      PrimChecks.turtleOrLink.setVariable("shape", "person righty");
     }
     else {
-      SelfManager.self().setVariable("shape", "person lefty");
+      PrimChecks.turtleOrLink.setVariable("shape", "person lefty");
     }
     PrimChecks.turtle.setVariable("infected?", Prims.lt(PrimChecks.turtle.getVariable("who"), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("initial-people")), 0.025)));
     if (PrimChecks.turtle.getVariable("infected?")) {
@@ -116,14 +116,14 @@ ProcedurePrims.defineCommand("setup-people", 2064, 2648, (function() {
 }))
 ProcedurePrims.defineCommand("assign-color", 2830, 2982, (function() {
   if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("infected?")))) {
-    SelfManager.self().setVariable("color", 55);
+    PrimChecks.turtleOrLink.setVariable("color", 55);
   }
   else {
     if (PrimChecks.turtle.getVariable("known?")) {
-      SelfManager.self().setVariable("color", 15);
+      PrimChecks.turtleOrLink.setVariable("color", 15);
     }
     else {
-      SelfManager.self().setVariable("color", 105);
+      PrimChecks.turtleOrLink.setVariable("color", 105);
     }
   }
 }))
@@ -165,7 +165,7 @@ ProcedurePrims.defineCommand("go", 3820, 4454, (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    if (((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("coupled?"))) && Prims.equality(SelfManager.self().getVariable("shape"), "person righty")) && Prims.lt(PrimChecks.math.randomFloat(10), PrimChecks.turtle.getVariable("coupling-tendency")))) {
+    if (((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("coupled?"))) && Prims.equality(PrimChecks.turtleOrLink.getVariable("shape"), "person righty")) && Prims.lt(PrimChecks.math.randomFloat(10), PrimChecks.turtle.getVariable("coupling-tendency")))) {
       var R = ProcedurePrims.callCommand("couple"); if (R === DeathInterrupt) { return R; }
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -203,7 +203,7 @@ ProcedurePrims.defineCommand("move", 5204, 5259, (function() {
 }))
 ProcedurePrims.defineCommand("couple", 5450, 6095, (function() {
   let potentialHpartner = PrimChecks.agentset.oneOfWith(SelfManager.self().turtlesAt(-1, 0), function() {
-    return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("coupled?"))) && Prims.equality(SelfManager.self().getVariable("shape"), "person lefty"));
+    return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("coupled?"))) && Prims.equality(PrimChecks.turtleOrLink.getVariable("shape"), "person lefty"));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("POTENTIAL-PARTNER", potentialHpartner);
   if (!Prims.equality(potentialHpartner, Nobody)) {
     if (Prims.lt(PrimChecks.math.randomFloat(10), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, potentialHpartner), function() { return PrimChecks.turtle.getVariable("coupling-tendency"); }))) {
@@ -213,19 +213,19 @@ ProcedurePrims.defineCommand("couple", 5450, 6095, (function() {
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.turtle.getVariable("partner")), function() { PrimChecks.turtle.setVariable("partner", SelfManager.myself()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       SelfManager.self().moveTo(SelfManager.self().getPatchHere());
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, potentialHpartner), function() { SelfManager.self().moveTo(SelfManager.self().getPatchHere()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-      SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(5, 3));
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      PrimChecks.patch.setVariable("pcolor", PrimChecks.math.minus(5, 3));
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.math.minus(5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }
   }
 }))
 ProcedurePrims.defineCommand("uncouple", 6220, 6707, (function() {
-  if ((PrimChecks.validator.checkArg('AND', 2, PrimChecks.turtle.getVariable("coupled?")) && Prims.equality(SelfManager.self().getVariable("shape"), "person righty"))) {
+  if ((PrimChecks.validator.checkArg('AND', 2, PrimChecks.turtle.getVariable("coupled?")) && Prims.equality(PrimChecks.turtleOrLink.getVariable("shape"), "person righty"))) {
     if ((Prims.gt(PrimChecks.turtle.getVariable("couple-length"), PrimChecks.turtle.getVariable("commitment")) || Prims.gt(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("partner")), function() { return PrimChecks.turtle.getVariable("couple-length"); }), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getVariable("partner")), function() { return PrimChecks.turtle.getVariable("commitment"); })))) {
       PrimChecks.turtle.setVariable("coupled?", false);
       PrimChecks.turtle.setVariable("couple-length", 0);
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.turtle.getVariable("partner")), function() { PrimChecks.turtle.setVariable("couple-length", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-      SelfManager.self().setPatchVariable("pcolor", 0);
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      PrimChecks.patch.setVariable("pcolor", 0);
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable("pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.turtle.getVariable("partner")), function() { PrimChecks.turtle.setVariable("partner", Nobody); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.turtle.getVariable("partner")), function() { PrimChecks.turtle.setVariable("coupled?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       PrimChecks.turtle.setVariable("partner", Nobody);

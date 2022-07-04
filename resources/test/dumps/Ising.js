@@ -73,14 +73,14 @@ ProcedurePrims.defineCommand("setup", 264, 462, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
     if (Prims.lt(RandomPrims.randomLong(100), world.observer.getGlobal("probability-of-spin-up"))) {
-      SelfManager.self().setPatchVariable("spin", 1);
+      PrimChecks.patch.setVariable("spin", 1);
     }
     else {
-      SelfManager.self().setPatchVariable("spin", -1);
+      PrimChecks.patch.setVariable("spin", -1);
     }
     var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  world.observer.setGlobal("sum-of-spins", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.patches(), function() { return SelfManager.self().getPatchVariable("spin"); }))));
+  world.observer.setGlobal("sum-of-spins", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.patch.getVariable("spin"); }))));
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 470, 759, (function() {
@@ -91,19 +91,19 @@ ProcedurePrims.defineCommand("go", 470, 759, (function() {
   plotManager.updatePlots();
 }))
 ProcedurePrims.defineCommand("update", 804, 1188, (function() {
-  let ediff = PrimChecks.math.mult(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("spin"))), SelfManager.self()._optimalNSum4("spin")); ProcedurePrims.stack().currentContext().registerStringRunVar("EDIFF", ediff);
+  let ediff = PrimChecks.math.mult(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, PrimChecks.patch.getVariable("spin"))), SelfManager.self()._optimalNSum4("spin")); ProcedurePrims.stack().currentContext().registerStringRunVar("EDIFF", ediff);
   if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(PrimChecks.math.randomFloat(1), PrimChecks.math.exp(PrimChecks.math.div(PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, ediff)), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("temperature")))))))) {
-    SelfManager.self().setPatchVariable("spin", PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("spin"))));
-    world.observer.setGlobal("sum-of-spins", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("sum-of-spins")), PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("spin")))));
+    PrimChecks.patch.setVariable("spin", PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("spin"))));
+    world.observer.setGlobal("sum-of-spins", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("sum-of-spins")), PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, PrimChecks.patch.getVariable("spin")))));
     var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
   }
 }))
 ProcedurePrims.defineCommand("recolor", 1241, 1343, (function() {
-  if (Prims.equality(SelfManager.self().getPatchVariable("spin"), 1)) {
-    SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(105, 2));
+  if (Prims.equality(PrimChecks.patch.getVariable("spin"), 1)) {
+    PrimChecks.patch.setVariable("pcolor", PrimChecks.math.plus(105, 2));
   }
   else {
-    SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(105, 2));
+    PrimChecks.patch.setVariable("pcolor", PrimChecks.math.minus(105, 2));
   }
 }))
 ProcedurePrims.defineReporter("magnetization", 1414, 1466, (function() {

@@ -52,10 +52,10 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 3, 203, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), ""), function() {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, PrimChecks.list.oneOf(SelfManager.self().getNeighbors4())));
-    SelfManager.self().setVariable("color", 15);
+    PrimChecks.turtleOrLink.setVariable("color", 15);
     PrimChecks.turtle.setVariable("size", 6);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
@@ -81,12 +81,12 @@ ProcedurePrims.defineCommand("go-reverse", 492, 592, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("turn", 600, 703, (function() {
-  if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9)) {
-    SelfManager.self().setPatchVariable("pcolor", 0);
+  if (Prims.equality(PrimChecks.patch.getVariable("pcolor"), 9.9)) {
+    PrimChecks.patch.setVariable("pcolor", 0);
     SelfManager.self().right(90);
   }
   else {
-    SelfManager.self().setPatchVariable("pcolor", 9.9);
+    PrimChecks.patch.setVariable("pcolor", 9.9);
     SelfManager.self().right(-(90));
   }
 }))

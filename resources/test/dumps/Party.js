@@ -109,7 +109,7 @@ ProcedurePrims.defineCommand("go", 654, 1039, (function() {
 ProcedurePrims.defineCommand("update-happiness", 1047, 1365, (function() {
   let total = PrimChecks.agentset.count(SelfManager.self().turtlesHere()); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL", total);
   let same = PrimChecks.agentset.countWith(SelfManager.self().turtlesHere(), function() {
-    return Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
+    return Prims.equality(PrimChecks.turtleOrLink.getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable("color"); }));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("SAME", same);
   let opposite = PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, total), PrimChecks.validator.checkArg('-', 1, same)); ProcedurePrims.stack().currentContext().registerStringRunVar("OPPOSITE", opposite);
   PrimChecks.turtle.setVariable("happy?", Prims.lte(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, opposite), PrimChecks.validator.checkArg('/', 1, total)), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("tolerance")), 100)));
@@ -133,7 +133,7 @@ ProcedurePrims.defineCommand("find-new-groups", 1557, 1777, (function() {
 }))
 ProcedurePrims.defineReporter("group-site?", 1792, 2517, (function() {
   let groupHinterval = PrimChecks.math.floor(PrimChecks.math.div(world.topology.width, PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("num-groups")))); ProcedurePrims.stack().currentContext().registerStringRunVar("GROUP-INTERVAL", groupHinterval);
-  return PrimChecks.procedure.report((((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, SelfManager.self().getPatchVariable("pxcor")), PrimChecks.validator.checkArg('MOD', 1, groupHinterval)), 0)) && Prims.lt(PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("pxcor"))), PrimChecks.validator.checkArg('/', 1, groupHinterval))), world.observer.getGlobal("num-groups"))));
+  return PrimChecks.procedure.report((((Prims.equality(PrimChecks.patch.getVariable("pycor"), 0) && Prims.lte(PrimChecks.patch.getVariable("pxcor"), 0)) && Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, PrimChecks.patch.getVariable("pxcor")), PrimChecks.validator.checkArg('MOD', 1, groupHinterval)), 0)) && Prims.lt(PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("pxcor"))), PrimChecks.validator.checkArg('/', 1, groupHinterval))), world.observer.getGlobal("num-groups"))));
 }))
 ProcedurePrims.defineCommand("spread-out-vertically", 2525, 2967, (function() {
   if (PrimChecks.procedure.callReporter("woman?")) {
@@ -157,24 +157,26 @@ ProcedurePrims.defineCommand("spread-out-vertically", 2525, 2967, (function() {
 ProcedurePrims.defineCommand("count-boring-groups", 2975, 3169, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("group-sites")), function() {
     if (PrimChecks.procedure.callReporter("boring?")) {
-      SelfManager.self().setPatchVariable("plabel-color", 5);
+      PrimChecks.patch.setVariable("plabel-color", 5);
     }
     else {
-      SelfManager.self().setPatchVariable("plabel-color", 9.9);
+      PrimChecks.patch.setVariable("plabel-color", 9.9);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  world.observer.setGlobal("boring-groups", PrimChecks.agentset.countWith(world.observer.getGlobal("group-sites"), function() { return Prims.equality(SelfManager.self().getPatchVariable("plabel-color"), 5); }));
+  world.observer.setGlobal("boring-groups", PrimChecks.agentset.countWith(world.observer.getGlobal("group-sites"), function() { return Prims.equality(PrimChecks.patch.getVariable("plabel-color"), 5); }));
 }))
 ProcedurePrims.defineReporter("boring?", 3184, 3518, (function() {
-  return PrimChecks.procedure.report(Prims.equality(PrimChecks.list.length(PrimChecks.list.removeDuplicates(PrimChecks.validator.checkArg('REMOVE-DUPLICATES', 8, PrimChecks.agentset.of(SelfManager.self().turtlesHere(), function() { return SelfManager.self().getVariable("color"); })))), 1));
+  return PrimChecks.procedure.report(Prims.equality(PrimChecks.list.length(PrimChecks.list.removeDuplicates(PrimChecks.validator.checkArg('REMOVE-DUPLICATES', 8, PrimChecks.agentset.of(SelfManager.self().turtlesHere(), function() { return PrimChecks.turtleOrLink.getVariable("color"); })))), 1));
 }))
 ProcedurePrims.defineCommand("update-labels", 3526, 3592, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("group-sites")), function() {
-    SelfManager.self().setPatchVariable("plabel", PrimChecks.agentset.count(SelfManager.self().turtlesHere()));
+    PrimChecks.patch.setVariable("plabel", PrimChecks.agentset.count(SelfManager.self().turtlesHere()));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
-ProcedurePrims.defineCommand("choose-sex", 3775, 3838, (function() { SelfManager.self().setVariable("color", PrimChecks.list.oneOf([135, 105])); }))
-ProcedurePrims.defineReporter("woman?", 3853, 3903, (function() { return PrimChecks.procedure.report(Prims.equality(SelfManager.self().getVariable("color"), 135)); }))
+ProcedurePrims.defineCommand("choose-sex", 3775, 3838, (function() { PrimChecks.turtleOrLink.setVariable("color", PrimChecks.list.oneOf([135, 105])); }))
+ProcedurePrims.defineReporter("woman?", 3853, 3903, (function() {
+  return PrimChecks.procedure.report(Prims.equality(PrimChecks.turtleOrLink.getVariable("color"), 135));
+}))
 world.observer.setGlobal("tolerance", 25);
 world.observer.setGlobal("number", 70);
 world.observer.setGlobal("num-groups", 10);

@@ -116,26 +116,26 @@ ProcedurePrims.defineCommand("setup", 1622, 2623, (function() {
   world.observer.setGlobal("speed-factor", 0.05);
   world.observer.setGlobal("max-speed", 10);
   world.observer.setGlobal("max-vision", 10);
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-bugs"), "BUGS"), function() {
     PrimChecks.turtle.setVariable("speed", world.observer.getGlobal("initial-bug-speed"));
     var R = ProcedurePrims.callCommand("attach-vision-cone"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BUGS"), function() {
     PrimChecks.turtle.setVariable("vision", world.observer.getGlobal("initial-bug-vision"));
-    SelfManager.self().setVariable("shape", "bug");
+    PrimChecks.turtleOrLink.setVariable("shape", "bug");
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "PLAYERS"), function() {
-    SelfManager.self().setVariable("shape", "bird");
-    SelfManager.self().setVariable("color", 35);
-    SelfManager.self().setVariable("hidden?", true);
+    PrimChecks.turtleOrLink.setVariable("shape", "bird");
+    PrimChecks.turtleOrLink.setVariable("color", 35);
+    PrimChecks.turtleOrLink.setVariable("hidden?", true);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-birds"), "BIRDS"), function() {
     PrimChecks.turtle.setVariable("vision", world.observer.getGlobal("initial-bird-vision"));
-    SelfManager.self().setVariable("shape", "bird-stationary");
-    SelfManager.self().setVariable("color", 35);
-    SelfManager.self().setVariable("hidden?", false);
+    PrimChecks.turtleOrLink.setVariable("shape", "bird-stationary");
+    PrimChecks.turtleOrLink.setVariable("color", 35);
+    PrimChecks.turtleOrLink.setVariable("hidden?", false);
     PrimChecks.turtle.setXY(RandomPrims.randomLong(100), RandomPrims.randomLong(100));
     PrimChecks.turtle.setVariable("speed", world.observer.getGlobal("initial-bird-speed"));
     var R = ProcedurePrims.callCommand("attach-vision-cone"); if (R === DeathInterrupt) { return R; }
@@ -149,10 +149,10 @@ ProcedurePrims.defineCommand("setup", 1622, 2623, (function() {
 ProcedurePrims.defineCommand("attach-vision-cone", 2632, 2863, (function() {
   let parentHvision = PrimChecks.turtle.getVariable("vision"); ProcedurePrims.stack().currentContext().registerStringRunVar("PARENT-VISION", parentHvision);
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-    SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("VISION-CONES"));
+    PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("VISION-CONES"));
     var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS"), function() { SelfManager.self().tie(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    SelfManager.self().setVariable("shape", "vision cone");
-    SelfManager.self().setVariable("color", 5);
+    PrimChecks.turtleOrLink.setVariable("shape", "vision cone");
+    PrimChecks.turtleOrLink.setVariable("color", 5);
     PrimChecks.turtle.setVariable("size", parentHvision);
     var R = ProcedurePrims.callCommand("set-visualize-vision-cone"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -191,7 +191,7 @@ ProcedurePrims.defineCommand("reproduce-birds", 3425, 3715, (function() {
     worstHbird = PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable("eaten"); }); ProcedurePrims.stack().currentContext().updateStringRunVar("WORST-BIRD", worstHbird);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, worstHbird), function() {
       var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
-        SelfManager.self().setVariable("color", 15);
+        PrimChecks.turtleOrLink.setVariable("color", 15);
         return SelfManager.self().die();
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       return SelfManager.self().die();
@@ -216,12 +216,12 @@ ProcedurePrims.defineCommand("move-bugs", 3723, 4807, (function() {
       }
       targetHheading = PrimChecks.math.plus(180, PrimChecks.turtle.towards(PrimChecks.validator.checkArg('TOWARDS', 768, predator))); ProcedurePrims.stack().currentContext().updateStringRunVar("TARGET-HEADING", targetHheading);
       PrimChecks.turtle.setVariable("heading", targetHheading);
-      SelfManager.self().setVariable("label-color", 0);
-      SelfManager.self().setVariable("label", "!");
+      PrimChecks.turtleOrLink.setVariable("label-color", 0);
+      PrimChecks.turtleOrLink.setVariable("label", "!");
     }
     else {
       var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
-      SelfManager.self().setVariable("label", "");
+      PrimChecks.turtleOrLink.setVariable("label", "");
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
@@ -238,27 +238,27 @@ ProcedurePrims.defineCommand("move-birds", 4815, 6236, (function() {
         preyHagent = closestHbug; ProcedurePrims.stack().currentContext().updateStringRunVar("PREY-AGENT", preyHagent);
         PrimChecks.turtle.setVariable("target", preyHagent);
         PrimChecks.turtle.setVariable("heading", PrimChecks.turtle.towards(PrimChecks.validator.checkArg('TOWARDS', 768, preyHagent)));
-        SelfManager.self().setVariable("label-color", PrimChecks.math.minus(15, 2));
-        SelfManager.self().setVariable("label", "!");
+        PrimChecks.turtleOrLink.setVariable("label-color", PrimChecks.math.minus(15, 2));
+        PrimChecks.turtleOrLink.setVariable("label", "!");
         assignedHtarget_Q = true; ProcedurePrims.stack().currentContext().updateStringRunVar("ASSIGNED-TARGET?", assignedHtarget_Q);
       }
       if ((Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "closest") && !Prims.equality(PrimChecks.turtle.getVariable("target"), closestHbug))) {
         preyHagent = closestHbug; ProcedurePrims.stack().currentContext().updateStringRunVar("PREY-AGENT", preyHagent);
         PrimChecks.turtle.setVariable("target", preyHagent);
         PrimChecks.turtle.setVariable("heading", PrimChecks.turtle.towards(PrimChecks.validator.checkArg('TOWARDS', 768, preyHagent)));
-        SelfManager.self().setVariable("label-color", PrimChecks.math.minus(15, 2));
-        SelfManager.self().setVariable("label", "!");
+        PrimChecks.turtleOrLink.setVariable("label-color", PrimChecks.math.minus(15, 2));
+        PrimChecks.turtleOrLink.setVariable("label", "!");
         assignedHtarget_Q = true; ProcedurePrims.stack().currentContext().updateStringRunVar("ASSIGNED-TARGET?", assignedHtarget_Q);
       }
       if (!Prims.equality(assignedHtarget_Q, false)) {
         PrimChecks.turtle.setVariable("target", Nobody);
-        SelfManager.self().setVariable("label", "");
+        PrimChecks.turtleOrLink.setVariable("label", "");
         var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
       }
     }
     else {
       PrimChecks.turtle.setVariable("target", Nobody);
-      SelfManager.self().setVariable("label", "");
+      PrimChecks.turtleOrLink.setVariable("label", "");
       var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
     }
     SelfManager.self().fd(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("speed-factor"))));
@@ -274,11 +274,11 @@ ProcedurePrims.defineCommand("move-player", 6375, 6520, (function() {
   if (MousePrims.isInside()) {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PLAYERS"), function() {
       PrimChecks.turtle.setXY(MousePrims.getX(), MousePrims.getY());
-      SelfManager.self().setVariable("hidden?", false);
+      PrimChecks.turtleOrLink.setVariable("hidden?", false);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
   else {
-    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PLAYERS"), function() { SelfManager.self().setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PLAYERS"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("check-player-caught", 6528, 7830, (function() {
@@ -311,7 +311,7 @@ ProcedurePrims.defineCommand("check-player-caught", 6528, 7830, (function() {
           world.observer.setGlobal("total-speed-1-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-1-caught")), 1));
         }
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
-          SelfManager.self().setVariable("color", 15);
+          PrimChecks.turtleOrLink.setVariable("color", 15);
           return SelfManager.self().die();
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         return SelfManager.self().die();
@@ -347,7 +347,7 @@ ProcedurePrims.defineCommand("check-bird-catch", 7839, 8853, (function() {
           world.observer.setGlobal("total-speed-1-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-1-caught")), 1));
         }
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
-          SelfManager.self().setVariable("color", 15);
+          PrimChecks.turtleOrLink.setVariable("color", 15);
           return SelfManager.self().die();
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         return SelfManager.self().die();
@@ -449,41 +449,41 @@ ProcedurePrims.defineCommand("check-visualize-vision-cone-change", 10410, 10783,
 ProcedurePrims.defineCommand("set-visualize-vision-cone", 10792, 11010, (function() {
   let parentHvision = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.list.oneOf(LinkPrims.inLinkNeighbors("LINKS"))), function() { return PrimChecks.turtle.getVariable("vision"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("PARENT-VISION", parentHvision);
   if (world.observer.getGlobal("show-vision-cone?")) {
-    SelfManager.self().setVariable("hidden?", false);
+    PrimChecks.turtleOrLink.setVariable("hidden?", false);
     PrimChecks.turtle.setVariable("size", PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, parentHvision)));
   }
   else {
-    SelfManager.self().setVariable("hidden?", true);
+    PrimChecks.turtleOrLink.setVariable("hidden?", true);
     PrimChecks.turtle.setVariable("size", PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, parentHvision)));
   }
 }))
 ProcedurePrims.defineCommand("recolor-shade", 11020, 11136, (function() {
-  SelfManager.self().setVariable("color", PrimChecks.math.plus(111, PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("speed"))));
+  PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(111, PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("speed"))));
 }))
 ProcedurePrims.defineCommand("recolor-rainbow", 11144, 11608, (function() {
   if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 6)) {
-    SelfManager.self().setVariable("color", 15);
+    PrimChecks.turtleOrLink.setVariable("color", 15);
   }
   if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 5)) {
-    SelfManager.self().setVariable("color", 25);
+    PrimChecks.turtleOrLink.setVariable("color", 25);
   }
   if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 4)) {
-    SelfManager.self().setVariable("color", PrimChecks.math.minus(45, 1));
+    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.minus(45, 1));
   }
   if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 3)) {
-    SelfManager.self().setVariable("color", 55);
+    PrimChecks.turtleOrLink.setVariable("color", 55);
   }
   if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 2)) {
-    SelfManager.self().setVariable("color", 105);
+    PrimChecks.turtleOrLink.setVariable("color", 105);
   }
   if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 1)) {
-    SelfManager.self().setVariable("color", 115);
+    PrimChecks.turtleOrLink.setVariable("color", 115);
   }
   if (Prims.gte(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 7)) {
-    SelfManager.self().setVariable("color", PrimChecks.math.minus(5, 2));
+    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.minus(5, 2));
   }
   if (Prims.lt(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 1)) {
-    SelfManager.self().setVariable("color", PrimChecks.math.plus(5, 2));
+    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(5, 2));
   }
 }))
 ProcedurePrims.defineCommand("do-plots", 11686, 12440, (function() {

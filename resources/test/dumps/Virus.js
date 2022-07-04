@@ -141,10 +141,10 @@ ProcedurePrims.defineCommand("update-global-variables", 1962, 2157, (function() 
 }))
 ProcedurePrims.defineCommand("update-display", 2165, 2341, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    if (!Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("turtle-shape"))) {
-      SelfManager.self().setVariable("shape", world.observer.getGlobal("turtle-shape"));
+    if (!Prims.equality(PrimChecks.turtleOrLink.getVariable("shape"), world.observer.getGlobal("turtle-shape"))) {
+      PrimChecks.turtleOrLink.setVariable("shape", world.observer.getGlobal("turtle-shape"));
     }
-    SelfManager.self().setVariable("color", (Prims.ifElseValueBooleanCheck(PrimChecks.turtle.getVariable("sick?")) ? 15 : (Prims.ifElseValueBooleanCheck(PrimChecks.procedure.callReporter("immune?")) ? 5 : 55)));
+    PrimChecks.turtleOrLink.setVariable("color", (Prims.ifElseValueBooleanCheck(PrimChecks.turtle.getVariable("sick?")) ? 15 : (Prims.ifElseValueBooleanCheck(PrimChecks.procedure.callReporter("immune?")) ? 5 : 55)));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("get-older", 2391, 2675, (function() {

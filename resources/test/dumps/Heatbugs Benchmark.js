@@ -64,11 +64,11 @@ ProcedurePrims.defineCommand("setup", 262, 842, (function() {
   world.ticker.reset();
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(PrimChecks.validator.checkArg('N-OF', 1, world.observer.getGlobal("bug-count")), world.patches())), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "TURTLES"), function() {
-      SelfManager.self().setVariable("color", 65);
+      PrimChecks.turtleOrLink.setVariable("color", 65);
       PrimChecks.turtle.setVariable("size", 1.75);
       PrimChecks.turtle.setVariable("ideal-temp", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("min-ideal-temp")), PrimChecks.math.random(PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("max-ideal-temp")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("min-ideal-temp")))))));
       PrimChecks.turtle.setVariable("output-heat", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("min-output-heat")), PrimChecks.math.random(PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("max-output-heat")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("min-output-heat")))))));
-      PrimChecks.turtle.setVariable("unhappiness", PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ideal-temp")), PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("temp")))));
+      PrimChecks.turtle.setVariable("unhappiness", PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ideal-temp")), PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("temp")))));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
@@ -83,29 +83,29 @@ ProcedurePrims.defineCommand("go", 850, 1041, (function() {
 }))
 ProcedurePrims.defineCommand("recolor-patches", 1049, 1314, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("temp", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("temp")), PrimChecks.math.minus(1, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("evaporation-rate")))));
-    SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("temp"), 0, 500));
+    PrimChecks.patch.setVariable("temp", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.patch.getVariable("temp")), PrimChecks.math.minus(1, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("evaporation-rate")))));
+    PrimChecks.patch.setVariable("pcolor", ColorModel.scaleColor(15, PrimChecks.patch.getVariable("temp"), 0, 500));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("step", 1322, 1878, (function() {
-  PrimChecks.turtle.setVariable("unhappiness", PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ideal-temp")), PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("temp")))));
+  PrimChecks.turtle.setVariable("unhappiness", PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ideal-temp")), PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("temp")))));
   if (Prims.equality(PrimChecks.turtle.getVariable("unhappiness"), 0)) {
-    SelfManager.self().setPatchVariable("temp", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("temp")), PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("output-heat"))));
+    PrimChecks.patch.setVariable("temp", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("temp")), PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("output-heat"))));
   }
   else {
     let target = PrimChecks.procedure.callReporter("find-target"); ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET", target);
     if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), RandomPrims.randomLong(100)))) {
       var R = ProcedurePrims.callCommand("bug-move", target); if (R === DeathInterrupt) { return R; }
     }
-    SelfManager.self().setPatchVariable("temp", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("temp")), PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("output-heat"))));
+    PrimChecks.patch.setVariable("temp", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("temp")), PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("output-heat"))));
   }
 }))
 ProcedurePrims.defineReporter("find-target", 1944, 2090, (function() {
-  if (Prims.lt(SelfManager.self().getPatchVariable("temp"), PrimChecks.turtle.getVariable("ideal-temp"))) {
-    return PrimChecks.procedure.report(PrimChecks.agentset.maxOneOf(SelfManager.self().getNeighbors(), function() { return SelfManager.self().getPatchVariable("temp"); }));
+  if (Prims.lt(PrimChecks.patch.getVariable("temp"), PrimChecks.turtle.getVariable("ideal-temp"))) {
+    return PrimChecks.procedure.report(PrimChecks.agentset.maxOneOf(SelfManager.self().getNeighbors(), function() { return PrimChecks.patch.getVariable("temp"); }));
   }
   else {
-    return PrimChecks.procedure.report(PrimChecks.agentset.minOneOf(SelfManager.self().getNeighbors(), function() { return SelfManager.self().getPatchVariable("temp"); }));
+    return PrimChecks.procedure.report(PrimChecks.agentset.minOneOf(SelfManager.self().getNeighbors(), function() { return PrimChecks.patch.getVariable("temp"); }));
   }
 }))
 ProcedurePrims.defineCommand("bug-move", 2098, 2698, (function(target) {

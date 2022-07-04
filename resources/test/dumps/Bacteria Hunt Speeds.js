@@ -97,7 +97,7 @@ ProcedurePrims.defineCommand("setup", 1375, 1855, (function() {
   world.observer.setGlobal("flagella-size", 1.2);
   world.observer.setGlobal("wiggle?", true);
   world.observer.setGlobal("camouflage?", true);
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("setup-bacteria"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-predator"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
@@ -106,7 +106,7 @@ ProcedurePrims.defineCommand("setup-bacteria", 1863, 2142, (function() {
   var R = PrimChecks.task.forEach([1, 2, 3, 4, 5, 6], PrimChecks.task.checked(function(thisHvariation) {
     PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-bacteria-per-variation"), "BACTERIA"), function() {
-      SelfManager.self().setVariable("label-color", 0);
+      PrimChecks.turtleOrLink.setVariable("label-color", 0);
       PrimChecks.turtle.setVariable("size", 1);
       PrimChecks.turtle.setVariable("variation", thisHvariation);
       var R = ProcedurePrims.callCommand("make-flagella"); if (R === DeathInterrupt) { return R; }
@@ -117,8 +117,8 @@ ProcedurePrims.defineCommand("setup-bacteria", 1863, 2142, (function() {
 }))
 ProcedurePrims.defineCommand("setup-predator", 2150, 2312, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "PREDATORS"), function() {
-    SelfManager.self().setVariable("shape", "circle");
-    SelfManager.self().setVariable("color", world.observer.getGlobal("predator-color-visible"));
+    PrimChecks.turtleOrLink.setVariable("shape", "circle");
+    PrimChecks.turtleOrLink.setVariable("color", world.observer.getGlobal("predator-color-visible"));
     PrimChecks.turtle.setVariable("size", 1);
     PrimChecks.turtle.setVariable("heading", 315);
     SelfManager.self().fd(-(1));
@@ -128,14 +128,14 @@ ProcedurePrims.defineCommand("setup-predator", 2150, 2312, (function() {
 ProcedurePrims.defineCommand("make-flagella", 2320, 2638, (function() {
   let flagellaHshape = StringPrims.word("flagella-", PrimChecks.turtle.getVariable("variation")); ProcedurePrims.stack().currentContext().registerStringRunVar("FLAGELLA-SHAPE", flagellaHshape);
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-    SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FLAGELLA"));
-    SelfManager.self().setVariable("color", world.observer.getGlobal("bacteria-default-color"));
-    SelfManager.self().setVariable("label", "");
-    SelfManager.self().setVariable("shape", flagellaHshape);
+    PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("FLAGELLA"));
+    PrimChecks.turtleOrLink.setVariable("color", world.observer.getGlobal("bacteria-default-color"));
+    PrimChecks.turtleOrLink.setVariable("label", "");
+    PrimChecks.turtleOrLink.setVariable("shape", flagellaHshape);
     SelfManager.self().fd(-(0.4));
     PrimChecks.turtle.setVariable("size", world.observer.getGlobal("flagella-size"));
     var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(SelfManager.myself(), "CONNECTORS"), function() {
-      SelfManager.self().setVariable("hidden?", true);
+      PrimChecks.turtleOrLink.setVariable("hidden?", true);
       SelfManager.self().tie();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -157,7 +157,7 @@ ProcedurePrims.defineCommand("death", 3029, 3231, (function() {
 }))
 ProcedurePrims.defineCommand("make-a-removal-spot", 3239, 3341, (function() {
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-    SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS"));
+    PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS"));
     PrimChecks.turtle.setVariable("size", 1.5);
     PrimChecks.turtle.setVariable("countdown", 30);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -186,15 +186,15 @@ ProcedurePrims.defineCommand("move-predator", 3666, 4226, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PREDATORS"), function() {
     if (Prims.lt(world.observer.getGlobal("tick-counter"), 100)) {
       world.observer.setGlobal("camouflage?", false);
-      SelfManager.self().setVariable("color", world.observer.getGlobal("predator-color-visible"));
+      PrimChecks.turtleOrLink.setVariable("color", world.observer.getGlobal("predator-color-visible"));
     }
     else {
       world.observer.setGlobal("camouflage?", true);
-      SelfManager.self().setVariable("color", world.observer.getGlobal("predator-color-invisible"));
+      PrimChecks.turtleOrLink.setVariable("color", world.observer.getGlobal("predator-color-invisible"));
     }
     PrimChecks.turtle.setXY(MousePrims.getX(), MousePrims.getY());
     world.observer.setGlobal("predator-location", world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 1, PrimChecks.turtle.getVariable("xcor")), PrimChecks.validator.checkArg('PATCH', 1, PrimChecks.turtle.getVariable("ycor"))));
-    SelfManager.self().setVariable("hidden?", PrimChecks.math.not(MousePrims.isInside()));
+    PrimChecks.turtleOrLink.setVariable("hidden?", PrimChecks.math.not(MousePrims.isInside()));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("move-flagella", 4234, 4560, (function() {
@@ -225,26 +225,26 @@ ProcedurePrims.defineCommand("check-caught", 4568, 5024, (function() {
 ProcedurePrims.defineCommand("visualize-bacteria", 5270, 5742, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BACTERIA"), function() {
     if (Prims.equality(world.observer.getGlobal("visualize-variation"), "# flagella as label")) {
-      SelfManager.self().setVariable("label", StringPrims.word(PrimChecks.turtle.getVariable("variation"), "     "));
+      PrimChecks.turtleOrLink.setVariable("label", StringPrims.word(PrimChecks.turtle.getVariable("variation"), "     "));
     }
     else {
-      SelfManager.self().setVariable("label", "");
+      PrimChecks.turtleOrLink.setVariable("label", "");
     }
     if (PrimChecks.list.member(world.observer.getGlobal("visualize-variation"), ["flagella and color", "as color only"])) {
-      SelfManager.self().setVariable("color", PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("variation")), 1), [115, 105, 55, 35, 25, 15]));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("variation")), 1), [115, 105, 55, 35, 25, 15]));
     }
     else {
-      SelfManager.self().setVariable("color", world.observer.getGlobal("bacteria-default-color"));
+      PrimChecks.turtleOrLink.setVariable("color", world.observer.getGlobal("bacteria-default-color"));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("FLAGELLA"), function() {
-    SelfManager.self().setVariable("hidden?", PrimChecks.list.member(world.observer.getGlobal("visualize-variation"), ["as color only", "# flagella as label", "none"]));
+    PrimChecks.turtleOrLink.setVariable("hidden?", PrimChecks.list.member(world.observer.getGlobal("visualize-variation"), ["as color only", "# flagella as label", "none"]));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("visualize-removal-spots", 5750, 6001, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS"), function() {
     PrimChecks.turtle.setVariable("countdown", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("countdown")), 1));
-    SelfManager.self().setVariable("color", PrimChecks.list.lput(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("countdown")), 4), [0, 100, 0]));
+    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.list.lput(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("countdown")), 4), [0, 100, 0]));
     if (Prims.lte(PrimChecks.turtle.getVariable("countdown"), 0)) {
       return SelfManager.self().die();
     }

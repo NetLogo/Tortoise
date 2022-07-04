@@ -53,11 +53,11 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 237, 880, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("inner-neighbors", PrimChecks.procedure.callReporter("ellipse-in", world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
-    SelfManager.self().setPatchVariable("outer-neighbors", PrimChecks.procedure.callReporter("ellipse-ring", world.observer.getGlobal("outer-radius-x"), world.observer.getGlobal("outer-radius-y"), world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
+    PrimChecks.patch.setVariable("inner-neighbors", PrimChecks.procedure.callReporter("ellipse-in", world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
+    PrimChecks.patch.setVariable("outer-neighbors", PrimChecks.procedure.callReporter("ellipse-ring", world.observer.getGlobal("outer-radius-x"), world.observer.getGlobal("outer-radius-y"), world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   if (PrimChecks.agentset.anyWith(world.patches(), function() {
-    return PrimChecks.agentset.optimizeCount(SelfManager.self().getPatchVariable("outer-neighbors"), 0, (a, b) => a === b);
+    return PrimChecks.agentset.optimizeCount(PrimChecks.patch.getVariable("outer-neighbors"), 0, (a, b) => a === b);
   })) {
     UserDialogPrims.confirm(StringPrims.word("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ", " Please reset the sliders and press Setup again."));
     return PrimChecks.procedure.stop();
@@ -70,29 +70,29 @@ ProcedurePrims.defineCommand("setup", 237, 880, (function() {
 ProcedurePrims.defineCommand("restart", 1086, 1232, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("initial-density"))) {
-      SelfManager.self().setPatchVariable("pcolor", 9.9);
+      PrimChecks.patch.setVariable("pcolor", 9.9);
     }
     else {
-      SelfManager.self().setPatchVariable("pcolor", 0);
+      PrimChecks.patch.setVariable("pcolor", 0);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 1240, 1322, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("pick-new-color"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getPatchVariable("new-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.patch.getVariable("new-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("pick-new-color", 1330, 1895, (function() {
-  let activator = PrimChecks.agentset.countWith(SelfManager.self().getPatchVariable("inner-neighbors"), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }); ProcedurePrims.stack().currentContext().registerStringRunVar("ACTIVATOR", activator);
-  let inhibitor = PrimChecks.agentset.countWith(SelfManager.self().getPatchVariable("outer-neighbors"), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }); ProcedurePrims.stack().currentContext().registerStringRunVar("INHIBITOR", inhibitor);
+  let activator = PrimChecks.agentset.countWith(PrimChecks.patch.getVariable("inner-neighbors"), function() { return Prims.equality(PrimChecks.patch.getVariable("pcolor"), 9.9); }); ProcedurePrims.stack().currentContext().registerStringRunVar("ACTIVATOR", activator);
+  let inhibitor = PrimChecks.agentset.countWith(PrimChecks.patch.getVariable("outer-neighbors"), function() { return Prims.equality(PrimChecks.patch.getVariable("pcolor"), 9.9); }); ProcedurePrims.stack().currentContext().registerStringRunVar("INHIBITOR", inhibitor);
   let difference = PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, activator), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("ratio")), PrimChecks.validator.checkArg('*', 1, inhibitor))); ProcedurePrims.stack().currentContext().registerStringRunVar("DIFFERENCE", difference);
   if (Prims.gt(difference, 0)) {
-    SelfManager.self().setPatchVariable("new-color", 9.9);
+    PrimChecks.patch.setVariable("new-color", 9.9);
   }
   else {
     if (Prims.lt(difference, 0)) {
-      SelfManager.self().setPatchVariable("new-color", 0);
+      PrimChecks.patch.setVariable("new-color", 0);
     }
   }
 }))
@@ -107,10 +107,10 @@ ProcedurePrims.defineReporter("ellipse-ring", 2221, 2660, (function(outxHradius,
   }));
 }))
 ProcedurePrims.defineReporter("xdistance", 3278, 3391, (function(otherHpatch) {
-  return PrimChecks.procedure.report(SelfManager.self().distanceXY(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHpatch), function() { return SelfManager.self().getPatchVariable("pxcor"); }), SelfManager.self().getPatchVariable("pycor")));
+  return PrimChecks.procedure.report(SelfManager.self().distanceXY(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHpatch), function() { return PrimChecks.patch.getVariable("pxcor"); }), PrimChecks.patch.getVariable("pycor")));
 }))
 ProcedurePrims.defineReporter("ydistance", 3406, 3519, (function(otherHpatch) {
-  return PrimChecks.procedure.report(SelfManager.self().distanceXY(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHpatch), function() { return SelfManager.self().getPatchVariable("pycor"); })));
+  return PrimChecks.procedure.report(SelfManager.self().distanceXY(PrimChecks.patch.getVariable("pxcor"), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHpatch), function() { return PrimChecks.patch.getVariable("pycor"); })));
 }))
 world.observer.setGlobal("initial-density", 50);
 world.observer.setGlobal("ratio", 0.35);

@@ -71,10 +71,10 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 67, 351, (function() {
   world.clearAll();
   world.observer.setGlobal("traps-triggered", 0);
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(105, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.math.plus(105, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
-    SelfManager.self().setVariable("color", 9.9);
+    PrimChecks.turtleOrLink.setVariable("color", 9.9);
     PrimChecks.turtle.setVariable("size", 1.5);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
@@ -84,11 +84,11 @@ ProcedurePrims.defineCommand("go", 359, 782, (function() {
     return PrimChecks.procedure.stop();
   }
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
+    if (Prims.equality(PrimChecks.patch.getVariable("pcolor"), 15)) {
       return SelfManager.self().die();
     }
     else {
-      SelfManager.self().setPatchVariable("pcolor", 15);
+      PrimChecks.patch.setVariable("pcolor", 15);
       world.observer.setGlobal("traps-triggered", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("traps-triggered")), 1));
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
