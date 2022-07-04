@@ -79,7 +79,7 @@ class Validator
   typeError: (prim, value, expectedTypes) ->
     valueText = @valueToString(value)
     expectedText = @listTypeNames(expectedTypes)
-    @bundle.get("_ expected input to be _ but got _ instead.", prim, expectedText, valueText)
+    @bundle.get("_ expected input to be _ but got _ instead.", prim.toUpperCase(), expectedText, valueText)
 
   # (String, Any, Array[NLType]) => Unit
   throwTypeError: (prim, value, expectedTypes...) ->
