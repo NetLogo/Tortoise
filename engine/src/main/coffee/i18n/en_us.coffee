@@ -44,9 +44,6 @@ bundle = {
   , '_ is too large to be represented exactly as an integer in NetLogo': (n) ->
       "#{n} is too large to be represented exactly as an integer in NetLogo"
 
-  , '_ expected input to be _ but got _ instead.': (prim, expectedType, actualType) ->
-      "#{prim} expected input to be #{expectedType} but got #{actualType} instead."
-
   , 'List is empty.': () ->
       "List is empty."
 
@@ -97,6 +94,9 @@ bundle = {
 
   , '_ expected input to be a _ agentset or _ but got _ instead.': (prim, agentType, value) ->
     "#{prim} expected input to be a #{agentType} agentset or #{agentType} but got #{value} instead."
+
+  , '_ expected input to be _ but got _ instead.': (prim, expectedType, actualType) ->
+    "#{prim} expected input to be #{expectedType} but got #{actualType} instead."
 
   , 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.': (prim, agentType, list, value) ->
     "List inputs to #{prim} must only contain #{agentType}, #{agentType} agentset, or list elements.  The list #{list} contained #{value} which is NOT a #{agentType} or #{agentType} agentset."
