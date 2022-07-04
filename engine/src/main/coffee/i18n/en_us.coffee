@@ -143,6 +143,9 @@ bundle = {
   , '_ is not a _': (breed1, breed2) ->
     "#{breed1} is not a #{breed2}"
 
+  , 'An rgb list must contain 3 numbers 0-255': ->
+    'An rgb list must contain 3 numbers 0-255'
+
   , 'An rgb list must contain 3 or 4 numbers 0-255': ->
     'An rgb list must contain 3 or 4 numbers 0-255'
 

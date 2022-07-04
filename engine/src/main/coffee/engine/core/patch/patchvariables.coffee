@@ -1,24 +1,43 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 ColorModel = require('engine/core/colormodel')
+{ checks } = require('engine/core/typechecker')
 
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
 
-{ all }               = require('brazierjs/array')
-{ isArray, isNumber } = require('brazierjs/type')
+{ all }                      = require('brazierjs/array')
+{ maybe, None, isSomething } = require('brazierjs/maybe')
+{ isArray, isNumber }        = require('brazierjs/type')
 
-# In this file: `this.type` is `Patch`
+# (Number|RGB|RGBA, Boolean) => Maybe[String]
+validateColor = (color, isPcolor) ->
 
-# (Number|(Number, Number, Number)) => Unit
+  hasBadLength    = (xs) -> xs.length isnt 3 and (isPcolor or xs.length isnt 4)
+  isBadCompNumber = (x) -> not (0 <= x <= 255)
+  isBadCompType   = (x) -> not checks.isNumber(x)
+
+  if checks.isList(color) and (hasBadLength(color) or color.some(isBadCompType))
+    maybe("Invalid RGB format")
+  else if checks.isList(color) and (color.some(isBadCompNumber))
+    maybe("Invalid RGB number")
+  else
+    None
+
+# (Number|RGB|RGBA) => Maybe[String]
 setPcolor = (color) ->
-  wrappedColor = ColorModel.wrapColor(color)
-  if @_pcolor isnt wrappedColor
-    @_pcolor = wrappedColor
-    @_genVarUpdate("pcolor")
-    if (isNumber(wrappedColor) and wrappedColor isnt 0) or
-       ( isArray(wrappedColor) and not all((n) -> n % 10 is 0)(wrappedColor))
-      @_declareNonBlackPatch()
-  return
+
+  errorMaybe = validateColor(color, true)
+
+  if not isSomething(errorMaybe)
+    wrappedColor = ColorModel.wrapColor(color)
+    if @_pcolor isnt wrappedColor
+      @_pcolor = wrappedColor
+      @_genVarUpdate("pcolor")
+      if (isNumber(wrappedColor) and wrappedColor isnt 0) or
+         ( isArray(wrappedColor) and not all((n) -> n % 10 is 0)(wrappedColor))
+        @_declareNonBlackPatch()
+
+  errorMaybe
 
 # (String) => Unit
 setPlabel = (label) ->
@@ -35,11 +54,16 @@ setPlabel = (label) ->
 
   return
 
-# (Number) => Unit
+# (Number|RGB|RGBA) => Maybe[String]
 setPlabelColor = (color) ->
-  @_plabelcolor = ColorModel.wrapColor(color)
-  @_genVarUpdate("plabel-color")
-  return
+
+  errorMaybe = validateColor(color, false)
+
+  if not isSomething(errorMaybe)
+    @_plabelcolor = ColorModel.wrapColor(color)
+    @_genVarUpdate("plabel-color")
+
+  errorMaybe
 
 Setters = {
   setPcolor

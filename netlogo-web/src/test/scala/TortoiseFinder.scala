@@ -107,7 +107,6 @@ private[tortoise] object Freebies {
     "Links::LinkCreationTypeChecking_2D",
     "MoveTo::MoveTo_2D",
     "Patch::SetVariableRuntime_2D",
-    "RGB::PatchesRGBColor_2D",
     "Random::OneOfWithAgentSets",
     "Sort::SortByBadReporter",
     "TypeChecking::AgentClassChecking1",
