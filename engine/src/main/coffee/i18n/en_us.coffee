@@ -152,6 +152,9 @@ bundle = {
   , 'RGB values must be 0-255': ->
     'RGB values must be 0-255'
 
+  , "can't set _ variable _ to non-number _": (e) ->
+    "can't set #{e.myType} variable #{e.varName.toUpperCase()} to non-number #{e.target}"
+
   , '_ breed does not own variable _': (breedName, varName) ->
     "#{breedName} breed does not own variable #{varName}"
 

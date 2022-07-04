@@ -2,18 +2,27 @@
 
 { fold } = require('brazierjs/maybe')
 
+{ checks } = require('engine/core/typechecker')
+
 # (() => Agent, Validator) => (String, Map[Any, String]) => (Any) => Unit
-genSetter = (getSelf, validator) -> (name, mappings) ->
-  (value) =>
-    patchOrTurtle = getSelf()
-    fold(->)(
-      (error) =>
-        msg        = mappings.get(error)
-        defaultMsg = "An unknown error occurred when setting the '#{name}' of \
-'#{patchOrTurtle}': #{error}"
-        validator.error('set', msg ? defaultMsg)
-    )(patchOrTurtle.setPatchVariableIfValid(name, value))
-    return
+genSetter = (getSelf, validator) -> (name, mappings) -> (value) ->
+
+  pot = getSelf() # pot: patchOrTurtle
+
+  fold(->)(
+    (error) =>
+
+      target      = if checks.isPatch(pot) then pot else pot.getPatchHere()
+      environment = { myType: "patch", varName: name, target }
+      msg         = mappings.get(error)
+      defaultMsg  = "An unknown error occurred when setting the '#{name}' of \
+'#{pot}': #{error}"
+
+      validator.error('set', msg ? defaultMsg, environment)
+
+  )(pot.setPatchVariableIfValid(name, value))
+
+  return
 
 class PatchChecks
 
@@ -24,15 +33,20 @@ class PatchChecks
 
     @_setterChecks = new Map()
 
+    invalidColorTypeMsg = "can't set _ variable _ to non-number _"
     invalidRGBMsg3      = "An rgb list must contain 3 numbers 0-255"
     invalidRGBMsg3Or4   = "An rgb list must contain 3 or 4 numbers 0-255"
     invalidRGBNumberMsg = "RGB values must be 0-255"
 
     pcolorMappings = new Map([ ["Invalid RGB format", invalidRGBMsg3]
-                             , ["Invalid RGB number", invalidRGBNumberMsg]])
+                             , ["Invalid RGB number", invalidRGBNumberMsg]
+                             , ["Invalid color type", invalidColorTypeMsg]
+                             ])
 
     plabelColorMappings = new Map([ ["Invalid RGB format", invalidRGBMsg3Or4]
-                                  , ["Invalid RGB number", invalidRGBNumberMsg]])
+                                  , ["Invalid RGB number", invalidRGBNumberMsg]
+                                  , ["Invalid color type", invalidColorTypeMsg]
+                                  ])
 
     asSetter     = genSetter(@getSelf, @validator)
     toSetterPair = ([varName, mappings]) -> [varName, asSetter(varName, mappings)]

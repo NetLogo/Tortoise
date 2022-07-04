@@ -20,6 +20,8 @@ validateColor = (color, isPcolor) ->
     maybe("Invalid RGB format")
   else if checks.isList(color) and (color.some(isBadCompNumber))
     maybe("Invalid RGB number")
+  else if not checks.isList(color) and not checks.isNumber(color)
+    maybe("Invalid color type")
   else
     None
 
