@@ -45,6 +45,10 @@ module.exports =
       @_varManager[varName] = value
       return
 
+    # (String, Any) => Maybe[Any]
+    setPatchVariableIfValid: (varName, value) ->
+      @_varManager.setIfValid(varName, value)
+
     # (Turtle) => Unit
     untrackTurtle: (turtle) ->
       @_turtles.splice(@_turtles.indexOf(turtle, 0), 1)

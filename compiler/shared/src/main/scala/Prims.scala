@@ -71,12 +71,12 @@ trait PrimUtils {
 
   trait VariablePrims {
     protected def procedureAndVarName(r: Reporter, action: String): Option[(String, String)] = PartialFunction.condOpt(r) {
-      case bv: prim._breedvariable        => (s"PrimChecks.turtle.${      action}Variable", bv.name.toLowerCase)
-      case bv: prim._linkbreedvariable    => (s"PrimChecks.link.${        action}Variable", bv.name.toLowerCase)
-      case tv: prim._turtlevariable       => (s"PrimChecks.turtle.${      action}Variable", tv.displayName.toLowerCase)
-      case tv: prim._linkvariable         => (s"PrimChecks.link.${        action}Variable", tv.displayName.toLowerCase)
-      case tv: prim._turtleorlinkvariable => (s"PrimChecks.turtleOrLink.${action}Variable", tv.varName.toLowerCase)
-      case pv: prim._patchvariable        => (s"SelfManager.self().${action}PatchVariable", pv.displayName.toLowerCase)
+      case bv: prim._breedvariable        => (s"PrimChecks.turtle.${       action}Variable", bv.name.toLowerCase)
+      case bv: prim._linkbreedvariable    => (s"PrimChecks.link.${         action}Variable", bv.name.toLowerCase)
+      case tv: prim._turtlevariable       => (s"PrimChecks.turtle.${       action}Variable", tv.displayName.toLowerCase)
+      case tv: prim._linkvariable         => (s"PrimChecks.link.${         action}Variable", tv.displayName.toLowerCase)
+      case tv: prim._turtleorlinkvariable => (s"PrimChecks.turtleOrLink.${ action}Variable", tv.varName.toLowerCase)
+      case pv: prim._patchvariable        => (s"PrimChecks.patch.${        action}Variable", pv.displayName.toLowerCase)
       case ov: prim._observervariable     => (s"world.observer.${action}Global", ov.displayName.toLowerCase)
       }
   }

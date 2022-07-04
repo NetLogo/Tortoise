@@ -2,15 +2,16 @@
 
 { checks } = require('../core/typechecker')
 
-Validator       = require('./validator')
 AgentSetChecks  = require('./agentset-checks')
 ColorChecks     = require('./color-checks')
+LinkChecks      = require('./link-checks')
 ListChecks      = require('./list-checks')
 MathChecks      = require('./math-checks')
+PatchChecks     = require('./patch-checks')
 ProcedureChecks = require('./procedure-checks')
-TurtleChecks    = require('./turtle-checks')
-LinkChecks      = require('./link-checks')
 TaskChecks      = require('./task-checks')
+TurtleChecks    = require('./turtle-checks')
+Validator       = require('./validator')
 
 class Checker
 
@@ -27,6 +28,7 @@ class Checker
     @procedure = new ProcedureChecks(@validator, procedurePrims)
     @turtle    = new TurtleChecks( @validator, getSelf, world.turtleManager
                                  , world.breedManager)
+    @patch     = new PatchChecks(@validator, getSelf)
     @link      = new LinkChecks(@validator, getSelf, selfPrims)
     @task      = new TaskChecks(@validator)
 
