@@ -221,9 +221,9 @@ object BrowserCompilerTest extends TestSuite {
         "any? turtles" -> "PrimChecks.agentset.any(world.turtles())",
         "any? apples"  -> """PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, world.observer.getGlobal(\"apples\")))""",
         "[color] of turtles" ->
-          """PrimChecks.agentset.of(world.turtles(), function() { return SelfManager.self().getVariable(\"color\"); })""",
+          """PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtleOrLink.getVariable(\"color\"); })""",
         "[color] of apples"  ->
-          """PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.observer.getGlobal(\"apples\")), function() { return SelfManager.self().getVariable(\"color\"); })"""
+          """PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.observer.getGlobal(\"apples\")), function() { return PrimChecks.turtleOrLink.getVariable(\"color\"); })"""
       )
       compiler.fromModel(compReq)
 
