@@ -78,8 +78,8 @@ ProcedurePrims.defineCommand("setup", 27, 270, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(500, ""), function() {
     PrimChecks.turtle.setVariable("wealth", 100);
-    SelfManager.self().setVariable("shape", "circle");
-    SelfManager.self().setVariable("color", 55);
+    PrimChecks.turtleOrLink.setVariable("shape", "circle");
+    PrimChecks.turtleOrLink.setVariable("color", 55);
     PrimChecks.turtle.setVariable("size", 2);
     PrimChecks.turtle.setXY(PrimChecks.validator.checkArg('SETXY', 1, PrimChecks.turtle.getVariable("wealth")), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }

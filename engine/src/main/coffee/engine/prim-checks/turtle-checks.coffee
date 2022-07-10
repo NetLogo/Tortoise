@@ -1,24 +1,96 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ fold } = require('brazierjs/maybe')
+
 { TopologyInterrupt, TowardsInterrupt } = require('util/interrupts')
+
+# (() => Agent, Validator) => (String, Map[Any, String]) => (Any) => Unit
+genSetter = (getSelf, validator) -> (name, mappings) ->
+  (value) =>
+    turtle = getSelf()
+    fold(->)(
+      (error) =>
+        msg        = mappings.get(error)
+        defaultMsg = "An unknown error occurred when setting the '#{name}' of \
+'#{turtle}': #{error}"
+        validator.error('set', msg ? defaultMsg)
+    )(turtle.setIfValid(name, value))
+    return
 
 class TurtleChecks
 
-  _getterChecks: null
-  _setterChecks: null
+  _getterChecks: null # Map[String, (Any) => Unit]
+  _setterChecks: null # Map[String, (Any) => Unit]
 
-  constructor: (@validator, @getSelf) ->
+  # (Validator, () => Agent, TurtleManager, BreedManager)
+  constructor: (@validator, @getSelf, @turtleManager, @breedManager) ->
+
     @_getterChecks = new Map()
-    @_setterChecks = new Map()
-    @_setterChecks.set("xcor", @makeCheckedSetter("xcor", 'Cannot move turtle beyond the world_s edge.'))
-    @_setterChecks.set("ycor", @makeCheckedSetter("ycor", 'Cannot move turtle beyond the world_s edge.'))
 
-  makeCheckedSetter: (name, error) ->
-    (value) =>
-      turtle = @getSelf()
-      if not turtle.setIfValid(name, value)
-        @validator.error('set', error)
-      return
+    cannotMoveMsg       = "Cannot move turtle beyond the world_s edge."
+    invalidRGBMsg       = "An rgb list must contain 3 or 4 numbers 0-255"
+    invalidRGBNumberMsg = "RGB values must be 0-255"
+
+    corSetterMappings   = new Map([ [TopologyInterrupt   , cannotMoveMsg]])
+    colorSetterMappings = new Map([ ["Invalid RGB format", invalidRGBMsg]
+                                  , ["Invalid RGB number", invalidRGBNumberMsg]])
+
+    asSetter     = genSetter(@getSelf, @validator)
+    toSetterPair = ([varName, mappings]) -> [varName, asSetter(varName, mappings)]
+
+    @_setterChecks =
+      new Map(
+        [ ["xcor"       ,   corSetterMappings]
+        , ["ycor"       ,   corSetterMappings]
+        , ["color"      , colorSetterMappings]
+        , ["label-color", colorSetterMappings]
+        ].map(toSetterPair)
+      )
+
+  # (Number) => Agent
+  getTurtle: (id) ->
+    if not Number.isInteger(id)
+      @validator.error('turtle', '_ is not an integer', id)
+    @turtleManager.getTurtle(id)
+
+  # (String, Number) => Agent
+  getTurtleOfBreed: (breedName, id) ->
+    agent   = @getTurtle(id)
+    isValid = agent.id isnt -1
+    if isValid and agent.getBreedName().toUpperCase() isnt breedName.toUpperCase()
+      lowerName      = breedName.toLowerCase()
+      targetSingular = @breedManager.get(breedName).singular.toUpperCase()
+      turtleStr      = "#{agent.getBreedNameSingular()} #{agent.id}"
+      @validator.error(lowerName, '_ is not a _', turtleStr, targetSingular)
+    agent
+
+  # (String) => Any
+  getVariable: (name) ->
+    turtle = @getSelf()
+    if not turtle.hasVariable(name)
+      msgKey    = "_ breed does not own variable _"
+      upperName = name.toUpperCase()
+      @validator.error(upperName, msgKey, turtle.getBreedName(), upperName)
+    else if @_getterChecks.has(name)
+      check = @_getterChecks.get(name)
+      check(name)
+    else
+      turtle.getVariable(name)
+
+  # (String, Any) => Unit
+  setVariable: (name, value) ->
+    turtle = @getSelf()
+    if not turtle.hasVariable(name)
+      msgKey    = "_ breed does not own variable _"
+      upperName = name.toUpperCase()
+      @validator.error('set', msgKey, turtle.getBreedName(), upperName)
+    else if @_setterChecks.has(name)
+      check = @_setterChecks.get(name)
+      check(value)
+    else
+      turtle.setVariable(name, value)
+
+    return
 
   # (Number, Number) => Unit
   setXY: (x, y) ->
@@ -42,33 +114,5 @@ class TurtleChecks
     if heading is TowardsInterrupt
       @validator.error('towardsxy', 'No heading is defined from a point (_,_) to that same point.', x, y)
     heading
-
-  # (String, Any) => Unit
-  setVariable: (name, value) ->
-    turtle = @getSelf()
-    if not turtle.hasVariable(name)
-      msgKey    = "_ breed does not own variable _"
-      upperName = name.toUpperCase()
-      @validator.error('set', msgKey, turtle.getBreedName(), upperName)
-    else if @_setterChecks.has(name)
-      check = @_setterChecks.get(name)
-      check(value)
-    else
-      turtle.setVariable(name, value)
-
-    return
-
-  # (String) => Any
-  getVariable: (name) ->
-    turtle = @getSelf()
-    if not turtle.hasVariable(name)
-      msgKey    = "_ breed does not own variable _"
-      upperName = name.toUpperCase()
-      @validator.error(upperName, msgKey, turtle.getBreedName(), upperName)
-    else if @_getterChecks.has(name)
-      check = @_getterChecks.get(name)
-      check(name)
-    else
-      turtle.getVariable(name)
 
 module.exports = TurtleChecks

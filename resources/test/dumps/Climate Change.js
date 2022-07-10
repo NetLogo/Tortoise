@@ -74,16 +74,16 @@ ProcedurePrims.defineCommand("setup-world", 676, 1134, (function() {
   world.observer.setGlobal("sky-top", PrimChecks.math.minus(world.topology.maxPycor, 5));
   world.observer.setGlobal("earth-top", 0);
   var R = ProcedurePrims.ask(world.patches(), function() {
-    if (Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("sky-top"))) {
-      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(9.9, SelfManager.self().getPatchVariable("pycor"), 22, 15));
+    if (Prims.gt(PrimChecks.patch.getVariable("pycor"), world.observer.getGlobal("sky-top"))) {
+      PrimChecks.patch.setVariable("pcolor", ColorModel.scaleColor(9.9, PrimChecks.patch.getVariable("pycor"), 22, 15));
     }
-    if ((Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("sky-top")) && Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("earth-top")))) {
-      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(105, SelfManager.self().getPatchVariable("pycor"), -20, 20));
+    if ((Prims.lte(PrimChecks.patch.getVariable("pycor"), world.observer.getGlobal("sky-top")) && Prims.gt(PrimChecks.patch.getVariable("pycor"), world.observer.getGlobal("earth-top")))) {
+      PrimChecks.patch.setVariable("pcolor", ColorModel.scaleColor(105, PrimChecks.patch.getVariable("pycor"), -20, 20));
     }
-    if (Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("earth-top"))) {
-      SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(15, 3));
+    if (Prims.lt(PrimChecks.patch.getVariable("pycor"), world.observer.getGlobal("earth-top"))) {
+      PrimChecks.patch.setVariable("pcolor", PrimChecks.math.plus(15, 3));
     }
-    if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("earth-top"))) {
+    if (Prims.equality(PrimChecks.patch.getVariable("pycor"), world.observer.getGlobal("earth-top"))) {
       var R = ProcedurePrims.callCommand("update-albedo"); if (R === DeathInterrupt) { return R; }
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -98,7 +98,7 @@ ProcedurePrims.defineCommand("go", 1171, 1496, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("update-albedo", 1504, 1579, (function() {
-  SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, world.observer.getGlobal("albedo"), 0, 1));
+  PrimChecks.patch.setVariable("pcolor", ColorModel.scaleColor(55, world.observer.getGlobal("albedo"), 0, 1));
 }))
 ProcedurePrims.defineCommand("add-cloud", 1587, 2772, (function() {
   let skyHheight = PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("sky-top")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("earth-top"))); ProcedurePrims.stack().currentContext().registerStringRunVar("SKY-HEIGHT", skyHheight);
@@ -113,7 +113,7 @@ ProcedurePrims.defineCommand("add-cloud", 1587, 2772, (function() {
     PrimChecks.turtle.setVariable("cloud-speed", speed);
     PrimChecks.turtle.setVariable("cloud-id", id);
     PrimChecks.turtle.setXY(PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, x), RandomPrims.randomLong(9)), 4), PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, y), 2.5), PrimChecks.math.randomFloat(2)), PrimChecks.math.randomFloat(2)));
-    SelfManager.self().setVariable("color", 9.9);
+    PrimChecks.turtleOrLink.setVariable("color", 9.9);
     PrimChecks.turtle.setVariable("size", PrimChecks.math.plus(2, RandomPrims.randomLong(2)));
     PrimChecks.turtle.setVariable("heading", 90);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -139,7 +139,7 @@ ProcedurePrims.defineCommand("create-sunshine", 3345, 3685, (function() {
   if (Prims.gt(PrimChecks.math.mult(10, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("sun-brightness"))), RandomPrims.randomLong(50))) {
     var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "RAYS"), function() {
       PrimChecks.turtle.setVariable("heading", 160);
-      SelfManager.self().setVariable("color", 45);
+      PrimChecks.turtleOrLink.setVariable("color", 45);
       PrimChecks.turtle.setXY(PrimChecks.math.plus(RandomPrims.randomLong(10), world.topology.minPxcor), world.topology.maxPycor);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
@@ -156,8 +156,8 @@ ProcedurePrims.defineCommand("encounter-earth", 3857, 4208, (function() {
     }
     else {
       SelfManager.self().right(PrimChecks.math.minus(RandomPrims.randomLong(45), RandomPrims.randomLong(45)));
-      SelfManager.self().setVariable("color", PrimChecks.math.plus(PrimChecks.math.minus(15, 2), RandomPrims.randomLong(4)));
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(PrimChecks.math.minus(15, 2), RandomPrims.randomLong(4)));
+      PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
@@ -173,9 +173,9 @@ ProcedurePrims.defineCommand("run-heat", 4216, 5125, (function() {
     }
     if (Prims.gte(PrimChecks.turtle.getVariable("ycor"), world.observer.getGlobal("earth-top"))) {
       if (((Prims.gt(world.observer.getGlobal("temperature"), PrimChecks.math.plus(20, RandomPrims.randomLong(40))) && Prims.gt(PrimChecks.turtle.getVariable("xcor"), 0)) && Prims.lt(PrimChecks.turtle.getVariable("xcor"), PrimChecks.math.minus(world.topology.maxPxcor, 8)))) {
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("IRS"));
+        PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("IRS"));
         PrimChecks.turtle.setVariable("heading", 20);
-        SelfManager.self().setVariable("color", 125);
+        PrimChecks.turtleOrLink.setVariable("color", 125);
       }
       else {
         PrimChecks.turtle.setVariable("heading", PrimChecks.math.plus(100, RandomPrims.randomLong(160)));
@@ -190,10 +190,10 @@ ProcedurePrims.defineCommand("run-ir", 5133, 5478, (function() {
     }
     SelfManager.self()._optimalFdLessThan1(0.3);
     if (Prims.lte(PrimChecks.turtle.getVariable("ycor"), world.observer.getGlobal("earth-top"))) {
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
+      PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
       SelfManager.self().right(RandomPrims.randomLong(45));
       SelfManager.self().right(-(RandomPrims.randomLong(45)));
-      SelfManager.self().setVariable("color", PrimChecks.math.plus(PrimChecks.math.minus(15, 2), RandomPrims.randomLong(4)));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(PrimChecks.math.minus(15, 2), RandomPrims.randomLong(4)));
     }
     if (PrimChecks.agentset.any(SelfManager.self().breedHere("CO2S"))) {
       PrimChecks.turtle.setVariable("heading", PrimChecks.math.minus(180, PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("heading"))));
@@ -203,7 +203,7 @@ ProcedurePrims.defineCommand("run-ir", 5133, 5478, (function() {
 ProcedurePrims.defineCommand("add-co2", 5486, 5737, (function() {
   let skyHheight = PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("sky-top")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("earth-top"))); ProcedurePrims.stack().currentContext().registerStringRunVar("SKY-HEIGHT", skyHheight);
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(25, "CO2S"), function() {
-    SelfManager.self().setVariable("color", 55);
+    PrimChecks.turtleOrLink.setVariable("color", 55);
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("earth-top")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, skyHheight))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
@@ -219,7 +219,7 @@ ProcedurePrims.defineCommand("run-co2", 5873, 6132, (function() {
     SelfManager.self().right(PrimChecks.math.minus(RandomPrims.randomLong(51), 25));
     let dist = PrimChecks.math.plus(0.05, PrimChecks.math.randomFloat(0.1)); ProcedurePrims.stack().currentContext().registerStringRunVar("DIST", dist);
     if (PrimChecks.agentset.of(SelfManager.self().patchAhead(dist), function() {
-      return PrimChecks.math.not(ColorModel.areRelatedByShade(105, SelfManager.self().getPatchVariable("pcolor")));
+      return PrimChecks.math.not(ColorModel.areRelatedByShade(105, PrimChecks.patch.getVariable("pcolor")));
     })) {
       PrimChecks.turtle.setVariable("heading", PrimChecks.math.minus(180, PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("heading"))));
     }

@@ -225,7 +225,7 @@ module.exports =
     # () => Unit
     clearLinks: ->
       @linkManager.clear()
-      @turtles().ask((-> SelfManager.self().linkManager.clear()), false)
+      @turtles().ask((=> @selfManager.self().linkManager.clear()), false)
       return
 
     # () => Unit

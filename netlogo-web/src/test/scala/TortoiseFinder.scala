@@ -68,10 +68,9 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
 }
 
 class TestReporters extends ReporterTests with TortoiseFinder {
-  import Freebies._
   override val freebies = Map(
     "Version::Version_2D" -> "Assumes JVM NetLogo version numbers"
-  ) ++ incErrorDetectReporters ++ awaitingFixReporters
+  )
 }
 
 class TestCommands extends CommandTests with TortoiseFinder {
@@ -79,31 +78,23 @@ class TestCommands extends CommandTests with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
-  ) ++ incErrorDetectCommands ++ preferExtensionsCommands ++ lameCommands ++ awaitingFixCommands
+  ) ++ incErrorDetectCommands ++ preferExtensionsCommands ++ headlessCommands ++ awaitingFixCommands
 }
 
 private[tortoise] object Freebies {
 
-  def incErrorDetectCommands     = asFreebieMap(  incErrorDetectCommandNames, incErrorDetectStr)
-  def lameCommands               = asFreebieMap(            lameCommandNames, lameCommandStr)
-  def preferExtensionsCommands   = asFreebieMap(preferExtensionsCommandNames, preferExtensionsStr)
-  def awaitingFixCommands        = asFreebieMap(     awaitingFixCommandNames, awaitingFixStr)
-
-  def incErrorDetectReporters    = asFreebieMap( incErrorDetectReporterNames, incErrorDetectStr)
-  def awaitingFixReporters       = asFreebieMap(    awaitingFixReporterNames, awaitingFixStr)
+  def incErrorDetectCommands   = asFreebieMap(  incErrorDetectCommandNames,   incErrorDetectStr)
+  def headlessCommands         = asFreebieMap(        headlessCommandNames,  headlessCommandStr)
+  def preferExtensionsCommands = asFreebieMap(preferExtensionsCommandNames, preferExtensionsStr)
+  def awaitingFixCommands      = asFreebieMap(     awaitingFixCommandNames,      awaitingFixStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
   private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
-  private val incErrorDetectReporterNames = Seq(
-    "Color::ExtractRGB"
-  )
   private val incErrorDetectCommandNames = Seq(
     "Ask::AskAllTurtles",
     "Ask::AskAllPatches",
     "Breeds::SetBreedToNonBreed",
-    "CommandLambda::*WrongTypeOfTask1",
-    "CommandLambda::WrongTypeOfTask2",
     "ComparingAgents::ComparingLinks",
     "DeadTurtles::DeadTurtles1",
     "DeadTurtles::DeadTurtles5",
@@ -115,21 +106,16 @@ private[tortoise] object Freebies {
     "Links::LinkNotAllowed_2D",
     "Links::LinkCreationTypeChecking_2D",
     "MoveTo::MoveTo_2D",
-    "Patch::SetVariableRuntime_2D",
-    "RGB::PatchesRGBColor_2D",
-    "RGB::TurtlesRGBColor",
-    "RGB::LinksRGBColor",
     "Random::OneOfWithAgentSets",
     "Sort::SortByBadReporter",
-    "Turtles::Turtles1a",
     "TypeChecking::AgentClassChecking1",
     "TypeChecking::AgentClassChecking3a",
     "TypeChecking::AgentClassChecking3b",
     "TypeChecking::RunRetainsAgentContext"
   )
 
-  private val lameCommandStr = "This test is LAME!"
-  private val lameCommandNames = Seq(
+  private val headlessCommandStr = "This test relies of behavior that only makes sense in Headless"
+  private val headlessCommandNames = Seq(
     "UserPrimitives::UserReporters_Headless"
   )
 
@@ -145,12 +131,6 @@ private[tortoise] object Freebies {
   private val awaitingFixCommandNames =
     Seq(
       "Timer::Timer1"
-    , "Lists::ForeachWithConciseVariadicCommand"
-    )
-  private val awaitingFixReporterNames =
-    Seq(
-      "Lists::MapDoublyVariadic"
-    , "Lists::MapWithMinArgs"
     )
 
 }

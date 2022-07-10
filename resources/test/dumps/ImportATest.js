@@ -120,76 +120,76 @@ ProcedurePrims.defineCommand("test-drawing-url-sync", 194156, 194251, (function(
 ProcedurePrims.defineCommand("test-drawing-url", 194259, 194353, (function() {
   world.clearPatches();
   world.turtleManager.clearTurtles();
-  Extensions["FETCH"].prims["URL-ASYNC"](PrimChecks.procedure.callReporter("image-url"), Tasks.commandTask(function(_0) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  Extensions["FETCH"].prims["URL-ASYNC"](PrimChecks.procedure.callReporter("image-url"), PrimChecks.task.checked(function(_0) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     Extensions["IMPORT-A"].prims["DRAWING"](_0);
-  }, "import-a:drawing"));
+  }, "import-a:drawing", false, false));
 }))
 ProcedurePrims.defineCommand("test-pcolors-url", 194361, 194455, (function() {
   world.clearPatches();
   world.turtleManager.clearTurtles();
-  Extensions["FETCH"].prims["URL-ASYNC"](PrimChecks.procedure.callReporter("image-url"), Tasks.commandTask(function(_0) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  Extensions["FETCH"].prims["URL-ASYNC"](PrimChecks.procedure.callReporter("image-url"), PrimChecks.task.checked(function(_0) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     Extensions["IMPORT-A"].prims["PCOLORS"](_0);
-  }, "import-a:pcolors"));
+  }, "import-a:pcolors", false, false));
 }))
 ProcedurePrims.defineCommand("test-pcolors-rgb-url", 194463, 194565, (function() {
   world.clearPatches();
   world.turtleManager.clearTurtles();
-  Extensions["FETCH"].prims["URL-ASYNC"](PrimChecks.procedure.callReporter("image-url"), Tasks.commandTask(function(_0) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  Extensions["FETCH"].prims["URL-ASYNC"](PrimChecks.procedure.callReporter("image-url"), PrimChecks.task.checked(function(_0) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     Extensions["IMPORT-A"].prims["PCOLORS-RGB"](_0);
-  }, "import-a:pcolors-rgb"));
+  }, "import-a:pcolors-rgb", false, false));
 }))
 ProcedurePrims.defineCommand("test-world-url", 194573, 194760, (function() {
   world.clearPatches();
   world.turtleManager.clearTurtles();
   let x = world.ticker.tickCount(); ProcedurePrims.stack().currentContext().registerStringRunVar("X", x);
-  Extensions["FETCH"].prims["URL-ASYNC"](PrimChecks.procedure.callReporter("world-url"), Tasks.commandTask(function(worldHtext) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  Extensions["FETCH"].prims["URL-ASYNC"](PrimChecks.procedure.callReporter("world-url"), PrimChecks.task.checked(function(worldHtext) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     Extensions["IMPORT-A"].prims["WORLD"](worldHtext);
     world.ticker.reset();
     for (let _index_194738_194744 = 0, _repeatcount_194738_194744 = StrictMath.floor(x); _index_194738_194744 < _repeatcount_194738_194744; _index_194738_194744++) {
       world.ticker.tick();
     }
-  }, "[ world-text -> import-a:world world-text reset-ticks repeat x [ tick ] ]"));
+  }, "[ world-text -> import-a:world world-text reset-ticks repeat x [ tick ] ]", false, false));
 }))
 ProcedurePrims.defineCommand("test-drawing-file", 194768, 194869, (function() {
   world.clearPatches();
   world.turtleManager.clearTurtles();
-  Extensions["FETCH"].prims["FILE-ASYNC"](PrimChecks.procedure.callReporter("image-filename"), Tasks.commandTask(function(_0) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  Extensions["FETCH"].prims["FILE-ASYNC"](PrimChecks.procedure.callReporter("image-filename"), PrimChecks.task.checked(function(_0) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     Extensions["IMPORT-A"].prims["DRAWING"](_0);
-  }, "import-a:drawing"));
+  }, "import-a:drawing", false, false));
 }))
 ProcedurePrims.defineCommand("test-pcolors-file", 194877, 194978, (function() {
   world.clearPatches();
   world.turtleManager.clearTurtles();
-  Extensions["FETCH"].prims["FILE-ASYNC"](PrimChecks.procedure.callReporter("image-filename"), Tasks.commandTask(function(_0) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  Extensions["FETCH"].prims["FILE-ASYNC"](PrimChecks.procedure.callReporter("image-filename"), PrimChecks.task.checked(function(_0) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     Extensions["IMPORT-A"].prims["PCOLORS"](_0);
-  }, "import-a:pcolors"));
+  }, "import-a:pcolors", false, false));
 }))
 ProcedurePrims.defineCommand("test-pcolors-rgb-file", 194986, 195095, (function() {
   world.clearPatches();
   world.turtleManager.clearTurtles();
-  Extensions["FETCH"].prims["FILE-ASYNC"](PrimChecks.procedure.callReporter("image-filename"), Tasks.commandTask(function(_0) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  Extensions["FETCH"].prims["FILE-ASYNC"](PrimChecks.procedure.callReporter("image-filename"), PrimChecks.task.checked(function(_0) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     Extensions["IMPORT-A"].prims["PCOLORS-RGB"](_0);
-  }, "import-a:pcolors-rgb"));
+  }, "import-a:pcolors-rgb", false, false));
 }))
 ProcedurePrims.defineCommand("test-world-file", 195103, 195297, (function() {
   world.clearPatches();
   world.turtleManager.clearTurtles();
   let x = world.ticker.tickCount(); ProcedurePrims.stack().currentContext().registerStringRunVar("X", x);
-  Extensions["FETCH"].prims["FILE-ASYNC"](PrimChecks.procedure.callReporter("world-filename"), Tasks.commandTask(function(worldHtext) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  Extensions["FETCH"].prims["FILE-ASYNC"](PrimChecks.procedure.callReporter("world-filename"), PrimChecks.task.checked(function(worldHtext) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     Extensions["IMPORT-A"].prims["WORLD"](worldHtext);
     world.ticker.reset();
     for (let _index_195275_195281 = 0, _repeatcount_195275_195281 = StrictMath.floor(x); _index_195275_195281 < _repeatcount_195275_195281; _index_195275_195281++) {
       world.ticker.tick();
     }
-  }, "[ world-text -> import-a:world world-text reset-ticks repeat x [ tick ] ]"));
+  }, "[ world-text -> import-a:world world-text reset-ticks repeat x [ tick ] ]", false, false));
 }))
 ProcedurePrims.defineCommand("test-drawing-reporter", 195305, 195384, (function() {
   world.clearPatches();

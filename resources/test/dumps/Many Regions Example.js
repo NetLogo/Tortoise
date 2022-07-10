@@ -58,77 +58,77 @@ ProcedurePrims.defineCommand("setup", 247, 643, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("color-regions", 651, 945, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return !Prims.equality(SelfManager.self().getPatchVariable("region"), 0); }), function() {
-    SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(2, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("region")), 10)));
-    SelfManager.self().setPatchVariable("plabel-color", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pcolor")), 1));
-    SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("region"));
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return !Prims.equality(PrimChecks.patch.getVariable("region"), 0); }), function() {
+    PrimChecks.patch.setVariable("pcolor", PrimChecks.math.plus(2, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.patch.getVariable("region")), 10)));
+    PrimChecks.patch.setVariable("plabel-color", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("pcolor")), 1));
+    PrimChecks.patch.setVariable("plabel", PrimChecks.patch.getVariable("region"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-turtles", 953, 1400, (function() {
-  var R = Tasks.forEach(Tasks.commandTask(function(regionHnumber) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
-    let regionHpatches = PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("region"), regionHnumber); }); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-PATCHES", regionHpatches);
+  var R = PrimChecks.task.forEach(ListPrims.rangeBinary(1, PrimChecks.math.plus(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("region-boundaries"))), 1)), PrimChecks.task.checked(function(regionHnumber) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
+    let regionHpatches = PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable("region"), regionHnumber); }); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-PATCHES", regionHpatches);
     var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-of-turtles-per-region"), ""), function() {
       SelfManager.self().moveTo(PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, regionHpatches)));
-      SelfManager.self().setVariable("color", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("pcolor")), 3));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("pcolor")), 3));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, "[ region-number -> let patches with [ region = region-number ] create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]"), Prims.rangeBinary(1, PrimChecks.math.plus(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("region-boundaries"))), 1))); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ region-number -> let patches with [ region = region-number ] create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 1408, 1441, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("move", 1449, 1980, (function() {
-  let currentHregion = SelfManager.self().getPatchVariable("region"); ProcedurePrims.stack().currentContext().registerStringRunVar("CURRENT-REGION", currentHregion);
+  let currentHregion = PrimChecks.patch.getVariable("region"); ProcedurePrims.stack().currentContext().registerStringRunVar("CURRENT-REGION", currentHregion);
   SelfManager.self().right(RandomPrims.randomLong(30));
   SelfManager.self().right(-(RandomPrims.randomLong(30)));
   SelfManager.self()._optimalFdLessThan1(0.25);
   var R = ProcedurePrims.callCommand("keep-in-region", currentHregion); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("setup-regions", 1988, 2598, (function(numHregions) {
-  var R = Tasks.forEach(Tasks.commandTask(function(_0) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, PrimChecks.procedure.callReporter("region-divisions", numHregions)), PrimChecks.task.checked(function(_0) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     var R = ProcedurePrims.callCommand("draw-region-division", _0); if (R === DeathInterrupt) { return R; }
-  }, "draw-region-division"), PrimChecks.procedure.callReporter("region-divisions", numHregions)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "draw-region-division", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("region-boundaries", PrimChecks.procedure.callReporter("calculate-region-boundaries", numHregions));
-  let regionHnumbers = Prims.rangeBinary(1, PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, numHregions), 1)); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-NUMBERS", regionHnumbers);
-  var R = Tasks.forEach(Tasks.commandTask(function(boundaries, regionHnumber) {
-    PrimChecks.procedure.runArgCountCheck(2, arguments.length);
+  let regionHnumbers = ListPrims.rangeBinary(1, PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, numHregions), 1)); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-NUMBERS", regionHnumbers);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, world.observer.getGlobal("region-boundaries")), PrimChecks.validator.checkArg('FOREACH', 8, regionHnumbers), PrimChecks.task.checked(function(boundaries, regionHnumber) {
+    PrimChecks.procedure.runArgCountCheck('run', 2, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() {
-      return (Prims.gte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, boundaries))) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.list.last(PrimChecks.validator.checkArg('LAST', 12, boundaries))));
-    }), function() { SelfManager.self().setPatchVariable("region", regionHnumber); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, "[ [boundaries region-number] -> ask patches with [ pxcor >= first boundaries and pxcor <= last boundaries ] [ set region region-number ] ]"), world.observer.getGlobal("region-boundaries"), regionHnumbers); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      return (Prims.gte(PrimChecks.patch.getVariable("pxcor"), PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, boundaries))) && Prims.lte(PrimChecks.patch.getVariable("pxcor"), PrimChecks.list.last(PrimChecks.validator.checkArg('LAST', 12, boundaries))));
+    }), function() { PrimChecks.patch.setVariable("region", regionHnumber); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ [boundaries region-number] -> ask patches with [ pxcor >= first boundaries and pxcor <= last boundaries ] [ set region region-number ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineReporter("calculate-region-boundaries", 2613, 3128, (function(numHregions) {
   let divisions = PrimChecks.procedure.callReporter("region-divisions", numHregions); ProcedurePrims.stack().currentContext().registerStringRunVar("DIVISIONS", divisions);
-  return PrimChecks.procedure.report(Tasks.map(Tasks.reporterTask(function(d1, d2) {
-    PrimChecks.procedure.runArgCountCheck(2, arguments.length);
+  return PrimChecks.procedure.report(PrimChecks.task.map(PrimChecks.task.checked(function(d1, d2) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 2, arguments.length);
     return ListPrims.list(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, d1), 1), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, d2), 1));
-  }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]"), PrimChecks.list.butLast('but-last', PrimChecks.validator.checkArg('BUT-LAST', 12, divisions)), PrimChecks.list.butFirst('but-first', PrimChecks.validator.checkArg('BUT-FIRST', 12, divisions))));
+  }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]", true, false), PrimChecks.validator.checkArg('MAP', 8, PrimChecks.list.butLast('but-last', PrimChecks.validator.checkArg('BUT-LAST', 12, divisions))), PrimChecks.validator.checkArg('MAP', 8, PrimChecks.list.butFirst('but-first', PrimChecks.validator.checkArg('BUT-FIRST', 12, divisions)))));
 }))
 ProcedurePrims.defineReporter("region-divisions", 3143, 3457, (function(numHregions) {
-  return PrimChecks.procedure.report(Tasks.nValues(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, numHregions), 1), Tasks.reporterTask(function(n) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
-    return PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.getPatchAt(PrimChecks.math.plus(world.topology.minPxcor, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, n), PrimChecks.math.div(PrimChecks.math.minus(world.topology.maxPxcor, world.topology.minPxcor), PrimChecks.validator.checkArg('/', 1, numHregions)))), 0)), function() { return SelfManager.self().getPatchVariable("pxcor"); });
-  }, "[ n -> [ pxcor ] of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]")));
+  return PrimChecks.procedure.report(PrimChecks.task.nValues(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, numHregions), 1), PrimChecks.task.checked(function(n) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
+    return PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, world.getPatchAt(PrimChecks.math.plus(world.topology.minPxcor, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, n), PrimChecks.math.div(PrimChecks.math.minus(world.topology.maxPxcor, world.topology.minPxcor), PrimChecks.validator.checkArg('/', 1, numHregions)))), 0)), function() { return PrimChecks.patch.getVariable("pxcor"); });
+  }, "[ n -> [ pxcor ] of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]", true, false)));
 }))
 ProcedurePrims.defineCommand("draw-region-division", 3465, 4077, (function(x) {
-  var R = ProcedurePrims.ask(world._optimalPatchCol(x), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.plus(5, 1.5)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world._optimalPatchCol(x), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.math.plus(5, 1.5)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
     PrimChecks.turtle.setXY(PrimChecks.validator.checkArg('SETXY', 1, x), PrimChecks.math.plus(world.topology.maxPycor, 0.5));
     PrimChecks.turtle.setVariable("heading", 0);
-    SelfManager.self().setVariable("color", PrimChecks.math.minus(5, 3));
+    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.minus(5, 3));
     SelfManager.self().penManager.lowerPen();
     SelfManager.self().fd(world.topology.height);
     PrimChecks.turtle.setVariable("xcor", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("xcor")), PrimChecks.math.div(1, world.patchSize)));
     SelfManager.self().right(180);
-    SelfManager.self().setVariable("color", PrimChecks.math.plus(5, 3));
+    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(5, 3));
     SelfManager.self().fd(world.topology.height);
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("keep-in-region", 4085, 4987, (function(whichHregion) {
-  if (!Prims.equality(SelfManager.self().getPatchVariable("region"), whichHregion)) {
+  if (!Prims.equality(PrimChecks.patch.getVariable("region"), whichHregion)) {
     let regionHminHpxcor = PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, whichHregion), 1), PrimChecks.validator.checkArg('ITEM', 12, world.observer.getGlobal("region-boundaries"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-MIN-PXCOR", regionHminHpxcor);
     let regionHmaxHpxcor = PrimChecks.list.last(PrimChecks.validator.checkArg('LAST', 12, PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, whichHregion), 1), PrimChecks.validator.checkArg('ITEM', 12, world.observer.getGlobal("region-boundaries"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-MAX-PXCOR", regionHmaxHpxcor);
     let regionHwidth = PrimChecks.math.plus(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, regionHmaxHpxcor), PrimChecks.validator.checkArg('-', 1, regionHminHpxcor)), 1); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-WIDTH", regionHwidth);

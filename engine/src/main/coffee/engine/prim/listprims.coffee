@@ -173,6 +173,18 @@ module.exports =
       else
         false
 
+    # (Number, Number, Number) => Array[Number]
+    range: (lowerBound, upperBound, stepSize) ->
+      x for x in [lowerBound...upperBound] by stepSize
+
+    # (Number) => Array[Number]
+    rangeUnary: (upperBound) ->
+      @range(0, upperBound, 1)
+
+    # (Number, Number) => Array[Number]
+    rangeBinary: (lowerBound, upperBound) ->
+      @range(lowerBound, upperBound, 1)
+
     reduce: (f, xs) ->
       xs.reduce(f)
 

@@ -71,15 +71,15 @@ ProcedurePrims.defineCommand("setup", 278, 1282, (function() {
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("num-water")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("num-lipids"))), "WATERS"), function() {
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-    SelfManager.self().setVariable("color", 105);
+    PrimChecks.turtleOrLink.setVariable("color", 105);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-lipids"), "OILS"), function() {
     let partner = PrimChecks.agentset.oneOfWith(world.turtleManager.turtlesOfBreed("WATERS"), function() { return PrimChecks.math.not(PrimChecks.agentset.any(LinkPrims.myLinks("LINKS"))); }); ProcedurePrims.stack().currentContext().registerStringRunVar("PARTNER", partner);
     SelfManager.self().moveTo(partner);
     SelfManager.self().fd(world.observer.getGlobal("lipid-length"));
     var R = ProcedurePrims.ask(LinkPrims.createLinkWith(partner, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    SelfManager.self().setVariable("color", 25);
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, partner), function() { SelfManager.self().setVariable("color", 115); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtleOrLink.setVariable("color", 25);
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, partner), function() { PrimChecks.turtleOrLink.setVariable("color", 115); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
@@ -95,7 +95,7 @@ ProcedurePrims.defineCommand("interact-with-neighbor", 1467, 1759, (function() {
   let near = PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, PrimChecks.agentset.otherWith(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")), function() { return PrimChecks.math.not(LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself())); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("NEAR", near);
   if (!Prims.equality(near, Nobody)) {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, near));
-    if (Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, near), function() { return SelfManager.self().getVariable("breed"); }), SelfManager.self().getVariable("breed"))) {
+    if (Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, near), function() { return PrimChecks.turtleOrLink.getVariable("breed"); }), PrimChecks.turtleOrLink.getVariable("breed"))) {
       SelfManager.self().fd(world.observer.getGlobal("water-water-force"));
     }
     else {

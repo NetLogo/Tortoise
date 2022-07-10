@@ -53,20 +53,20 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("go", 53, 439, (function() {
   world.observer.setGlobal("hsb-as-rgb", ColorModel.hsbToRGB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
   world.observer.setGlobal("hsb-color", ColorModel.nearestColorNumberOfHSB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", -1, 1)), function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-as-rgb")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", 1, 1)), function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", -1, 1)), function() { PrimChecks.patch.setVariable("pcolor", world.observer.getGlobal("hsb-as-rgb")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", 1, 1)), function() { PrimChecks.patch.setVariable("pcolor", world.observer.getGlobal("hsb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("rgb-color", ColorModel.nearestColorNumberOfRGB(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", -1, -1)), function() {
-    SelfManager.self().setPatchVariable("pcolor", ListPrims.list(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
+    PrimChecks.patch.setVariable("pcolor", ListPrims.list(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", 1, -1)), function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("rgb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", 1, -1)), function() { PrimChecks.patch.setVariable("pcolor", world.observer.getGlobal("rgb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   Prims.display();
 }))
 ProcedurePrims.defineReporter("quadrant", 454, 542, (function(x, y) {
   return PrimChecks.procedure.report(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.procedure.callReporter("patch-quadrant"), ListPrims.list(x, y)); }));
 }))
 ProcedurePrims.defineReporter("patch-quadrant", 557, 712, (function() {
-  return PrimChecks.procedure.report(ListPrims.list((Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pxcor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1), (Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pycor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1)));
+  return PrimChecks.procedure.report(ListPrims.list((Prims.ifElseValueBooleanCheck(Prims.lt(PrimChecks.patch.getVariable("pxcor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1), (Prims.ifElseValueBooleanCheck(Prims.lt(PrimChecks.patch.getVariable("pycor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1)));
 }))
 world.observer.setGlobal("hue", 180);
 world.observer.setGlobal("saturation", 100);

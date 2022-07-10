@@ -164,11 +164,11 @@ ProcedurePrims.defineCommand("setup", 825, 1970, (function() {
   world.observer.setGlobal("transition-time?", false);
   world.observer.setGlobal("old-visualize-time-steps-state", world.observer.getGlobal("visualize-time-steps"));
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("barrier?", false);
+    PrimChecks.patch.setVariable("barrier?", false);
     var R = ProcedurePrims.callCommand("setup-two-regions"); if (R === DeathInterrupt) { return R; }
-    SelfManager.self().setPatchVariable("pcolor", PrimChecks.procedure.callReporter("calc-patch-color", SelfManager.self().getPatchVariable("metal")));
+    PrimChecks.patch.setVariable("pcolor", PrimChecks.procedure.callReporter("calc-patch-color", PrimChecks.patch.getVariable("metal")));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); }), function() {
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable("pxcor"), world.topology.minPxcor); }), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(world.observer.getGlobal("plants-per-patch"), "TURTLES"), function() {
       if (Prims.equality(world.observer.getGlobal("initial-tolerance"), "all no tolerance")) {
         PrimChecks.turtle.setVariable("tolerance", 0);
@@ -183,16 +183,16 @@ ProcedurePrims.defineCommand("setup", 825, 1970, (function() {
       PrimChecks.turtle.setVariable("heading", RandomPrims.randomLong(360));
       SelfManager.self().fd(PrimChecks.math.randomFloat(0.5));
       PrimChecks.turtle.setVariable("fitness", 1);
-      SelfManager.self().setVariable("shape", "plant");
+      PrimChecks.turtleOrLink.setVariable("shape", "plant");
       PrimChecks.turtle.setVariable("seedling?", false);
       PrimChecks.turtle.setVariable("will-die?", false);
-      SelfManager.self().setVariable("color", PrimChecks.procedure.callReporter("calc-plant-color", PrimChecks.turtle.getVariable("tolerance")));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.procedure.callReporter("calc-plant-color", PrimChecks.turtle.getVariable("tolerance")));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-two-regions", 1979, 2194, (function() {
-  SelfManager.self().setPatchVariable("metal", PrimChecks.math.precision(PrimChecks.math.div(100, PrimChecks.math.plus(1, PrimChecks.math.exp(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("frontier-sharpness")), PrimChecks.math.minus(PrimChecks.math.div(PrimChecks.math.plus(world.topology.maxPxcor, world.topology.minPxcor), 2), PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("pxcor"))))))), 0));
+  PrimChecks.patch.setVariable("metal", PrimChecks.math.precision(PrimChecks.math.div(100, PrimChecks.math.plus(1, PrimChecks.math.exp(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("frontier-sharpness")), PrimChecks.math.minus(PrimChecks.math.div(PrimChecks.math.plus(world.topology.maxPxcor, world.topology.minPxcor), 2), PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("pxcor"))))))), 0));
 }))
 ProcedurePrims.defineCommand("go", 2491, 3005, (function() {
   var R = ProcedurePrims.callCommand("check-labels"); if (R === DeathInterrupt) { return R; }
@@ -269,10 +269,10 @@ ProcedurePrims.defineCommand("do-reproduction", 4405, 6519, (function() {
       potentialHmates = PrimChecks.list.sort(PrimChecks.list.nOf(10, PrimChecks.validator.checkArg('N-OF', 120, nearbyHturtles))); ProcedurePrims.stack().currentContext().updateStringRunVar("POTENTIAL-MATES", potentialHmates);
       potentialHmates = PrimChecks.list.fput(SelfManager.self(), PrimChecks.validator.checkArg('FPUT', 8, potentialHmates)); ProcedurePrims.stack().currentContext().updateStringRunVar("POTENTIAL-MATES", potentialHmates);
     }
-    let compatibilities = Tasks.map(Tasks.reporterTask(function(potentialHmate) {
-      PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+    let compatibilities = PrimChecks.task.map(PrimChecks.task.checked(function(potentialHmate) {
+      PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
       return PrimChecks.procedure.callReporter("compatibility", SelfManager.self(), potentialHmate);
-    }, "[ potential-mate -> compatibility self potential-mate ]"), potentialHmates); ProcedurePrims.stack().currentContext().registerStringRunVar("COMPATIBILITIES", compatibilities);
+    }, "[ potential-mate -> compatibility self potential-mate ]", true, false), PrimChecks.validator.checkArg('MAP', 8, potentialHmates)); ProcedurePrims.stack().currentContext().registerStringRunVar("COMPATIBILITIES", compatibilities);
     let mate = PrimChecks.procedure.callReporter("pick-weighted", potentialHmates, compatibilities); ProcedurePrims.stack().currentContext().registerStringRunVar("MATE", mate);
     var R = ProcedurePrims.ask(SelfManager.self().hatch(PrimChecks.math.randomPoisson(PrimChecks.validator.checkArg('RANDOM-POISSON', 1, world.observer.getGlobal("average-number-offspring"))), ""), function() {
       PrimChecks.turtle.setVariable("seedling?", true);
@@ -305,7 +305,7 @@ ProcedurePrims.defineCommand("do-reproduction", 4405, 6519, (function() {
       if (Prims.gt(PrimChecks.turtle.getVariable("flower-time"), 365)) {
         PrimChecks.turtle.setVariable("flower-time", 365);
       }
-      SelfManager.self().setVariable("color", PrimChecks.procedure.callReporter("calc-plant-color", PrimChecks.turtle.getVariable("tolerance")));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.procedure.callReporter("calc-plant-color", PrimChecks.turtle.getVariable("tolerance")));
       var R = ProcedurePrims.callCommand("migrate-this-plant"); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     if (Prims.equality(world.observer.getGlobal("plant-type"), "annual")) {
@@ -316,7 +316,7 @@ ProcedurePrims.defineCommand("do-reproduction", 4405, 6519, (function() {
 ProcedurePrims.defineCommand("mark-turtles-to-kill", 6582, 9307, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     let t = PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.turtle.getVariable("tolerance")), 100); ProcedurePrims.stack().currentContext().registerStringRunVar("T", t);
-    let m = PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, SelfManager.self().getPatchVariable("metal")), 100); ProcedurePrims.stack().currentContext().registerStringRunVar("M", m);
+    let m = PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.patch.getVariable("metal")), 100); ProcedurePrims.stack().currentContext().registerStringRunVar("M", m);
     PrimChecks.turtle.setVariable("fitness", PrimChecks.math.plus(PrimChecks.math.mult(PrimChecks.math.minus(1, PrimChecks.validator.checkArg('-', 1, m)), PrimChecks.math.minus(1, PrimChecks.math.mult(0.4, PrimChecks.validator.checkArg('*', 1, t)))), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, m), PrimChecks.math.minus(1, PrimChecks.math.mult(0.4, PrimChecks.math.minus(1, PrimChecks.validator.checkArg('-', 1, t)))))));
     if (Prims.gt(PrimChecks.math.randomFloat(1), PrimChecks.turtle.getVariable("fitness"))) {
       PrimChecks.turtle.setVariable("will-die?", true);
@@ -351,26 +351,26 @@ ProcedurePrims.defineCommand("turn-seedlings-into-full-plants", 9707, 9827, (fun
 ProcedurePrims.defineCommand("check-labels", 10124, 10460, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal in soil")) {
-      SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("metal"));
+      PrimChecks.patch.setVariable("plabel", PrimChecks.patch.getVariable("metal"));
     }
     else {
-      SelfManager.self().setPatchVariable("plabel", "");
+      PrimChecks.patch.setVariable("plabel", "");
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal tolerance")) {
-      SelfManager.self().setVariable("label", PrimChecks.math.precision(PrimChecks.validator.checkArg('PRECISION', 1, PrimChecks.turtle.getVariable("tolerance")), 0));
+      PrimChecks.turtleOrLink.setVariable("label", PrimChecks.math.precision(PrimChecks.validator.checkArg('PRECISION', 1, PrimChecks.turtle.getVariable("tolerance")), 0));
     }
     if (Prims.equality(world.observer.getGlobal("show-labels-as"), "flower time")) {
-      SelfManager.self().setVariable("label", PrimChecks.math.precision(PrimChecks.validator.checkArg('PRECISION', 1, PrimChecks.turtle.getVariable("flower-time")), 0));
+      PrimChecks.turtleOrLink.setVariable("label", PrimChecks.math.precision(PrimChecks.validator.checkArg('PRECISION', 1, PrimChecks.turtle.getVariable("flower-time")), 0));
     }
     if (Prims.equality(world.observer.getGlobal("show-labels-as"), "none")) {
-      SelfManager.self().setVariable("label", "");
+      PrimChecks.turtleOrLink.setVariable("label", "");
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("redraw-plants-as-full-sized-plants", 10468, 10556, (function() {
-  SelfManager.self().setVariable("shape", "plant");
+  PrimChecks.turtleOrLink.setVariable("shape", "plant");
   PrimChecks.turtle.setVariable("size", 1);
 }))
 ProcedurePrims.defineCommand("visualize-seedling-growth", 10564, 10664, (function() {
@@ -381,30 +381,30 @@ ProcedurePrims.defineCommand("visualize-seedling-growth", 10564, 10664, (functio
 ProcedurePrims.defineCommand("visualize-bloom", 10672, 11062, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if ((Prims.gte(world.observer.getGlobal("day"), PrimChecks.turtle.getVariable("flower-time")) && Prims.lte(world.observer.getGlobal("day"), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("flower-time")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("flower-duration")))))) {
-      SelfManager.self().setVariable("shape", "flower");
+      PrimChecks.turtleOrLink.setVariable("shape", "flower");
     }
     else {
-      SelfManager.self().setVariable("shape", "plant");
+      PrimChecks.turtleOrLink.setVariable("shape", "plant");
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineReporter("pick-weighted", 11502, 11806, (function(options, weights) {
   let wsum = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("WSUM", wsum);
-  var R = Tasks.forEach(Tasks.commandTask(function(weight) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, weights), PrimChecks.task.checked(function(weight) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     wsum = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, wsum), PrimChecks.validator.checkArg('+', 1, weight)); ProcedurePrims.stack().currentContext().updateStringRunVar("WSUM", wsum);
-  }, "[ weight -> set wsum wsum + weight ]"), weights); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ weight -> set wsum wsum + weight ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   let wret = PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, wsum), PrimChecks.math.randomFloat(1)); ProcedurePrims.stack().currentContext().registerStringRunVar("WRET", wret);
   let ret = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("RET", ret);
   wsum = 0; ProcedurePrims.stack().currentContext().updateStringRunVar("WSUM", wsum);
-  var R = Tasks.forEach(Tasks.commandTask(function(weight) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, weights), PrimChecks.task.checked(function(weight) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     wsum = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, wsum), PrimChecks.validator.checkArg('+', 1, weight)); ProcedurePrims.stack().currentContext().updateStringRunVar("WSUM", wsum);
     if (Prims.gt(wsum, wret)) {
       return PrimChecks.procedure.report(PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, ret), PrimChecks.validator.checkArg('ITEM', 12, options)));
     }
     ret = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, ret), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("RET", ret);
-  }, "[ weight -> set wsum wsum + weight if wsum > wret [ report item ret options ] set ret ret + 1 ]"), weights); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ weight -> set wsum wsum + weight if wsum > wret [ report item ret options ] set ret ret + 1 ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineReporter("compatibility", 12017, 12181, (function(t1, t2) {
   let diff = PrimChecks.math.abs(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, t1), function() { return PrimChecks.turtle.getVariable("flower-time"); })), PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, t2), function() { return PrimChecks.turtle.getVariable("flower-time"); })))); ProcedurePrims.stack().currentContext().registerStringRunVar("DIFF", diff);
@@ -420,7 +420,7 @@ ProcedurePrims.defineReporter("calc-patch-color", 12268, 12356, (function(m) {
 }))
 ProcedurePrims.defineReporter("calc-plant-color", 12371, 12530, (function(t) {
   let blackHpcolor = ColorModel.genRGBFromComponents(0, 0, 0); ProcedurePrims.stack().currentContext().registerStringRunVar("BLACK-PCOLOR", blackHpcolor);
-  if (SelfManager.self().getPatchVariable("barrier?")) {
+  if (PrimChecks.patch.getVariable("barrier?")) {
     return PrimChecks.procedure.report(blackHpcolor);
   }
   else {

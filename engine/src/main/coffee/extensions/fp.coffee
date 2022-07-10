@@ -34,7 +34,8 @@ reduceReporters = (rs) ->
     rs.slice(1).reduce( (resultSoFar, reporter) ->
       reporter(resultSoFar)
     , firstResult)
-  reduced.isReporter = true
+  reduced.isReporter  = true
+  reduced.minArgCount = rs[0].minArgCount
   reduced
 
 # (Array[Reporter]) => Reporter
@@ -51,7 +52,8 @@ curry = (r, leftArgs...) ->
   curried = (rightArgs...) ->
     args = leftArgs.concat(rightArgs)
     r(args...)
-  curried.isReporter = true
+  curried.isReporter  = true
+  curried.minArgCount = (r.minArgCount - leftArgs.length)
   curried
 
 # ((Any) => Boolean, Array[Any]) => Array[Int]
@@ -106,12 +108,49 @@ flatten = (l) ->
       v
   flattenRec(l)
 
+iterateToList = (f, initialValue, repetitions) ->
+  initialResult = f(initialValue)
+  result        = initialResult
+  repetitions   = repetitions - 1
+
+  list = while repetitions > 0
+    repetitions = repetitions - 1
+    result = f(result)
+    result
+
+  list.splice(0, 0, initialValue, initialResult)
+  list
+
+iterateForLast = (f, initialValue, repetitions) ->
+  result        = f(initialValue)
+  repetitions   = repetitions - 1
+
+  while repetitions > 0
+    repetitions = repetitions - 1
+    result = f(result)
+
+  result
+
 module.exports = {
 
   porter: undefined
 
   init: (workspace) ->
-    prims = { take, drop, scan, compose, pipe, curry, "find-indices": findIndices, find, zip, unzip, flatten }
+    prims = {
+      take
+    , drop
+    , scan
+    , compose
+    , pipe
+    , curry
+    , "find-indices": findIndices
+    , find
+    , zip
+    , unzip
+    , flatten
+    , "iterate": iterateToList
+    , "iterate-last": iterateForLast
+    }
     Object.keys(prims).forEach( (p) => prims[p.toUpperCase()] = prims[p] )
     { name: "fp", prims }
 

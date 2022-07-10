@@ -108,12 +108,12 @@ ProcedurePrims.defineCommand("setup", 1897, 1978, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-globals", 1986, 2204, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(PrimChecks.math.div(PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0)), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(PrimChecks.math.div(world.topology.maxPxcor, 2), 0)), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(PrimChecks.math.div(PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0)), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(PrimChecks.math.div(world.topology.maxPxcor, 2), 0)), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("border", PrimChecks.agentset.with(world.patches(), function() {
-    return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pycor"))), 0));
+    return (Prims.equality(PrimChecks.patch.getVariable("pxcor"), 0) && Prims.gte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, PrimChecks.patch.getVariable("pycor"))), 0));
   }));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("border")), function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("border")), function() { PrimChecks.patch.setVariable("pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-people", 2328, 3227, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), ""), function() {
@@ -132,10 +132,10 @@ ProcedurePrims.defineCommand("setup-people", 2328, 3227, (function() {
     PrimChecks.turtle.setVariable("susceptible?", true);
     var R = ProcedurePrims.callCommand("assign-tendency"); if (R === DeathInterrupt) { return R; }
     if (Prims.equality(PrimChecks.turtle.getVariable("continent"), 1)) {
-      SelfManager.self().setVariable("shape", "square");
+      PrimChecks.turtleOrLink.setVariable("shape", "square");
     }
     else {
-      SelfManager.self().setVariable("shape", "circle");
+      PrimChecks.turtleOrLink.setVariable("shape", "circle");
     }
     PrimChecks.turtle.setVariable("size", 0.5);
     if (Prims.lt(PrimChecks.math.randomFloat(100), 5)) {
@@ -173,8 +173,8 @@ ProcedurePrims.defineCommand("setup-ambulance", 3235, 3669, (function() {
     PrimChecks.turtle.setVariable("inoculated?", false);
     PrimChecks.turtle.setVariable("susceptible?", false);
     PrimChecks.turtle.setVariable("ambulance?", true);
-    SelfManager.self().setVariable("shape", "person");
-    SelfManager.self().setVariable("color", 45);
+    PrimChecks.turtleOrLink.setVariable("shape", "person");
+    PrimChecks.turtleOrLink.setVariable("color", 45);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("assign-tendency", 3677, 4656, (function() {
@@ -202,23 +202,23 @@ ProcedurePrims.defineCommand("assign-tendency", 3677, 4656, (function() {
 }))
 ProcedurePrims.defineCommand("assign-color", 4926, 5169, (function() {
   if (PrimChecks.turtle.getVariable("cured?")) {
-    SelfManager.self().setVariable("color", 55);
+    PrimChecks.turtleOrLink.setVariable("color", 55);
   }
   else {
     if (PrimChecks.turtle.getVariable("inoculated?")) {
-      SelfManager.self().setVariable("color", 105);
+      PrimChecks.turtleOrLink.setVariable("color", 105);
     }
     else {
       if (PrimChecks.turtle.getVariable("infected?")) {
-        SelfManager.self().setVariable("color", 15);
+        PrimChecks.turtleOrLink.setVariable("color", 15);
       }
       else {
-        SelfManager.self().setVariable("color", 9.9);
+        PrimChecks.turtleOrLink.setVariable("color", 9.9);
       }
     }
   }
   if (PrimChecks.turtle.getVariable("ambulance?")) {
-    SelfManager.self().setVariable("color", 45);
+    PrimChecks.turtleOrLink.setVariable("color", 45);
   }
 }))
 ProcedurePrims.defineCommand("make-network", 5178, 5256, (function() {
@@ -360,26 +360,26 @@ ProcedurePrims.defineCommand("maybe-recover", 7752, 8466, (function() {
 ProcedurePrims.defineCommand("isolate", 8559, 8701, (function() {
   PrimChecks.turtle.setVariable("isolated?", true);
   SelfManager.self().moveTo(SelfManager.self().getPatchHere());
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchHereInternal()), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchHereInternal()), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.math.minus(5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("unisolate", 8764, 9177, (function() {
   PrimChecks.turtle.setVariable("isolated?", false);
   PrimChecks.turtle.setVariable("hospitalized?", false);
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchHereInternal()), function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("border")), function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(PrimChecks.math.div(PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0)), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(PrimChecks.math.div(world.topology.maxPxcor, 2), 0)), function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchHereInternal()), function() { PrimChecks.patch.setVariable("pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("border")), function() { PrimChecks.patch.setVariable("pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(PrimChecks.math.div(PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0)), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(PrimChecks.math.div(world.topology.maxPxcor, 2), 0)), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("hospitalize", 9265, 9473, (function() {
   PrimChecks.turtle.setVariable("hospitalized?", true);
-  SelfManager.self().setPatchVariable("pcolor", 0);
+  PrimChecks.patch.setVariable("pcolor", 0);
   if (Prims.equality(PrimChecks.turtle.getVariable("continent"), 1)) {
     SelfManager.self().moveTo(world.getPatchAt(PrimChecks.math.div(PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0));
   }
   else {
     SelfManager.self().moveTo(world.getPatchAt(PrimChecks.math.div(world.topology.maxPxcor, 2), 0));
   }
-  SelfManager.self().setPatchVariable("pcolor", 9.9);
+  PrimChecks.patch.setVariable("pcolor", 9.9);
 }))
 ProcedurePrims.defineCommand("infect", 9698, 10414, (function() {
   let _CALLER_ = SelfManager.self(); ProcedurePrims.stack().currentContext().registerStringRunVar("CALLER", _CALLER_);

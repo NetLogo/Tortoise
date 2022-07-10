@@ -2,12 +2,19 @@
 
 package org.nlogo.tortoise.compiler
 
-import
-  JsOps.{ jsArrayString, jsFunction }
+import JsOps.{ jsArrayString, jsFunction }
 
-import
-  org.nlogo.core.{ AstNode, CommandBlock, Dump, LogoList, Nobody => NlogoNobody, ReporterApp,
-                   ReporterBlock, Statements, Token }
+import org.nlogo.core.{
+  AstNode
+, CommandBlock
+, Dump
+, LogoList
+, Nobody => NlogoNobody
+, ReporterApp
+, ReporterBlock
+, Statements
+, Token }
+import org.nlogo.core.prim.{ _commandlambda, _reporterlambda, Lambda }
 
 trait Handlers extends EveryIDProvider {
 
@@ -19,16 +26,21 @@ trait Handlers extends EveryIDProvider {
     jsFunction(body = body)
   }
 
-  def task(node: AstNode, isReporter: Boolean = false, args: Seq[String] = Seq())
+  def task(lambda: Lambda, node: AstNode)
           (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val body = if (isReporter) s"return ${reporter(node)};" else commands(node)
-    val fullBody =
-      if (args.length > 0)
-        s"""PrimChecks.procedure.runArgCountCheck(${args.length}, arguments.length);
+    val compileTimeArgs  = lambda.argumentNames.map(JSIdentProvider.apply)
+    val useCompileArgs   = !lambda.synthetic || !lambda.arguments.isVariadic
+    val (primName, body) = lambda match {
+      case _: _reporterlambda => ("runresult", s"return ${reporter(node, useCompileArgs)};")
+      case _: _commandlambda  => ("run",       commands(node, useCompileArgs))
+    }
+    val fullBody = if (compileTimeArgs.length == 0) {
+      body
+    } else {
+      s"""PrimChecks.procedure.runArgCountCheck('$primName', ${compileTimeArgs.length}, arguments.length);
           |$body""".stripMargin
-      else
-        s"""$body""".stripMargin
-    jsFunction(args = args, body = fullBody)
+    }
+    jsFunction(args = compileTimeArgs, body = fullBody)
   }
 
   // The "abstract" syntax trees we get from the front end aren't totally abstract in that they have
@@ -36,28 +48,29 @@ trait Handlers extends EveryIDProvider {
   // objects, representing the concrete syntax of square brackets, but at this stage of compilation
   // the brackets are irrelevant.  So when we see a block we just immediately recurse into it.
 
-  def commands(node: AstNode)
-              (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
+  def commands(node: AstNode, useCompileArgs: Boolean = true)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
     incrementingContext { context =>
       node match {
         case block: CommandBlock =>
-          commands(block.statements)(compilerFlags, context, procContext)
+          commands(block.statements, useCompileArgs)(compilerFlags, context, procContext)
         case statements: Statements =>
           val generatedJS =
-            statements.stmts.map(prims.generateCommand(_)(compilerFlags, context, procContext))
+            statements.stmts.map(prims.generateCommand(_, useCompileArgs)(compilerFlags, context, procContext))
               .filter(_.nonEmpty)
               .mkString("\n")
           generatedJS
       }
     }
 
-  def reporter(node: AstNode)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
+  def reporter(node: AstNode, useCompileArgs: Boolean = true)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
     incrementingContext { context =>
       node match {
         case block: ReporterBlock =>
-          reporter(block.app)(compilerFlags, context, procContext)
+          reporter(block.app, useCompileArgs)(compilerFlags, context, procContext)
         case app: ReporterApp =>
-          prims.reporter(app)(compilerFlags, context, procContext)
+          prims.reporter(app, useCompileArgs)(compilerFlags, context, procContext)
       }
     }
 

@@ -55,11 +55,11 @@ ProcedurePrims.defineCommand("setup", 69, 489, (function() {
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "planet")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "SUNS"), function() {
     PrimChecks.turtle.setVariable("size", 6);
-    SelfManager.self().setVariable("color", 45);
+    PrimChecks.turtleOrLink.setVariable("color", 45);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(5, "PLANETS"), function() {
     PrimChecks.turtle.setVariable("size", 2);
-    SelfManager.self().setVariable("color", PrimChecks.math.plus(105, RandomPrims.randomLong(3)));
+    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(105, RandomPrims.randomLong(3)));
     SelfManager.self().fd(PrimChecks.math.plus(6, PrimChecks.math.randomFloat(12)));
     var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("SUNS")), "LINKS"), function() {
       SelfManager.self().tie();
@@ -67,7 +67,7 @@ ProcedurePrims.defineCommand("setup", 69, 489, (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     var R = ProcedurePrims.ask(SelfManager.self().hatch(2, "MOONS"), function() {
       PrimChecks.turtle.setVariable("size", 0.5);
-      SelfManager.self().setVariable("color", PrimChecks.math.plus(5, RandomPrims.randomLong(3)));
+      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(5, RandomPrims.randomLong(3)));
       SelfManager.self().fd(PrimChecks.math.plus(1, PrimChecks.math.randomFloat(3)));
       var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS"), function() {
         SelfManager.self().tie();

@@ -137,6 +137,11 @@ object SimplePrims {
         // Link
         case _: prim.etc._linkheading => "PrimChecks.link.linkHeading"
 
+        // Task
+        case _: prim.etc._applyresult    => "Tasks.apply"
+        case _: prim.etc._map            => "PrimChecks.task.map"
+        case _: prim.etc._nvalues        => "PrimChecks.task.nValues"
+
         // Other
         case _: prim.etc._readfromstring => "ProcedurePrims.readFromString"
 
@@ -180,18 +185,6 @@ object SimplePrims {
         case _: prim._neighbors4                     => "SelfManager.self().getNeighbors4"
         case _: prim._patchat                        => "SelfManager.self().patchAt"
 
-        // ListPrims
-        case _: prim._list     => "ListPrims.list"
-        case _: prim._sentence => "ListPrims.sentence"
-
-        // Agentset
-        // In theory these should be able to be made standard `CheckedReporters`, but in practice
-        // their errors are weird enough that I'm going to leave them as custom.
-        // -Jeremy B February 2021
-        case _: prim.etc._linkset   => "PrimChecks.agentset.linkSet"
-        case _: prim.etc._patchset  => "PrimChecks.agentset.patchSet"
-        case _: prim.etc._turtleset => "PrimChecks.agentset.turtleSet"
-
         // Plotting
         case _: prim.etc._autoplot      => "plotManager.isAutoplotting"
         case _: prim.etc._plotname      => "plotManager.getPlotName"
@@ -214,14 +207,14 @@ object SimplePrims {
         case _: prim.etc._approximatehsb => "ColorModel.nearestColorNumberOfHSB"
         case _: prim.etc._approximatergb => "ColorModel.nearestColorNumberOfRGB"
         case _: prim.etc._extracthsb     => "ColorModel.colorToHSB"
-        case _: prim.etc._extractrgb     => "ColorModel.colorToRGB"
+        case _: prim.etc._extractrgb     => "PrimChecks.color.extractRGB"
         case _: prim.etc._hsb            => "ColorModel.hsbToRGB"
         case _: prim.etc._rgb            => "ColorModel.genRGBFromComponents"
         case _: prim.etc._scalecolor     => "ColorModel.scaleColor"
         case _: prim.etc._shadeof        => "ColorModel.areRelatedByShade"
         case _: prim.etc._wrapcolor      => "ColorModel.wrapColor"
 
-        case _: prim._turtle             => "world.turtleManager.getTurtle"
+        case _: prim._turtle             => "PrimChecks.turtle.getTurtle"
         case _: prim._equal              => "Prims.equality"
         case _: prim._notequal           => "!Prims.equality"
         case _: prim._turtles            => "world.turtles"
@@ -229,7 +222,6 @@ object SimplePrims {
         case _: prim._patches            => "world.patches"
         case _: prim.etc._ticks          => "world.ticker.tickCount"
         case _: prim.etc._timer          => "workspace.timer.elapsed"
-        case _: prim.etc._map            => "Tasks.map"
         case _: prim.etc._newseed        => "Prims.generateNewSeed"
         case _: prim.etc._randomstate    => "Random.save"
         case _: prim._greaterthan        => "Prims.gt"
@@ -237,7 +229,6 @@ object SimplePrims {
         case _: prim.etc._greaterorequal => "Prims.gte"
         case _: prim.etc._lessorequal    => "Prims.lte"
         case _: prim.etc._link           => "world.linkManager.getLink"
-        case _: prim.etc._applyresult    => "Tasks.apply(\"__apply-result\")"
         case _: prim.etc._boom           => "Prims.boom"
         case _: prim.etc._subject        => "world.observer.subject"
         case _: prim.etc._dateandtime    => "Prims.dateAndTime"
@@ -300,6 +291,9 @@ object SimplePrims {
 
         // Random
         case _: prim.etc._randomseed => "PrimChecks.math.randomSeed"
+
+        // Task
+        case _: prim.etc._apply => "Tasks.apply"
 
       }
   }
@@ -393,7 +387,6 @@ object SimplePrims {
         case _: prim.etc._layoutradial     => "LayoutManager.layoutRadial"
         case _: prim.etc._layouttutte      => "LayoutManager.layoutTutte"
         case _: prim.etc._changetopology   => "world.changeTopology"
-        case _: prim.etc._apply            => "Tasks.apply(\"__apply\")"
         case _: prim.etc._stdout           => "Prims.stdout"
         case _: prim.etc._usermessage      => "UserDialogPrims.confirm"
         case _: prim.etc._exportoutput     => "ImportExportPrims.exportOutput"

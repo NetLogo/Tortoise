@@ -1,11 +1,46 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ fold } = require('brazierjs/maybe')
+
 { TowardsInterrupt } = require('util/interrupts')
+
+# (() => Agent, Validator) => (String, Map[Any, String]) => (Any) => Unit
+genSetter = (getSelf, validator) -> (name, mappings) ->
+  (value) =>
+    link = getSelf()
+    fold(->)(
+      (error) =>
+        msg        = mappings.get(error)
+        defaultMsg = "An unknown error occurred when setting the '#{name}' of \
+'#{link}': #{error}"
+        validator.error('set', msg ? defaultMsg)
+    )(link.setIfValid(name, value))
+    return
 
 class LinkChecks
 
+  _setterChecks: null # Map[String, (Any) => Unit]
+
   # (Validator, () => Number|Agent, SelfPrims)
   constructor: (@validator, @getSelf, @selfPrims) ->
+
+    @_setterChecks = new Map()
+
+    invalidRGBMsg       = "An rgb list must contain 3 or 4 numbers 0-255"
+    invalidRGBNumberMsg = "RGB values must be 0-255"
+
+    colorSetterMappings = new Map([ ["Invalid RGB format", invalidRGBMsg]
+                                  , ["Invalid RGB number", invalidRGBNumberMsg]])
+
+    asSetter     = genSetter(@getSelf, @validator)
+    toSetterPair = ([varName, mappings]) -> [varName, asSetter(varName, mappings)]
+
+    @_setterChecks =
+      new Map(
+        [ ["color"      , colorSetterMappings]
+        , ["label-color", colorSetterMappings]
+        ].map(toSetterPair)
+      )
 
   linkHeading: () ->
     heading = @selfPrims.linkHeading()
@@ -20,6 +55,9 @@ class LinkChecks
       msgKey    = "_ breed does not own variable _"
       upperName = name.toUpperCase()
       @validator.error('set', msgKey, link.getBreedName(), upperName)
+    else if @_setterChecks.has(name)
+      check = @_setterChecks.get(name)
+      check(value)
     else
       link.setVariable(name, value)
 

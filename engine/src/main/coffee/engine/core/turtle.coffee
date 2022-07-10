@@ -297,7 +297,7 @@ module.exports =
       @_varManager[varName] = value
       return
 
-    # (String, Any) => Boolean
+    # (String, Any) => Maybe[Any]
     setIfValid: (varName, value) ->
       @_varManager.setIfValid(varName, value)
 
@@ -313,6 +313,10 @@ module.exports =
     setPatchVariable: (varName, value) ->
       @getPatchHere().setVariable(varName, value)
       return
+
+    # (String, Any) => Maybe[Any]
+    setPatchVariableIfValid: (varName, value) ->
+      @getPatchHere().setPatchVariableIfValid(varName, value)
 
     # () => PatchSet
     getNeighbors: ->

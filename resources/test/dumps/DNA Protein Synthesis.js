@@ -93,10 +93,10 @@ ProcedurePrims.defineCommand("setup", 4135, 5704, (function() {
   var R = ProcedurePrims.callCommand("initialize-codon-to-amino-acid-key"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-starting-dna"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("visualize-all-genes"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(105, 4)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), 2); }), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(105, 3.5)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), 0); }), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(55, 4)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), -3); }), function() { SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(55, 3.5)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.math.minus(105, 4)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.gt(PrimChecks.patch.getVariable("pycor"), 2); }), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.math.minus(105, 3.5)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.lt(PrimChecks.patch.getVariable("pycor"), 0); }), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.math.minus(55, 4)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.lt(PrimChecks.patch.getVariable("pycor"), -3); }), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.math.minus(55, 3.5)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.callCommand("show-instruction", 1); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
@@ -179,10 +179,10 @@ ProcedurePrims.defineCommand("make-a-nucleotide-chain-for-dna-string", 8031, 869
     SelfManager.self()._optimalFdOne();
     for (let _index_8203_8209 = 0, _repeatcount_8203_8209 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, dnaHstring))); _index_8203_8209 < _repeatcount_8203_8209; _index_8203_8209++) {
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
+        PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
         PrimChecks.turtle.setVariable("strand", strandHtype);
         PrimChecks.turtle.setVariable("value", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, placeHcounter), PrimChecks.validator.checkArg('ITEM', 12, dnaHstring)));
-        SelfManager.self().setVariable("shape", StringPrims.word("nucleotide-", PrimChecks.turtle.getVariable("value")));
+        PrimChecks.turtleOrLink.setVariable("shape", StringPrims.word("nucleotide-", PrimChecks.turtle.getVariable("value")));
         PrimChecks.turtle.setVariable("heading", 0);
         PrimChecks.turtle.setVariable("place", placeHcounter);
         var R = ProcedurePrims.callCommand("attach-tag", 5, 0.5, PrimChecks.turtle.getVariable("value"), world.observer.getGlobal("nucleo-tag-color")); if (R === DeathInterrupt) { return R; }
@@ -210,7 +210,7 @@ ProcedurePrims.defineCommand("build-genes-from-dna", 8704, 10555, (function(stra
     triplet = StringPrims.word(lastHlastHitem, lastHitem, thisHitem); ProcedurePrims.stack().currentContext().updateStringRunVar("TRIPLET", triplet);
     if (Prims.equality(triplet, "ATG")) {
       var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "GENES"), function() {
-        SelfManager.self().setVariable("hidden?", true);
+        PrimChecks.turtleOrLink.setVariable("hidden?", true);
         PrimChecks.turtle.setVariable("strand", strandHtype);
         if (Prims.equality(PrimChecks.turtle.getVariable("strand"), "original")) {
           world.observer.setGlobal("original-strand-gene-counter", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("original-strand-gene-counter")), 1));
@@ -255,25 +255,25 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
       SelfManager.self()._optimalFdLessThan1(0.45);
     }
     let geneHcolor = PrimChecks.procedure.callReporter("next-gene-color"); ProcedurePrims.stack().currentContext().registerStringRunVar("GENE-COLOR", geneHcolor);
-    let geneHcolorHwithHtransparency = ListPrims.sentence(ColorModel.colorToRGB(geneHcolor), 110); ProcedurePrims.stack().currentContext().registerStringRunVar("GENE-COLOR-WITH-TRANSPARENCY", geneHcolorHwithHtransparency);
-    let geneHcolorHlabel = ListPrims.sentence(ColorModel.colorToRGB(geneHcolor), 250); ProcedurePrims.stack().currentContext().registerStringRunVar("GENE-COLOR-LABEL", geneHcolorHlabel);
+    let geneHcolorHwithHtransparency = ListPrims.sentence(PrimChecks.color.extractRGB(geneHcolor), 110); ProcedurePrims.stack().currentContext().registerStringRunVar("GENE-COLOR-WITH-TRANSPARENCY", geneHcolorHwithHtransparency);
+    let geneHcolorHlabel = ListPrims.sentence(PrimChecks.color.extractRGB(geneHcolor), 250); ProcedurePrims.stack().currentContext().registerStringRunVar("GENE-COLOR-LABEL", geneHcolorHlabel);
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PROMOTERS"));
-      SelfManager.self().setVariable("color", geneHcolorHwithHtransparency);
+      PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("PROMOTERS"));
+      PrimChecks.turtleOrLink.setVariable("color", geneHcolorHwithHtransparency);
       PrimChecks.turtle.setVariable("size", 3);
-      SelfManager.self().setVariable("hidden?", false);
+      PrimChecks.turtleOrLink.setVariable("hidden?", false);
       var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, StringPrims.word("start:", PrimChecks.turtle.getVariable("gene-number")), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
       var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHgene, "BACKBONES"), function() {
-        SelfManager.self().setVariable("hidden?", true);
+        PrimChecks.turtleOrLink.setVariable("hidden?", true);
         PrimChecks.link.setVariable("tie-mode", "fixed");
         SelfManager.self().tie();
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TERMINATORS"));
+        PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("TERMINATORS"));
         SelfManager.self().fd(PrimChecks.math.mult(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, thisHcode)), 0.45));
         var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, StringPrims.word("end:", PrimChecks.turtle.getVariable("gene-number")), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
         var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHgene, "BACKBONES"), function() {
-          SelfManager.self().setVariable("hidden?", true);
+          PrimChecks.turtleOrLink.setVariable("hidden?", true);
           PrimChecks.link.setVariable("tie-mode", "fixed");
           SelfManager.self().tie();
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -281,37 +281,37 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       let thisHmrna = SelfManager.self(); ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-MRNA", thisHmrna);
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("MRNAS"));
+      PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("MRNAS"));
       PrimChecks.turtle.setVariable("traveling?", false);
       PrimChecks.turtle.setVariable("released?", false);
       PrimChecks.turtle.setVariable("code", PrimChecks.procedure.callReporter("mrna-string-from-dna-string", PrimChecks.turtle.getVariable("code")));
       PrimChecks.turtle.setVariable("cap-type", "start");
-      SelfManager.self().setVariable("shape", "mrna-start");
-      SelfManager.self().setVariable("hidden?", false);
+      PrimChecks.turtleOrLink.setVariable("shape", "mrna-start");
+      PrimChecks.turtleOrLink.setVariable("hidden?", false);
       var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHgene, "BACKBONES"), function() {
-        SelfManager.self().setVariable("hidden?", true);
+        PrimChecks.turtleOrLink.setVariable("hidden?", true);
         PrimChecks.link.setVariable("tie-mode", "fixed");
         SelfManager.self().tie();
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
         PrimChecks.turtle.setVariable("cap-type", "stop");
-        SelfManager.self().setVariable("shape", "mrna-stop");
+        PrimChecks.turtleOrLink.setVariable("shape", "mrna-stop");
         let nucleotideHcounter = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("NUCLEOTIDE-COUNTER", nucleotideHcounter);
         var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHmrna, "BACKBONES"), function() {
-          SelfManager.self().setVariable("hidden?", true);
+          PrimChecks.turtleOrLink.setVariable("hidden?", true);
           PrimChecks.link.setVariable("tie-mode", "fixed");
           SelfManager.self().tie();
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         let codeHtoHtranscribe = PrimChecks.turtle.getVariable("code"); ProcedurePrims.stack().currentContext().registerStringRunVar("CODE-TO-TRANSCRIBE", codeHtoHtranscribe);
         for (let _index_12422_12428 = 0, _repeatcount_12422_12428 = StrictMath.floor(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.turtle.getVariable("code")))); _index_12422_12428 < _repeatcount_12422_12428; _index_12422_12428++) {
           var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-            SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES"));
+            PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES"));
             PrimChecks.turtle.setVariable("value", PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, codeHtoHtranscribe)));
-            SelfManager.self().setVariable("shape", StringPrims.word("mrna-", PrimChecks.turtle.getVariable("value")));
+            PrimChecks.turtleOrLink.setVariable("shape", StringPrims.word("mrna-", PrimChecks.turtle.getVariable("value")));
             PrimChecks.turtle.setVariable("heading", 180);
             var R = ProcedurePrims.callCommand("attach-tag", 175, 0.9, PrimChecks.turtle.getVariable("value"), world.observer.getGlobal("nucleo-tag-color")); if (R === DeathInterrupt) { return R; }
             var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHmrna, "BACKBONES"), function() {
-              SelfManager.self().setVariable("hidden?", true);
+              PrimChecks.turtleOrLink.setVariable("hidden?", true);
               PrimChecks.link.setVariable("tie-mode", "fixed");
               SelfManager.self().tie();
             }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -340,56 +340,56 @@ ProcedurePrims.defineCommand("build-protein-from-mrna", 12909, 13543, (function(
 ProcedurePrims.defineCommand("build-trna-for-this-triplet", 13553, 14956, (function(thisHtriplet, tripletHcounter) {
   let thisHtrna = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-TRNA", thisHtrna);
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-    SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNAS"));
+    PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("TRNAS"));
     thisHtrna = SelfManager.self(); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-TRNA", thisHtrna);
-    SelfManager.self().setVariable("shape", "tRNA-core");
+    PrimChecks.turtleOrLink.setVariable("shape", "tRNA-core");
     PrimChecks.turtle.setVariable("size", 1.2);
     PrimChecks.turtle.setVariable("heading", 0);
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("AMINO-ACIDS"));
+      PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("AMINO-ACIDS"));
       PrimChecks.turtle.setVariable("value", PrimChecks.procedure.callReporter("which-protein-for-this-codon", thisHtriplet));
-      SelfManager.self().setVariable("shape", StringPrims.word("amino-", PrimChecks.turtle.getVariable("value")));
+      PrimChecks.turtleOrLink.setVariable("shape", StringPrims.word("amino-", PrimChecks.turtle.getVariable("value")));
       PrimChecks.turtle.setVariable("heading", 0);
       PrimChecks.turtle.setVariable("size", 2);
       SelfManager.self()._optimalFdOne();
       var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHtrna, "BACKBONES"), function() {
-        SelfManager.self().setVariable("hidden?", true);
+        PrimChecks.turtleOrLink.setVariable("hidden?", true);
         PrimChecks.link.setVariable("tie-mode", "free");
         SelfManager.self().tie();
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       var R = ProcedurePrims.callCommand("attach-tag", 20, 0.8, PrimChecks.turtle.getVariable("value"), world.observer.getGlobal("nucleo-tag-color")); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
-      SelfManager.self().setVariable("shape", StringPrims.word("trna-", PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet))));
+      PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
+      PrimChecks.turtleOrLink.setVariable("shape", StringPrims.word("trna-", PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet))));
       PrimChecks.turtle.setVariable("heading", -155);
       SelfManager.self().fd(1.1);
       PrimChecks.turtle.setVariable("heading", 0);
       var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHtrna, "BACKBONES"), function() {
-        SelfManager.self().setVariable("hidden?", true);
+        PrimChecks.turtleOrLink.setVariable("hidden?", true);
         PrimChecks.link.setVariable("tie-mode", "fixed");
         SelfManager.self().tie();
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
-        SelfManager.self().setVariable("shape", StringPrims.word("trna-", PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet))));
+        PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
+        PrimChecks.turtleOrLink.setVariable("shape", StringPrims.word("trna-", PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet))));
         PrimChecks.turtle.setVariable("heading", 90);
         SelfManager.self()._optimalFdLessThan1(0.45);
         PrimChecks.turtle.setVariable("heading", 0);
         var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHtrna, "BACKBONES"), function() {
-          SelfManager.self().setVariable("hidden?", true);
+          PrimChecks.turtleOrLink.setVariable("hidden?", true);
           PrimChecks.link.setVariable("tie-mode", "fixed");
           SelfManager.self().tie();
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
-        SelfManager.self().setVariable("shape", StringPrims.word("trna-", PrimChecks.list.item(2, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet))));
+        PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
+        PrimChecks.turtleOrLink.setVariable("shape", StringPrims.word("trna-", PrimChecks.list.item(2, PrimChecks.validator.checkArg('ITEM', 12, thisHtriplet))));
         PrimChecks.turtle.setVariable("heading", 90);
         SelfManager.self()._optimalFdLessThan1(0.9);
         PrimChecks.turtle.setVariable("heading", 0);
         var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHtrna, "BACKBONES"), function() {
-          SelfManager.self().setVariable("hidden?", true);
+          PrimChecks.turtleOrLink.setVariable("hidden?", true);
           PrimChecks.link.setVariable("tie-mode", "fixed");
           SelfManager.self().tie();
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -405,13 +405,13 @@ ProcedurePrims.defineCommand("attach-tag", 15047, 15338, (function(direction, di
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     PrimChecks.turtle.setVariable("heading", direction);
     SelfManager.self().fd(displacement);
-    SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TAGS"));
-    SelfManager.self().setVariable("label", labelHvalue);
+    PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("TAGS"));
+    PrimChecks.turtleOrLink.setVariable("label", labelHvalue);
     PrimChecks.turtle.setVariable("size", 0.1);
-    SelfManager.self().setVariable("label-color", colorHvalue);
+    PrimChecks.turtleOrLink.setVariable("label-color", colorHvalue);
     var R = ProcedurePrims.ask(LinkPrims.createLinkWith(SelfManager.myself(), "TAGLINES"), function() {
       PrimChecks.link.setVariable("tie-mode", "fixed");
-      SelfManager.self().setVariable("hidden?", true);
+      PrimChecks.turtleOrLink.setVariable("hidden?", true);
       SelfManager.self().tie();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -419,27 +419,27 @@ ProcedurePrims.defineCommand("attach-tag", 15047, 15338, (function(direction, di
 ProcedurePrims.defineCommand("visualize-all-genes", 15571, 15714, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")), function() {
     var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
-      SelfManager.self().setVariable("hidden?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("show-genes?"))));
+      PrimChecks.turtleOrLink.setVariable("hidden?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("show-genes?"))));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    SelfManager.self().setVariable("hidden?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("show-genes?"))));
+    PrimChecks.turtleOrLink.setVariable("hidden?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("show-genes?"))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("hide-genes", 15723, 15880, (function(strandHtype) {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")), function() { return Prims.equality(PrimChecks.turtle.getVariable("strand"), strandHtype); }), function() {
-    var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    SelfManager.self().setVariable("hidden?", true);
+    var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtleOrLink.setVariable("hidden?", true);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("hide-mrna", 15889, 16045, (function(strandHtype) {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES")), function() { return Prims.equality(PrimChecks.turtle.getVariable("strand"), strandHtype); }), function() {
-    var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    SelfManager.self().setVariable("hidden?", true);
+    var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtleOrLink.setVariable("hidden?", true);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("hide-trna", 16054, 16222, (function(strandHtype) {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")), function() { return Prims.equality(PrimChecks.turtle.getVariable("strand"), strandHtype); }), function() {
-    var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    SelfManager.self().setVariable("hidden?", true);
+    var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtleOrLink.setVariable("hidden?", true);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("show-next-mrna", 16231, 17664, (function(strandHtype) {
@@ -457,17 +457,17 @@ ProcedurePrims.defineCommand("show-next-mrna", 16231, 17664, (function(strandHty
     }), function() {
       if (!Prims.equality(PrimChecks.turtle.getVariable("gene-number"), world.observer.getGlobal("original-display-mrna-counter"))) {
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
-          SelfManager.self().setVariable("hidden?", true);
-          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+          PrimChecks.turtleOrLink.setVariable("hidden?", true);
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-        SelfManager.self().setVariable("hidden?", true);
+        PrimChecks.turtleOrLink.setVariable("hidden?", true);
       }
       else {
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
-          SelfManager.self().setVariable("hidden?", false);
-          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+          PrimChecks.turtleOrLink.setVariable("hidden?", false);
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-        SelfManager.self().setVariable("hidden?", false);
+        PrimChecks.turtleOrLink.setVariable("hidden?", false);
       }
       PrimChecks.turtle.setVariable("traveling?", false);
       PrimChecks.turtle.setVariable("released?", false);
@@ -484,17 +484,17 @@ ProcedurePrims.defineCommand("show-next-mrna", 16231, 17664, (function(strandHty
     }), function() {
       if (!Prims.equality(PrimChecks.turtle.getVariable("gene-number"), world.observer.getGlobal("duplicate-display-mrna-counter"))) {
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
-          SelfManager.self().setVariable("hidden?", true);
-          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+          PrimChecks.turtleOrLink.setVariable("hidden?", true);
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-        SelfManager.self().setVariable("hidden?", true);
+        PrimChecks.turtleOrLink.setVariable("hidden?", true);
       }
       else {
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
-          SelfManager.self().setVariable("hidden?", false);
-          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+          PrimChecks.turtleOrLink.setVariable("hidden?", false);
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-        SelfManager.self().setVariable("hidden?", false);
+        PrimChecks.turtleOrLink.setVariable("hidden?", false);
       }
       PrimChecks.turtle.setVariable("traveling?", false);
       PrimChecks.turtle.setVariable("released?", false);
@@ -510,17 +510,17 @@ ProcedurePrims.defineCommand("show-next-trna", 17673, 18214, (function(strandHty
     var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("TRNAS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("strand"), strandHtype); }), function() {
       if (Prims.equality(PrimChecks.turtle.getVariable("gene-number"), thisHgeneHnumber)) {
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
-          SelfManager.self().setVariable("hidden?", false);
-          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+          PrimChecks.turtleOrLink.setVariable("hidden?", false);
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-        SelfManager.self().setVariable("hidden?", false);
+        PrimChecks.turtleOrLink.setVariable("hidden?", false);
       }
       else {
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
-          SelfManager.self().setVariable("hidden?", true);
-          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+          PrimChecks.turtleOrLink.setVariable("hidden?", true);
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-        SelfManager.self().setVariable("hidden?", true);
+        PrimChecks.turtleOrLink.setVariable("hidden?", true);
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -538,25 +538,25 @@ ProcedurePrims.defineCommand("release-next-protein", 18381, 19220, (function(str
       if (Prims.equality(PrimChecks.turtle.getVariable("gene-number"), thisHgeneHnumber)) {
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
           makeHprotein_Q = true; ProcedurePrims.stack().currentContext().updateStringRunVar("MAKE-PROTEIN?", makeHprotein_Q);
-          SelfManager.self().setVariable("hidden?", true);
-          if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"))) {
-            SelfManager.self().setVariable("hidden?", false);
-            var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+          PrimChecks.turtleOrLink.setVariable("hidden?", true);
+          if (Prims.equality(PrimChecks.turtleOrLink.getVariable("breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"))) {
+            PrimChecks.turtleOrLink.setVariable("hidden?", false);
+            var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
           }
           else {
-            SelfManager.self().setVariable("hidden?", true);
-            var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+            PrimChecks.turtleOrLink.setVariable("hidden?", true);
+            var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
           }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       }
       else {
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
-          SelfManager.self().setVariable("hidden?", true);
-          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { SelfManager.self().setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+          PrimChecks.turtleOrLink.setVariable("hidden?", true);
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-        SelfManager.self().setVariable("hidden?", true);
+        PrimChecks.turtleOrLink.setVariable("hidden?", true);
       }
-      SelfManager.self().setVariable("hidden?", true);
+      PrimChecks.turtleOrLink.setVariable("hidden?", true);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     if (makeHprotein_Q) {
       var R = ProcedurePrims.callCommand("make-protein", strandHtype); if (R === DeathInterrupt) { return R; }
@@ -567,20 +567,20 @@ ProcedurePrims.defineCommand("make-protein", 19229, 19848, (function(strandHtype
   let thisHgeneHnumber = PrimChecks.procedure.callReporter("gene-number-for-this-strand", strandHtype); ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-GENE-NUMBER", thisHgeneHnumber);
   let thisHproteinHvalue = ""; ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-PROTEIN-VALUE", thisHproteinHvalue);
   let theseHaminoHacids = PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("AMINO-ACIDS"), function() {
-    return ((Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")) && Prims.equality(strandHtype, PrimChecks.turtle.getVariable("strand"))) && Prims.equality(PrimChecks.turtle.getVariable("gene-number"), thisHgeneHnumber));
+    return ((Prims.equality(PrimChecks.turtleOrLink.getVariable("breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")) && Prims.equality(strandHtype, PrimChecks.turtle.getVariable("strand"))) && Prims.equality(PrimChecks.turtle.getVariable("gene-number"), thisHgeneHnumber));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("THESE-AMINO-ACIDS", theseHaminoHacids);
   let orderedHaminoHacids = PrimChecks.agentset.sortOn(PrimChecks.validator.checkArg('SORT-ON', 112, theseHaminoHacids), function() { return PrimChecks.turtle.getVariable("who"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("ORDERED-AMINO-ACIDS", orderedHaminoHacids);
-  var R = Tasks.forEach(Tasks.commandTask(function(theHaminoHacid) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, orderedHaminoHacids), PrimChecks.task.checked(function(theHaminoHacid) {
+    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
     thisHproteinHvalue = StringPrims.word(thisHproteinHvalue, "-", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, theHaminoHacid), function() { return PrimChecks.turtle.getVariable("value"); })); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-PROTEIN-VALUE", thisHproteinHvalue);
-  }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" [ value ] of the-amino-acid ]"), orderedHaminoHacids); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" [ value ] of the-amino-acid ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   if (PrimChecks.math.not(PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PROTEINS"), function() {
     return (Prims.equality(PrimChecks.turtle.getVariable("strand"), strandHtype) && Prims.equality(PrimChecks.turtle.getVariable("value"), thisHproteinHvalue));
   }))) {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PROTEINS"));
+      PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("PROTEINS"));
       PrimChecks.turtle.setVariable("value", thisHproteinHvalue);
-      SelfManager.self().setVariable("hidden?", true);
+      PrimChecks.turtleOrLink.setVariable("hidden?", true);
       PrimChecks.turtle.setXY(0, 0);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
@@ -744,10 +744,10 @@ ProcedurePrims.defineCommand("initialize-codon-to-amino-acid-key", 25658, 26888,
   world.observer.setGlobal("codon-to-amino-acid-key", [["UUU", "Phe"], ["UUC", "Phe"], ["UUA", "Leu"], ["UUG", "Leu"], ["CUU", "Leu"], ["CUC", "Leu"], ["CUA", "Leu"], ["CUG", "Leu"], ["AUU", "Ile"], ["AUC", "Ile"], ["AUA", "Ile"], ["AUG", "Met"], ["GUU", "Val"], ["GUC", "Val"], ["GUA", "Val"], ["GUG", "Val"], ["UCU", "Ser"], ["UCC", "Ser"], ["UCA", "Ser"], ["UCG", "Ser"], ["CCU", "Pro"], ["CCC", "Pro"], ["CCA", "Pro"], ["CCG", "Pro"], ["ACU", "Thr"], ["ACC", "Thr"], ["ACA", "Thr"], ["ACG", "Thr"], ["GCU", "Ala"], ["GCC", "Ala"], ["GCA", "Ala"], ["GCG", "Ala"], ["UAU", "Tyr"], ["UAC", "Tyr"], ["UAA", "Stop"], ["UAG", "Stop"], ["CAU", "His"], ["CAC", "His"], ["CAA", "Gln"], ["CAG", "Gln"], ["AAU", "Asn"], ["AAC", "Asn"], ["AAA", "Lys"], ["AAG", "Lys"], ["GAU", "Asp"], ["GAC", "Asp"], ["GAA", "Glu"], ["GAG", "Glu"], ["UGU", "Cys"], ["UGC", "Cys"], ["UGA", "Stop"], ["UGG", "Trp"], ["CGU", "Arg"], ["CGC", "Arg"], ["CGA", "Arg"], ["CGG", "Arg"], ["AGU", "Ser"], ["AGC", "Ser"], ["AGA", "Arg"], ["AGG", "Arg"], ["GGU", "Gly"], ["GGC", "Gly"], ["GGA", "Gly"], ["GGG", "Gly"]]);
 }))
 ProcedurePrims.defineReporter("which-protein-for-this-codon", 27188, 27321, (function(thisHcodon) {
-  return PrimChecks.procedure.report(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.list.item(0, PrimChecks.list.filter(Tasks.reporterTask(function(pair) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  return PrimChecks.procedure.report(PrimChecks.list.item(1, PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.list.item(0, PrimChecks.list.filter(PrimChecks.task.checked(function(pair) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
     return Prims.equality(PrimChecks.list.first(PrimChecks.validator.checkArg('FIRST', 12, pair)), thisHcodon);
-  }, "[ pair -> first pair = this-codon ]"), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("codon-to-amino-acid-key")))))));
+  }, "[ pair -> first pair = this-codon ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("codon-to-amino-acid-key")))))));
 }))
 ProcedurePrims.defineReporter("random-base-letter-dna", 27386, 27630, (function() {
   let r = RandomPrims.randomLong(4); ProcedurePrims.stack().currentContext().registerStringRunVar("R", r);
@@ -845,10 +845,10 @@ ProcedurePrims.defineCommand("show-instruction", 30479, 30665, (function(i) {
   if ((Prims.gte(i, 1) && Prims.lte(i, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, PrimChecks.procedure.callReporter("instructions")))))) {
     world.observer.setGlobal("current-instruction", i);
     OutputPrims.clear();
-    var R = Tasks.forEach(Tasks.commandTask(function(_0) {
-      PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+    var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("current-instruction")), 1), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.procedure.callReporter("instructions")))), PrimChecks.task.checked(function(_0) {
+      PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
       OutputPrims.print(_0);
-    }, "output-print"), PrimChecks.list.item(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("current-instruction")), 1), PrimChecks.validator.checkArg('ITEM', 12, PrimChecks.procedure.callReporter("instructions")))); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, "output-print", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }
 }))
 ProcedurePrims.defineReporter("instructions", 30681, 33242, (function() {

@@ -12,11 +12,9 @@ class ImmutableVariableSpec extends VariableSpec
     super(name)
 
 class MutableVariableSpec extends VariableSpec
-  #(String, () => T, (T) => Unit) => MutableVariableSpec[T]
-  constructor: (name, @get, set, setIfValid) ->
+  #(String, () => T, (T) => Maybe[Any]) => MutableVariableSpec[T]
+  constructor: (name, @get, @set) ->
     super(name)
-    @set        = set
-    @setIfValid = if setIfValid? then setIfValid else set
 
 module.exports = {
   ExtraVariableSpec

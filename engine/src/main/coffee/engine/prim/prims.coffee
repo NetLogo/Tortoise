@@ -24,10 +24,6 @@ getNeighbors4 = (patch) -> patch.getNeighbors4()
 lessThan      = (a, b)  -> a < b
 greaterThan   = (a, b)  -> a > b
 
-# (Number, Number, Number) => Array[Number]
-range = (lowerBound, upperBound, stepSize) ->
-  x for x in [lowerBound...upperBound] by stepSize
-
 module.exports =
   class Prims
 
@@ -222,21 +218,6 @@ module.exports =
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs) ->
       @_createAgentSet(inputs, Patch, PatchSet)
-
-    # (Number) => Array[Number]
-    rangeUnary: (upperBound) ->
-      range(0, upperBound, 1)
-
-    # (Number, Number) => Array[Number]
-    rangeBinary: (lowerBound, upperBound) ->
-      range(lowerBound, upperBound, 1)
-
-    # (Number, Number, Number) => Array[Number]
-    rangeTernary: (lowerBound, upperBound, stepSize) ->
-      if stepSize isnt 0
-        range(lowerBound, upperBound, stepSize)
-      else
-        throw exceptions.runtime("The step-size for range must be non-zero.", "range")
 
     # (Any) => Unit
     stdout: (x) ->

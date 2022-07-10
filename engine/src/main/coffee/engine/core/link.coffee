@@ -5,9 +5,10 @@ ColorModel       = require('./colormodel')
 linkCompare      = require('./structure/linkcompare')
 VariableManager  = require('./structure/variablemanager')
 TurtleSet        = require('./turtleset')
+{ checks }       = require('./typechecker')
 
-{ EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT } = require('util/comparator')
-{ exceptionFactory: exceptions }                = require('util/exception')
+Comparator                       = require('util/comparator')
+{ exceptionFactory: exceptions } = require('util/exception')
 
 { ifInterrupt, DeathInterrupt } = require('util/interrupts')
 { Setters, VariableSpecs }      = require('./link/linkvariables')
@@ -70,6 +71,10 @@ module.exports =
     setVariable: (varName, value) ->
       @_varManager[varName] = value
       return
+
+    # (String, Any) => Maybe[Any]
+    setIfValid: (varName, value) ->
+      @_varManager.setIfValid(varName, value)
 
     # () => DeathInterrupt
     die: ->
@@ -169,11 +174,14 @@ module.exports =
 
     # (Any) => { toInt: Number }
     compare: (x) ->
-      switch linkCompare(this, x)
-        when -1 then LT
-        when  0 then EQ
-        when  1 then GT
-        else exceptions.internal("Comparison should only yield an integer within the interval [-1,1]")
+      if checks.isLink(x)
+        switch linkCompare(this, x)
+          when -1 then Comparator.LESS_THAN
+          when  0 then Comparator.EQUALS
+          when  1 then Comparator.GREATER_THAN
+          else exceptions.internal("Comparison should only yield an integer within the interval [-1,1]")
+      else
+        Comparator.NOT_EQUALS
 
     # () => Boolean
     hasVariable: (varName) ->

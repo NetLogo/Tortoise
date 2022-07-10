@@ -52,9 +52,9 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 3, 267, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(0, 0)), function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(0, 0)), function() { PrimChecks.patch.setVariable("pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-particles"), ""), function() {
-    SelfManager.self().setVariable("color", 15);
+    PrimChecks.turtleOrLink.setVariable("color", 15);
     PrimChecks.turtle.setVariable("size", 1.5);
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -65,8 +65,8 @@ ProcedurePrims.defineCommand("go", 275, 594, (function() {
     SelfManager.self().right(PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("wiggle-angle"))));
     SelfManager.self().right(-(PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("wiggle-angle")))));
     SelfManager.self()._optimalFdOne();
-    if (PrimChecks.agentset.anyWith(SelfManager.self().getNeighbors(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); })) {
-      SelfManager.self().setPatchVariable("pcolor", 55);
+    if (PrimChecks.agentset.anyWith(SelfManager.self().getNeighbors(), function() { return Prims.equality(PrimChecks.patch.getVariable("pcolor"), 55); })) {
+      PrimChecks.patch.setVariable("pcolor", 55);
       return SelfManager.self().die();
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }

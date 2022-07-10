@@ -75,10 +75,10 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 590, 971, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("pcolor", 9.9);
+    PrimChecks.patch.setVariable("pcolor", 9.9);
     if (Prims.lt(RandomPrims.randomLong(100), world.observer.getGlobal("density"))) {
       var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "TURTLES"), function() {
-        SelfManager.self().setVariable("color", PrimChecks.list.oneOf([105, 27]));
+        PrimChecks.turtleOrLink.setVariable("color", PrimChecks.list.oneOf([105, 27]));
         PrimChecks.turtle.setVariable("size", 1);
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }
@@ -112,23 +112,23 @@ ProcedurePrims.defineCommand("find-new-spot", 1279, 1478, (function() {
 ProcedurePrims.defineCommand("update-turtles", 1486, 2127, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setVariable("similar-nearby", PrimChecks.agentset.countWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), function() {
-      return Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
+      return Prims.equality(PrimChecks.turtleOrLink.getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable("color"); }));
     }));
     PrimChecks.turtle.setVariable("other-nearby", PrimChecks.agentset.countWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), function() {
-      return !Prims.equality(SelfManager.self().getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getVariable("color"); }));
+      return !Prims.equality(PrimChecks.turtleOrLink.getVariable("color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable("color"); }));
     }));
     PrimChecks.turtle.setVariable("total-nearby", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("similar-nearby")), PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("other-nearby"))));
     PrimChecks.turtle.setVariable("happy?", Prims.gte(PrimChecks.turtle.getVariable("similar-nearby"), PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("%-similar-wanted")), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("total-nearby"))), 100)));
     if (Prims.equality(world.observer.getGlobal("visualization"), "old")) {
-      SelfManager.self().setVariable("shape", "default");
+      PrimChecks.turtleOrLink.setVariable("shape", "default");
       PrimChecks.turtle.setVariable("size", 1.3);
     }
     if (Prims.equality(world.observer.getGlobal("visualization"), "square-x")) {
       if (PrimChecks.turtle.getVariable("happy?")) {
-        SelfManager.self().setVariable("shape", "square");
+        PrimChecks.turtleOrLink.setVariable("shape", "square");
       }
       else {
-        SelfManager.self().setVariable("shape", "X");
+        PrimChecks.turtleOrLink.setVariable("shape", "X");
       }
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }

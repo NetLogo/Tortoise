@@ -53,7 +53,7 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 125, 358, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("population"), ""), function() {
-    SelfManager.self().setVariable("color", PrimChecks.math.plus(PrimChecks.math.minus(45, 2), RandomPrims.randomLong(7)));
+    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(PrimChecks.math.minus(45, 2), RandomPrims.randomLong(7)));
     PrimChecks.turtle.setVariable("size", 1.5);
     PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
     PrimChecks.turtle.setVariable("flockmates", new TurtleSet([], world));

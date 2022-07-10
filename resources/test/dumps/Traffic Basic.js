@@ -79,8 +79,8 @@ ProcedurePrims.defineCommand("setup", 80, 173, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-road", 181, 262, (function() {
-  if ((Prims.lt(SelfManager.self().getPatchVariable("pycor"), 2) && Prims.gt(SelfManager.self().getPatchVariable("pycor"), -2))) {
-    SelfManager.self().setPatchVariable("pcolor", 9.9);
+  if ((Prims.lt(PrimChecks.patch.getVariable("pycor"), 2) && Prims.gt(PrimChecks.patch.getVariable("pycor"), -2))) {
+    PrimChecks.patch.setVariable("pcolor", 9.9);
   }
 }))
 ProcedurePrims.defineCommand("setup-cars", 270, 914, (function() {
@@ -90,7 +90,7 @@ ProcedurePrims.defineCommand("setup-cars", 270, 914, (function() {
   }
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-of-cars"), ""), function() {
-    SelfManager.self().setVariable("color", 105);
+    PrimChecks.turtleOrLink.setVariable("color", 105);
     PrimChecks.turtle.setVariable("xcor", RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor));
     PrimChecks.turtle.setVariable("heading", 90);
     PrimChecks.turtle.setVariable("speed", PrimChecks.math.plus(0.1, PrimChecks.math.randomFloat(0.9)));
@@ -99,7 +99,7 @@ ProcedurePrims.defineCommand("setup-cars", 270, 914, (function() {
     var R = ProcedurePrims.callCommand("separate-cars"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.observer.setGlobal("sample-car", PrimChecks.list.oneOf(world.turtles()));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("sample-car")), function() { SelfManager.self().setVariable("color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("sample-car")), function() { PrimChecks.turtleOrLink.setVariable("color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("separate-cars", 1028, 1124, (function() {
   if (SelfPrims._optimalAnyOther(SelfManager.self().turtlesHere())) {

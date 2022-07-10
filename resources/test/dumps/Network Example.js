@@ -54,7 +54,7 @@ ProcedurePrims.defineCommand("setup", 3, 191, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), ""), function() {
-    SelfManager.self().setVariable("color", 105);
+    PrimChecks.turtleOrLink.setVariable("color", 105);
     PrimChecks.turtle.setVariable("size", 2);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   LayoutManager.layoutCircle(world.turtles(), PrimChecks.math.minus(PrimChecks.math.div(world.topology.width, 2), 2));

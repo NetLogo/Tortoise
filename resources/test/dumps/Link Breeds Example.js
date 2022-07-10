@@ -54,18 +54,18 @@ ProcedurePrims.defineCommand("setup", 245, 813, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(10, ""), function() {
     SelfManager.self().fd(5);
-    SelfManager.self().setVariable("color", 5);
+    PrimChecks.turtleOrLink.setVariable("color", 5);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(5, world.turtles())), function() {
     var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.list.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS"), function() {
-      SelfManager.self().setVariable("color", 105);
+      PrimChecks.turtleOrLink.setVariable("color", 105);
       PrimChecks.link.setVariable("weight", RandomPrims.randomLong(10));
-      SelfManager.self().setVariable("label", PrimChecks.link.getVariable("weight"));
+      PrimChecks.turtleOrLink.setVariable("label", PrimChecks.link.getVariable("weight"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getSpecialName(), "curved link")
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(5, world.turtles())), function() {
-    var R = ProcedurePrims.ask(LinkPrims.createLinkTo(PrimChecks.list.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS"), function() { SelfManager.self().setVariable("color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinkTo(PrimChecks.list.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS"), function() { PrimChecks.turtleOrLink.setVariable("color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
