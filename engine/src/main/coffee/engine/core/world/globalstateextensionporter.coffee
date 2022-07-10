@@ -38,7 +38,7 @@ class GlobalStateExtensionPorter extends SingleObjectExtensionPorter
     new ExportedStatedExtension(@extensionName, @readGlobalState(sectionLines), @readObjects(sectionLines.slice(1), parseAny))
 
   import: (exportedExt) ->
-    if exportedExp isnt null
+    if exportedExt isnt null
       @importGlobalState(exportedExt.state)
 
 module.exports = GlobalStateExtensionPorter
