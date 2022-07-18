@@ -25,11 +25,11 @@ class ColorChecks
   # (Validator)
   constructor: (@validator) ->
 
-  # (ColorNumber|RGB|ColorName) => RGB
-  extractRGB: (color) ->
+  # (Int, Int, ColorNumber|RGB|ColorName) => RGB
+  extractRGB: (sourceStart, sourceEnd, color) ->
     if isValidColor(color)
       ColorModel.colorToRGB(color)
     else
-      @validator.error('extract-rgb', invalidColorMsg)
+      @validator.error('extract-rgb', sourceStart, sourceEnd, invalidColorMsg)
 
 module.exports = ColorChecks

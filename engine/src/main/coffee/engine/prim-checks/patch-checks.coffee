@@ -18,7 +18,7 @@ genSetter = (getSelf, validator) -> (name, mappings) -> (value) ->
       defaultMsg  = "An unknown error occurred when setting the '#{name}' of \
 '#{pot}': #{error}"
 
-      validator.error('set', msg ? defaultMsg, environment)
+      validator.error('set', null, null, msg ? defaultMsg, environment)
 
   )(pot.setPatchVariableIfValid(name, value))
 
@@ -58,8 +58,8 @@ class PatchChecks
         ].map(toSetterPair)
       )
 
-  # (String, Any) => Unit
-  setVariable: (name, value) ->
+  # (Int, Int, String, Any) => Unit
+  setVariable: (sourceStart, sourceEnd, name, value) ->
     patchOrTurtle = @getSelf()
     if @_setterChecks.has(name)
       check = @_setterChecks.get(name)
@@ -69,8 +69,8 @@ class PatchChecks
 
     return
 
-  # (String) => Any
-  getVariable: (name) ->
+  # (Int, Int, String) => Any
+  getVariable: (sourceStart, sourceEnd, name) ->
     @getSelf().getPatchVariable(name)
 
 module.exports = PatchChecks

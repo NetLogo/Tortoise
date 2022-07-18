@@ -37,7 +37,9 @@ trait Handlers extends EveryIDProvider {
     val fullBody = if (compileTimeArgs.length == 0) {
       body
     } else {
-      s"""PrimChecks.procedure.runArgCountCheck('$primName', ${compileTimeArgs.length}, arguments.length);
+      val sourceStart = node.sourceLocation.start
+      val sourceEnd   = node.sourceLocation.end
+      s"""PrimChecks.procedure.runArgCountCheck('$primName', $sourceStart, $sourceEnd, ${compileTimeArgs.length}, arguments.length);
           |$body""".stripMargin
     }
     jsFunction(args = compileTimeArgs, body = fullBody)

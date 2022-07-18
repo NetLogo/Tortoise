@@ -57,7 +57,10 @@ trait PrimUtils {
   object VariableReporter extends VariablePrims {
     def unapply(r: Reporter): Option[String] =
       procedureAndVarName(r, "get").map {
-        case (proc: String, varName: String) => s"$proc(${jsString(varName)})"
+        case (proc: String, varName: String) =>
+          val sourceStart = r.token.sourceLocation.start
+          val sourceEnd = r.token.sourceLocation.end
+          s"$proc($sourceStart, $sourceEnd, ${jsString(varName)})"
       }
   }
 
@@ -65,7 +68,9 @@ trait PrimUtils {
     def unapply(r: Reporter): Option[String => String] =
       procedureAndVarName(r, "set").map {
         case (proc: String, varName: String) =>
-          ((setValue: String) => s"$proc(${jsString(varName)}, $setValue);")
+          val sourceStart = r.token.sourceLocation.start
+          val sourceEnd = r.token.sourceLocation.end
+          ((setValue: String) => s"$proc($sourceStart, $sourceEnd, ${jsString(varName)}, $setValue);")
       }
   }
 
@@ -77,7 +82,6 @@ trait PrimUtils {
       case tv: prim._linkvariable         => (s"PrimChecks.link.${         action}Variable", tv.displayName.toLowerCase)
       case tv: prim._turtleorlinkvariable => (s"PrimChecks.turtleOrLink.${ action}Variable", tv.varName.toLowerCase)
       case pv: prim._patchvariable        => (s"PrimChecks.patch.${        action}Variable", pv.displayName.toLowerCase)
-      case ov: prim._observervariable     => (s"world.observer.${action}Global", ov.displayName.toLowerCase)
       }
   }
 
@@ -142,8 +146,10 @@ object ReporterPrims {
     }
 
     val argsWithTypes = allAllowed.zip(a.args).zip(ops)
+    val sourceStart   = a.instruction.token.sourceLocation.start
+    val sourceEnd     = a.instruction.token.sourceLocation.end
     val checkedArgs   = argsWithTypes.map( { case ((allowed: Int, exp: Expression), op: String) =>
-      ReporterPrims.makeCheckedOp(a.instruction.token.text, allowed, exp.reportedType(), op)
+      ReporterPrims.makeCheckedOp(a.instruction.token.text, sourceStart, sourceEnd, allowed, exp.reportedType(), op)
     })
     checkedArgs
   }
@@ -152,12 +158,12 @@ object ReporterPrims {
     t - (t & Syntax.RepeatableType)
   }
 
-  def makeCheckedOp(prim: String, allowed: Int, actual: Int, op: String): String = {
+  def makeCheckedOp(prim: String, sourceStart: Int, sourceEnd: Int, allowed: Int, actual: Int, op: String): String = {
     if (ReporterPrims.allTypesAllowed(allowed, actual) || allowed == Syntax.WildcardType) {
       op
     } else {
       // at runtime, don't consider repeatable as its own real type
-      s"PrimChecks.validator.checkArg('${prim.toUpperCase()}', ${removeRepeatable(allowed)}, $op)"
+      s"PrimChecks.validator.checkArg('${prim.toUpperCase()}', $sourceStart, $sourceEnd, ${removeRepeatable(allowed)}, $op)"
     }
   }
 
@@ -168,7 +174,9 @@ object ReporterPrims {
     } else {
       if (i == 0) syntax.left else syntax.right(i - 1)
     }
-    ReporterPrims.makeCheckedOp(instruction.token.text, allowed, actual, op)
+    val sourceStart = instruction.token.sourceLocation.start
+    val sourceEnd   = instruction.token.sourceLocation.end
+    ReporterPrims.makeCheckedOp(instruction.token.text, sourceStart, sourceEnd, allowed, actual, op)
   }
 
   def callArgs(name: String, args: Seq[String]): String = {
@@ -181,9 +189,9 @@ object ReporterPrims {
     if (argsString == "") "" else s", $argsString"
   }
 
-  def conciseVarArgs(primName: String, syntax: Syntax): String = {
+  def conciseVarArgs(primName: String, sourceStart: String, sourceEnd: String, syntax: Syntax): String = {
     // assumes variadic prims cannot be infix with a `left` value
-    s"...PrimChecks.task.checkVarArgs('$primName', [${syntax.right.mkString(", ")}], ...arguments)"
+    s"...PrimChecks.task.checkVarArgs('$primName', $sourceStart, $sourceEnd, [${syntax.right.mkString(", ")}], ...arguments)"
   }
 
 }
@@ -193,6 +201,12 @@ trait ReporterPrims extends PrimUtils {
   // scalastyle:off cyclomatic.complexity
   def reporter(r: ReporterApp, useCompileArgs: Boolean = true)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
+
+    def sourceStart: String =
+      Option(r.reporter.token).flatMap( (t: Token) => Option(t.sourceLocation) ).map(_.start.toString).getOrElse("null")
+
+    def sourceEnd: String =
+      Option(r.reporter.token).flatMap( (t: Token) => Option(t.sourceLocation) ).map(_.end.toString).getOrElse("null")
 
     def arg(i: Int) =
       handlers.reporter(r.args(i))
@@ -223,23 +237,27 @@ trait ReporterPrims extends PrimUtils {
       if (useCompileArgs || !syntax.isVariadic) {
         commaCheckedArgs
       } else {
-        ReporterPrims.conciseVarArgs(primName, syntax)
+        ReporterPrims.conciseVarArgs(primName, sourceStart, sourceEnd, syntax)
       }
     }
 
     r.reporter match {
 
       // Basics stuff
-      case SimplePrims.SimpleReporter(op)  => op
-      case SimplePrims.NormalReporter(op)  => s"$op($commaArgs)"
-      case SimplePrims.CheckedReporter(op) => s"$op($commaCheckedArgs)"
-      case SimplePrims.TypeCheck(check)    => s"NLType.checks.$check${arg(0)})"
-      case VariableReporter(op)            => op
-      case p: prim._const                  => handlers.literal(p.value)
-      case lv: prim._letvariable           => JSIdentProvider(lv.let.name)
-      case pv: prim._procedurevariable     => JSIdentProvider(pv.name)
-      case lv: prim._lambdavariable        => JSIdentProvider(lv.name)
-      case call: prim._callreport          => s"""PrimChecks.procedure.callReporter(${ReporterPrims.callArgs(call.name, args)})"""
+      case SimplePrims.SimpleReporter(op)             => op
+      case SimplePrims.NormalReporter(op)             => s"$op($commaArgs)"
+      case SimplePrims.CheckedReporter(op)            => s"$op($sourceStart, $sourceEnd, $commaCheckedArgs)"
+      case SimplePrims.CheckedPassThroughReporter(op) => s"$op($commaCheckedArgs)"
+      case SimplePrims.TypeCheck(check)               => s"NLType.checks.$check${arg(0)})"
+      case VariableReporter(op)                       => op
+      case p: prim._const                             => handlers.literal(p.value)
+      case lv: prim._letvariable                      => JSIdentProvider(lv.let.name)
+      case pv: prim._procedurevariable                => JSIdentProvider(pv.name)
+      case lv: prim._lambdavariable                   => JSIdentProvider(lv.name)
+      case ov: prim._observervariable                 => s"""world.observer.getGlobal("${ov.displayName.toLowerCase}")"""
+
+      case call: prim._callreport =>
+        s"""PrimChecks.procedure.callReporter($sourceStart, $sourceEnd, ${ReporterPrims.callArgs(call.name, args)})"""
 
       // Blarg
       case w: prim._word               => s"StringPrims.word(${maybeConciseVarArgs("WORD", w.syntax)})"
@@ -251,29 +269,29 @@ trait ReporterPrims extends PrimUtils {
       case _: prim._or  => makeInfixBoolOp("||")
 
       // Agentset filtering
-      case _: prim.etc._all      => s"PrimChecks.agentset.all(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._maxnof   => s"PrimChecks.agentset.maxNOf(${makeCheckedOp(1)}, ${makeCheckedOp(0)}, ${handlers.fun(r.args(2), true)})"
+      case _: prim.etc._all      => s"PrimChecks.agentset.all($sourceStart, $sourceEnd, ${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._maxnof   => s"PrimChecks.agentset.maxNOf($sourceStart, $sourceEnd, ${makeCheckedOp(1)}, ${makeCheckedOp(0)}, ${handlers.fun(r.args(2), true)})"
       case _: prim.etc._maxoneof => s"PrimChecks.agentset.maxOneOf(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._minnof   => s"PrimChecks.agentset.minNOf(${makeCheckedOp(1)}, ${makeCheckedOp(0)}, ${handlers.fun(r.args(2), true)})"
+      case _: prim.etc._minnof   => s"PrimChecks.agentset.minNOf($sourceStart, $sourceEnd, ${makeCheckedOp(1)}, ${makeCheckedOp(0)}, ${handlers.fun(r.args(2), true)})"
       case _: prim.etc._minoneof => s"PrimChecks.agentset.minOneOf(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
       case _: prim._of           => s"PrimChecks.agentset.of(${makeCheckedOp(1)}, ${handlers.fun(r.args(0), isReporter = true)})"
-      case _: prim.etc._sorton   => s"PrimChecks.agentset.sortOn(${makeCheckedOp(1)}, ${handlers.fun(r.args(0), true)})"
-      case _: prim._with         => s"PrimChecks.agentset.with(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._sorton   => s"PrimChecks.agentset.sortOn($sourceStart, $sourceEnd, ${makeCheckedOp(1)}, ${handlers.fun(r.args(0), true)})"
+      case _: prim._with         => s"PrimChecks.agentset.with($sourceStart, $sourceEnd, ${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
       case _: prim.etc._withmax  => s"PrimChecks.agentset.withMax(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
       case _: prim.etc._withmin  => s"PrimChecks.agentset.withMin(${makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
 
-      case _: Optimizer._countotherwith => s"PrimChecks.agentset.countOtherWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: Optimizer._countwith      => s"PrimChecks.agentset.countWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: Optimizer._otherwith      => s"PrimChecks.agentset.otherWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: Optimizer._anyotherwith   => s"PrimChecks.agentset.anyOtherWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: Optimizer._oneofwith      => s"PrimChecks.agentset.oneOfWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: Optimizer._anywith        => s"PrimChecks.agentset.anyWith(${arg(0)}, ${handlers.fun(r.args(1), true)})"
-      case o: Optimizer._optimizecount  => s"PrimChecks.agentset.optimizeCount(${arg(0)}, ${o.checkValue}, ${o.operator})"
+      case _: Optimizer._countotherwith => s"PrimChecks.agentset.countOtherWith($sourceStart, $sourceEnd, ${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: Optimizer._countwith      => s"PrimChecks.agentset.countWith($sourceStart, $sourceEnd, ${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: Optimizer._otherwith      => s"PrimChecks.agentset.otherWith($sourceStart, $sourceEnd, ${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: Optimizer._anyotherwith   => s"PrimChecks.agentset.anyOtherWith($sourceStart, $sourceEnd, ${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: Optimizer._oneofwith      => s"PrimChecks.agentset.oneOfWith($sourceStart, $sourceEnd, ${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: Optimizer._anywith        => s"PrimChecks.agentset.anyWith($sourceStart, $sourceEnd, ${arg(0)}, ${handlers.fun(r.args(1), true)})"
+      case o: Optimizer._optimizecount  => s"PrimChecks.agentset.optimizeCount($sourceStart, $sourceEnd, ${arg(0)}, ${o.checkValue}, ${o.operator})"
 
       // agentset creators do their own, weird runtime checking with unique error messages, so we don't check their args.
-      case ls: prim.etc._linkset   => s"PrimChecks.agentset.linkSet(${if (useCompileArgs) { commaArgs } else { "...arguments" }})"
-      case ps: prim.etc._patchset  => s"PrimChecks.agentset.patchSet(${if (useCompileArgs) { commaArgs } else { "...arguments" }})"
-      case ts: prim.etc._turtleset => s"PrimChecks.agentset.turtleSet(${if (useCompileArgs) { commaArgs } else { "...arguments" }})"
+      case ls: prim.etc._linkset   => s"PrimChecks.agentset.linkSet($sourceStart, $sourceEnd, ${if (useCompileArgs) { commaArgs } else { "...arguments" }})"
+      case ps: prim.etc._patchset  => s"PrimChecks.agentset.patchSet($sourceStart, $sourceEnd, ${if (useCompileArgs) { commaArgs } else { "...arguments" }})"
+      case ts: prim.etc._turtleset => s"PrimChecks.agentset.turtleSet($sourceStart, $sourceEnd, ${if (useCompileArgs) { commaArgs } else { "...arguments" }})"
 
       case ns: Optimizer._nsum => generateOptimalNSum(r, ns.varName)
       case ns: Optimizer._nsum4 => generateOptimalNSum4(r, ns.varName)
@@ -290,7 +308,7 @@ trait ReporterPrims extends PrimUtils {
 
       // Lookup by breed
       case b: prim._breed                 => s"world.turtleManager.turtlesOfBreed(${jsString(b.breedName)})"
-      case b: prim.etc._breedsingular     => s"PrimChecks.turtle.getTurtleOfBreed(${jsString(b.breedName)}, ${arg(0)})"
+      case b: prim.etc._breedsingular     => s"PrimChecks.turtle.getTurtleOfBreed($sourceStart, $sourceEnd, ${jsString(b.breedName)}, ${arg(0)})"
       case b: prim.etc._linkbreed         => s"world.linkManager.linksOfBreed(${jsString(b.breedName)})"
       case p: prim.etc._linkbreedsingular => s"world.linkManager.getLink(${arg(0)}, ${arg(1)}, ${jsString(p.breedName)})"
       case b: prim.etc._breedat           => s"SelfManager.self().breedAt(${jsString(b.breedName)}, ${arg(0)}, ${arg(1)})"
@@ -298,8 +316,8 @@ trait ReporterPrims extends PrimUtils {
       case b: prim.etc._breedon           => s"PrimChecks.agentset.breedOn(${jsString(b.breedName)}, ${makeCheckedOp(0)})"
 
       // List prims
-      case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}', $commaCheckedArgs)"
-      case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.token.text}', $commaCheckedArgs)"
+      case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}', $sourceStart, $sourceEnd, $commaCheckedArgs)"
+      case b: prim.etc._butlast           => s"PrimChecks.list.butLast('${b.token.text}', $sourceStart, $sourceEnd, $commaCheckedArgs)"
       case l: prim._list                  => s"ListPrims.list(${maybeConciseVarArgs("LIST", l.syntax)})"
       case s: prim._sentence              => s"ListPrims.sentence(${maybeConciseVarArgs("SENTENCE", s.syntax)})"
 
@@ -319,14 +337,14 @@ trait ReporterPrims extends PrimUtils {
 
       case u: prim.etc._runresult        =>
         val argString = maybeConciseVarArgs("RUNRESULT", u.syntax)
-        val run = s"PrimChecks.procedure.runResult($argString)"
+        val run = s"PrimChecks.procedure.runResult($sourceStart, $sourceEnd, $argString)"
         maybeStoreProcedureArgsForRunResult(r.args(0).reportedType(), procContext, run)
 
       case l: prim._reporterlambda =>
-        generateTask(l, r.args(0), true, l.source)
+        generateTask(sourceStart, sourceEnd, l, r.args(0), true, l.source)
 
       case l: prim._commandlambda  =>
-        generateTask(l, r.args(0), false, l.source)
+        generateTask(sourceStart, sourceEnd, l, r.args(0), false, l.source)
 
       case x: prim._externreport =>
         val ExtensionPrimRegex = """_externreport\(([^:]+):([^)]+)\)""".r
@@ -334,7 +352,7 @@ trait ReporterPrims extends PrimUtils {
         s"Extensions[${jsString(extName)}].prims[${jsString(primName)}]($commaArgs)"
 
       case ra: prim.etc._range =>
-        generateRange(useCompileArgs, checkedArgs, ra.syntax)
+        generateRange(sourceStart, sourceEnd, useCompileArgs, checkedArgs, ra.syntax)
 
       case _ if compilerFlags.generateUnimplemented =>
         generateNotImplementedStub(r.reporter.getClass.getName.drop(1))
@@ -347,12 +365,12 @@ trait ReporterPrims extends PrimUtils {
   // scalastyle:on method.length
   // scalastyle:on cyclomatic.complexity
 
-  private def generateTask(lambda: Lambda, node: AstNode, isReporter: Boolean, source: Option[String])
+  private def generateTask(sourceStart: String, sourceEnd: String, lambda: Lambda, node: AstNode, isReporter: Boolean, source: Option[String])
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val task       = handlers.task(lambda, node)
     val body       = jsStringEscaped(source.getOrElse(""))
     val isVariadic = lambda.arguments.isVariadic
-    s"PrimChecks.task.checked($task, $body, $isReporter, $isVariadic)"
+    s"PrimChecks.task.checked($sourceStart, $sourceEnd, $task, $body, $isReporter, $isVariadic)"
   }
 
   def generateIfElseValue(args: Seq[Expression])
@@ -377,16 +395,16 @@ trait ReporterPrims extends PrimUtils {
   // The engine has this to say on the matter (with me acting as ventriloquist):
   // "Call with me with the correct number of arguments or GTFO."
   // I will open a can of whoop-ass on anyone who thinks differently. --Stone Cold J. Bertsche (3/16/17)
-  def generateRange(useCompileArgs: Boolean, args: Seq[String], syntax: Syntax): String =
+  def generateRange(sourceStart: String, sourceEnd: String, useCompileArgs: Boolean, args: Seq[String], syntax: Syntax): String =
     if (useCompileArgs) {
       args match {
         case Seq(a)       => s"ListPrims.rangeUnary($a)"
         case Seq(a, b)    => s"ListPrims.rangeBinary($a, $b)"
-        case Seq(a, b, c) => s"PrimChecks.list.rangeTernary($a, $b, $c)"
+        case Seq(a, b, c) => s"PrimChecks.list.rangeTernary($sourceStart, $sourceEnd, $a, $b, $c)"
         case _            => throw new IllegalArgumentException("range expects at most three arguments")
       }
     } else {
-      s"PrimChecks.list.rangeVariadic(${ReporterPrims.conciseVarArgs("RANGE", syntax)})"
+      s"PrimChecks.list.rangeVariadic($sourceStart, $sourceEnd, ${ReporterPrims.conciseVarArgs("RANGE", sourceStart, sourceEnd, syntax)})"
     }
 
 }
@@ -396,6 +414,12 @@ trait CommandPrims extends PrimUtils {
   // scalastyle:off method.length
   def generateCommand(s: Statement, useCompileArgs: Boolean = true)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
+
+    def sourceStart: String =
+      Option(s.command.token.sourceLocation).map(_.start.toString).getOrElse("null")
+
+    def sourceEnd: String =
+      Option(s.command.token.sourceLocation).map(_.end.toString).getOrElse("null")
 
     def arg(i: Int) =
       handlers.reporter(s.args(i))
@@ -422,14 +446,15 @@ trait CommandPrims extends PrimUtils {
       if (useCompileArgs || !syntax.isVariadic) {
         commaCheckedArgs
       } else {
-        ReporterPrims.conciseVarArgs(primName, syntax)
+        ReporterPrims.conciseVarArgs(primName, sourceStart, sourceEnd, syntax)
       }
     }
 
     s.command match {
-      case SimplePrims.SimpleCommand(op)  => if (op.isEmpty) "" else s"$op;"
-      case SimplePrims.NormalCommand(op)  => s"$op($commaArgs);"
-      case SimplePrims.CheckedCommand(op) => s"$op($commaCheckedArgs);"
+      case SimplePrims.SimpleCommand(op)             => if (op.isEmpty) "" else s"$op;"
+      case SimplePrims.NormalCommand(op)             => s"$op($commaArgs);"
+      case SimplePrims.CheckedCommand(op)            => s"$op($sourceStart, $sourceEnd, $commaCheckedArgs);"
+      case SimplePrims.CheckedPassThroughCommand(op) => s"$op($commaCheckedArgs);"
 
       case _: prim._set                  => generateSet(s)
       case _: prim.etc._loop             => generateLoop(s)
@@ -452,7 +477,6 @@ trait CommandPrims extends PrimUtils {
       case p: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith",  p.breedName)
       case p: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith", p.breedName)
       case _: prim.etc._every            => generateEvery(s)
-      case _: prim.etc._error            => s"Prims.error(${arg(0)});"
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case h: Optimizer._hatchfast       => optimalGenerateHatch(s, h.breedName)
       case _: prim._bk                   => s"SelfManager.self().fd(-(${arg(0)}));"
@@ -467,7 +491,7 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._hidelink         => "SelfManager.self().setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfManager.self().setVariable('hidden?', false)"
       case call: prim._call              => generateCall(call, args)
-      case _: prim._report               => s"return PrimChecks.procedure.report(${arg(0)});"
+      case _: prim._report               => s"return PrimChecks.procedure.report($sourceStart, $sourceEnd, ${arg(0)});"
       case _: prim.etc._ignore           => s"${arg(0)};"
 
       case l: prim._let                  =>
@@ -481,12 +505,12 @@ trait CommandPrims extends PrimUtils {
 
       case r: prim._run =>
         val argString = maybeConciseVarArgs("RUN", r.syntax)
-        val run       = s"var R = PrimChecks.procedure.run($argString); if (R !== undefined) { return R; }"
+        val run       = s"var R = PrimChecks.procedure.run($sourceStart, $sourceEnd, $argString); if (R !== undefined) { return R; }"
         maybeStoreProcedureArgsForRun(s.args(0).reportedType(), procContext, run)
 
       case fe: prim.etc._foreach =>
         val argString = maybeConciseVarArgs("FOREACH", fe.syntax)
-        val code      = s"PrimChecks.task.forEach($argString)"
+        val code      = s"PrimChecks.task.forEach($sourceStart, $sourceEnd, $argString)"
         addReturn(code)
 
       case x: prim._extern =>
@@ -539,6 +563,8 @@ trait CommandPrims extends PrimUtils {
         s"$name = ${arg(1)};"
       case p: prim._lambdavariable =>
         s"${JSIdentProvider(p.name)} = ${arg(1)};"
+      case ov: prim._observervariable =>
+        s"""world.observer.setVariable("${ov.displayName.toLowerCase}", ${arg(1)});"""
       case VariableSetter(setValue) =>
         setValue(arg(1))
       case x =>
