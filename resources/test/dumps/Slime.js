@@ -53,33 +53,33 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 27, 207, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("population"), ""), function() {
-    PrimChecks.turtleOrLink.setVariable("color", 15);
-    PrimChecks.turtle.setVariable("size", 2);
-    PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
+    PrimChecks.turtleOrLink.setVariable(81, 86, "color", 15);
+    PrimChecks.turtle.setVariable(99, 103, "size", 2);
+    PrimChecks.turtle.setXY(128, 133, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("chemical", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(180, 188, "chemical", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 215, 807, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    if (Prims.gt(PrimChecks.patch.getVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
+    if (Prims.gt(PrimChecks.patch.getVariable(239, 247, "chemical"), world.observer.getGlobal("sniff-threshold"))) {
       var R = ProcedurePrims.callCommand("turn-toward-chemical"); if (R === DeathInterrupt) { return R; }
     }
-    SelfManager.self().right(PrimChecks.math.plus(PrimChecks.math.minus(PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("wiggle-angle"))), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("wiggle-angle")))), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("wiggle-bias"))));
+    SelfManager.self().right(PrimChecks.math.plus(422, 423, PrimChecks.math.minus(394, 395, PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 368, 380, 1, world.observer.getGlobal("wiggle-angle"))), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 396, 408, 1, world.observer.getGlobal("wiggle-angle")))), PrimChecks.validator.checkArg('+', 422, 423, 1, world.observer.getGlobal("wiggle-bias"))));
     SelfManager.self()._optimalFdOne();
-    PrimChecks.patch.setVariable("chemical", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("chemical")), 2));
+    PrimChecks.patch.setVariable(453, 461, "chemical", PrimChecks.math.plus(471, 472, PrimChecks.validator.checkArg('+', 471, 472, 1, PrimChecks.patch.getVariable(462, 470, "chemical")), 2));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.topology.diffuse("chemical", 1, false)
   var R = ProcedurePrims.ask(world.patches(), function() {
-    PrimChecks.patch.setVariable("chemical", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.patch.getVariable("chemical")), 0.9));
-    PrimChecks.patch.setVariable("pcolor", ColorModel.scaleColor(55, PrimChecks.patch.getVariable("chemical"), 0.1, 3));
+    PrimChecks.patch.setVariable(640, 648, "chemical", PrimChecks.math.mult(658, 659, PrimChecks.validator.checkArg('*', 658, 659, 1, PrimChecks.patch.getVariable(649, 657, "chemical")), 0.9));
+    PrimChecks.patch.setVariable(713, 719, "pcolor", ColorModel.scaleColor(55, PrimChecks.patch.getVariable(738, 746, "chemical"), 0.1, 3));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("turn-toward-chemical", 815, 1279, (function() {
-  let ahead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return PrimChecks.patch.getVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("AHEAD", ahead);
-  let myright = PrimChecks.agentset.of(SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return PrimChecks.patch.getVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MYRIGHT", myright);
-  let myleft = PrimChecks.agentset.of(SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return PrimChecks.patch.getVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MYLEFT", myleft);
+  let ahead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return PrimChecks.patch.getVariable(978, 986, "chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("AHEAD", ahead);
+  let myright = PrimChecks.agentset.of(SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return PrimChecks.patch.getVariable(1020, 1028, "chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MYRIGHT", myright);
+  let myleft = PrimChecks.agentset.of(SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1), function() { return PrimChecks.patch.getVariable(1083, 1091, "chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MYLEFT", myleft);
   if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
     SelfManager.self().right(world.observer.getGlobal("sniff-angle"));
   }
@@ -89,8 +89,8 @@ ProcedurePrims.defineCommand("turn-toward-chemical", 815, 1279, (function() {
     }
   }
 }))
-world.observer.setGlobal("population", 400);
-world.observer.setGlobal("sniff-threshold", 1);
-world.observer.setGlobal("sniff-angle", 45);
-world.observer.setGlobal("wiggle-angle", 40);
-world.observer.setGlobal("wiggle-bias", 0);
+world.observer.setVariable("population", 400);
+world.observer.setVariable("sniff-threshold", 1);
+world.observer.setVariable("sniff-angle", 45);
+world.observer.setVariable("wiggle-angle", 40);
+world.observer.setVariable("wiggle-bias", 0);

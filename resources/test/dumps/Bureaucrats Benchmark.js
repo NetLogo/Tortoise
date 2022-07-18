@@ -32,20 +32,20 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('average', plotOps.makePenOps, false, new PenBundle.State(0, 1, PenBundle.DisplayMode.Line), function() {}, function() {
     return ProcedurePrims.runInPlotContext('Average', 'average', function() {
-      plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("total")), PrimChecks.agentset.count(world.patches())));;
+      plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.math.div(53, 54, PrimChecks.validator.checkArg('/', 53, 54, 1, world.observer.getGlobal("total")), PrimChecks.agentset.count(world.patches())));;
     });
   })];
   var setup   = function() {};
   var update  = function() {
     return ProcedurePrims.runInPlotContext('Average', undefined, function() {
-      if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("plot?")))) {
-        return PrimChecks.procedure.stop();
+      if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 36, 39, 2, world.observer.getGlobal("plot?")))) {
+        return PrimChecks.procedure.stop(48, 52);
       };
     });
   };
   return new Plot(name, pens, plotOps, "", "", true, true, 0, 1, 2, 2.1, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [total result] patches-own [n]  to benchmark   random-seed 0   reset-timer   setup   repeat 5000 [ go ]   set result timer end  to setup   clear-all   ask patches [     set n 2     colorize   ]   set total 2 * count patches   reset-ticks end  to go   let active-patches patch-set one-of patches   ask active-patches [     set n n + 1     set total total + 1     colorize   ]   while [any? active-patches] [     let overloaded-patches active-patches with [n > 3]     ask overloaded-patches [       set n n - 4       set total total - 4       colorize       ask neighbors4 [         set n n + 1         set total total + 1         colorize       ]     ]     set active-patches patch-set [neighbors4] of overloaded-patches   ]   tick end  to colorize  ;; patch procedure   ifelse n <= 3     [ set pcolor item n [83 54 45 25] ]     [ set pcolor red ] end')([{"left":415,"top":10,"right":725,"bottom":341,"dimensions":{"minPxcor":0,"maxPxcor":99,"minPycor":0,"maxPycor":99,"patchSize":3,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":100000,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":10,"top":25,"right":89,"bottom":58,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":95,"top":25,"right":173,"bottom":58,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Average', undefined, function() {     if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal(\"plot?\")))) {       return PrimChecks.procedure.stop();     };   }); }","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Average', 'average', function() {     plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal(\"total\")), PrimChecks.agentset.count(world.patches())));;   }); }","display":"average","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks (total / count patches)","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Average","left":10,"top":165,"right":400,"bottom":340,"xmin":0,"xmax":1,"ymin":2,"ymax":2.1,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"if not plot? [ stop ]","pens":[{"display":"average","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks (total / count patches)","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"plot?","left":40,"top":65,"right":143,"bottom":98,"display":"plot?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"benchmark\"); if (R === StopInterrupt) { return R; }","source":"benchmark","left":10,"top":130,"right":170,"bottom":163,"display":"benchmark (5000 ticks)","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"left":175,"top":84,"right":400,"bottom":164,"fontSize":12,"type":"output","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":200,"top":15,"right":285,"bottom":60,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["plot?", "total", "result"], ["plot?"], ["n"], 0, 99, 0, 99, 3, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [total result] patches-own [n]  to benchmark   random-seed 0   reset-timer   setup   repeat 5000 [ go ]   set result timer end  to setup   clear-all   ask patches [     set n 2     colorize   ]   set total 2 * count patches   reset-ticks end  to go   let active-patches patch-set one-of patches   ask active-patches [     set n n + 1     set total total + 1     colorize   ]   while [any? active-patches] [     let overloaded-patches active-patches with [n > 3]     ask overloaded-patches [       set n n - 4       set total total - 4       colorize       ask neighbors4 [         set n n + 1         set total total + 1         colorize       ]     ]     set active-patches patch-set [neighbors4] of overloaded-patches   ]   tick end  to colorize  ;; patch procedure   ifelse n <= 3     [ set pcolor item n [83 54 45 25] ]     [ set pcolor red ] end')([{"left":415,"top":10,"right":725,"bottom":341,"dimensions":{"minPxcor":0,"maxPxcor":99,"minPycor":0,"maxPycor":99,"patchSize":3,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":100000,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":10,"top":25,"right":89,"bottom":58,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":95,"top":25,"right":173,"bottom":58,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Average', undefined, function() {     if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 36, 39, 2, world.observer.getGlobal(\"plot?\")))) {       return PrimChecks.procedure.stop(48, 52);     };   }); }","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Average', 'average', function() {     plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.math.div(53, 54, PrimChecks.validator.checkArg('/', 53, 54, 1, world.observer.getGlobal(\"total\")), PrimChecks.agentset.count(world.patches())));;   }); }","display":"average","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks (total / count patches)","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Average","left":10,"top":165,"right":400,"bottom":340,"xmin":0,"xmax":1,"ymin":2,"ymax":2.1,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"if not plot? [ stop ]","pens":[{"display":"average","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks (total / count patches)","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"plot?","left":40,"top":65,"right":143,"bottom":98,"display":"plot?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"benchmark\"); if (R === StopInterrupt) { return R; }","source":"benchmark","left":10,"top":130,"right":170,"bottom":163,"display":"benchmark (5000 ticks)","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"left":175,"top":84,"right":400,"bottom":164,"fontSize":12,"type":"output","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":200,"top":15,"right":285,"bottom":60,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["plot?", "total", "result"], ["plot?"], ["n"], 0, 99, 0, 99, 3, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -68,52 +68,52 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("benchmark", 43, 131, (function() {
-  PrimChecks.math.randomSeed(0);
+  PrimChecks.math.randomSeed(55, 66, 0);
   workspace.timer.reset();
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
   for (let _index_93_99 = 0, _repeatcount_93_99 = StrictMath.floor(5000); _index_93_99 < _repeatcount_93_99; _index_93_99++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
-  world.observer.setGlobal("result", workspace.timer.elapsed());
+  world.observer.setVariable("result", workspace.timer.elapsed());
 }))
 ProcedurePrims.defineCommand("setup", 139, 246, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
-    PrimChecks.patch.setVariable("n", 2);
+    PrimChecks.patch.setVariable(181, 182, "n", 2);
     var R = ProcedurePrims.callCommand("colorize"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  world.observer.setGlobal("total", PrimChecks.math.mult(2, PrimChecks.agentset.count(world.patches())));
+  world.observer.setVariable("total", PrimChecks.math.mult(216, 217, 2, PrimChecks.agentset.count(world.patches())));
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 254, 739, (function() {
-  let activeHpatches = PrimChecks.agentset.patchSet(PrimChecks.list.oneOf(world.patches())); ProcedurePrims.stack().currentContext().registerStringRunVar("ACTIVE-PATCHES", activeHpatches);
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, activeHpatches), function() {
-    PrimChecks.patch.setVariable("n", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("n")), 1));
-    world.observer.setGlobal("total", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total")), 1));
+  let activeHpatches = PrimChecks.agentset.patchSet(278, 287, PrimChecks.list.oneOf(288, 294, world.patches())); ProcedurePrims.stack().currentContext().registerStringRunVar("ACTIVE-PATCHES", activeHpatches);
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 305, 308, 1904, activeHpatches), function() {
+    PrimChecks.patch.setVariable(334, 335, "n", PrimChecks.math.plus(338, 339, PrimChecks.validator.checkArg('+', 338, 339, 1, PrimChecks.patch.getVariable(336, 337, "n")), 1));
+    world.observer.setVariable("total", PrimChecks.math.plus(362, 363, PrimChecks.validator.checkArg('+', 362, 363, 1, world.observer.getGlobal("total")), 1));
     var R = ProcedurePrims.callCommand("colorize"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  while (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, activeHpatches))) {
-    let overloadedHpatches = PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, activeHpatches), function() { return Prims.gt(PrimChecks.patch.getVariable("n"), 3); }); ProcedurePrims.stack().currentContext().registerStringRunVar("OVERLOADED-PATCHES", overloadedHpatches);
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, overloadedHpatches), function() {
-      PrimChecks.patch.setVariable("n", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("n")), 4));
-      world.observer.setGlobal("total", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("total")), 4));
+  while (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 392, 396, 112, activeHpatches))) {
+    let overloadedHpatches = PrimChecks.agentset.with(457, 461, PrimChecks.validator.checkArg('WITH', 457, 461, 112, activeHpatches), function() { return Prims.gt(PrimChecks.patch.getVariable(463, 464, "n"), 3); }); ProcedurePrims.stack().currentContext().registerStringRunVar("OVERLOADED-PATCHES", overloadedHpatches);
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 474, 477, 1904, overloadedHpatches), function() {
+      PrimChecks.patch.setVariable(509, 510, "n", PrimChecks.math.minus(513, 514, PrimChecks.validator.checkArg('-', 513, 514, 1, PrimChecks.patch.getVariable(511, 512, "n")), 4));
+      world.observer.setVariable("total", PrimChecks.math.minus(539, 540, PrimChecks.validator.checkArg('-', 539, 540, 1, world.observer.getGlobal("total")), 4));
       var R = ProcedurePrims.callCommand("colorize"); if (R === DeathInterrupt) { return R; }
       var R = ProcedurePrims.ask(SelfManager.self().getNeighbors4(), function() {
-        PrimChecks.patch.setVariable("n", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("n")), 1));
-        world.observer.setGlobal("total", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total")), 1));
+        PrimChecks.patch.setVariable(593, 594, "n", PrimChecks.math.plus(597, 598, PrimChecks.validator.checkArg('+', 597, 598, 1, PrimChecks.patch.getVariable(595, 596, "n")), 1));
+        world.observer.setVariable("total", PrimChecks.math.plus(625, 626, PrimChecks.validator.checkArg('+', 625, 626, 1, world.observer.getGlobal("total")), 1));
         var R = ProcedurePrims.callCommand("colorize"); if (R === DeathInterrupt) { return R; }
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    activeHpatches = PrimChecks.agentset.patchSet(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, overloadedHpatches), function() { return SelfManager.self().getNeighbors4(); })); ProcedurePrims.stack().currentContext().updateStringRunVar("ACTIVE-PATCHES", activeHpatches);
+    activeHpatches = PrimChecks.agentset.patchSet(683, 692, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 706, 708, 1904, overloadedHpatches), function() { return SelfManager.self().getNeighbors4(); })); ProcedurePrims.stack().currentContext().updateStringRunVar("ACTIVE-PATCHES", activeHpatches);
   }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("colorize", 747, 855, (function() {
-  if (Prims.lte(PrimChecks.patch.getVariable("n"), 3)) {
-    PrimChecks.patch.setVariable("pcolor", PrimChecks.list.item(PrimChecks.validator.checkArg('ITEM', 1, PrimChecks.patch.getVariable("n")), [83, 54, 45, 25]));
+  if (Prims.lte(PrimChecks.patch.getVariable(785, 786, "n"), 3)) {
+    PrimChecks.patch.setVariable(802, 808, "pcolor", PrimChecks.list.item(809, 813, PrimChecks.validator.checkArg('ITEM', 809, 813, 1, PrimChecks.patch.getVariable(814, 815, "n")), [83, 54, 45, 25]));
   }
   else {
-    PrimChecks.patch.setVariable("pcolor", 15);
+    PrimChecks.patch.setVariable(842, 848, "pcolor", 15);
   }
 }))
-world.observer.setGlobal("plot?", false);
+world.observer.setVariable("plot?", false);

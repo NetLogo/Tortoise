@@ -51,26 +51,28 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("go", 53, 439, (function() {
-  world.observer.setGlobal("hsb-as-rgb", ColorModel.hsbToRGB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
-  world.observer.setGlobal("hsb-color", ColorModel.nearestColorNumberOfHSB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", -1, 1)), function() { PrimChecks.patch.setVariable("pcolor", world.observer.getGlobal("hsb-as-rgb")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", 1, 1)), function() { PrimChecks.patch.setVariable("pcolor", world.observer.getGlobal("hsb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  world.observer.setGlobal("rgb-color", ColorModel.nearestColorNumberOfRGB(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", -1, -1)), function() {
-    PrimChecks.patch.setVariable("pcolor", ListPrims.list(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
+  world.observer.setVariable("hsb-as-rgb", ColorModel.hsbToRGB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
+  world.observer.setVariable("hsb-color", ColorModel.nearestColorNumberOfHSB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 163, 166, 1904, PrimChecks.procedure.callReporter(167, 175, "quadrant", -1, 1)), function() { PrimChecks.patch.setVariable(188, 194, "pcolor", world.observer.getGlobal("hsb-as-rgb")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 210, 213, 1904, PrimChecks.procedure.callReporter(214, 222, "quadrant", 1, 1)), function() { PrimChecks.patch.setVariable(235, 241, "pcolor", world.observer.getGlobal("hsb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  world.observer.setVariable("rgb-color", ColorModel.nearestColorNumberOfRGB(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 315, 318, 1904, PrimChecks.procedure.callReporter(319, 327, "quadrant", -1, -1)), function() {
+    PrimChecks.patch.setVariable(340, 346, "pcolor", ListPrims.list(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.procedure.callReporter("quadrant", 1, -1)), function() { PrimChecks.patch.setVariable("pcolor", world.observer.getGlobal("rgb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 385, 388, 1904, PrimChecks.procedure.callReporter(389, 397, "quadrant", 1, -1)), function() { PrimChecks.patch.setVariable(410, 416, "pcolor", world.observer.getGlobal("rgb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   Prims.display();
 }))
 ProcedurePrims.defineReporter("quadrant", 454, 542, (function(x, y) {
-  return PrimChecks.procedure.report(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.procedure.callReporter("patch-quadrant"), ListPrims.list(x, y)); }));
+  return PrimChecks.procedure.report(494, 500, PrimChecks.agentset.with(509, 513, world.patches(), function() {
+    return Prims.equality(PrimChecks.procedure.callReporter(515, 529, "patch-quadrant"), ListPrims.list(x, y));
+  }));
 }))
 ProcedurePrims.defineReporter("patch-quadrant", 557, 712, (function() {
-  return PrimChecks.procedure.report(ListPrims.list((Prims.ifElseValueBooleanCheck(Prims.lt(PrimChecks.patch.getVariable("pxcor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1), (Prims.ifElseValueBooleanCheck(Prims.lt(PrimChecks.patch.getVariable("pycor"), PrimChecks.math.div(world.topology.width, 2))) ? -1 : 1)));
+  return PrimChecks.procedure.report(594, 600, ListPrims.list((Prims.ifElseValueBooleanCheck(Prims.lt(PrimChecks.patch.getVariable(619, 624, "pxcor"), PrimChecks.math.div(639, 640, world.topology.width, 2))) ? -1 : 1), (Prims.ifElseValueBooleanCheck(Prims.lt(PrimChecks.patch.getVariable(679, 684, "pycor"), PrimChecks.math.div(699, 700, world.topology.width, 2))) ? -1 : 1)));
 }))
-world.observer.setGlobal("hue", 180);
-world.observer.setGlobal("saturation", 100);
-world.observer.setGlobal("brightness", 100);
-world.observer.setGlobal("rgb-red", 105);
-world.observer.setGlobal("rgb-green", 105);
-world.observer.setGlobal("rgb-blue", 255);
+world.observer.setVariable("hue", 180);
+world.observer.setVariable("saturation", 100);
+world.observer.setVariable("brightness", 100);
+world.observer.setVariable("rgb-red", 105);
+world.observer.setVariable("rgb-green", 105);
+world.observer.setVariable("rgb-blue", 255);

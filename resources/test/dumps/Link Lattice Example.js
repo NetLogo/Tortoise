@@ -64,10 +64,10 @@ ProcedurePrims.defineCommand("setup-hex", 502, 1072, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
     var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    if (Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, PrimChecks.patch.getVariable("pxcor")), 2), 0)) {
+    if (Prims.equality(PrimChecks.math.mod(819, 822, PrimChecks.validator.checkArg('MOD', 819, 822, 1, PrimChecks.patch.getVariable(813, 818, "pxcor")), 2), 0)) {
       var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
       var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-      PrimChecks.turtle.setVariable("ycor", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ycor")), 0.5));
+      PrimChecks.turtle.setVariable(1032, 1036, "ycor", PrimChecks.math.minus(1042, 1043, PrimChecks.validator.checkArg('-', 1042, 1043, 1, PrimChecks.turtle.getVariable(1037, 1041, "ycor")), 0.5));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();

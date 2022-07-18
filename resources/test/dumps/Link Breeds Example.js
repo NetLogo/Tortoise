@@ -54,18 +54,18 @@ ProcedurePrims.defineCommand("setup", 245, 813, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(10, ""), function() {
     SelfManager.self().fd(5);
-    PrimChecks.turtleOrLink.setVariable("color", 5);
+    PrimChecks.turtleOrLink.setVariable(310, 315, "color", 5);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(5, world.turtles())), function() {
-    var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.list.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS"), function() {
-      PrimChecks.turtleOrLink.setVariable("color", 105);
-      PrimChecks.link.setVariable("weight", RandomPrims.randomLong(10));
-      PrimChecks.turtleOrLink.setVariable("label", PrimChecks.link.getVariable("weight"));
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 327, 330, 1904, PrimChecks.list.nOf(331, 335, 5, world.turtles())), function() {
+    var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.list.oneOf(434, 440, SelfPrims.other(world.turtles())), "BLUE-LINKS"), function() {
+      PrimChecks.turtleOrLink.setVariable(467, 472, "color", 105);
+      PrimChecks.link.setVariable(488, 494, "weight", RandomPrims.randomLong(10));
+      PrimChecks.turtleOrLink.setVariable(515, 520, "label", PrimChecks.link.getVariable(521, 527, "weight"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getSpecialName(), "curved link")
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(5, world.turtles())), function() {
-    var R = ProcedurePrims.ask(LinkPrims.createLinkTo(PrimChecks.list.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS"), function() { PrimChecks.turtleOrLink.setVariable("color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 640, 643, 1904, PrimChecks.list.nOf(644, 648, 5, world.turtles())), function() {
+    var R = ProcedurePrims.ask(LinkPrims.createLinkTo(PrimChecks.list.oneOf(746, 752, SelfPrims.other(world.turtles())), "RED-LINKS"), function() { PrimChecks.turtleOrLink.setVariable(779, 784, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))

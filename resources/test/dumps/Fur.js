@@ -53,14 +53,14 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 237, 880, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
-    PrimChecks.patch.setVariable("inner-neighbors", PrimChecks.procedure.callReporter("ellipse-in", world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
-    PrimChecks.patch.setVariable("outer-neighbors", PrimChecks.procedure.callReporter("ellipse-ring", world.observer.getGlobal("outer-radius-x"), world.observer.getGlobal("outer-radius-y"), world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
+    PrimChecks.patch.setVariable(352, 367, "inner-neighbors", PrimChecks.procedure.callReporter(368, 378, "ellipse-in", world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
+    PrimChecks.patch.setVariable(515, 530, "outer-neighbors", PrimChecks.procedure.callReporter(531, 543, "ellipse-ring", world.observer.getGlobal("outer-radius-x"), world.observer.getGlobal("outer-radius-y"), world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  if (PrimChecks.agentset.anyWith(world.patches(), function() {
-    return PrimChecks.agentset.optimizeCount(PrimChecks.patch.getVariable("outer-neighbors"), 0, (a, b) => a === b);
+  if (PrimChecks.agentset.anyWith(null, null, world.patches(), function() {
+    return PrimChecks.agentset.optimizeCount(null, null, PrimChecks.patch.getVariable(644, 659, "outer-neighbors"), 0, (a, b) => a === b);
   })) {
     UserDialogPrims.confirm(StringPrims.word("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ", " Please reset the sliders and press Setup again."));
-    return PrimChecks.procedure.stop();
+    return PrimChecks.procedure.stop(846, 850);
   }
   else {
     var R = ProcedurePrims.callCommand("restart"); if (R === DeathInterrupt) { return R; }
@@ -70,51 +70,53 @@ ProcedurePrims.defineCommand("setup", 237, 880, (function() {
 ProcedurePrims.defineCommand("restart", 1086, 1232, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("initial-density"))) {
-      PrimChecks.patch.setVariable("pcolor", 9.9);
+      PrimChecks.patch.setVariable(1172, 1178, "pcolor", 9.9);
     }
     else {
-      PrimChecks.patch.setVariable("pcolor", 0);
+      PrimChecks.patch.setVariable(1201, 1207, "pcolor", 0);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 1240, 1322, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("pick-new-color"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.patch.getVariable("new-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() {
+    PrimChecks.patch.setVariable(1296, 1302, "pcolor", PrimChecks.patch.getVariable(1303, 1312, "new-color"));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("pick-new-color", 1330, 1895, (function() {
-  let activator = PrimChecks.agentset.countWith(PrimChecks.patch.getVariable("inner-neighbors"), function() { return Prims.equality(PrimChecks.patch.getVariable("pcolor"), 9.9); }); ProcedurePrims.stack().currentContext().registerStringRunVar("ACTIVATOR", activator);
-  let inhibitor = PrimChecks.agentset.countWith(PrimChecks.patch.getVariable("outer-neighbors"), function() { return Prims.equality(PrimChecks.patch.getVariable("pcolor"), 9.9); }); ProcedurePrims.stack().currentContext().registerStringRunVar("INHIBITOR", inhibitor);
-  let difference = PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, activator), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("ratio")), PrimChecks.validator.checkArg('*', 1, inhibitor))); ProcedurePrims.stack().currentContext().registerStringRunVar("DIFFERENCE", difference);
+  let activator = PrimChecks.agentset.countWith(null, null, PrimChecks.patch.getVariable(1387, 1402, "inner-neighbors"), function() { return Prims.equality(PrimChecks.patch.getVariable(1409, 1415, "pcolor"), 9.9); }); ProcedurePrims.stack().currentContext().registerStringRunVar("ACTIVATOR", activator);
+  let inhibitor = PrimChecks.agentset.countWith(null, null, PrimChecks.patch.getVariable(1447, 1462, "outer-neighbors"), function() { return Prims.equality(PrimChecks.patch.getVariable(1469, 1475, "pcolor"), 9.9); }); ProcedurePrims.stack().currentContext().registerStringRunVar("INHIBITOR", inhibitor);
+  let difference = PrimChecks.math.minus(1632, 1633, PrimChecks.validator.checkArg('-', 1632, 1633, 1, activator), PrimChecks.math.mult(1640, 1641, PrimChecks.validator.checkArg('*', 1640, 1641, 1, world.observer.getGlobal("ratio")), PrimChecks.validator.checkArg('*', 1640, 1641, 1, inhibitor))); ProcedurePrims.stack().currentContext().registerStringRunVar("DIFFERENCE", difference);
   if (Prims.gt(difference, 0)) {
-    PrimChecks.patch.setVariable("new-color", 9.9);
+    PrimChecks.patch.setVariable(1686, 1695, "new-color", 9.9);
   }
   else {
     if (Prims.lt(difference, 0)) {
-      PrimChecks.patch.setVariable("new-color", 0);
+      PrimChecks.patch.setVariable(1742, 1751, "new-color", 0);
     }
   }
 }))
 ProcedurePrims.defineReporter("ellipse-in", 1964, 2206, (function(xHradius, yHradius) {
-  return PrimChecks.procedure.report(PrimChecks.agentset.with(SelfManager.self().inRadius(world.patches(), PrimChecks.list.max(ListPrims.list(xHradius, yHradius))), function() {
-    return Prims.gte(1, PrimChecks.math.plus(PrimChecks.math.div(PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, PrimChecks.procedure.callReporter("xdistance", SelfManager.myself())), 2), PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, xHradius), 2)), PrimChecks.math.div(PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, PrimChecks.procedure.callReporter("ydistance", SelfManager.myself())), 2), PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, yHradius), 2))));
+  return PrimChecks.procedure.report(2017, 2023, PrimChecks.agentset.with(2082, 2086, SelfManager.self().inRadius(world.patches(), PrimChecks.list.max(2043, 2046, ListPrims.list(xHradius, yHradius))), function() {
+    return Prims.gte(1, PrimChecks.math.plus(2137, 2138, PrimChecks.math.div(2119, 2120, PrimChecks.math.pow(2114, 2115, PrimChecks.validator.checkArg('^', 2114, 2115, 1, PrimChecks.procedure.callReporter(2097, 2106, "xdistance", SelfManager.myself())), 2), PrimChecks.math.pow(2131, 2132, PrimChecks.validator.checkArg('^', 2131, 2132, 1, xHradius), 2)), PrimChecks.math.div(2187, 2188, PrimChecks.math.pow(2182, 2183, PrimChecks.validator.checkArg('^', 2182, 2183, 1, PrimChecks.procedure.callReporter(2165, 2174, "ydistance", SelfManager.myself())), 2), PrimChecks.math.pow(2199, 2200, PrimChecks.validator.checkArg('^', 2199, 2200, 1, yHradius), 2))));
   }));
 }))
 ProcedurePrims.defineReporter("ellipse-ring", 2221, 2660, (function(outxHradius, outyHradius, inxHradius, inyHradius) {
-  return PrimChecks.procedure.report(PrimChecks.agentset.with(SelfManager.self().inRadius(world.patches(), PrimChecks.list.max(ListPrims.list(outxHradius, outyHradius))), function() {
-    return (Prims.gte(1, PrimChecks.math.plus(PrimChecks.math.div(PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, PrimChecks.procedure.callReporter("xdistance", SelfManager.myself())), 2), PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, outxHradius), 2)), PrimChecks.math.div(PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, PrimChecks.procedure.callReporter("ydistance", SelfManager.myself())), 2), PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, outyHradius), 2)))) && Prims.lt(1, PrimChecks.math.plus(PrimChecks.math.div(PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, PrimChecks.procedure.callReporter("xdistance", SelfManager.myself())), 2), PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, inxHradius), 2)), PrimChecks.math.div(PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, PrimChecks.procedure.callReporter("ydistance", SelfManager.myself())), 2), PrimChecks.math.pow(PrimChecks.validator.checkArg('^', 1, inyHradius), 2)))));
+  return PrimChecks.procedure.report(2304, 2310, PrimChecks.agentset.with(2375, 2379, SelfManager.self().inRadius(world.patches(), PrimChecks.list.max(2330, 2333, ListPrims.list(outxHradius, outyHradius))), function() {
+    return (Prims.gte(1, PrimChecks.math.plus(2433, 2434, PrimChecks.math.div(2412, 2413, PrimChecks.math.pow(2407, 2408, PrimChecks.validator.checkArg('^', 2407, 2408, 1, PrimChecks.procedure.callReporter(2390, 2399, "xdistance", SelfManager.myself())), 2), PrimChecks.math.pow(2427, 2428, PrimChecks.validator.checkArg('^', 2427, 2428, 1, outxHradius), 2)), PrimChecks.math.div(2483, 2484, PrimChecks.math.pow(2478, 2479, PrimChecks.validator.checkArg('^', 2478, 2479, 1, PrimChecks.procedure.callReporter(2461, 2470, "ydistance", SelfManager.myself())), 2), PrimChecks.math.pow(2498, 2499, PrimChecks.validator.checkArg('^', 2498, 2499, 1, outyHradius), 2)))) && Prims.lt(1, PrimChecks.math.plus(2572, 2573, PrimChecks.math.div(2552, 2553, PrimChecks.math.pow(2547, 2548, PrimChecks.validator.checkArg('^', 2547, 2548, 1, PrimChecks.procedure.callReporter(2530, 2539, "xdistance", SelfManager.myself())), 2), PrimChecks.math.pow(2566, 2567, PrimChecks.validator.checkArg('^', 2566, 2567, 1, inxHradius), 2)), PrimChecks.math.div(2622, 2623, PrimChecks.math.pow(2617, 2618, PrimChecks.validator.checkArg('^', 2617, 2618, 1, PrimChecks.procedure.callReporter(2600, 2609, "ydistance", SelfManager.myself())), 2), PrimChecks.math.pow(2636, 2637, PrimChecks.validator.checkArg('^', 2636, 2637, 1, inyHradius), 2)))));
   }));
 }))
 ProcedurePrims.defineReporter("xdistance", 3278, 3391, (function(otherHpatch) {
-  return PrimChecks.procedure.report(SelfManager.self().distanceXY(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHpatch), function() { return PrimChecks.patch.getVariable("pxcor"); }), PrimChecks.patch.getVariable("pycor")));
+  return PrimChecks.procedure.report(3324, 3330, SelfManager.self().distanceXY(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 3350, 3352, 1904, otherHpatch), function() { return PrimChecks.patch.getVariable(3343, 3348, "pxcor"); }), PrimChecks.patch.getVariable(3385, 3390, "pycor")));
 }))
 ProcedurePrims.defineReporter("ydistance", 3406, 3519, (function(otherHpatch) {
-  return PrimChecks.procedure.report(SelfManager.self().distanceXY(PrimChecks.patch.getVariable("pxcor"), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHpatch), function() { return PrimChecks.patch.getVariable("pycor"); })));
+  return PrimChecks.procedure.report(3452, 3458, SelfManager.self().distanceXY(PrimChecks.patch.getVariable(3470, 3475, "pxcor"), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 3504, 3506, 1904, otherHpatch), function() { return PrimChecks.patch.getVariable(3497, 3502, "pycor"); })));
 }))
-world.observer.setGlobal("initial-density", 50);
-world.observer.setGlobal("ratio", 0.35);
-world.observer.setGlobal("inner-radius-x", 3);
-world.observer.setGlobal("inner-radius-y", 3);
-world.observer.setGlobal("outer-radius-x", 6);
-world.observer.setGlobal("outer-radius-y", 6);
+world.observer.setVariable("initial-density", 50);
+world.observer.setVariable("ratio", 0.35);
+world.observer.setVariable("inner-radius-x", 3);
+world.observer.setVariable("inner-radius-y", 3);
+world.observer.setVariable("outer-radius-x", 6);
+world.observer.setVariable("outer-radius-y", 6);

@@ -52,18 +52,18 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 3, 203, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(45, 51, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), ""), function() {
-    SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, PrimChecks.list.oneOf(SelfManager.self().getNeighbors4())));
-    PrimChecks.turtleOrLink.setVariable("color", 15);
-    PrimChecks.turtle.setVariable("size", 6);
+    SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 93, 97, 768, PrimChecks.list.oneOf(98, 104, SelfManager.self().getNeighbors4())));
+    PrimChecks.turtleOrLink.setVariable(126, 131, "color", 15);
+    PrimChecks.turtle.setVariable(146, 150, "size", 6);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go-forward", 392, 484, (function() {
-  var R = PrimChecks.task.forEach(PrimChecks.list.sort(world.turtles()), PrimChecks.task.checked(function(t) {
-    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, t), function() {
+  var R = PrimChecks.task.forEach(405, 412, PrimChecks.list.sort(world.turtles()), PrimChecks.task.checked(426, 427, function(t) {
+    PrimChecks.procedure.runArgCountCheck('run', 426, 476, 1, arguments.length);
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 437, 440, 1904, t), function() {
       SelfManager.self()._optimalFdOne();
       var R = ProcedurePrims.callCommand("turn"); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -71,9 +71,9 @@ ProcedurePrims.defineCommand("go-forward", 392, 484, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("go-reverse", 492, 592, (function() {
-  var R = PrimChecks.task.forEach(PrimChecks.validator.checkArg('FOREACH', 8, PrimChecks.list.reverse(PrimChecks.list.sort(world.turtles()))), PrimChecks.task.checked(function(t) {
-    PrimChecks.procedure.runArgCountCheck('run', 1, arguments.length);
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, t), function() {
+  var R = PrimChecks.task.forEach(505, 512, PrimChecks.validator.checkArg('FOREACH', 505, 512, 8, PrimChecks.list.reverse(PrimChecks.list.sort(world.turtles()))), PrimChecks.task.checked(534, 535, function(t) {
+    PrimChecks.procedure.runArgCountCheck('run', 534, 584, 1, arguments.length);
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 545, 548, 1904, t), function() {
       var R = ProcedurePrims.callCommand("turn"); if (R === DeathInterrupt) { return R; }
       SelfManager.self().fd(-(1));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
@@ -81,13 +81,13 @@ ProcedurePrims.defineCommand("go-reverse", 492, 592, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("turn", 600, 703, (function() {
-  if (Prims.equality(PrimChecks.patch.getVariable("pcolor"), 9.9)) {
-    PrimChecks.patch.setVariable("pcolor", 0);
+  if (Prims.equality(PrimChecks.patch.getVariable(614, 620, "pcolor"), 9.9)) {
+    PrimChecks.patch.setVariable(639, 645, "pcolor", 0);
     SelfManager.self().right(90);
   }
   else {
-    PrimChecks.patch.setVariable("pcolor", 9.9);
+    PrimChecks.patch.setVariable(676, 682, "pcolor", 9.9);
     SelfManager.self().right(-(90));
   }
 }))
-world.observer.setGlobal("num-vants", 1);
+world.observer.setVariable("num-vants", 1);

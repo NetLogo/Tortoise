@@ -53,41 +53,41 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 71, 231, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
-    PrimChecks.turtleOrLink.setVariable("shape", "line");
-    PrimChecks.turtleOrLink.setVariable("color", world.observer.getGlobal("init-color"));
-    PrimChecks.turtle.setXY(PrimChecks.validator.checkArg('SETXY', 1, world.observer.getGlobal("init-x")), PrimChecks.validator.checkArg('SETXY', 1, world.observer.getGlobal("init-y")));
-    PrimChecks.turtle.setVariable("heading", 0);
+    PrimChecks.turtleOrLink.setVariable(120, 125, "shape", "line");
+    PrimChecks.turtleOrLink.setVariable(141, 146, "color", world.observer.getGlobal("init-color"));
+    PrimChecks.turtle.setXY(162, 167, PrimChecks.validator.checkArg('SETXY', 162, 167, 1, world.observer.getGlobal("init-x")), PrimChecks.validator.checkArg('SETXY', 162, 167, 1, world.observer.getGlobal("init-y")));
+    PrimChecks.turtle.setVariable(190, 197, "heading", 0);
     SelfManager.self().penManager.lowerPen();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 296, 676, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    PrimChecks.turtle.setVariable("new?", false);
+    PrimChecks.turtle.setVariable(325, 329, "new?", false);
     SelfManager.self().penManager.lowerPen();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtles(), function() {
-    return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("new?")));
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(408, 412, world.turtles(), function() {
+    return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 415, 418, 2, PrimChecks.turtle.getVariable(419, 423, "new?")));
   }), function() {
     SelfManager.self().fd(4);
     SelfManager.self().right(15);
     SelfManager.self().fd(8);
-    var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { PrimChecks.turtle.setVariable("new?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtleOrLink.getVariable("color")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("color-inc"))));
+    var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { PrimChecks.turtle.setVariable(476, 480, "new?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtleOrLink.setVariable(496, 501, "color", PrimChecks.math.plus(509, 510, PrimChecks.validator.checkArg('+', 509, 510, 1, PrimChecks.turtleOrLink.getVariable(503, 508, "color")), PrimChecks.validator.checkArg('+', 509, 510, 1, world.observer.getGlobal("color-inc"))));
     SelfManager.self().right(180);
     SelfManager.self().jumpIfAble(8);
     SelfManager.self().right(180);
     SelfManager.self().right(-(15));
     SelfManager.self().fd(4);
     SelfManager.self().right(-(15));
-    var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { PrimChecks.turtle.setVariable("new?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtleOrLink.getVariable("color")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("color-inc"))));
+    var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { PrimChecks.turtle.setVariable(602, 606, "new?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtleOrLink.setVariable(622, 627, "color", PrimChecks.math.plus(635, 636, PrimChecks.validator.checkArg('+', 635, 636, 1, PrimChecks.turtleOrLink.getVariable(629, 634, "color")), PrimChecks.validator.checkArg('+', 635, 636, 1, world.observer.getGlobal("color-inc"))));
     SelfManager.self().fd(8);
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();
 }))
-world.observer.setGlobal("color-inc", 7);
-world.observer.setGlobal("init-color", 45);
-world.observer.setGlobal("init-x", 0);
-world.observer.setGlobal("init-y", -50);
+world.observer.setVariable("color-inc", 7);
+world.observer.setVariable("init-color", 45);
+world.observer.setVariable("init-x", 0);
+world.observer.setVariable("init-y", -50);

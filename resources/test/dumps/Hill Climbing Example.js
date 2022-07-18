@@ -52,28 +52,28 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 150, 504, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(100, world.patches())), function() { PrimChecks.patch.setVariable("pcolor", 120); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 215, 218, 1904, PrimChecks.list.nOf(219, 223, 100, world.patches())), function() { PrimChecks.patch.setVariable(242, 248, "pcolor", 120); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   for (let _index_296_302 = 0, _repeatcount_296_302 = StrictMath.floor(20); _index_296_302 < _repeatcount_296_302; _index_296_302++) {
     world.topology.diffuse("pcolor", 1, false)
   }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(800, world.patches())), function() {
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 385, 388, 1904, PrimChecks.list.nOf(389, 393, 800, world.patches())), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "TURTLES"), function() {
-      PrimChecks.turtle.setVariable("peak?", false);
-      PrimChecks.turtleOrLink.setVariable("color", 15);
+      PrimChecks.turtle.setVariable(433, 438, "peak?", false);
+      PrimChecks.turtleOrLink.setVariable(455, 460, "color", 15);
       SelfManager.self().penManager.lowerPen();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 512, 900, (function() {
-  if (PrimChecks.agentset.all(world.turtles(), function() { return PrimChecks.turtle.getVariable("peak?"); })) {
-    return PrimChecks.procedure.stop();
+  if (PrimChecks.agentset.all(559, 563, world.turtles(), function() { return PrimChecks.turtle.getVariable(573, 578, "peak?"); })) {
+    return PrimChecks.procedure.stop(586, 590);
   }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     let oldHpatch = SelfManager.self().getPatchHere(); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-PATCH", oldHpatch);
     Prims.uphill("pcolor")
     if (Prims.equality(oldHpatch, SelfManager.self().getPatchHere())) {
-      PrimChecks.turtle.setVariable("peak?", true);
+      PrimChecks.turtle.setVariable(876, 881, "peak?", true);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();

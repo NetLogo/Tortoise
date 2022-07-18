@@ -51,25 +51,25 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("benchmark", 21, 112, (function() {
-  PrimChecks.math.randomSeed(362);
+  PrimChecks.math.randomSeed(33, 44, 362);
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
   workspace.timer.reset();
   for (let _index_73_79 = 0, _repeatcount_73_79 = StrictMath.floor(20000); _index_73_79 < _repeatcount_73_79; _index_73_79++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
-  world.observer.setGlobal("result", workspace.timer.elapsed());
+  world.observer.setVariable("result", workspace.timer.elapsed());
 }))
 ProcedurePrims.defineCommand("setup", 125, 219, (function() {
   world.clearAll();
   world.ticker.reset();
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(1000, ""), function() {
-    SelfManager.self().moveTo(PrimChecks.list.oneOf(world.patches()));
-    SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, PrimChecks.list.oneOf(SelfManager.self().getNeighbors4())));
+    SelfManager.self().moveTo(PrimChecks.list.oneOf(173, 179, world.patches()));
+    SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 192, 196, 768, PrimChecks.list.oneOf(197, 203, SelfManager.self().getNeighbors4())));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 227, 293, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 768, PrimChecks.list.oneOf(SelfManager.self().getNeighbors4())));
+    SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 250, 254, 768, PrimChecks.list.oneOf(255, 261, SelfManager.self().getNeighbors4())));
     SelfManager.self()._optimalFdOne();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.tick();

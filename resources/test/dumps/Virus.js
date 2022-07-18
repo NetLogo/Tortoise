@@ -32,18 +32,18 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('sick', plotOps.makePenOps, false, new PenBundle.State(15, 1, PenBundle.DisplayMode.Line), function() {}, function() {
     return ProcedurePrims.runInPlotContext('Populations', 'sick', function() {
-      plotManager.plotValue(PrimChecks.agentset.countWith(world.turtles(), function() { return PrimChecks.turtle.getVariable("sick?"); }));;
+      plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(59, 64, "sick?"); }));;
     });
   }),
   new PenBundle.Pen('immune', plotOps.makePenOps, false, new PenBundle.State(5, 1, PenBundle.DisplayMode.Line), function() {}, function() {
     return ProcedurePrims.runInPlotContext('Populations', 'immune', function() {
-      plotManager.plotValue(PrimChecks.agentset.countWith(world.turtles(), function() { return PrimChecks.procedure.callReporter("immune?"); }));;
+      plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.procedure.callReporter(59, 66, "immune?"); }));;
     });
   }),
   new PenBundle.Pen('healthy', plotOps.makePenOps, false, new PenBundle.State(55, 1, PenBundle.DisplayMode.Line), function() {}, function() {
     return ProcedurePrims.runInPlotContext('Populations', 'healthy', function() {
-      plotManager.plotValue(PrimChecks.agentset.countWith(world.turtles(), function() {
-        return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("sick?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.procedure.callReporter("immune?"))));
+      plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtles(), function() {
+        return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 59, 62, 2, PrimChecks.turtle.getVariable(63, 68, "sick?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 73, 76, 2, PrimChecks.procedure.callReporter(77, 84, "immune?"))));
       }));;
     });
   }),
@@ -54,7 +54,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "weeks", "people", true, true, 0, 52, 0, 200, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["sick?", "remaining-immunity", "sick-time", "age"], [])('turtles-own   [ sick?                ;; if true, the turtle is infectious     remaining-immunity   ;; how many weeks of immunity the turtle has left     sick-time            ;; how long, in weeks, the turtle has been infectious     age ]                ;; how many weeks old the turtle is  globals   [ %infected            ;; what % of the population is infectious     %immune              ;; what % of the population is immune     lifespan             ;; the lifespan of a turtle     chance-reproduce     ;; the probability of a turtle generating an offspring each tick     carrying-capacity    ;; the number of turtles that can be in the world at one time     immunity-duration ]  ;; how many weeks immunity lasts  ;; The setup is divided into four procedures to setup   clear-all   setup-constants   setup-turtles   update-global-variables   update-display   reset-ticks end  ;; We create a variable number of turtles of which 10 are infectious, ;; and distribute them randomly to setup-turtles   create-turtles number-people     [ setxy random-xcor random-ycor       set age random lifespan       set sick-time 0       set remaining-immunity 0       set size 1.5  ;; easier to see       get-healthy ]   ask n-of 10 turtles     [ get-sick ] end  to get-sick ;; turtle procedure   set sick? true   set remaining-immunity 0 end  to get-healthy ;; turtle procedure   set sick? false   set remaining-immunity 0   set sick-time 0 end  to become-immune ;; turtle procedure   set sick? false   set sick-time 0   set remaining-immunity immunity-duration end  ;; This sets up basic constants of the model. to setup-constants   set lifespan 50 * 52      ;; 50 times 52 weeks = 50 years = 2600 weeks old   set carrying-capacity 300   set chance-reproduce 1   set immunity-duration 52 end  to go   ask turtles [     get-older     move     if sick? [ recover-or-die ]     ifelse sick? [ infect ] [ reproduce ]   ]   update-global-variables   update-display   tick end  to update-global-variables   if count turtles > 0     [ set %infected (count turtles with [ sick? ] / count turtles) * 100       set %immune (count turtles with [ immune? ] / count turtles) * 100 ] end  to update-display   ask turtles     [ if shape != turtle-shape [ set shape turtle-shape ]       set color ifelse-value sick? [ red ] [ ifelse-value immune? [ grey ] [ green ] ] ] end  ;;Turtle counting variables are advanced. to get-older ;; turtle procedure   ;; Turtles die of old age once their age exceeds the   ;; lifespan (set at 50 years in this model).   set age age + 1   if age > lifespan [ die ]   if immune? [ set remaining-immunity remaining-immunity - 1 ]   if sick? [ set sick-time sick-time + 1 ] end  ;; Turtles move about at random. to move ;; turtle procedure   rt random 100   lt random 100   fd 1 end  ;; If a turtle is sick, it infects other turtles on the same patch. ;; Immune turtles don\'t get sick. to infect ;; turtle procedure   ask other turtles-here with [ not sick? and not immune? ]     [ if random-float 100 < infectiousness       [ get-sick ] ] end  ;; Once the turtle has been sick long enough, it ;; either recovers (and becomes immune) or it dies. to recover-or-die ;; turtle procedure   if sick-time > duration                        ;; If the turtle has survived past the virus\' duration, then     [ ifelse random-float 100 < chance-recover   ;; either recover or die       [ become-immune ]       [ die ] ] end  ;; If there are less turtles than the carrying-capacity ;; then turtles can reproduce. to reproduce   if count turtles < carrying-capacity and random-float 100 < chance-reproduce     [ hatch 1       [ set age 1         lt 45 fd 1         get-healthy ] ] end  to-report immune?   report remaining-immunity > 0 end  to startup   setup-constants ;; so that carrying-capacity can be used as upper bound of number-people slider end   ; Copyright 1998 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":280,"top":10,"right":778,"bottom":509,"dimensions":{"minPxcor":-17,"maxPxcor":17,"minPycor":-17,"maxPycor":17,"patchSize":14,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"duration","left":40,"top":155,"right":234,"bottom":188,"display":"duration","min":"0","max":"99","default":20,"step":"1","units":"weeks","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"chance-recover","left":40,"top":121,"right":234,"bottom":154,"display":"chance-recover","min":"0","max":"99","default":75,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"infectiousness","left":40,"top":87,"right":234,"bottom":120,"display":"infectiousness","min":"0","max":"99","default":65,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":62,"top":48,"right":132,"bottom":83,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":138,"top":48,"right":209,"bottom":84,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Populations', 'sick', function() {     plotManager.plotValue(PrimChecks.agentset.countWith(world.turtles(), function() { return PrimChecks.turtle.getVariable(\"sick?\"); }));;   }); }","display":"sick","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ sick? ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Populations', 'immune', function() {     plotManager.plotValue(PrimChecks.agentset.countWith(world.turtles(), function() { return PrimChecks.procedure.callReporter(\"immune?\"); }));;   }); }","display":"immune","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ immune? ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Populations', 'healthy', function() {     plotManager.plotValue(PrimChecks.agentset.countWith(world.turtles(), function() {       return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable(\"sick?\"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.procedure.callReporter(\"immune?\"))));     }));;   }); }","display":"healthy","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ not sick? and not immune? ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Populations', 'total', function() { plotManager.plotValue(PrimChecks.agentset.count(world.turtles()));; }); }","display":"total","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count turtles","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Populations","left":15,"top":375,"right":267,"bottom":539,"xAxis":"weeks","yAxis":"people","xmin":0,"xmax":52,"ymin":0,"ymax":200,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"sick","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ sick? ]","type":"pen"},{"display":"immune","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ immune? ]","type":"pen"},{"display":"healthy","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ not sick? and not immune? ]","type":"pen"},{"display":"total","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count turtles","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"10","compiledMax":"world.observer.getGlobal(\"carrying-capacity\")","compiledStep":"1","variable":"number-people","left":40,"top":10,"right":234,"bottom":43,"display":"number-people","min":"10","max":"carrying-capacity","default":150,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"%infected\")","source":"%infected","left":28,"top":328,"right":103,"bottom":373,"precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"%immune\")","source":"%immune","left":105,"top":328,"right":179,"bottom":373,"precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"PrimChecks.math.div(world.ticker.tickCount(), 52)","source":"ticks / 52","left":181,"top":329,"right":255,"bottom":374,"display":"years","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"turtle-shape","left":65,"top":195,"right":210,"bottom":240,"display":"turtle-shape","choices":["person","circle"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape", "%infected", "%immune", "lifespan", "chance-reproduce", "carrying-capacity", "immunity-duration"], ["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape"], [], -17, 17, -17, 17, 14, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["sick?", "remaining-immunity", "sick-time", "age"], [])('turtles-own   [ sick?                ;; if true, the turtle is infectious     remaining-immunity   ;; how many weeks of immunity the turtle has left     sick-time            ;; how long, in weeks, the turtle has been infectious     age ]                ;; how many weeks old the turtle is  globals   [ %infected            ;; what % of the population is infectious     %immune              ;; what % of the population is immune     lifespan             ;; the lifespan of a turtle     chance-reproduce     ;; the probability of a turtle generating an offspring each tick     carrying-capacity    ;; the number of turtles that can be in the world at one time     immunity-duration ]  ;; how many weeks immunity lasts  ;; The setup is divided into four procedures to setup   clear-all   setup-constants   setup-turtles   update-global-variables   update-display   reset-ticks end  ;; We create a variable number of turtles of which 10 are infectious, ;; and distribute them randomly to setup-turtles   create-turtles number-people     [ setxy random-xcor random-ycor       set age random lifespan       set sick-time 0       set remaining-immunity 0       set size 1.5  ;; easier to see       get-healthy ]   ask n-of 10 turtles     [ get-sick ] end  to get-sick ;; turtle procedure   set sick? true   set remaining-immunity 0 end  to get-healthy ;; turtle procedure   set sick? false   set remaining-immunity 0   set sick-time 0 end  to become-immune ;; turtle procedure   set sick? false   set sick-time 0   set remaining-immunity immunity-duration end  ;; This sets up basic constants of the model. to setup-constants   set lifespan 50 * 52      ;; 50 times 52 weeks = 50 years = 2600 weeks old   set carrying-capacity 300   set chance-reproduce 1   set immunity-duration 52 end  to go   ask turtles [     get-older     move     if sick? [ recover-or-die ]     ifelse sick? [ infect ] [ reproduce ]   ]   update-global-variables   update-display   tick end  to update-global-variables   if count turtles > 0     [ set %infected (count turtles with [ sick? ] / count turtles) * 100       set %immune (count turtles with [ immune? ] / count turtles) * 100 ] end  to update-display   ask turtles     [ if shape != turtle-shape [ set shape turtle-shape ]       set color ifelse-value sick? [ red ] [ ifelse-value immune? [ grey ] [ green ] ] ] end  ;;Turtle counting variables are advanced. to get-older ;; turtle procedure   ;; Turtles die of old age once their age exceeds the   ;; lifespan (set at 50 years in this model).   set age age + 1   if age > lifespan [ die ]   if immune? [ set remaining-immunity remaining-immunity - 1 ]   if sick? [ set sick-time sick-time + 1 ] end  ;; Turtles move about at random. to move ;; turtle procedure   rt random 100   lt random 100   fd 1 end  ;; If a turtle is sick, it infects other turtles on the same patch. ;; Immune turtles don\'t get sick. to infect ;; turtle procedure   ask other turtles-here with [ not sick? and not immune? ]     [ if random-float 100 < infectiousness       [ get-sick ] ] end  ;; Once the turtle has been sick long enough, it ;; either recovers (and becomes immune) or it dies. to recover-or-die ;; turtle procedure   if sick-time > duration                        ;; If the turtle has survived past the virus\' duration, then     [ ifelse random-float 100 < chance-recover   ;; either recover or die       [ become-immune ]       [ die ] ] end  ;; If there are less turtles than the carrying-capacity ;; then turtles can reproduce. to reproduce   if count turtles < carrying-capacity and random-float 100 < chance-reproduce     [ hatch 1       [ set age 1         lt 45 fd 1         get-healthy ] ] end  to-report immune?   report remaining-immunity > 0 end  to startup   setup-constants ;; so that carrying-capacity can be used as upper bound of number-people slider end   ; Copyright 1998 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":280,"top":10,"right":778,"bottom":509,"dimensions":{"minPxcor":-17,"maxPxcor":17,"minPycor":-17,"maxPycor":17,"patchSize":14,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"duration","left":40,"top":155,"right":234,"bottom":188,"display":"duration","min":"0","max":"99","default":20,"step":"1","units":"weeks","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"chance-recover","left":40,"top":121,"right":234,"bottom":154,"display":"chance-recover","min":"0","max":"99","default":75,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"infectiousness","left":40,"top":87,"right":234,"bottom":120,"display":"infectiousness","min":"0","max":"99","default":65,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":62,"top":48,"right":132,"bottom":83,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":138,"top":48,"right":209,"bottom":84,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Populations', 'sick', function() {     plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(59, 64, \"sick?\"); }));;   }); }","display":"sick","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ sick? ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Populations', 'immune', function() {     plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.procedure.callReporter(59, 66, \"immune?\"); }));;   }); }","display":"immune","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ immune? ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Populations', 'healthy', function() {     plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtles(), function() {       return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 59, 62, 2, PrimChecks.turtle.getVariable(63, 68, \"sick?\"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 73, 76, 2, PrimChecks.procedure.callReporter(77, 84, \"immune?\"))));     }));;   }); }","display":"healthy","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ not sick? and not immune? ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Populations', 'total', function() { plotManager.plotValue(PrimChecks.agentset.count(world.turtles()));; }); }","display":"total","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count turtles","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Populations","left":15,"top":375,"right":267,"bottom":539,"xAxis":"weeks","yAxis":"people","xmin":0,"xmax":52,"ymin":0,"ymax":200,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"sick","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ sick? ]","type":"pen"},{"display":"immune","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ immune? ]","type":"pen"},{"display":"healthy","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ not sick? and not immune? ]","type":"pen"},{"display":"total","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count turtles","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"10","compiledMax":"world.observer.getGlobal(\"carrying-capacity\")","compiledStep":"1","variable":"number-people","left":40,"top":10,"right":234,"bottom":43,"display":"number-people","min":"10","max":"carrying-capacity","default":150,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"%infected\")","source":"%infected","left":28,"top":328,"right":103,"bottom":373,"precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"%immune\")","source":"%immune","left":105,"top":328,"right":179,"bottom":373,"precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"PrimChecks.math.div(55, 56, world.ticker.tickCount(), 52)","source":"ticks / 52","left":181,"top":329,"right":255,"bottom":374,"display":"years","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"turtle-shape","left":65,"top":195,"right":210,"bottom":240,"display":"turtle-shape","choices":["person","circle"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape", "%infected", "%immune", "lifespan", "chance-reproduce", "carrying-capacity", "immunity-duration"], ["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape"], [], -17, 17, -17, 17, 14, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -86,43 +86,43 @@ ProcedurePrims.defineCommand("setup", 765, 874, (function() {
 }))
 ProcedurePrims.defineCommand("setup-turtles", 984, 1244, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-people"), ""), function() {
-    PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-    PrimChecks.turtle.setVariable("age", PrimChecks.math.random(PrimChecks.validator.checkArg('RANDOM', 1, world.observer.getGlobal("lifespan"))));
-    PrimChecks.turtle.setVariable("sick-time", 0);
-    PrimChecks.turtle.setVariable("remaining-immunity", 0);
-    PrimChecks.turtle.setVariable("size", 1.5);
+    PrimChecks.turtle.setXY(1035, 1040, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
+    PrimChecks.turtle.setVariable(1075, 1078, "age", PrimChecks.math.random(1079, 1085, PrimChecks.validator.checkArg('RANDOM', 1079, 1085, 1, world.observer.getGlobal("lifespan"))));
+    PrimChecks.turtle.setVariable(1105, 1114, "sick-time", 0);
+    PrimChecks.turtle.setVariable(1127, 1145, "remaining-immunity", 0);
+    PrimChecks.turtle.setVariable(1158, 1162, "size", 1.5);
     var R = ProcedurePrims.callCommand("get-healthy"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(10, world.turtles())), function() { var R = ProcedurePrims.callCommand("get-sick"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1207, 1210, 1904, PrimChecks.list.nOf(1211, 1215, 10, world.turtles())), function() { var R = ProcedurePrims.callCommand("get-sick"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("get-sick", 1252, 1325, (function() {
-  PrimChecks.turtle.setVariable("sick?", true);
-  PrimChecks.turtle.setVariable("remaining-immunity", 0);
+  PrimChecks.turtle.setVariable(1287, 1292, "sick?", true);
+  PrimChecks.turtle.setVariable(1304, 1322, "remaining-immunity", 0);
 }))
 ProcedurePrims.defineCommand("get-healthy", 1333, 1428, (function() {
-  PrimChecks.turtle.setVariable("sick?", false);
-  PrimChecks.turtle.setVariable("remaining-immunity", 0);
-  PrimChecks.turtle.setVariable("sick-time", 0);
+  PrimChecks.turtle.setVariable(1371, 1376, "sick?", false);
+  PrimChecks.turtle.setVariable(1389, 1407, "remaining-immunity", 0);
+  PrimChecks.turtle.setVariable(1416, 1425, "sick-time", 0);
 }))
 ProcedurePrims.defineCommand("become-immune", 1436, 1549, (function() {
-  PrimChecks.turtle.setVariable("sick?", false);
-  PrimChecks.turtle.setVariable("sick-time", 0);
-  PrimChecks.turtle.setVariable("remaining-immunity", world.observer.getGlobal("immunity-duration"));
+  PrimChecks.turtle.setVariable(1476, 1481, "sick?", false);
+  PrimChecks.turtle.setVariable(1494, 1503, "sick-time", 0);
+  PrimChecks.turtle.setVariable(1512, 1530, "remaining-immunity", world.observer.getGlobal("immunity-duration"));
 }))
 ProcedurePrims.defineCommand("setup-constants", 1603, 1776, (function() {
-  world.observer.setGlobal("lifespan", PrimChecks.math.mult(50, 52));
-  world.observer.setGlobal("carrying-capacity", 300);
-  world.observer.setGlobal("chance-reproduce", 1);
-  world.observer.setGlobal("immunity-duration", 52);
+  world.observer.setVariable("lifespan", PrimChecks.math.mult(1637, 1638, 50, 52));
+  world.observer.setVariable("carrying-capacity", 300);
+  world.observer.setVariable("chance-reproduce", 1);
+  world.observer.setVariable("immunity-duration", 52);
 }))
 ProcedurePrims.defineCommand("go", 1784, 1954, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.callCommand("get-older"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
-    if (PrimChecks.turtle.getVariable("sick?")) {
+    if (PrimChecks.turtle.getVariable(1833, 1838, "sick?")) {
       var R = ProcedurePrims.callCommand("recover-or-die"); if (R === DeathInterrupt) { return R; }
     }
-    if (PrimChecks.turtle.getVariable("sick?")) {
+    if (PrimChecks.turtle.getVariable(1869, 1874, "sick?")) {
       var R = ProcedurePrims.callCommand("infect"); if (R === DeathInterrupt) { return R; }
     }
     else {
@@ -134,29 +134,29 @@ ProcedurePrims.defineCommand("go", 1784, 1954, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("update-global-variables", 1962, 2157, (function() {
-  if (PrimChecks.agentset.optimizeCount(world.turtles(), 0, (a, b) => a > b)) {
-    world.observer.setGlobal("%infected", PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.agentset.countWith(world.turtles(), function() { return PrimChecks.turtle.getVariable("sick?"); }), PrimChecks.agentset.count(world.turtles())), 100));
-    world.observer.setGlobal("%immune", PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.agentset.countWith(world.turtles(), function() { return PrimChecks.procedure.callReporter("immune?"); }), PrimChecks.agentset.count(world.turtles())), 100));
+  if (PrimChecks.agentset.optimizeCount(null, null, world.turtles(), 0, (a, b) => a > b)) {
+    world.observer.setVariable("%infected", PrimChecks.math.mult(2076, 2077, PrimChecks.math.div(2059, 2060, PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(2051, 2056, "sick?"); }), PrimChecks.agentset.count(world.turtles())), 100));
+    world.observer.setVariable("%immune", PrimChecks.math.mult(2149, 2150, PrimChecks.math.div(2132, 2133, PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.procedure.callReporter(2122, 2129, "immune?"); }), PrimChecks.agentset.count(world.turtles())), 100));
   }
 }))
 ProcedurePrims.defineCommand("update-display", 2165, 2341, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    if (!Prims.equality(PrimChecks.turtleOrLink.getVariable("shape"), world.observer.getGlobal("turtle-shape"))) {
-      PrimChecks.turtleOrLink.setVariable("shape", world.observer.getGlobal("turtle-shape"));
+    if (!Prims.equality(PrimChecks.turtleOrLink.getVariable(2203, 2208, "shape"), world.observer.getGlobal("turtle-shape"))) {
+      PrimChecks.turtleOrLink.setVariable(2231, 2236, "shape", world.observer.getGlobal("turtle-shape"));
     }
-    PrimChecks.turtleOrLink.setVariable("color", (Prims.ifElseValueBooleanCheck(PrimChecks.turtle.getVariable("sick?")) ? 15 : (Prims.ifElseValueBooleanCheck(PrimChecks.procedure.callReporter("immune?")) ? 5 : 55)));
+    PrimChecks.turtleOrLink.setVariable(2262, 2267, "color", (Prims.ifElseValueBooleanCheck(PrimChecks.turtle.getVariable(2281, 2286, "sick?")) ? 15 : (Prims.ifElseValueBooleanCheck(PrimChecks.procedure.callReporter(2310, 2317, "immune?")) ? 5 : 55)));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("get-older", 2391, 2675, (function() {
-  PrimChecks.turtle.setVariable("age", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("age")), 1));
-  if (Prims.gt(PrimChecks.turtle.getVariable("age"), world.observer.getGlobal("lifespan"))) {
+  PrimChecks.turtle.setVariable(2529, 2532, "age", PrimChecks.math.plus(2537, 2538, PrimChecks.validator.checkArg('+', 2537, 2538, 1, PrimChecks.turtle.getVariable(2533, 2536, "age")), 1));
+  if (Prims.gt(PrimChecks.turtle.getVariable(2546, 2549, "age"), world.observer.getGlobal("lifespan"))) {
     return SelfManager.self().die();
   }
-  if (PrimChecks.procedure.callReporter("immune?")) {
-    PrimChecks.turtle.setVariable("remaining-immunity", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("remaining-immunity")), 1));
+  if (PrimChecks.procedure.callReporter(2574, 2581, "immune?")) {
+    PrimChecks.turtle.setVariable(2588, 2606, "remaining-immunity", PrimChecks.math.minus(2626, 2627, PrimChecks.validator.checkArg('-', 2626, 2627, 1, PrimChecks.turtle.getVariable(2607, 2625, "remaining-immunity")), 1));
   }
-  if (PrimChecks.turtle.getVariable("sick?")) {
-    PrimChecks.turtle.setVariable("sick-time", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("sick-time")), 1));
+  if (PrimChecks.turtle.getVariable(2637, 2642, "sick?")) {
+    PrimChecks.turtle.setVariable(2649, 2658, "sick-time", PrimChecks.math.plus(2669, 2670, PrimChecks.validator.checkArg('+', 2669, 2670, 1, PrimChecks.turtle.getVariable(2659, 2668, "sick-time")), 1));
   }
 }))
 ProcedurePrims.defineCommand("move", 2716, 2780, (function() {
@@ -165,8 +165,8 @@ ProcedurePrims.defineCommand("move", 2716, 2780, (function() {
   SelfManager.self()._optimalFdOne();
 }))
 ProcedurePrims.defineCommand("infect", 2890, 3041, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.agentset.otherWith(SelfManager.self().turtlesHere(), function() {
-    return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.turtle.getVariable("sick?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, PrimChecks.procedure.callReporter("immune?"))));
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2919, 2922, 1904, PrimChecks.agentset.otherWith(null, null, SelfManager.self().turtlesHere(), function() {
+    return (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2949, 2952, 2, PrimChecks.turtle.getVariable(2953, 2958, "sick?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2963, 2966, 2, PrimChecks.procedure.callReporter(2967, 2974, "immune?"))));
   })), function() {
     if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("infectiousness"))) {
       var R = ProcedurePrims.callCommand("get-sick"); if (R === DeathInterrupt) { return R; }
@@ -174,7 +174,7 @@ ProcedurePrims.defineCommand("infect", 2890, 3041, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
 ProcedurePrims.defineCommand("recover-or-die", 3150, 3409, (function() {
-  if (Prims.gt(PrimChecks.turtle.getVariable("sick-time"), world.observer.getGlobal("duration"))) {
+  if (Prims.gt(PrimChecks.turtle.getVariable(3190, 3199, "sick-time"), world.observer.getGlobal("duration"))) {
     if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("chance-recover"))) {
       var R = ProcedurePrims.callCommand("become-immune"); if (R === DeathInterrupt) { return R; }
     }
@@ -186,7 +186,7 @@ ProcedurePrims.defineCommand("recover-or-die", 3150, 3409, (function() {
 ProcedurePrims.defineCommand("reproduce", 3504, 3668, (function() {
   if ((Prims.lt(PrimChecks.agentset.count(world.turtles()), world.observer.getGlobal("carrying-capacity")) && Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("chance-reproduce")))) {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-      PrimChecks.turtle.setVariable("age", 1);
+      PrimChecks.turtle.setVariable(3619, 3622, "age", 1);
       SelfManager.self().right(-(45));
       SelfManager.self()._optimalFdOne();
       var R = ProcedurePrims.callCommand("get-healthy"); if (R === DeathInterrupt) { return R; }
@@ -194,11 +194,11 @@ ProcedurePrims.defineCommand("reproduce", 3504, 3668, (function() {
   }
 }))
 ProcedurePrims.defineReporter("immune?", 3683, 3723, (function() {
-  return PrimChecks.procedure.report(Prims.gt(PrimChecks.turtle.getVariable("remaining-immunity"), 0));
+  return PrimChecks.procedure.report(3693, 3699, Prims.gt(PrimChecks.turtle.getVariable(3700, 3718, "remaining-immunity"), 0));
 }))
 ProcedurePrims.defineCommand("startup", 3731, 3837, (function() { var R = ProcedurePrims.callCommand("setup-constants"); if (R === DeathInterrupt) { return R; } }))
-world.observer.setGlobal("duration", 20);
-world.observer.setGlobal("chance-recover", 75);
-world.observer.setGlobal("infectiousness", 65);
-world.observer.setGlobal("number-people", 150);
-world.observer.setGlobal("turtle-shape", "person");
+world.observer.setVariable("duration", 20);
+world.observer.setVariable("chance-recover", 75);
+world.observer.setVariable("infectiousness", 65);
+world.observer.setVariable("number-people", 150);
+world.observer.setVariable("turtle-shape", "person");

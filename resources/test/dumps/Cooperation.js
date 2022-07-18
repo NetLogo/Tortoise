@@ -70,7 +70,7 @@ ProcedurePrims.defineCommand("setup", 122, 234, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-cows"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
-    PrimChecks.patch.setVariable("grass", world.observer.getGlobal("max-grass-height"));
+    PrimChecks.patch.setVariable(177, 182, "grass", world.observer.getGlobal("max-grass-height"));
     var R = ProcedurePrims.callCommand("color-grass"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
@@ -78,15 +78,15 @@ ProcedurePrims.defineCommand("setup", 122, 234, (function() {
 ProcedurePrims.defineCommand("setup-cows", 242, 598, (function() {
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "cow")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-cows"), ""), function() {
-    PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-    PrimChecks.turtle.setVariable("energy", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("metabolism")), 4));
+    PrimChecks.turtle.setXY(351, 356, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
+    PrimChecks.turtle.setVariable(389, 395, "energy", PrimChecks.math.mult(407, 408, PrimChecks.validator.checkArg('*', 407, 408, 1, world.observer.getGlobal("metabolism")), 4));
     if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("cooperative-probability"))) {
-      PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"));
-      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.minus(15, 1.5));
+      PrimChecks.turtleOrLink.setVariable(479, 484, "breed", world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"));
+      PrimChecks.turtleOrLink.setVariable(512, 517, "color", PrimChecks.math.minus(522, 523, 15, 1.5));
     }
     else {
-      PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("GREEDY-COWS"));
-      PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.minus(95, 2));
+      PrimChecks.turtleOrLink.setVariable(546, 551, "breed", world.turtleManager.turtlesOfBreed("GREEDY-COWS"));
+      PrimChecks.turtleOrLink.setVariable(574, 579, "color", PrimChecks.math.minus(584, 585, 95, 2));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
 }))
@@ -103,67 +103,67 @@ ProcedurePrims.defineCommand("go", 606, 743, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("reproduce", 751, 879, (function() {
-  if (Prims.gt(PrimChecks.turtle.getVariable("energy"), world.observer.getGlobal("reproduction-threshold"))) {
-    PrimChecks.turtle.setVariable("energy", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("energy")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("reproduction-cost"))));
+  if (Prims.gt(PrimChecks.turtle.getVariable(787, 793, "energy"), world.observer.getGlobal("reproduction-threshold"))) {
+    PrimChecks.turtle.setVariable(829, 835, "energy", PrimChecks.math.minus(843, 844, PrimChecks.validator.checkArg('-', 843, 844, 1, PrimChecks.turtle.getVariable(836, 842, "energy")), PrimChecks.validator.checkArg('-', 843, 844, 1, world.observer.getGlobal("reproduction-cost"))));
     SelfManager.self().hatch(1, "");
   }
 }))
 ProcedurePrims.defineCommand("grow-grass", 887, 1185, (function() {
-  if (Prims.gte(PrimChecks.patch.getVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
+  if (Prims.gte(PrimChecks.patch.getVariable(929, 934, "grass"), world.observer.getGlobal("low-high-threshold"))) {
     if (Prims.gte(world.observer.getGlobal("high-growth-chance"), PrimChecks.math.randomFloat(100))) {
-      PrimChecks.patch.setVariable("grass", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("grass")), 1));
+      PrimChecks.patch.setVariable(1018, 1023, "grass", PrimChecks.math.plus(1030, 1031, PrimChecks.validator.checkArg('+', 1030, 1031, 1, PrimChecks.patch.getVariable(1024, 1029, "grass")), 1));
     }
   }
   else {
     if (Prims.gte(world.observer.getGlobal("low-growth-chance"), PrimChecks.math.randomFloat(100))) {
-      PrimChecks.patch.setVariable("grass", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("grass")), 1));
+      PrimChecks.patch.setVariable(1098, 1103, "grass", PrimChecks.math.plus(1110, 1111, PrimChecks.validator.checkArg('+', 1110, 1111, 1, PrimChecks.patch.getVariable(1104, 1109, "grass")), 1));
     }
   }
-  if (Prims.gt(PrimChecks.patch.getVariable("grass"), world.observer.getGlobal("max-grass-height"))) {
-    PrimChecks.patch.setVariable("grass", world.observer.getGlobal("max-grass-height"));
+  if (Prims.gt(PrimChecks.patch.getVariable(1125, 1130, "grass"), world.observer.getGlobal("max-grass-height"))) {
+    PrimChecks.patch.setVariable(1160, 1165, "grass", world.observer.getGlobal("max-grass-height"));
   }
 }))
 ProcedurePrims.defineCommand("color-grass", 1193, 1293, (function() {
-  PrimChecks.patch.setVariable("pcolor", ColorModel.scaleColor(PrimChecks.math.minus(55, 1), PrimChecks.patch.getVariable("grass"), 0, PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("max-grass-height")))));
+  PrimChecks.patch.setVariable(1231, 1237, "pcolor", ColorModel.scaleColor(PrimChecks.math.minus(1257, 1258, 55, 1), PrimChecks.patch.getVariable(1262, 1267, "grass"), 0, PrimChecks.math.mult(1273, 1274, 2, PrimChecks.validator.checkArg('*', 1273, 1274, 1, world.observer.getGlobal("max-grass-height")))));
 }))
 ProcedurePrims.defineCommand("move", 1301, 1419, (function() {
   SelfManager.self().right(RandomPrims.randomLong(360));
   SelfManager.self().fd(world.observer.getGlobal("stride-length"));
-  PrimChecks.turtle.setVariable("energy", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("energy")), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("metabolism"))));
-  if (Prims.lt(PrimChecks.turtle.getVariable("energy"), 0)) {
+  PrimChecks.turtle.setVariable(1368, 1374, "energy", PrimChecks.math.minus(1382, 1383, PrimChecks.validator.checkArg('-', 1382, 1383, 1, PrimChecks.turtle.getVariable(1375, 1381, "energy")), PrimChecks.validator.checkArg('-', 1382, 1383, 1, world.observer.getGlobal("metabolism"))));
+  if (Prims.lt(PrimChecks.turtle.getVariable(1400, 1406, "energy"), 0)) {
     return SelfManager.self().die();
   }
 }))
 ProcedurePrims.defineCommand("eat", 1427, 1566, (function() {
-  if (Prims.equality(PrimChecks.turtleOrLink.getVariable("breed"), world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"))) {
+  if (Prims.equality(PrimChecks.turtleOrLink.getVariable(1461, 1466, "breed"), world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"))) {
     var R = ProcedurePrims.callCommand("eat-cooperative"); if (R === DeathInterrupt) { return R; }
   }
   else {
-    if (Prims.equality(PrimChecks.turtleOrLink.getVariable("breed"), world.turtleManager.turtlesOfBreed("GREEDY-COWS"))) {
+    if (Prims.equality(PrimChecks.turtleOrLink.getVariable(1521, 1526, "breed"), world.turtleManager.turtlesOfBreed("GREEDY-COWS"))) {
       var R = ProcedurePrims.callCommand("eat-greedy"); if (R === DeathInterrupt) { return R; }
     }
   }
 }))
 ProcedurePrims.defineCommand("eat-cooperative", 1574, 1710, (function() {
-  if (Prims.gt(PrimChecks.patch.getVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
-    PrimChecks.patch.setVariable("grass", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("grass")), 1));
-    PrimChecks.turtle.setVariable("energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("energy")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("grass-energy"))));
+  if (Prims.gt(PrimChecks.patch.getVariable(1616, 1621, "grass"), world.observer.getGlobal("low-high-threshold"))) {
+    PrimChecks.patch.setVariable(1653, 1658, "grass", PrimChecks.math.minus(1665, 1666, PrimChecks.validator.checkArg('-', 1665, 1666, 1, PrimChecks.patch.getVariable(1659, 1664, "grass")), 1));
+    PrimChecks.turtle.setVariable(1677, 1683, "energy", PrimChecks.math.plus(1691, 1692, PrimChecks.validator.checkArg('+', 1691, 1692, 1, PrimChecks.turtle.getVariable(1684, 1690, "energy")), PrimChecks.validator.checkArg('+', 1691, 1692, 1, world.observer.getGlobal("grass-energy"))));
   }
 }))
 ProcedurePrims.defineCommand("eat-greedy", 1718, 1832, (function() {
-  if (Prims.gt(PrimChecks.patch.getVariable("grass"), 0)) {
-    PrimChecks.patch.setVariable("grass", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("grass")), 1));
-    PrimChecks.turtle.setVariable("energy", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("energy")), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("grass-energy"))));
+  if (Prims.gt(PrimChecks.patch.getVariable(1755, 1760, "grass"), 0)) {
+    PrimChecks.patch.setVariable(1775, 1780, "grass", PrimChecks.math.minus(1787, 1788, PrimChecks.validator.checkArg('-', 1787, 1788, 1, PrimChecks.patch.getVariable(1781, 1786, "grass")), 1));
+    PrimChecks.turtle.setVariable(1799, 1805, "energy", PrimChecks.math.plus(1813, 1814, PrimChecks.validator.checkArg('+', 1813, 1814, 1, PrimChecks.turtle.getVariable(1806, 1812, "energy")), PrimChecks.validator.checkArg('+', 1813, 1814, 1, world.observer.getGlobal("grass-energy"))));
   }
 }))
-world.observer.setGlobal("cooperative-probability", 0.5);
-world.observer.setGlobal("initial-cows", 20);
-world.observer.setGlobal("low-high-threshold", 5);
-world.observer.setGlobal("high-growth-chance", 77);
-world.observer.setGlobal("stride-length", 0.08);
-world.observer.setGlobal("max-grass-height", 10);
-world.observer.setGlobal("reproduction-threshold", 102);
-world.observer.setGlobal("grass-energy", 51);
-world.observer.setGlobal("metabolism", 6);
-world.observer.setGlobal("low-growth-chance", 30);
-world.observer.setGlobal("reproduction-cost", 54);
+world.observer.setVariable("cooperative-probability", 0.5);
+world.observer.setVariable("initial-cows", 20);
+world.observer.setVariable("low-high-threshold", 5);
+world.observer.setVariable("high-growth-chance", 77);
+world.observer.setVariable("stride-length", 0.08);
+world.observer.setVariable("max-grass-height", 10);
+world.observer.setVariable("reproduction-threshold", 102);
+world.observer.setVariable("grass-energy", 51);
+world.observer.setVariable("metabolism", 6);
+world.observer.setVariable("low-growth-chance", 30);
+world.observer.setVariable("reproduction-cost", 54);

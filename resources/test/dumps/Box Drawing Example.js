@@ -53,38 +53,38 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup-corner", 123, 956, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
-    if (((Prims.equality(PrimChecks.patch.getVariable("pxcor"), 0) && Prims.gte(PrimChecks.patch.getVariable("pycor"), 0)) && Prims.lte(PrimChecks.patch.getVariable("pycor"), world.observer.getGlobal("edge")))) {
-      PrimChecks.patch.setVariable("pcolor", 15);
+    if (((Prims.equality(PrimChecks.patch.getVariable(222, 227, "pxcor"), 0) && Prims.gte(PrimChecks.patch.getVariable(236, 241, "pycor"), 0)) && Prims.lte(PrimChecks.patch.getVariable(251, 256, "pycor"), world.observer.getGlobal("edge")))) {
+      PrimChecks.patch.setVariable(277, 283, "pcolor", 15);
     }
-    if (((Prims.equality(PrimChecks.patch.getVariable("pxcor"), world.observer.getGlobal("edge")) && Prims.gte(PrimChecks.patch.getVariable("pycor"), 0)) && Prims.lte(PrimChecks.patch.getVariable("pycor"), world.observer.getGlobal("edge")))) {
-      PrimChecks.patch.setVariable("pcolor", 15);
+    if (((Prims.equality(PrimChecks.patch.getVariable(416, 421, "pxcor"), world.observer.getGlobal("edge")) && Prims.gte(PrimChecks.patch.getVariable(433, 438, "pycor"), 0)) && Prims.lte(PrimChecks.patch.getVariable(448, 453, "pycor"), world.observer.getGlobal("edge")))) {
+      PrimChecks.patch.setVariable(474, 480, "pcolor", 15);
     }
-    if (((Prims.equality(PrimChecks.patch.getVariable("pycor"), 0) && Prims.gte(PrimChecks.patch.getVariable("pxcor"), 0)) && Prims.lte(PrimChecks.patch.getVariable("pxcor"), world.observer.getGlobal("edge")))) {
-      PrimChecks.patch.setVariable("pcolor", 15);
+    if (((Prims.equality(PrimChecks.patch.getVariable(608, 613, "pycor"), 0) && Prims.gte(PrimChecks.patch.getVariable(622, 627, "pxcor"), 0)) && Prims.lte(PrimChecks.patch.getVariable(637, 642, "pxcor"), world.observer.getGlobal("edge")))) {
+      PrimChecks.patch.setVariable(663, 669, "pcolor", 15);
     }
-    if (((Prims.equality(PrimChecks.patch.getVariable("pycor"), world.observer.getGlobal("edge")) && Prims.gte(PrimChecks.patch.getVariable("pxcor"), 0)) && Prims.lte(PrimChecks.patch.getVariable("pxcor"), world.observer.getGlobal("edge")))) {
-      PrimChecks.patch.setVariable("pcolor", 15);
+    if (((Prims.equality(PrimChecks.patch.getVariable(804, 809, "pycor"), world.observer.getGlobal("edge")) && Prims.gte(PrimChecks.patch.getVariable(821, 826, "pxcor"), 0)) && Prims.lte(PrimChecks.patch.getVariable(836, 841, "pxcor"), world.observer.getGlobal("edge")))) {
+      PrimChecks.patch.setVariable(862, 868, "pcolor", 15);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-center", 1035, 2250, (function() {
   world.clearAll();
-  let halfedge = PrimChecks.math.int(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("edge")), 2)); ProcedurePrims.stack().currentContext().registerStringRunVar("HALFEDGE", halfedge);
+  let halfedge = PrimChecks.math.int(1201, 1204, PrimChecks.math.div(1211, 1212, PrimChecks.validator.checkArg('/', 1211, 1212, 1, world.observer.getGlobal("edge")), 2)); ProcedurePrims.stack().currentContext().registerStringRunVar("HALFEDGE", halfedge);
   var R = ProcedurePrims.ask(world.patches(), function() {
-    if (((Prims.equality(PrimChecks.patch.getVariable("pxcor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge))) && Prims.gte(PrimChecks.patch.getVariable("pycor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge)))) && Prims.lte(PrimChecks.patch.getVariable("pycor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))))) {
-      PrimChecks.patch.setVariable("pcolor", 105);
+    if (((Prims.equality(PrimChecks.patch.getVariable(1318, 1323, "pxcor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1327, 1328, 1, halfedge))) && Prims.gte(PrimChecks.patch.getVariable(1343, 1348, "pycor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1353, 1354, 1, halfedge)))) && Prims.lte(PrimChecks.patch.getVariable(1369, 1374, "pycor"), PrimChecks.math.plus(1381, 1382, 0, PrimChecks.validator.checkArg('+', 1381, 1382, 1, halfedge))))) {
+      PrimChecks.patch.setVariable(1405, 1411, "pcolor", 105);
     }
-    if (((Prims.equality(PrimChecks.patch.getVariable("pxcor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))) && Prims.gte(PrimChecks.patch.getVariable("pycor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge)))) && Prims.lte(PrimChecks.patch.getVariable("pycor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))))) {
-      PrimChecks.patch.setVariable("pcolor", 105);
+    if (((Prims.equality(PrimChecks.patch.getVariable(1565, 1570, "pxcor"), PrimChecks.math.plus(1576, 1577, 0, PrimChecks.validator.checkArg('+', 1576, 1577, 1, halfedge))) && Prims.gte(PrimChecks.patch.getVariable(1592, 1597, "pycor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1602, 1603, 1, halfedge)))) && Prims.lte(PrimChecks.patch.getVariable(1618, 1623, "pycor"), PrimChecks.math.plus(1630, 1631, 0, PrimChecks.validator.checkArg('+', 1630, 1631, 1, halfedge))))) {
+      PrimChecks.patch.setVariable(1654, 1660, "pcolor", 105);
     }
-    if (((Prims.equality(PrimChecks.patch.getVariable("pycor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge))) && Prims.gte(PrimChecks.patch.getVariable("pxcor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge)))) && Prims.lte(PrimChecks.patch.getVariable("pxcor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))))) {
-      PrimChecks.patch.setVariable("pcolor", 105);
+    if (((Prims.equality(PrimChecks.patch.getVariable(1817, 1822, "pycor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1826, 1827, 1, halfedge))) && Prims.gte(PrimChecks.patch.getVariable(1842, 1847, "pxcor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1852, 1853, 1, halfedge)))) && Prims.lte(PrimChecks.patch.getVariable(1868, 1873, "pxcor"), PrimChecks.math.plus(1880, 1881, 0, PrimChecks.validator.checkArg('+', 1880, 1881, 1, halfedge))))) {
+      PrimChecks.patch.setVariable(1904, 1910, "pcolor", 105);
     }
-    if (((Prims.equality(PrimChecks.patch.getVariable("pycor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))) && Prims.gte(PrimChecks.patch.getVariable("pxcor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, halfedge)))) && Prims.lte(PrimChecks.patch.getVariable("pxcor"), PrimChecks.math.plus(0, PrimChecks.validator.checkArg('+', 1, halfedge))))) {
-      PrimChecks.patch.setVariable("pcolor", 105);
+    if (((Prims.equality(PrimChecks.patch.getVariable(2066, 2071, "pycor"), PrimChecks.math.plus(2077, 2078, 0, PrimChecks.validator.checkArg('+', 2077, 2078, 1, halfedge))) && Prims.gte(PrimChecks.patch.getVariable(2093, 2098, "pxcor"), PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 2103, 2104, 1, halfedge)))) && Prims.lte(PrimChecks.patch.getVariable(2119, 2124, "pxcor"), PrimChecks.math.plus(2131, 2132, 0, PrimChecks.validator.checkArg('+', 2131, 2132, 1, halfedge))))) {
+      PrimChecks.patch.setVariable(2155, 2161, "pcolor", 105);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
   world.ticker.reset();
 }))
-world.observer.setGlobal("edge", 8);
+world.observer.setVariable("edge", 8);
