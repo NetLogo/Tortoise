@@ -167,7 +167,12 @@ object SimplePrims {
       }
   }
 
-  object NormalReporter {
+  // This represents a reporter that has no runtime error checking that also does not have
+  // args to type check.  This could be because that's simply the case (like with
+  // `_randomconst`) or because they haven't been converted to checked prims yet.  -Jeremy
+  // B July 2022
+
+  object UncheckedReporter {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
 
@@ -330,7 +335,12 @@ object SimplePrims {
       }
   }
 
-  object NormalCommand {
+  // This represents a command that has no runtime error checking that also does not have
+  // args to type check.  This could be because that's simply the case (like with
+  // `_cleardrawing`) or because they haven't been converted to checked prims yet.
+  // -Jeremy B July 2022
+
+  object UncheckedCommand {
     def unapply(c: Command): Option[String] =
       PartialFunction.condOpt(c) {
 
