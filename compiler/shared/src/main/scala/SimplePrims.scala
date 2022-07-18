@@ -3,9 +3,6 @@
 package org.nlogo.tortoise.compiler
 
 import
-  JsOps.jsString
-
-import
   org.nlogo.core.{ Command, prim, Reporter }
 
 object SimplePrims {
@@ -264,23 +261,22 @@ object SimplePrims {
   object TypeCheck {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
-        case _: prim.etc._isagent             => "isValidAgent("
-        case _: prim.etc._isagentset          => "isAgentSet("
-        case _: prim.etc._isanonymouscommand  => "isCommandLambda("
-        case _: prim.etc._isanonymousreporter => "isReporterLambda("
-        case _: prim.etc._isboolean           => "isBoolean("
-        case x: prim.etc._isbreed             => s"isBreed(${jsString(x.breedName)}, "
-        case _: prim.etc._isdirectedlink      => "isDirectedLink("
-        case _: prim.etc._islink              => "isValidLink("
-        case _: prim.etc._islinkset           => "isLinkSet("
-        case _: prim.etc._islist              => "isList("
-        case _: prim.etc._isnumber            => "isNumber("
-        case _: prim.etc._ispatch             => "isPatch("
-        case _: prim.etc._ispatchset          => "isPatchSet("
-        case _: prim.etc._isstring            => "isString("
-        case _: prim.etc._isturtle            => "isValidTurtle("
-        case _: prim.etc._isturtleset         => "isTurtleSet("
-        case _: prim.etc._isundirectedlink    => "isUndirectedLink("
+        case _: prim.etc._isagent             => "isValidAgent"
+        case _: prim.etc._isagentset          => "isAgentSet"
+        case _: prim.etc._isanonymouscommand  => "isCommandLambda"
+        case _: prim.etc._isanonymousreporter => "isReporterLambda"
+        case _: prim.etc._isboolean           => "isBoolean"
+        case _: prim.etc._isdirectedlink      => "isDirectedLink"
+        case _: prim.etc._islink              => "isValidLink"
+        case _: prim.etc._islinkset           => "isLinkSet"
+        case _: prim.etc._islist              => "isList"
+        case _: prim.etc._isnumber            => "isNumber"
+        case _: prim.etc._ispatch             => "isPatch"
+        case _: prim.etc._ispatchset          => "isPatchSet"
+        case _: prim.etc._isstring            => "isString"
+        case _: prim.etc._isturtle            => "isValidTurtle"
+        case _: prim.etc._isturtleset         => "isTurtleSet"
+        case _: prim.etc._isundirectedlink    => "isUndirectedLink"
       }
   }
 

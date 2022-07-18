@@ -141,7 +141,7 @@ trait ReporterPrims extends PrimUtils {
       case SimplePrims.UncheckedReporter(op)          => s"$op(${args.commas})"
       case SimplePrims.CheckedReporter(op)            => s"$op(${sourceInfo.start}, ${sourceInfo.end}, ${args.commasChecked})"
       case SimplePrims.CheckedPassThroughReporter(op) => s"$op(${args.commasChecked})"
-      case SimplePrims.TypeCheck(check)               => s"NLType.checks.$check${args.get(0)})"
+      case SimplePrims.TypeCheck(check)               => s"NLType.checks.$check(${args.get(0)})"
       case VariableReporter(op)                       => op
       case p: prim._const                             => handlers.literal(p.value)
       case lv: prim._letvariable                      => JSIdentProvider(lv.let.name)
@@ -207,6 +207,7 @@ trait ReporterPrims extends PrimUtils {
       case b: prim.etc._breedat           => s"SelfManager.self().breedAt(${jsString(b.breedName)}, ${args.get(0)}, ${args.get(1)})"
       case b: prim.etc._breedhere         => s"SelfManager.self().breedHere(${jsString(b.breedName)})"
       case b: prim.etc._breedon           => s"PrimChecks.agentset.breedOn(${jsString(b.breedName)}, ${args.makeCheckedOp(0)})"
+      case b: prim.etc._isbreed           => s"NLType.checks.isBreed(${jsString(b.breedName)}, ${args.get(0)})"
 
       // List prims
       case b: prim.etc._butfirst          => s"PrimChecks.list.butFirst('${b.token.text}', ${sourceInfo.start}, ${sourceInfo.end}, ${args.commasChecked})"
