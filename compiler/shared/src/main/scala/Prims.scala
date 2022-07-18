@@ -118,6 +118,7 @@ object ReporterPrims {
 trait ReporterPrims extends PrimUtils {
   // scalastyle:off method.length
   // scalastyle:off cyclomatic.complexity
+  // scalastyle:off line.size.limit
   def reporter(r: ReporterApp, useCompileArgs: Boolean = true)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
 
@@ -258,7 +259,9 @@ trait ReporterPrims extends PrimUtils {
   }
   // scalastyle:on method.length
   // scalastyle:on cyclomatic.complexity
+  // scalastyle:on line.size.limit
 
+  // scalastyle:off parameter.number
   private def generateTask(sourceStart: String, sourceEnd: String, lambda: Lambda, node: AstNode, isReporter: Boolean, source: Option[String])
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val task       = handlers.task(lambda, node)
@@ -266,6 +269,7 @@ trait ReporterPrims extends PrimUtils {
     val isVariadic = lambda.arguments.isVariadic
     s"PrimChecks.task.checked($sourceStart, $sourceEnd, $task, $body, $isReporter, $isVariadic)"
   }
+  // scalastyle:on parameter.number
 
   def generateIfElseValue(args: Seq[Expression])
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {

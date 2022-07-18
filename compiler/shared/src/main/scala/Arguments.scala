@@ -92,22 +92,22 @@ case class Arguments(handlers: Handlers, a: Application, sourceInfo: SourceInfor
   def get(i: Int): String =
     handlers.reporter(a.args(i))
 
-  def all =
+  def all: Seq[String] =
     a.args.collect {
       case r: ReporterApp  => handlers.reporter(r)
       case c: CommandBlock => s"() => { ${handlers.commands(c)} }"
     }
 
-  def commas =
+  def commas: String =
     all.mkString(", ")
 
-  def checked =
+  def checked: Seq[String] =
     Arguments.makeCheckedArgOps(a, all)
 
-  def commasChecked =
+  def commasChecked: String =
     checked.mkString(", ")
 
-  def makeCheckedOp(i: Int) =
+  def makeCheckedOp(i: Int): String =
     Arguments.makeCheckedOp(a.instruction, i, get(i), a.args(i).reportedType())
 
   def maybeConciseVarArgs(useCompileArgs: Boolean, primName: String, syntax: Syntax): String = {

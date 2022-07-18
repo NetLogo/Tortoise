@@ -281,7 +281,7 @@ object SimplePrims {
   }
 
   object SimpleCommand {
-    def imperfect(c: Command, prim: String) =
+    def imperfect(c: Command, prim: String): String =
       s"PrimChecks.imperfectImport(${c.token.sourceLocation.start}, ${c.token.sourceLocation.start}, '$prim')"
 
     def unapply(c: Command): Option[String] =

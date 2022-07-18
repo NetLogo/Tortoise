@@ -127,7 +127,7 @@ class Validator
       @_cachedRuntimeTypes.set(syntax, allowedTypes)
       allowedTypes
 
-  # (String, Int, Int, Int, Any, Maybe[Location]) => Any
+  # (String, Int, Int, Int, Any) => Any
   checkArg: (prim, sourceStart, sourceEnd, syntax, argValue) ->
     allowedTypes = @syntaxTypeToRuntimeTypes(syntax)
     @checkValueTypes(prim, sourceStart, sourceEnd, allowedTypes, argValue)
