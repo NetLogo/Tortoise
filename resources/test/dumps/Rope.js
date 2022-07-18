@@ -98,6 +98,6 @@ ProcedurePrims.defineCommand("go", 593, 1852, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1552, 1555, R); return R; }
   world.ticker.tick();
 }))
-world.observer.setVariable("friction", 24);
-world.observer.setVariable("frequency", 10);
-world.observer.setVariable("amplitude", 30);
+world.observer.setGlobal("friction", 24);
+world.observer.setGlobal("frequency", 10);
+world.observer.setGlobal("amplitude", 30);

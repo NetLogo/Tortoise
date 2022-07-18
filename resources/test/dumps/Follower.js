@@ -138,7 +138,7 @@ ProcedurePrims.defineCommand("turn-turtle", 1343, 1568, (function() {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 1554, 1558, 768, PrimChecks.turtle.getVariable(1559, 1565, "leader")));
   }
 }))
-world.observer.setVariable("waver", 70);
-world.observer.setVariable("far-radius", 10);
-world.observer.setVariable("population", 1500);
-world.observer.setVariable("near-radius", 5);
+world.observer.setGlobal("waver", 70);
+world.observer.setGlobal("far-radius", 10);
+world.observer.setGlobal("population", 1500);
+world.observer.setGlobal("near-radius", 5);

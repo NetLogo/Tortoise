@@ -204,10 +204,10 @@ ProcedurePrims.defineCommand("update-environment", 2402, 2850, (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2693, 2696, R); return R; }
 }))
-world.observer.setVariable("num-recyclers", 25);
-world.observer.setVariable("num-wastefuls", 25);
-world.observer.setVariable("show-energy?", true);
-world.observer.setVariable("recycling-waste-cost", 0.5);
-world.observer.setVariable("resource-regeneration", 25);
-world.observer.setVariable("max-stored-energy", 50);
-world.observer.setVariable("agents-seek-resources?", false);
+world.observer.setGlobal("num-recyclers", 25);
+world.observer.setGlobal("num-wastefuls", 25);
+world.observer.setGlobal("show-energy?", true);
+world.observer.setGlobal("recycling-waste-cost", 0.5);
+world.observer.setGlobal("resource-regeneration", 25);
+world.observer.setGlobal("max-stored-energy", 50);
+world.observer.setGlobal("agents-seek-resources?", false);

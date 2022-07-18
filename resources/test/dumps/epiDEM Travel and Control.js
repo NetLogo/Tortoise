@@ -110,7 +110,7 @@ ProcedurePrims.defineCommand("setup", 1897, 1978, (function() {
 ProcedurePrims.defineCommand("setup-globals", 1986, 2204, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2002, 2005, 1904, world.getPatchAt(PrimChecks.math.div(2025, 2026, PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0)), function() { PrimChecks.patch.setVariable(2039, 2045, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2002, 2005, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2056, 2059, 1904, world.getPatchAt(PrimChecks.math.div(2077, 2078, world.topology.maxPxcor, 2), 0)), function() { PrimChecks.patch.setVariable(2091, 2097, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2056, 2059, R); return R; }
-  world.observer.setVariable("border", PrimChecks.agentset.with(2128, 2132, world.patches(), function() {
+  world.observer.setGlobal("border", PrimChecks.agentset.with(2128, 2132, world.patches(), function() {
     return (Prims.equality(PrimChecks.patch.getVariable(2135, 2140, "pxcor"), 0) && Prims.gte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 2150, 2153, 1, PrimChecks.patch.getVariable(2155, 2160, "pycor"))), 0));
   }));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2171, 2174, 1904, world.observer.getGlobal("border")), function() { PrimChecks.patch.setVariable(2188, 2194, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2171, 2174, R); return R; }
@@ -287,7 +287,7 @@ ProcedurePrims.defineCommand("move", 6265, 7683, (function() {
   }
   if (Prims.equality(PrimChecks.turtle.getVariable(6435, 6444, "continent"), 1)) {
     if (Prims.gt(PrimChecks.turtle.getVariable(6464, 6468, "xcor"), PrimChecks.math.unaryminus(0.5))) {
-      world.observer.setVariable("angle", PrimChecks.math.randomFloat(180));
+      world.observer.setGlobal("angle", PrimChecks.math.randomFloat(180));
       let newHpatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), -1); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PATCH", newHpatch);
       if (!Prims.equality(newHpatch, Nobody)) {
         SelfManager.self().moveTo(newHpatch);
@@ -295,10 +295,10 @@ ProcedurePrims.defineCommand("move", 6265, 7683, (function() {
     }
     else {
       if (Prims.lt(PrimChecks.turtle.getVariable(6738, 6742, "xcor"), PrimChecks.math.plus(6756, 6757, world.topology.minPxcor, 0.5))) {
-        world.observer.setVariable("angle", PrimChecks.math.randomFloat(180));
+        world.observer.setGlobal("angle", PrimChecks.math.randomFloat(180));
       }
       else {
-        world.observer.setVariable("angle", PrimChecks.math.randomFloat(360));
+        world.observer.setGlobal("angle", PrimChecks.math.randomFloat(360));
       }
       SelfManager.self().right(world.observer.getGlobal("angle"));
       if (PrimChecks.turtle.getVariable(6936, 6946, "ambulance?")) {
@@ -311,7 +311,7 @@ ProcedurePrims.defineCommand("move", 6265, 7683, (function() {
   }
   else {
     if (Prims.lt(PrimChecks.turtle.getVariable(7128, 7132, "xcor"), 1)) {
-      world.observer.setVariable("angle", PrimChecks.math.randomFloat(180));
+      world.observer.setGlobal("angle", PrimChecks.math.randomFloat(180));
       let newHpatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), 1); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PATCH", newHpatch);
       if (!Prims.equality(newHpatch, Nobody)) {
         SelfManager.self().moveTo(newHpatch);
@@ -319,10 +319,10 @@ ProcedurePrims.defineCommand("move", 6265, 7683, (function() {
     }
     else {
       if (Prims.gt(PrimChecks.turtle.getVariable(7395, 7399, "xcor"), PrimChecks.math.minus(7413, 7414, world.topology.maxPxcor, 1))) {
-        world.observer.setVariable("angle", PrimChecks.math.randomFloat(180));
+        world.observer.setGlobal("angle", PrimChecks.math.randomFloat(180));
       }
       else {
-        world.observer.setVariable("angle", PrimChecks.math.randomFloat(360));
+        world.observer.setGlobal("angle", PrimChecks.math.randomFloat(360));
       }
       SelfManager.self().right(-(world.observer.getGlobal("angle")));
       if (PrimChecks.turtle.getVariable(7573, 7583, "ambulance?")) {
@@ -406,35 +406,35 @@ ProcedurePrims.defineCommand("infect", 9698, 10414, (function() {
 ProcedurePrims.defineCommand("calculate-r0", 10423, 11922, (function() {
   let newHinfected = PrimChecks.list.sum(10456, 10459, PrimChecks.validator.checkArg('SUM', 10456, 10459, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(10462, 10473, "nb-infected"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-INFECTED", newHinfected);
   let newHrecovered = PrimChecks.list.sum(10507, 10510, PrimChecks.validator.checkArg('SUM', 10507, 10510, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(10513, 10525, "nb-recovered"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-RECOVERED", newHrecovered);
-  world.observer.setVariable("nb-infected-previous", PrimChecks.math.minus(10616, 10617, PrimChecks.math.plus(10600, 10601, PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(10588, 10597, "infected?"); }), PrimChecks.validator.checkArg('+', 10600, 10601, 1, newHrecovered)), PrimChecks.validator.checkArg('-', 10616, 10617, 1, newHinfected)));
+  world.observer.setGlobal("nb-infected-previous", PrimChecks.math.minus(10616, 10617, PrimChecks.math.plus(10600, 10601, PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(10588, 10597, "infected?"); }), PrimChecks.validator.checkArg('+', 10600, 10601, 1, newHrecovered)), PrimChecks.validator.checkArg('-', 10616, 10617, 1, newHinfected)));
   let susceptibleHt = PrimChecks.math.minus(10756, 10757, PrimChecks.math.minus(10719, 10720, PrimChecks.validator.checkArg('-', 10719, 10720, 1, world.observer.getGlobal("initial-people")), PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(10743, 10752, "infected?"); })), PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(10780, 10786, "cured?"); })); ProcedurePrims.stack().currentContext().registerStringRunVar("SUSCEPTIBLE-T", susceptibleHt);
   let s0 = PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(10852, 10864, "susceptible?"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("S0", s0);
   if (Prims.lt(world.observer.getGlobal("nb-infected-previous"), 10)) {
-    world.observer.setVariable("beta-n", 0);
+    world.observer.setGlobal("beta-n", 0);
   }
   else {
-    world.observer.setVariable("beta-n", PrimChecks.math.div(10989, 10990, PrimChecks.validator.checkArg('/', 10989, 10990, 1, newHinfected), PrimChecks.validator.checkArg('/', 10989, 10990, 1, world.observer.getGlobal("nb-infected-previous"))));
+    world.observer.setGlobal("beta-n", PrimChecks.math.div(10989, 10990, PrimChecks.validator.checkArg('/', 10989, 10990, 1, newHinfected), PrimChecks.validator.checkArg('/', 10989, 10990, 1, world.observer.getGlobal("nb-infected-previous"))));
   }
   if (Prims.lt(world.observer.getGlobal("nb-infected-previous"), 5)) {
-    world.observer.setVariable("gamma", 0);
+    world.observer.setGlobal("gamma", 0);
   }
   else {
-    world.observer.setVariable("gamma", PrimChecks.math.div(11190, 11191, PrimChecks.validator.checkArg('/', 11190, 11191, 1, newHrecovered), PrimChecks.validator.checkArg('/', 11190, 11191, 1, world.observer.getGlobal("nb-infected-previous"))));
+    world.observer.setGlobal("gamma", PrimChecks.math.div(11190, 11191, PrimChecks.validator.checkArg('/', 11190, 11191, 1, newHrecovered), PrimChecks.validator.checkArg('/', 11190, 11191, 1, world.observer.getGlobal("nb-infected-previous"))));
   }
   if ((!Prims.equality(PrimChecks.math.minus(11316, 11317, PrimChecks.validator.checkArg('-', 11316, 11317, 1, world.observer.getGlobal("initial-people")), PrimChecks.validator.checkArg('-', 11316, 11317, 1, susceptibleHt)), 0) && !Prims.equality(susceptibleHt, 0))) {
-    world.observer.setVariable("r0", PrimChecks.math.div(11865, 11866, PrimChecks.math.ln(11841, 11843, PrimChecks.math.div(11848, 11849, PrimChecks.validator.checkArg('/', 11848, 11849, 1, s0), PrimChecks.validator.checkArg('/', 11848, 11849, 1, susceptibleHt))), PrimChecks.math.minus(11883, 11884, PrimChecks.validator.checkArg('-', 11883, 11884, 1, world.observer.getGlobal("initial-people")), PrimChecks.validator.checkArg('-', 11883, 11884, 1, susceptibleHt))));
-    world.observer.setVariable("r0", PrimChecks.math.mult(11915, 11916, PrimChecks.validator.checkArg('*', 11915, 11916, 1, world.observer.getGlobal("r0")), PrimChecks.validator.checkArg('*', 11915, 11916, 1, s0)));
+    world.observer.setGlobal("r0", PrimChecks.math.div(11865, 11866, PrimChecks.math.ln(11841, 11843, PrimChecks.math.div(11848, 11849, PrimChecks.validator.checkArg('/', 11848, 11849, 1, s0), PrimChecks.validator.checkArg('/', 11848, 11849, 1, susceptibleHt))), PrimChecks.math.minus(11883, 11884, PrimChecks.validator.checkArg('-', 11883, 11884, 1, world.observer.getGlobal("initial-people")), PrimChecks.validator.checkArg('-', 11883, 11884, 1, susceptibleHt))));
+    world.observer.setGlobal("r0", PrimChecks.math.mult(11915, 11916, PrimChecks.validator.checkArg('*', 11915, 11916, 1, world.observer.getGlobal("r0")), PrimChecks.validator.checkArg('*', 11915, 11916, 1, s0)));
   }
 }))
-world.observer.setVariable("initial-people", 250);
-world.observer.setVariable("average-isolation-tendency", 5);
-world.observer.setVariable("inoculation-chance", 10);
-world.observer.setVariable("initial-ambulance", 2);
-world.observer.setVariable("average-hospital-going-tendency", 5);
-world.observer.setVariable("infection-chance", 55);
-world.observer.setVariable("recovery-chance", 45);
-world.observer.setVariable("links?", false);
-world.observer.setVariable("intra-mobility", 0.4);
-world.observer.setVariable("travel?", false);
-world.observer.setVariable("travel-tendency", 1);
-world.observer.setVariable("average-recovery-time", 110);
+world.observer.setGlobal("initial-people", 250);
+world.observer.setGlobal("average-isolation-tendency", 5);
+world.observer.setGlobal("inoculation-chance", 10);
+world.observer.setGlobal("initial-ambulance", 2);
+world.observer.setGlobal("average-hospital-going-tendency", 5);
+world.observer.setGlobal("infection-chance", 55);
+world.observer.setGlobal("recovery-chance", 45);
+world.observer.setGlobal("links?", false);
+world.observer.setGlobal("intra-mobility", 0.4);
+world.observer.setGlobal("travel?", false);
+world.observer.setGlobal("travel-tendency", 1);
+world.observer.setGlobal("average-recovery-time", 110);

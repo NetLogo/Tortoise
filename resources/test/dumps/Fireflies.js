@@ -124,9 +124,9 @@ ProcedurePrims.defineCommand("look", 1276, 1403, (function() {
     PrimChecks.turtle.setVariable(1383, 1388, "clock", PrimChecks.turtle.getVariable(1389, 1400, "reset-level"));
   }
 }))
-world.observer.setVariable("number", 1500);
-world.observer.setVariable("cycle-length", 10);
-world.observer.setVariable("flash-length", 1);
-world.observer.setVariable("flashes-to-reset", 1);
-world.observer.setVariable("show-dark-fireflies?", false);
-world.observer.setVariable("strategy", "delay");
+world.observer.setGlobal("number", 1500);
+world.observer.setGlobal("cycle-length", 10);
+world.observer.setGlobal("flash-length", 1);
+world.observer.setGlobal("flashes-to-reset", 1);
+world.observer.setGlobal("show-dark-fireflies?", false);
+world.observer.setGlobal("strategy", "delay");

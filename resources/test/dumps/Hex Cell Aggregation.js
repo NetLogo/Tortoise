@@ -67,7 +67,7 @@ ProcedurePrims.defineCommand("go", 1466, 1547, (function() {
 ProcedurePrims.defineCommand("become-alive", 1555, 1811, (function() {
   SelfManager.self().hideTurtle(false);
   PrimChecks.turtle.setVariable(1607, 1616, "eligible?", false);
-  world.observer.setVariable("eligibles", PrimChecks.list.remove(1639, 1645, SelfManager.self(), PrimChecks.validator.checkArg('REMOVE', 1639, 1645, 12, world.observer.getGlobal("eligibles"))));
+  world.observer.setGlobal("eligibles", PrimChecks.list.remove(1639, 1645, SelfManager.self(), PrimChecks.validator.checkArg('REMOVE', 1639, 1645, 12, world.observer.getGlobal("eligibles"))));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1663, 1666, 1904, PrimChecks.turtle.getVariable(1667, 1680, "hex-neighbors")), function() {
     PrimChecks.turtle.setVariable(1691, 1710, "live-neighbor-count", PrimChecks.math.plus(1731, 1732, PrimChecks.validator.checkArg('+', 1731, 1732, 1, PrimChecks.turtle.getVariable(1711, 1730, "live-neighbor-count")), 1));
     if (Prims.equality(PrimChecks.turtle.getVariable(1742, 1761, "live-neighbor-count"), 6)) {
@@ -80,40 +80,40 @@ ProcedurePrims.defineCommand("update-eligibility", 1819, 2428, (function() {
   if (PrimChecks.turtle.getVariable(1866, 1875, "eligible?")) {
     if (PrimChecks.math.not(PrimChecks.list.member(PrimChecks.turtle.getVariable(1931, 1950, "live-neighbor-count"), PrimChecks.validator.checkArg('MEMBER?', 1923, 1930, 124, world.observer.getGlobal("switches"))))) {
       PrimChecks.turtle.setVariable(1972, 1981, "eligible?", false);
-      world.observer.setVariable("eligibles", PrimChecks.list.remove(2008, 2014, SelfManager.self(), PrimChecks.validator.checkArg('REMOVE', 2008, 2014, 12, world.observer.getGlobal("eligibles"))));
+      world.observer.setGlobal("eligibles", PrimChecks.list.remove(2008, 2014, SelfManager.self(), PrimChecks.validator.checkArg('REMOVE', 2008, 2014, 12, world.observer.getGlobal("eligibles"))));
     }
   }
   else {
     if ((PrimChecks.validator.checkArg('AND', 2161, 2164, 2, PrimChecks.turtleOrLink.getVariable(2153, 2160, "hidden?")) && PrimChecks.list.member(PrimChecks.turtle.getVariable(2173, 2192, "live-neighbor-count"), PrimChecks.validator.checkArg('MEMBER?', 2165, 2172, 124, world.observer.getGlobal("switches"))))) {
       PrimChecks.turtle.setVariable(2214, 2223, "eligible?", true);
-      world.observer.setVariable("eligibles", PrimChecks.list.fput(SelfManager.self(), PrimChecks.validator.checkArg('FPUT', 2398, 2402, 8, world.observer.getGlobal("eligibles"))));
+      world.observer.setGlobal("eligibles", PrimChecks.list.fput(SelfManager.self(), PrimChecks.validator.checkArg('FPUT', 2398, 2402, 8, world.observer.getGlobal("eligibles"))));
     }
   }
 }))
 ProcedurePrims.defineCommand("read-switches", 2526, 3022, (function() {
-  world.observer.setVariable("switches", []);
+  world.observer.setGlobal("switches", []);
   if (world.observer.getGlobal("one-neighbor?")) {
-    world.observer.setVariable("switches", PrimChecks.list.lput(1, PrimChecks.validator.checkArg('LPUT', 2595, 2599, 8, world.observer.getGlobal("switches"))));
+    world.observer.setGlobal("switches", PrimChecks.list.lput(1, PrimChecks.validator.checkArg('LPUT', 2595, 2599, 8, world.observer.getGlobal("switches"))));
   }
   if (world.observer.getGlobal("two-neighbors?")) {
-    world.observer.setVariable("switches", PrimChecks.list.lput(2, PrimChecks.validator.checkArg('LPUT', 2650, 2654, 8, world.observer.getGlobal("switches"))));
+    world.observer.setGlobal("switches", PrimChecks.list.lput(2, PrimChecks.validator.checkArg('LPUT', 2650, 2654, 8, world.observer.getGlobal("switches"))));
   }
   if (world.observer.getGlobal("three-neighbors?")) {
-    world.observer.setVariable("switches", PrimChecks.list.lput(3, PrimChecks.validator.checkArg('LPUT', 2705, 2709, 8, world.observer.getGlobal("switches"))));
+    world.observer.setGlobal("switches", PrimChecks.list.lput(3, PrimChecks.validator.checkArg('LPUT', 2705, 2709, 8, world.observer.getGlobal("switches"))));
   }
   if (world.observer.getGlobal("four-neighbors?")) {
-    world.observer.setVariable("switches", PrimChecks.list.lput(4, PrimChecks.validator.checkArg('LPUT', 2760, 2764, 8, world.observer.getGlobal("switches"))));
+    world.observer.setGlobal("switches", PrimChecks.list.lput(4, PrimChecks.validator.checkArg('LPUT', 2760, 2764, 8, world.observer.getGlobal("switches"))));
   }
   if (world.observer.getGlobal("five-neighbors?")) {
-    world.observer.setVariable("switches", PrimChecks.list.lput(5, PrimChecks.validator.checkArg('LPUT', 2815, 2819, 8, world.observer.getGlobal("switches"))));
+    world.observer.setGlobal("switches", PrimChecks.list.lput(5, PrimChecks.validator.checkArg('LPUT', 2815, 2819, 8, world.observer.getGlobal("switches"))));
   }
   if (world.observer.getGlobal("six-neighbors?")) {
-    world.observer.setVariable("switches", PrimChecks.list.lput(6, PrimChecks.validator.checkArg('LPUT', 2870, 2874, 8, world.observer.getGlobal("switches"))));
+    world.observer.setGlobal("switches", PrimChecks.list.lput(6, PrimChecks.validator.checkArg('LPUT', 2870, 2874, 8, world.observer.getGlobal("switches"))));
   }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CELLS"), function() {
     PrimChecks.turtle.setVariable(2910, 2919, "eligible?", (PrimChecks.validator.checkArg('AND', 2928, 2931, 2, PrimChecks.turtleOrLink.getVariable(2920, 2927, "hidden?")) && PrimChecks.list.member(PrimChecks.turtle.getVariable(2940, 2959, "live-neighbor-count"), PrimChecks.validator.checkArg('MEMBER?', 2932, 2939, 124, world.observer.getGlobal("switches")))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2890, 2893, R); return R; }
-  world.observer.setVariable("eligibles", PrimChecks.agentset.of(PrimChecks.agentset.with(3005, 3009, world.turtleManager.turtlesOfBreed("CELLS"), function() { return PrimChecks.turtle.getVariable(3011, 3020, "eligible?"); }), function() { return SelfManager.self(); }));
+  world.observer.setGlobal("eligibles", PrimChecks.agentset.of(PrimChecks.agentset.with(3005, 3009, world.turtleManager.turtlesOfBreed("CELLS"), function() { return PrimChecks.turtle.getVariable(3011, 3020, "eligible?"); }), function() { return SelfManager.self(); }));
 }))
 ProcedurePrims.defineCommand("setup-grid", 3079, 3663, (function() {
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "hex")
@@ -136,9 +136,9 @@ ProcedurePrims.defineCommand("setup-grid", 3079, 3663, (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3303, 3306, R); return R; }
 }))
-world.observer.setVariable("one-neighbor?", true);
-world.observer.setVariable("two-neighbors?", true);
-world.observer.setVariable("three-neighbors?", true);
-world.observer.setVariable("four-neighbors?", true);
-world.observer.setVariable("five-neighbors?", true);
-world.observer.setVariable("six-neighbors?", true);
+world.observer.setGlobal("one-neighbor?", true);
+world.observer.setGlobal("two-neighbors?", true);
+world.observer.setGlobal("three-neighbors?", true);
+world.observer.setGlobal("four-neighbors?", true);
+world.observer.setGlobal("five-neighbors?", true);
+world.observer.setGlobal("six-neighbors?", true);

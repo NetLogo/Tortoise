@@ -55,8 +55,8 @@ ProcedurePrims.defineCommand("setup", 283, 642, (function() {
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "square")
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(379, 383, world.patches(), function() { return Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("density")); }), function() { PrimChecks.patch.setVariable(425, 431, "pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(367, 370, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(490, 494, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(496, 501, "pxcor"), world.topology.minPxcor); }), function() { var R = ProcedurePrims.callCommand("ignite"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(478, 481, R); return R; }
-  world.observer.setVariable("initial-trees", PrimChecks.agentset.countWith(null, null, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(591, 597, "pcolor"), 55); }));
-  world.observer.setVariable("burned-trees", 0);
+  world.observer.setGlobal("initial-trees", PrimChecks.agentset.countWith(null, null, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(591, 597, "pcolor"), 55); }));
+  world.observer.setGlobal("burned-trees", 0);
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 650, 835, (function() {
@@ -73,7 +73,7 @@ ProcedurePrims.defineCommand("go", 650, 835, (function() {
 ProcedurePrims.defineCommand("ignite", 871, 992, (function() {
   var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "FIRES"), function() { PrimChecks.turtleOrLink.setVariable(925, 930, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(900, 912, R); return R; }
   PrimChecks.patch.setVariable(943, 949, "pcolor", 0);
-  world.observer.setVariable("burned-trees", PrimChecks.math.plus(988, 989, PrimChecks.validator.checkArg('+', 988, 989, 1, world.observer.getGlobal("burned-trees")), 1));
+  world.observer.setGlobal("burned-trees", PrimChecks.math.plus(988, 989, PrimChecks.validator.checkArg('+', 988, 989, 1, world.observer.getGlobal("burned-trees")), 1));
 }))
 ProcedurePrims.defineCommand("fade-embers", 1056, 1232, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("EMBERS"), function() {
@@ -84,4 +84,4 @@ ProcedurePrims.defineCommand("fade-embers", 1056, 1232, (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1070, 1073, R); return R; }
 }))
-world.observer.setVariable("density", 57);
+world.observer.setGlobal("density", 57);

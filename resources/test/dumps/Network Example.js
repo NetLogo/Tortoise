@@ -72,5 +72,5 @@ ProcedurePrims.defineCommand("go", 371, 596, (function() {
   }
   world.ticker.tick();
 }))
-world.observer.setVariable("number-of-nodes", 30);
-world.observer.setVariable("number-of-links", 20);
+world.observer.setGlobal("number-of-nodes", 30);
+world.observer.setGlobal("number-of-links", 20);

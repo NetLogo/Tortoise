@@ -63,16 +63,16 @@ ProcedurePrims.defineCommand("setup", 69, 275, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 89, 92, 1904, PrimChecks.list.nOf(93, 97, PrimChecks.math.div(115, 116, PrimChecks.agentset.count(world.patches()), 2), world.patches())), function() { PrimChecks.patch.setVariable(140, 150, "brightness", 1); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(89, 92, R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("update-visual"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(159, 162, R); return R; }
-  world.observer.setVariable("global-energy", PrimChecks.list.sum(210, 213, PrimChecks.validator.checkArg('SUM', 210, 213, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter(215, 226, "find-energy"); }))));
-  world.observer.setVariable("temperature", 1);
+  world.observer.setGlobal("global-energy", PrimChecks.list.sum(210, 213, PrimChecks.validator.checkArg('SUM', 210, 213, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter(215, 226, "find-energy"); }))));
+  world.observer.setGlobal("temperature", 1);
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 284, 527, (function() {
   for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 309, 312, 1904, PrimChecks.list.oneOf(313, 319, world.patches())), function() { var R = ProcedurePrims.callCommand("try-swap"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(309, 312, R); return R; }
   }
-  world.observer.setVariable("temperature", PrimChecks.math.mult(441, 442, PrimChecks.validator.checkArg('*', 441, 442, 1, world.observer.getGlobal("temperature")), PrimChecks.math.minus(446, 447, 1, PrimChecks.math.div(461, 462, PrimChecks.validator.checkArg('/', 461, 462, 1, world.observer.getGlobal("cooling-rate")), 100))));
-  world.observer.setVariable("global-energy", PrimChecks.list.sum(489, 492, PrimChecks.validator.checkArg('SUM', 489, 492, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter(494, 505, "find-energy"); }))));
+  world.observer.setGlobal("temperature", PrimChecks.math.mult(441, 442, PrimChecks.validator.checkArg('*', 441, 442, 1, world.observer.getGlobal("temperature")), PrimChecks.math.minus(446, 447, 1, PrimChecks.math.div(461, 462, PrimChecks.validator.checkArg('/', 461, 462, 1, world.observer.getGlobal("cooling-rate")), 100))));
+  world.observer.setGlobal("global-energy", PrimChecks.list.sum(489, 492, PrimChecks.validator.checkArg('SUM', 489, 492, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter(494, 505, "find-energy"); }))));
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("update-visual", 535, 605, (function() {
@@ -121,6 +121,6 @@ ProcedurePrims.defineReporter("find-energy", 2070, 2565, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2415, 2418, R); return R; }
   return PrimChecks.procedure.report(2546, 2552, unhappiness);
 }))
-world.observer.setVariable("cooling-rate", 1);
-world.observer.setVariable("swap-radius", 1);
-world.observer.setVariable("accept-equal-changes?", false);
+world.observer.setGlobal("cooling-rate", 1);
+world.observer.setGlobal("swap-radius", 1);
+world.observer.setGlobal("accept-equal-changes?", false);

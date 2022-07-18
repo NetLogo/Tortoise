@@ -90,4 +90,4 @@ ProcedurePrims.defineCommand("turn", 600, 703, (function() {
     SelfManager.self().right(-(90));
   }
 }))
-world.observer.setVariable("num-vants", 1);
+world.observer.setGlobal("num-vants", 1);

@@ -139,9 +139,9 @@ ProcedurePrims.defineCommand("turn-at-most", 2695, 2862, (function(turn, maxHtur
     SelfManager.self().right(turn);
   }
 }))
-world.observer.setVariable("population", 300);
-world.observer.setVariable("max-align-turn", 5);
-world.observer.setVariable("max-cohere-turn", 3);
-world.observer.setVariable("max-separate-turn", 1.5);
-world.observer.setVariable("vision", 5);
-world.observer.setVariable("minimum-separation", 1);
+world.observer.setGlobal("population", 300);
+world.observer.setGlobal("max-align-turn", 5);
+world.observer.setGlobal("max-cohere-turn", 3);
+world.observer.setGlobal("max-separate-turn", 1.5);
+world.observer.setGlobal("vision", 5);
+world.observer.setGlobal("minimum-separation", 1);

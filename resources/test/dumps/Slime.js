@@ -89,8 +89,8 @@ ProcedurePrims.defineCommand("turn-toward-chemical", 815, 1279, (function() {
     }
   }
 }))
-world.observer.setVariable("population", 400);
-world.observer.setVariable("sniff-threshold", 1);
-world.observer.setVariable("sniff-angle", 45);
-world.observer.setVariable("wiggle-angle", 40);
-world.observer.setVariable("wiggle-bias", 0);
+world.observer.setGlobal("population", 400);
+world.observer.setGlobal("sniff-threshold", 1);
+world.observer.setGlobal("sniff-angle", 45);
+world.observer.setGlobal("wiggle-angle", 40);
+world.observer.setGlobal("wiggle-bias", 0);

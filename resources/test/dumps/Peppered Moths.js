@@ -92,8 +92,8 @@ ProcedurePrims.defineCommand("setup", 1163, 1241, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-world", 1249, 1389, (function() {
-  world.observer.setVariable("darkness", 0);
-  world.observer.setVariable("darkening?", true);
+  world.observer.setGlobal("darkness", 0);
+  world.observer.setGlobal("darkening?", true);
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(1370, 1376, "pcolor", PrimChecks.procedure.callReporter(1377, 1386, "env-color"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1352, 1355, R); return R; }
@@ -171,30 +171,30 @@ ProcedurePrims.defineCommand("moths-pick-shape", 3034, 3155, (function() {
   }
 }))
 ProcedurePrims.defineCommand("update-monitors", 3163, 3427, (function() {
-  world.observer.setVariable("light-moths", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("MOTHS"), function() { return Prims.gte(PrimChecks.turtleOrLink.getVariable(3303, 3308, "color"), 7); }));
-  world.observer.setVariable("dark-moths", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("MOTHS"), function() { return Prims.lte(PrimChecks.turtleOrLink.getVariable(3352, 3357, "color"), 3); }));
-  world.observer.setVariable("medium-moths", PrimChecks.math.minus(3397, 3398, PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("MOTHS")), PrimChecks.math.plus(3412, 3413, PrimChecks.validator.checkArg('+', 3412, 3413, 1, world.observer.getGlobal("light-moths")), PrimChecks.validator.checkArg('+', 3412, 3413, 1, world.observer.getGlobal("dark-moths")))));
+  world.observer.setGlobal("light-moths", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("MOTHS"), function() { return Prims.gte(PrimChecks.turtleOrLink.getVariable(3303, 3308, "color"), 7); }));
+  world.observer.setGlobal("dark-moths", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("MOTHS"), function() { return Prims.lte(PrimChecks.turtleOrLink.getVariable(3352, 3357, "color"), 3); }));
+  world.observer.setGlobal("medium-moths", PrimChecks.math.minus(3397, 3398, PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("MOTHS")), PrimChecks.math.plus(3412, 3413, PrimChecks.validator.checkArg('+', 3412, 3413, 1, world.observer.getGlobal("light-moths")), PrimChecks.validator.checkArg('+', 3412, 3413, 1, world.observer.getGlobal("dark-moths")))));
 }))
 ProcedurePrims.defineCommand("pollute-world", 3530, 3742, (function() {
   if (Prims.lte(world.observer.getGlobal("darkness"), PrimChecks.math.minus(3569, 3570, 8, PrimChecks.validator.checkArg('-', 3569, 3570, 1, PrimChecks.procedure.callReporter(3571, 3580, "delta-env"))))) {
-    world.observer.setVariable("darkness", PrimChecks.math.plus(3654, 3655, PrimChecks.validator.checkArg('+', 3654, 3655, 1, world.observer.getGlobal("darkness")), PrimChecks.validator.checkArg('+', 3654, 3655, 1, PrimChecks.procedure.callReporter(3656, 3665, "delta-env"))));
+    world.observer.setGlobal("darkness", PrimChecks.math.plus(3654, 3655, PrimChecks.validator.checkArg('+', 3654, 3655, 1, world.observer.getGlobal("darkness")), PrimChecks.validator.checkArg('+', 3654, 3655, 1, PrimChecks.procedure.callReporter(3656, 3665, "delta-env"))));
     var R = ProcedurePrims.ask(world.patches(), function() {
       PrimChecks.patch.setVariable(3689, 3695, "pcolor", PrimChecks.procedure.callReporter(3696, 3705, "env-color"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3671, 3674, R); return R; }
   }
   else {
-    world.observer.setVariable("darkening?", false);
+    world.observer.setGlobal("darkening?", false);
   }
 }))
 ProcedurePrims.defineCommand("clean-up-world", 3848, 4054, (function() {
   if (Prims.gte(world.observer.getGlobal("darkness"), PrimChecks.math.plus(3888, 3889, 0, PrimChecks.validator.checkArg('+', 3888, 3889, 1, PrimChecks.procedure.callReporter(3890, 3899, "delta-env"))))) {
-    world.observer.setVariable("darkness", PrimChecks.math.minus(3967, 3968, PrimChecks.validator.checkArg('-', 3967, 3968, 1, world.observer.getGlobal("darkness")), PrimChecks.validator.checkArg('-', 3967, 3968, 1, PrimChecks.procedure.callReporter(3969, 3978, "delta-env"))));
+    world.observer.setGlobal("darkness", PrimChecks.math.minus(3967, 3968, PrimChecks.validator.checkArg('-', 3967, 3968, 1, world.observer.getGlobal("darkness")), PrimChecks.validator.checkArg('-', 3967, 3968, 1, PrimChecks.procedure.callReporter(3969, 3978, "delta-env"))));
     var R = ProcedurePrims.ask(world.patches(), function() {
       PrimChecks.patch.setVariable(4002, 4008, "pcolor", PrimChecks.procedure.callReporter(4009, 4018, "env-color"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3984, 3987, R); return R; }
   }
   else {
-    world.observer.setVariable("darkening?", true);
+    world.observer.setGlobal("darkening?", true);
   }
 }))
 ProcedurePrims.defineCommand("cycle-pollution", 4236, 4329, (function() {
@@ -205,8 +205,8 @@ ProcedurePrims.defineCommand("cycle-pollution", 4236, 4329, (function() {
     var R = ProcedurePrims.callCommand("clean-up-world"); if (R === DeathInterrupt) { return R; }
   }
 }))
-world.observer.setVariable("num-moths", 100);
-world.observer.setVariable("mutation", 15);
-world.observer.setVariable("selection", 50);
-world.observer.setVariable("speed", 10);
-world.observer.setVariable("cycle-pollution?", false);
+world.observer.setGlobal("num-moths", 100);
+world.observer.setGlobal("mutation", 15);
+world.observer.setGlobal("selection", 50);
+world.observer.setGlobal("speed", 10);
+world.observer.setGlobal("cycle-pollution?", false);

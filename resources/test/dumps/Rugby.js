@@ -54,9 +54,9 @@ ProcedurePrims.defineCommand("setup", 1220, 1435, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-field"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-balls"); if (R === DeathInterrupt) { return R; }
-  world.observer.setVariable("current-max", 0);
-  world.observer.setVariable("best-dist", -1);
-  world.observer.setVariable("kicks", 0);
+  world.observer.setGlobal("current-max", 0);
+  world.observer.setGlobal("best-dist", -1);
+  world.observer.setGlobal("kicks", 0);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1321, 1324, 1904, world.observer.getGlobal("try-line")), function() { PrimChecks.patch.setVariable(1340, 1345, "score", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1321, 1324, R); return R; }
   var R = ProcedurePrims.callCommand("find-analytic-solution"); if (R === DeathInterrupt) { return R; }
   if (world.observer.getGlobal("show-level-curves?")) {
@@ -73,11 +73,11 @@ ProcedurePrims.defineCommand("setup-field", 1443, 1886, (function() {
       PrimChecks.patch.setVariable(1687, 1693, "pcolor", 55);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1510, 1513, R); return R; }
-  world.observer.setVariable("try-line", PrimChecks.agentset.with(1728, 1732, world.patches(), function() {
+  world.observer.setGlobal("try-line", PrimChecks.agentset.with(1728, 1732, world.patches(), function() {
     return (Prims.equality(PrimChecks.patch.getVariable(1735, 1740, "pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(PrimChecks.patch.getVariable(1757, 1763, "pcolor"), 0));
   }));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1776, 1779, 1904, world.observer.getGlobal("try-line")), function() { PrimChecks.patch.setVariable(1795, 1801, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1776, 1779, R); return R; }
-  world.observer.setVariable("histogram-area", PrimChecks.agentset.with(1840, 1844, world.patches(), function() {
+  world.observer.setGlobal("histogram-area", PrimChecks.agentset.with(1840, 1844, world.patches(), function() {
     return (Prims.lt(PrimChecks.patch.getVariable(1847, 1852, "pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(PrimChecks.patch.getVariable(1869, 1875, "pcolor"), 0));
   }));
 }))
@@ -97,8 +97,8 @@ ProcedurePrims.defineCommand("go", 2184, 2345, (function() {
     var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2216, 2219, R); return R; }
     Prims.display();
   }
-  world.observer.setVariable("kicks", PrimChecks.math.plus(2271, 2272, PrimChecks.validator.checkArg('+', 2271, 2272, 1, world.observer.getGlobal("kicks")), PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 2273, 2278, 112, world.observer.getGlobal("try-line")))));
-  world.observer.setVariable("goals", PrimChecks.list.sum(2300, 2303, PrimChecks.validator.checkArg('SUM', 2300, 2303, 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2312, 2314, 1904, world.observer.getGlobal("try-line")), function() { return PrimChecks.patch.getVariable(2305, 2310, "score"); }))));
+  world.observer.setGlobal("kicks", PrimChecks.math.plus(2271, 2272, PrimChecks.validator.checkArg('+', 2271, 2272, 1, world.observer.getGlobal("kicks")), PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 2273, 2278, 112, world.observer.getGlobal("try-line")))));
+  world.observer.setGlobal("goals", PrimChecks.list.sum(2300, 2303, PrimChecks.validator.checkArg('SUM', 2300, 2303, 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2312, 2314, 1904, world.observer.getGlobal("try-line")), function() { return PrimChecks.patch.getVariable(2305, 2310, "score"); }))));
   var R = ProcedurePrims.callCommand("setup-balls"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
@@ -136,14 +136,14 @@ ProcedurePrims.defineReporter("next-patch", 3625, 4005, (function() {
   return PrimChecks.procedure.report(3985, 3991, SelfManager.self()._optimalPatchNorth());
 }))
 ProcedurePrims.defineCommand("plot-scores", 4045, 4912, (function() {
-  world.observer.setVariable("current-max", PrimChecks.list.max(4125, 4128, PrimChecks.validator.checkArg('MAX', 4125, 4128, 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4137, 4139, 1904, world.observer.getGlobal("try-line")), function() { return PrimChecks.patch.getVariable(4130, 4135, "score"); }))));
+  world.observer.setGlobal("current-max", PrimChecks.list.max(4125, 4128, PrimChecks.validator.checkArg('MAX', 4125, 4128, 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4137, 4139, 1904, world.observer.getGlobal("try-line")), function() { return PrimChecks.patch.getVariable(4130, 4135, "score"); }))));
   if (Prims.equality(world.observer.getGlobal("current-max"), 0)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4179, 4182, 1904, world.observer.getGlobal("histogram-area")), function() { PrimChecks.patch.setVariable(4204, 4210, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4179, 4182, R); return R; }
     return PrimChecks.procedure.stop(4223, 4227);
   }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4287, 4290, 1904, world.observer.getGlobal("try-line")), function() {
     if (Prims.equality(PrimChecks.patch.getVariable(4313, 4318, "score"), world.observer.getGlobal("current-max"))) {
-      world.observer.setVariable("best-dist", PrimChecks.patch.getVariable(4355, 4360, "pycor"));
+      world.observer.setGlobal("best-dist", PrimChecks.patch.getVariable(4355, 4360, "pycor"));
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4369, 4372, 1904, SelfManager.self().patchAt(2, 0)), function() {
         PrimChecks.patch.setVariable(4392, 4398, "plabel", PrimChecks.patch.getVariable(4399, 4404, "pycor"));
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4369, 4372, R); return R; }
@@ -177,7 +177,7 @@ ProcedurePrims.defineCommand("find-analytic-solution", 4920, 5248, (function() {
       PrimChecks.patch.setVariable(5189, 5195, "plabel", PrimChecks.patch.getVariable(5196, 5201, "pycor"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5166, 5169, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5121, 5124, R); return R; }
-  world.observer.setVariable("analytic", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 5231, 5233, 1904, winningHpatch), function() { return PrimChecks.patch.getVariable(5223, 5228, "pycor"); }));
+  world.observer.setGlobal("analytic", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 5231, 5233, 1904, winningHpatch), function() { return PrimChecks.patch.getVariable(5223, 5228, "pycor"); }));
 }))
 ProcedurePrims.defineCommand("draw-level-curves", 5256, 5415, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(5288, 5292, world.patches(), function() {
@@ -193,7 +193,7 @@ ProcedurePrims.defineCommand("calc-goal-angle", 5465, 5727, (function() {
   PrimChecks.patch.setVariable(5578, 5589, "right-angle", PrimChecks.turtle.towardsXY(5590, 5599, PrimChecks.math.minus(5622, 5623, PrimChecks.math.plus(5610, 5611, PrimChecks.validator.checkArg('+', 5610, 5611, 1, world.observer.getGlobal("goal-pos")), PrimChecks.validator.checkArg('+', 5610, 5611, 1, world.observer.getGlobal("goal-size"))), 0.5), PrimChecks.math.plus(5668, 5669, world.topology.minPycor, 0.5)));
   PrimChecks.patch.setVariable(5681, 5691, "goal-angle", PrimChecks.math.mod(5719, 5722, PrimChecks.math.minus(5705, 5706, PrimChecks.validator.checkArg('-', 5705, 5706, 1, PrimChecks.patch.getVariable(5693, 5704, "right-angle")), PrimChecks.validator.checkArg('-', 5705, 5706, 1, PrimChecks.patch.getVariable(5707, 5717, "left-angle"))), 360));
 }))
-world.observer.setVariable("kick-line", 20);
-world.observer.setVariable("goal-size", 11);
-world.observer.setVariable("goal-pos", 40);
-world.observer.setVariable("show-level-curves?", false);
+world.observer.setGlobal("kick-line", 20);
+world.observer.setGlobal("goal-size", 11);
+world.observer.setGlobal("goal-pos", 40);
+world.observer.setGlobal("show-level-curves?", false);

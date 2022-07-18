@@ -105,12 +105,12 @@ ProcedurePrims.defineCommand("setup", 2026, 2945, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-globals", 3010, 3350, (function() {
-  world.observer.setVariable("current-light", Nobody);
-  world.observer.setVariable("phase", 0);
-  world.observer.setVariable("num-cars-stopped", 0);
-  world.observer.setVariable("grid-x-inc", PrimChecks.math.div(3166, 3167, world.topology.width, PrimChecks.validator.checkArg('/', 3166, 3167, 1, world.observer.getGlobal("grid-size-x"))));
-  world.observer.setVariable("grid-y-inc", PrimChecks.math.div(3210, 3211, world.topology.height, PrimChecks.validator.checkArg('/', 3210, 3211, 1, world.observer.getGlobal("grid-size-y"))));
-  world.observer.setVariable("acceleration", 0.099);
+  world.observer.setGlobal("current-light", Nobody);
+  world.observer.setGlobal("phase", 0);
+  world.observer.setGlobal("num-cars-stopped", 0);
+  world.observer.setGlobal("grid-x-inc", PrimChecks.math.div(3166, 3167, world.topology.width, PrimChecks.validator.checkArg('/', 3166, 3167, 1, world.observer.getGlobal("grid-size-x"))));
+  world.observer.setGlobal("grid-y-inc", PrimChecks.math.div(3210, 3211, world.topology.height, PrimChecks.validator.checkArg('/', 3210, 3211, 1, world.observer.getGlobal("grid-size-y"))));
+  world.observer.setGlobal("acceleration", 0.099);
 }))
 ProcedurePrims.defineCommand("setup-patches", 3501, 4221, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
@@ -122,10 +122,10 @@ ProcedurePrims.defineCommand("setup-patches", 3501, 4221, (function() {
     PrimChecks.patch.setVariable(3737, 3745, "my-phase", -1);
     PrimChecks.patch.setVariable(3757, 3763, "pcolor", PrimChecks.math.plus(3770, 3771, 35, 3));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3597, 3600, R); return R; }
-  world.observer.setVariable("roads", PrimChecks.agentset.with(3862, 3866, world.patches(), function() {
+  world.observer.setGlobal("roads", PrimChecks.agentset.with(3862, 3866, world.patches(), function() {
     return (Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(3923, 3926, PrimChecks.math.minus(3898, 3899, PrimChecks.math.plus(3886, 3887, PrimChecks.validator.checkArg('+', 3886, 3887, 1, PrimChecks.patch.getVariable(3880, 3885, "pxcor")), world.topology.maxPxcor), PrimChecks.math.floor(PrimChecks.math.minus(3917, 3918, PrimChecks.validator.checkArg('-', 3917, 3918, 1, world.observer.getGlobal("grid-x-inc")), 1))), PrimChecks.validator.checkArg('MOD', 3923, 3926, 1, world.observer.getGlobal("grid-x-inc")))), 0) || Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(3978, 3981, PrimChecks.math.plus(3965, 3966, PrimChecks.validator.checkArg('+', 3965, 3966, 1, PrimChecks.patch.getVariable(3959, 3964, "pycor")), world.topology.maxPycor), PrimChecks.validator.checkArg('MOD', 3978, 3981, 1, world.observer.getGlobal("grid-y-inc")))), 0));
   }));
-  world.observer.setVariable("intersections", PrimChecks.agentset.with(4026, 4030, PrimChecks.validator.checkArg('WITH', 4026, 4030, 112, world.observer.getGlobal("roads")), function() {
+  world.observer.setGlobal("intersections", PrimChecks.agentset.with(4026, 4030, PrimChecks.validator.checkArg('WITH', 4026, 4030, 112, world.observer.getGlobal("roads")), function() {
     return (Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(4087, 4090, PrimChecks.math.minus(4062, 4063, PrimChecks.math.plus(4050, 4051, PrimChecks.validator.checkArg('+', 4050, 4051, 1, PrimChecks.patch.getVariable(4044, 4049, "pxcor")), world.topology.maxPxcor), PrimChecks.math.floor(PrimChecks.math.minus(4081, 4082, PrimChecks.validator.checkArg('-', 4081, 4082, 1, world.observer.getGlobal("grid-x-inc")), 1))), PrimChecks.validator.checkArg('MOD', 4087, 4090, 1, world.observer.getGlobal("grid-x-inc")))), 0) && Prims.equality(PrimChecks.math.floor(PrimChecks.math.mod(4143, 4146, PrimChecks.math.plus(4130, 4131, PrimChecks.validator.checkArg('+', 4130, 4131, 1, PrimChecks.patch.getVariable(4124, 4129, "pycor")), world.topology.maxPycor), PrimChecks.validator.checkArg('MOD', 4143, 4146, 1, world.observer.getGlobal("grid-y-inc")))), 0));
   }));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4168, 4171, 1904, world.observer.getGlobal("roads")), function() { PrimChecks.patch.setVariable(4184, 4190, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4168, 4171, R); return R; }
@@ -177,7 +177,7 @@ ProcedurePrims.defineCommand("put-on-empty-road", 5378, 5472, (function() {
 ProcedurePrims.defineCommand("go", 5579, 6043, (function() {
   var R = ProcedurePrims.callCommand("update-current"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("set-signals"); if (R === DeathInterrupt) { return R; }
-  world.observer.setVariable("num-cars-stopped", 0);
+  world.observer.setGlobal("num-cars-stopped", 0);
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.callCommand("set-car-speed"); if (R === DeathInterrupt) { return R; }
     SelfManager.self().fd(PrimChecks.turtle.getVariable(5935, 5940, "speed"));
@@ -201,9 +201,9 @@ ProcedurePrims.defineCommand("choose-current", 6051, 6320, (function() {
   }
 }))
 ProcedurePrims.defineCommand("make-current", 6388, 6528, (function(light) {
-  world.observer.setVariable("current-light", light);
-  world.observer.setVariable("current-phase", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 6466, 6468, 1904, world.observer.getGlobal("current-light")), function() { return PrimChecks.patch.getVariable(6456, 6464, "my-phase"); }));
-  world.observer.setVariable("current-auto?", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 6511, 6513, 1904, world.observer.getGlobal("current-light")), function() { return PrimChecks.patch.getVariable(6504, 6509, "auto?"); }));
+  world.observer.setGlobal("current-light", light);
+  world.observer.setGlobal("current-phase", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 6466, 6468, 1904, world.observer.getGlobal("current-light")), function() { return PrimChecks.patch.getVariable(6456, 6464, "my-phase"); }));
+  world.observer.setGlobal("current-auto?", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 6511, 6513, 1904, world.observer.getGlobal("current-light")), function() { return PrimChecks.patch.getVariable(6504, 6509, "auto?"); }));
 }))
 ProcedurePrims.defineCommand("update-current", 6582, 6682, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6599, 6602, 1904, world.observer.getGlobal("current-light")), function() {
@@ -304,7 +304,7 @@ ProcedurePrims.defineCommand("set-car-color", 9225, 9341, (function() {
 }))
 ProcedurePrims.defineCommand("record-data", 9466, 9626, (function() {
   if (Prims.equality(PrimChecks.turtle.getVariable(9508, 9513, "speed"), 0)) {
-    world.observer.setVariable("num-cars-stopped", PrimChecks.math.plus(9564, 9565, PrimChecks.validator.checkArg('+', 9564, 9565, 1, world.observer.getGlobal("num-cars-stopped")), 1));
+    world.observer.setGlobal("num-cars-stopped", PrimChecks.math.plus(9564, 9565, PrimChecks.validator.checkArg('+', 9564, 9565, 1, world.observer.getGlobal("num-cars-stopped")), 1));
     PrimChecks.turtle.setVariable(9576, 9585, "wait-time", PrimChecks.math.plus(9596, 9597, PrimChecks.validator.checkArg('+', 9596, 9597, 1, PrimChecks.turtle.getVariable(9586, 9595, "wait-time")), 1));
   }
   else {
@@ -318,16 +318,16 @@ ProcedurePrims.defineCommand("change-current", 9634, 9745, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9651, 9654, R); return R; }
 }))
 ProcedurePrims.defineCommand("next-phase", 9799, 9954, (function() {
-  world.observer.setVariable("phase", PrimChecks.math.plus(9895, 9896, PrimChecks.validator.checkArg('+', 9895, 9896, 1, world.observer.getGlobal("phase")), 1));
+  world.observer.setGlobal("phase", PrimChecks.math.plus(9895, 9896, PrimChecks.validator.checkArg('+', 9895, 9896, 1, world.observer.getGlobal("phase")), 1));
   if (Prims.equality(PrimChecks.math.mod(9910, 9913, PrimChecks.validator.checkArg('MOD', 9910, 9913, 1, world.observer.getGlobal("phase")), PrimChecks.validator.checkArg('MOD', 9910, 9913, 1, world.observer.getGlobal("ticks-per-cycle"))), 0)) {
-    world.observer.setVariable("phase", 0);
+    world.observer.setGlobal("phase", 0);
   }
 }))
-world.observer.setVariable("grid-size-y", 5);
-world.observer.setVariable("grid-size-x", 5);
-world.observer.setVariable("power?", true);
-world.observer.setVariable("num-cars", 200);
-world.observer.setVariable("speed-limit", 1);
-world.observer.setVariable("ticks-per-cycle", 20);
-world.observer.setVariable("current-phase", 0);
-world.observer.setVariable("current-auto?", true);
+world.observer.setGlobal("grid-size-y", 5);
+world.observer.setGlobal("grid-size-x", 5);
+world.observer.setGlobal("power?", true);
+world.observer.setGlobal("num-cars", 200);
+world.observer.setGlobal("speed-limit", 1);
+world.observer.setGlobal("ticks-per-cycle", 20);
+world.observer.setGlobal("current-phase", 0);
+world.observer.setGlobal("current-auto?", true);

@@ -160,10 +160,10 @@ ProcedurePrims.defineCommand("do-virus-checks", 2002, 2240, (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2020, 2023, R); return R; }
 }))
-world.observer.setVariable("gain-resistance-chance", 5);
-world.observer.setVariable("recovery-chance", 5);
-world.observer.setVariable("virus-spread-chance", 2.5);
-world.observer.setVariable("number-of-nodes", 150);
-world.observer.setVariable("virus-check-frequency", 1);
-world.observer.setVariable("initial-outbreak-size", 3);
-world.observer.setVariable("average-node-degree", 6);
+world.observer.setGlobal("gain-resistance-chance", 5);
+world.observer.setGlobal("recovery-chance", 5);
+world.observer.setGlobal("virus-spread-chance", 2.5);
+world.observer.setGlobal("number-of-nodes", 150);
+world.observer.setGlobal("virus-check-frequency", 1);
+world.observer.setGlobal("initial-outbreak-size", 3);
+world.observer.setGlobal("average-node-degree", 6);

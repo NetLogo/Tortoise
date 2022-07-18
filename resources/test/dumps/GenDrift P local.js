@@ -125,4 +125,4 @@ ProcedurePrims.defineCommand("go", 247, 455, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(305, 308, R); return R; }
   world.ticker.tick();
 }))
-world.observer.setVariable("colors", 5);
+world.observer.setGlobal("colors", 5);

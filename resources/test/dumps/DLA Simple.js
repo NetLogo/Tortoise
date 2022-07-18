@@ -72,5 +72,5 @@ ProcedurePrims.defineCommand("go", 275, 594, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(280, 283, R); return R; }
   world.ticker.tick();
 }))
-world.observer.setVariable("wiggle-angle", 60);
-world.observer.setVariable("num-particles", 2500);
+world.observer.setGlobal("wiggle-angle", 60);
+world.observer.setGlobal("num-particles", 2500);

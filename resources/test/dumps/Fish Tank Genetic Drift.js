@@ -168,27 +168,27 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 2809, 4258, (function() {
   world.clearAll();
-  world.observer.setVariable("mouse-continuous-down?", false);
-  world.observer.setVariable("intra-chromosome-pair-spacing", 0.2);
-  world.observer.setVariable("inter-chromosome-pair-spacing", 0.55);
-  world.observer.setVariable("fish-forward-step", 0.04);
-  world.observer.setVariable("num-fish-removed", 0);
-  world.observer.setVariable("num-fish-born", 0);
-  world.observer.setVariable("num-fish-in-tank", 0);
-  world.observer.setVariable("size-of-karyotype-background-for-cells", 5.2);
-  world.observer.setVariable("initial-#-females", PrimChecks.math.floor(PrimChecks.math.mult(3260, 3261, PrimChecks.math.div(3253, 3254, PrimChecks.validator.checkArg('/', 3253, 3254, 1, world.observer.getGlobal("initial-females")), 100), PrimChecks.validator.checkArg('*', 3260, 3261, 1, world.observer.getGlobal("carrying-capacity")))));
-  world.observer.setVariable("initial-#-males", PrimChecks.math.minus(3322, 3323, PrimChecks.validator.checkArg('-', 3322, 3323, 1, world.observer.getGlobal("carrying-capacity")), PrimChecks.validator.checkArg('-', 3322, 3323, 1, world.observer.getGlobal("initial-#-females"))));
-  world.observer.setVariable("green-dorsal-fin-color", [90, 255, 90, 255]);
-  world.observer.setVariable("no-green-dorsal-fin-color", [176, 196, 222, 255]);
-  world.observer.setVariable("yellow-tail-fin-color", [255, 255, 0, 255]);
-  world.observer.setVariable("no-yellow-tail-fin-color", [176, 196, 255, 255]);
-  world.observer.setVariable("female-color", [255, 150, 150, 255]);
-  world.observer.setVariable("male-color", [150, 150, 255, 255]);
-  world.observer.setVariable("water-color", PrimChecks.math.minus(3676, 3677, 105, 1.5));
-  world.observer.setVariable("spots-shape", "fish-spots");
-  world.observer.setVariable("no-spots-shape", "none");
-  world.observer.setVariable("forked-tail-shape", "fish-forked-tail");
-  world.observer.setVariable("no-forked-tail-shape", "fish-no-forked-tail");
+  world.observer.setGlobal("mouse-continuous-down?", false);
+  world.observer.setGlobal("intra-chromosome-pair-spacing", 0.2);
+  world.observer.setGlobal("inter-chromosome-pair-spacing", 0.55);
+  world.observer.setGlobal("fish-forward-step", 0.04);
+  world.observer.setGlobal("num-fish-removed", 0);
+  world.observer.setGlobal("num-fish-born", 0);
+  world.observer.setGlobal("num-fish-in-tank", 0);
+  world.observer.setGlobal("size-of-karyotype-background-for-cells", 5.2);
+  world.observer.setGlobal("initial-#-females", PrimChecks.math.floor(PrimChecks.math.mult(3260, 3261, PrimChecks.math.div(3253, 3254, PrimChecks.validator.checkArg('/', 3253, 3254, 1, world.observer.getGlobal("initial-females")), 100), PrimChecks.validator.checkArg('*', 3260, 3261, 1, world.observer.getGlobal("carrying-capacity")))));
+  world.observer.setGlobal("initial-#-males", PrimChecks.math.minus(3322, 3323, PrimChecks.validator.checkArg('-', 3322, 3323, 1, world.observer.getGlobal("carrying-capacity")), PrimChecks.validator.checkArg('-', 3322, 3323, 1, world.observer.getGlobal("initial-#-females"))));
+  world.observer.setGlobal("green-dorsal-fin-color", [90, 255, 90, 255]);
+  world.observer.setGlobal("no-green-dorsal-fin-color", [176, 196, 222, 255]);
+  world.observer.setGlobal("yellow-tail-fin-color", [255, 255, 0, 255]);
+  world.observer.setGlobal("no-yellow-tail-fin-color", [176, 196, 255, 255]);
+  world.observer.setGlobal("female-color", [255, 150, 150, 255]);
+  world.observer.setGlobal("male-color", [150, 150, 255, 255]);
+  world.observer.setGlobal("water-color", PrimChecks.math.minus(3676, 3677, 105, 1.5));
+  world.observer.setGlobal("spots-shape", "fish-spots");
+  world.observer.setGlobal("no-spots-shape", "none");
+  world.observer.setGlobal("forked-tail-shape", "fish-forked-tail");
+  world.observer.setGlobal("no-forked-tail-shape", "fish-no-forked-tail");
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("FISH").getSpecialName(), "fish-body")
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").getSpecialName(), "cell-somatic")
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("FISH-BONES").getSpecialName(), "fish-bones")
@@ -391,10 +391,10 @@ ProcedurePrims.defineCommand("move-gametes-together", 11378, 12055, (function() 
   let myHzygote = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("MY-ZYGOTE", myHzygote);
   let distanceHtoHzygote = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("DISTANCE-TO-ZYGOTE", distanceHtoHzygote);
   if (world.observer.getGlobal("see-sex-cells?")) {
-    world.observer.setVariable("gamete-forward-step", 0.08);
+    world.observer.setGlobal("gamete-forward-step", 0.08);
   }
   else {
-    world.observer.setVariable("gamete-forward-step", 1);
+    world.observer.setGlobal("gamete-forward-step", 1);
   }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAMETE-CELLS"), function() {
     myHzygote = PrimChecks.agentset.oneOfWith(null, null, world.turtleManager.turtlesOfBreed("FISH-ZYGOTES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("MY-ZYGOTE", myHzygote);
@@ -453,7 +453,7 @@ ProcedurePrims.defineCommand("convert-zygote-into-somatic-cell", 12064, 13746, (
         var R = ProcedurePrims.callCommand("align-alleles-for-this-somatic-cell", thisHsomaticHcell); if (R === DeathInterrupt) { return R; }
         PrimChecks.turtle.setVariable(13629, 13632, "sex", PrimChecks.procedure.callReporter(13633, 13646, "sex-phenotype"));
         var R = ProcedurePrims.callCommand("grow-fish-parts-from-somatic-cell"); if (R === DeathInterrupt) { return R; }
-        world.observer.setVariable("num-fish-born", PrimChecks.math.plus(13727, 13728, PrimChecks.validator.checkArg('+', 13727, 13728, 1, world.observer.getGlobal("num-fish-born")), 1));
+        world.observer.setGlobal("num-fish-born", PrimChecks.math.plus(13727, 13728, PrimChecks.validator.checkArg('+', 13727, 13728, 1, world.observer.getGlobal("num-fish-born")), 1));
       }
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12512, 12515, R); return R; }
@@ -609,7 +609,7 @@ ProcedurePrims.defineCommand("clean-up-fish-bones", 17638, 18005, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(17707, 17710, R); return R; }
 }))
 ProcedurePrims.defineCommand("remove-this-fish", 18014, 18389, (function() {
-  world.observer.setVariable("num-fish-removed", PrimChecks.math.plus(18070, 18071, PrimChecks.validator.checkArg('+', 18070, 18071, 1, world.observer.getGlobal("num-fish-removed")), 1));
+  world.observer.setGlobal("num-fish-removed", PrimChecks.math.plus(18070, 18071, PrimChecks.validator.checkArg('+', 18070, 18071, 1, world.observer.getGlobal("num-fish-removed")), 1));
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     PrimChecks.turtleOrLink.setVariable(18157, 18162, "breed", world.turtleManager.turtlesOfBreed("FISH-BONES"));
     PrimChecks.turtleOrLink.setVariable(18181, 18186, "color", 9.9);
@@ -671,50 +671,50 @@ ProcedurePrims.defineCommand("detect-mouse-selection-event", 18398, 20126, (func
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(18603, 18606, R); return R; }
   if (mouseHwasHjustHdown_Q) {
-    world.observer.setVariable("mouse-continuous-down?", true);
+    world.observer.setGlobal("mouse-continuous-down?", true);
   }
   else {
-    world.observer.setVariable("mouse-continuous-down?", false);
+    world.observer.setGlobal("mouse-continuous-down?", false);
   }
 }))
 ProcedurePrims.defineCommand("update-statistics", 20384, 21848, (function() {
-  world.observer.setVariable("num-fish-in-tank", PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("FISH")));
-  world.observer.setVariable("#-big-b-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20484, 20489, "value"), "B"); }));
-  world.observer.setVariable("#-small-b-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20541, 20546, "value"), "b"); }));
-  world.observer.setVariable("#-big-t-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20598, 20603, "value"), "T"); }));
-  world.observer.setVariable("#-small-t-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20655, 20660, "value"), "t"); }));
-  world.observer.setVariable("#-big-f-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20712, 20717, "value"), "F"); }));
-  world.observer.setVariable("#-small-f-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20769, 20774, "value"), "f"); }));
-  world.observer.setVariable("#-big-g-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20826, 20831, "value"), "G"); }));
-  world.observer.setVariable("#-small-g-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20883, 20888, "value"), "g"); }));
-  world.observer.setVariable("#-y-chromosomes", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20940, 20945, "value"), "Y"); }));
-  world.observer.setVariable("#-x-chromosomes", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20997, 21002, "value"), "X"); }));
-  world.observer.setVariable("#-of-green-dorsal-fins", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
+  world.observer.setGlobal("num-fish-in-tank", PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("FISH")));
+  world.observer.setGlobal("#-big-b-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20484, 20489, "value"), "B"); }));
+  world.observer.setGlobal("#-small-b-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20541, 20546, "value"), "b"); }));
+  world.observer.setGlobal("#-big-t-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20598, 20603, "value"), "T"); }));
+  world.observer.setGlobal("#-small-t-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20655, 20660, "value"), "t"); }));
+  world.observer.setGlobal("#-big-f-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20712, 20717, "value"), "F"); }));
+  world.observer.setGlobal("#-small-f-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20769, 20774, "value"), "f"); }));
+  world.observer.setGlobal("#-big-g-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20826, 20831, "value"), "G"); }));
+  world.observer.setGlobal("#-small-g-alleles", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20883, 20888, "value"), "g"); }));
+  world.observer.setGlobal("#-y-chromosomes", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20940, 20945, "value"), "Y"); }));
+  world.observer.setGlobal("#-x-chromosomes", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(20997, 21002, "value"), "X"); }));
+  world.observer.setGlobal("#-of-green-dorsal-fins", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
     return Prims.equality(PrimChecks.turtleOrLink.getVariable(21067, 21072, "color"), world.observer.getGlobal("green-dorsal-fin-color"));
   }));
-  world.observer.setVariable("#-of-no-green-dorsal-fins", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
+  world.observer.setGlobal("#-of-no-green-dorsal-fins", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
     return Prims.equality(PrimChecks.turtleOrLink.getVariable(21155, 21160, "color"), world.observer.getGlobal("no-green-dorsal-fin-color"));
   }));
-  world.observer.setVariable("#-of-yellow-tail-fins", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
+  world.observer.setGlobal("#-of-yellow-tail-fins", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
     return Prims.equality(PrimChecks.turtleOrLink.getVariable(21246, 21251, "color"), world.observer.getGlobal("yellow-tail-fin-color"));
   }));
-  world.observer.setVariable("#-of-no-yellow-tail-fins", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
+  world.observer.setGlobal("#-of-no-yellow-tail-fins", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
     return Prims.equality(PrimChecks.turtleOrLink.getVariable(21333, 21338, "color"), world.observer.getGlobal("no-yellow-tail-fin-color"));
   }));
-  world.observer.setVariable("#-of-spots", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
+  world.observer.setGlobal("#-of-spots", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
     return (Prims.equality(PrimChecks.turtleOrLink.getVariable(21421, 21426, "shape"), world.observer.getGlobal("spots-shape")) && Prims.equality(PrimChecks.turtleOrLink.getVariable(21445, 21452, "hidden?"), false));
   }));
-  world.observer.setVariable("#-of-no-spots", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
+  world.observer.setGlobal("#-of-no-spots", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
     return (Prims.equality(PrimChecks.turtleOrLink.getVariable(21516, 21521, "shape"), world.observer.getGlobal("spots-shape")) && Prims.equality(PrimChecks.turtleOrLink.getVariable(21540, 21547, "hidden?"), true));
   }));
-  world.observer.setVariable("#-of-forked-tails", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
+  world.observer.setGlobal("#-of-forked-tails", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
     return Prims.equality(PrimChecks.turtleOrLink.getVariable(21610, 21615, "shape"), world.observer.getGlobal("forked-tail-shape"));
   }));
-  world.observer.setVariable("#-of-no-forked-tails", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
+  world.observer.setGlobal("#-of-no-forked-tails", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH-PARTS"), function() {
     return Prims.equality(PrimChecks.turtleOrLink.getVariable(21691, 21696, "shape"), world.observer.getGlobal("no-forked-tail-shape"));
   }));
-  world.observer.setVariable("#-of-males", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH"), function() { return Prims.equality(PrimChecks.turtle.getVariable(21769, 21772, "sex"), "male"); }));
-  world.observer.setVariable("#-of-females", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH"), function() { return Prims.equality(PrimChecks.turtle.getVariable(21831, 21834, "sex"), "female"); }));
+  world.observer.setGlobal("#-of-males", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH"), function() { return Prims.equality(PrimChecks.turtle.getVariable(21769, 21772, "sex"), "male"); }));
+  world.observer.setGlobal("#-of-females", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("FISH"), function() { return Prims.equality(PrimChecks.turtle.getVariable(21831, 21834, "sex"), "female"); }));
 }))
 ProcedurePrims.defineCommand("visualize-tank", 22108, 22536, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(22138, 22142, world.patches(), function() {
@@ -965,13 +965,13 @@ ProcedurePrims.defineReporter("carrying-capacity-in-this-region", 29524, 30187, 
   let tankHcapacityHofHthisHregion = PrimChecks.math.div(30144, 30145, PrimChecks.math.mult(30124, 30125, PrimChecks.math.minus(30099, 30100, PrimChecks.validator.checkArg('-', 30099, 30100, 1, thisHregionHrightHside), PrimChecks.validator.checkArg('-', 30099, 30100, 1, thisHregionHleftHside)), PrimChecks.validator.checkArg('*', 30124, 30125, 1, world.observer.getGlobal("carrying-capacity"))), 25); ProcedurePrims.stack().currentContext().registerStringRunVar("TANK-CAPACITY-OF-THIS-REGION", tankHcapacityHofHthisHregion);
   return PrimChecks.procedure.report(30151, 30157, tankHcapacityHofHthisHregion);
 }))
-world.observer.setVariable("initial-alleles-big-b", 50);
-world.observer.setVariable("see-body-cells?", false);
-world.observer.setVariable("initial-alleles-big-t", 50);
-world.observer.setVariable("initial-alleles-big-g", 50);
-world.observer.setVariable("initial-alleles-big-f", 50);
-world.observer.setVariable("carrying-capacity", 30);
-world.observer.setVariable("see-fish?", true);
-world.observer.setVariable("see-sex-cells?", false);
-world.observer.setVariable("auto-replace?", true);
-world.observer.setVariable("initial-females", 50);
+world.observer.setGlobal("initial-alleles-big-b", 50);
+world.observer.setGlobal("see-body-cells?", false);
+world.observer.setGlobal("initial-alleles-big-t", 50);
+world.observer.setGlobal("initial-alleles-big-g", 50);
+world.observer.setGlobal("initial-alleles-big-f", 50);
+world.observer.setGlobal("carrying-capacity", 30);
+world.observer.setGlobal("see-fish?", true);
+world.observer.setGlobal("see-sex-cells?", false);
+world.observer.setGlobal("auto-replace?", true);
+world.observer.setGlobal("initial-females", 50);

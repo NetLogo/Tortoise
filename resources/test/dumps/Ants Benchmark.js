@@ -73,7 +73,7 @@ ProcedurePrims.defineCommand("benchmark", 280, 369, (function() {
   for (let _index_332_338 = 0, _repeatcount_332_338 = StrictMath.floor(800); _index_332_338 < _repeatcount_332_338; _index_332_338++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
-  world.observer.setVariable("result", workspace.timer.elapsed());
+  world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
 ProcedurePrims.defineCommand("setup-turtles", 377, 555, (function() {
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
@@ -255,7 +255,7 @@ ProcedurePrims.defineCommand("do-plotting", 4645, 4962, (function() {
   plotManager.setCurrentPen("food-in-pile3");
   plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(4947, 4953, "pcolor"), 105); }));
 }))
-world.observer.setVariable("diffusion-rate", 53);
-world.observer.setVariable("evaporation-rate", 10);
-world.observer.setVariable("plot?", true);
-world.observer.setVariable("ants", 300);
+world.observer.setGlobal("diffusion-rate", 53);
+world.observer.setGlobal("evaporation-rate", 10);
+world.observer.setGlobal("plot?", true);
+world.observer.setGlobal("ants", 300);

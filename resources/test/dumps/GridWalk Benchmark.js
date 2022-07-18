@@ -57,7 +57,7 @@ ProcedurePrims.defineCommand("benchmark", 21, 112, (function() {
   for (let _index_73_79 = 0, _repeatcount_73_79 = StrictMath.floor(20000); _index_73_79 < _repeatcount_73_79; _index_73_79++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
-  world.observer.setVariable("result", workspace.timer.elapsed());
+  world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
 ProcedurePrims.defineCommand("setup", 125, 219, (function() {
   world.clearAll();

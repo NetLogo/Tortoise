@@ -136,11 +136,11 @@ ProcedurePrims.defineCommand("update-turtles", 1486, 2127, (function() {
 ProcedurePrims.defineCommand("update-globals", 2135, 2410, (function() {
   let similarHneighbors = PrimChecks.list.sum(2174, 2177, PrimChecks.validator.checkArg('SUM', 2174, 2177, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(2180, 2194, "similar-nearby"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("SIMILAR-NEIGHBORS", similarHneighbors);
   let totalHneighbors = PrimChecks.list.sum(2230, 2233, PrimChecks.validator.checkArg('SUM', 2230, 2233, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(2236, 2248, "total-nearby"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL-NEIGHBORS", totalHneighbors);
-  world.observer.setVariable("percent-similar", PrimChecks.math.mult(2322, 2323, PrimChecks.math.div(2303, 2304, PrimChecks.validator.checkArg('/', 2303, 2304, 1, similarHneighbors), PrimChecks.validator.checkArg('/', 2303, 2304, 1, totalHneighbors)), 100));
-  world.observer.setVariable("percent-unhappy", PrimChecks.math.mult(2404, 2405, PrimChecks.math.div(2386, 2387, PrimChecks.agentset.countWith(null, null, world.turtles(), function() {
+  world.observer.setGlobal("percent-similar", PrimChecks.math.mult(2322, 2323, PrimChecks.math.div(2303, 2304, PrimChecks.validator.checkArg('/', 2303, 2304, 1, similarHneighbors), PrimChecks.validator.checkArg('/', 2303, 2304, 1, totalHneighbors)), 100));
+  world.observer.setGlobal("percent-unhappy", PrimChecks.math.mult(2404, 2405, PrimChecks.math.div(2386, 2387, PrimChecks.agentset.countWith(null, null, world.turtles(), function() {
     return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2372, 2375, 2, PrimChecks.turtle.getVariable(2376, 2382, "happy?")));
   }), PrimChecks.agentset.count(world.turtles())), 100));
 }))
-world.observer.setVariable("%-similar-wanted", 30);
-world.observer.setVariable("visualization", "square-x");
-world.observer.setVariable("density", 95);
+world.observer.setGlobal("%-similar-wanted", 30);
+world.observer.setGlobal("visualization", "square-x");
+world.observer.setGlobal("density", 95);

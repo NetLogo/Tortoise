@@ -84,12 +84,12 @@ ProcedurePrims.defineCommand("setup", 1399, 1462, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-globals", 1470, 1888, (function() {
-  world.observer.setVariable("infection-chance", 50);
-  world.observer.setVariable("symptoms-show", 200);
-  world.observer.setVariable("slider-check-1", world.observer.getGlobal("average-commitment"));
-  world.observer.setVariable("slider-check-2", world.observer.getGlobal("average-coupling-tendency"));
-  world.observer.setVariable("slider-check-3", world.observer.getGlobal("average-condom-use"));
-  world.observer.setVariable("slider-check-4", world.observer.getGlobal("average-test-frequency"));
+  world.observer.setGlobal("infection-chance", 50);
+  world.observer.setGlobal("symptoms-show", 200);
+  world.observer.setGlobal("slider-check-1", world.observer.getGlobal("average-commitment"));
+  world.observer.setGlobal("slider-check-2", world.observer.getGlobal("average-coupling-tendency"));
+  world.observer.setGlobal("slider-check-3", world.observer.getGlobal("average-condom-use"));
+  world.observer.setGlobal("slider-check-4", world.observer.getGlobal("average-test-frequency"));
 }))
 ProcedurePrims.defineCommand("setup-people", 2064, 2648, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), ""), function() {
@@ -178,23 +178,23 @@ ProcedurePrims.defineCommand("go", 3820, 4454, (function() {
 ProcedurePrims.defineCommand("check-sliders", 4595, 5163, (function() {
   if (!Prims.equality(world.observer.getGlobal("slider-check-1"), world.observer.getGlobal("average-commitment"))) {
     var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("assign-commitment"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4659, 4662, R); return R; }
-    world.observer.setVariable("slider-check-1", world.observer.getGlobal("average-commitment"));
+    world.observer.setGlobal("slider-check-1", world.observer.getGlobal("average-commitment"));
   }
   if (!Prims.equality(world.observer.getGlobal("slider-check-2"), world.observer.getGlobal("average-coupling-tendency"))) {
     var R = ProcedurePrims.ask(world.turtles(), function() {
       var R = ProcedurePrims.callCommand("assign-coupling-tendency"); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4796, 4799, R); return R; }
-    world.observer.setVariable("slider-check-2", world.observer.getGlobal("average-coupling-tendency"));
+    world.observer.setGlobal("slider-check-2", world.observer.getGlobal("average-coupling-tendency"));
   }
   if (!Prims.equality(world.observer.getGlobal("slider-check-3"), world.observer.getGlobal("average-condom-use"))) {
     var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("assign-condom-use"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4940, 4943, R); return R; }
-    world.observer.setVariable("slider-check-3", world.observer.getGlobal("average-condom-use"));
+    world.observer.setGlobal("slider-check-3", world.observer.getGlobal("average-condom-use"));
   }
   if (!Prims.equality(world.observer.getGlobal("slider-check-4"), world.observer.getGlobal("average-test-frequency"))) {
     var R = ProcedurePrims.ask(world.turtles(), function() {
       var R = ProcedurePrims.callCommand("assign-test-frequency"); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5075, 5078, R); return R; }
-    world.observer.setVariable("slider-check-4", world.observer.getGlobal("average-test-frequency"));
+    world.observer.setGlobal("slider-check-4", world.observer.getGlobal("average-test-frequency"));
   }
 }))
 ProcedurePrims.defineCommand("move", 5204, 5259, (function() {
@@ -261,8 +261,8 @@ ProcedurePrims.defineReporter("%infected", 8155, 8274, (function() {
     return PrimChecks.procedure.report(8263, 8269, 0);
   }
 }))
-world.observer.setVariable("initial-people", 300);
-world.observer.setVariable("average-commitment", 50);
-world.observer.setVariable("average-coupling-tendency", 5);
-world.observer.setVariable("average-condom-use", 0);
-world.observer.setVariable("average-test-frequency", 0);
+world.observer.setGlobal("initial-people", 300);
+world.observer.setGlobal("average-commitment", 50);
+world.observer.setGlobal("average-coupling-tendency", 5);
+world.observer.setGlobal("average-condom-use", 0);
+world.observer.setGlobal("average-test-frequency", 0);

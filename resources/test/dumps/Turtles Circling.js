@@ -107,8 +107,8 @@ ProcedurePrims.defineCommand("draw-circle", 580, 732, (function() {
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(610, 624, R); return R; }
 }))
-world.observer.setVariable("radius", 20);
-world.observer.setVariable("speed", 25);
-world.observer.setVariable("number", 40);
-world.observer.setVariable("draw-radius", 15);
-world.observer.setVariable("plot?", true);
+world.observer.setGlobal("radius", 20);
+world.observer.setGlobal("speed", 25);
+world.observer.setGlobal("number", 40);
+world.observer.setGlobal("draw-radius", 15);
+world.observer.setGlobal("plot?", true);

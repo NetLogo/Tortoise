@@ -73,12 +73,12 @@ ProcedurePrims.defineCommand("setup", 778, 844, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-variables", 876, 1080, (function() {
-  world.observer.setVariable("carrying-capacity-monarchs", 225);
-  world.observer.setVariable("carrying-capacity-viceroys", 225);
-  world.observer.setVariable("carrying-capacity-birds", 75);
-  world.observer.setVariable("reproduction-chance", 4);
-  world.observer.setVariable("color-range-begin", 15);
-  world.observer.setVariable("color-range-end", 109);
+  world.observer.setGlobal("carrying-capacity-monarchs", 225);
+  world.observer.setGlobal("carrying-capacity-viceroys", 225);
+  world.observer.setGlobal("carrying-capacity-birds", 75);
+  world.observer.setGlobal("reproduction-chance", 4);
+  world.observer.setGlobal("color-range-begin", 15);
+  world.observer.setGlobal("color-range-end", 109);
 }))
 ProcedurePrims.defineCommand("setup-turtles", 1344, 1839, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(1378, 1384, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1360, 1363, R); return R; }
@@ -190,6 +190,6 @@ ProcedurePrims.defineCommand("hatch-butterfly", 4541, 4990, (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4632, 4637, R); return R; }
   }
 }))
-world.observer.setVariable("memory-duration", 30);
-world.observer.setVariable("mutation-rate", 5);
-world.observer.setVariable("memory-size", 3);
+world.observer.setGlobal("memory-duration", 30);
+world.observer.setGlobal("mutation-rate", 5);
+world.observer.setGlobal("memory-size", 3);

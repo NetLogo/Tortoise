@@ -95,15 +95,15 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 1979, 2473, (function() {
   world.clearAll();
-  world.observer.setVariable("max-tick-advance-amount", 0.01);
-  world.observer.setVariable("margin-outside-box", 4);
-  world.observer.setVariable("box-edge", PrimChecks.math.minus(2085, 2086, world.topology.maxPxcor, PrimChecks.validator.checkArg('-', 2085, 2086, 1, world.observer.getGlobal("margin-outside-box"))));
+  world.observer.setGlobal("max-tick-advance-amount", 0.01);
+  world.observer.setGlobal("margin-outside-box", 4);
+  world.observer.setGlobal("box-edge", PrimChecks.math.minus(2085, 2086, world.topology.maxPxcor, PrimChecks.validator.checkArg('-', 2085, 2086, 1, world.observer.getGlobal("margin-outside-box"))));
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("FLASHES").getSpecialName(), "square")
-  world.observer.setVariable("molecule-size", 1.4);
-  world.observer.setVariable("pressure-history", [0, 0, 0, 0, 0, 0]);
-  world.observer.setVariable("box-intact?", true);
-  world.observer.setVariable("length-horizontal-surface", PrimChecks.math.plus(2345, 2346, PrimChecks.math.mult(2328, 2329, 2, PrimChecks.math.minus(2340, 2341, PrimChecks.validator.checkArg('-', 2340, 2341, 1, world.observer.getGlobal("box-edge")), 1)), 1));
-  world.observer.setVariable("length-vertical-surface", PrimChecks.math.plus(2402, 2403, PrimChecks.math.mult(2385, 2386, 2, PrimChecks.math.minus(2397, 2398, PrimChecks.validator.checkArg('-', 2397, 2398, 1, world.observer.getGlobal("box-edge")), 1)), 1));
+  world.observer.setGlobal("molecule-size", 1.4);
+  world.observer.setGlobal("pressure-history", [0, 0, 0, 0, 0, 0]);
+  world.observer.setGlobal("box-intact?", true);
+  world.observer.setGlobal("length-horizontal-surface", PrimChecks.math.plus(2345, 2346, PrimChecks.math.mult(2328, 2329, 2, PrimChecks.math.minus(2340, 2341, PrimChecks.validator.checkArg('-', 2340, 2341, 1, world.observer.getGlobal("box-edge")), 1)), 1));
+  world.observer.setGlobal("length-vertical-surface", PrimChecks.math.plus(2402, 2403, PrimChecks.math.mult(2385, 2386, 2, PrimChecks.math.minus(2397, 2398, PrimChecks.validator.checkArg('-', 2397, 2398, 1, world.observer.getGlobal("box-edge")), 1)), 1));
   var R = ProcedurePrims.callCommand("make-box"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("make-gas-molecules"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("update-variables"); if (R === DeathInterrupt) { return R; }
@@ -172,7 +172,7 @@ ProcedurePrims.defineCommand("go", 4274, 4737, (function() {
   var R = ProcedurePrims.callCommand("update-variables"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("calculate-pressure"); if (R === DeathInterrupt) { return R; }
   if (Prims.gt(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-limit-container"))) {
-    world.observer.setVariable("box-intact?", false);
+    world.observer.setGlobal("box-intact?", false);
   }
   var R = ProcedurePrims.callCommand("calculate-tick-advance-amount"); if (R === DeathInterrupt) { return R; }
   world.ticker.tickAdvance(world.observer.getGlobal("tick-advance-amount"));
@@ -182,18 +182,18 @@ ProcedurePrims.defineCommand("go", 4274, 4737, (function() {
 }))
 ProcedurePrims.defineCommand("update-variables", 4746, 5295, (function() {
   if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"))) {
-    world.observer.setVariable("avg-speed", PrimChecks.list.mean(4871, 4875, PrimChecks.validator.checkArg('MEAN', 4871, 4875, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable(4877, 4882, "speed"); }))));
-    world.observer.setVariable("avg-energy", PrimChecks.list.mean(4920, 4924, PrimChecks.validator.checkArg('MEAN', 4920, 4924, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable(4926, 4932, "energy"); }))));
-    world.observer.setVariable("temperature", world.observer.getGlobal("avg-energy"));
+    world.observer.setGlobal("avg-speed", PrimChecks.list.mean(4871, 4875, PrimChecks.validator.checkArg('MEAN', 4871, 4875, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable(4877, 4882, "speed"); }))));
+    world.observer.setGlobal("avg-energy", PrimChecks.list.mean(4920, 4924, PrimChecks.validator.checkArg('MEAN', 4920, 4924, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable(4926, 4932, "energy"); }))));
+    world.observer.setGlobal("temperature", world.observer.getGlobal("avg-energy"));
   }
   else {
-    world.observer.setVariable("avg-speed", 0);
-    world.observer.setVariable("avg-energy", 0);
-    world.observer.setVariable("temperature", 0);
+    world.observer.setGlobal("avg-speed", 0);
+    world.observer.setGlobal("avg-energy", 0);
+    world.observer.setGlobal("temperature", 0);
   }
-  world.observer.setVariable("number-oxygen-molecules", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(5100, 5113, "molecule-type"), "oxygen"); }));
-  world.observer.setVariable("number-hydrogen-molecules", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(5184, 5197, "molecule-type"), "hydrogen"); }));
-  world.observer.setVariable("number-water-molecules", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(5270, 5283, "molecule-type"), "water"); }));
+  world.observer.setGlobal("number-oxygen-molecules", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(5100, 5113, "molecule-type"), "oxygen"); }));
+  world.observer.setGlobal("number-hydrogen-molecules", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(5184, 5197, "molecule-type"), "hydrogen"); }));
+  world.observer.setGlobal("number-water-molecules", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(5270, 5283, "molecule-type"), "water"); }));
 }))
 ProcedurePrims.defineCommand("update-flash-visualization", 5304, 5507, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("FLASHES"), function() {
@@ -263,16 +263,16 @@ ProcedurePrims.defineCommand("move", 7647, 8155, (function() {
   }
 }))
 ProcedurePrims.defineCommand("calculate-pressure", 8164, 8667, (function() {
-  world.observer.setVariable("pressure", PrimChecks.math.mult(8357, 8358, 100, PrimChecks.list.sum(8359, 8362, PrimChecks.validator.checkArg('SUM', 8359, 8362, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable(8364, 8383, "momentum-difference"); })))));
-  world.observer.setVariable("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.validator.checkArg('LPUT', 8425, 8429, 8, PrimChecks.list.butFirst('but-first', 8439, 8448, PrimChecks.validator.checkArg('BUT-FIRST', 8439, 8448, 12, world.observer.getGlobal("pressure-history"))))));
+  world.observer.setGlobal("pressure", PrimChecks.math.mult(8357, 8358, 100, PrimChecks.list.sum(8359, 8362, PrimChecks.validator.checkArg('SUM', 8359, 8362, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable(8364, 8383, "momentum-difference"); })))));
+  world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.validator.checkArg('LPUT', 8425, 8429, 8, PrimChecks.list.butFirst('but-first', 8439, 8448, PrimChecks.validator.checkArg('BUT-FIRST', 8439, 8448, 12, world.observer.getGlobal("pressure-history"))))));
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { PrimChecks.turtle.setVariable(8496, 8515, "momentum-difference", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8468, 8471, R); return R; }
 }))
 ProcedurePrims.defineCommand("calculate-tick-advance-amount", 8675, 9388, (function() {
   if (PrimChecks.agentset.anyWith(null, null, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.gt(PrimChecks.turtle.getVariable(9211, 9216, "speed"), 0); })) {
-    world.observer.setVariable("tick-advance-amount", PrimChecks.list.min(9252, 9255, ListPrims.list(PrimChecks.math.div(9264, 9265, 1, PrimChecks.math.ceil(PrimChecks.list.max(9275, 9278, PrimChecks.validator.checkArg('MAX', 9275, 9278, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable(9280, 9285, "speed"); }))))), world.observer.getGlobal("max-tick-advance-amount"))));
+    world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(9252, 9255, ListPrims.list(PrimChecks.math.div(9264, 9265, 1, PrimChecks.math.ceil(PrimChecks.list.max(9275, 9278, PrimChecks.validator.checkArg('MAX', 9275, 9278, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable(9280, 9285, "speed"); }))))), world.observer.getGlobal("max-tick-advance-amount"))));
   }
   else {
-    world.observer.setVariable("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
+    world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
   }
 }))
 ProcedurePrims.defineCommand("speed-up-one-molecule", 9397, 9599, (function() {
@@ -358,11 +358,11 @@ ProcedurePrims.defineReporter("speed-from-energy", 15829, 15881, (function() {
 ProcedurePrims.defineReporter("energy-from-speed", 15896, 15950, (function() {
   return PrimChecks.procedure.report(15916, 15922, PrimChecks.math.mult(15942, 15943, PrimChecks.math.mult(15934, 15935, PrimChecks.math.mult(15927, 15928, 0.5, PrimChecks.validator.checkArg('*', 15927, 15928, 1, PrimChecks.turtle.getVariable(15929, 15933, "mass"))), PrimChecks.validator.checkArg('*', 15934, 15935, 1, PrimChecks.turtle.getVariable(15936, 15941, "speed"))), PrimChecks.validator.checkArg('*', 15942, 15943, 1, PrimChecks.turtle.getVariable(15944, 15949, "speed"))));
 }))
-world.observer.setVariable("initial-oxygen-molecules", 64);
-world.observer.setVariable("initial-gas-temperature", 200);
-world.observer.setVariable("bond-energy-released", 3240);
-world.observer.setVariable("activation-energy", 2000);
-world.observer.setVariable("initial-hydrogen-molecules", 104);
-world.observer.setVariable("pressure-limit-container", 4000);
-world.observer.setVariable("show-wall-hits?", true);
-world.observer.setVariable("highlight-product?", true);
+world.observer.setGlobal("initial-oxygen-molecules", 64);
+world.observer.setGlobal("initial-gas-temperature", 200);
+world.observer.setGlobal("bond-energy-released", 3240);
+world.observer.setGlobal("activation-energy", 2000);
+world.observer.setGlobal("initial-hydrogen-molecules", 104);
+world.observer.setGlobal("pressure-limit-container", 4000);
+world.observer.setGlobal("show-wall-hits?", true);
+world.observer.setGlobal("highlight-product?", true);

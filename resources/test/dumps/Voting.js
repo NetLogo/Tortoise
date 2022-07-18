@@ -108,5 +108,5 @@ ProcedurePrims.defineCommand("recolor-patch", 1077, 1178, (function() {
     PrimChecks.patch.setVariable(1164, 1170, "pcolor", 105);
   }
 }))
-world.observer.setVariable("change-vote-if-tied?", false);
-world.observer.setVariable("award-close-calls-to-loser?", false);
+world.observer.setGlobal("change-vote-if-tied?", false);
+world.observer.setGlobal("award-close-calls-to-loser?", false);

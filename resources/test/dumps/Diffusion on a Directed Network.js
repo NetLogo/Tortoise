@@ -127,11 +127,11 @@ ProcedurePrims.defineCommand("rewire-a-link", 2478, 2687, (function() {
   }
 }))
 ProcedurePrims.defineCommand("update-globals", 2768, 2994, (function() {
-  world.observer.setVariable("total-val", PrimChecks.list.sum(2799, 2802, PrimChecks.validator.checkArg('SUM', 2799, 2802, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(2805, 2808, "val"); }))));
-  world.observer.setVariable("max-val", PrimChecks.list.max(2836, 2839, PrimChecks.validator.checkArg('MAX', 2836, 2839, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(2842, 2845, "val"); }))));
+  world.observer.setGlobal("total-val", PrimChecks.list.sum(2799, 2802, PrimChecks.validator.checkArg('SUM', 2799, 2802, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(2805, 2808, "val"); }))));
+  world.observer.setGlobal("max-val", PrimChecks.list.max(2836, 2839, PrimChecks.validator.checkArg('MAX', 2836, 2839, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(2842, 2845, "val"); }))));
   if (PrimChecks.agentset.any(world.linkManager.linksOfBreed("ACTIVE-LINKS"))) {
-    world.observer.setVariable("max-flow", PrimChecks.list.max(2901, 2904, PrimChecks.validator.checkArg('MAX', 2901, 2904, 8, PrimChecks.agentset.of(world.linkManager.linksOfBreed("ACTIVE-LINKS"), function() { return PrimChecks.link.getVariable(2906, 2918, "current-flow"); }))));
-    world.observer.setVariable("mean-flow", PrimChecks.list.mean(2954, 2958, PrimChecks.validator.checkArg('MEAN', 2954, 2958, 8, PrimChecks.agentset.of(world.linkManager.linksOfBreed("ACTIVE-LINKS"), function() { return PrimChecks.link.getVariable(2960, 2972, "current-flow"); }))));
+    world.observer.setGlobal("max-flow", PrimChecks.list.max(2901, 2904, PrimChecks.validator.checkArg('MAX', 2901, 2904, 8, PrimChecks.agentset.of(world.linkManager.linksOfBreed("ACTIVE-LINKS"), function() { return PrimChecks.link.getVariable(2906, 2918, "current-flow"); }))));
+    world.observer.setGlobal("mean-flow", PrimChecks.list.mean(2954, 2958, PrimChecks.validator.checkArg('MEAN', 2954, 2958, 8, PrimChecks.agentset.of(world.linkManager.linksOfBreed("ACTIVE-LINKS"), function() { return PrimChecks.link.getVariable(2960, 2972, "current-flow"); }))));
   }
 }))
 ProcedurePrims.defineCommand("update-visuals", 3002, 3104, (function() {
@@ -148,6 +148,6 @@ ProcedurePrims.defineCommand("update-node-appearance", 3112, 3241, (function() {
 ProcedurePrims.defineCommand("update-link-appearance", 3249, 3437, (function() {
   PrimChecks.turtleOrLink.setVariable(3364, 3369, "color", ColorModel.scaleColor(5, PrimChecks.math.div(3401, 3402, PrimChecks.validator.checkArg('/', 3401, 3402, 1, PrimChecks.link.getVariable(3388, 3400, "current-flow")), PrimChecks.math.plus(3418, 3419, PrimChecks.math.mult(3406, 3407, 2, PrimChecks.validator.checkArg('*', 3406, 3407, 1, world.observer.getGlobal("mean-flow"))), 0.00001)), -0.4, 1));
 }))
-world.observer.setVariable("link-chance", 50);
-world.observer.setVariable("grid-size", 9);
-world.observer.setVariable("diffusion-rate", 10);
+world.observer.setGlobal("link-chance", 50);
+world.observer.setGlobal("grid-size", 9);
+world.observer.setGlobal("diffusion-rate", 10);

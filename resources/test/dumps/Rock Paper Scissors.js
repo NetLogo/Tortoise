@@ -144,6 +144,6 @@ ProcedurePrims.defineReporter("select-rate", 3130, 3191, (function() {
 ProcedurePrims.defineReporter("percentage", 3279, 3364, (function(rate) {
   return PrimChecks.procedure.report(3301, 3307, PrimChecks.math.div(3319, 3320, PrimChecks.math.mult(3312, 3313, 100, PrimChecks.validator.checkArg('*', 3312, 3313, 1, rate)), PrimChecks.math.plus(3349, 3350, PrimChecks.math.plus(3332, 3333, PrimChecks.validator.checkArg('+', 3332, 3333, 1, PrimChecks.procedure.callReporter(3322, 3331, "swap-rate")), PrimChecks.validator.checkArg('+', 3332, 3333, 1, PrimChecks.procedure.callReporter(3334, 3348, "reproduce-rate"))), PrimChecks.validator.checkArg('+', 3349, 3350, 1, PrimChecks.procedure.callReporter(3351, 3362, "select-rate")))));
 }))
-world.observer.setVariable("swap-rate-exponent", 0);
-world.observer.setVariable("reproduce-rate-exponent", 0);
-world.observer.setVariable("select-rate-exponent", 0);
+world.observer.setGlobal("swap-rate-exponent", 0);
+world.observer.setGlobal("reproduce-rate-exponent", 0);
+world.observer.setGlobal("select-rate-exponent", 0);

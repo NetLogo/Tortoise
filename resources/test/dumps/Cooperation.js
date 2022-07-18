@@ -156,14 +156,14 @@ ProcedurePrims.defineCommand("eat-greedy", 1718, 1832, (function() {
     PrimChecks.turtle.setVariable(1799, 1805, "energy", PrimChecks.math.plus(1813, 1814, PrimChecks.validator.checkArg('+', 1813, 1814, 1, PrimChecks.turtle.getVariable(1806, 1812, "energy")), PrimChecks.validator.checkArg('+', 1813, 1814, 1, world.observer.getGlobal("grass-energy"))));
   }
 }))
-world.observer.setVariable("cooperative-probability", 0.5);
-world.observer.setVariable("initial-cows", 20);
-world.observer.setVariable("low-high-threshold", 5);
-world.observer.setVariable("high-growth-chance", 77);
-world.observer.setVariable("stride-length", 0.08);
-world.observer.setVariable("max-grass-height", 10);
-world.observer.setVariable("reproduction-threshold", 102);
-world.observer.setVariable("grass-energy", 51);
-world.observer.setVariable("metabolism", 6);
-world.observer.setVariable("low-growth-chance", 30);
-world.observer.setVariable("reproduction-cost", 54);
+world.observer.setGlobal("cooperative-probability", 0.5);
+world.observer.setGlobal("initial-cows", 20);
+world.observer.setGlobal("low-high-threshold", 5);
+world.observer.setGlobal("high-growth-chance", 77);
+world.observer.setGlobal("stride-length", 0.08);
+world.observer.setGlobal("max-grass-height", 10);
+world.observer.setGlobal("reproduction-threshold", 102);
+world.observer.setGlobal("grass-energy", 51);
+world.observer.setGlobal("metabolism", 6);
+world.observer.setGlobal("low-growth-chance", 30);
+world.observer.setGlobal("reproduction-cost", 54);

@@ -71,7 +71,7 @@ ProcedurePrims.defineCommand("go", 512, 900, (function() {
   }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     let oldHpatch = SelfManager.self().getPatchHere(); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-PATCH", oldHpatch);
-    Prims.uphill("pcolor")})
+    Prims.uphill("pcolor")
     if (Prims.equality(oldHpatch, SelfManager.self().getPatchHere())) {
       PrimChecks.turtle.setVariable(876, 881, "peak?", true);
     }

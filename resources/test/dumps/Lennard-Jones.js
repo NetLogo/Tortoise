@@ -66,12 +66,12 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 255, 740, (function() {
   world.clearAll();
   world.ticker.reset();
-  world.observer.setVariable("eps", 1);
-  world.observer.setVariable("diameter", PrimChecks.math.sqrt(364, 368, PrimChecks.math.div(406, 407, PrimChecks.math.mult(391, 392, PrimChecks.math.mult(377, 378, PrimChecks.validator.checkArg('*', 377, 378, 1, world.observer.getGlobal("density")), world.topology.width), world.topology.height), PrimChecks.validator.checkArg('/', 406, 407, 1, world.observer.getGlobal("num-atoms")))));
-  world.observer.setVariable("max-move-dist", world.observer.getGlobal("diameter"));
-  world.observer.setVariable("cutoff-dist", PrimChecks.math.mult(470, 471, 2.5, PrimChecks.validator.checkArg('*', 470, 471, 1, world.observer.getGlobal("diameter"))));
-  world.observer.setVariable("pot-offset", PrimChecks.math.unaryminus(PrimChecks.math.mult(504, 505, 4, PrimChecks.math.minus(537, 538, PrimChecks.math.pow(532, 533, PrimChecks.math.div(517, 518, PrimChecks.validator.checkArg('/', 517, 518, 1, world.observer.getGlobal("diameter")), PrimChecks.validator.checkArg('/', 517, 518, 1, world.observer.getGlobal("cutoff-dist"))), 12), PrimChecks.math.pow(564, 565, PrimChecks.math.div(549, 550, PrimChecks.validator.checkArg('/', 549, 550, 1, world.observer.getGlobal("diameter")), PrimChecks.validator.checkArg('/', 549, 550, 1, world.observer.getGlobal("cutoff-dist"))), 6)))));
-  world.observer.setVariable("v-total", PrimChecks.procedure.callReporter(585, 597, "calc-v-total"));
+  world.observer.setGlobal("eps", 1);
+  world.observer.setGlobal("diameter", PrimChecks.math.sqrt(364, 368, PrimChecks.math.div(406, 407, PrimChecks.math.mult(391, 392, PrimChecks.math.mult(377, 378, PrimChecks.validator.checkArg('*', 377, 378, 1, world.observer.getGlobal("density")), world.topology.width), world.topology.height), PrimChecks.validator.checkArg('/', 406, 407, 1, world.observer.getGlobal("num-atoms")))));
+  world.observer.setGlobal("max-move-dist", world.observer.getGlobal("diameter"));
+  world.observer.setGlobal("cutoff-dist", PrimChecks.math.mult(470, 471, 2.5, PrimChecks.validator.checkArg('*', 470, 471, 1, world.observer.getGlobal("diameter"))));
+  world.observer.setGlobal("pot-offset", PrimChecks.math.unaryminus(PrimChecks.math.mult(504, 505, 4, PrimChecks.math.minus(537, 538, PrimChecks.math.pow(532, 533, PrimChecks.math.div(517, 518, PrimChecks.validator.checkArg('/', 517, 518, 1, world.observer.getGlobal("diameter")), PrimChecks.validator.checkArg('/', 517, 518, 1, world.observer.getGlobal("cutoff-dist"))), 12), PrimChecks.math.pow(564, 565, PrimChecks.math.div(549, 550, PrimChecks.validator.checkArg('/', 549, 550, 1, world.observer.getGlobal("diameter")), PrimChecks.validator.checkArg('/', 549, 550, 1, world.observer.getGlobal("cutoff-dist"))), 6)))));
+  world.observer.setGlobal("v-total", PrimChecks.procedure.callReporter(585, 597, "calc-v-total"));
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-atoms"), ""), function() {
     PrimChecks.turtleOrLink.setVariable(666, 671, "shape", "circle");
     PrimChecks.turtle.setVariable(689, 693, "size", world.observer.getGlobal("diameter"));
@@ -89,8 +89,8 @@ ProcedurePrims.defineCommand("go", 748, 1047, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("attempt-move", 1055, 2038, (function() {
-  world.observer.setVariable("total-move-attempts", PrimChecks.math.plus(1114, 1115, PrimChecks.validator.checkArg('+', 1114, 1115, 1, world.observer.getGlobal("total-move-attempts")), 1));
-  world.observer.setVariable("current-move-attempts", PrimChecks.math.plus(1203, 1204, PrimChecks.validator.checkArg('+', 1203, 1204, 1, world.observer.getGlobal("current-move-attempts")), 1));
+  world.observer.setGlobal("total-move-attempts", PrimChecks.math.plus(1114, 1115, PrimChecks.validator.checkArg('+', 1114, 1115, 1, world.observer.getGlobal("total-move-attempts")), 1));
+  world.observer.setGlobal("current-move-attempts", PrimChecks.math.plus(1203, 1204, PrimChecks.validator.checkArg('+', 1203, 1204, 1, world.observer.getGlobal("current-move-attempts")), 1));
   let vHold = PrimChecks.procedure.callReporter(1277, 1283, "calc-v"); ProcedurePrims.stack().currentContext().registerStringRunVar("V-OLD", vHold);
   let deltaHx = PrimChecks.math.minus(1357, 1358, PrimChecks.math.mult(1340, 1341, PrimChecks.math.randomFloat(2), PrimChecks.validator.checkArg('*', 1340, 1341, 1, world.observer.getGlobal("max-move-dist"))), PrimChecks.validator.checkArg('-', 1357, 1358, 1, world.observer.getGlobal("max-move-dist"))); ProcedurePrims.stack().currentContext().registerStringRunVar("DELTA-X", deltaHx);
   let deltaHy = PrimChecks.math.minus(1446, 1447, PrimChecks.math.mult(1429, 1430, PrimChecks.math.randomFloat(2), PrimChecks.validator.checkArg('*', 1429, 1430, 1, world.observer.getGlobal("max-move-dist"))), PrimChecks.validator.checkArg('-', 1446, 1447, 1, world.observer.getGlobal("max-move-dist"))); ProcedurePrims.stack().currentContext().registerStringRunVar("DELTA-Y", deltaHy);
@@ -98,9 +98,9 @@ ProcedurePrims.defineCommand("attempt-move", 1055, 2038, (function() {
   let vHnew = PrimChecks.procedure.callReporter(1576, 1582, "calc-v"); ProcedurePrims.stack().currentContext().registerStringRunVar("V-NEW", vHnew);
   let deltaHv = PrimChecks.math.minus(1630, 1631, PrimChecks.validator.checkArg('-', 1630, 1631, 1, vHnew), PrimChecks.validator.checkArg('-', 1630, 1631, 1, vHold)); ProcedurePrims.stack().currentContext().registerStringRunVar("DELTA-V", deltaHv);
   if ((Prims.lt(vHnew, vHold) || Prims.lt(PrimChecks.math.randomFloat(1), PrimChecks.math.exp(1684, 1687, PrimChecks.math.div(1699, 1700, PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1689, 1690, 1, deltaHv)), PrimChecks.validator.checkArg('/', 1699, 1700, 1, world.observer.getGlobal("temperature"))))))) {
-    world.observer.setVariable("total-successful-moves", PrimChecks.math.plus(1772, 1773, PrimChecks.validator.checkArg('+', 1772, 1773, 1, world.observer.getGlobal("total-successful-moves")), 1));
-    world.observer.setVariable("current-successful-moves", PrimChecks.math.plus(1870, 1871, PrimChecks.validator.checkArg('+', 1870, 1871, 1, world.observer.getGlobal("current-successful-moves")), 1));
-    world.observer.setVariable("v-total", PrimChecks.math.plus(1958, 1959, PrimChecks.validator.checkArg('+', 1958, 1959, 1, world.observer.getGlobal("v-total")), PrimChecks.validator.checkArg('+', 1958, 1959, 1, deltaHv)));
+    world.observer.setGlobal("total-successful-moves", PrimChecks.math.plus(1772, 1773, PrimChecks.validator.checkArg('+', 1772, 1773, 1, world.observer.getGlobal("total-successful-moves")), 1));
+    world.observer.setGlobal("current-successful-moves", PrimChecks.math.plus(1870, 1871, PrimChecks.validator.checkArg('+', 1870, 1871, 1, world.observer.getGlobal("current-successful-moves")), 1));
+    world.observer.setGlobal("v-total", PrimChecks.math.plus(1958, 1959, PrimChecks.validator.checkArg('+', 1958, 1959, 1, world.observer.getGlobal("v-total")), PrimChecks.validator.checkArg('+', 1958, 1959, 1, deltaHv)));
   }
   else {
     PrimChecks.turtle.setXY(1978, 1983, PrimChecks.math.minus(1990, 1991, PrimChecks.validator.checkArg('-', 1990, 1991, 1, PrimChecks.turtle.getVariable(1985, 1989, "xcor")), PrimChecks.validator.checkArg('-', 1990, 1991, 1, deltaHx)), PrimChecks.math.minus(2007, 2008, PrimChecks.validator.checkArg('-', 2007, 2008, 1, PrimChecks.turtle.getVariable(2002, 2006, "ycor")), PrimChecks.validator.checkArg('-', 2007, 2008, 1, deltaHy)));
@@ -126,16 +126,16 @@ ProcedurePrims.defineReporter("accept-rate", 2595, 2665, (function() {
 }))
 ProcedurePrims.defineCommand("tune-acceptance-rate", 2673, 2954, (function() {
   if (Prims.lt(PrimChecks.procedure.callReporter(2703, 2714, "accept-rate"), 0.5)) {
-    world.observer.setVariable("max-move-dist", PrimChecks.math.mult(2759, 2760, PrimChecks.validator.checkArg('*', 2759, 2760, 1, world.observer.getGlobal("max-move-dist")), 0.95));
+    world.observer.setGlobal("max-move-dist", PrimChecks.math.mult(2759, 2760, PrimChecks.validator.checkArg('*', 2759, 2760, 1, world.observer.getGlobal("max-move-dist")), 0.95));
   }
   else {
-    world.observer.setVariable("max-move-dist", PrimChecks.math.mult(2807, 2808, PrimChecks.validator.checkArg('*', 2807, 2808, 1, world.observer.getGlobal("max-move-dist")), 1.05));
+    world.observer.setGlobal("max-move-dist", PrimChecks.math.mult(2807, 2808, PrimChecks.validator.checkArg('*', 2807, 2808, 1, world.observer.getGlobal("max-move-dist")), 1.05));
     if (Prims.gt(world.observer.getGlobal("max-move-dist"), world.observer.getGlobal("diameter"))) {
-      world.observer.setVariable("max-move-dist", world.observer.getGlobal("diameter"));
+      world.observer.setGlobal("max-move-dist", world.observer.getGlobal("diameter"));
     }
   }
-  world.observer.setVariable("current-successful-moves", 0);
-  world.observer.setVariable("current-move-attempts", 0);
+  world.observer.setGlobal("current-successful-moves", 0);
+  world.observer.setGlobal("current-move-attempts", 0);
 }))
 ProcedurePrims.defineReporter("energy-per-particle", 2969, 3018, (function() {
   return PrimChecks.procedure.report(2991, 2997, PrimChecks.math.div(3006, 3007, PrimChecks.validator.checkArg('/', 3006, 3007, 1, world.observer.getGlobal("v-total")), PrimChecks.validator.checkArg('/', 3006, 3007, 1, world.observer.getGlobal("num-atoms"))));
@@ -175,7 +175,7 @@ ProcedurePrims.defineCommand("remove-overlap", 3923, 4059, (function() {
 ProcedurePrims.defineReporter("overlapping", 4074, 4138, (function(rHmin) {
   return PrimChecks.procedure.report(4096, 4102, SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtles(), rHmin)));
 }))
-world.observer.setVariable("num-atoms", 250);
-world.observer.setVariable("temperature", 0.45);
-world.observer.setVariable("density", 0.25);
-world.observer.setVariable("initial-config", "HCP");
+world.observer.setGlobal("num-atoms", 250);
+world.observer.setGlobal("temperature", 0.45);
+world.observer.setGlobal("density", 0.25);
+world.observer.setGlobal("initial-config", "HCP");

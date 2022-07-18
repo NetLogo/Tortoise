@@ -81,14 +81,14 @@ ProcedurePrims.defineCommand("setup", 315, 543, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-globals", 551, 769, (function() {
-  world.observer.setVariable("power", 0);
-  world.observer.setVariable("old-power", 0);
-  world.observer.setVariable("old-power-2", 0);
-  world.observer.setVariable("old-power-3", 0);
-  world.observer.setVariable("old-power-4", 0);
-  world.observer.setVariable("r", PrimChecks.math.div(685, 686, PrimChecks.validator.checkArg('/', 685, 686, 1, world.observer.getGlobal("reactor-size")), 2));
-  world.observer.setVariable("rod-length", world.observer.getGlobal("rod-depth"));
-  world.observer.setVariable("n-rods", PrimChecks.math.minus(765, 766, PrimChecks.math.div(744, 745, PrimChecks.validator.checkArg('/', 744, 745, 1, world.observer.getGlobal("reactor-size")), PrimChecks.math.plus(759, 760, PrimChecks.validator.checkArg('+', 759, 760, 1, world.observer.getGlobal("rod-spacing")), 1)), 1));
+  world.observer.setGlobal("power", 0);
+  world.observer.setGlobal("old-power", 0);
+  world.observer.setGlobal("old-power-2", 0);
+  world.observer.setGlobal("old-power-3", 0);
+  world.observer.setGlobal("old-power-4", 0);
+  world.observer.setGlobal("r", PrimChecks.math.div(685, 686, PrimChecks.validator.checkArg('/', 685, 686, 1, world.observer.getGlobal("reactor-size")), 2));
+  world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
+  world.observer.setGlobal("n-rods", PrimChecks.math.minus(765, 766, PrimChecks.math.div(744, 745, PrimChecks.validator.checkArg('/', 744, 745, 1, world.observer.getGlobal("reactor-size")), PrimChecks.math.plus(759, 760, PrimChecks.validator.checkArg('+', 759, 760, 1, world.observer.getGlobal("rod-spacing")), 1)), 1));
 }))
 ProcedurePrims.defineCommand("build-reactor", 777, 907, (function() {
   if (((Prims.equality(PrimChecks.patch.getVariable(817, 818, "x"), world.observer.getGlobal("r")) && Prims.lte(PrimChecks.patch.getVariable(829, 830, "y"), world.observer.getGlobal("r"))) || (Prims.equality(PrimChecks.patch.getVariable(843, 844, "y"), world.observer.getGlobal("r")) && Prims.lte(PrimChecks.patch.getVariable(855, 856, "x"), world.observer.getGlobal("r"))))) {
@@ -103,19 +103,19 @@ ProcedurePrims.defineCommand("setup-nuclear-fuel", 915, 1020, (function() {
 }))
 ProcedurePrims.defineCommand("setup-control-rods", 1028, 2107, (function() {
   if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
-    world.observer.setVariable("rod-depth", world.observer.getGlobal("reactor-size"));
+    world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
   }
   if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 5) || Prims.equality(world.observer.getGlobal("rod-spacing"), 6)) && Prims.equality(world.observer.getGlobal("reactor-size"), 10))) {
     UserDialogPrims.confirm("Spacing too large for reactor size.  Spacing set to 4.");
-    world.observer.setVariable("rod-spacing", 4);
-    world.observer.setVariable("n-rods", 1);
+    world.observer.setGlobal("rod-spacing", 4);
+    world.observer.setGlobal("n-rods", 1);
   }
   let rodHx = PrimChecks.math.plus(1305, 1306, PrimChecks.math.minus(1301, 1302, 1, PrimChecks.validator.checkArg('-', 1301, 1302, 1, world.observer.getGlobal("r"))), PrimChecks.validator.checkArg('+', 1305, 1306, 1, world.observer.getGlobal("rod-spacing"))); ProcedurePrims.stack().currentContext().registerStringRunVar("ROD-X", rodHx);
   if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 2) && !Prims.equality(world.observer.getGlobal("reactor-size"), 30)) && !Prims.equality(world.observer.getGlobal("reactor-size"), 60))) {
     rodHx = PrimChecks.math.plus(1470, 1471, PrimChecks.validator.checkArg('+', 1470, 1471, 1, rodHx), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("ROD-X", rodHx);
   }
   if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 3) && !Prims.equality(PrimChecks.math.mod(1516, 1519, PrimChecks.validator.checkArg('MOD', 1516, 1519, 1, world.observer.getGlobal("reactor-size")), 20), 0))) {
-    world.observer.setVariable("n-rods", PrimChecks.math.plus(1552, 1553, PrimChecks.validator.checkArg('+', 1552, 1553, 1, world.observer.getGlobal("n-rods")), 1));
+    world.observer.setGlobal("n-rods", PrimChecks.math.plus(1552, 1553, PrimChecks.validator.checkArg('+', 1552, 1553, 1, world.observer.getGlobal("n-rods")), 1));
     rodHx = PrimChecks.math.minus(1576, 1577, PrimChecks.validator.checkArg('-', 1576, 1577, 1, rodHx), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("ROD-X", rodHx);
   }
   if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 5) && ((Prims.equality(world.observer.getGlobal("reactor-size"), 20) || Prims.equality(world.observer.getGlobal("reactor-size"), 40)) || Prims.equality(world.observer.getGlobal("reactor-size"), 70)))) {
@@ -127,7 +127,7 @@ ProcedurePrims.defineCommand("setup-control-rods", 1028, 2107, (function() {
     }
   }
   if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 6) && Prims.equality(PrimChecks.math.mod(1804, 1807, PrimChecks.validator.checkArg('MOD', 1804, 1807, 1, world.observer.getGlobal("reactor-size")), 20), 0))) {
-    world.observer.setVariable("n-rods", PrimChecks.math.plus(1839, 1840, PrimChecks.validator.checkArg('+', 1839, 1840, 1, world.observer.getGlobal("n-rods")), 1));
+    world.observer.setGlobal("n-rods", PrimChecks.math.plus(1839, 1840, PrimChecks.validator.checkArg('+', 1839, 1840, 1, world.observer.getGlobal("n-rods")), 1));
     if (Prims.equality(world.observer.getGlobal("reactor-size"), 80)) {
       rodHx = PrimChecks.math.minus(1896, 1897, PrimChecks.validator.checkArg('-', 1896, 1897, 1, rodHx), 2); ProcedurePrims.stack().currentContext().updateStringRunVar("ROD-X", rodHx);
     }
@@ -148,19 +148,19 @@ ProcedurePrims.defineCommand("auto-react", 2217, 2565, (function() {
   }
   if (Prims.gte(world.observer.getGlobal("power-change"), 0)) {
     if (Prims.gte(PrimChecks.math.minus(2302, 2303, PrimChecks.validator.checkArg('-', 2302, 2303, 1, world.observer.getGlobal("power")), PrimChecks.validator.checkArg('-', 2302, 2303, 1, world.observer.getGlobal("power-rated"))), 0)) {
-      world.observer.setVariable("rod-length", PrimChecks.math.plus(2356, 2357, PrimChecks.validator.checkArg('+', 2356, 2357, 1, world.observer.getGlobal("rod-length")), 50));
+      world.observer.setGlobal("rod-length", PrimChecks.math.plus(2356, 2357, PrimChecks.validator.checkArg('+', 2356, 2357, 1, world.observer.getGlobal("rod-length")), 50));
     }
   }
   else {
     if (Prims.lt(PrimChecks.math.minus(2383, 2384, PrimChecks.validator.checkArg('-', 2383, 2384, 1, world.observer.getGlobal("power")), PrimChecks.validator.checkArg('-', 2383, 2384, 1, world.observer.getGlobal("power-rated"))), 0)) {
-      world.observer.setVariable("rod-length", PrimChecks.math.minus(2436, 2437, PrimChecks.validator.checkArg('-', 2436, 2437, 1, world.observer.getGlobal("rod-length")), 10));
+      world.observer.setGlobal("rod-length", PrimChecks.math.minus(2436, 2437, PrimChecks.validator.checkArg('-', 2436, 2437, 1, world.observer.getGlobal("rod-length")), 10));
     }
   }
   if (Prims.lt(world.observer.getGlobal("rod-length"), 0)) {
-    world.observer.setVariable("rod-length", 0);
+    world.observer.setGlobal("rod-length", 0);
   }
   if (Prims.gt(world.observer.getGlobal("rod-length"), world.observer.getGlobal("reactor-size"))) {
-    world.observer.setVariable("rod-length", world.observer.getGlobal("reactor-size"));
+    world.observer.setGlobal("rod-length", world.observer.getGlobal("reactor-size"));
   }
   var R = ProcedurePrims.callCommand("react"); if (R === DeathInterrupt) { return R; }
 }))
@@ -169,14 +169,14 @@ ProcedurePrims.defineCommand("manu-react", 2590, 2728, (function() {
     return PrimChecks.procedure.stop(2628, 2632);
   }
   if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
-    world.observer.setVariable("rod-depth", world.observer.getGlobal("reactor-size"));
+    world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
   }
-  world.observer.setVariable("rod-length", world.observer.getGlobal("rod-depth"));
+  world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
   var R = ProcedurePrims.callCommand("react"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("react", 2736, 3122, (function() {
   var R = ProcedurePrims.callCommand("place-control-rods"); if (R === DeathInterrupt) { return R; }
-  world.observer.setVariable("power", 0);
+  world.observer.setGlobal("power", 0);
   var R = ProcedurePrims.ask(world.turtles(), function() {
     SelfManager.self()._optimalFdOne();
     if (Prims.equality(PrimChecks.patch.getVariable(2809, 2815, "pcolor"), 5)) {
@@ -186,12 +186,12 @@ ProcedurePrims.defineCommand("react", 2736, 3122, (function() {
       var R = ProcedurePrims.callCommand("fission"); if (R === DeathInterrupt) { return R; }
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2779, 2782, R); return R; }
-  world.observer.setVariable("average-power", PrimChecks.math.div(2961, 2962, PrimChecks.math.plus(2946, 2947, PrimChecks.math.plus(2932, 2933, PrimChecks.math.plus(2918, 2919, PrimChecks.math.plus(2906, 2907, PrimChecks.validator.checkArg('+', 2906, 2907, 1, world.observer.getGlobal("power")), PrimChecks.validator.checkArg('+', 2906, 2907, 1, world.observer.getGlobal("old-power"))), PrimChecks.validator.checkArg('+', 2918, 2919, 1, world.observer.getGlobal("old-power-2"))), PrimChecks.validator.checkArg('+', 2932, 2933, 1, world.observer.getGlobal("old-power-3"))), PrimChecks.validator.checkArg('+', 2946, 2947, 1, world.observer.getGlobal("old-power-4"))), 5));
-  world.observer.setVariable("power-change", PrimChecks.math.minus(2992, 2993, PrimChecks.validator.checkArg('-', 2992, 2993, 1, world.observer.getGlobal("power")), PrimChecks.validator.checkArg('-', 2992, 2993, 1, world.observer.getGlobal("old-power"))));
-  world.observer.setVariable("old-power-4", world.observer.getGlobal("old-power-3"));
-  world.observer.setVariable("old-power-3", world.observer.getGlobal("old-power-2"));
-  world.observer.setVariable("old-power-2", world.observer.getGlobal("old-power"));
-  world.observer.setVariable("old-power", world.observer.getGlobal("power"));
+  world.observer.setGlobal("average-power", PrimChecks.math.div(2961, 2962, PrimChecks.math.plus(2946, 2947, PrimChecks.math.plus(2932, 2933, PrimChecks.math.plus(2918, 2919, PrimChecks.math.plus(2906, 2907, PrimChecks.validator.checkArg('+', 2906, 2907, 1, world.observer.getGlobal("power")), PrimChecks.validator.checkArg('+', 2906, 2907, 1, world.observer.getGlobal("old-power"))), PrimChecks.validator.checkArg('+', 2918, 2919, 1, world.observer.getGlobal("old-power-2"))), PrimChecks.validator.checkArg('+', 2932, 2933, 1, world.observer.getGlobal("old-power-3"))), PrimChecks.validator.checkArg('+', 2946, 2947, 1, world.observer.getGlobal("old-power-4"))), 5));
+  world.observer.setGlobal("power-change", PrimChecks.math.minus(2992, 2993, PrimChecks.validator.checkArg('-', 2992, 2993, 1, world.observer.getGlobal("power")), PrimChecks.validator.checkArg('-', 2992, 2993, 1, world.observer.getGlobal("old-power"))));
+  world.observer.setGlobal("old-power-4", world.observer.getGlobal("old-power-3"));
+  world.observer.setGlobal("old-power-3", world.observer.getGlobal("old-power-2"));
+  world.observer.setGlobal("old-power-2", world.observer.getGlobal("old-power"));
+  world.observer.setGlobal("old-power", world.observer.getGlobal("power"));
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("release-neutron", 3130, 3406, (function() {
@@ -226,12 +226,12 @@ ProcedurePrims.defineCommand("fission", 3562, 3799, (function() {
       PrimChecks.patch.setVariable(3657, 3663, "pcolor", 35);
     }
     let gain = PrimChecks.math.div(3688, 3689, 1, PrimChecks.agentset.count(SelfManager.self().turtlesHere())); ProcedurePrims.stack().currentContext().registerStringRunVar("GAIN", gain);
-    world.observer.setVariable("power", PrimChecks.math.plus(3730, 3731, PrimChecks.validator.checkArg('+', 3730, 3731, 1, world.observer.getGlobal("power")), PrimChecks.validator.checkArg('+', 3730, 3731, 1, gain)));
+    world.observer.setGlobal("power", PrimChecks.math.plus(3730, 3731, PrimChecks.validator.checkArg('+', 3730, 3731, 1, world.observer.getGlobal("power")), PrimChecks.validator.checkArg('+', 3730, 3731, 1, gain)));
     var R = ProcedurePrims.ask(SelfManager.self().hatch(PrimChecks.math.mult(3763, 3764, PrimChecks.math.plus(3751, 3752, 2, RandomPrims.randomLong(2)), PrimChecks.validator.checkArg('*', 3763, 3764, 1, gain)), ""), function() { SelfManager.self().right(RandomPrims.randomLong(360)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3741, 3746, R); return R; }
   }
 }))
-world.observer.setVariable("power-rated", 35);
-world.observer.setVariable("reactor-size", 122);
-world.observer.setVariable("rod-depth", 0);
-world.observer.setVariable("rod-spacing", 4);
-world.observer.setVariable("spend-fuel?", true);
+world.observer.setGlobal("power-rated", 35);
+world.observer.setGlobal("reactor-size", 122);
+world.observer.setGlobal("rod-depth", 0);
+world.observer.setGlobal("rod-spacing", 4);
+world.observer.setGlobal("spend-fuel?", true);

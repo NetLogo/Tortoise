@@ -88,29 +88,29 @@ ProcedurePrims.defineCommand("setup-full", 2377, 2469, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("initialize-variables", 2477, 2999, (function() {
-  world.observer.setVariable("meetown", 0);
-  world.observer.setVariable("meetown-agg", 0);
-  world.observer.setVariable("meet", 0);
-  world.observer.setVariable("meet-agg", 0);
-  world.observer.setVariable("coopown", 0);
-  world.observer.setVariable("coopown-agg", 0);
-  world.observer.setVariable("defother", 0);
-  world.observer.setVariable("defother-agg", 0);
-  world.observer.setVariable("meetother", 0);
-  world.observer.setVariable("meetother-agg", 0);
-  world.observer.setVariable("coopother", 0);
-  world.observer.setVariable("coopother-agg", 0);
-  world.observer.setVariable("last100dd", []);
-  world.observer.setVariable("last100cd", []);
-  world.observer.setVariable("last100cc", []);
-  world.observer.setVariable("last100dc", []);
-  world.observer.setVariable("last100coopown", []);
-  world.observer.setVariable("last100defother", []);
-  world.observer.setVariable("last100consist-ethno", []);
-  world.observer.setVariable("last100meetown", []);
-  world.observer.setVariable("last100meetother", []);
-  world.observer.setVariable("last100meet", []);
-  world.observer.setVariable("last100coop", []);
+  world.observer.setGlobal("meetown", 0);
+  world.observer.setGlobal("meetown-agg", 0);
+  world.observer.setGlobal("meet", 0);
+  world.observer.setGlobal("meet-agg", 0);
+  world.observer.setGlobal("coopown", 0);
+  world.observer.setGlobal("coopown-agg", 0);
+  world.observer.setGlobal("defother", 0);
+  world.observer.setGlobal("defother-agg", 0);
+  world.observer.setGlobal("meetother", 0);
+  world.observer.setGlobal("meetother-agg", 0);
+  world.observer.setGlobal("coopother", 0);
+  world.observer.setGlobal("coopother-agg", 0);
+  world.observer.setGlobal("last100dd", []);
+  world.observer.setGlobal("last100cd", []);
+  world.observer.setGlobal("last100cc", []);
+  world.observer.setGlobal("last100dc", []);
+  world.observer.setGlobal("last100coopown", []);
+  world.observer.setGlobal("last100defother", []);
+  world.observer.setGlobal("last100consist-ethno", []);
+  world.observer.setGlobal("last100meetown", []);
+  world.observer.setGlobal("last100meetother", []);
+  world.observer.setGlobal("last100meet", []);
+  world.observer.setGlobal("last100coop", []);
 }))
 ProcedurePrims.defineCommand("create-turtle", 3043, 3545, (function() {
   var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "TURTLES"), function() {
@@ -124,12 +124,12 @@ ProcedurePrims.defineReporter("random-color", 3560, 3613, (function() {
   return PrimChecks.procedure.report(3575, 3581, PrimChecks.list.oneOf(3582, 3588, [15, 105, 45, 55]));
 }))
 ProcedurePrims.defineCommand("clear-stats", 3682, 3792, (function() {
-  world.observer.setVariable("meetown", 0);
-  world.observer.setVariable("meet", 0);
-  world.observer.setVariable("coopown", 0);
-  world.observer.setVariable("defother", 0);
-  world.observer.setVariable("meetother", 0);
-  world.observer.setVariable("coopother", 0);
+  world.observer.setGlobal("meetown", 0);
+  world.observer.setGlobal("meet", 0);
+  world.observer.setGlobal("coopown", 0);
+  world.observer.setGlobal("defother", 0);
+  world.observer.setGlobal("meetother", 0);
+  world.observer.setGlobal("coopother", 0);
 }))
 ProcedurePrims.defineCommand("go", 3820, 4282, (function() {
   var R = ProcedurePrims.callCommand("clear-stats"); if (R === DeathInterrupt) { return R; }
@@ -148,14 +148,14 @@ ProcedurePrims.defineCommand("immigrate", 4343, 4591, (function() {
 }))
 ProcedurePrims.defineCommand("interact", 4599, 6139, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors4()), function() {
-    world.observer.setVariable("meet", PrimChecks.math.plus(4931, 4932, PrimChecks.validator.checkArg('+', 4931, 4932, 1, world.observer.getGlobal("meet")), 1));
-    world.observer.setVariable("meet-agg", PrimChecks.math.plus(4961, 4962, PrimChecks.validator.checkArg('+', 4961, 4962, 1, world.observer.getGlobal("meet-agg")), 1));
+    world.observer.setGlobal("meet", PrimChecks.math.plus(4931, 4932, PrimChecks.validator.checkArg('+', 4931, 4932, 1, world.observer.getGlobal("meet")), 1));
+    world.observer.setGlobal("meet-agg", PrimChecks.math.plus(4961, 4962, PrimChecks.validator.checkArg('+', 4961, 4962, 1, world.observer.getGlobal("meet-agg")), 1));
     if (Prims.equality(PrimChecks.turtleOrLink.getVariable(5046, 5051, "color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable(5055, 5060, "color"); }))) {
-      world.observer.setVariable("meetown", PrimChecks.math.plus(5164, 5165, PrimChecks.validator.checkArg('+', 5164, 5165, 1, world.observer.getGlobal("meetown")), 1));
-      world.observer.setVariable("meetown-agg", PrimChecks.math.plus(5202, 5203, PrimChecks.validator.checkArg('+', 5202, 5203, 1, world.observer.getGlobal("meetown-agg")), 1));
+      world.observer.setGlobal("meetown", PrimChecks.math.plus(5164, 5165, PrimChecks.validator.checkArg('+', 5164, 5165, 1, world.observer.getGlobal("meetown")), 1));
+      world.observer.setGlobal("meetown-agg", PrimChecks.math.plus(5202, 5203, PrimChecks.validator.checkArg('+', 5202, 5203, 1, world.observer.getGlobal("meetown-agg")), 1));
       if (PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtle.getVariable(5287, 5307, "cooperate-with-same?"); })) {
-        world.observer.setVariable("coopown", PrimChecks.math.plus(5349, 5350, PrimChecks.validator.checkArg('+', 5349, 5350, 1, world.observer.getGlobal("coopown")), 1));
-        world.observer.setVariable("coopown-agg", PrimChecks.math.plus(5389, 5390, PrimChecks.validator.checkArg('+', 5389, 5390, 1, world.observer.getGlobal("coopown-agg")), 1));
+        world.observer.setGlobal("coopown", PrimChecks.math.plus(5349, 5350, PrimChecks.validator.checkArg('+', 5349, 5350, 1, world.observer.getGlobal("coopown")), 1));
+        world.observer.setGlobal("coopown-agg", PrimChecks.math.plus(5389, 5390, PrimChecks.validator.checkArg('+', 5389, 5390, 1, world.observer.getGlobal("coopown-agg")), 1));
         var R = ProcedurePrims.ask(SelfManager.myself(), function() {
           PrimChecks.turtle.setVariable(5418, 5421, "ptr", PrimChecks.math.minus(5426, 5427, PrimChecks.validator.checkArg('-', 5426, 5427, 1, PrimChecks.turtle.getVariable(5422, 5425, "ptr")), PrimChecks.validator.checkArg('-', 5426, 5427, 1, world.observer.getGlobal("cost-of-giving"))));
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5401, 5404, R); return R; }
@@ -163,19 +163,19 @@ ProcedurePrims.defineCommand("interact", 4599, 6139, (function() {
       }
     }
     if (!Prims.equality(PrimChecks.turtleOrLink.getVariable(5569, 5574, "color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable(5579, 5584, "color"); }))) {
-      world.observer.setVariable("meetother", PrimChecks.math.plus(5664, 5665, PrimChecks.validator.checkArg('+', 5664, 5665, 1, world.observer.getGlobal("meetother")), 1));
-      world.observer.setVariable("meetother-agg", PrimChecks.math.plus(5706, 5707, PrimChecks.validator.checkArg('+', 5706, 5707, 1, world.observer.getGlobal("meetother-agg")), 1));
+      world.observer.setGlobal("meetother", PrimChecks.math.plus(5664, 5665, PrimChecks.validator.checkArg('+', 5664, 5665, 1, world.observer.getGlobal("meetother")), 1));
+      world.observer.setGlobal("meetother-agg", PrimChecks.math.plus(5706, 5707, PrimChecks.validator.checkArg('+', 5706, 5707, 1, world.observer.getGlobal("meetother-agg")), 1));
       if (PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtle.getVariable(5818, 5843, "cooperate-with-different?"); })) {
-        world.observer.setVariable("coopother", PrimChecks.math.plus(5889, 5890, PrimChecks.validator.checkArg('+', 5889, 5890, 1, world.observer.getGlobal("coopother")), 1));
-        world.observer.setVariable("coopother-agg", PrimChecks.math.plus(5933, 5934, PrimChecks.validator.checkArg('+', 5933, 5934, 1, world.observer.getGlobal("coopother-agg")), 1));
+        world.observer.setGlobal("coopother", PrimChecks.math.plus(5889, 5890, PrimChecks.validator.checkArg('+', 5889, 5890, 1, world.observer.getGlobal("coopother")), 1));
+        world.observer.setGlobal("coopother-agg", PrimChecks.math.plus(5933, 5934, PrimChecks.validator.checkArg('+', 5933, 5934, 1, world.observer.getGlobal("coopother-agg")), 1));
         var R = ProcedurePrims.ask(SelfManager.myself(), function() {
           PrimChecks.turtle.setVariable(5962, 5965, "ptr", PrimChecks.math.minus(5970, 5971, PrimChecks.validator.checkArg('-', 5970, 5971, 1, PrimChecks.turtle.getVariable(5966, 5969, "ptr")), PrimChecks.validator.checkArg('-', 5970, 5971, 1, world.observer.getGlobal("cost-of-giving"))));
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5945, 5948, R); return R; }
         PrimChecks.turtle.setVariable(6001, 6004, "ptr", PrimChecks.math.plus(6009, 6010, PrimChecks.validator.checkArg('+', 6009, 6010, 1, PrimChecks.turtle.getVariable(6005, 6008, "ptr")), PrimChecks.validator.checkArg('+', 6009, 6010, 1, world.observer.getGlobal("gain-of-receiving"))));
       }
       else {
-        world.observer.setVariable("defother", PrimChecks.math.plus(6075, 6076, PrimChecks.validator.checkArg('+', 6075, 6076, 1, world.observer.getGlobal("defother")), 1));
-        world.observer.setVariable("defother-agg", PrimChecks.math.plus(6117, 6118, PrimChecks.validator.checkArg('+', 6117, 6118, 1, world.observer.getGlobal("defother-agg")), 1));
+        world.observer.setGlobal("defother", PrimChecks.math.plus(6075, 6076, PrimChecks.validator.checkArg('+', 6075, 6076, 1, world.observer.getGlobal("defother")), 1));
+        world.observer.setGlobal("defother-agg", PrimChecks.math.plus(6117, 6118, PrimChecks.validator.checkArg('+', 6117, 6118, 1, world.observer.getGlobal("defother-agg")), 1));
       }
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4676, 4679, R); return R; }
@@ -232,16 +232,16 @@ ProcedurePrims.defineCommand("update-shape", 7486, 7988, (function() {
   }
 }))
 ProcedurePrims.defineCommand("update-stats", 8078, 8804, (function() {
-  world.observer.setVariable("last100dd", PrimChecks.procedure.callReporter(8114, 8121, "shorten", PrimChecks.list.lput(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(8148, 8153, "shape"), "square 2"); }), PrimChecks.validator.checkArg('LPUT', 8122, 8126, 8, world.observer.getGlobal("last100dd")))));
-  world.observer.setVariable("last100cc", PrimChecks.procedure.callReporter(8202, 8209, "shorten", PrimChecks.list.lput(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(8236, 8241, "shape"), "circle"); }), PrimChecks.validator.checkArg('LPUT', 8210, 8214, 8, world.observer.getGlobal("last100cc")))));
-  world.observer.setVariable("last100cd", PrimChecks.procedure.callReporter(8288, 8295, "shorten", PrimChecks.list.lput(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(8322, 8327, "shape"), "circle 2"); }), PrimChecks.validator.checkArg('LPUT', 8296, 8300, 8, world.observer.getGlobal("last100cd")))));
-  world.observer.setVariable("last100dc", PrimChecks.procedure.callReporter(8376, 8383, "shorten", PrimChecks.list.lput(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(8410, 8415, "shape"), "square"); }), PrimChecks.validator.checkArg('LPUT', 8384, 8388, 8, world.observer.getGlobal("last100dc")))));
-  world.observer.setVariable("last100coopown", PrimChecks.procedure.callReporter(8462, 8469, "shorten", PrimChecks.list.lput(world.observer.getGlobal("coopown"), PrimChecks.validator.checkArg('LPUT', 8470, 8474, 8, world.observer.getGlobal("last100coopown")))));
-  world.observer.setVariable("last100defother", PrimChecks.procedure.callReporter(8521, 8528, "shorten", PrimChecks.list.lput(world.observer.getGlobal("defother"), PrimChecks.validator.checkArg('LPUT', 8529, 8533, 8, world.observer.getGlobal("last100defother")))));
-  world.observer.setVariable("last100meetown", PrimChecks.procedure.callReporter(8582, 8589, "shorten", PrimChecks.list.lput(world.observer.getGlobal("meetown"), PrimChecks.validator.checkArg('LPUT', 8590, 8594, 8, world.observer.getGlobal("last100meetown")))));
-  world.observer.setVariable("last100coop", PrimChecks.procedure.callReporter(8641, 8648, "shorten", PrimChecks.list.lput(PrimChecks.math.plus(8663, 8664, PrimChecks.validator.checkArg('+', 8663, 8664, 1, world.observer.getGlobal("coopown")), PrimChecks.validator.checkArg('+', 8663, 8664, 1, world.observer.getGlobal("coopother"))), PrimChecks.validator.checkArg('LPUT', 8649, 8653, 8, world.observer.getGlobal("last100coop")))));
-  world.observer.setVariable("last100meet", PrimChecks.procedure.callReporter(8711, 8718, "shorten", PrimChecks.list.lput(world.observer.getGlobal("meet"), PrimChecks.validator.checkArg('LPUT', 8719, 8723, 8, world.observer.getGlobal("last100meet")))));
-  world.observer.setVariable("last100meetother", PrimChecks.procedure.callReporter(8764, 8771, "shorten", PrimChecks.list.lput(world.observer.getGlobal("meetother"), PrimChecks.validator.checkArg('LPUT', 8772, 8776, 8, world.observer.getGlobal("last100meetother")))));
+  world.observer.setGlobal("last100dd", PrimChecks.procedure.callReporter(8114, 8121, "shorten", PrimChecks.list.lput(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(8148, 8153, "shape"), "square 2"); }), PrimChecks.validator.checkArg('LPUT', 8122, 8126, 8, world.observer.getGlobal("last100dd")))));
+  world.observer.setGlobal("last100cc", PrimChecks.procedure.callReporter(8202, 8209, "shorten", PrimChecks.list.lput(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(8236, 8241, "shape"), "circle"); }), PrimChecks.validator.checkArg('LPUT', 8210, 8214, 8, world.observer.getGlobal("last100cc")))));
+  world.observer.setGlobal("last100cd", PrimChecks.procedure.callReporter(8288, 8295, "shorten", PrimChecks.list.lput(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(8322, 8327, "shape"), "circle 2"); }), PrimChecks.validator.checkArg('LPUT', 8296, 8300, 8, world.observer.getGlobal("last100cd")))));
+  world.observer.setGlobal("last100dc", PrimChecks.procedure.callReporter(8376, 8383, "shorten", PrimChecks.list.lput(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(8410, 8415, "shape"), "square"); }), PrimChecks.validator.checkArg('LPUT', 8384, 8388, 8, world.observer.getGlobal("last100dc")))));
+  world.observer.setGlobal("last100coopown", PrimChecks.procedure.callReporter(8462, 8469, "shorten", PrimChecks.list.lput(world.observer.getGlobal("coopown"), PrimChecks.validator.checkArg('LPUT', 8470, 8474, 8, world.observer.getGlobal("last100coopown")))));
+  world.observer.setGlobal("last100defother", PrimChecks.procedure.callReporter(8521, 8528, "shorten", PrimChecks.list.lput(world.observer.getGlobal("defother"), PrimChecks.validator.checkArg('LPUT', 8529, 8533, 8, world.observer.getGlobal("last100defother")))));
+  world.observer.setGlobal("last100meetown", PrimChecks.procedure.callReporter(8582, 8589, "shorten", PrimChecks.list.lput(world.observer.getGlobal("meetown"), PrimChecks.validator.checkArg('LPUT', 8590, 8594, 8, world.observer.getGlobal("last100meetown")))));
+  world.observer.setGlobal("last100coop", PrimChecks.procedure.callReporter(8641, 8648, "shorten", PrimChecks.list.lput(PrimChecks.math.plus(8663, 8664, PrimChecks.validator.checkArg('+', 8663, 8664, 1, world.observer.getGlobal("coopown")), PrimChecks.validator.checkArg('+', 8663, 8664, 1, world.observer.getGlobal("coopother"))), PrimChecks.validator.checkArg('LPUT', 8649, 8653, 8, world.observer.getGlobal("last100coop")))));
+  world.observer.setGlobal("last100meet", PrimChecks.procedure.callReporter(8711, 8718, "shorten", PrimChecks.list.lput(world.observer.getGlobal("meet"), PrimChecks.validator.checkArg('LPUT', 8719, 8723, 8, world.observer.getGlobal("last100meet")))));
+  world.observer.setGlobal("last100meetother", PrimChecks.procedure.callReporter(8764, 8771, "shorten", PrimChecks.list.lput(world.observer.getGlobal("meetother"), PrimChecks.validator.checkArg('LPUT', 8772, 8776, 8, world.observer.getGlobal("last100meetother")))));
 }))
 ProcedurePrims.defineReporter("shorten", 8885, 8992, (function(theHlist) {
   if (Prims.gt(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 8913, 8919, 12, theHlist)), 100)) {
@@ -320,11 +320,11 @@ ProcedurePrims.defineReporter("last100meetown-percent", 10902, 10982, (function(
 ProcedurePrims.defineReporter("last100coop-percent", 10996, 11070, (function() {
   return PrimChecks.procedure.report(11018, 11024, PrimChecks.math.div(11041, 11042, PrimChecks.list.sum(11025, 11028, PrimChecks.validator.checkArg('SUM', 11025, 11028, 8, world.observer.getGlobal("last100coop"))), PrimChecks.list.max(11043, 11046, ListPrims.list(1, PrimChecks.list.sum(11054, 11057, PrimChecks.validator.checkArg('SUM', 11054, 11057, 8, world.observer.getGlobal("last100meet")))))));
 }))
-world.observer.setVariable("mutation-rate", 0.005);
-world.observer.setVariable("death-rate", 0.1);
-world.observer.setVariable("immigrants-per-day", 1);
-world.observer.setVariable("initial-ptr", 0.12);
-world.observer.setVariable("cost-of-giving", 0.01);
-world.observer.setVariable("gain-of-receiving", 0.03);
-world.observer.setVariable("immigrant-chance-cooperate-with-same", 0.5);
-world.observer.setVariable("immigrant-chance-cooperate-with-different", 0.5);
+world.observer.setGlobal("mutation-rate", 0.005);
+world.observer.setGlobal("death-rate", 0.1);
+world.observer.setGlobal("immigrants-per-day", 1);
+world.observer.setGlobal("initial-ptr", 0.12);
+world.observer.setGlobal("cost-of-giving", 0.01);
+world.observer.setGlobal("gain-of-receiving", 0.03);
+world.observer.setGlobal("immigrant-chance-cooperate-with-same", 0.5);
+world.observer.setGlobal("immigrant-chance-cooperate-with-different", 0.5);

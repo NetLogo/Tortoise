@@ -74,7 +74,7 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 209, 646, (function() {
   world.clearAll();
-  world.observer.setVariable("group-sites", PrimChecks.agentset.with(253, 257, world.patches(), function() { return PrimChecks.procedure.callReporter(259, 270, "group-site?"); }));
+  world.observer.setGlobal("group-sites", PrimChecks.agentset.with(253, 257, world.patches(), function() { return PrimChecks.procedure.callReporter(259, 270, "group-site?"); }));
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number"), ""), function() {
     var R = ProcedurePrims.callCommand("choose-sex"); if (R === DeathInterrupt) { return R; }
@@ -163,7 +163,7 @@ ProcedurePrims.defineCommand("count-boring-groups", 2975, 3169, (function() {
       PrimChecks.patch.setVariable(3079, 3091, "plabel-color", 9.9);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2997, 3000, R); return R; }
-  world.observer.setVariable("boring-groups", PrimChecks.agentset.countWith(null, null, world.observer.getGlobal("group-sites"), function() { return Prims.equality(PrimChecks.patch.getVariable(3148, 3160, "plabel-color"), 5); }));
+  world.observer.setGlobal("boring-groups", PrimChecks.agentset.countWith(null, null, world.observer.getGlobal("group-sites"), function() { return Prims.equality(PrimChecks.patch.getVariable(3148, 3160, "plabel-color"), 5); }));
 }))
 ProcedurePrims.defineReporter("boring?", 3184, 3518, (function() {
   return PrimChecks.procedure.report(3456, 3462, Prims.equality(PrimChecks.list.length(PrimChecks.list.removeDuplicates(PrimChecks.validator.checkArg('REMOVE-DUPLICATES', 3470, 3487, 8, PrimChecks.agentset.of(SelfManager.self().turtlesHere(), function() { return PrimChecks.turtleOrLink.getVariable(3490, 3495, "color"); })))), 1));
@@ -179,6 +179,6 @@ ProcedurePrims.defineCommand("choose-sex", 3775, 3838, (function() {
 ProcedurePrims.defineReporter("woman?", 3853, 3903, (function() {
   return PrimChecks.procedure.report(3883, 3889, Prims.equality(PrimChecks.turtleOrLink.getVariable(3890, 3895, "color"), 135));
 }))
-world.observer.setVariable("tolerance", 25);
-world.observer.setVariable("number", 70);
-world.observer.setVariable("num-groups", 10);
+world.observer.setGlobal("tolerance", 25);
+world.observer.setGlobal("number", 70);
+world.observer.setGlobal("num-groups", 10);

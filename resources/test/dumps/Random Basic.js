@@ -52,10 +52,10 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 894, 1221, (function() {
   world.clearAll();
-  world.observer.setVariable("max-y-histogram", PrimChecks.math.plus(1122, 1123, world.topology.minPycor, PrimChecks.validator.checkArg('+', 1122, 1123, 1, world.observer.getGlobal("height"))));
+  world.observer.setGlobal("max-y-histogram", PrimChecks.math.plus(1122, 1123, world.topology.minPycor, PrimChecks.validator.checkArg('+', 1122, 1123, 1, world.observer.getGlobal("height"))));
   var R = ProcedurePrims.callCommand("create-histogram-width"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-column-counters"); if (R === DeathInterrupt) { return R; }
-  world.observer.setVariable("time-to-stop?", false);
+  world.observer.setGlobal("time-to-stop?", false);
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("create-histogram-width", 1229, 1703, (function() {
@@ -104,7 +104,7 @@ ProcedurePrims.defineCommand("select-random-value", 2782, 3280, (function() {
       PrimChecks.turtle.setVariable(2930, 2937, "heading", 180);
       PrimChecks.turtle.setVariable(2952, 2956, "size", 12);
       PrimChecks.turtleOrLink.setVariable(2970, 2975, "label", PrimChecks.math.plus(2978, 2979, 1, PrimChecks.math.random(2980, 2986, PrimChecks.validator.checkArg('RANDOM', 2980, 2986, 1, world.observer.getGlobal("sample-space")))));
-      world.observer.setVariable("the-messenger", SelfManager.self());
+      world.observer.setGlobal("the-messenger", SelfManager.self());
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2846, 2863, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2804, 2807, R); return R; }
 }))
@@ -124,7 +124,7 @@ ProcedurePrims.defineCommand("send-messenger-to-its-column", 3442, 4252, (functi
     var R = ProcedurePrims.callCommand("create-frame"); if (R === DeathInterrupt) { return R; }
     SelfManager.self()._optimalFdOne();
     if (Prims.equality(PrimChecks.turtle.getVariable(4197, 4201, "ycor"), world.observer.getGlobal("max-y-histogram"))) {
-      world.observer.setVariable("time-to-stop?", true);
+      world.observer.setGlobal("time-to-stop?", true);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3974, 3977, R); return R; }
 }))
@@ -169,7 +169,7 @@ ProcedurePrims.defineReporter("biggest-gap", 5383, 5630, (function() {
   }))); ProcedurePrims.stack().currentContext().registerStringRunVar("MIN-COLUMN", minHcolumn);
   return PrimChecks.procedure.report(5599, 5605, PrimChecks.math.minus(5617, 5618, PrimChecks.validator.checkArg('-', 5617, 5618, 1, maxHcolumn), PrimChecks.validator.checkArg('-', 5617, 5618, 1, minHcolumn)));
 }))
-world.observer.setVariable("red-green", 50);
-world.observer.setVariable("colors?", true);
-world.observer.setVariable("sample-space", 100);
-world.observer.setVariable("height", 30);
+world.observer.setGlobal("red-green", 50);
+world.observer.setGlobal("colors?", true);
+world.observer.setGlobal("sample-space", 100);
+world.observer.setGlobal("height", 30);

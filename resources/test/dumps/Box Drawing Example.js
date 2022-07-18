@@ -87,4 +87,4 @@ ProcedurePrims.defineCommand("setup-center", 1035, 2250, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1218, 1221, R); return R; }
   world.ticker.reset();
 }))
-world.observer.setVariable("edge", 8);
+world.observer.setGlobal("edge", 8);

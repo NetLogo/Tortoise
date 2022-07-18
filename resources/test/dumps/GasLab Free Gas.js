@@ -156,11 +156,11 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 583, 782, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
-  world.observer.setVariable("max-tick-delta", 0.1073);
+  world.observer.setGlobal("max-tick-delta", 0.1073);
   var R = ProcedurePrims.callCommand("make-particles"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("update-variables"); if (R === DeathInterrupt) { return R; }
-  world.observer.setVariable("init-avg-speed", world.observer.getGlobal("avg-speed"));
-  world.observer.setVariable("init-avg-energy", world.observer.getGlobal("avg-energy"));
+  world.observer.setGlobal("init-avg-speed", world.observer.getGlobal("avg-speed"));
+  world.observer.setGlobal("init-avg-energy", world.observer.getGlobal("avg-energy"));
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 790, 1114, (function() {
@@ -185,21 +185,21 @@ ProcedurePrims.defineCommand("go", 790, 1114, (function() {
   Prims.display();
 }))
 ProcedurePrims.defineCommand("update-variables", 1122, 1524, (function() {
-  world.observer.setVariable("medium", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(1174, 1179, "color"), 55); }));
-  world.observer.setVariable("slow", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(1222, 1227, "color"), 105); }));
-  world.observer.setVariable("fast", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(1269, 1274, "color"), 15); }));
-  world.observer.setVariable("percent-medium", PrimChecks.math.mult(1330, 1331, PrimChecks.math.div(1311, 1312, PrimChecks.validator.checkArg('/', 1311, 1312, 1, world.observer.getGlobal("medium")), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("PARTICLES"))), 100));
-  world.observer.setVariable("percent-slow", PrimChecks.math.mult(1380, 1381, PrimChecks.math.div(1361, 1362, PrimChecks.validator.checkArg('/', 1361, 1362, 1, world.observer.getGlobal("slow")), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("PARTICLES"))), 100));
-  world.observer.setVariable("percent-fast", PrimChecks.math.mult(1430, 1431, PrimChecks.math.div(1411, 1412, PrimChecks.validator.checkArg('/', 1411, 1412, 1, world.observer.getGlobal("fast")), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("PARTICLES"))), 100));
-  world.observer.setVariable("avg-speed", PrimChecks.list.mean(1453, 1457, PrimChecks.validator.checkArg('MEAN', 1453, 1457, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(1459, 1464, "speed"); }))));
-  world.observer.setVariable("avg-energy", PrimChecks.list.mean(1497, 1501, PrimChecks.validator.checkArg('MEAN', 1497, 1501, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(1503, 1509, "energy"); }))));
+  world.observer.setGlobal("medium", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(1174, 1179, "color"), 55); }));
+  world.observer.setGlobal("slow", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(1222, 1227, "color"), 105); }));
+  world.observer.setGlobal("fast", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(1269, 1274, "color"), 15); }));
+  world.observer.setGlobal("percent-medium", PrimChecks.math.mult(1330, 1331, PrimChecks.math.div(1311, 1312, PrimChecks.validator.checkArg('/', 1311, 1312, 1, world.observer.getGlobal("medium")), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("PARTICLES"))), 100));
+  world.observer.setGlobal("percent-slow", PrimChecks.math.mult(1380, 1381, PrimChecks.math.div(1361, 1362, PrimChecks.validator.checkArg('/', 1361, 1362, 1, world.observer.getGlobal("slow")), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("PARTICLES"))), 100));
+  world.observer.setGlobal("percent-fast", PrimChecks.math.mult(1430, 1431, PrimChecks.math.div(1411, 1412, PrimChecks.validator.checkArg('/', 1411, 1412, 1, world.observer.getGlobal("fast")), PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("PARTICLES"))), 100));
+  world.observer.setGlobal("avg-speed", PrimChecks.list.mean(1453, 1457, PrimChecks.validator.checkArg('MEAN', 1453, 1457, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(1459, 1464, "speed"); }))));
+  world.observer.setGlobal("avg-energy", PrimChecks.list.mean(1497, 1501, PrimChecks.validator.checkArg('MEAN', 1497, 1501, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(1503, 1509, "energy"); }))));
 }))
 ProcedurePrims.defineCommand("calculate-tick-delta", 1534, 2142, (function() {
   if (PrimChecks.agentset.anyWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.gt(PrimChecks.turtle.getVariable(2005, 2010, "speed"), 0); })) {
-    world.observer.setVariable("tick-delta", PrimChecks.list.min(2037, 2040, ListPrims.list(PrimChecks.math.div(2049, 2050, 1, PrimChecks.math.ceil(PrimChecks.list.max(2060, 2063, PrimChecks.validator.checkArg('MAX', 2060, 2063, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(2065, 2070, "speed"); }))))), world.observer.getGlobal("max-tick-delta"))));
+    world.observer.setGlobal("tick-delta", PrimChecks.list.min(2037, 2040, ListPrims.list(PrimChecks.math.div(2049, 2050, 1, PrimChecks.math.ceil(PrimChecks.list.max(2060, 2063, PrimChecks.validator.checkArg('MAX', 2060, 2063, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(2065, 2070, "speed"); }))))), world.observer.getGlobal("max-tick-delta"))));
   }
   else {
-    world.observer.setVariable("tick-delta", world.observer.getGlobal("max-tick-delta"));
+    world.observer.setGlobal("tick-delta", world.observer.getGlobal("max-tick-delta"));
   }
 }))
 ProcedurePrims.defineCommand("move", 2152, 2294, (function() {
@@ -291,8 +291,8 @@ ProcedurePrims.defineCommand("draw-vert-line", 7970, 8074, (function(xval) {
   plotManager.plotPoint(xval, plotManager.getPlotYMax());
   plotManager.raisePen();
 }))
-world.observer.setVariable("number-of-particles", 100);
-world.observer.setVariable("collide?", true);
-world.observer.setVariable("trace?", true);
-world.observer.setVariable("init-particle-speed", 10);
-world.observer.setVariable("particle-mass", 1);
+world.observer.setGlobal("number-of-particles", 100);
+world.observer.setGlobal("collide?", true);
+world.observer.setGlobal("trace?", true);
+world.observer.setGlobal("init-particle-speed", 10);
+world.observer.setGlobal("particle-mass", 1);

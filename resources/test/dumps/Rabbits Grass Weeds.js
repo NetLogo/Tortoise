@@ -137,9 +137,9 @@ ProcedurePrims.defineCommand("death", 1301, 1389, (function() {
     return SelfManager.self().die();
   }
 }))
-world.observer.setVariable("grass-grow-rate", 15);
-world.observer.setVariable("weeds-grow-rate", 0);
-world.observer.setVariable("grass-energy", 5);
-world.observer.setVariable("weed-energy", 0);
-world.observer.setVariable("number", 150);
-world.observer.setVariable("birth-threshold", 15);
+world.observer.setGlobal("grass-grow-rate", 15);
+world.observer.setGlobal("weeds-grow-rate", 0);
+world.observer.setGlobal("grass-energy", 5);
+world.observer.setGlobal("weed-energy", 0);
+world.observer.setGlobal("number", 150);
+world.observer.setGlobal("birth-threshold", 15);

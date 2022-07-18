@@ -72,10 +72,10 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 379, 1576, (function() {
   world.clearAll();
   if (Meta.isWeb) {
-    world.observer.setVariable("max-sheep", 10000);
+    world.observer.setGlobal("max-sheep", 10000);
   }
   else {
-    world.observer.setVariable("max-sheep", 30000);
+    world.observer.setGlobal("max-sheep", 30000);
   }
   if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
     var R = ProcedurePrims.ask(world.patches(), function() {
@@ -212,12 +212,12 @@ ProcedurePrims.defineCommand("display-labels", 4509, 4706, (function() {
     }
   }
 }))
-world.observer.setVariable("initial-number-sheep", 100);
-world.observer.setVariable("sheep-gain-from-food", 4);
-world.observer.setVariable("sheep-reproduce", 4);
-world.observer.setVariable("initial-number-wolves", 50);
-world.observer.setVariable("wolf-gain-from-food", 20);
-world.observer.setVariable("wolf-reproduce", 5);
-world.observer.setVariable("grass-regrowth-time", 30);
-world.observer.setVariable("show-energy?", false);
-world.observer.setVariable("model-version", "sheep-wolves");
+world.observer.setGlobal("initial-number-sheep", 100);
+world.observer.setGlobal("sheep-gain-from-food", 4);
+world.observer.setGlobal("sheep-reproduce", 4);
+world.observer.setGlobal("initial-number-wolves", 50);
+world.observer.setGlobal("wolf-gain-from-food", 20);
+world.observer.setGlobal("wolf-reproduce", 5);
+world.observer.setGlobal("grass-regrowth-time", 30);
+world.observer.setGlobal("show-energy?", false);
+world.observer.setGlobal("model-version", "sheep-wolves");

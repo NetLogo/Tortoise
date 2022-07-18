@@ -59,10 +59,10 @@ ProcedurePrims.defineCommand("go", 774, 1120, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtles()))) {
     if (Prims.equality(world.observer.getGlobal("countdown"), 0)) {
       var R = ProcedurePrims.callCommand("init-rockets"); if (R === DeathInterrupt) { return R; }
-      world.observer.setVariable("countdown", (Prims.ifElseValueBooleanCheck(world.observer.getGlobal("trails?")) ? 30 : 10));
+      world.observer.setGlobal("countdown", (Prims.ifElseValueBooleanCheck(world.observer.getGlobal("trails?")) ? 30 : 10));
     }
     else {
-      world.observer.setVariable("countdown", PrimChecks.math.minus(1063, 1064, PrimChecks.validator.checkArg('-', 1063, 1064, 1, world.observer.getGlobal("countdown")), 1));
+      world.observer.setGlobal("countdown", PrimChecks.math.minus(1063, 1064, PrimChecks.validator.checkArg('-', 1063, 1064, 1, world.observer.getGlobal("countdown")), 1));
     }
   }
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("projectile-motion"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1079, 1082, R); return R; }
@@ -120,10 +120,10 @@ ProcedurePrims.defineCommand("fade", 2692, 2822, (function() {
     return SelfManager.self().die();
   }
 }))
-world.observer.setVariable("trails?", true);
-world.observer.setVariable("max-fireworks", 20);
-world.observer.setVariable("fragments", 30);
-world.observer.setVariable("initial-x-vel", 2);
-world.observer.setVariable("initial-y-vel", 2);
-world.observer.setVariable("gravity", 0.5);
-world.observer.setVariable("fade-amount", 1.5);
+world.observer.setGlobal("trails?", true);
+world.observer.setGlobal("max-fireworks", 20);
+world.observer.setGlobal("fragments", 30);
+world.observer.setGlobal("initial-x-vel", 2);
+world.observer.setGlobal("initial-y-vel", 2);
+world.observer.setGlobal("gravity", 0.5);
+world.observer.setGlobal("fade-amount", 1.5);

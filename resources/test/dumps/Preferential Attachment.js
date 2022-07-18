@@ -151,5 +151,5 @@ ProcedurePrims.defineReporter("limit-magnitude", 2777, 2906, (function(number, l
   }
   return PrimChecks.procedure.report(2892, 2898, number);
 }))
-world.observer.setVariable("plot?", true);
-world.observer.setVariable("layout?", true);
+world.observer.setGlobal("plot?", true);
+world.observer.setGlobal("layout?", true);

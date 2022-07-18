@@ -100,7 +100,7 @@ ProcedurePrims.defineCommand("go", 884, 2025, (function() {
 ProcedurePrims.defineCommand("draw-cells", 2078, 2355, (function() {
   if (MousePrims.isDown()) {
     if (Prims.equality(world.observer.getGlobal("erasing?"), 0)) {
-      world.observer.setVariable("erasing?", PrimChecks.agentset.any(PrimChecks.agentset.breedOn("CELLS", PrimChecks.validator.checkArg('CELLS-ON', 2158, 2166, 816, world.getPatchAt(MousePrims.getX(), MousePrims.getY())))));
+      world.observer.setGlobal("erasing?", PrimChecks.agentset.any(PrimChecks.agentset.breedOn("CELLS", PrimChecks.validator.checkArg('CELLS-ON', 2158, 2166, 816, world.getPatchAt(MousePrims.getX(), MousePrims.getY())))));
     }
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2205, 2208, 1904, world.getPatchAt(MousePrims.getX(), MousePrims.getY())), function() {
       if (world.observer.getGlobal("erasing?")) {
@@ -113,7 +113,7 @@ ProcedurePrims.defineCommand("draw-cells", 2078, 2355, (function() {
     Prims.display();
   }
   else {
-    world.observer.setVariable("erasing?", 0);
+    world.observer.setGlobal("erasing?", 0);
   }
 }))
 ProcedurePrims.defineCommand("draw", 2398, 2599, (function() {
@@ -147,4 +147,4 @@ ProcedurePrims.defineCommand("update", 2902, 3271, (function() {
   }
   PrimChecks.patch.setVariable(3217, 3231, "live-neighbors", 0);
 }))
-world.observer.setVariable("initial-density", 35);
+world.observer.setGlobal("initial-density", 35);

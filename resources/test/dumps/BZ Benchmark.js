@@ -57,7 +57,7 @@ ProcedurePrims.defineCommand("benchmark", 52, 141, (function() {
   for (let _index_105_111 = 0, _repeatcount_105_111 = StrictMath.floor(20); _index_105_111 < _repeatcount_105_111; _index_105_111++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
-  world.observer.setVariable("result", workspace.timer.elapsed());
+  world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
 ProcedurePrims.defineCommand("setup", 149, 292, (function() {
   world.clearAll();
@@ -98,7 +98,7 @@ ProcedurePrims.defineCommand("find-new-state", 579, 1094, (function() {
     }
   }
 }))
-world.observer.setVariable("n", 200);
-world.observer.setVariable("k1", 3);
-world.observer.setVariable("k2", 3);
-world.observer.setVariable("g", 28);
+world.observer.setGlobal("n", 200);
+world.observer.setGlobal("k1", 3);
+world.observer.setGlobal("k2", 3);
+world.observer.setGlobal("g", 28);

@@ -52,7 +52,7 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 353, 1051, (function() {
   world.clearAll();
-  world.observer.setVariable("show-water?", true);
+  world.observer.setGlobal("show-water?", true);
   var R = ProcedurePrims.ask(world.patches(), function() {
     if (world.observer.getGlobal("bumpy?")) {
       if (world.observer.getGlobal("hill?")) {
@@ -79,8 +79,8 @@ ProcedurePrims.defineCommand("setup", 353, 1051, (function() {
     PrimChecks.patch.setVariable(873, 879, "drain?", true);
     PrimChecks.patch.setVariable(895, 904, "elevation", -10000000);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(823, 826, R); return R; }
-  world.observer.setVariable("drains", PrimChecks.agentset.with(938, 942, world.patches(), function() { return PrimChecks.patch.getVariable(944, 950, "drain?"); }));
-  world.observer.setVariable("land", PrimChecks.agentset.with(971, 975, world.patches(), function() {
+  world.observer.setGlobal("drains", PrimChecks.agentset.with(938, 942, world.patches(), function() { return PrimChecks.patch.getVariable(944, 950, "drain?"); }));
+  world.observer.setGlobal("land", PrimChecks.agentset.with(971, 975, world.patches(), function() {
     return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 977, 980, 2, PrimChecks.patch.getVariable(981, 987, "drain?")));
   }));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1016, 1019, 1904, world.observer.getGlobal("land")), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1016, 1019, R); return R; }
@@ -95,11 +95,11 @@ ProcedurePrims.defineCommand("recolor", 1059, 1245, (function() {
   }
 }))
 ProcedurePrims.defineCommand("show-water", 1253, 1310, (function() {
-  world.observer.setVariable("show-water?", true);
+  world.observer.setGlobal("show-water?", true);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1289, 1292, 1904, world.observer.getGlobal("land")), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1289, 1292, R); return R; }
 }))
 ProcedurePrims.defineCommand("hide-water", 1318, 1376, (function() {
-  world.observer.setVariable("show-water?", false);
+  world.observer.setGlobal("show-water?", false);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1355, 1358, 1904, world.observer.getGlobal("land")), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1355, 1358, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 1384, 1929, (function() {
@@ -135,8 +135,8 @@ ProcedurePrims.defineCommand("flow", 1937, 2756, (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2712, 2715, R); return R; }
   }
 }))
-world.observer.setVariable("terrain-smoothness", 6);
-world.observer.setVariable("rainfall", 0.1);
-world.observer.setVariable("bumpy?", true);
-world.observer.setVariable("soil-hardness", 0.8);
-world.observer.setVariable("hill?", false);
+world.observer.setGlobal("terrain-smoothness", 6);
+world.observer.setGlobal("rainfall", 0.1);
+world.observer.setGlobal("bumpy?", true);
+world.observer.setGlobal("soil-hardness", 0.8);
+world.observer.setGlobal("hill?", false);

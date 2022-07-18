@@ -54,29 +54,29 @@ ProcedurePrims.defineCommand("benchmark", 577, 702, (function() {
   PrimChecks.math.randomSeed(589, 600, 12345);
   workspace.timer.reset();
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
-  world.observer.setVariable("manage-view-updates?", false);
+  world.observer.setGlobal("manage-view-updates?", false);
   for (let _index_664_670 = 0, _repeatcount_664_670 = StrictMath.floor(3500); _index_664_670 < _repeatcount_664_670; _index_664_670++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
-  world.observer.setVariable("result", workspace.timer.elapsed());
+  world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
 ProcedurePrims.defineCommand("setup", 710, 1282, (function() {
   world.clearAll();
   world.ticker.reset();
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
-  world.observer.setVariable("manage-view-updates?", true);
-  world.observer.setVariable("view-update-rate", 0.2);
-  world.observer.setVariable("box-edge", PrimChecks.math.minus(857, 858, world.topology.maxPxcor, 1));
+  world.observer.setGlobal("manage-view-updates?", true);
+  world.observer.setGlobal("view-update-rate", 0.2);
+  world.observer.setGlobal("box-edge", PrimChecks.math.minus(857, 858, world.topology.maxPxcor, 1));
   var R = ProcedurePrims.callCommand("make-box"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("make-particles"); if (R === DeathInterrupt) { return R; }
-  world.observer.setVariable("tick-length", PrimChecks.math.div(1112, 1113, 1, PrimChecks.math.ceil(PrimChecks.list.max(1123, 1126, PrimChecks.validator.checkArg('MAX', 1123, 1126, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(1128, 1133, "speed"); }))))));
-  world.observer.setVariable("original-tick-length", world.observer.getGlobal("tick-length"));
-  world.observer.setVariable("colliding-particle-1", Nobody);
-  world.observer.setVariable("colliding-particle-2", Nobody);
+  world.observer.setGlobal("tick-length", PrimChecks.math.div(1112, 1113, 1, PrimChecks.math.ceil(PrimChecks.list.max(1123, 1126, PrimChecks.validator.checkArg('MAX', 1123, 1126, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(1128, 1133, "speed"); }))))));
+  world.observer.setGlobal("original-tick-length", world.observer.getGlobal("tick-length"));
+  world.observer.setGlobal("colliding-particle-1", Nobody);
+  world.observer.setGlobal("colliding-particle-2", Nobody);
   var R = ProcedurePrims.callCommand("rebuild-collision-list"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("rebuild-collision-list", 1290, 1433, (function() {
-  world.observer.setVariable("colliding-particles", []);
+  world.observer.setGlobal("colliding-particles", []);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
     var R = ProcedurePrims.callCommand("check-for-wall-collision"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1344, 1347, R); return R; }
@@ -86,7 +86,7 @@ ProcedurePrims.defineCommand("rebuild-collision-list", 1290, 1433, (function() {
 }))
 ProcedurePrims.defineCommand("go", 1442, 3434, (function() {
   if (NLType.checks.isValidTurtle(world.observer.getGlobal("colliding-particle-2"))) {
-    world.observer.setVariable("colliding-particles", PrimChecks.list.filter(2045, 2051, PrimChecks.task.checked(2052, 2053, function(collision) {
+    world.observer.setGlobal("colliding-particles", PrimChecks.list.filter(2045, 2051, PrimChecks.task.checked(2052, 2053, function(collision) {
       PrimChecks.procedure.runArgCountCheck('runresult', 2075, 2268, 1, arguments.length);
       return (((!Prims.equality(PrimChecks.list.item(2075, 2079, 1, PrimChecks.validator.checkArg('ITEM', 2075, 2079, 12, collision)), world.observer.getGlobal("colliding-particle-1")) && !Prims.equality(PrimChecks.list.item(2126, 2130, 2, PrimChecks.validator.checkArg('ITEM', 2126, 2130, 12, collision)), world.observer.getGlobal("colliding-particle-1"))) && !Prims.equality(PrimChecks.list.item(2177, 2181, 1, PrimChecks.validator.checkArg('ITEM', 2177, 2181, 12, collision)), world.observer.getGlobal("colliding-particle-2"))) && !Prims.equality(PrimChecks.list.item(2228, 2232, 2, PrimChecks.validator.checkArg('ITEM', 2228, 2232, 12, collision)), world.observer.getGlobal("colliding-particle-2")));
     }, "[ [collision] -> item 1 collision != colliding-particle-1 and item 2 collision != colliding-particle-1 and item 1 collision != colliding-particle-2 and item 2 collision != colliding-particle-2 ]", true, false), PrimChecks.validator.checkArg('FILTER', 2045, 2051, 8, world.observer.getGlobal("colliding-particles"))));
@@ -98,7 +98,7 @@ ProcedurePrims.defineCommand("go", 1442, 3434, (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2354, 2357, R); return R; }
   }
   else {
-    world.observer.setVariable("colliding-particles", PrimChecks.list.filter(2446, 2452, PrimChecks.task.checked(2453, 2454, function(collision) {
+    world.observer.setGlobal("colliding-particles", PrimChecks.list.filter(2446, 2452, PrimChecks.task.checked(2453, 2454, function(collision) {
       PrimChecks.procedure.runArgCountCheck('runresult', 2476, 2567, 1, arguments.length);
       return (!Prims.equality(PrimChecks.list.item(2476, 2480, 1, PrimChecks.validator.checkArg('ITEM', 2476, 2480, 12, collision)), world.observer.getGlobal("colliding-particle-1")) && !Prims.equality(PrimChecks.list.item(2527, 2531, 2, PrimChecks.validator.checkArg('ITEM', 2527, 2531, 12, collision)), world.observer.getGlobal("colliding-particle-1")));
     }, "[ [collision] -> item 1 collision != colliding-particle-1 and item 2 collision != colliding-particle-1 ]", true, false), PrimChecks.validator.checkArg('FILTER', 2446, 2452, 8, world.observer.getGlobal("colliding-particles"))));
@@ -122,7 +122,7 @@ ProcedurePrims.defineCommand("go", 1442, 3434, (function() {
   if (world.observer.getGlobal("manage-view-updates?")) {
     if (Prims.gt(PrimChecks.math.minus(3338, 3339, world.ticker.tickCount(), PrimChecks.validator.checkArg('-', 3338, 3339, 1, world.observer.getGlobal("last-view-update"))), world.observer.getGlobal("view-update-rate"))) {
       Prims.display();
-      world.observer.setVariable("last-view-update", world.ticker.tickCount());
+      world.observer.setGlobal("last-view-update", world.ticker.tickCount());
     }
   }
 }))
@@ -156,7 +156,7 @@ ProcedurePrims.defineCommand("check-for-particle-collision", 3595, 10888, (funct
     }
     if (Prims.gt(timeHtoHcollision, 0)) {
       let collidingHpair = ListPrims.list(PrimChecks.math.plus(10404, 10405, PrimChecks.validator.checkArg('+', 10404, 10405, 1, timeHtoHcollision), world.ticker.tickCount()), SelfManager.self(), SelfManager.myself()); ProcedurePrims.stack().currentContext().registerStringRunVar("COLLIDING-PAIR", collidingHpair);
-      world.observer.setVariable("colliding-particles", PrimChecks.list.fput(collidingHpair, PrimChecks.validator.checkArg('FPUT', 10596, 10600, 8, world.observer.getGlobal("colliding-particles"))));
+      world.observer.setGlobal("colliding-particles", PrimChecks.list.fput(collidingHpair, PrimChecks.validator.checkArg('FPUT', 10596, 10600, 8, world.observer.getGlobal("colliding-particles"))));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4222, 4225, R); return R; }
 }))
@@ -218,16 +218,16 @@ ProcedurePrims.defineCommand("check-for-wall-collision", 10897, 13047, (function
 }))
 ProcedurePrims.defineCommand("assign-colliding-wall", 13055, 13589, (function(timeHtoHcollision, wall) {
   let collidingHpair = ListPrims.list(PrimChecks.math.plus(13502, 13503, PrimChecks.validator.checkArg('+', 13502, 13503, 1, timeHtoHcollision), world.ticker.tickCount()), SelfManager.self(), wall); ProcedurePrims.stack().currentContext().registerStringRunVar("COLLIDING-PAIR", collidingHpair);
-  world.observer.setVariable("colliding-particles", PrimChecks.list.fput(collidingHpair, PrimChecks.validator.checkArg('FPUT', 13548, 13552, 8, world.observer.getGlobal("colliding-particles"))));
+  world.observer.setGlobal("colliding-particles", PrimChecks.list.fput(collidingHpair, PrimChecks.validator.checkArg('FPUT', 13548, 13552, 8, world.observer.getGlobal("colliding-particles"))));
 }))
 ProcedurePrims.defineCommand("sort-collisions", 13598, 15397, (function() {
-  world.observer.setVariable("colliding-particles", PrimChecks.list.filter(13920, 13926, PrimChecks.task.checked(13927, 13928, function(collision) {
+  world.observer.setGlobal("colliding-particles", PrimChecks.list.filter(13920, 13926, PrimChecks.task.checked(13927, 13928, function(collision) {
     PrimChecks.procedure.runArgCountCheck('runresult', 13948, 14036, 1, arguments.length);
     return (!Prims.equality(PrimChecks.list.item(13948, 13952, 1, PrimChecks.validator.checkArg('ITEM', 13948, 13952, 12, collision)), world.observer.getGlobal("colliding-particle-1")) || !Prims.equality(PrimChecks.list.item(13996, 14000, 2, PrimChecks.validator.checkArg('ITEM', 13996, 14000, 12, collision)), world.observer.getGlobal("colliding-particle-2")));
   }, "[ [collision] -> item 1 collision != colliding-particle-1 or item 2 collision != colliding-particle-2 ]", true, false), PrimChecks.validator.checkArg('FILTER', 13920, 13926, 8, world.observer.getGlobal("colliding-particles"))));
-  world.observer.setVariable("colliding-particle-1", Nobody);
-  world.observer.setVariable("colliding-particle-2", Nobody);
-  world.observer.setVariable("tick-length", world.observer.getGlobal("original-tick-length"));
+  world.observer.setGlobal("colliding-particle-1", Nobody);
+  world.observer.setGlobal("colliding-particle-2", Nobody);
+  world.observer.setGlobal("tick-length", world.observer.getGlobal("original-tick-length"));
   if (Prims.equality(world.observer.getGlobal("colliding-particles"), [])) {
     return PrimChecks.procedure.stop(14199, 14203);
   }
@@ -241,12 +241,12 @@ ProcedurePrims.defineCommand("sort-collisions", 13598, 15397, (function() {
   let dt = PrimChecks.list.item(14696, 14700, 0, PrimChecks.validator.checkArg('ITEM', 14696, 14700, 12, winner)); ProcedurePrims.stack().currentContext().registerStringRunVar("DT", dt);
   if (Prims.gt(dt, 0)) {
     if (Prims.lte(PrimChecks.math.minus(14921, 14922, PrimChecks.validator.checkArg('-', 14921, 14922, 1, dt), world.ticker.tickCount()), 1)) {
-      world.observer.setVariable("tick-length", PrimChecks.math.minus(15108, 15109, PrimChecks.validator.checkArg('-', 15108, 15109, 1, dt), world.ticker.tickCount()));
-      world.observer.setVariable("colliding-particle-1", PrimChecks.list.item(15146, 15150, 1, PrimChecks.validator.checkArg('ITEM', 15146, 15150, 12, winner)));
-      world.observer.setVariable("colliding-particle-2", PrimChecks.list.item(15190, 15194, 2, PrimChecks.validator.checkArg('ITEM', 15190, 15194, 12, winner)));
+      world.observer.setGlobal("tick-length", PrimChecks.math.minus(15108, 15109, PrimChecks.validator.checkArg('-', 15108, 15109, 1, dt), world.ticker.tickCount()));
+      world.observer.setGlobal("colliding-particle-1", PrimChecks.list.item(15146, 15150, 1, PrimChecks.validator.checkArg('ITEM', 15146, 15150, 12, winner)));
+      world.observer.setGlobal("colliding-particle-2", PrimChecks.list.item(15190, 15194, 2, PrimChecks.validator.checkArg('ITEM', 15190, 15194, 12, winner)));
     }
     else {
-      world.observer.setVariable("tick-length", 1);
+      world.observer.setGlobal("tick-length", 1);
     }
   }
 }))
@@ -382,7 +382,7 @@ ProcedurePrims.defineCommand("test-time-reversal", 22865, 23061, (function(n) {
   }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { PrimChecks.turtleOrLink.setVariable(23047, 23052, "color", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(23027, 23030, R); return R; }
 }))
-world.observer.setVariable("number", 200);
-world.observer.setVariable("largest-particle-size", 4);
-world.observer.setVariable("color-scheme", "red-green-blue");
-world.observer.setVariable("smallest-particle-size", 1);
+world.observer.setGlobal("number", 200);
+world.observer.setGlobal("largest-particle-size", 4);
+world.observer.setGlobal("color-scheme", "red-green-blue");
+world.observer.setGlobal("smallest-particle-size", 1);

@@ -98,7 +98,7 @@ ProcedurePrims.defineCommand("setup-cars", 270, 914, (function() {
     PrimChecks.turtle.setVariable(813, 822, "speed-min", 0);
     var R = ProcedurePrims.callCommand("separate-cars"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(600, 614, R); return R; }
-  world.observer.setVariable("sample-car", PrimChecks.list.oneOf(864, 870, world.turtles()));
+  world.observer.setGlobal("sample-car", PrimChecks.list.oneOf(864, 870, world.turtles()));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 881, 884, 1904, world.observer.getGlobal("sample-car")), function() { PrimChecks.turtleOrLink.setVariable(902, 907, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(881, 884, R); return R; }
 }))
 ProcedurePrims.defineCommand("separate-cars", 1028, 1124, (function() {
@@ -132,6 +132,6 @@ ProcedurePrims.defineCommand("slow-down-car", 1594, 1764, (function(carHahead) {
 ProcedurePrims.defineCommand("speed-up-car", 1772, 1838, (function() {
   PrimChecks.turtle.setVariable(1811, 1816, "speed", PrimChecks.math.plus(1823, 1824, PrimChecks.validator.checkArg('+', 1823, 1824, 1, PrimChecks.turtle.getVariable(1817, 1822, "speed")), PrimChecks.validator.checkArg('+', 1823, 1824, 1, world.observer.getGlobal("acceleration"))));
 }))
-world.observer.setVariable("number-of-cars", 20);
-world.observer.setVariable("deceleration", 0.026);
-world.observer.setVariable("acceleration", 0.0045);
+world.observer.setGlobal("number-of-cars", 20);
+world.observer.setGlobal("deceleration", 0.026);
+world.observer.setGlobal("acceleration", 0.0045);

@@ -86,8 +86,8 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 701, 1311, (function() {
   world.clearAll();
-  world.observer.setVariable("single-outcomes", []);
-  world.observer.setVariable("pair-outcomes", []);
+  world.observer.setGlobal("single-outcomes", []);
+  world.observer.setGlobal("pair-outcomes", []);
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(813, 817, world.patches(), function() { return Prims.gt(PrimChecks.patch.getVariable(819, 824, "pxcor"), 4); }), function() {
     PrimChecks.patch.setVariable(840, 846, "column", PrimChecks.math.floor(PrimChecks.math.div(866, 867, PrimChecks.math.minus(861, 862, PrimChecks.validator.checkArg('-', 861, 862, 1, PrimChecks.patch.getVariable(855, 860, "pxcor")), 1), 2)));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(801, 804, R); return R; }
@@ -103,8 +103,8 @@ ProcedurePrims.defineCommand("setup", 701, 1311, (function() {
       PrimChecks.patch.setVariable(1109, 1115, "pcolor", PrimChecks.math.minus(1122, 1123, 35, 1));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1010, 1013, R); return R; }
-  world.observer.setVariable("top-row", PrimChecks.agentset.with(1176, 1180, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(1182, 1187, "pycor"), world.topology.maxPycor); }));
-  world.observer.setVariable("generators", PrimChecks.agentset.with(1226, 1230, PrimChecks.validator.checkArg('WITH', 1226, 1230, 112, world.observer.getGlobal("top-row")), function() {
+  world.observer.setGlobal("top-row", PrimChecks.agentset.with(1176, 1180, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(1182, 1187, "pycor"), world.topology.maxPycor); }));
+  world.observer.setGlobal("generators", PrimChecks.agentset.with(1226, 1230, PrimChecks.validator.checkArg('WITH', 1226, 1230, 112, world.observer.getGlobal("top-row")), function() {
     return (Prims.equality(PrimChecks.patch.getVariable(1232, 1237, "pxcor"), -1) || Prims.equality(PrimChecks.patch.getVariable(1246, 1251, "pxcor"), 0));
   }));
   world.ticker.reset();
@@ -143,9 +143,9 @@ ProcedurePrims.defineCommand("roll-dice", 1835, 2601, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2124, 2127, R); return R; }
   let total = PrimChecks.list.sum(2384, 2387, PrimChecks.validator.checkArg('SUM', 2384, 2387, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { return PrimChecks.turtle.getVariable(2389, 2398, "die-value"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL", total);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { PrimChecks.turtle.setVariable(2439, 2447, "pair-sum", total); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2417, 2420, R); return R; }
-  world.observer.setVariable("pair-outcomes", PrimChecks.list.lput(total, PrimChecks.validator.checkArg('LPUT', 2503, 2507, 8, world.observer.getGlobal("pair-outcomes"))));
+  world.observer.setGlobal("pair-outcomes", PrimChecks.list.lput(total, PrimChecks.validator.checkArg('LPUT', 2503, 2507, 8, world.observer.getGlobal("pair-outcomes"))));
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() {
-    world.observer.setVariable("single-outcomes", PrimChecks.list.lput(PrimChecks.turtle.getVariable(2573, 2582, "die-value"), PrimChecks.validator.checkArg('LPUT', 2568, 2572, 8, world.observer.getGlobal("single-outcomes"))));
+    world.observer.setGlobal("single-outcomes", PrimChecks.list.lput(PrimChecks.turtle.getVariable(2573, 2582, "die-value"), PrimChecks.validator.checkArg('LPUT', 2568, 2572, 8, world.observer.getGlobal("single-outcomes"))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2530, 2533, R); return R; }
 }))
 ProcedurePrims.defineCommand("move-paired-dice", 2609, 3010, (function() {
@@ -240,4 +240,4 @@ ProcedurePrims.defineCommand("bump-down", 4881, 5038, (function(candidates) {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4965, 4968, R); return R; }
   }
 }))
-world.observer.setVariable("stop-at-top?", false);
+world.observer.setGlobal("stop-at-top?", false);

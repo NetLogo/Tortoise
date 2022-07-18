@@ -87,7 +87,7 @@ ProcedurePrims.defineCommand("go", 296, 676, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(396, 399, R); return R; }
   world.ticker.tick();
 }))
-world.observer.setVariable("color-inc", 7);
-world.observer.setVariable("init-color", 45);
-world.observer.setVariable("init-x", 0);
-world.observer.setVariable("init-y", -50);
+world.observer.setGlobal("color-inc", 7);
+world.observer.setGlobal("init-color", 45);
+world.observer.setGlobal("init-x", 0);
+world.observer.setGlobal("init-y", -50);

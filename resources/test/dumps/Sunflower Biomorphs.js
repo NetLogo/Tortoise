@@ -60,8 +60,8 @@ ProcedurePrims.defineCommand("setup", 1076, 1428, (function() {
     SelfManager.self().hideTurtle(true);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1096, 1111, R); return R; }
   var R = ProcedurePrims.callCommand("arrange-spawners"); if (R === DeathInterrupt) { return R; }
-  world.observer.setVariable("first-parent", Nobody);
-  world.observer.setVariable("mouse-handled?", false);
+  world.observer.setGlobal("first-parent", Nobody);
+  world.observer.setGlobal("mouse-handled?", false);
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("arrange-spawners", 1436, 1810, (function() {
@@ -99,18 +99,18 @@ ProcedurePrims.defineCommand("go", 1818, 2638, (function() {
   if (MousePrims.isDown()) {
     if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2518, 2521, 2, world.observer.getGlobal("mouse-handled?")))) {
       var R = ProcedurePrims.callCommand("handle-mouse-down"); if (R === DeathInterrupt) { return R; }
-      world.observer.setVariable("mouse-handled?", true);
+      world.observer.setGlobal("mouse-handled?", true);
     }
   }
   else {
-    world.observer.setVariable("mouse-handled?", false);
+    world.observer.setGlobal("mouse-handled?", false);
   }
 }))
 ProcedurePrims.defineCommand("repopulate-from-two", 2646, 3518, (function(parent1, parent2) {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PETALS"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2686, 2689, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() {
     if (world.observer.getGlobal("controlled-mutation?")) {
-      world.observer.setVariable("mutation", PrimChecks.math.div(2884, 2885, PrimChecks.math.mult(2880, 2881, PrimChecks.validator.checkArg('*', 2880, 2881, 1, PrimChecks.turtle.getVariable(2876, 2879, "who")), 1), PrimChecks.math.mult(2892, 2893, PrimChecks.validator.checkArg('*', 2892, 2893, 1, world.observer.getGlobal("rows")), PrimChecks.validator.checkArg('*', 2892, 2893, 1, world.observer.getGlobal("columns")))));
+      world.observer.setGlobal("mutation", PrimChecks.math.div(2884, 2885, PrimChecks.math.mult(2880, 2881, PrimChecks.validator.checkArg('*', 2880, 2881, 1, PrimChecks.turtle.getVariable(2876, 2879, "who")), 1), PrimChecks.math.mult(2892, 2893, PrimChecks.validator.checkArg('*', 2892, 2893, 1, world.observer.getGlobal("rows")), PrimChecks.validator.checkArg('*', 2892, 2893, 1, world.observer.getGlobal("columns")))));
     }
     PrimChecks.turtle.setVariable(2987, 2997, "num-colors", PrimChecks.math.plus(3089, 3090, PrimChecks.math.plus(3044, 3045, PrimChecks.validator.checkArg('+', 3044, 3045, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 3012, 3014, 1904, PrimChecks.list.oneOf(3015, 3021, ListPrims.list(parent1, parent2))), function() { return PrimChecks.turtle.getVariable(3000, 3010, "num-colors"); })), PrimChecks.math.mod(3082, 3085, PrimChecks.math.int(3046, 3049, PrimChecks.math.randomNormal(3050, 3063, 0, PrimChecks.math.mult(3076, 3077, PrimChecks.validator.checkArg('*', 3076, 3077, 1, world.observer.getGlobal("mutation")), 10))), 15)), 1));
     PrimChecks.turtle.setVariable(3101, 3110, "step-size", PrimChecks.math.plus(3156, 3157, PrimChecks.validator.checkArg('+', 3156, 3157, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 3124, 3126, 1904, PrimChecks.list.oneOf(3127, 3133, ListPrims.list(parent1, parent2))), function() { return PrimChecks.turtle.getVariable(3113, 3122, "step-size"); })), PrimChecks.math.randomNormal(3158, 3171, 0, PrimChecks.math.div(3184, 3185, PrimChecks.validator.checkArg('/', 3184, 3185, 1, world.observer.getGlobal("mutation")), 5))));
@@ -125,7 +125,7 @@ ProcedurePrims.defineCommand("repopulate-from-one", 3526, 4123, (function(parent
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PETALS"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3558, 3561, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() {
     if (world.observer.getGlobal("controlled-mutation?")) {
-      world.observer.setVariable("mutation", PrimChecks.math.div(3647, 3648, PrimChecks.math.mult(3643, 3644, PrimChecks.validator.checkArg('*', 3643, 3644, 1, PrimChecks.turtle.getVariable(3639, 3642, "who")), 1), PrimChecks.math.mult(3655, 3656, PrimChecks.validator.checkArg('*', 3655, 3656, 1, world.observer.getGlobal("rows")), PrimChecks.validator.checkArg('*', 3655, 3656, 1, world.observer.getGlobal("columns")))));
+      world.observer.setGlobal("mutation", PrimChecks.math.div(3647, 3648, PrimChecks.math.mult(3643, 3644, PrimChecks.validator.checkArg('*', 3643, 3644, 1, PrimChecks.turtle.getVariable(3639, 3642, "who")), 1), PrimChecks.math.mult(3655, 3656, PrimChecks.validator.checkArg('*', 3655, 3656, 1, world.observer.getGlobal("rows")), PrimChecks.validator.checkArg('*', 3655, 3656, 1, world.observer.getGlobal("columns")))));
     }
     PrimChecks.turtle.setVariable(3676, 3686, "num-colors", PrimChecks.math.plus(3758, 3759, PrimChecks.math.mod(3751, 3754, PrimChecks.math.plus(3712, 3713, PrimChecks.validator.checkArg('+', 3712, 3713, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 3701, 3703, 1904, parent1), function() { return PrimChecks.turtle.getVariable(3689, 3699, "num-colors"); })), PrimChecks.math.int(3714, 3717, PrimChecks.math.randomNormal(3718, 3731, 0, PrimChecks.math.mult(3744, 3745, PrimChecks.validator.checkArg('*', 3744, 3745, 1, world.observer.getGlobal("mutation")), 10)))), 15), 1));
     PrimChecks.turtle.setVariable(3770, 3779, "step-size", PrimChecks.math.plus(3803, 3804, PrimChecks.validator.checkArg('+', 3803, 3804, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 3792, 3794, 1904, parent1), function() { return PrimChecks.turtle.getVariable(3781, 3790, "step-size"); })), PrimChecks.math.randomNormal(3805, 3818, 0, PrimChecks.math.div(3831, 3832, PrimChecks.validator.checkArg('/', 3831, 3832, 1, world.observer.getGlobal("mutation")), 5))));
@@ -144,11 +144,11 @@ ProcedurePrims.defineCommand("handle-mouse-down", 4131, 4953, (function() {
   else {
     if (!Prims.equality(world.observer.getGlobal("first-parent"), Nobody)) {
       var R = ProcedurePrims.callCommand("repopulate-from-two", world.observer.getGlobal("first-parent"), newHparent); if (R === DeathInterrupt) { return R; }
-      world.observer.setVariable("first-parent", Nobody);
+      world.observer.setGlobal("first-parent", Nobody);
       var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(4479, 4485, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4461, 4464, R); return R; }
     }
     else {
-      world.observer.setVariable("first-parent", newHparent);
+      world.observer.setGlobal("first-parent", newHparent);
       var R = ProcedurePrims.ask(world.patches(), function() {
         if (PrimChecks.list.member(newHparent, PrimChecks.agentset.withMin(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return SelfManager.self().distance(SelfManager.myself()); }))) {
           PrimChecks.patch.setVariable(4917, 4923, "pcolor", PrimChecks.math.minus(4929, 4930, 5, 3));
@@ -157,8 +157,8 @@ ProcedurePrims.defineCommand("handle-mouse-down", 4131, 4953, (function() {
     }
   }
 }))
-world.observer.setVariable("rows", 5);
-world.observer.setVariable("columns", 5);
-world.observer.setVariable("mutation", 0.14);
-world.observer.setVariable("asexual?", true);
-world.observer.setVariable("controlled-mutation?", false);
+world.observer.setGlobal("rows", 5);
+world.observer.setGlobal("columns", 5);
+world.observer.setGlobal("mutation", 0.14);
+world.observer.setGlobal("asexual?", true);
+world.observer.setGlobal("controlled-mutation?", false);

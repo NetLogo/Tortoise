@@ -116,7 +116,7 @@ ProcedurePrims.defineCommand("make-newcomer", 763, 957, (function() {
     PrimChecks.turtle.setVariable(831, 835, "size", 1.8);
     PrimChecks.turtle.setVariable(848, 858, "incumbent?", false);
     PrimChecks.turtle.setVariable(873, 881, "in-team?", false);
-    world.observer.setVariable("newcomer", SelfManager.self());
+    world.observer.setGlobal("newcomer", SelfManager.self());
     PrimChecks.turtle.setVariable(918, 926, "downtime", 0);
     PrimChecks.turtle.setVariable(937, 946, "explored?", false);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(779, 793, R); return R; }
@@ -232,8 +232,8 @@ ProcedurePrims.defineCommand("layout", 4150, 4233, (function() {
   }
 }))
 ProcedurePrims.defineCommand("find-all-components", 4416, 5176, (function() {
-  world.observer.setVariable("components", []);
-  world.observer.setVariable("giant-component-size", 0);
+  world.observer.setGlobal("components", []);
+  world.observer.setGlobal("giant-component-size", 0);
   var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtle.setVariable(4506, 4515, "explored?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4488, 4491, R); return R; }
   while (true) {
     let start = PrimChecks.agentset.oneOfWith(null, null, world.turtles(), function() {
@@ -242,12 +242,12 @@ ProcedurePrims.defineCommand("find-all-components", 4416, 5176, (function() {
     if (Prims.equality(start, Nobody)) {
       return PrimChecks.procedure.stop(4713, 4717);
     }
-    world.observer.setVariable("component-size", 0);
+    world.observer.setGlobal("component-size", 0);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4877, 4880, 1904, start), function() { var R = ProcedurePrims.callCommand("explore"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4877, 4880, R); return R; }
     if (Prims.gt(world.observer.getGlobal("component-size"), world.observer.getGlobal("giant-component-size"))) {
-      world.observer.setVariable("giant-component-size", world.observer.getGlobal("component-size"));
+      world.observer.setGlobal("giant-component-size", world.observer.getGlobal("component-size"));
     }
-    world.observer.setVariable("components", PrimChecks.list.lput(world.observer.getGlobal("component-size"), PrimChecks.validator.checkArg('LPUT', 5141, 5145, 8, world.observer.getGlobal("components"))));
+    world.observer.setGlobal("components", PrimChecks.list.lput(world.observer.getGlobal("component-size"), PrimChecks.validator.checkArg('LPUT', 5141, 5145, 8, world.observer.getGlobal("components"))));
   };
 }))
 ProcedurePrims.defineCommand("explore", 5232, 5378, (function() {
@@ -255,11 +255,11 @@ ProcedurePrims.defineCommand("explore", 5232, 5378, (function() {
     return PrimChecks.procedure.stop(5277, 5281);
   }
   PrimChecks.turtle.setVariable(5290, 5299, "explored?", true);
-  world.observer.setVariable("component-size", PrimChecks.math.plus(5341, 5342, PrimChecks.validator.checkArg('+', 5341, 5342, 1, world.observer.getGlobal("component-size")), 1));
+  world.observer.setGlobal("component-size", PrimChecks.math.plus(5341, 5342, PrimChecks.validator.checkArg('+', 5341, 5342, 1, world.observer.getGlobal("component-size")), 1));
   var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("LINKS"), function() { var R = ProcedurePrims.callCommand("explore"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5347, 5350, R); return R; }
 }))
-world.observer.setVariable("layout?", true);
-world.observer.setVariable("p", 40);
-world.observer.setVariable("q", 65);
-world.observer.setVariable("team-size", 4);
-world.observer.setVariable("max-downtime", 40);
+world.observer.setGlobal("layout?", true);
+world.observer.setGlobal("p", 40);
+world.observer.setGlobal("q", 65);
+world.observer.setGlobal("team-size", 4);
+world.observer.setGlobal("max-downtime", 40);

@@ -67,12 +67,12 @@ ProcedurePrims.defineCommand("setup", 433, 668, (function() {
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("HEATS").getSpecialName(), "dot")
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CO2S").getSpecialName(), "CO2-molecule")
   var R = ProcedurePrims.callCommand("setup-world"); if (R === DeathInterrupt) { return R; }
-  world.observer.setVariable("temperature", 12);
+  world.observer.setGlobal("temperature", 12);
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-world", 676, 1134, (function() {
-  world.observer.setVariable("sky-top", PrimChecks.math.minus(712, 713, world.topology.maxPycor, 5));
-  world.observer.setVariable("earth-top", 0);
+  world.observer.setGlobal("sky-top", PrimChecks.math.minus(712, 713, world.topology.maxPycor, 5));
+  world.observer.setGlobal("earth-top", 0);
   var R = ProcedurePrims.ask(world.patches(), function() {
     if (Prims.gt(PrimChecks.patch.getVariable(812, 817, "pycor"), world.observer.getGlobal("sky-top"))) {
       PrimChecks.patch.setVariable(850, 856, "pcolor", ColorModel.scaleColor(9.9, PrimChecks.patch.getVariable(875, 880, "pycor"), 22, 15));
@@ -164,7 +164,7 @@ ProcedurePrims.defineCommand("encounter-earth", 3857, 4208, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3875, 3878, R); return R; }
 }))
 ProcedurePrims.defineCommand("run-heat", 4216, 5125, (function() {
-  world.observer.setVariable("temperature", PrimChecks.math.plus(4363, 4364, PrimChecks.math.mult(4349, 4350, 0.99, PrimChecks.validator.checkArg('*', 4349, 4350, 1, world.observer.getGlobal("temperature"))), PrimChecks.math.mult(4370, 4371, 0.01, PrimChecks.math.plus(4376, 4377, 12, PrimChecks.math.mult(4382, 4383, 0.1, PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("HEATS")))))));
+  world.observer.setGlobal("temperature", PrimChecks.math.plus(4363, 4364, PrimChecks.math.mult(4349, 4350, 0.99, PrimChecks.validator.checkArg('*', 4349, 4350, 1, world.observer.getGlobal("temperature"))), PrimChecks.math.mult(4370, 4371, 0.01, PrimChecks.math.plus(4376, 4377, 12, PrimChecks.math.mult(4382, 4383, 0.1, PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("HEATS")))))));
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("HEATS"), function() {
     let dist = PrimChecks.math.mult(4430, 4431, 0.5, PrimChecks.math.randomFloat(1)); ProcedurePrims.stack().currentContext().registerStringRunVar("DIST", dist);
     if (SelfManager.self().canMove(dist)) {
@@ -228,5 +228,5 @@ ProcedurePrims.defineCommand("run-co2", 5873, 6132, (function() {
     SelfManager.self().fd(dist);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5883, 5886, R); return R; }
 }))
-world.observer.setVariable("sun-brightness", 1);
-world.observer.setVariable("albedo", 0.6);
+world.observer.setGlobal("sun-brightness", 1);
+world.observer.setGlobal("albedo", 0.6);

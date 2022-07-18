@@ -132,8 +132,8 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 812, 2101, (function() {
   world.clearAll();
-  world.observer.setVariable("bottom-line", PrimChecks.math.plus(858, 859, world.topology.minPycor, 1));
-  world.observer.setVariable("evaporation-temp", 30);
+  world.observer.setGlobal("bottom-line", PrimChecks.math.plus(858, 859, world.topology.minPycor, 1));
+  world.observer.setGlobal("evaporation-temp", 30);
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RAINDROPS").getSpecialName(), "circle")
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("SUNS").getSpecialName(), "circle")
   var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(1012, 1018, "pcolor", PrimChecks.math.minus(1024, 1025, 105, 2)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(990, 993, R); return R; }
@@ -377,11 +377,11 @@ ProcedurePrims.defineCommand("set-shape-for-value", 11574, 11857, (function(valu
     }
   }
 }))
-world.observer.setVariable("number-of-leaves", 278);
-world.observer.setVariable("wind-factor", 3);
-world.observer.setVariable("temperature", 11);
-world.observer.setVariable("rain-intensity", 19);
-world.observer.setVariable("sun-intensity", 97);
-world.observer.setVariable("start-sugar-mean", 50);
-world.observer.setVariable("start-sugar-stddev", 25);
-world.observer.setVariable("leaf-display-mode", "attachedness");
+world.observer.setGlobal("number-of-leaves", 278);
+world.observer.setGlobal("wind-factor", 3);
+world.observer.setGlobal("temperature", 11);
+world.observer.setGlobal("rain-intensity", 19);
+world.observer.setGlobal("sun-intensity", 97);
+world.observer.setGlobal("start-sugar-mean", 50);
+world.observer.setGlobal("start-sugar-stddev", 25);
+world.observer.setGlobal("leaf-display-mode", "attachedness");

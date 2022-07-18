@@ -65,9 +65,9 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 278, 1282, (function() {
   world.clearAll();
-  world.observer.setVariable("lipid-length", 2);
-  world.observer.setVariable("interaction-distance", 4);
-  world.observer.setVariable("too-close-distance", 1.3);
+  world.observer.setGlobal("lipid-length", 2);
+  world.observer.setGlobal("interaction-distance", 4);
+  world.observer.setGlobal("too-close-distance", 1.3);
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(PrimChecks.math.plus(506, 507, PrimChecks.validator.checkArg('+', 506, 507, 1, world.observer.getGlobal("num-water")), PrimChecks.validator.checkArg('+', 506, 507, 1, world.observer.getGlobal("num-lipids"))), "WATERS"), function() {
     PrimChecks.turtle.setXY(526, 531, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
@@ -119,9 +119,9 @@ ProcedurePrims.defineCommand("interact-with-partner", 2005, 2250, (function() {
   SelfManager.self().right(-(RandomPrims.randomLong(360)));
   SelfManager.self().fd(world.observer.getGlobal("random-force"));
 }))
-world.observer.setVariable("num-water", 750);
-world.observer.setVariable("num-lipids", 250);
-world.observer.setVariable("water-water-force", 0.2);
-world.observer.setVariable("water-oil-force", -0.7);
-world.observer.setVariable("too-close-force", -0.3);
-world.observer.setVariable("random-force", 0.1);
+world.observer.setGlobal("num-water", 750);
+world.observer.setGlobal("num-lipids", 250);
+world.observer.setGlobal("water-water-force", 0.2);
+world.observer.setGlobal("water-oil-force", -0.7);
+world.observer.setGlobal("too-close-force", -0.3);
+world.observer.setGlobal("random-force", 0.1);

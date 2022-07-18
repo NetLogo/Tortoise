@@ -104,31 +104,31 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 3394, 5068, (function() {
   world.clearAll();
-  world.observer.setVariable("run-go?", true);
-  world.observer.setVariable("number-forward-reactions", 0);
-  world.observer.setVariable("number-reverse-reactions", 0);
-  world.observer.setVariable("scale-factor-energy-to-temp", 4);
-  world.observer.setVariable("scale-factor-temp-to-energy", PrimChecks.math.div(3571, 3572, 1, PrimChecks.validator.checkArg('/', 3571, 3572, 1, world.observer.getGlobal("scale-factor-energy-to-temp"))));
-  world.observer.setVariable("outside-energy", PrimChecks.math.mult(3640, 3641, PrimChecks.validator.checkArg('*', 3640, 3641, 1, world.observer.getGlobal("initial-gas-temp")), PrimChecks.validator.checkArg('*', 3640, 3641, 1, world.observer.getGlobal("scale-factor-temp-to-energy"))));
-  world.observer.setVariable("difference-bond-energies", 20);
-  world.observer.setVariable("activation-energy", 80);
-  world.observer.setVariable("energy-increment", 5);
-  world.observer.setVariable("min-outside-energy", 0);
-  world.observer.setVariable("max-outside-energy", 100);
-  world.observer.setVariable("particle-size", 1.3);
+  world.observer.setGlobal("run-go?", true);
+  world.observer.setGlobal("number-forward-reactions", 0);
+  world.observer.setGlobal("number-reverse-reactions", 0);
+  world.observer.setGlobal("scale-factor-energy-to-temp", 4);
+  world.observer.setGlobal("scale-factor-temp-to-energy", PrimChecks.math.div(3571, 3572, 1, PrimChecks.validator.checkArg('/', 3571, 3572, 1, world.observer.getGlobal("scale-factor-energy-to-temp"))));
+  world.observer.setGlobal("outside-energy", PrimChecks.math.mult(3640, 3641, PrimChecks.validator.checkArg('*', 3640, 3641, 1, world.observer.getGlobal("initial-gas-temp")), PrimChecks.validator.checkArg('*', 3640, 3641, 1, world.observer.getGlobal("scale-factor-temp-to-energy"))));
+  world.observer.setGlobal("difference-bond-energies", 20);
+  world.observer.setGlobal("activation-energy", 80);
+  world.observer.setGlobal("energy-increment", 5);
+  world.observer.setGlobal("min-outside-energy", 0);
+  world.observer.setGlobal("max-outside-energy", 100);
+  world.observer.setGlobal("particle-size", 1.3);
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("FLASHES").getSpecialName(), "square")
-  world.observer.setVariable("piston-color", 55);
-  world.observer.setVariable("insulated-wall-color", 45);
-  world.observer.setVariable("max-tick-advance-amount", 0.1);
-  world.observer.setVariable("box-edge-y", PrimChecks.math.minus(4410, 4411, world.topology.maxPycor, 1));
-  world.observer.setVariable("box-edge-x", PrimChecks.math.minus(4443, 4444, world.topology.maxPxcor, 1));
-  world.observer.setVariable("piston-position", PrimChecks.math.minus(4837, 4838, PrimChecks.validator.checkArg('-', 4837, 4838, 1, world.observer.getGlobal("init-wall-position")), PrimChecks.validator.checkArg('-', 4837, 4838, 1, world.observer.getGlobal("box-edge-x"))));
+  world.observer.setGlobal("piston-color", 55);
+  world.observer.setGlobal("insulated-wall-color", 45);
+  world.observer.setGlobal("max-tick-advance-amount", 0.1);
+  world.observer.setGlobal("box-edge-y", PrimChecks.math.minus(4410, 4411, world.topology.maxPycor, 1));
+  world.observer.setGlobal("box-edge-x", PrimChecks.math.minus(4443, 4444, world.topology.maxPxcor, 1));
+  world.observer.setGlobal("piston-position", PrimChecks.math.minus(4837, 4838, PrimChecks.validator.checkArg('-', 4837, 4838, 1, world.observer.getGlobal("init-wall-position")), PrimChecks.validator.checkArg('-', 4837, 4838, 1, world.observer.getGlobal("box-edge-x"))));
   var R = ProcedurePrims.callCommand("draw-box-piston"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("recalculate-wall-color"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("calculate-volume"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("make-particles"); if (R === DeathInterrupt) { return R; }
-  world.observer.setVariable("pressure-history", []);
+  world.observer.setGlobal("pressure-history", []);
   var R = ProcedurePrims.callCommand("calculate-pressure-and-temperature"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
@@ -202,10 +202,10 @@ ProcedurePrims.defineCommand("go", 6487, 6938, (function() {
 }))
 ProcedurePrims.defineCommand("calculate-tick-advance-amount", 6947, 7180, (function() {
   if (PrimChecks.agentset.anyWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.gt(PrimChecks.turtle.getVariable(7007, 7012, "speed"), 0); })) {
-    world.observer.setVariable("tick-advance-amount", PrimChecks.list.min(7048, 7051, ListPrims.list(PrimChecks.math.div(7060, 7061, 1, PrimChecks.math.ceil(PrimChecks.list.max(7071, 7074, PrimChecks.validator.checkArg('MAX', 7071, 7074, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(7076, 7081, "speed"); }))))), world.observer.getGlobal("max-tick-advance-amount"))));
+    world.observer.setGlobal("tick-advance-amount", PrimChecks.list.min(7048, 7051, ListPrims.list(PrimChecks.math.div(7060, 7061, 1, PrimChecks.math.ceil(PrimChecks.list.max(7071, 7074, PrimChecks.validator.checkArg('MAX', 7071, 7074, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(7076, 7081, "speed"); }))))), world.observer.getGlobal("max-tick-advance-amount"))));
   }
   else {
-    world.observer.setVariable("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
+    world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
   }
 }))
 ProcedurePrims.defineCommand("move", 7189, 7349, (function() {
@@ -216,10 +216,10 @@ ProcedurePrims.defineCommand("move", 7189, 7349, (function() {
 }))
 ProcedurePrims.defineCommand("recalculate-wall-color", 7668, 8225, (function() {
   if (world.observer.getGlobal("insulated-walls?")) {
-    world.observer.setVariable("wall-color", world.observer.getGlobal("insulated-wall-color"));
+    world.observer.setGlobal("wall-color", world.observer.getGlobal("insulated-wall-color"));
   }
   else {
-    world.observer.setVariable("wall-color", ColorModel.scaleColor(15, world.observer.getGlobal("outside-energy"), -60, PrimChecks.math.plus(8030, 8031, PrimChecks.validator.checkArg('+', 8030, 8031, 1, world.observer.getGlobal("max-outside-energy")), 100)));
+    world.observer.setGlobal("wall-color", ColorModel.scaleColor(15, world.observer.getGlobal("outside-energy"), -60, PrimChecks.math.plus(8030, 8031, PrimChecks.validator.checkArg('+', 8030, 8031, 1, world.observer.getGlobal("max-outside-energy")), 100)));
   }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(8056, 8060, world.patches(), function() {
     return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 8062, 8065, 2, PrimChecks.patch.getVariable(8066, 8076, "insulated?")));
@@ -249,7 +249,7 @@ ProcedurePrims.defineCommand("check-for-forward-reaction", 8544, 9638, (function
         PrimChecks.turtle.setVariable(9484, 9491, "heading", PrimChecks.math.plus(9501, 9502, PrimChecks.validator.checkArg('+', 9501, 9502, 1, PrimChecks.turtle.getVariable(9493, 9500, "heading")), 180));
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9471, 9476, R); return R; }
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9516, 9519, 1904, reactants), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9516, 9519, R); return R; }
-      world.observer.setVariable("number-forward-reactions", PrimChecks.math.plus(9622, 9623, PrimChecks.validator.checkArg('+', 9622, 9623, 1, world.observer.getGlobal("number-forward-reactions")), 1));
+      world.observer.setGlobal("number-forward-reactions", PrimChecks.math.plus(9622, 9623, PrimChecks.validator.checkArg('+', 9622, 9623, 1, world.observer.getGlobal("number-forward-reactions")), 1));
     }
   }
 }))
@@ -276,54 +276,54 @@ ProcedurePrims.defineCommand("check-for-reverse-reaction", 9647, 10925, (functio
         PrimChecks.turtle.setVariable(10793, 10800, "heading", RandomPrims.randomLong(360));
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(10493, 10498, R); return R; }
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 10826, 10829, 1904, reactants), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(10826, 10829, R); return R; }
-      world.observer.setVariable("number-reverse-reactions", PrimChecks.math.plus(10910, 10911, PrimChecks.validator.checkArg('+', 10910, 10911, 1, world.observer.getGlobal("number-reverse-reactions")), 1));
+      world.observer.setGlobal("number-reverse-reactions", PrimChecks.math.plus(10910, 10911, PrimChecks.validator.checkArg('+', 10910, 10911, 1, world.observer.getGlobal("number-reverse-reactions")), 1));
     }
   }
 }))
 ProcedurePrims.defineCommand("cool", 11244, 11802, (function() {
   if (Prims.gt(world.observer.getGlobal("outside-energy"), 20)) {
-    world.observer.setVariable("outside-energy", PrimChecks.math.minus(11318, 11319, PrimChecks.validator.checkArg('-', 11318, 11319, 1, world.observer.getGlobal("outside-energy")), PrimChecks.validator.checkArg('-', 11318, 11319, 1, world.observer.getGlobal("energy-increment"))));
+    world.observer.setGlobal("outside-energy", PrimChecks.math.minus(11318, 11319, PrimChecks.validator.checkArg('-', 11318, 11319, 1, world.observer.getGlobal("outside-energy")), PrimChecks.validator.checkArg('-', 11318, 11319, 1, world.observer.getGlobal("energy-increment"))));
   }
   else {
-    world.observer.setVariable("outside-energy", 0);
+    world.observer.setGlobal("outside-energy", 0);
   }
   if (Prims.lte(world.observer.getGlobal("outside-energy"), 0)) {
-    world.observer.setVariable("outside-energy", world.observer.getGlobal("min-outside-energy"));
+    world.observer.setGlobal("outside-energy", world.observer.getGlobal("min-outside-energy"));
     UserDialogPrims.confirm(StringPrims.word("You are currently trying to cool the walls of the container below ", "absolute zero (OK or -273C).  Absolute zero is the lowest theoretical ", "temperature for all matter in the universe and has never been ", "achieved in a real-world laboratory"));
   }
   var R = ProcedurePrims.callCommand("recalculate-wall-color"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 11759, 11762, 1904, world.observer.getGlobal("heatable-walls")), function() { PrimChecks.patch.setVariable(11783, 11789, "pcolor", world.observer.getGlobal("wall-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(11759, 11762, R); return R; }
 }))
 ProcedurePrims.defineCommand("heat", 11811, 12156, (function() {
-  world.observer.setVariable("outside-energy", PrimChecks.math.plus(11852, 11853, PrimChecks.validator.checkArg('+', 11852, 11853, 1, world.observer.getGlobal("outside-energy")), PrimChecks.validator.checkArg('+', 11852, 11853, 1, world.observer.getGlobal("energy-increment"))));
+  world.observer.setGlobal("outside-energy", PrimChecks.math.plus(11852, 11853, PrimChecks.validator.checkArg('+', 11852, 11853, 1, world.observer.getGlobal("outside-energy")), PrimChecks.validator.checkArg('+', 11852, 11853, 1, world.observer.getGlobal("energy-increment"))));
   if (Prims.gt(world.observer.getGlobal("outside-energy"), world.observer.getGlobal("max-outside-energy"))) {
-    world.observer.setVariable("outside-energy", world.observer.getGlobal("max-outside-energy"));
+    world.observer.setGlobal("outside-energy", world.observer.getGlobal("max-outside-energy"));
     UserDialogPrims.confirm(StringPrims.word("You have reached the maximum allowable temperature for the walls of the container in this model."));
   }
   var R = ProcedurePrims.callCommand("recalculate-wall-color"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12113, 12116, 1904, world.observer.getGlobal("heatable-walls")), function() { PrimChecks.patch.setVariable(12137, 12143, "pcolor", world.observer.getGlobal("wall-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12113, 12116, R); return R; }
 }))
 ProcedurePrims.defineCommand("calculate-pressure-and-temperature", 13542, 14212, (function() {
-  world.observer.setVariable("pressure", PrimChecks.math.mult(13702, 13703, 15, PrimChecks.list.sum(13704, 13707, PrimChecks.validator.checkArg('SUM', 13704, 13707, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(13709, 13728, "momentum-difference"); })))));
+  world.observer.setGlobal("pressure", PrimChecks.math.mult(13702, 13703, 15, PrimChecks.list.sum(13704, 13707, PrimChecks.validator.checkArg('SUM', 13704, 13707, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(13709, 13728, "momentum-difference"); })))));
   if (Prims.gt(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 13752, 13758, 12, world.observer.getGlobal("pressure-history"))), 10)) {
-    world.observer.setVariable("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.validator.checkArg('LPUT', 13808, 13812, 8, PrimChecks.list.butFirst('but-first', 13822, 13831, PrimChecks.validator.checkArg('BUT-FIRST', 13822, 13831, 12, world.observer.getGlobal("pressure-history"))))));
+    world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.validator.checkArg('LPUT', 13808, 13812, 8, PrimChecks.list.butFirst('but-first', 13822, 13831, PrimChecks.validator.checkArg('BUT-FIRST', 13822, 13831, 12, world.observer.getGlobal("pressure-history"))))));
   }
   else {
-    world.observer.setVariable("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.validator.checkArg('LPUT', 13877, 13881, 8, world.observer.getGlobal("pressure-history"))));
+    world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.validator.checkArg('LPUT', 13877, 13881, 8, world.observer.getGlobal("pressure-history"))));
   }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { PrimChecks.turtle.setVariable(13931, 13950, "momentum-difference", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13911, 13914, R); return R; }
   if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("PARTICLES"))) {
-    world.observer.setVariable("temperature", PrimChecks.math.mult(14179, 14180, PrimChecks.list.mean(14151, 14155, PrimChecks.validator.checkArg('MEAN', 14151, 14155, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(14157, 14163, "energy"); }))), PrimChecks.validator.checkArg('*', 14179, 14180, 1, world.observer.getGlobal("scale-factor-energy-to-temp"))));
+    world.observer.setGlobal("temperature", PrimChecks.math.mult(14179, 14180, PrimChecks.list.mean(14151, 14155, PrimChecks.validator.checkArg('MEAN', 14151, 14155, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(14157, 14163, "energy"); }))), PrimChecks.validator.checkArg('*', 14179, 14180, 1, world.observer.getGlobal("scale-factor-energy-to-temp"))));
   }
 }))
 ProcedurePrims.defineCommand("calculate-volume", 14221, 14482, (function() {
-  world.observer.setVariable("length-horizontal-surface", PrimChecks.math.minus(14299, 14300, PrimChecks.math.plus(14294, 14295, PrimChecks.math.mult(14275, 14276, 2, PrimChecks.math.minus(14289, 14290, PrimChecks.validator.checkArg('-', 14289, 14290, 1, world.observer.getGlobal("box-edge-x")), 1)), 1), PrimChecks.math.abs(PrimChecks.math.minus(14323, 14324, PrimChecks.validator.checkArg('-', 14323, 14324, 1, world.observer.getGlobal("piston-position")), PrimChecks.validator.checkArg('-', 14323, 14324, 1, world.observer.getGlobal("box-edge-x"))))));
-  world.observer.setVariable("length-vertical-surface", PrimChecks.math.plus(14392, 14393, PrimChecks.math.mult(14373, 14374, 2, PrimChecks.math.minus(14387, 14388, PrimChecks.validator.checkArg('-', 14387, 14388, 1, world.observer.getGlobal("box-edge-y")), 1)), 1));
-  world.observer.setVariable("volume", PrimChecks.math.mult(14463, 14464, PrimChecks.math.mult(14437, 14438, PrimChecks.validator.checkArg('*', 14437, 14438, 1, world.observer.getGlobal("length-horizontal-surface")), PrimChecks.validator.checkArg('*', 14437, 14438, 1, world.observer.getGlobal("length-vertical-surface"))), 1));
+  world.observer.setGlobal("length-horizontal-surface", PrimChecks.math.minus(14299, 14300, PrimChecks.math.plus(14294, 14295, PrimChecks.math.mult(14275, 14276, 2, PrimChecks.math.minus(14289, 14290, PrimChecks.validator.checkArg('-', 14289, 14290, 1, world.observer.getGlobal("box-edge-x")), 1)), 1), PrimChecks.math.abs(PrimChecks.math.minus(14323, 14324, PrimChecks.validator.checkArg('-', 14323, 14324, 1, world.observer.getGlobal("piston-position")), PrimChecks.validator.checkArg('-', 14323, 14324, 1, world.observer.getGlobal("box-edge-x"))))));
+  world.observer.setGlobal("length-vertical-surface", PrimChecks.math.plus(14392, 14393, PrimChecks.math.mult(14373, 14374, 2, PrimChecks.math.minus(14387, 14388, PrimChecks.validator.checkArg('-', 14387, 14388, 1, world.observer.getGlobal("box-edge-y")), 1)), 1));
+  world.observer.setGlobal("volume", PrimChecks.math.mult(14463, 14464, PrimChecks.math.mult(14437, 14438, PrimChecks.validator.checkArg('*', 14437, 14438, 1, world.observer.getGlobal("length-horizontal-surface")), PrimChecks.validator.checkArg('*', 14437, 14438, 1, world.observer.getGlobal("length-vertical-surface"))), 1));
 }))
 ProcedurePrims.defineCommand("reset-reaction-counters", 14490, 14580, (function() {
-  world.observer.setVariable("number-forward-reactions", 0);
-  world.observer.setVariable("number-reverse-reactions", 0);
+  world.observer.setGlobal("number-forward-reactions", 0);
+  world.observer.setGlobal("number-reverse-reactions", 0);
 }))
 ProcedurePrims.defineCommand("bounce", 14898, 16572, (function() {
   let newHpatch = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PATCH", newHpatch);
@@ -405,12 +405,12 @@ ProcedurePrims.defineCommand("collide-with", 18892, 21146, (function(otherHparti
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(20961, 20964, R); return R; }
 }))
 ProcedurePrims.defineCommand("check-move-piston", 21417, 21740, (function() {
-  world.observer.setVariable("run-go?", false);
+  world.observer.setGlobal("run-go?", false);
   if ((MousePrims.isDown() && Prims.lt(MousePrims.getY(), PrimChecks.math.minus(21503, 21504, world.topology.maxPycor, 1)))) {
     if ((Prims.gte(MousePrims.getX(), world.observer.getGlobal("piston-position")) && Prims.lt(MousePrims.getX(), PrimChecks.math.minus(21646, 21647, PrimChecks.validator.checkArg('-', 21646, 21647, 1, world.observer.getGlobal("box-edge-x")), 2)))) {
       var R = ProcedurePrims.callCommand("piston-out", PrimChecks.math.ceil(PrimChecks.math.minus(21685, 21686, MousePrims.getX(), PrimChecks.validator.checkArg('-', 21685, 21686, 1, world.observer.getGlobal("piston-position"))))); if (R === DeathInterrupt) { return R; }
     }
-    world.observer.setVariable("run-go?", true);
+    world.observer.setGlobal("run-go?", true);
     return PrimChecks.procedure.stop(21731, 21735);
   }
 }))
@@ -418,12 +418,12 @@ ProcedurePrims.defineCommand("piston-out", 21749, 22048, (function(dist) {
   if (Prims.gt(dist, 0)) {
     if (Prims.lt(PrimChecks.math.plus(21814, 21815, PrimChecks.validator.checkArg('+', 21814, 21815, 1, world.observer.getGlobal("piston-position")), PrimChecks.validator.checkArg('+', 21814, 21815, 1, dist)), PrimChecks.math.minus(21835, 21836, PrimChecks.validator.checkArg('-', 21835, 21836, 1, world.observer.getGlobal("box-edge-x")), 1))) {
       var R = ProcedurePrims.callCommand("undraw-piston"); if (R === DeathInterrupt) { return R; }
-      world.observer.setVariable("piston-position", PrimChecks.math.plus(21904, 21905, PrimChecks.validator.checkArg('+', 21904, 21905, 1, world.observer.getGlobal("piston-position")), PrimChecks.validator.checkArg('+', 21904, 21905, 1, dist)));
+      world.observer.setGlobal("piston-position", PrimChecks.math.plus(21904, 21905, PrimChecks.validator.checkArg('+', 21904, 21905, 1, world.observer.getGlobal("piston-position")), PrimChecks.validator.checkArg('+', 21904, 21905, 1, dist)));
       var R = ProcedurePrims.callCommand("draw-box-piston"); if (R === DeathInterrupt) { return R; }
     }
     else {
       var R = ProcedurePrims.callCommand("undraw-piston"); if (R === DeathInterrupt) { return R; }
-      world.observer.setVariable("piston-position", PrimChecks.math.minus(21994, 21995, PrimChecks.validator.checkArg('-', 21994, 21995, 1, world.observer.getGlobal("box-edge-x")), 1));
+      world.observer.setGlobal("piston-position", PrimChecks.math.minus(21994, 21995, PrimChecks.validator.checkArg('-', 21994, 21995, 1, world.observer.getGlobal("box-edge-x")), 1));
       var R = ProcedurePrims.callCommand("draw-box-piston"); if (R === DeathInterrupt) { return R; }
     }
     var R = ProcedurePrims.callCommand("calculate-volume"); if (R === DeathInterrupt) { return R; }
@@ -434,7 +434,7 @@ ProcedurePrims.defineCommand("draw-box-piston", 22057, 22919, (function() {
     PrimChecks.patch.setVariable(22092, 22102, "insulated?", true);
     PrimChecks.patch.setVariable(22112, 22117, "wall?", false);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(22075, 22078, R); return R; }
-  world.observer.setVariable("heatable-walls", PrimChecks.agentset.with(22154, 22158, world.patches(), function() {
+  world.observer.setGlobal("heatable-walls", PrimChecks.agentset.with(22154, 22158, world.patches(), function() {
     return ((Prims.equality(PrimChecks.patch.getVariable(22163, 22168, "pxcor"), PrimChecks.math.mult(22174, 22175, -1, PrimChecks.validator.checkArg('*', 22174, 22175, 1, world.observer.getGlobal("box-edge-x")))) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 22193, 22196, 1, PrimChecks.patch.getVariable(22197, 22202, "pycor"))), world.observer.getGlobal("box-edge-y"))) || ((Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 22245, 22248, 1, PrimChecks.patch.getVariable(22249, 22254, "pycor"))), world.observer.getGlobal("box-edge-y")) && Prims.lte(PrimChecks.patch.getVariable(22274, 22279, "pxcor"), world.observer.getGlobal("piston-position"))) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 22305, 22308, 1, PrimChecks.patch.getVariable(22309, 22314, "pxcor"))), world.observer.getGlobal("box-edge-x"))));
   }));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 22335, 22338, 1904, world.observer.getGlobal("heatable-walls")), function() {
@@ -442,7 +442,7 @@ ProcedurePrims.defineCommand("draw-box-piston", 22057, 22919, (function() {
     PrimChecks.patch.setVariable(22383, 22393, "insulated?", false);
     PrimChecks.patch.setVariable(22405, 22410, "wall?", true);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(22335, 22338, R); return R; }
-  world.observer.setVariable("piston-wall", PrimChecks.agentset.with(22444, 22448, world.patches(), function() {
+  world.observer.setGlobal("piston-wall", PrimChecks.agentset.with(22444, 22448, world.patches(), function() {
     return (Prims.equality(PrimChecks.patch.getVariable(22453, 22458, "pxcor"), PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 22462, 22467, 1, world.observer.getGlobal("piston-position")))) && Prims.lt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 22492, 22495, 1, PrimChecks.patch.getVariable(22496, 22501, "pycor"))), world.observer.getGlobal("box-edge-y")));
   }));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 22522, 22525, 1904, world.observer.getGlobal("piston-wall")), function() {
@@ -476,11 +476,11 @@ ProcedurePrims.defineReporter("energy-from-speed", 23447, 23501, (function() {
 ProcedurePrims.defineReporter("isothermal-wall?", 23573, 23782, (function() {
   return PrimChecks.procedure.report(23592, 23598, ((((Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 23606, 23609, 1, PrimChecks.patch.getVariable(23610, 23615, "pxcor"))), PrimChecks.math.mult(23621, 23622, -1, PrimChecks.validator.checkArg('*', 23621, 23622, 1, world.observer.getGlobal("box-edge-x")))) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 23640, 23643, 1, PrimChecks.patch.getVariable(23644, 23649, "pycor"))), world.observer.getGlobal("box-edge-y"))) || (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 23675, 23678, 1, PrimChecks.patch.getVariable(23679, 23684, "pycor"))), world.observer.getGlobal("box-edge-y")) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 23704, 23707, 1, PrimChecks.patch.getVariable(23708, 23713, "pxcor"))), world.observer.getGlobal("box-edge-x")))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 23738, 23741, 2, PrimChecks.patch.getVariable(23742, 23752, "insulated?")))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 23761, 23764, 2, world.observer.getGlobal("insulated-walls?")))));
 }))
-world.observer.setVariable("init-wall-position", 6);
-world.observer.setVariable("#-n2", 0);
-world.observer.setVariable("#-h2", 0);
-world.observer.setVariable("initial-gas-temp", 90);
-world.observer.setVariable("forward-react?", true);
-world.observer.setVariable("reverse-react?", true);
-world.observer.setVariable("#-nh3", 200);
-world.observer.setVariable("insulated-walls?", true);
+world.observer.setGlobal("init-wall-position", 6);
+world.observer.setGlobal("#-n2", 0);
+world.observer.setGlobal("#-h2", 0);
+world.observer.setGlobal("initial-gas-temp", 90);
+world.observer.setGlobal("forward-react?", true);
+world.observer.setGlobal("reverse-react?", true);
+world.observer.setGlobal("#-nh3", 200);
+world.observer.setGlobal("insulated-walls?", true);

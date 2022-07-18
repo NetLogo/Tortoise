@@ -51,9 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("startup", 234, 347, (function() {
-  world.observer.setVariable("rules-shown?", false);
-  world.observer.setVariable("gone?", false);
-  world.observer.setVariable("old-rule", world.observer.getGlobal("rule"));
+  world.observer.setGlobal("rules-shown?", false);
+  world.observer.setGlobal("gone?", false);
+  world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
 }))
 ProcedurePrims.defineCommand("benchmark", 355, 466, (function() {
   PrimChecks.math.randomSeed(367, 378, 4378);
@@ -62,15 +62,15 @@ ProcedurePrims.defineCommand("benchmark", 355, 466, (function() {
   for (let _index_415_421 = 0, _repeatcount_415_421 = StrictMath.floor(PrimChecks.math.mult(425, 426, 10, world.topology.height)); _index_415_421 < _repeatcount_415_421; _index_415_421++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
-  world.observer.setVariable("result", workspace.timer.elapsed());
+  world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
 ProcedurePrims.defineCommand("setup-general", 550, 776, (function() {
   world.clearPatches();
   world.turtleManager.clearTurtles();
-  world.observer.setVariable("row", world.topology.maxPycor);
+  world.observer.setGlobal("row", world.topology.maxPycor);
   var R = ProcedurePrims.callCommand("refresh-rules"); if (R === DeathInterrupt) { return R; }
-  world.observer.setVariable("gone?", false);
-  world.observer.setVariable("rules-shown?", false);
+  world.observer.setGlobal("gone?", false);
+  world.observer.setGlobal("rules-shown?", false);
 }))
 ProcedurePrims.defineCommand("single-cell", 784, 997, (function() {
   var R = ProcedurePrims.callCommand("setup-general"); if (R === DeathInterrupt) { return R; }
@@ -106,7 +106,7 @@ ProcedurePrims.defineCommand("setup-continue", 1204, 1672, (function() {
     PrimChecks.patch.setVariable(1560, 1563, "on?", PrimChecks.list.item(1564, 1568, PrimChecks.math.plus(1576, 1577, PrimChecks.validator.checkArg('+', 1576, 1577, 1, PrimChecks.patch.getVariable(1570, 1575, "pxcor")), world.topology.maxPxcor), PrimChecks.validator.checkArg('ITEM', 1564, 1568, 12, on_QHlist)));
     var R = ProcedurePrims.callCommand("color-patch"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1515, 1518, R); return R; }
-  world.observer.setVariable("gone?", true);
+  world.observer.setGlobal("gone?", true);
 }))
 ProcedurePrims.defineCommand("go", 1763, 2202, (function() {
   if (world.observer.getGlobal("rules-shown?")) {
@@ -122,9 +122,9 @@ ProcedurePrims.defineCommand("go", 1763, 2202, (function() {
     }
   }
   var R = ProcedurePrims.ask(world._optimalPatchRow(world.observer.getGlobal("row")), function() { var R = ProcedurePrims.callCommand("do-rule"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2012, 2015, R); return R; }
-  world.observer.setVariable("row", PrimChecks.math.minus(2091, 2092, PrimChecks.validator.checkArg('-', 2091, 2092, 1, world.observer.getGlobal("row")), 1));
+  world.observer.setGlobal("row", PrimChecks.math.minus(2091, 2092, PrimChecks.validator.checkArg('-', 2091, 2092, 1, world.observer.getGlobal("row")), 1));
   var R = ProcedurePrims.ask(world._optimalPatchRow(world.observer.getGlobal("row")), function() { var R = ProcedurePrims.callCommand("color-patch"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2098, 2101, R); return R; }
-  world.observer.setVariable("gone?", true);
+  world.observer.setGlobal("gone?", true);
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("do-rule", 2211, 3140, (function() {
@@ -152,23 +152,23 @@ ProcedurePrims.defineReporter("bindigit", 3351, 3506, (function(number, powerHof
 ProcedurePrims.defineCommand("refresh-rules", 3514, 3754, (function() {
   if (Prims.equality(world.observer.getGlobal("rule"), world.observer.getGlobal("old-rule"))) {
     if (!Prims.equality(world.observer.getGlobal("rule"), PrimChecks.procedure.callReporter(3653, 3667, "calculate-rule"))) {
-      world.observer.setVariable("rule", PrimChecks.procedure.callReporter(3686, 3700, "calculate-rule"));
+      world.observer.setGlobal("rule", PrimChecks.procedure.callReporter(3686, 3700, "calculate-rule"));
     }
   }
   else {
     var R = ProcedurePrims.callCommand("extrapolate-switches"); if (R === DeathInterrupt) { return R; }
   }
-  world.observer.setVariable("old-rule", world.observer.getGlobal("rule"));
+  world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
 }))
 ProcedurePrims.defineCommand("extrapolate-switches", 3762, 4097, (function() {
-  world.observer.setVariable("ooo", Prims.equality(PrimChecks.procedure.callReporter(3837, 3845, "bindigit", world.observer.getGlobal("rule"), 0), 1));
-  world.observer.setVariable("ooi", Prims.equality(PrimChecks.procedure.callReporter(3871, 3879, "bindigit", world.observer.getGlobal("rule"), 1), 1));
-  world.observer.setVariable("oio", Prims.equality(PrimChecks.procedure.callReporter(3905, 3913, "bindigit", world.observer.getGlobal("rule"), 2), 1));
-  world.observer.setVariable("oii", Prims.equality(PrimChecks.procedure.callReporter(3939, 3947, "bindigit", world.observer.getGlobal("rule"), 3), 1));
-  world.observer.setVariable("ioo", Prims.equality(PrimChecks.procedure.callReporter(3973, 3981, "bindigit", world.observer.getGlobal("rule"), 4), 1));
-  world.observer.setVariable("ioi", Prims.equality(PrimChecks.procedure.callReporter(4007, 4015, "bindigit", world.observer.getGlobal("rule"), 5), 1));
-  world.observer.setVariable("iio", Prims.equality(PrimChecks.procedure.callReporter(4041, 4049, "bindigit", world.observer.getGlobal("rule"), 6), 1));
-  world.observer.setVariable("iii", Prims.equality(PrimChecks.procedure.callReporter(4075, 4083, "bindigit", world.observer.getGlobal("rule"), 7), 1));
+  world.observer.setGlobal("ooo", Prims.equality(PrimChecks.procedure.callReporter(3837, 3845, "bindigit", world.observer.getGlobal("rule"), 0), 1));
+  world.observer.setGlobal("ooi", Prims.equality(PrimChecks.procedure.callReporter(3871, 3879, "bindigit", world.observer.getGlobal("rule"), 1), 1));
+  world.observer.setGlobal("oio", Prims.equality(PrimChecks.procedure.callReporter(3905, 3913, "bindigit", world.observer.getGlobal("rule"), 2), 1));
+  world.observer.setGlobal("oii", Prims.equality(PrimChecks.procedure.callReporter(3939, 3947, "bindigit", world.observer.getGlobal("rule"), 3), 1));
+  world.observer.setGlobal("ioo", Prims.equality(PrimChecks.procedure.callReporter(3973, 3981, "bindigit", world.observer.getGlobal("rule"), 4), 1));
+  world.observer.setGlobal("ioi", Prims.equality(PrimChecks.procedure.callReporter(4007, 4015, "bindigit", world.observer.getGlobal("rule"), 5), 1));
+  world.observer.setGlobal("iio", Prims.equality(PrimChecks.procedure.callReporter(4041, 4049, "bindigit", world.observer.getGlobal("rule"), 6), 1));
+  world.observer.setGlobal("iii", Prims.equality(PrimChecks.procedure.callReporter(4075, 4083, "bindigit", world.observer.getGlobal("rule"), 7), 1));
 }))
 ProcedurePrims.defineReporter("calculate-rule", 4112, 4514, (function() {
   let rresult = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("RRESULT", rresult);
@@ -223,7 +223,7 @@ ProcedurePrims.defineCommand("show-rules", 4632, 5403, (function() {
       return SelfManager.self().die();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4961, 4967, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4842, 4845, R); return R; }
-  world.observer.setVariable("rules-shown?", true);
+  world.observer.setGlobal("rules-shown?", true);
 }))
 ProcedurePrims.defineCommand("print-block", 5431, 5663, (function(state) {
   if (state) {
@@ -251,16 +251,16 @@ ProcedurePrims.defineReporter("list-rules", 5678, 6244, (function() {
   rules = PrimChecks.list.lput(PrimChecks.list.lput(world.observer.getGlobal("iii"), [true, true, true]), PrimChecks.validator.checkArg('LPUT', 6186, 6190, 8, rules)); ProcedurePrims.stack().currentContext().updateStringRunVar("RULES", rules);
   return PrimChecks.procedure.report(6231, 6237, rules);
 }))
-world.observer.setVariable("ooo", true);
-world.observer.setVariable("ooi", false);
-world.observer.setVariable("oio", false);
-world.observer.setVariable("oii", true);
-world.observer.setVariable("ioo", false);
-world.observer.setVariable("ioi", true);
-world.observer.setVariable("iio", true);
-world.observer.setVariable("iii", false);
-world.observer.setVariable("foreground", 55);
-world.observer.setVariable("background", 0);
-world.observer.setVariable("rule", 105);
-world.observer.setVariable("density", 10);
-world.observer.setVariable("auto-continue?", true);
+world.observer.setGlobal("ooo", true);
+world.observer.setGlobal("ooi", false);
+world.observer.setGlobal("oio", false);
+world.observer.setGlobal("oii", true);
+world.observer.setGlobal("ioo", false);
+world.observer.setGlobal("ioi", true);
+world.observer.setGlobal("iio", true);
+world.observer.setGlobal("iii", false);
+world.observer.setGlobal("foreground", 55);
+world.observer.setGlobal("background", 0);
+world.observer.setGlobal("rule", 105);
+world.observer.setGlobal("density", 10);
+world.observer.setGlobal("auto-continue?", true);

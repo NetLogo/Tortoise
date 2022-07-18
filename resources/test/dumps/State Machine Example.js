@@ -109,5 +109,5 @@ ProcedurePrims.defineCommand("get-away", 1349, 1470, (function() {
     PrimChecks.turtle.setVariable(1435, 1444, "next-task", PrimChecks.task.checked(1445, 1446, function() { var R = ProcedurePrims.callCommand("search-for-chip"); if (R === DeathInterrupt) { return R; } }, "[ -> search-for-chip ]", false, false));
   }
 }))
-world.observer.setVariable("number", 400);
-world.observer.setVariable("density", 20);
+world.observer.setGlobal("number", 400);
+world.observer.setGlobal("density", 20);

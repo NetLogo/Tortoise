@@ -128,7 +128,7 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 572, 792, (function() {
   world.clearAll();
-  world.observer.setVariable("max-grain", 50);
+  world.observer.setGlobal("max-grain", 50);
   var R = ProcedurePrims.callCommand("setup-patches"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-turtles"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("update-lorenz-and-gini"); if (R === DeathInterrupt) { return R; }
@@ -265,20 +265,20 @@ ProcedurePrims.defineCommand("update-lorenz-and-gini", 5651, 6347, (function() {
   let totalHwealth = PrimChecks.list.sum(5739, 5742, PrimChecks.validator.checkArg('SUM', 5739, 5742, 8, sortedHwealths)); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL-WEALTH", totalHwealth);
   let wealthHsumHsoHfar = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("WEALTH-SUM-SO-FAR", wealthHsumHsoHfar);
   let index = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("INDEX", index);
-  world.observer.setVariable("gini-index-reserve", 0);
-  world.observer.setVariable("lorenz-points", []);
+  world.observer.setGlobal("gini-index-reserve", 0);
+  world.observer.setGlobal("lorenz-points", []);
   for (let _index_6015_6021 = 0, _repeatcount_6015_6021 = StrictMath.floor(world.observer.getGlobal("num-people")); _index_6015_6021 < _repeatcount_6015_6021; _index_6015_6021++) {
     wealthHsumHsoHfar = PrimChecks.math.plus(6080, 6081, PrimChecks.validator.checkArg('+', 6080, 6081, 1, wealthHsumHsoHfar), PrimChecks.validator.checkArg('+', 6080, 6081, 1, PrimChecks.list.item(6082, 6086, PrimChecks.validator.checkArg('ITEM', 6082, 6086, 1, index), PrimChecks.validator.checkArg('ITEM', 6082, 6086, 12, sortedHwealths)))); ProcedurePrims.stack().currentContext().updateStringRunVar("WEALTH-SUM-SO-FAR", wealthHsumHsoHfar);
-    world.observer.setVariable("lorenz-points", PrimChecks.list.lput(PrimChecks.math.mult(6172, 6173, PrimChecks.math.div(6156, 6157, PrimChecks.validator.checkArg('/', 6156, 6157, 1, wealthHsumHsoHfar), PrimChecks.validator.checkArg('/', 6156, 6157, 1, totalHwealth)), 100), PrimChecks.validator.checkArg('LPUT', 6131, 6135, 8, world.observer.getGlobal("lorenz-points"))));
+    world.observer.setGlobal("lorenz-points", PrimChecks.list.lput(PrimChecks.math.mult(6172, 6173, PrimChecks.math.div(6156, 6157, PrimChecks.validator.checkArg('/', 6156, 6157, 1, wealthHsumHsoHfar), PrimChecks.validator.checkArg('/', 6156, 6157, 1, totalHwealth)), 100), PrimChecks.validator.checkArg('LPUT', 6131, 6135, 8, world.observer.getGlobal("lorenz-points"))));
     index = PrimChecks.math.plus(6214, 6215, PrimChecks.validator.checkArg('+', 6214, 6215, 1, index), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("INDEX", index);
-    world.observer.setVariable("gini-index-reserve", PrimChecks.math.minus(6300, 6301, PrimChecks.math.plus(6271, 6272, PrimChecks.validator.checkArg('+', 6271, 6272, 1, world.observer.getGlobal("gini-index-reserve")), PrimChecks.math.div(6286, 6287, PrimChecks.validator.checkArg('/', 6286, 6287, 1, index), PrimChecks.validator.checkArg('/', 6286, 6287, 1, world.observer.getGlobal("num-people")))), PrimChecks.math.div(6327, 6328, PrimChecks.validator.checkArg('/', 6327, 6328, 1, wealthHsumHsoHfar), PrimChecks.validator.checkArg('/', 6327, 6328, 1, totalHwealth))));
+    world.observer.setGlobal("gini-index-reserve", PrimChecks.math.minus(6300, 6301, PrimChecks.math.plus(6271, 6272, PrimChecks.validator.checkArg('+', 6271, 6272, 1, world.observer.getGlobal("gini-index-reserve")), PrimChecks.math.div(6286, 6287, PrimChecks.validator.checkArg('/', 6286, 6287, 1, index), PrimChecks.validator.checkArg('/', 6286, 6287, 1, world.observer.getGlobal("num-people")))), PrimChecks.math.div(6327, 6328, PrimChecks.validator.checkArg('/', 6327, 6328, 1, wealthHsumHsoHfar), PrimChecks.validator.checkArg('/', 6327, 6328, 1, totalHwealth))));
   }
 }))
-world.observer.setVariable("max-vision", 5);
-world.observer.setVariable("grain-growth-interval", 1);
-world.observer.setVariable("metabolism-max", 15);
-world.observer.setVariable("num-people", 250);
-world.observer.setVariable("percent-best-land", 10);
-world.observer.setVariable("life-expectancy-max", 83);
-world.observer.setVariable("num-grain-grown", 4);
-world.observer.setVariable("life-expectancy-min", 1);
+world.observer.setGlobal("max-vision", 5);
+world.observer.setGlobal("grain-growth-interval", 1);
+world.observer.setGlobal("metabolism-max", 15);
+world.observer.setGlobal("num-people", 250);
+world.observer.setGlobal("percent-best-land", 10);
+world.observer.setGlobal("life-expectancy-max", 83);
+world.observer.setGlobal("num-grain-grown", 4);
+world.observer.setGlobal("life-expectancy-min", 1);

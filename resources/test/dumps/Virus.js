@@ -110,10 +110,10 @@ ProcedurePrims.defineCommand("become-immune", 1436, 1549, (function() {
   PrimChecks.turtle.setVariable(1512, 1530, "remaining-immunity", world.observer.getGlobal("immunity-duration"));
 }))
 ProcedurePrims.defineCommand("setup-constants", 1603, 1776, (function() {
-  world.observer.setVariable("lifespan", PrimChecks.math.mult(1637, 1638, 50, 52));
-  world.observer.setVariable("carrying-capacity", 300);
-  world.observer.setVariable("chance-reproduce", 1);
-  world.observer.setVariable("immunity-duration", 52);
+  world.observer.setGlobal("lifespan", PrimChecks.math.mult(1637, 1638, 50, 52));
+  world.observer.setGlobal("carrying-capacity", 300);
+  world.observer.setGlobal("chance-reproduce", 1);
+  world.observer.setGlobal("immunity-duration", 52);
 }))
 ProcedurePrims.defineCommand("go", 1784, 1954, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
@@ -135,8 +135,8 @@ ProcedurePrims.defineCommand("go", 1784, 1954, (function() {
 }))
 ProcedurePrims.defineCommand("update-global-variables", 1962, 2157, (function() {
   if (PrimChecks.agentset.optimizeCount(null, null, world.turtles(), 0, (a, b) => a > b)) {
-    world.observer.setVariable("%infected", PrimChecks.math.mult(2076, 2077, PrimChecks.math.div(2059, 2060, PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(2051, 2056, "sick?"); }), PrimChecks.agentset.count(world.turtles())), 100));
-    world.observer.setVariable("%immune", PrimChecks.math.mult(2149, 2150, PrimChecks.math.div(2132, 2133, PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.procedure.callReporter(2122, 2129, "immune?"); }), PrimChecks.agentset.count(world.turtles())), 100));
+    world.observer.setGlobal("%infected", PrimChecks.math.mult(2076, 2077, PrimChecks.math.div(2059, 2060, PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(2051, 2056, "sick?"); }), PrimChecks.agentset.count(world.turtles())), 100));
+    world.observer.setGlobal("%immune", PrimChecks.math.mult(2149, 2150, PrimChecks.math.div(2132, 2133, PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return PrimChecks.procedure.callReporter(2122, 2129, "immune?"); }), PrimChecks.agentset.count(world.turtles())), 100));
   }
 }))
 ProcedurePrims.defineCommand("update-display", 2165, 2341, (function() {
@@ -197,8 +197,8 @@ ProcedurePrims.defineReporter("immune?", 3683, 3723, (function() {
   return PrimChecks.procedure.report(3693, 3699, Prims.gt(PrimChecks.turtle.getVariable(3700, 3718, "remaining-immunity"), 0));
 }))
 ProcedurePrims.defineCommand("startup", 3731, 3837, (function() { var R = ProcedurePrims.callCommand("setup-constants"); if (R === DeathInterrupt) { return R; } }))
-world.observer.setVariable("duration", 20);
-world.observer.setVariable("chance-recover", 75);
-world.observer.setVariable("infectiousness", 65);
-world.observer.setVariable("number-people", 150);
-world.observer.setVariable("turtle-shape", "person");
+world.observer.setGlobal("duration", 20);
+world.observer.setGlobal("chance-recover", 75);
+world.observer.setGlobal("infectiousness", 65);
+world.observer.setGlobal("number-people", 150);
+world.observer.setGlobal("turtle-shape", "person");

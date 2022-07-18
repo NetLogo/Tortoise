@@ -356,7 +356,7 @@ trait CommandPrims extends PrimUtils {
           s"${JSIdentProvider(p.name)} = ${args.get(1)};"
 
         case ov: prim._observervariable =>
-          s"""world.observer.setVariable("${ov.displayName.toLowerCase}", ${args.get(1)});"""
+          s"""world.observer.setGlobal("${ov.displayName.toLowerCase}", ${args.get(1)});"""
 
         case VariableSetter(setValue) =>
           setValue(args.get(1))

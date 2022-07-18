@@ -58,4 +58,4 @@ ProcedurePrims.defineCommand("setup", 3, 207, (function() {
     var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfPrims.other(world.turtles()), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(173, 190, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(159, 162, R); return R; }
 }))
-world.observer.setVariable("num-nodes", 16);
+world.observer.setGlobal("num-nodes", 16);

@@ -271,8 +271,8 @@ ProcedurePrims.defineCommand("move-surfer", 6785, 6860, (function() {
   SelfManager.self().moveTo(PrimChecks.turtle.getVariable(6847, 6859, "current-page"));
 }))
 ProcedurePrims.defineCommand("update-globals", 6868, 6955, (function() {
-  world.observer.setVariable("total-rank", PrimChecks.list.sum(6900, 6903, PrimChecks.validator.checkArg('SUM', 6900, 6903, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAGES"), function() { return PrimChecks.turtle.getVariable(6905, 6909, "rank"); }))));
-  world.observer.setVariable("max-rank", PrimChecks.list.max(6935, 6938, PrimChecks.validator.checkArg('MAX', 6935, 6938, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAGES"), function() { return PrimChecks.turtle.getVariable(6940, 6944, "rank"); }))));
+  world.observer.setGlobal("total-rank", PrimChecks.list.sum(6900, 6903, PrimChecks.validator.checkArg('SUM', 6900, 6903, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAGES"), function() { return PrimChecks.turtle.getVariable(6905, 6909, "rank"); }))));
+  world.observer.setGlobal("max-rank", PrimChecks.list.max(6935, 6938, PrimChecks.validator.checkArg('MAX', 6935, 6938, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAGES"), function() { return PrimChecks.turtle.getVariable(6940, 6944, "rank"); }))));
 }))
 ProcedurePrims.defineCommand("update-page-appearance", 6963, 7177, (function() {
   PrimChecks.turtle.setVariable(7044, 7048, "size", PrimChecks.math.plus(7053, 7054, 0.2, PrimChecks.math.mult(7057, 7058, 4, PrimChecks.math.sqrt(7059, 7063, PrimChecks.math.div(7070, 7071, PrimChecks.validator.checkArg('/', 7070, 7071, 1, PrimChecks.turtle.getVariable(7065, 7069, "rank")), PrimChecks.validator.checkArg('/', 7070, 7071, 1, world.observer.getGlobal("total-rank")))))));
@@ -283,9 +283,9 @@ ProcedurePrims.defineCommand("update-page-appearance", 6963, 7177, (function() {
     PrimChecks.turtleOrLink.setVariable(7166, 7171, "label", "");
   }
 }))
-world.observer.setVariable("damping-factor", 0.85);
-world.observer.setVariable("calculation-method", "random-surfer");
-world.observer.setVariable("watch-surfers?", true);
-world.observer.setVariable("number-of-surfers", 5);
-world.observer.setVariable("network-choice", "Example 1");
-world.observer.setVariable("show-page-ranks?", true);
+world.observer.setGlobal("damping-factor", 0.85);
+world.observer.setGlobal("calculation-method", "random-surfer");
+world.observer.setGlobal("watch-surfers?", true);
+world.observer.setGlobal("number-of-surfers", 5);
+world.observer.setGlobal("network-choice", "Example 1");
+world.observer.setGlobal("show-page-ranks?", true);

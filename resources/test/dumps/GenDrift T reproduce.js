@@ -145,5 +145,5 @@ ProcedurePrims.defineCommand("death", 660, 771, (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(702, 705, R); return R; }
 }))
-world.observer.setVariable("colors", 5);
-world.observer.setVariable("number", 500);
+world.observer.setGlobal("colors", 5);
+world.observer.setGlobal("number", 500);

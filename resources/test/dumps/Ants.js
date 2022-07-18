@@ -216,6 +216,6 @@ ProcedurePrims.defineReporter("chemical-scent-at-angle", 4010, 4134, (function(a
   }
   return PrimChecks.procedure.report(4111, 4117, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4129, 4131, 1904, p), function() { return PrimChecks.patch.getVariable(4119, 4127, "chemical"); }));
 }))
-world.observer.setVariable("diffusion-rate", 50);
-world.observer.setVariable("evaporation-rate", 10);
-world.observer.setVariable("population", 125);
+world.observer.setGlobal("diffusion-rate", 50);
+world.observer.setGlobal("evaporation-rate", 10);
+world.observer.setGlobal("population", 125);

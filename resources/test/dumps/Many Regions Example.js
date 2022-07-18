@@ -90,7 +90,7 @@ ProcedurePrims.defineCommand("setup-regions", 1988, 2598, (function(numHregions)
     PrimChecks.procedure.runArgCountCheck('run', 2136, 2156, 1, arguments.length);
     var R = ProcedurePrims.callCommand("draw-region-division", _0); if (R === DeathInterrupt) { return R; }
   }, "draw-region-division", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2099, 2106, R); return R; }
-  world.observer.setVariable("region-boundaries", PrimChecks.procedure.callReporter(2242, 2269, "calculate-region-boundaries", numHregions));
+  world.observer.setGlobal("region-boundaries", PrimChecks.procedure.callReporter(2242, 2269, "calculate-region-boundaries", numHregions));
   let regionHnumbers = ListPrims.rangeBinary(1, PrimChecks.math.plus(2392, 2393, PrimChecks.validator.checkArg('+', 2392, 2393, 1, numHregions), 1)); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-NUMBERS", regionHnumbers);
   var R = PrimChecks.task.forEach(2401, 2408, PrimChecks.validator.checkArg('FOREACH', 2401, 2408, 8, world.observer.getGlobal("region-boundaries")), PrimChecks.validator.checkArg('FOREACH', 2401, 2408, 8, regionHnumbers), PrimChecks.task.checked(2442, 2443, function(boundaries, regionHnumber) {
     PrimChecks.procedure.runArgCountCheck('run', 2442, 2596, 2, arguments.length);
@@ -142,5 +142,5 @@ ProcedurePrims.defineCommand("keep-in-region", 4085, 4987, (function(whichHregio
     }
   }
 }))
-world.observer.setVariable("number-of-regions", 4);
-world.observer.setVariable("number-of-turtles-per-region", 10);
+world.observer.setGlobal("number-of-regions", 4);
+world.observer.setGlobal("number-of-turtles-per-region", 10);

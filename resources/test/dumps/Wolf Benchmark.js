@@ -66,7 +66,7 @@ ProcedurePrims.defineCommand("benchmark", 123, 214, (function() {
   for (let _index_175_181 = 0, _repeatcount_175_181 = StrictMath.floor(10000); _index_175_181 < _repeatcount_175_181; _index_175_181++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
-  world.observer.setVariable("result", workspace.timer.elapsed());
+  world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
 ProcedurePrims.defineCommand("setup", 222, 1191, (function() {
   world.clearAll();
@@ -187,12 +187,12 @@ ProcedurePrims.defineCommand("graph", 3246, 3592, (function() {
     plotManager.plotValue(PrimChecks.math.div(3452, 3453, PrimChecks.agentset.countWith(null, null, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(3435, 3441, "pcolor"), 55); }), 4));
   }
 }))
-world.observer.setVariable("init-sheep", 82);
-world.observer.setVariable("sheep-metabolism", 4);
-world.observer.setVariable("sheep-reproduce", 4);
-world.observer.setVariable("init-wolves", 49);
-world.observer.setVariable("wolf-metabolism", 20);
-world.observer.setVariable("wolf-reproduce", 5);
-world.observer.setVariable("grass?", true);
-world.observer.setVariable("grass-delay", 30);
-world.observer.setVariable("plot?", false);
+world.observer.setGlobal("init-sheep", 82);
+world.observer.setGlobal("sheep-metabolism", 4);
+world.observer.setGlobal("sheep-reproduce", 4);
+world.observer.setGlobal("init-wolves", 49);
+world.observer.setGlobal("wolf-metabolism", 20);
+world.observer.setGlobal("wolf-reproduce", 5);
+world.observer.setGlobal("grass?", true);
+world.observer.setGlobal("grass-delay", 30);
+world.observer.setGlobal("plot?", false);

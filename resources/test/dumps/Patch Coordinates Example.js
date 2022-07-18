@@ -83,6 +83,6 @@ ProcedurePrims.defineCommand("go", 420, 934, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(679, 682, R); return R; }
   world.ticker.tick();
 }))
-world.observer.setVariable("distance-of-travel", 1);
-world.observer.setVariable("start-y", 0);
-world.observer.setVariable("start-x", 0);
+world.observer.setGlobal("distance-of-travel", 1);
+world.observer.setGlobal("start-y", 0);
+world.observer.setGlobal("start-x", 0);

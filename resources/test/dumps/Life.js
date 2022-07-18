@@ -94,7 +94,7 @@ ProcedurePrims.defineCommand("go", 578, 1072, (function() {
 ProcedurePrims.defineCommand("draw-cells", 1080, 1367, (function() {
   if (MousePrims.isDown()) {
     if (Prims.equality(world.observer.getGlobal("erasing?"), 0)) {
-      world.observer.setVariable("erasing?", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1165, 1167, 1904, world.getPatchAt(MousePrims.getX(), MousePrims.getY())), function() { return PrimChecks.patch.getVariable(1156, 1163, "living?"); }));
+      world.observer.setGlobal("erasing?", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1165, 1167, 1904, world.getPatchAt(MousePrims.getX(), MousePrims.getY())), function() { return PrimChecks.patch.getVariable(1156, 1163, "living?"); }));
     }
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1206, 1209, 1904, world.getPatchAt(MousePrims.getX(), MousePrims.getY())), function() {
       if (world.observer.getGlobal("erasing?")) {
@@ -107,9 +107,9 @@ ProcedurePrims.defineCommand("draw-cells", 1080, 1367, (function() {
     Prims.display();
   }
   else {
-    world.observer.setVariable("erasing?", 0);
+    world.observer.setGlobal("erasing?", 0);
   }
 }))
-world.observer.setVariable("initial-density", 35);
-world.observer.setVariable("fgcolor", 123);
-world.observer.setVariable("bgcolor", 79);
+world.observer.setGlobal("initial-density", 35);
+world.observer.setGlobal("fgcolor", 123);
+world.observer.setGlobal("bgcolor", 79);

@@ -150,7 +150,7 @@ ProcedurePrims.defineCommand("find-top-species", 981, 1282, (function() {
       winningHamount = howHmany; ProcedurePrims.stack().currentContext().updateStringRunVar("WINNING-AMOUNT", winningHamount);
     }
   }, "[ c -> let count turtles with [ color = c ] if how-many > winning-amount [ set winning-amount how-many ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1075, 1082, R); return R; }
-  world.observer.setVariable("max-percent", PrimChecks.math.div(1265, 1266, PrimChecks.math.mult(1248, 1249, 100, PrimChecks.validator.checkArg('*', 1248, 1249, 1, winningHamount)), PrimChecks.agentset.count(world.turtles())));
+  world.observer.setGlobal("max-percent", PrimChecks.math.div(1265, 1266, PrimChecks.math.mult(1248, 1249, 100, PrimChecks.validator.checkArg('*', 1248, 1249, 1, winningHamount)), PrimChecks.agentset.count(world.turtles())));
 }))
 ProcedurePrims.defineCommand("place-wall", 1698, 2202, (function() {
   if (MousePrims.isDown()) {
@@ -177,5 +177,5 @@ ProcedurePrims.defineCommand("move-off-wall", 2381, 2477, (function() {
     SelfManager.self().moveTo(PrimChecks.list.oneOf(2456, 2462, SelfManager.self().getNeighbors()));
   }
 }))
-world.observer.setVariable("colors", 5);
-world.observer.setVariable("number", 300);
+world.observer.setGlobal("colors", 5);
+world.observer.setGlobal("number", 300);

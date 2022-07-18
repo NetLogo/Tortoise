@@ -114,9 +114,9 @@ ProcedurePrims.defineReporter("xdistance", 3278, 3391, (function(otherHpatch) {
 ProcedurePrims.defineReporter("ydistance", 3406, 3519, (function(otherHpatch) {
   return PrimChecks.procedure.report(3452, 3458, SelfManager.self().distanceXY(PrimChecks.patch.getVariable(3470, 3475, "pxcor"), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 3504, 3506, 1904, otherHpatch), function() { return PrimChecks.patch.getVariable(3497, 3502, "pycor"); })));
 }))
-world.observer.setVariable("initial-density", 50);
-world.observer.setVariable("ratio", 0.35);
-world.observer.setVariable("inner-radius-x", 3);
-world.observer.setVariable("inner-radius-y", 3);
-world.observer.setVariable("outer-radius-x", 6);
-world.observer.setVariable("outer-radius-y", 6);
+world.observer.setGlobal("initial-density", 50);
+world.observer.setGlobal("ratio", 0.35);
+world.observer.setGlobal("inner-radius-x", 3);
+world.observer.setGlobal("inner-radius-y", 3);
+world.observer.setGlobal("outer-radius-x", 6);
+world.observer.setGlobal("outer-radius-y", 6);

@@ -57,7 +57,7 @@ ProcedurePrims.defineCommand("benchmark", 103, 254, (function() {
   for (let _index_216_222 = 0, _repeatcount_216_222 = StrictMath.floor(1000); _index_216_222 < _repeatcount_216_222; _index_216_222++) {
     var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   }
-  world.observer.setVariable("result", workspace.timer.elapsed());
+  world.observer.setGlobal("result", workspace.timer.elapsed());
 }))
 ProcedurePrims.defineCommand("setup", 262, 842, (function() {
   world.clearAll();
@@ -123,11 +123,11 @@ ProcedurePrims.defineCommand("bug-move", 2098, 2698, (function(target) {
     }
   }
 }))
-world.observer.setVariable("bug-count", 100);
-world.observer.setVariable("evaporation-rate", 0.01);
-world.observer.setVariable("diffusion-rate", 1);
-world.observer.setVariable("random-move-chance", 0);
-world.observer.setVariable("min-ideal-temp", 170);
-world.observer.setVariable("max-ideal-temp", 310);
-world.observer.setVariable("max-output-heat", 100);
-world.observer.setVariable("min-output-heat", 30);
+world.observer.setGlobal("bug-count", 100);
+world.observer.setGlobal("evaporation-rate", 0.01);
+world.observer.setGlobal("diffusion-rate", 1);
+world.observer.setGlobal("random-move-chance", 0);
+world.observer.setGlobal("min-ideal-temp", 170);
+world.observer.setGlobal("max-ideal-temp", 310);
+world.observer.setGlobal("max-output-heat", 100);
+world.observer.setGlobal("min-output-heat", 30);

@@ -80,7 +80,7 @@ ProcedurePrims.defineCommand("setup", 264, 462, (function() {
     }
     var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(284, 287, R); return R; }
-  world.observer.setVariable("sum-of-spins", PrimChecks.list.sum(424, 427, PrimChecks.validator.checkArg('SUM', 424, 427, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.patch.getVariable(430, 434, "spin"); }))));
+  world.observer.setGlobal("sum-of-spins", PrimChecks.list.sum(424, 427, PrimChecks.validator.checkArg('SUM', 424, 427, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.patch.getVariable(430, 434, "spin"); }))));
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 470, 759, (function() {
@@ -94,7 +94,7 @@ ProcedurePrims.defineCommand("update", 804, 1188, (function() {
   let ediff = PrimChecks.math.mult(980, 981, PrimChecks.math.mult(973, 974, 2, PrimChecks.validator.checkArg('*', 973, 974, 1, PrimChecks.patch.getVariable(975, 979, "spin"))), SelfManager.self()._optimalNSum4("spin")); ProcedurePrims.stack().currentContext().registerStringRunVar("EDIFF", ediff);
   if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(PrimChecks.math.randomFloat(1), PrimChecks.math.exp(1071, 1074, PrimChecks.math.div(1086, 1087, PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1077, 1078, 1, ediff)), PrimChecks.validator.checkArg('/', 1086, 1087, 1, world.observer.getGlobal("temperature")))))))) {
     PrimChecks.patch.setVariable(1113, 1117, "spin", PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1119, 1120, 1, PrimChecks.patch.getVariable(1121, 1125, "spin"))));
-    world.observer.setVariable("sum-of-spins", PrimChecks.math.plus(1161, 1162, PrimChecks.validator.checkArg('+', 1161, 1162, 1, world.observer.getGlobal("sum-of-spins")), PrimChecks.math.mult(1165, 1166, 2, PrimChecks.validator.checkArg('*', 1165, 1166, 1, PrimChecks.patch.getVariable(1167, 1171, "spin")))));
+    world.observer.setGlobal("sum-of-spins", PrimChecks.math.plus(1161, 1162, PrimChecks.validator.checkArg('+', 1161, 1162, 1, world.observer.getGlobal("sum-of-spins")), PrimChecks.math.mult(1165, 1166, 2, PrimChecks.validator.checkArg('*', 1165, 1166, 1, PrimChecks.patch.getVariable(1167, 1171, "spin")))));
     var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
   }
 }))
@@ -109,5 +109,5 @@ ProcedurePrims.defineCommand("recolor", 1241, 1343, (function() {
 ProcedurePrims.defineReporter("magnetization", 1414, 1466, (function() {
   return PrimChecks.procedure.report(1430, 1436, PrimChecks.math.div(1450, 1451, PrimChecks.validator.checkArg('/', 1450, 1451, 1, world.observer.getGlobal("sum-of-spins")), PrimChecks.agentset.count(world.patches())));
 }))
-world.observer.setVariable("temperature", 2.27);
-world.observer.setVariable("probability-of-spin-up", 50);
+world.observer.setGlobal("temperature", 2.27);
+world.observer.setGlobal("probability-of-spin-up", 50);
