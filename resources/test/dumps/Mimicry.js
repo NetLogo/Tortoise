@@ -81,36 +81,36 @@ ProcedurePrims.defineCommand("setup-variables", 876, 1080, (function() {
   world.observer.setVariable("color-range-end", 109);
 }))
 ProcedurePrims.defineCommand("setup-turtles", 1344, 1839, (function() {
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(1378, 1384, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(1378, 1384, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1360, 1363, R); return R; }
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("MONARCHS").getSpecialName(), "butterfly monarch")
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("VICEROYS").getSpecialName(), "butterfly viceroy")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-birds"), "BIRDS"), function() {
     PrimChecks.turtleOrLink.setVariable(1542, 1547, "color", 0);
     PrimChecks.turtle.setVariable(1562, 1568, "memory", []);
     PrimChecks.turtleOrLink.setVariable(1580, 1585, "shape", PrimChecks.list.oneOf(1586, 1592, ["bird 1", "bird 2"]));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-monarchs"), "MONARCHS"), function() { PrimChecks.turtleOrLink.setVariable(1668, 1673, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-viceroys"), "VICEROYS"), function() { PrimChecks.turtleOrLink.setVariable(1731, 1736, "color", 105); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1493, 1505, R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-monarchs"), "MONARCHS"), function() { PrimChecks.turtleOrLink.setVariable(1668, 1673, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1619, 1634, R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-viceroys"), "VICEROYS"), function() { PrimChecks.turtleOrLink.setVariable(1731, 1736, "color", 105); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1682, 1697, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setXY(1807, 1812, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1793, 1796, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 1876, 2171, (function() {
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BIRDS"), function() { var R = ProcedurePrims.callCommand("birds-move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BIRDS"), function() { var R = ProcedurePrims.callCommand("birds-move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1881, 1884, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(1968, 1972, world.turtles(), function() {
     return !Prims.equality(PrimChecks.turtleOrLink.getVariable(1974, 1979, "breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
-  }), function() { var R = ProcedurePrims.callCommand("butterflies-move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }), function() { var R = ProcedurePrims.callCommand("butterflies-move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1956, 1959, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(2025, 2029, world.turtles(), function() {
     return !Prims.equality(PrimChecks.turtleOrLink.getVariable(2031, 2036, "breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
   }), function() {
     var R = ProcedurePrims.callCommand("butterflies-get-eaten"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BIRDS"), function() { var R = ProcedurePrims.callCommand("birds-forget"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2013, 2016, R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BIRDS"), function() { var R = ProcedurePrims.callCommand("birds-forget"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2075, 2078, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(2116, 2120, world.turtles(), function() {
     return !Prims.equality(PrimChecks.turtleOrLink.getVariable(2122, 2127, "breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
   }), function() {
     var R = ProcedurePrims.callCommand("butterflies-reproduce"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2104, 2107, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("birds-move", 2179, 2372, (function() {
@@ -137,7 +137,7 @@ ProcedurePrims.defineCommand("butterflies-get-eaten", 2735, 3020, (function() {
       if (Prims.equality(PrimChecks.turtleOrLink.getVariable(2920, 2925, "breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
         var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2947, 2950, 1904, birdHhere), function() {
           var R = ProcedurePrims.callCommand("remember-color", PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable(2979, 2984, "color"); })); if (R === DeathInterrupt) { return R; }
-        }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+        }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2947, 2950, R); return R; }
       }
       return SelfManager.self().die();
     }
@@ -149,7 +149,7 @@ ProcedurePrims.defineReporter("color-in-memory?", 3120, 3232, (function(c) {
     if (Prims.equality(PrimChecks.list.item(3186, 3190, 0, PrimChecks.validator.checkArg('ITEM', 3186, 3190, 12, i)), c)) {
       return PrimChecks.procedure.report(3201, 3207, true);
     }
-  }, "[ i -> if item 0 i = c [ report true ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ i -> if item 0 i = c [ report true ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3161, 3168, R); return R; }
   return PrimChecks.procedure.report(3219, 3225, false);
 }))
 ProcedurePrims.defineCommand("remember-color", 3280, 3747, (function(c) {
@@ -187,7 +187,7 @@ ProcedurePrims.defineCommand("hatch-butterfly", 4541, 4990, (function() {
       if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("mutation-rate"))) {
         PrimChecks.turtleOrLink.setVariable(4941, 4946, "color", PrimChecks.list.oneOf(4947, 4953, PrimChecks.list.sublist(4954, 4961, ColorModel.BASE_COLORS, 1, 10)));
       }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4632, 4637, R); return R; }
   }
 }))
 world.observer.setVariable("memory-duration", 30);

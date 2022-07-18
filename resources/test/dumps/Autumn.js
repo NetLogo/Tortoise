@@ -136,10 +136,10 @@ ProcedurePrims.defineCommand("setup", 812, 2101, (function() {
   world.observer.setVariable("evaporation-temp", 30);
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RAINDROPS").getSpecialName(), "circle")
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("SUNS").getSpecialName(), "circle")
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(1012, 1018, "pcolor", PrimChecks.math.minus(1024, 1025, 105, 2)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(1012, 1018, "pcolor", PrimChecks.math.minus(1024, 1025, 105, 2)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(990, 993, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(1046, 1050, world.patches(), function() {
     return Prims.lt(PrimChecks.patch.getVariable(1053, 1058, "pycor"), PrimChecks.math.plus(1071, 1072, world.topology.minPycor, 2));
-  }), function() { PrimChecks.patch.setVariable(1087, 1093, "pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }), function() { PrimChecks.patch.setVariable(1087, 1093, "pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1034, 1037, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-of-leaves"), "LEAVES"), function() {
     PrimChecks.turtle.setVariable(1167, 1178, "chlorophyll", PrimChecks.math.plus(1182, 1183, 50, RandomPrims.randomLong(50)));
     PrimChecks.turtle.setVariable(1202, 1213, "water-level", PrimChecks.math.plus(1217, 1218, 75, RandomPrims.randomLong(25)));
@@ -148,14 +148,14 @@ ProcedurePrims.defineCommand("setup", 812, 2101, (function() {
     var R = ProcedurePrims.callCommand("change-color"); if (R === DeathInterrupt) { return R; }
     PrimChecks.turtle.setVariable(1432, 1444, "attachedness", PrimChecks.math.plus(1449, 1450, 100, RandomPrims.randomLong(50)));
     SelfManager.self().fd(PrimChecks.math.sqrt(1681, 1685, PrimChecks.math.randomFloat(100)));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1126, 1139, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(1753, 1757, world.patches(), function() {
     return (((((Prims.equality(PrimChecks.patch.getVariable(1764, 1769, "pxcor"), 0) && Prims.lte(PrimChecks.patch.getVariable(1778, 1783, "pycor"), 5)) || Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1796, 1799, 1, PrimChecks.patch.getVariable(1800, 1805, "pxcor"))), PrimChecks.math.plus(1815, 1816, PrimChecks.validator.checkArg('+', 1815, 1816, 1, PrimChecks.patch.getVariable(1809, 1814, "pycor")), 2))) && Prims.lt(PrimChecks.patch.getVariable(1824, 1829, "pycor"), 4)) || Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1841, 1844, 1, PrimChecks.patch.getVariable(1845, 1850, "pxcor"))), PrimChecks.math.plus(1860, 1861, PrimChecks.validator.checkArg('+', 1860, 1861, 1, PrimChecks.patch.getVariable(1854, 1859, "pycor")), 8))) && Prims.lt(PrimChecks.patch.getVariable(1869, 1874, "pycor"), 3));
-  }), function() { PrimChecks.patch.setVariable(1893, 1899, "pcolor", 35); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }), function() { PrimChecks.patch.setVariable(1893, 1899, "pcolor", 35); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1741, 1744, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "SUNS"), function() {
     PrimChecks.turtle.setXY(1953, 1958, PrimChecks.math.minus(1970, 1971, world.topology.maxPxcor, 2), PrimChecks.math.minus(1986, 1987, world.topology.maxPycor, 3));
     var R = ProcedurePrims.callCommand("show-intensity"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1933, 1944, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 2203, 3345, (function() {
@@ -165,21 +165,21 @@ ProcedurePrims.defineCommand("go", 2203, 3345, (function() {
   var R = ProcedurePrims.callCommand("make-wind-blow"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("make-rain-fall"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("move-water"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SUNS"), function() { var R = ProcedurePrims.callCommand("show-intensity"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SUNS"), function() { var R = ProcedurePrims.callCommand("show-intensity"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2495, 2498, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2566, 2569, 1904, PrimChecks.procedure.callReporter(2570, 2585, "attached-leaves")), function() {
     var R = ProcedurePrims.callCommand("adjust-water"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("adjust-chlorophyll"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("adjust-sugar"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("change-color"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("change-shape"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("LEAVES"), function() { var R = ProcedurePrims.callCommand("fall-if-necessary"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2566, 2569, R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("LEAVES"), function() { var R = ProcedurePrims.callCommand("fall-if-necessary"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2730, 2733, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(2824, 2828, world.turtleManager.turtlesOfBreed("LEAVES"), function() {
     return Prims.lte(PrimChecks.turtle.getVariable(2831, 2835, "ycor"), world.observer.getGlobal("bottom-line"));
   }), function() {
     PrimChecks.turtleOrLink.setVariable(2863, 2868, "breed", world.turtleManager.turtlesOfBreed("DEAD-LEAVES"));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(2951, 2955, world.turtleManager.turtlesOfBreed("LEAVES"), function() { return Prims.lt(PrimChecks.turtle.getVariable(2958, 2969, "water-level"), 1); }), function() { PrimChecks.turtle.setVariable(2986, 2998, "attachedness", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2813, 2816, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(2951, 2955, world.turtleManager.turtlesOfBreed("LEAVES"), function() { return Prims.lt(PrimChecks.turtle.getVariable(2958, 2969, "water-level"), 1); }), function() { PrimChecks.turtle.setVariable(2986, 2998, "attachedness", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2940, 2943, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("LEAVES"), function() {
     PrimChecks.turtle.setVariable(3079, 3090, "chlorophyll", PrimChecks.procedure.callReporter(3092, 3096, "clip", PrimChecks.turtle.getVariable(3097, 3108, "chlorophyll")));
     PrimChecks.turtle.setVariable(3118, 3129, "water-level", PrimChecks.procedure.callReporter(3131, 3135, "clip", PrimChecks.turtle.getVariable(3136, 3147, "water-level")));
@@ -187,7 +187,7 @@ ProcedurePrims.defineCommand("go", 2203, 3345, (function() {
     PrimChecks.turtle.setVariable(3196, 3204, "carotene", PrimChecks.procedure.callReporter(3206, 3210, "clip", PrimChecks.turtle.getVariable(3211, 3219, "carotene")));
     PrimChecks.turtle.setVariable(3229, 3240, "anthocyanin", PrimChecks.procedure.callReporter(3242, 3246, "clip", PrimChecks.turtle.getVariable(3247, 3258, "anthocyanin")));
     PrimChecks.turtle.setVariable(3268, 3280, "attachedness", PrimChecks.procedure.callReporter(3282, 3286, "clip", PrimChecks.turtle.getVariable(3287, 3299, "attachedness")));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3058, 3061, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineReporter("clip", 3360, 3450, (function(value) {
@@ -208,7 +208,7 @@ ProcedurePrims.defineCommand("make-wind-blow", 3783, 3949, (function() {
       SelfManager.self().right(-(PrimChecks.math.mult(3881, 3882, 10, PrimChecks.validator.checkArg('*', 3881, 3882, 1, world.observer.getGlobal("wind-factor")))));
     }
     PrimChecks.turtle.setVariable(3905, 3917, "attachedness", PrimChecks.math.minus(3931, 3932, PrimChecks.validator.checkArg('-', 3931, 3932, 1, PrimChecks.turtle.getVariable(3918, 3930, "attachedness")), PrimChecks.validator.checkArg('-', 3931, 3932, 1, world.observer.getGlobal("wind-factor"))));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3800, 3803, R); return R; }
 }))
 ProcedurePrims.defineCommand("make-rain-fall", 4146, 4534, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("rain-intensity"), "RAINDROPS"), function() {
@@ -219,8 +219,8 @@ ProcedurePrims.defineCommand("make-rain-fall", 4146, 4534, (function() {
     PrimChecks.turtleOrLink.setVariable(4353, 4358, "color", 5);
     PrimChecks.turtle.setVariable(4372, 4380, "location", "falling");
     PrimChecks.turtle.setVariable(4399, 4414, "amount-of-water", 10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("RAINDROPS"), function() { SelfManager.self().fd(PrimChecks.math.randomFloat(2)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4213, 4229, R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("RAINDROPS"), function() { SelfManager.self().fd(PrimChecks.math.randomFloat(2)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4498, 4501, R); return R; }
 }))
 ProcedurePrims.defineCommand("move-water", 4775, 5983, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(4917, 4921, world.turtleManager.turtlesOfBreed("RAINDROPS"), function() {
@@ -228,25 +228,25 @@ ProcedurePrims.defineCommand("move-water", 4775, 5983, (function() {
   }), function() {
     PrimChecks.turtle.setVariable(4976, 4984, "location", "in roots");
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 5000, 5004, 768, world.getPatchAt(0, PrimChecks.validator.checkArg('PATCH', 5005, 5010, 1, PrimChecks.turtle.getVariable(5013, 5017, "ycor")))));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4903, 4906, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(5107, 5111, world.turtleManager.turtlesOfBreed("RAINDROPS"), function() {
     return (Prims.equality(PrimChecks.turtle.getVariable(5114, 5122, "location"), "in roots") && Prims.equality(PrimChecks.patch.getVariable(5140, 5146, "pcolor"), 35));
   }), function() {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 5163, 5167, 768, world.getPatchAt(0, 0)));
     PrimChecks.turtle.setVariable(5186, 5194, "location", "in trunk");
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5093, 5096, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(5343, 5347, world.turtleManager.turtlesOfBreed("RAINDROPS"), function() {
     return (Prims.equality(PrimChecks.turtle.getVariable(5350, 5358, "location"), "in trunk") && Prims.equality(SelfManager.self().getPatchHere(), world.getPatchAt(0, 0)));
   }), function() {
     PrimChecks.turtle.setVariable(5411, 5419, "location", "in leaves");
     PrimChecks.turtle.setVariable(5440, 5447, "heading", RandomPrims.randomLong(360));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5329, 5332, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(5554, 5558, world.turtleManager.turtlesOfBreed("RAINDROPS"), function() {
     return (Prims.equality(PrimChecks.turtle.getVariable(5561, 5569, "location"), "in leaves") && Prims.lte(PrimChecks.turtle.getVariable(5588, 5603, "amount-of-water"), 0.5));
-  }), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5540, 5543, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(5779, 5783, world.turtleManager.turtlesOfBreed("RAINDROPS"), function() {
     return ((Prims.equality(PrimChecks.turtle.getVariable(5791, 5799, "location"), "in trunk") || Prims.equality(PrimChecks.turtle.getVariable(5816, 5824, "location"), "in leaves")) && ((Prims.gt(PrimChecks.turtle.getVariable(5849, 5853, "ycor"), PrimChecks.list.max(5856, 5859, PrimChecks.validator.checkArg('MAX', 5856, 5859, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("LEAVES"), function() { return PrimChecks.turtle.getVariable(5862, 5866, "ycor"); })))) || Prims.gt(PrimChecks.turtle.getVariable(5891, 5895, "xcor"), PrimChecks.list.max(5898, 5901, PrimChecks.validator.checkArg('MAX', 5898, 5901, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("LEAVES"), function() { return PrimChecks.turtle.getVariable(5904, 5908, "xcor"); }))))) || Prims.lt(PrimChecks.turtle.getVariable(5933, 5937, "xcor"), PrimChecks.list.min(5940, 5943, PrimChecks.validator.checkArg('MIN', 5940, 5943, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("LEAVES"), function() { return PrimChecks.turtle.getVariable(5946, 5950, "xcor"); }))))));
-  }), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5765, 5768, R); return R; }
 }))
 ProcedurePrims.defineCommand("show-intensity", 6336, 6575, (function() {
   PrimChecks.turtleOrLink.setVariable(6375, 6380, "color", ColorModel.scaleColor(45, world.observer.getGlobal("sun-intensity"), 0, 150));
@@ -271,7 +271,7 @@ ProcedurePrims.defineCommand("adjust-water", 6771, 7742, (function() {
     PrimChecks.turtle.setVariable(7290, 7301, "water-level", PrimChecks.math.plus(7314, 7315, PrimChecks.validator.checkArg('+', 7314, 7315, 1, PrimChecks.turtle.getVariable(7302, 7313, "water-level")), PrimChecks.math.mult(7352, 7353, PrimChecks.validator.checkArg('*', 7352, 7353, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 7337, 7339, 1904, myHraindrop), function() { return PrimChecks.turtle.getVariable(7319, 7334, "amount-of-water"); })), 0.2)));
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7364, 7367, 1904, myHraindrop), function() {
       PrimChecks.turtle.setVariable(7392, 7407, "amount-of-water", PrimChecks.math.mult(7425, 7426, PrimChecks.validator.checkArg('*', 7425, 7426, 1, PrimChecks.turtle.getVariable(7409, 7424, "amount-of-water")), 0.8));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7364, 7367, R); return R; }
   }
   if (Prims.gt(world.observer.getGlobal("temperature"), world.observer.getGlobal("evaporation-temp"))) {
     PrimChecks.turtle.setVariable(7541, 7552, "water-level", PrimChecks.math.minus(7565, 7566, PrimChecks.validator.checkArg('-', 7565, 7566, 1, PrimChecks.turtle.getVariable(7553, 7564, "water-level")), PrimChecks.math.mult(7572, 7573, 0.5, PrimChecks.math.minus(7587, 7588, PrimChecks.validator.checkArg('-', 7587, 7588, 1, world.observer.getGlobal("temperature")), PrimChecks.validator.checkArg('-', 7587, 7588, 1, world.observer.getGlobal("evaporation-temp"))))));

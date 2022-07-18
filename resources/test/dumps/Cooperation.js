@@ -72,7 +72,7 @@ ProcedurePrims.defineCommand("setup", 122, 234, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(177, 182, "grass", world.observer.getGlobal("max-grass-height"));
     var R = ProcedurePrims.callCommand("color-grass"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(155, 158, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-cows", 242, 598, (function() {
@@ -88,18 +88,18 @@ ProcedurePrims.defineCommand("setup-cows", 242, 598, (function() {
       PrimChecks.turtleOrLink.setVariable(546, 551, "breed", world.turtleManager.turtlesOfBreed("GREEDY-COWS"));
       PrimChecks.turtleOrLink.setVariable(574, 579, "color", PrimChecks.math.minus(584, 585, 95, 2));
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(317, 331, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 606, 743, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("eat"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("reproduce"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(611, 614, R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
     var R = ProcedurePrims.callCommand("grow-grass"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("color-grass"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(687, 690, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("reproduce", 751, 879, (function() {

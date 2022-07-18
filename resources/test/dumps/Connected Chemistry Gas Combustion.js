@@ -112,17 +112,17 @@ ProcedurePrims.defineCommand("setup", 1979, 2473, (function() {
 ProcedurePrims.defineCommand("make-box", 2482, 2749, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(2505, 2509, world.patches(), function() {
     return ((Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 2516, 2519, 1, PrimChecks.patch.getVariable(2520, 2525, "pxcor"))), PrimChecks.math.minus(2539, 2540, world.topology.maxPxcor, PrimChecks.validator.checkArg('-', 2539, 2540, 1, world.observer.getGlobal("margin-outside-box")))) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 2567, 2570, 1, PrimChecks.patch.getVariable(2571, 2576, "pycor"))), PrimChecks.math.minus(2591, 2592, world.topology.maxPycor, PrimChecks.validator.checkArg('-', 2591, 2592, 1, world.observer.getGlobal("margin-outside-box"))))) || (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 2624, 2627, 1, PrimChecks.patch.getVariable(2628, 2633, "pycor"))), PrimChecks.math.minus(2647, 2648, world.topology.maxPxcor, PrimChecks.validator.checkArg('-', 2647, 2648, 1, world.observer.getGlobal("margin-outside-box")))) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 2675, 2678, 1, PrimChecks.patch.getVariable(2679, 2684, "pxcor"))), PrimChecks.math.minus(2699, 2700, world.topology.maxPycor, PrimChecks.validator.checkArg('-', 2699, 2700, 1, world.observer.getGlobal("margin-outside-box"))))));
-  }), function() { PrimChecks.patch.setVariable(2735, 2741, "pcolor", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }), function() { PrimChecks.patch.setVariable(2735, 2741, "pcolor", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2493, 2496, R); return R; }
 }))
 ProcedurePrims.defineCommand("make-gas-molecules", 2758, 3004, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-oxygen-molecules"), "GAS-MOLECULES"), function() {
     var R = ProcedurePrims.callCommand("setup-initial-oxygen-molecules"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("random-position"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2779, 2799, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-hydrogen-molecules"), "GAS-MOLECULES"), function() {
     var R = ProcedurePrims.callCommand("setup-initial-hydrogen-molecules"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("random-position"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2891, 2911, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-initial-hydrogen-molecules", 3013, 3285, (function() {
   PrimChecks.turtle.setVariable(3080, 3084, "size", world.observer.getGlobal("molecule-size"));
@@ -159,7 +159,7 @@ ProcedurePrims.defineCommand("go", 4274, 4737, (function() {
     return PrimChecks.procedure.stop(4307, 4311);
   }
   if (world.observer.getGlobal("box-intact?")) {
-    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { var R = ProcedurePrims.callCommand("bounce"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { var R = ProcedurePrims.callCommand("bounce"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4335, 4338, R); return R; }
   }
   else {
     var R = ProcedurePrims.callCommand("shatter-box"); if (R === DeathInterrupt) { return R; }
@@ -167,8 +167,8 @@ ProcedurePrims.defineCommand("go", 4274, 4737, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() {
     var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("check-for-collision"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(4456, 4460, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(4462, 4475, "molecule-type"), "oxygen"); }), function() { var R = ProcedurePrims.callCommand("check-for-reaction"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4379, 4382, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(4456, 4460, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(4462, 4475, "molecule-type"), "oxygen"); }), function() { var R = ProcedurePrims.callCommand("check-for-reaction"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4438, 4441, R); return R; }
   var R = ProcedurePrims.callCommand("update-variables"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("calculate-pressure"); if (R === DeathInterrupt) { return R; }
   if (Prims.gt(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-limit-container"))) {
@@ -201,7 +201,7 @@ ProcedurePrims.defineCommand("update-flash-visualization", 5304, 5507, (function
       return SelfManager.self().die();
     }
     PrimChecks.turtleOrLink.setVariable(5396, 5401, "color", PrimChecks.list.lput(PrimChecks.math.minus(5412, 5413, 255, PrimChecks.math.div(5441, 5442, PrimChecks.math.mult(5419, 5420, 255, PrimChecks.math.minus(5428, 5429, world.ticker.tickCount(), PrimChecks.validator.checkArg('-', 5428, 5429, 1, PrimChecks.turtle.getVariable(5430, 5438, "birthday")))), 0.4)), [20, 20, 20]));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5333, 5336, R); return R; }
 }))
 ProcedurePrims.defineCommand("bounce", 5516, 7066, (function() {
   let newHpatch = SelfManager.self().patchAhead(1); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PATCH", newHpatch);
@@ -221,7 +221,7 @@ ProcedurePrims.defineCommand("bounce", 5516, 7066, (function() {
     PrimChecks.turtle.setVariable(6930, 6949, "momentum-difference", PrimChecks.math.plus(6970, 6971, PrimChecks.validator.checkArg('+', 6970, 6971, 1, PrimChecks.turtle.getVariable(6950, 6969, "momentum-difference")), PrimChecks.validator.checkArg('+', 6970, 6971, 1, PrimChecks.turtle.getVariable(6972, 6988, "momentum-instant"))));
   }
   if (world.observer.getGlobal("show-wall-hits?")) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7023, 7026, 1904, world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 7027, 7032, 1, newHpx), PrimChecks.validator.checkArg('PATCH', 7027, 7032, 1, newHpy))), function() { var R = ProcedurePrims.callCommand("make-a-flash"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7023, 7026, 1904, world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 7027, 7032, 1, newHpx), PrimChecks.validator.checkArg('PATCH', 7027, 7032, 1, newHpy))), function() { var R = ProcedurePrims.callCommand("make-a-flash"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7023, 7026, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("make-a-flash", 7075, 7179, (function() {
@@ -229,7 +229,7 @@ ProcedurePrims.defineCommand("make-a-flash", 7075, 7179, (function() {
     PrimChecks.turtleOrLink.setVariable(7109, 7114, "breed", world.turtleManager.turtlesOfBreed("FLASHES"));
     PrimChecks.turtleOrLink.setVariable(7131, 7136, "color", [20, 20, 20, 255]);
     PrimChecks.turtle.setVariable(7160, 7168, "birthday", world.ticker.tickCount());
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7090, 7096, R); return R; }
 }))
 ProcedurePrims.defineCommand("shatter-box", 7188, 7638, (function() {
   let centerHpatch = PrimChecks.agentset.oneOfWith(null, null, world.patches(), function() {
@@ -242,16 +242,16 @@ ProcedurePrims.defineCommand("shatter-box", 7188, 7638, (function() {
       return SelfManager.self().die();
     }
     SelfManager.self().fd(PrimChecks.math.mult(7467, 7468, PrimChecks.validator.checkArg('*', 7467, 7468, 1, world.observer.getGlobal("avg-speed")), PrimChecks.validator.checkArg('*', 7467, 7468, 1, world.observer.getGlobal("tick-advance-amount"))));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7267, 7270, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(7507, 7511, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(7513, 7519, "pcolor"), 5); }), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "TURTLES"), function() {
       PrimChecks.turtleOrLink.setVariable(7546, 7551, "breed", world.turtleManager.turtlesOfBreed("BROKEN-WALLS"));
       PrimChecks.turtleOrLink.setVariable(7569, 7574, "color", 5);
       PrimChecks.turtleOrLink.setVariable(7584, 7589, "shape", "square");
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7532, 7538, R); return R; }
     PrimChecks.patch.setVariable(7604, 7610, "pcolor", 0);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("FLASHES"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7495, 7498, R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("FLASHES"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7620, 7623, R); return R; }
 }))
 ProcedurePrims.defineCommand("move", 7647, 8155, (function() {
   if (!Prims.equality(SelfManager.self().patchAhead(PrimChecks.math.mult(7704, 7705, PrimChecks.validator.checkArg('*', 7704, 7705, 1, PrimChecks.turtle.getVariable(7698, 7703, "speed")), PrimChecks.validator.checkArg('*', 7704, 7705, 1, world.observer.getGlobal("tick-advance-amount")))), SelfManager.self().getPatchHere())) {
@@ -265,7 +265,7 @@ ProcedurePrims.defineCommand("move", 7647, 8155, (function() {
 ProcedurePrims.defineCommand("calculate-pressure", 8164, 8667, (function() {
   world.observer.setVariable("pressure", PrimChecks.math.mult(8357, 8358, 100, PrimChecks.list.sum(8359, 8362, PrimChecks.validator.checkArg('SUM', 8359, 8362, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return PrimChecks.turtle.getVariable(8364, 8383, "momentum-difference"); })))));
   world.observer.setVariable("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.validator.checkArg('LPUT', 8425, 8429, 8, PrimChecks.list.butFirst('but-first', 8439, 8448, PrimChecks.validator.checkArg('BUT-FIRST', 8439, 8448, 12, world.observer.getGlobal("pressure-history"))))));
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { PrimChecks.turtle.setVariable(8496, 8515, "momentum-difference", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { PrimChecks.turtle.setVariable(8496, 8515, "momentum-difference", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8468, 8471, R); return R; }
 }))
 ProcedurePrims.defineCommand("calculate-tick-advance-amount", 8675, 9388, (function() {
   if (PrimChecks.agentset.anyWith(null, null, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { return Prims.gt(PrimChecks.turtle.getVariable(9211, 9216, "speed"), 0); })) {
@@ -277,12 +277,12 @@ ProcedurePrims.defineCommand("calculate-tick-advance-amount", 8675, 9388, (funct
 }))
 ProcedurePrims.defineCommand("speed-up-one-molecule", 9397, 9599, (function() {
   world.clearDrawing();
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { SelfManager.self().penManager.raisePen(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { SelfManager.self().penManager.raisePen(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9437, 9440, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9465, 9468, 1904, PrimChecks.list.oneOf(9469, 9475, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"))), function() {
     PrimChecks.turtle.setVariable(9501, 9506, "speed", PrimChecks.math.mult(9513, 9514, PrimChecks.validator.checkArg('*', 9513, 9514, 1, PrimChecks.turtle.getVariable(9507, 9512, "speed")), 10));
     PrimChecks.turtle.setVariable(9526, 9532, "energy", PrimChecks.procedure.callReporter(9533, 9550, "energy-from-speed"));
     SelfManager.self().penManager.lowerPen();
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9465, 9468, R); return R; }
   var R = ProcedurePrims.callCommand("calculate-tick-advance-amount"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("check-for-reaction", 9834, 10979, (function() {
@@ -308,7 +308,7 @@ ProcedurePrims.defineCommand("check-for-reaction", 9834, 10979, (function() {
         let totalHenergyHproducts = PrimChecks.math.plus(10624, 10625, PrimChecks.validator.checkArg('+', 10624, 10625, 1, totalHenergyHallHreactants), PrimChecks.validator.checkArg('+', 10624, 10625, 1, world.observer.getGlobal("bond-energy-released"))); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL-ENERGY-PRODUCTS", totalHenergyHproducts);
         PrimChecks.turtle.setVariable(10663, 10669, "energy", PrimChecks.math.div(10692, 10693, PrimChecks.validator.checkArg('/', 10692, 10693, 1, totalHenergyHproducts), 2));
         PrimChecks.turtle.setVariable(10841, 10846, "speed", PrimChecks.procedure.callReporter(10847, 10864, "speed-from-energy"));
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(10289, 10292, R); return R; }
       return SelfManager.self().die();
     }
   }
@@ -320,10 +320,10 @@ ProcedurePrims.defineCommand("check-for-collision", 11227, 12322, (function() {
     }))); ProcedurePrims.stack().currentContext().registerStringRunVar("CANDIDATE", candidate);
     if ((!Prims.equality(candidate, Nobody) && (Prims.gt(PrimChecks.turtle.getVariable(12089, 12094, "speed"), 0) || Prims.gt(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 12110, 12112, 1904, candidate), function() { return PrimChecks.turtle.getVariable(12103, 12108, "speed"); }), 0)))) {
       var R = ProcedurePrims.callCommand("collide-with", candidate); if (R === DeathInterrupt) { return R; }
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12169, 12172, 1904, candidate), function() { SelfManager.self().penManager.raisePen(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12169, 12172, 1904, candidate), function() { SelfManager.self().penManager.raisePen(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12169, 12172, R); return R; }
       PrimChecks.turtle.setVariable(12201, 12215, "last-collision", candidate);
       let thisHcandidate = SelfManager.self(); ProcedurePrims.stack().currentContext().registerStringRunVar("THIS-CANDIDATE", thisHcandidate);
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12262, 12265, 1904, candidate), function() { PrimChecks.turtle.setVariable(12281, 12295, "last-collision", thisHcandidate); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12262, 12265, 1904, candidate), function() { PrimChecks.turtle.setVariable(12281, 12295, "last-collision", thisHcandidate); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12262, 12265, R); return R; }
     }
   }
 }))
@@ -350,7 +350,7 @@ ProcedurePrims.defineCommand("collide-with", 13542, 15714, (function(otherHgasHm
     if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
       PrimChecks.turtle.setVariable(15675, 15682, "heading", PrimChecks.math.minus(15690, 15691, PrimChecks.validator.checkArg('-', 15690, 15691, 1, theta), PrimChecks.math.atan(15693, 15697, PrimChecks.validator.checkArg('ATAN', 15693, 15697, 1, v2l), PrimChecks.validator.checkArg('ATAN', 15693, 15697, 1, v2t))));
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(15524, 15527, R); return R; }
 }))
 ProcedurePrims.defineReporter("speed-from-energy", 15829, 15881, (function() {
   return PrimChecks.procedure.report(15849, 15855, PrimChecks.math.sqrt(15856, 15860, PrimChecks.math.div(15873, 15874, PrimChecks.math.mult(15864, 15865, 2, PrimChecks.validator.checkArg('*', 15864, 15865, 1, PrimChecks.turtle.getVariable(15866, 15872, "energy"))), PrimChecks.validator.checkArg('/', 15873, 15874, 1, PrimChecks.turtle.getVariable(15875, 15879, "mass")))));

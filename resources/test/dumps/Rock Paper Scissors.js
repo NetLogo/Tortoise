@@ -73,7 +73,7 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 3, 150, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(93, 99, "pcolor", PrimChecks.list.oneOf(100, 106, [15, 55, 105, 0])); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(93, 99, "pcolor", PrimChecks.list.oneOf(100, 106, [15, 55, 105, 0])); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(23, 26, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 158, 1941, (function() {
@@ -95,18 +95,18 @@ ProcedurePrims.defineCommand("go", 158, 1941, (function() {
       if (Prims.equality(_EVENT_, selectHevent)) {
         var R = ProcedurePrims.callCommand("select", target); if (R === DeathInterrupt) { return R; }
       }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, "[ event -> ask one-of patches [ let one-of neighbors4 if event = swap-event [ swap target ] if event = reproduce-event [ reproduce target ] if event = select-event [ select target ] ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1714, 1717, R); return R; }
+  }, "[ event -> ask one-of patches [ let one-of neighbors4 if event = swap-event [ swap target ] if event = reproduce-event [ reproduce target ] if event = select-event [ select target ] ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1684, 1691, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("swap", 1996, 2107, (function(target) {
   let oldHcolor = PrimChecks.patch.getVariable(2028, 2034, "pcolor"); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-COLOR", oldHcolor);
   PrimChecks.patch.setVariable(2041, 2047, "pcolor", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2059, 2061, 1904, target), function() { return PrimChecks.patch.getVariable(2050, 2056, "pcolor"); }));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2071, 2074, 1904, target), function() { PrimChecks.patch.setVariable(2088, 2094, "pcolor", oldHcolor); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2071, 2074, 1904, target), function() { PrimChecks.patch.setVariable(2088, 2094, "pcolor", oldHcolor); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2071, 2074, R); return R; }
 }))
 ProcedurePrims.defineCommand("select", 2163, 2316, (function(target) {
   if (PrimChecks.procedure.callReporter(2190, 2195, "beat?", target)) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2209, 2212, 1904, target), function() { PrimChecks.patch.setVariable(2226, 2232, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2209, 2212, 1904, target), function() { PrimChecks.patch.setVariable(2226, 2232, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2209, 2212, R); return R; }
   }
   else {
     if (PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2271, 2273, 1904, target), function() { return PrimChecks.procedure.callReporter(2256, 2261, "beat?", SelfManager.myself()); })) {
@@ -118,7 +118,7 @@ ProcedurePrims.defineCommand("reproduce", 2416, 2616, (function(target) {
   if (Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2457, 2459, 1904, target), function() { return PrimChecks.patch.getVariable(2448, 2454, "pcolor"); }), 0)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2481, 2484, 1904, target), function() {
       PrimChecks.patch.setVariable(2504, 2510, "pcolor", PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(2513, 2519, "pcolor"); }));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2481, 2484, R); return R; }
   }
   else {
     if (Prims.equality(PrimChecks.patch.getVariable(2551, 2557, "pcolor"), 0)) {

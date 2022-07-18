@@ -79,7 +79,7 @@ ProcedurePrims.defineCommand("setup", 50, 288, (function() {
     PrimChecks.turtleOrLink.setVariable(162, 167, "color", 9.9);
     PrimChecks.turtle.setXY(178, 183, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
     PrimChecks.turtle.setVariable(216, 222, "energy", RandomPrims.randomLong(10));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(130, 144, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 296, 437, (function() {
@@ -93,7 +93,7 @@ ProcedurePrims.defineCommand("go", 296, 437, (function() {
     var R = ProcedurePrims.callCommand("eat-weeds"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("reproduce"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("death"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(355, 358, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("grow-grass-and-weeds", 445, 661, (function() {
@@ -106,7 +106,7 @@ ProcedurePrims.defineCommand("grow-grass-and-weeds", 445, 661, (function() {
         PrimChecks.patch.setVariable(640, 646, "pcolor", 55);
       }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(468, 471, R); return R; }
 }))
 ProcedurePrims.defineCommand("move", 669, 788, (function() {
   SelfManager.self().right(RandomPrims.randomLong(50));
@@ -129,7 +129,7 @@ ProcedurePrims.defineCommand("eat-weeds", 956, 1107, (function() {
 ProcedurePrims.defineCommand("reproduce", 1115, 1293, (function() {
   if (Prims.gt(PrimChecks.turtle.getVariable(1215, 1221, "energy"), world.observer.getGlobal("birth-threshold"))) {
     PrimChecks.turtle.setVariable(1250, 1256, "energy", PrimChecks.math.div(1264, 1265, PrimChecks.validator.checkArg('/', 1264, 1265, 1, PrimChecks.turtle.getVariable(1257, 1263, "energy")), 2));
-    var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1274, 1279, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("death", 1301, 1389, (function() {

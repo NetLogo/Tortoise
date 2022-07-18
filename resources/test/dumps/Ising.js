@@ -79,13 +79,13 @@ ProcedurePrims.defineCommand("setup", 264, 462, (function() {
       PrimChecks.patch.setVariable(379, 383, "spin", -1);
     }
     var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(284, 287, R); return R; }
   world.observer.setVariable("sum-of-spins", PrimChecks.list.sum(424, 427, PrimChecks.validator.checkArg('SUM', 424, 427, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.patch.getVariable(430, 434, "spin"); }))));
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 470, 759, (function() {
   for (let _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 528, 531, 1904, PrimChecks.list.oneOf(532, 538, world.patches())), function() { var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 528, 531, 1904, PrimChecks.list.oneOf(532, 538, world.patches())), function() { var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(528, 531, R); return R; }
   }
   world.ticker.tickAdvance(1000);
   plotManager.updatePlots();

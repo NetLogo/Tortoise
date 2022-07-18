@@ -87,7 +87,7 @@ ProcedurePrims.defineCommand("test-literal", 445, 569, (function() {
     PrimChecks.turtleOrLink.setVariable(530, 535, "color", 15);
     SelfManager.self().stamp();
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(468, 482, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-number", 577, 699, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
@@ -97,7 +97,7 @@ ProcedurePrims.defineCommand("test-number", 577, 699, (function() {
     PrimChecks.turtleOrLink.setVariable(661, 666, "color", 15);
     SelfManager.self().stamp();
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(599, 613, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgb", 707, 835, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
@@ -107,7 +107,7 @@ ProcedurePrims.defineCommand("test-rgb", 707, 835, (function() {
     PrimChecks.turtleOrLink.setVariable(788, 793, "color", [215, 50, 41]);
     SelfManager.self().stamp();
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(726, 740, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgba-opaque", 843, 983, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
@@ -117,7 +117,7 @@ ProcedurePrims.defineCommand("test-rgba-opaque", 843, 983, (function() {
     PrimChecks.turtleOrLink.setVariable(932, 937, "color", [215, 50, 41, 255]);
     SelfManager.self().stamp();
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(870, 884, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgba-transparent", 991, 1134, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
@@ -127,7 +127,7 @@ ProcedurePrims.defineCommand("test-rgba-transparent", 991, 1134, (function() {
     PrimChecks.turtleOrLink.setVariable(1085, 1090, "color", [215, 50, 41, 0]);
     SelfManager.self().stamp();
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1023, 1037, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgba-swap-to-blue", 1142, 1318, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
@@ -138,7 +138,7 @@ ProcedurePrims.defineCommand("test-rgba-swap-to-blue", 1142, 1318, (function() {
     SelfManager.self().stamp();
     PrimChecks.turtleOrLink.setVariable(1277, 1282, "color", [41, 50, 215, 255]);
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1175, 1189, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgba-swap-to-transparent", 1326, 1509, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
@@ -149,7 +149,7 @@ ProcedurePrims.defineCommand("test-rgba-swap-to-transparent", 1326, 1509, (funct
     SelfManager.self().stamp();
     PrimChecks.turtleOrLink.setVariable(1468, 1473, "color", [215, 50, 41, 100]);
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1366, 1380, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgba-swap-to-opaque", 1517, 1695, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
@@ -160,5 +160,5 @@ ProcedurePrims.defineCommand("test-rgba-swap-to-opaque", 1517, 1695, (function()
     SelfManager.self().stamp();
     PrimChecks.turtleOrLink.setVariable(1654, 1659, "color", [215, 50, 41, 255]);
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1552, 1566, R); return R; }
 }))

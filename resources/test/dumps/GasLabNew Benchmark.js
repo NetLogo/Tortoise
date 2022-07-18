@@ -132,18 +132,18 @@ ProcedurePrims.defineCommand("update-variables", 2006, 2257, (function() {
   world.observer.setVariable("avg-energy", PrimChecks.list.mean(2230, 2234, PrimChecks.validator.checkArg('MEAN', 2230, 2234, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(2236, 2242, "energy"); }))));
 }))
 ProcedurePrims.defineCommand("go", 2265, 2990, (function() {
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { var R = ProcedurePrims.callCommand("bounce"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { var R = ProcedurePrims.callCommand("bounce"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2270, 2273, R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2297, 2300, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
     if (world.observer.getGlobal("collide?")) {
       var R = ProcedurePrims.callCommand("check-for-collision"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2322, 2325, R); return R; }
   if (world.observer.getGlobal("trace?")) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2390, 2393, 1904, PrimChecks.turtle.getTurtleOfBreed(2394, 2402, "PARTICLES", 0)), function() {
       PrimChecks.patch.setVariable(2416, 2422, "pcolor", 5);
       world.observer.setVariable("fade-needed?", true);
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2390, 2393, R); return R; }
   }
   let oldHclock = world.ticker.tickCount(); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-CLOCK", oldHclock);
   world.ticker.tickAdvance(world.observer.getGlobal("tick-length"));
@@ -154,7 +154,7 @@ ProcedurePrims.defineCommand("go", 2265, 2990, (function() {
     else {
       world.observer.setVariable("wall-hits-per-particle", 0);
     }
-    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { PrimChecks.turtle.setVariable(2718, 2727, "wall-hits", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { PrimChecks.turtle.setVariable(2718, 2727, "wall-hits", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2692, 2695, R); return R; }
     if (world.observer.getGlobal("fade-needed?")) {
       var R = ProcedurePrims.callCommand("fade-patches"); if (R === DeathInterrupt) { return R; }
     }
@@ -165,13 +165,13 @@ ProcedurePrims.defineCommand("go", 2265, 2990, (function() {
   var R = ProcedurePrims.callCommand("calculate-tick-length"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CLOCKERS"), function() {
     PrimChecks.turtle.setVariable(2876, 2883, "heading", PrimChecks.math.mult(2890, 2891, world.ticker.tickCount(), 360));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2857, 2860, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(2912, 2916, world.turtleManager.turtlesOfBreed("FLASHES"), function() {
     return Prims.gt(PrimChecks.math.minus(2924, 2925, world.ticker.tickCount(), PrimChecks.validator.checkArg('-', 2924, 2925, 1, PrimChecks.turtle.getVariable(2926, 2934, "birthday"))), 0.4);
   }), function() {
     PrimChecks.patch.setVariable(2954, 2960, "pcolor", 45);
     return SelfManager.self().die();
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2900, 2903, R); return R; }
   Prims.display();
 }))
 ProcedurePrims.defineCommand("calculate-tick-length", 2998, 3150, (function() {
@@ -189,7 +189,7 @@ ProcedurePrims.defineCommand("calculate-pressure", 4224, 4733, (function() {
     PrimChecks.procedure.runArgCountCheck('runresult', 4512, 4517, 1, arguments.length);
     return Prims.equality(p, 0);
   }, "[ [p] -> p = 0 ]", true, false), PrimChecks.validator.checkArg('FILTER', 4496, 4502, 8, world.observer.getGlobal("pressure-history")))));
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { PrimChecks.turtle.setVariable(4562, 4581, "momentum-difference", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { PrimChecks.turtle.setVariable(4562, 4581, "momentum-difference", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4538, 4541, R); return R; }
 }))
 ProcedurePrims.defineCommand("bounce", 4741, 6490, (function() {
   if (ColorModel.areRelatedByShade(45, PrimChecks.patch.getVariable(4922, 4928, "pcolor"))) {
@@ -219,8 +219,8 @@ ProcedurePrims.defineCommand("bounce", 4741, 6490, (function() {
       SelfManager.self().hideTurtle(true);
       PrimChecks.turtle.setVariable(6432, 6440, "birthday", world.ticker.tickCount());
       PrimChecks.patch.setVariable(6468, 6474, "pcolor", PrimChecks.math.minus(6482, 6483, 45, 3));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6389, 6403, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6359, 6362, R); return R; }
 }))
 ProcedurePrims.defineCommand("move", 6498, 6645, (function() {
   let oldHpatch = SelfManager.self().getPatchHere(); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-PATCH", oldHpatch);
@@ -237,7 +237,7 @@ ProcedurePrims.defineCommand("check-for-collision", 6653, 9524, (function() {
     if ((!Prims.equality(candidate, Nobody) && (Prims.gt(PrimChecks.turtle.getVariable(9355, 9360, "speed"), 0) || Prims.gt(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 9376, 9378, 1904, candidate), function() { return PrimChecks.turtle.getVariable(9369, 9374, "speed"); }), 0)))) {
       var R = ProcedurePrims.callCommand("collide-with", candidate); if (R === DeathInterrupt) { return R; }
       PrimChecks.turtle.setVariable(9439, 9453, "last-collision", candidate);
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9470, 9473, 1904, candidate), function() { PrimChecks.turtle.setVariable(9490, 9504, "last-collision", SelfManager.myself()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9470, 9473, 1904, candidate), function() { PrimChecks.turtle.setVariable(9490, 9504, "last-collision", SelfManager.myself()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9470, 9473, R); return R; }
     }
   }
 }))
@@ -260,17 +260,17 @@ ProcedurePrims.defineCommand("collide-with", 10847, 13178, (function(otherHparti
   }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12801, 12804, 1904, otherHparticle), function() {
     PrimChecks.turtle.setVariable(12826, 12831, "speed", PrimChecks.math.sqrt(12832, 12836, PrimChecks.math.plus(12850, 12851, PrimChecks.math.mult(12843, 12844, PrimChecks.validator.checkArg('*', 12843, 12844, 1, v2t), PrimChecks.validator.checkArg('*', 12843, 12844, 1, v2t)), PrimChecks.math.mult(12857, 12858, PrimChecks.validator.checkArg('*', 12857, 12858, 1, v2l), PrimChecks.validator.checkArg('*', 12857, 12858, 1, v2l)))));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12801, 12804, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12869, 12872, 1904, otherHparticle), function() {
     PrimChecks.turtle.setVariable(12894, 12900, "energy", PrimChecks.math.mult(12920, 12921, PrimChecks.math.mult(12912, 12913, PrimChecks.math.mult(12905, 12906, 0.5, PrimChecks.validator.checkArg('*', 12905, 12906, 1, PrimChecks.turtle.getVariable(12907, 12911, "mass"))), PrimChecks.validator.checkArg('*', 12912, 12913, 1, PrimChecks.turtle.getVariable(12914, 12919, "speed"))), PrimChecks.validator.checkArg('*', 12920, 12921, 1, PrimChecks.turtle.getVariable(12922, 12927, "speed"))));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12869, 12872, R); return R; }
   if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12962, 12965, 1904, otherHparticle), function() {
       PrimChecks.turtle.setVariable(12987, 12994, "heading", PrimChecks.math.minus(13002, 13003, PrimChecks.validator.checkArg('-', 13002, 13003, 1, theta), PrimChecks.math.atan(13005, 13009, PrimChecks.validator.checkArg('ATAN', 13005, 13009, 1, v2l), PrimChecks.validator.checkArg('ATAN', 13005, 13009, 1, v2t))));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12962, 12965, R); return R; }
   }
   var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 13143, 13146, 1904, otherHparticle), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 13143, 13146, 1904, otherHparticle), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13143, 13146, R); return R; }
 }))
 ProcedurePrims.defineCommand("recolor", 13186, 13360, (function() {
   if (Prims.lt(PrimChecks.turtle.getVariable(13226, 13231, "speed"), PrimChecks.math.mult(13239, 13240, 0.5, 10))) {
@@ -295,7 +295,7 @@ ProcedurePrims.defineCommand("fade-patches", 13368, 13661, (function() {
       if ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 13557, 13560, 2, world.observer.getGlobal("trace?"))) || Prims.equality(PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 13573, 13578, 1, PrimChecks.patch.getVariable(13579, 13585, "pcolor"))), 0))) {
         PrimChecks.patch.setVariable(13611, 13617, "pcolor", 0);
       }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13491, 13494, R); return R; }
   }
   else {
     world.observer.setVariable("fade-needed?", false);
@@ -304,14 +304,14 @@ ProcedurePrims.defineCommand("fade-patches", 13368, 13661, (function() {
 ProcedurePrims.defineCommand("make-box", 13718, 13906, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(13741, 13745, world.patches(), function() {
     return ((Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 13750, 13753, 1, PrimChecks.patch.getVariable(13754, 13759, "pxcor"))), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 13777, 13780, 1, PrimChecks.patch.getVariable(13781, 13786, "pycor"))), world.observer.getGlobal("box-edge"))) || (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 13827, 13830, 1, PrimChecks.patch.getVariable(13831, 13836, "pycor"))), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 13854, 13857, 1, PrimChecks.patch.getVariable(13858, 13863, "pxcor"))), world.observer.getGlobal("box-edge"))));
-  }), function() { PrimChecks.patch.setVariable(13890, 13896, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }), function() { PrimChecks.patch.setVariable(13890, 13896, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13729, 13732, R); return R; }
 }))
 ProcedurePrims.defineCommand("make-particles", 13943, 14088, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(world.observer.getGlobal("number-of-particles"), "PARTICLES"), function() {
     var R = ProcedurePrims.callCommand("setup-particle"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("random-position"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13960, 13984, R); return R; }
   var R = ProcedurePrims.callCommand("calculate-tick-length"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("setup-particle", 14097, 14308, (function() {
@@ -415,7 +415,7 @@ ProcedurePrims.defineCommand("make-clocker", 17044, 17231, (function() {
     PrimChecks.turtleOrLink.setVariable(17176, 17181, "color", PrimChecks.math.plus(17189, 17190, 115, 2));
     PrimChecks.turtle.setVariable(17201, 17205, "size", 10);
     PrimChecks.turtle.setVariable(17217, 17224, "heading", 0);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(17098, 17121, R); return R; }
 }))
 world.observer.setVariable("number-of-particles", 150);
 world.observer.setVariable("collide?", true);

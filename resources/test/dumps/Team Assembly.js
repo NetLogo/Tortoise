@@ -119,7 +119,7 @@ ProcedurePrims.defineCommand("make-newcomer", 763, 957, (function() {
     world.observer.setVariable("newcomer", SelfManager.self());
     PrimChecks.turtle.setVariable(918, 926, "downtime", 0);
     PrimChecks.turtle.setVariable(937, 946, "explored?", false);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(779, 793, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup", 966, 1374, (function() {
   world.clearAll();
@@ -130,14 +130,14 @@ ProcedurePrims.defineCommand("setup", 966, 1374, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setVariable(1114, 1122, "in-team?", true);
     PrimChecks.turtle.setVariable(1136, 1146, "incumbent?", true);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1090, 1093, R); return R; }
   var R = ProcedurePrims.callCommand("tie-collaborators"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("color-collaborations"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setVariable(1267, 1274, "heading", PrimChecks.math.mult(1293, 1294, PrimChecks.math.div(1280, 1281, 360, PrimChecks.validator.checkArg('/', 1280, 1281, 1, world.observer.getGlobal("team-size"))), PrimChecks.validator.checkArg('*', 1293, 1294, 1, PrimChecks.turtle.getVariable(1295, 1298, "who"))));
     SelfManager.self().fd(1.75);
     PrimChecks.turtle.setVariable(1319, 1327, "in-team?", false);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1202, 1205, R); return R; }
   var R = ProcedurePrims.callCommand("find-all-components"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
@@ -146,8 +146,8 @@ ProcedurePrims.defineCommand("go", 1456, 2009, (function() {
     PrimChecks.turtle.setVariable(1534, 1544, "incumbent?", true);
     PrimChecks.turtleOrLink.setVariable(1554, 1559, "color", PrimChecks.math.minus(1565, 1566, 5, 1.5));
     PrimChecks.turtle.setVariable(1575, 1579, "size", 0.9);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.links(), function() { PrimChecks.link.setVariable(1602, 1620, "new-collaboration?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1517, 1520, R); return R; }
+  var R = ProcedurePrims.ask(world.links(), function() { PrimChecks.link.setVariable(1602, 1620, "new-collaboration?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1587, 1590, R); return R; }
   var R = ProcedurePrims.callCommand("pick-team-members"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("tie-collaborators"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("color-collaborations"); if (R === DeathInterrupt) { return R; }
@@ -157,7 +157,7 @@ ProcedurePrims.defineCommand("go", 1456, 2009, (function() {
     }
     PrimChecks.turtle.setVariable(1906, 1914, "in-team?", false);
     PrimChecks.turtle.setVariable(1929, 1937, "downtime", PrimChecks.math.plus(1947, 1948, PrimChecks.validator.checkArg('+', 1947, 1948, 1, PrimChecks.turtle.getVariable(1938, 1946, "downtime")), 1));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1737, 1740, R); return R; }
   if (world.observer.getGlobal("layout?")) {
     var R = ProcedurePrims.callCommand("layout"); if (R === DeathInterrupt) { return R; }
   }
@@ -192,7 +192,7 @@ ProcedurePrims.defineCommand("pick-team-members", 2056, 3026, (function() {
       PrimChecks.turtle.setVariable(2922, 2930, "downtime", 0);
       PrimChecks.turtle.setVariable(2943, 2947, "size", 1.8);
       PrimChecks.turtleOrLink.setVariable(2962, 2967, "color", (Prims.ifElseValueBooleanCheck(PrimChecks.turtle.getVariable(2981, 2991, "incumbent?")) ? PrimChecks.math.plus(3000, 3001, 45, 2) : PrimChecks.math.plus(3011, 3012, 105, 1)));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2815, 2818, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("tie-collaborators", 3104, 3343, (function() {
@@ -200,8 +200,8 @@ ProcedurePrims.defineCommand("tie-collaborators", 3104, 3343, (function() {
     var R = ProcedurePrims.ask(LinkPrims.createLinksWith(PrimChecks.agentset.otherWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(3198, 3206, "in-team?"); }), "LINKS"), function() {
       PrimChecks.link.setVariable(3224, 3242, "new-collaboration?", true);
       PrimChecks.link.setVariable(3319, 3328, "thickness", 0.3);
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3160, 3177, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3124, 3127, R); return R; }
 }))
 ProcedurePrims.defineCommand("color-collaborations", 3496, 4092, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(3531, 3535, world.links(), function() {
@@ -223,7 +223,7 @@ ProcedurePrims.defineCommand("color-collaborations", 3496, 4092, (function() {
     else {
       PrimChecks.turtleOrLink.setVariable(4019, 4024, "color", 15);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3521, 3524, R); return R; }
 }))
 ProcedurePrims.defineCommand("layout", 4150, 4233, (function() {
   for (let _index_4159_4165 = 0, _repeatcount_4159_4165 = StrictMath.floor(12); _index_4159_4165 < _repeatcount_4159_4165; _index_4159_4165++) {
@@ -234,7 +234,7 @@ ProcedurePrims.defineCommand("layout", 4150, 4233, (function() {
 ProcedurePrims.defineCommand("find-all-components", 4416, 5176, (function() {
   world.observer.setVariable("components", []);
   world.observer.setVariable("giant-component-size", 0);
-  var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtle.setVariable(4506, 4515, "explored?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtle.setVariable(4506, 4515, "explored?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4488, 4491, R); return R; }
   while (true) {
     let start = PrimChecks.agentset.oneOfWith(null, null, world.turtles(), function() {
       return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 4673, 4676, 2, PrimChecks.turtle.getVariable(4677, 4686, "explored?")));
@@ -243,7 +243,7 @@ ProcedurePrims.defineCommand("find-all-components", 4416, 5176, (function() {
       return PrimChecks.procedure.stop(4713, 4717);
     }
     world.observer.setVariable("component-size", 0);
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4877, 4880, 1904, start), function() { var R = ProcedurePrims.callCommand("explore"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4877, 4880, 1904, start), function() { var R = ProcedurePrims.callCommand("explore"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4877, 4880, R); return R; }
     if (Prims.gt(world.observer.getGlobal("component-size"), world.observer.getGlobal("giant-component-size"))) {
       world.observer.setVariable("giant-component-size", world.observer.getGlobal("component-size"));
     }
@@ -256,7 +256,7 @@ ProcedurePrims.defineCommand("explore", 5232, 5378, (function() {
   }
   PrimChecks.turtle.setVariable(5290, 5299, "explored?", true);
   world.observer.setVariable("component-size", PrimChecks.math.plus(5341, 5342, PrimChecks.validator.checkArg('+', 5341, 5342, 1, world.observer.getGlobal("component-size")), 1));
-  var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("LINKS"), function() { var R = ProcedurePrims.callCommand("explore"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("LINKS"), function() { var R = ProcedurePrims.callCommand("explore"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5347, 5350, R); return R; }
 }))
 world.observer.setVariable("layout?", true);
 world.observer.setVariable("p", 40);

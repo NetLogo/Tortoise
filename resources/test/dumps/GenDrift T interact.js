@@ -115,7 +115,7 @@ ProcedurePrims.defineCommand("setup", 119, 463, (function() {
     PrimChecks.turtleOrLink.setVariable(334, 339, "color", PrimChecks.list.item(340, 344, PrimChecks.math.random(346, 352, PrimChecks.validator.checkArg('RANDOM', 346, 352, 1, world.observer.getGlobal("colors"))), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
     PrimChecks.turtle.setXY(397, 402, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
     var R = ProcedurePrims.callCommand("move-off-wall"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(302, 316, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 471, 734, (function() {
@@ -131,7 +131,7 @@ ProcedurePrims.defineCommand("go", 471, 734, (function() {
     else {
       SelfManager.self().right(RandomPrims.randomLong(360));
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(528, 531, R); return R; }
   var R = ProcedurePrims.callCommand("find-top-species"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
@@ -149,7 +149,7 @@ ProcedurePrims.defineCommand("find-top-species", 981, 1282, (function() {
     if (Prims.gt(howHmany, winningHamount)) {
       winningHamount = howHmany; ProcedurePrims.stack().currentContext().updateStringRunVar("WINNING-AMOUNT", winningHamount);
     }
-  }, "[ c -> let count turtles with [ color = c ] if how-many > winning-amount [ set winning-amount how-many ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ c -> let count turtles with [ color = c ] if how-many > winning-amount [ set winning-amount how-many ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1075, 1082, R); return R; }
   world.observer.setVariable("max-percent", PrimChecks.math.div(1265, 1266, PrimChecks.math.mult(1248, 1249, 100, PrimChecks.validator.checkArg('*', 1248, 1249, 1, winningHamount)), PrimChecks.agentset.count(world.turtles())));
 }))
 ProcedurePrims.defineCommand("place-wall", 1698, 2202, (function() {
@@ -158,8 +158,8 @@ ProcedurePrims.defineCommand("place-wall", 1698, 2202, (function() {
       return (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1925, 1928, 1, PrimChecks.patch.getVariable(1929, 1934, "pycor"))), world.topology.maxPycor) || Prims.equality(PrimChecks.patch.getVariable(1972, 1977, "pycor"), PrimChecks.math.round(MousePrims.getY())));
     }), function() {
       PrimChecks.patch.setVariable(2010, 2016, "pcolor", 9.9);
-      var R = ProcedurePrims.ask(SelfManager.self().turtlesHere(), function() { var R = ProcedurePrims.callCommand("move-off-wall"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(SelfManager.self().turtlesHere(), function() { var R = ProcedurePrims.callCommand("move-off-wall"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2145, 2148, R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1907, 1910, R); return R; }
     Prims.display();
   }
 }))
@@ -167,7 +167,7 @@ ProcedurePrims.defineCommand("remove-wall", 2210, 2332, (function() {
   if (MousePrims.isDown()) {
     var R = ProcedurePrims.ask(PrimChecks.agentset.with(2257, 2261, world.patches(), function() {
       return Prims.equality(PrimChecks.patch.getVariable(2263, 2268, "pycor"), PrimChecks.math.round(MousePrims.getY()));
-    }), function() { PrimChecks.patch.setVariable(2301, 2307, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }), function() { PrimChecks.patch.setVariable(2301, 2307, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2245, 2248, R); return R; }
     Prims.display();
   }
 }))

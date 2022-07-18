@@ -71,12 +71,12 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 67, 351, (function() {
   world.clearAll();
   world.observer.setVariable("traps-triggered", 0);
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(177, 183, "pcolor", PrimChecks.math.plus(189, 190, 105, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(177, 183, "pcolor", PrimChecks.math.plus(189, 190, 105, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(155, 158, R); return R; }
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
     PrimChecks.turtleOrLink.setVariable(286, 291, "color", 9.9);
     PrimChecks.turtle.setVariable(308, 312, "size", 1.5);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(259, 273, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 359, 782, (function() {
@@ -90,10 +90,10 @@ ProcedurePrims.defineCommand("go", 359, 782, (function() {
     else {
       PrimChecks.patch.setVariable(583, 589, "pcolor", 15);
       world.observer.setVariable("traps-triggered", PrimChecks.math.plus(640, 641, PrimChecks.validator.checkArg('+', 640, 641, 1, world.observer.getGlobal("traps-triggered")), 1));
-      var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(696, 701, R); return R; }
       var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(399, 402, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("move", 790, 869, (function() {

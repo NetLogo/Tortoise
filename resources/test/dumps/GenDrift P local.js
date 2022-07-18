@@ -113,7 +113,7 @@ ProcedurePrims.defineCommand("setup", 3, 239, (function() {
     if (Prims.equality(PrimChecks.patch.getVariable(125, 131, "pcolor"), 75)) {
       PrimChecks.patch.setVariable(210, 216, "pcolor", 125);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(23, 26, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 247, 455, (function() {
@@ -122,7 +122,7 @@ ProcedurePrims.defineCommand("go", 247, 455, (function() {
   }
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(408, 414, "pcolor", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 424, 426, 1904, PrimChecks.list.oneOf(427, 433, SelfManager.self().getNeighbors())), function() { return PrimChecks.patch.getVariable(416, 422, "pcolor"); }));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(305, 308, R); return R; }
   world.ticker.tick();
 }))
 world.observer.setVariable("colors", 5);

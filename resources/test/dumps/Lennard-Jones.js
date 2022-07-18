@@ -76,12 +76,12 @@ ProcedurePrims.defineCommand("setup", 255, 740, (function() {
     PrimChecks.turtleOrLink.setVariable(666, 671, "shape", "circle");
     PrimChecks.turtle.setVariable(689, 693, "size", world.observer.getGlobal("diameter"));
     PrimChecks.turtleOrLink.setVariable(711, 716, "color", 105);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(631, 645, R); return R; }
   var R = ProcedurePrims.callCommand("setup-atoms"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("go", 748, 1047, (function() {
   for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 850, 853, 1904, PrimChecks.list.oneOf(854, 860, world.turtles())), function() { var R = ProcedurePrims.callCommand("attempt-move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 850, 853, 1904, PrimChecks.list.oneOf(854, 860, world.turtles())), function() { var R = ProcedurePrims.callCommand("attempt-move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(850, 853, R); return R; }
   }
   if (Prims.equality(PrimChecks.math.mod(990, 993, world.ticker.tickCount(), PrimChecks.validator.checkArg('MOD', 990, 993, 1, world.observer.getGlobal("num-atoms"))), 1)) {
     var R = ProcedurePrims.callCommand("tune-acceptance-rate"); if (R === DeathInterrupt) { return R; }
@@ -118,7 +118,7 @@ ProcedurePrims.defineReporter("calc-v", 2180, 2580, (function() {
     let repelHterm = PrimChecks.math.mult(2395, 2396, PrimChecks.validator.checkArg('*', 2395, 2396, 1, attractHterm), PrimChecks.validator.checkArg('*', 2395, 2396, 1, attractHterm)); ProcedurePrims.stack().currentContext().registerStringRunVar("REPEL-TERM", repelHterm);
     let vi = PrimChecks.math.plus(2535, 2536, PrimChecks.math.mult(2505, 2506, PrimChecks.math.mult(2499, 2500, 4, PrimChecks.validator.checkArg('*', 2499, 2500, 1, world.observer.getGlobal("eps"))), PrimChecks.math.minus(2519, 2520, PrimChecks.validator.checkArg('-', 2519, 2520, 1, repelHterm), PrimChecks.validator.checkArg('-', 2519, 2520, 1, attractHterm))), PrimChecks.validator.checkArg('+', 2535, 2536, 1, world.observer.getGlobal("pot-offset"))); ProcedurePrims.stack().currentContext().registerStringRunVar("VI", vi);
     v = PrimChecks.math.plus(2560, 2561, PrimChecks.validator.checkArg('+', 2560, 2561, 1, v), PrimChecks.validator.checkArg('+', 2560, 2561, 1, vi)); ProcedurePrims.stack().currentContext().updateStringRunVar("V", v);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2200, 2203, R); return R; }
   return PrimChecks.procedure.report(2571, 2577, v);
 }))
 ProcedurePrims.defineReporter("accept-rate", 2595, 2665, (function() {
@@ -155,12 +155,12 @@ ProcedurePrims.defineCommand("setup-atoms", 3067, 3915, (function() {
       }
       PrimChecks.turtle.setXY(3671, 3676, PrimChecks.validator.checkArg('SETXY', 3671, 3676, 1, xpos), PrimChecks.validator.checkArg('SETXY', 3671, 3676, 1, ypos));
       xpos = PrimChecks.math.plus(3741, 3742, PrimChecks.validator.checkArg('+', 3741, 3742, 1, xpos), PrimChecks.validator.checkArg('+', 3741, 3742, 1, rowHdist)); ProcedurePrims.stack().currentContext().updateStringRunVar("XPOS", xpos);
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3417, 3420, R); return R; }
   }
   if (Prims.equality(world.observer.getGlobal("initial-config"), "random")) {
     var R = ProcedurePrims.ask(world.turtles(), function() {
       PrimChecks.turtle.setXY(3820, 3825, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3800, 3803, R); return R; }
     var R = ProcedurePrims.callCommand("remove-overlap"); if (R === DeathInterrupt) { return R; }
   }
 }))
@@ -170,7 +170,7 @@ ProcedurePrims.defineCommand("remove-overlap", 3923, 4059, (function() {
     while (PrimChecks.procedure.callReporter(3992, 4003, "overlapping", rHmin)) {
       PrimChecks.turtle.setXY(4019, 4024, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3967, 3970, R); return R; }
 }))
 ProcedurePrims.defineReporter("overlapping", 4074, 4138, (function(rHmin) {
   return PrimChecks.procedure.report(4096, 4102, SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtles(), rHmin)));

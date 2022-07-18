@@ -64,7 +64,7 @@ ProcedurePrims.defineCommand("setup", 23, 141, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(65, 69, "heat", RandomPrims.randomLong(212));
     PrimChecks.patch.setVariable(89, 95, "pcolor", ColorModel.scaleColor(15, PrimChecks.patch.getVariable(112, 116, "heat"), 0, 212));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(43, 46, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 149, 313, (function() {
@@ -72,7 +72,7 @@ ProcedurePrims.defineCommand("go", 149, 313, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(236, 240, "heat", PrimChecks.math.mod(252, 255, PrimChecks.math.plus(247, 248, PrimChecks.validator.checkArg('+', 247, 248, 1, PrimChecks.patch.getVariable(242, 246, "heat")), 5), 212));
     PrimChecks.patch.setVariable(268, 274, "pcolor", ColorModel.scaleColor(15, PrimChecks.patch.getVariable(291, 295, "heat"), 0, 212));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(171, 174, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineReporter("average-heat", 328, 373, (function() {

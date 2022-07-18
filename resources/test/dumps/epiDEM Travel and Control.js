@@ -108,12 +108,12 @@ ProcedurePrims.defineCommand("setup", 1897, 1978, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-globals", 1986, 2204, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2002, 2005, 1904, world.getPatchAt(PrimChecks.math.div(2025, 2026, PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0)), function() { PrimChecks.patch.setVariable(2039, 2045, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2056, 2059, 1904, world.getPatchAt(PrimChecks.math.div(2077, 2078, world.topology.maxPxcor, 2), 0)), function() { PrimChecks.patch.setVariable(2091, 2097, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2002, 2005, 1904, world.getPatchAt(PrimChecks.math.div(2025, 2026, PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0)), function() { PrimChecks.patch.setVariable(2039, 2045, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2002, 2005, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2056, 2059, 1904, world.getPatchAt(PrimChecks.math.div(2077, 2078, world.topology.maxPxcor, 2), 0)), function() { PrimChecks.patch.setVariable(2091, 2097, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2056, 2059, R); return R; }
   world.observer.setVariable("border", PrimChecks.agentset.with(2128, 2132, world.patches(), function() {
     return (Prims.equality(PrimChecks.patch.getVariable(2135, 2140, "pxcor"), 0) && Prims.gte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 2150, 2153, 1, PrimChecks.patch.getVariable(2155, 2160, "pycor"))), 0));
   }));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2171, 2174, 1904, world.observer.getGlobal("border")), function() { PrimChecks.patch.setVariable(2188, 2194, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2171, 2174, 1904, world.observer.getGlobal("border")), function() { PrimChecks.patch.setVariable(2188, 2194, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2171, 2174, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-people", 2328, 3227, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), ""), function() {
@@ -151,7 +151,7 @@ ProcedurePrims.defineCommand("setup-people", 2328, 3227, (function() {
       PrimChecks.turtle.setVariable(3147, 3158, "inoculated?", false);
     }
     var R = ProcedurePrims.callCommand("assign-color"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2343, 2357, R); return R; }
   if (world.observer.getGlobal("links?")) {
     var R = ProcedurePrims.callCommand("make-network"); if (R === DeathInterrupt) { return R; }
   }
@@ -175,7 +175,7 @@ ProcedurePrims.defineCommand("setup-ambulance", 3235, 3669, (function() {
     PrimChecks.turtle.setVariable(3604, 3614, "ambulance?", true);
     PrimChecks.turtleOrLink.setVariable(3629, 3634, "shape", "person");
     PrimChecks.turtleOrLink.setVariable(3652, 3657, "color", 45);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3253, 3267, R); return R; }
 }))
 ProcedurePrims.defineCommand("assign-tendency", 3677, 4656, (function() {
   PrimChecks.turtle.setVariable(3720, 3738, "isolation-tendency", PrimChecks.math.div(3807, 3808, PrimChecks.math.randomNormal(3739, 3752, PrimChecks.validator.checkArg('RANDOM-NORMAL', 3739, 3752, 1, world.observer.getGlobal("average-isolation-tendency")), PrimChecks.validator.checkArg('RANDOM-NORMAL', 3739, 3752, 1, world.observer.getGlobal("average-isolation-tendency"))), 4));
@@ -223,8 +223,8 @@ ProcedurePrims.defineCommand("assign-color", 4926, 5169, (function() {
 }))
 ProcedurePrims.defineCommand("make-network", 5178, 5256, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5213, 5230, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5193, 5196, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 5293, 6256, (function() {
   if (PrimChecks.agentset.all(5301, 5305, world.turtles(), function() {
@@ -232,27 +232,27 @@ ProcedurePrims.defineCommand("go", 5293, 6256, (function() {
   })) {
     return PrimChecks.procedure.stop(5338, 5342);
   }
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("clear-count"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("clear-count"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5347, 5350, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 5403, 5406, 2, PrimChecks.turtle.getVariable(5407, 5416, "isolated?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 5421, 5424, 2, PrimChecks.turtle.getVariable(5425, 5438, "hospitalized?")))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 5443, 5446, 2, PrimChecks.turtle.getVariable(5447, 5457, "ambulance?"))))) {
       var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5382, 5385, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (((PrimChecks.validator.checkArg('AND', 5511, 5514, 2, PrimChecks.turtle.getVariable(5501, 5510, "infected?")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 5515, 5518, 2, PrimChecks.turtle.getVariable(5519, 5528, "isolated?")))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 5533, 5536, 2, PrimChecks.turtle.getVariable(5537, 5550, "hospitalized?"))))) {
       var R = ProcedurePrims.callCommand("infect"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5480, 5483, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if ((((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 5597, 5600, 2, PrimChecks.turtle.getVariable(5601, 5610, "isolated?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 5615, 5618, 2, PrimChecks.turtle.getVariable(5619, 5632, "hospitalized?")))) && PrimChecks.validator.checkArg('AND', 5633, 5636, 2, PrimChecks.turtle.getVariable(5637, 5646, "infected?"))) && Prims.lt(RandomPrims.randomLong(100), PrimChecks.turtle.getVariable(5665, 5683, "isolation-tendency")))) {
       var R = ProcedurePrims.callCommand("isolate"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5576, 5579, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if ((((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 5731, 5734, 2, PrimChecks.turtle.getVariable(5735, 5744, "isolated?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 5749, 5752, 2, PrimChecks.turtle.getVariable(5753, 5766, "hospitalized?")))) && PrimChecks.validator.checkArg('AND', 5767, 5770, 2, PrimChecks.turtle.getVariable(5771, 5780, "infected?"))) && Prims.lt(RandomPrims.randomLong(100), PrimChecks.turtle.getVariable(5799, 5822, "hospital-going-tendency")))) {
       var R = ProcedurePrims.callCommand("hospitalize"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5710, 5713, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (PrimChecks.turtle.getVariable(5876, 5886, "ambulance?")) {
       var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
@@ -260,23 +260,23 @@ ProcedurePrims.defineCommand("go", 5293, 6256, (function() {
         if ((Prims.equality(PrimChecks.turtle.getVariable(5955, 5965, "ambulance?"), false) && Prims.equality(PrimChecks.turtle.getVariable(5980, 5989, "infected?"), true))) {
           var R = ProcedurePrims.callCommand("hospitalize"); if (R === DeathInterrupt) { return R; }
         }
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5910, 5913, R); return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5853, 5856, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (PrimChecks.turtle.getVariable(6064, 6073, "infected?")) {
       var R = ProcedurePrims.callCommand("maybe-recover"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6043, 6046, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (((PrimChecks.validator.checkArg('OR', 6140, 6142, 2, PrimChecks.turtle.getVariable(6130, 6139, "isolated?")) || PrimChecks.validator.checkArg('OR', 6140, 6142, 2, PrimChecks.turtle.getVariable(6143, 6156, "hospitalized?"))) && PrimChecks.validator.checkArg('AND', 6158, 6161, 2, PrimChecks.turtle.getVariable(6162, 6168, "cured?")))) {
       var R = ProcedurePrims.callCommand("unisolate"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6108, 6111, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.callCommand("assign-color"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("calculate-r0"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6196, 6199, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("move", 6265, 7683, (function() {
@@ -360,15 +360,15 @@ ProcedurePrims.defineCommand("maybe-recover", 7752, 8466, (function() {
 ProcedurePrims.defineCommand("isolate", 8559, 8701, (function() {
   PrimChecks.turtle.setVariable(8593, 8602, "isolated?", true);
   SelfManager.self().moveTo(SelfManager.self().getPatchHere());
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8658, 8661, 1904, SelfManager.self()._optimalPatchHereInternal()), function() { PrimChecks.patch.setVariable(8683, 8689, "pcolor", PrimChecks.math.minus(8695, 8696, 5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8658, 8661, 1904, SelfManager.self()._optimalPatchHereInternal()), function() { PrimChecks.patch.setVariable(8683, 8689, "pcolor", PrimChecks.math.minus(8695, 8696, 5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8658, 8661, R); return R; }
 }))
 ProcedurePrims.defineCommand("unisolate", 8764, 9177, (function() {
   PrimChecks.turtle.setVariable(8801, 8810, "isolated?", false);
   PrimChecks.turtle.setVariable(8823, 8836, "hospitalized?", false);
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8846, 8849, 1904, SelfManager.self()._optimalPatchHereInternal()), function() { PrimChecks.patch.setVariable(8871, 8877, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8889, 8892, 1904, world.observer.getGlobal("border")), function() { PrimChecks.patch.setVariable(8906, 8912, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8982, 8985, 1904, world.getPatchAt(PrimChecks.math.div(9006, 9007, PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0)), function() { PrimChecks.patch.setVariable(9020, 9026, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9080, 9083, 1904, world.getPatchAt(PrimChecks.math.div(9102, 9103, world.topology.maxPxcor, 2), 0)), function() { PrimChecks.patch.setVariable(9116, 9122, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8846, 8849, 1904, SelfManager.self()._optimalPatchHereInternal()), function() { PrimChecks.patch.setVariable(8871, 8877, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8846, 8849, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8889, 8892, 1904, world.observer.getGlobal("border")), function() { PrimChecks.patch.setVariable(8906, 8912, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8889, 8892, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8982, 8985, 1904, world.getPatchAt(PrimChecks.math.div(9006, 9007, PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0)), function() { PrimChecks.patch.setVariable(9020, 9026, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8982, 8985, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9080, 9083, 1904, world.getPatchAt(PrimChecks.math.div(9102, 9103, world.topology.maxPxcor, 2), 0)), function() { PrimChecks.patch.setVariable(9116, 9122, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9080, 9083, R); return R; }
 }))
 ProcedurePrims.defineCommand("hospitalize", 9265, 9473, (function() {
   PrimChecks.turtle.setVariable(9303, 9316, "hospitalized?", true);
@@ -400,7 +400,7 @@ ProcedurePrims.defineCommand("infect", 9698, 10414, (function() {
           PrimChecks.turtle.setVariable(10339, 10350, "nb-infected", PrimChecks.math.plus(10364, 10365, PrimChecks.validator.checkArg('+', 10364, 10365, 1, PrimChecks.turtle.getVariable(10352, 10363, "nb-infected")), 1));
         }
       }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9907, 9910, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("calculate-r0", 10423, 11922, (function() {

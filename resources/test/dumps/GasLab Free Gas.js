@@ -164,17 +164,17 @@ ProcedurePrims.defineCommand("setup", 583, 782, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 790, 1114, (function() {
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(795, 798, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
     if (world.observer.getGlobal("collide?")) {
       var R = ProcedurePrims.callCommand("check-for-collision"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(820, 823, R); return R; }
   if (world.observer.getGlobal("trace?")) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 898, 901, 1904, PrimChecks.turtle.getTurtleOfBreed(902, 910, "PARTICLES", 0)), function() { SelfManager.self().penManager.lowerPen(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 898, 901, 1904, PrimChecks.turtle.getTurtleOfBreed(902, 910, "PARTICLES", 0)), function() { SelfManager.self().penManager.lowerPen(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(898, 901, R); return R; }
   }
   else {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 934, 937, 1904, PrimChecks.turtle.getTurtleOfBreed(938, 946, "PARTICLES", 0)), function() { SelfManager.self().penManager.raisePen(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 934, 937, 1904, PrimChecks.turtle.getTurtleOfBreed(938, 946, "PARTICLES", 0)), function() { SelfManager.self().penManager.raisePen(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(934, 937, R); return R; }
   }
   world.ticker.tickAdvance(world.observer.getGlobal("tick-delta"));
   if (Prims.gt(PrimChecks.math.floor(world.ticker.tickCount()), PrimChecks.math.floor(PrimChecks.math.minus(1020, 1021, world.ticker.tickCount(), PrimChecks.validator.checkArg('-', 1020, 1021, 1, world.observer.getGlobal("tick-delta")))))) {
@@ -216,7 +216,7 @@ ProcedurePrims.defineCommand("check-for-collision", 2302, 3415, (function() {
     if ((!Prims.equality(candidate, Nobody) && (Prims.gt(PrimChecks.turtle.getVariable(3246, 3251, "speed"), 0) || Prims.gt(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 3267, 3269, 1904, candidate), function() { return PrimChecks.turtle.getVariable(3260, 3265, "speed"); }), 0)))) {
       var R = ProcedurePrims.callCommand("collide-with", candidate); if (R === DeathInterrupt) { return R; }
       PrimChecks.turtle.setVariable(3330, 3344, "last-collision", candidate);
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3361, 3364, 1904, candidate), function() { PrimChecks.turtle.setVariable(3381, 3395, "last-collision", SelfManager.myself()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3361, 3364, 1904, candidate), function() { PrimChecks.turtle.setVariable(3381, 3395, "last-collision", SelfManager.myself()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3361, 3364, R); return R; }
     }
   }
 }))
@@ -243,9 +243,9 @@ ProcedurePrims.defineCommand("collide-with", 4738, 7022, (function(otherHparticl
     if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
       PrimChecks.turtle.setVariable(6831, 6838, "heading", PrimChecks.math.minus(6846, 6847, PrimChecks.validator.checkArg('-', 6846, 6847, 1, theta), PrimChecks.math.atan(6849, 6853, PrimChecks.validator.checkArg('ATAN', 6849, 6853, 1, v2l), PrimChecks.validator.checkArg('ATAN', 6849, 6853, 1, v2t))));
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6685, 6688, R); return R; }
   var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6987, 6990, 1904, otherHparticle), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6987, 6990, 1904, otherHparticle), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6987, 6990, R); return R; }
 }))
 ProcedurePrims.defineCommand("recolor", 7030, 7204, (function() {
   if (Prims.lt(PrimChecks.turtle.getVariable(7070, 7075, "speed"), PrimChecks.math.mult(7083, 7084, 0.5, 10))) {
@@ -265,7 +265,7 @@ ProcedurePrims.defineCommand("make-particles", 7274, 7410, (function() {
     var R = ProcedurePrims.callCommand("setup-particle"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("random-position"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7291, 7307, R); return R; }
   var R = ProcedurePrims.callCommand("calculate-tick-delta"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("setup-particle", 7419, 7582, (function() {

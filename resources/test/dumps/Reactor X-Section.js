@@ -76,7 +76,7 @@ ProcedurePrims.defineCommand("setup", 315, 543, (function() {
     PrimChecks.patch.setVariable(452, 456, "rod?", false);
     var R = ProcedurePrims.callCommand("build-reactor"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("setup-nuclear-fuel"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(388, 391, R); return R; }
   var R = ProcedurePrims.callCommand("setup-control-rods"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
@@ -136,10 +136,10 @@ ProcedurePrims.defineCommand("setup-control-rods", 1028, 2107, (function() {
     }
   }
   for (let _index_1937_1943 = 0, _repeatcount_1937_1943 = StrictMath.floor(world.observer.getGlobal("n-rods")); _index_1937_1943 < _repeatcount_1937_1943; _index_1937_1943++) {
-    var R = ProcedurePrims.ask(PrimChecks.agentset.with(1967, 1971, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(1974, 1979, "pxcor"), rodHx); }), function() { PrimChecks.patch.setVariable(2000, 2004, "rod?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.agentset.with(1967, 1971, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(1974, 1979, "pxcor"), rodHx); }), function() { PrimChecks.patch.setVariable(2000, 2004, "rod?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1955, 1958, R); return R; }
     rodHx = PrimChecks.math.plus(2046, 2047, PrimChecks.math.plus(2032, 2033, PrimChecks.validator.checkArg('+', 2032, 2033, 1, rodHx), PrimChecks.validator.checkArg('+', 2032, 2033, 1, world.observer.getGlobal("rod-spacing"))), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("ROD-X", rodHx);
   }
-  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("build-reactor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("build-reactor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2056, 2059, R); return R; }
   var R = ProcedurePrims.callCommand("place-control-rods"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("auto-react", 2217, 2565, (function() {
@@ -185,7 +185,7 @@ ProcedurePrims.defineCommand("react", 2736, 3122, (function() {
     if (Prims.equality(PrimChecks.patch.getVariable(2844, 2850, "pcolor"), 15)) {
       var R = ProcedurePrims.callCommand("fission"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2779, 2782, R); return R; }
   world.observer.setVariable("average-power", PrimChecks.math.div(2961, 2962, PrimChecks.math.plus(2946, 2947, PrimChecks.math.plus(2932, 2933, PrimChecks.math.plus(2918, 2919, PrimChecks.math.plus(2906, 2907, PrimChecks.validator.checkArg('+', 2906, 2907, 1, world.observer.getGlobal("power")), PrimChecks.validator.checkArg('+', 2906, 2907, 1, world.observer.getGlobal("old-power"))), PrimChecks.validator.checkArg('+', 2918, 2919, 1, world.observer.getGlobal("old-power-2"))), PrimChecks.validator.checkArg('+', 2932, 2933, 1, world.observer.getGlobal("old-power-3"))), PrimChecks.validator.checkArg('+', 2946, 2947, 1, world.observer.getGlobal("old-power-4"))), 5));
   world.observer.setVariable("power-change", PrimChecks.math.minus(2992, 2993, PrimChecks.validator.checkArg('-', 2992, 2993, 1, world.observer.getGlobal("power")), PrimChecks.validator.checkArg('-', 2992, 2993, 1, world.observer.getGlobal("old-power"))));
   world.observer.setVariable("old-power-4", world.observer.getGlobal("old-power-3"));
@@ -204,7 +204,7 @@ ProcedurePrims.defineCommand("release-neutron", 3130, 3406, (function() {
     if (Prims.equality(PrimChecks.patch.getVariable(3334, 3340, "pcolor"), 5)) {
       return SelfManager.self().die();
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3176, 3190, R); return R; }
   if (Prims.equality(whom, Nobody)) {
     var R = ProcedurePrims.callCommand("release-neutron"); if (R === DeathInterrupt) { return R; }
   }
@@ -217,7 +217,7 @@ ProcedurePrims.defineCommand("place-control-rods", 3414, 3554, (function() {
     else {
       PrimChecks.patch.setVariable(3535, 3541, "pcolor", 0);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3435, 3438, R); return R; }
 }))
 ProcedurePrims.defineCommand("fission", 3562, 3799, (function() {
   SelfManager.self().right(RandomPrims.randomLong(360));
@@ -227,7 +227,7 @@ ProcedurePrims.defineCommand("fission", 3562, 3799, (function() {
     }
     let gain = PrimChecks.math.div(3688, 3689, 1, PrimChecks.agentset.count(SelfManager.self().turtlesHere())); ProcedurePrims.stack().currentContext().registerStringRunVar("GAIN", gain);
     world.observer.setVariable("power", PrimChecks.math.plus(3730, 3731, PrimChecks.validator.checkArg('+', 3730, 3731, 1, world.observer.getGlobal("power")), PrimChecks.validator.checkArg('+', 3730, 3731, 1, gain)));
-    var R = ProcedurePrims.ask(SelfManager.self().hatch(PrimChecks.math.mult(3763, 3764, PrimChecks.math.plus(3751, 3752, 2, RandomPrims.randomLong(2)), PrimChecks.validator.checkArg('*', 3763, 3764, 1, gain)), ""), function() { SelfManager.self().right(RandomPrims.randomLong(360)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(SelfManager.self().hatch(PrimChecks.math.mult(3763, 3764, PrimChecks.math.plus(3751, 3752, 2, RandomPrims.randomLong(2)), PrimChecks.validator.checkArg('*', 3763, 3764, 1, gain)), ""), function() { SelfManager.self().right(RandomPrims.randomLong(360)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3741, 3746, R); return R; }
   }
 }))
 world.observer.setVariable("power-rated", 35);

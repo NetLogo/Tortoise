@@ -111,14 +111,14 @@ ProcedurePrims.defineCommand("setup-hives", 2642, 3564, (function() {
       PrimChecks.turtle.setVariable(3080, 3084, "size", 2);
       PrimChecks.turtleOrLink.setVariable(3097, 3102, "color", 5);
       PrimChecks.turtle.setVariable(3118, 3129, "discovered?", false);
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3031, 3043, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2782, 2785, R); return R; }
   let i = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("I", i);
   for (let _index_3202_3208 = 0, _repeatcount_3202_3208 = StrictMath.floor(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SITES"))); _index_3202_3208 < _repeatcount_3202_3208; _index_3202_3208++) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3227, 3230, 1904, PrimChecks.turtle.getTurtleOfBreed(3231, 3235, "SITES", i)), function() {
       PrimChecks.turtle.setVariable(3250, 3257, "quality", PrimChecks.list.item(3258, 3262, PrimChecks.validator.checkArg('ITEM', 3258, 3262, 1, i), PrimChecks.validator.checkArg('ITEM', 3258, 3262, 12, world.observer.getGlobal("quality-list"))));
       PrimChecks.turtleOrLink.setVariable(3288, 3293, "label", PrimChecks.turtle.getVariable(3294, 3301, "quality"));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3227, 3230, R); return R; }
     plotManager.setCurrentPlot("on-site");
     plotManager.createTemporaryPen(StringPrims.word("site", i));
     plotManager.setPenColor(PrimChecks.list.item(3406, 3410, PrimChecks.validator.checkArg('ITEM', 3406, 3410, 1, i), PrimChecks.validator.checkArg('ITEM', 3406, 3410, 12, world.observer.getGlobal("color-list"))));
@@ -142,11 +142,11 @@ ProcedurePrims.defineCommand("setup-bees", 3572, 4206, (function() {
     PrimChecks.turtle.setVariable(3865, 3872, "piping?", false);
     PrimChecks.turtle.setVariable(3887, 3896, "next-task", world.observer.getGlobal("watch-dance-task"));
     PrimChecks.turtle.setVariable(3922, 3933, "task-string", "watching-dance");
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3585, 3598, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4106, 4109, 1904, PrimChecks.list.nOf(4110, 4114, PrimChecks.validator.checkArg('N-OF', 4110, 4114, 1, world.observer.getGlobal("initial-percentage")), world.turtleManager.turtlesOfBreed("SCOUTS"))), function() {
     PrimChecks.turtle.setVariable(4153, 4167, "initial-scout?", true);
     PrimChecks.turtle.setVariable(4181, 4190, "bee-timer", RandomPrims.randomLong(100));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4106, 4109, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-tasks", 4215, 4314, (function() {
   var R = ProcedurePrims.callCommand("watch-dance"); if (R === DeathInterrupt) { return R; }
@@ -208,7 +208,7 @@ ProcedurePrims.defineCommand("discover", 7292, 8833, (function() {
           var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7996, 7999, 1904, PrimChecks.turtle.getVariable(8000, 8006, "target")), function() {
             PrimChecks.turtle.setVariable(8069, 8080, "discovered?", true);
             PrimChecks.turtleOrLink.setVariable(8102, 8107, "color", PrimChecks.list.item(8108, 8112, PrimChecks.validator.checkArg('ITEM', 8108, 8112, 1, PrimChecks.turtle.getVariable(8113, 8116, "who")), PrimChecks.validator.checkArg('ITEM', 8108, 8112, 12, world.observer.getGlobal("color-list"))));
-          }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+          }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7996, 7999, R); return R; }
           PrimChecks.turtle.setVariable(8196, 8204, "interest", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 8217, 8219, 1904, PrimChecks.turtle.getVariable(8220, 8226, "target")), function() { return PrimChecks.turtle.getVariable(8207, 8214, "quality"); }));
           PrimChecks.turtleOrLink.setVariable(8315, 8320, "color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 8331, 8333, 1904, PrimChecks.turtle.getVariable(8334, 8340, "target")), function() { return PrimChecks.turtleOrLink.getVariable(8323, 8328, "color"); }));
           PrimChecks.turtle.setVariable(8355, 8364, "next-task", world.observer.getGlobal("inspect-hive-task"));
@@ -395,7 +395,7 @@ ProcedurePrims.defineCommand("go", 16383, 16622, (function() {
   }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SCOUTS"), function() {
     var R = PrimChecks.procedure.run(16577, 16580, PrimChecks.validator.checkArg('RUN', 16577, 16580, 2052, PrimChecks.turtle.getVariable(16581, 16590, "next-task"))); if (R !== undefined) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(16564, 16567, R); return R; }
   var R = ProcedurePrims.callCommand("plot-on-site-scouts"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
@@ -488,10 +488,10 @@ ProcedurePrims.defineCommand("show-hide-dance-path", 18770, 18881, (function() {
 }))
 ProcedurePrims.defineCommand("show-hide-scouts", 18889, 19045, (function() {
   if (world.observer.getGlobal("scouts-visible?")) {
-    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { SelfManager.self().hideTurtle(true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { SelfManager.self().hideTurtle(true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(18937, 18940, R); return R; }
   }
   else {
-    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { SelfManager.self().hideTurtle(false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SCOUTS"), function() { SelfManager.self().hideTurtle(false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(18974, 18977, R); return R; }
   }
   world.observer.setVariable("scouts-visible?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 19025, 19028, 2, world.observer.getGlobal("scouts-visible?"))));
 }))

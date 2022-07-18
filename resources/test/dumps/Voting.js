@@ -55,12 +55,12 @@ ProcedurePrims.defineCommand("setup", 84, 176, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(126, 130, "vote", RandomPrims.randomLong(2));
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(104, 107, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 184, 1069, (function() {
   let anyHvotesHchanged_Q = false; ProcedurePrims.stack().currentContext().registerStringRunVar("ANY-VOTES-CHANGED?", anyHvotesHchanged_Q);
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(302, 307, "total", SelfManager.self()._optimalNSum("vote")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(302, 307, "total", SelfManager.self()._optimalNSum("vote")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(280, 283, R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
     let previousHvote = PrimChecks.patch.getVariable(480, 484, "vote"); ProcedurePrims.stack().currentContext().registerStringRunVar("PREVIOUS-VOTE", previousHvote);
     if (Prims.gt(PrimChecks.patch.getVariable(494, 499, "total"), 5)) {
@@ -94,7 +94,7 @@ ProcedurePrims.defineCommand("go", 184, 1069, (function() {
       anyHvotesHchanged_Q = true; ProcedurePrims.stack().currentContext().updateStringRunVar("ANY-VOTES-CHANGED?", anyHvotesHchanged_Q);
     }
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(444, 447, R); return R; }
   if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 1030, 1033, 2, anyHvotesHchanged_Q))) {
     return PrimChecks.procedure.stop(1055, 1059);
   }

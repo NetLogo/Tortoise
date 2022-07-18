@@ -77,11 +77,11 @@ ProcedurePrims.defineCommand("single-cell", 784, 997, (function() {
   var R = ProcedurePrims.ask(world._optimalPatchRow(world.observer.getGlobal("row")), function() {
     PrimChecks.patch.setVariable(850, 853, "on?", false);
     PrimChecks.patch.setVariable(864, 870, "pcolor", world.observer.getGlobal("background"));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(814, 817, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 908, 911, 1904, world.getPatchAt(0, PrimChecks.validator.checkArg('PATCH', 912, 917, 1, world.observer.getGlobal("row")))), function() {
     PrimChecks.patch.setVariable(930, 936, "pcolor", world.observer.getGlobal("foreground"));
     PrimChecks.patch.setVariable(972, 975, "on?", true);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(908, 911, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-random", 1005, 1196, (function() {
@@ -89,7 +89,7 @@ ProcedurePrims.defineCommand("setup-random", 1005, 1196, (function() {
   var R = ProcedurePrims.ask(world._optimalPatchRow(world.observer.getGlobal("row")), function() {
     PrimChecks.patch.setVariable(1133, 1136, "on?", Prims.lt(RandomPrims.randomLong(100), world.observer.getGlobal("density")));
     var R = ProcedurePrims.callCommand("color-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1036, 1039, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-continue", 1204, 1672, (function() {
@@ -105,7 +105,7 @@ ProcedurePrims.defineCommand("setup-continue", 1204, 1672, (function() {
   var R = ProcedurePrims.ask(world._optimalPatchRow(world.observer.getGlobal("row")), function() {
     PrimChecks.patch.setVariable(1560, 1563, "on?", PrimChecks.list.item(1564, 1568, PrimChecks.math.plus(1576, 1577, PrimChecks.validator.checkArg('+', 1576, 1577, 1, PrimChecks.patch.getVariable(1570, 1575, "pxcor")), world.topology.maxPxcor), PrimChecks.validator.checkArg('ITEM', 1564, 1568, 12, on_QHlist)));
     var R = ProcedurePrims.callCommand("color-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1515, 1518, R); return R; }
   world.observer.setVariable("gone?", true);
 }))
 ProcedurePrims.defineCommand("go", 1763, 2202, (function() {
@@ -121,9 +121,9 @@ ProcedurePrims.defineCommand("go", 1763, 2202, (function() {
       return PrimChecks.procedure.stop(1999, 2003);
     }
   }
-  var R = ProcedurePrims.ask(world._optimalPatchRow(world.observer.getGlobal("row")), function() { var R = ProcedurePrims.callCommand("do-rule"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world._optimalPatchRow(world.observer.getGlobal("row")), function() { var R = ProcedurePrims.callCommand("do-rule"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2012, 2015, R); return R; }
   world.observer.setVariable("row", PrimChecks.math.minus(2091, 2092, PrimChecks.validator.checkArg('-', 2091, 2092, 1, world.observer.getGlobal("row")), 1));
-  var R = ProcedurePrims.ask(world._optimalPatchRow(world.observer.getGlobal("row")), function() { var R = ProcedurePrims.callCommand("color-patch"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world._optimalPatchRow(world.observer.getGlobal("row")), function() { var R = ProcedurePrims.callCommand("color-patch"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2098, 2101, R); return R; }
   world.observer.setVariable("gone?", true);
   world.ticker.tick();
 }))
@@ -131,7 +131,7 @@ ProcedurePrims.defineCommand("do-rule", 2211, 3140, (function() {
   let leftHon_Q = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2260, 2262, 1904, SelfManager.self()._optimalPatchWest()), function() { return PrimChecks.patch.getVariable(2255, 2258, "on?"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("LEFT-ON?", leftHon_Q);
   let rightHon_Q = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2346, 2348, 1904, SelfManager.self()._optimalPatchEast()), function() { return PrimChecks.patch.getVariable(2341, 2344, "on?"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("RIGHT-ON?", rightHon_Q);
   let newHvalue = ((((((((((PrimChecks.validator.checkArg('AND', 2561, 2564, 2, world.observer.getGlobal("iii")) && PrimChecks.validator.checkArg('AND', 2561, 2564, 2, leftHon_Q)) && PrimChecks.validator.checkArg('AND', 2580, 2583, 2, PrimChecks.patch.getVariable(2584, 2587, "on?"))) && PrimChecks.validator.checkArg('AND', 2594, 2597, 2, rightHon_Q)) || (((PrimChecks.validator.checkArg('AND', 2630, 2633, 2, world.observer.getGlobal("iio")) && PrimChecks.validator.checkArg('AND', 2630, 2633, 2, leftHon_Q)) && PrimChecks.validator.checkArg('AND', 2649, 2652, 2, PrimChecks.patch.getVariable(2653, 2656, "on?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2668, 2671, 2, rightHon_Q)))) || (((PrimChecks.validator.checkArg('AND', 2699, 2702, 2, world.observer.getGlobal("ioi")) && PrimChecks.validator.checkArg('AND', 2699, 2702, 2, leftHon_Q)) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2723, 2726, 2, PrimChecks.patch.getVariable(2727, 2730, "on?")))) && PrimChecks.validator.checkArg('AND', 2732, 2735, 2, rightHon_Q))) || (((PrimChecks.validator.checkArg('AND', 2768, 2771, 2, world.observer.getGlobal("ioo")) && PrimChecks.validator.checkArg('AND', 2768, 2771, 2, leftHon_Q)) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2792, 2795, 2, PrimChecks.patch.getVariable(2796, 2799, "on?")))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2806, 2809, 2, rightHon_Q)))) || (((PrimChecks.validator.checkArg('AND', 2837, 2840, 2, world.observer.getGlobal("oii")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2842, 2845, 2, leftHon_Q))) && PrimChecks.validator.checkArg('AND', 2856, 2859, 2, PrimChecks.patch.getVariable(2860, 2863, "on?"))) && PrimChecks.validator.checkArg('AND', 2870, 2873, 2, rightHon_Q))) || (((PrimChecks.validator.checkArg('AND', 2906, 2909, 2, world.observer.getGlobal("oio")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2911, 2914, 2, leftHon_Q))) && PrimChecks.validator.checkArg('AND', 2925, 2928, 2, PrimChecks.patch.getVariable(2929, 2932, "on?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2944, 2947, 2, rightHon_Q)))) || (((PrimChecks.validator.checkArg('AND', 2975, 2978, 2, world.observer.getGlobal("ooi")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2980, 2983, 2, leftHon_Q))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2999, 3002, 2, PrimChecks.patch.getVariable(3003, 3006, "on?")))) && PrimChecks.validator.checkArg('AND', 3008, 3011, 2, rightHon_Q))) || (((PrimChecks.validator.checkArg('AND', 3044, 3047, 2, world.observer.getGlobal("ooo")) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 3049, 3052, 2, leftHon_Q))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 3068, 3071, 2, PrimChecks.patch.getVariable(3072, 3075, "on?")))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 3082, 3085, 2, rightHon_Q)))); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-VALUE", newHvalue);
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3100, 3103, 1904, SelfManager.self()._optimalPatchSouth()), function() { PrimChecks.patch.setVariable(3124, 3127, "on?", newHvalue); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3100, 3103, 1904, SelfManager.self()._optimalPatchSouth()), function() { PrimChecks.patch.setVariable(3124, 3127, "on?", newHvalue); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3100, 3103, R); return R; }
 }))
 ProcedurePrims.defineCommand("color-patch", 3231, 3335, (function() {
   if (PrimChecks.patch.getVariable(3271, 3274, "on?")) {
@@ -203,7 +203,7 @@ ProcedurePrims.defineCommand("show-rules", 4632, 5403, (function() {
   let rules = PrimChecks.procedure.callReporter(4706, 4716, "list-rules"); ProcedurePrims.stack().currentContext().registerStringRunVar("RULES", rules);
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(4732, 4736, world.patches(), function() {
     return Prims.gt(PrimChecks.patch.getVariable(4738, 4743, "pycor"), PrimChecks.math.minus(4756, 4757, world.topology.maxPycor, 5));
-  }), function() { PrimChecks.patch.setVariable(4771, 4777, "pcolor", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }), function() { PrimChecks.patch.setVariable(4771, 4777, "pcolor", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4720, 4723, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(4854, 4858, world.patches(), function() {
     return (Prims.equality(PrimChecks.patch.getVariable(4861, 4866, "pycor"), world.topology.maxPycor) && Prims.equality(PrimChecks.math.mod(4916, 4919, PrimChecks.math.plus(4911, 4912, PrimChecks.validator.checkArg('+', 4911, 4912, 1, PrimChecks.patch.getVariable(4905, 4910, "pxcor")), 1), PrimChecks.math.floor(PrimChecks.math.div(4940, 4941, world.topology.width, 8))), 0));
   }), function() {
@@ -221,8 +221,8 @@ ProcedurePrims.defineCommand("show-rules", 4632, 5403, (function() {
       PrimChecks.turtle.setVariable(5284, 5291, "heading", 90);
       var R = ProcedurePrims.callCommand("print-block", PrimChecks.list.item(5314, 5318, 3, PrimChecks.validator.checkArg('ITEM', 5314, 5318, 12, PrimChecks.list.item(5322, 5326, PrimChecks.validator.checkArg('ITEM', 5322, 5326, 1, PrimChecks.turtle.getVariable(5327, 5330, "who")), PrimChecks.validator.checkArg('ITEM', 5322, 5326, 12, rules))))); if (R === DeathInterrupt) { return R; }
       return SelfManager.self().die();
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4961, 4967, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4842, 4845, R); return R; }
   world.observer.setVariable("rules-shown?", true);
 }))
 ProcedurePrims.defineCommand("print-block", 5431, 5663, (function(state) {

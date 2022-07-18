@@ -112,7 +112,7 @@ ProcedurePrims.defineCommand("setup-people", 2064, 2648, (function() {
     var R = ProcedurePrims.callCommand("assign-condom-use"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("assign-test-frequency"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("assign-color"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2079, 2093, R); return R; }
 }))
 ProcedurePrims.defineCommand("assign-color", 2830, 2982, (function() {
   if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2873, 2876, 2, PrimChecks.turtle.getVariable(2877, 2886, "infected?")))) {
@@ -158,42 +158,42 @@ ProcedurePrims.defineCommand("go", 3820, 4454, (function() {
     if (PrimChecks.turtle.getVariable(3975, 3983, "coupled?")) {
       PrimChecks.turtle.setVariable(3998, 4011, "couple-length", PrimChecks.math.plus(4026, 4027, PrimChecks.validator.checkArg('+', 4026, 4027, 1, PrimChecks.turtle.getVariable(4012, 4025, "couple-length")), 1));
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3881, 3884, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 4057, 4060, 2, PrimChecks.turtle.getVariable(4061, 4069, "coupled?")))) {
       var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4036, 4039, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 4235, 4238, 2, PrimChecks.turtle.getVariable(4239, 4247, "coupled?"))) && Prims.equality(PrimChecks.turtleOrLink.getVariable(4252, 4257, "shape"), "person righty")) && Prims.lt(PrimChecks.math.randomFloat(10), PrimChecks.turtle.getVariable(4301, 4318, "coupling-tendency")))) {
       var R = ProcedurePrims.callCommand("couple"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("uncouple"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("infect"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("test"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("assign-color"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4214, 4217, R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("uncouple"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4343, 4346, R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("infect"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4370, 4373, R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("test"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4395, 4398, R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("assign-color"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4418, 4421, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("check-sliders", 4595, 5163, (function() {
   if (!Prims.equality(world.observer.getGlobal("slider-check-1"), world.observer.getGlobal("average-commitment"))) {
-    var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("assign-commitment"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("assign-commitment"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4659, 4662, R); return R; }
     world.observer.setVariable("slider-check-1", world.observer.getGlobal("average-commitment"));
   }
   if (!Prims.equality(world.observer.getGlobal("slider-check-2"), world.observer.getGlobal("average-coupling-tendency"))) {
     var R = ProcedurePrims.ask(world.turtles(), function() {
       var R = ProcedurePrims.callCommand("assign-coupling-tendency"); if (R === DeathInterrupt) { return R; }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4796, 4799, R); return R; }
     world.observer.setVariable("slider-check-2", world.observer.getGlobal("average-coupling-tendency"));
   }
   if (!Prims.equality(world.observer.getGlobal("slider-check-3"), world.observer.getGlobal("average-condom-use"))) {
-    var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("assign-condom-use"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("assign-condom-use"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4940, 4943, R); return R; }
     world.observer.setVariable("slider-check-3", world.observer.getGlobal("average-condom-use"));
   }
   if (!Prims.equality(world.observer.getGlobal("slider-check-4"), world.observer.getGlobal("average-test-frequency"))) {
     var R = ProcedurePrims.ask(world.turtles(), function() {
       var R = ProcedurePrims.callCommand("assign-test-frequency"); if (R === DeathInterrupt) { return R; }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5075, 5078, R); return R; }
     world.observer.setVariable("slider-check-4", world.observer.getGlobal("average-test-frequency"));
   }
 }))
@@ -209,12 +209,12 @@ ProcedurePrims.defineCommand("couple", 5450, 6095, (function() {
     if (Prims.lt(PrimChecks.math.randomFloat(10), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 5700, 5702, 1904, potentialHpartner), function() { return PrimChecks.turtle.getVariable(5681, 5698, "coupling-tendency"); }))) {
       PrimChecks.turtle.setVariable(5733, 5740, "partner", potentialHpartner);
       PrimChecks.turtle.setVariable(5771, 5779, "coupled?", true);
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5793, 5796, 1904, PrimChecks.turtle.getVariable(5797, 5804, "partner")), function() { PrimChecks.turtle.setVariable(5811, 5819, "coupled?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5835, 5838, 1904, PrimChecks.turtle.getVariable(5839, 5846, "partner")), function() { PrimChecks.turtle.setVariable(5853, 5860, "partner", SelfManager.myself()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5793, 5796, 1904, PrimChecks.turtle.getVariable(5797, 5804, "partner")), function() { PrimChecks.turtle.setVariable(5811, 5819, "coupled?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5793, 5796, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5835, 5838, 1904, PrimChecks.turtle.getVariable(5839, 5846, "partner")), function() { PrimChecks.turtle.setVariable(5853, 5860, "partner", SelfManager.myself()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5835, 5838, R); return R; }
       SelfManager.self().moveTo(SelfManager.self().getPatchHere());
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5932, 5935, 1904, potentialHpartner), function() { SelfManager.self().moveTo(SelfManager.self().getPatchHere()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5932, 5935, 1904, potentialHpartner), function() { SelfManager.self().moveTo(SelfManager.self().getPatchHere()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5932, 5935, R); return R; }
       PrimChecks.patch.setVariable(6023, 6029, "pcolor", PrimChecks.math.minus(6035, 6036, 5, 3));
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6047, 6050, 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable(6073, 6079, "pcolor", PrimChecks.math.minus(6085, 6086, 5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6047, 6050, 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable(6073, 6079, "pcolor", PrimChecks.math.minus(6085, 6086, 5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6047, 6050, R); return R; }
     }
   }
 }))
@@ -223,11 +223,11 @@ ProcedurePrims.defineCommand("uncouple", 6220, 6707, (function() {
     if ((Prims.gt(PrimChecks.turtle.getVariable(6304, 6317, "couple-length"), PrimChecks.turtle.getVariable(6320, 6330, "commitment")) || Prims.gt(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 6361, 6363, 1904, PrimChecks.turtle.getVariable(6364, 6371, "partner")), function() { return PrimChecks.turtle.getVariable(6346, 6359, "couple-length"); }), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 6389, 6391, 1904, PrimChecks.turtle.getVariable(6392, 6399, "partner")), function() { return PrimChecks.turtle.getVariable(6377, 6387, "commitment"); })))) {
       PrimChecks.turtle.setVariable(6415, 6423, "coupled?", false);
       PrimChecks.turtle.setVariable(6444, 6457, "couple-length", 0);
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6470, 6473, 1904, PrimChecks.turtle.getVariable(6474, 6481, "partner")), function() { PrimChecks.turtle.setVariable(6488, 6501, "couple-length", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6470, 6473, 1904, PrimChecks.turtle.getVariable(6474, 6481, "partner")), function() { PrimChecks.turtle.setVariable(6488, 6501, "couple-length", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6470, 6473, R); return R; }
       PrimChecks.patch.setVariable(6520, 6526, "pcolor", 0);
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6543, 6546, 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable(6569, 6575, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6594, 6597, 1904, PrimChecks.turtle.getVariable(6598, 6605, "partner")), function() { PrimChecks.turtle.setVariable(6612, 6619, "partner", Nobody); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6639, 6642, 1904, PrimChecks.turtle.getVariable(6643, 6650, "partner")), function() { PrimChecks.turtle.setVariable(6657, 6665, "coupled?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6543, 6546, 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable(6569, 6575, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6543, 6546, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6594, 6597, 1904, PrimChecks.turtle.getVariable(6598, 6605, "partner")), function() { PrimChecks.turtle.setVariable(6612, 6619, "partner", Nobody); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6594, 6597, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6639, 6642, 1904, PrimChecks.turtle.getVariable(6643, 6650, "partner")), function() { PrimChecks.turtle.setVariable(6657, 6665, "coupled?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6639, 6642, R); return R; }
       PrimChecks.turtle.setVariable(6688, 6695, "partner", Nobody);
     }
   }
@@ -236,7 +236,7 @@ ProcedurePrims.defineCommand("infect", 7260, 7529, (function() {
   if (((PrimChecks.validator.checkArg('AND', 7302, 7305, 2, PrimChecks.turtle.getVariable(7293, 7301, "coupled?")) && PrimChecks.validator.checkArg('AND', 7302, 7305, 2, PrimChecks.turtle.getVariable(7306, 7315, "infected?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 7320, 7323, 2, PrimChecks.turtle.getVariable(7324, 7330, "known?"))))) {
     if ((Prims.gt(PrimChecks.math.randomFloat(10), PrimChecks.turtle.getVariable(7358, 7368, "condom-use")) || Prims.gt(PrimChecks.math.randomFloat(10), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 7413, 7415, 1904, PrimChecks.turtle.getVariable(7416, 7423, "partner")), function() { return PrimChecks.turtle.getVariable(7401, 7411, "condom-use"); })))) {
       if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("infection-chance"))) {
-        var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7488, 7491, 1904, PrimChecks.turtle.getVariable(7492, 7499, "partner")), function() { PrimChecks.turtle.setVariable(7506, 7515, "infected?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+        var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7488, 7491, 1904, PrimChecks.turtle.getVariable(7492, 7499, "partner")), function() { PrimChecks.turtle.setVariable(7506, 7515, "infected?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7488, 7491, R); return R; }
       }
     }
   }

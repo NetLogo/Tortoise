@@ -319,47 +319,250 @@ trait CommandPrims extends PrimUtils {
     def args: Arguments =
       Arguments(handlers, s, sourceInfo)
 
+    def getReferenceName: String = {
+      val name = s.args(0).asInstanceOf[ReporterApp].reporter match {
+        case p: prim._patchvariable => p.displayName.toLowerCase
+        case x                      => failCompilation(s"unknown reference: ${x.getClass.getName}", s.instruction.token)
+      }
+      jsString(name)
+    }
+
+    /// custom generators for particular Commands
+    def generateCall(call: prim._call): String = {
+      val callCommand = s"ProcedurePrims.callCommand(${ReporterPrims.callArgs(call.name, args.all)})"
+      if (!procContext.isProcedure && compilerContext.blockLevel < 2) {
+        callCommand
+      } else {
+        val interrupt = if (compilerFlags.propagationStyle == WidgetPropagation && compilerContext.blockLevel == 1) {
+          "StopInterrupt"
+        } else {
+          "DeathInterrupt"
+        }
+        s"var R = $callCommand; if (R === $interrupt) { return R; }"
+      }
+    }
+
+    def generateSet: String = {
+      s.args(0).asInstanceOf[ReporterApp].reporter match {
+        case p: prim._letvariable =>
+          val name = JSIdentProvider(p.let.name)
+          s"""$name = ${args.get(1)}; ProcedurePrims.stack().currentContext().updateStringRunVar("${p.let.name}", $name);"""
+
+        case p: prim._procedurevariable =>
+          val name = JSIdentProvider(p.name)
+          s"$name = ${args.get(1)};"
+
+        case p: prim._lambdavariable =>
+          s"${JSIdentProvider(p.name)} = ${args.get(1)};"
+
+        case ov: prim._observervariable =>
+          s"""world.observer.setVariable("${ov.displayName.toLowerCase}", ${args.get(1)});"""
+
+        case VariableSetter(setValue) =>
+          setValue(args.get(1))
+
+        case x =>
+          failCompilation("This isn't something you can use \"set\" on.", s.instruction.token)
+
+      }
+    }
+
+    def generateLoop: String = {
+      val body = args.get(0)
+      s"""|while (true) {
+          |${indented(body)}
+          |};""".stripMargin
+    }
+
+    def generateRepeat: String = {
+      val count = args.get(0)
+      val body  = args.get(1)
+      val i     = handlers.unusedVarname(s.command.token, "index")
+      val j     = handlers.unusedVarname(s.command.token, "repeatcount")
+      s"""|for (let $i = 0, $j = StrictMath.floor($count); $i < $j; $i++) {
+          |${indented(body)}
+          |}""".stripMargin
+    }
+
+    def generateWhile: String = {
+      val pred = args.get(0)
+      val body = args.get(1)
+      s"""|while ($pred) {
+          |${indented(body)}
+          |}""".stripMargin
+    }
+
+    def generateIf: String = {
+      val pred = args.get(0)
+      val body = args.get(1)
+      s"""|if ($pred) {
+          |${indented(body)}
+          |}""".stripMargin
+    }
+
+    def generateIfElse: String = {
+        val clauses = List.range(0, s.args.length - 1, 2).map { i =>
+          val bool = s.args(i)
+          if (!(bool.isInstanceOf[ReporterApp] || bool.isInstanceOf[ReporterBlock])) {
+            failCompilation("IFELSE expected a reporter here but got a block.", bool.start, bool.end, bool.filename)
+          }
+          val cmd = s.args(i + 1)
+          if (!cmd.isInstanceOf[CommandBlock]) {
+            failCompilation("IFELSE expected a command block here but got a TRUE/FALSE.", cmd.start, cmd.end, cmd.filename)
+          }
+          val pred      = handlers.reporter(bool)
+          val thenBlock = handlers.commands(cmd)
+          s"""|if ($pred) {
+              |${indented(thenBlock)}
+              |}""".stripMargin
+        }
+        val elseBlock = if (s.args.length % 2 == 0)
+          ""
+        else {
+          val elseBlock = handlers.commands(s.args(s.args.length - 1))
+          s"""|else {
+              |${indented(elseBlock)}
+              |}""".stripMargin
+        }
+        s"""|${clauses.mkString(" else ")}
+            |${elseBlock}""".stripMargin
+    }
+
+    def generateCarefully(c: prim._carefully): String = {
+      val errorName   = handlers.unusedVarname(s.command.token, "error")
+      val doCarefully = args.get(0)
+      val handleError = args.get(1).replaceAll(s"_error_${c.let.hashCode()}", errorName)
+      s"""
+        |try {
+        |${indented(doCarefully)}
+        |} catch ($errorName) {
+        |${indented(handleError)}
+        |}
+      """.stripMargin
+    }
+
+    def generateCreateLink(name: String, breedName: String): String = {
+      val other                = args.get(0)
+      // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
+      val nonEmptyCommandBlock = s.args(1).asInstanceOf[CommandBlock].statements.stmts.nonEmpty
+      val body                 = handlers.fun(s.args(1))
+      addAskContext(s"LinkPrims.$name($other, ${jsString(fixBN(breedName))})", body, nonEmptyCommandBlock)
+    }
+
+    def generateCreateTurtles(ordered: Boolean): String = {
+      val n = args.get(0)
+      val name = if (ordered) "createOrderedTurtles" else "createTurtles"
+      val breed =
+        s.command match {
+          case x: prim._createturtles => x.breedName
+          case x: prim._createorderedturtles => x.breedName
+          case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
+        }
+      val body = handlers.fun(s.args(1))
+      addAskContext(s"world.turtleManager.$name($n, ${jsString(breed)})", body, true)
+    }
+
+    def optimalGenerateCreateTurtles(ordered: Boolean): String = {
+      val n = handlers.reporter(s.args(0))
+      val name = if (ordered) "createOrderedTurtles" else "createTurtles"
+      val breed =
+        s.command match {
+          case x: Optimizer._crtfast => x.breedName
+          case x: Optimizer._crofast => x.breedName
+          case x                     => throw new IllegalArgumentException(s"How did you get here with class of type ${x.getClass.getName}")
+        }
+      s"world.turtleManager.$name($n, ${jsString(breed)});"
+    }
+
+    def generateSprout: String = {
+      val n    = args.get(0)
+      val body = handlers.fun(s.args(1))
+      val breedName = s.command.asInstanceOf[prim._sprout].breedName
+      val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
+      val sprouted = s"SelfManager.self().sprout($n, ${jsString(trueBreedName)})"
+      addAskContext(sprouted, body, true)
+    }
+
+    def optimalGenerateSprout: String = {
+      val n = args.get(0)
+      val breedName =
+        s.command match {
+          case x: Optimizer._sproutfast => x.breedName
+          case x                        => throw new IllegalArgumentException(s"How did you get here with class of type ${x.getClass.getName}")
+        }
+      val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
+      s"SelfManager.self().sprout($n, ${jsString(trueBreedName)});"
+    }
+
+    def generateHatch(breedName: String): String = {
+      val n = args.get(0)
+      val body = handlers.fun(s.args(1))
+      addAskContext(s"SelfManager.self().hatch($n, ${jsString(breedName)})", body, true)
+    }
+
+    def optimalGenerateHatch(breedName: String): String = {
+      val n = args.get(0)
+      s"SelfManager.self().hatch($n, ${jsString(breedName)});"
+    }
+
+    def generateEvery: String = {
+      val time = args.get(0)
+      val body = args.get(1)
+      val everyId = handlers.nextEveryID()
+      s"""|if (Prims.isThrottleTimeElapsed("$everyId", workspace.selfManager.self(), $time)) {
+          |  Prims.resetThrottleTimerFor("$everyId", workspace.selfManager.self());
+          |${indented(body)}
+          |}""".stripMargin
+    }
+
+    def addAskContext(agents: String, code: String, shuffle: Boolean): String =
+      addReturn(s"ProcedurePrims.ask($agents, $code, $shuffle)")
+
+    def addReturn(code: String): String = {
+      s"var R = $code; if (R !== undefined) { PrimChecks.procedure.preReturnCheck(${sourceInfo.start}, ${sourceInfo.end}, R); return R; }"
+    }
+
     s.command match {
       case SimplePrims.SimpleCommand(op)             => if (op.isEmpty) "" else s"$op;"
       case SimplePrims.UncheckedCommand(op)          => s"$op(${args.commas});"
       case SimplePrims.CheckedCommand(op)            => s"$op(${sourceInfo.start}, ${sourceInfo.end}, ${args.commasChecked});"
       case SimplePrims.CheckedPassThroughCommand(op) => s"$op(${args.commasChecked});"
 
-      case _: prim._set                  => generateSet(s)
-      case _: prim.etc._loop             => generateLoop(s)
-      case _: prim._repeat               => generateRepeat(s)
-      case _: prim.etc._while            => generateWhile(s)
-      case _: prim.etc._if               => generateIf(s)
-      case _: prim.etc._ifelse           => generateIfElse(s)
+      case _: prim._set                  => generateSet
+      case _: prim.etc._loop             => generateLoop
+      case _: prim._repeat               => generateRepeat
+      case _: prim.etc._while            => generateWhile
+      case _: prim.etc._if               => generateIf
+      case _: prim.etc._ifelse           => generateIfElse
       case _: prim._ask                  => addAskContext(args.makeCheckedOp(0), handlers.fun(s.args(1)), true)
-      case p: prim._carefully            => generateCarefully(s, p)
-      case _: prim._createturtles        => generateCreateTurtles(s, ordered = false)
-      case _: prim._createorderedturtles => generateCreateTurtles(s, ordered = true)
-      case _: Optimizer._crtfast         => optimalGenerateCreateTurtles(s, ordered = false)
-      case _: Optimizer._crofast         => optimalGenerateCreateTurtles(s, ordered = true)
-      case _: prim._sprout               => generateSprout(s)
-      case _: Optimizer._sproutfast      => optimalGenerateSprout(s)
-      case p: prim.etc._createlinkfrom   => generateCreateLink(s, "createLinkFrom",  p.breedName)
-      case p: prim.etc._createlinksfrom  => generateCreateLink(s, "createLinksFrom", p.breedName)
-      case p: prim.etc._createlinkto     => generateCreateLink(s, "createLinkTo",    p.breedName)
-      case p: prim.etc._createlinksto    => generateCreateLink(s, "createLinksTo",   p.breedName)
-      case p: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith",  p.breedName)
-      case p: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith", p.breedName)
-      case _: prim.etc._every            => generateEvery(s)
-      case h: prim._hatch                => generateHatch(s, h.breedName)
-      case h: Optimizer._hatchfast       => optimalGenerateHatch(s, h.breedName)
+      case p: prim._carefully            => generateCarefully(p)
+      case _: prim._createturtles        => generateCreateTurtles(ordered = false)
+      case _: prim._createorderedturtles => generateCreateTurtles(ordered = true)
+      case _: Optimizer._crtfast         => optimalGenerateCreateTurtles(ordered = false)
+      case _: Optimizer._crofast         => optimalGenerateCreateTurtles(ordered = true)
+      case _: prim._sprout               => generateSprout
+      case _: Optimizer._sproutfast      => optimalGenerateSprout
+      case p: prim.etc._createlinkfrom   => generateCreateLink("createLinkFrom",  p.breedName)
+      case p: prim.etc._createlinksfrom  => generateCreateLink("createLinksFrom", p.breedName)
+      case p: prim.etc._createlinkto     => generateCreateLink("createLinkTo",    p.breedName)
+      case p: prim.etc._createlinksto    => generateCreateLink("createLinksTo",   p.breedName)
+      case p: prim.etc._createlinkwith   => generateCreateLink("createLinkWith",  p.breedName)
+      case p: prim.etc._createlinkswith  => generateCreateLink("createLinksWith", p.breedName)
+      case _: prim.etc._every            => generateEvery
+      case h: prim._hatch                => generateHatch(h.breedName)
+      case h: Optimizer._hatchfast       => optimalGenerateHatch(h.breedName)
       case _: prim._bk                   => s"SelfManager.self().fd(-(${args.get(0)}));"
       case _: prim.etc._left             => s"SelfManager.self().right(-(${args.get(0)}));"
-      case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${args.get(1)}, false)"
-      case _: prim.etc._diffuse4         => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${args.get(1)}, true)"
-      case _: prim.etc._uphill           => s"Prims.uphill(${jsString(getReferenceName(s))})"
-      case _: prim.etc._uphill4          => s"Prims.uphill4(${jsString(getReferenceName(s))})"
-      case _: prim.etc._downhill         => s"Prims.downhill(${jsString(getReferenceName(s))})"
-      case _: prim.etc._downhill4        => s"Prims.downhill4(${jsString(getReferenceName(s))})"
+      case _: prim.etc._diffuse          => s"world.topology.diffuse($getReferenceName, ${args.get(1)}, false)"
+      case _: prim.etc._diffuse4         => s"world.topology.diffuse($getReferenceName, ${args.get(1)}, true)"
+      case _: prim.etc._uphill           => s"Prims.uphill($getReferenceName)"
+      case _: prim.etc._uphill4          => s"Prims.uphill4($getReferenceName)"
+      case _: prim.etc._downhill         => s"Prims.downhill($getReferenceName)"
+      case _: prim.etc._downhill4        => s"Prims.downhill4($getReferenceName)"
       case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${args.get(0)}.getSpecialName(), ${args.get(1)})"
       case _: prim.etc._hidelink         => "SelfManager.self().setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfManager.self().setVariable('hidden?', false)"
-      case call: prim._call              => generateCall(call, args.all)
+      case call: prim._call              => generateCall(call)
       case _: prim._report               => s"return PrimChecks.procedure.report(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)});"
       case _: prim.etc._ignore           => s"${args.get(0)};"
 
@@ -394,221 +597,10 @@ trait CommandPrims extends PrimUtils {
         failCompilation(s"unimplemented primitive: ${s.instruction.token.text}", s.instruction.token)
 
     }
+
   }
   // scalastyle:on method.length
   // scalastyle:on cyclomatic.complexity
-
-  def getReferenceName(s: Statement): String =
-    s.args(0).asInstanceOf[ReporterApp].reporter match {
-      case p: prim._patchvariable => p.displayName.toLowerCase
-      case x                      => failCompilation(s"unknown reference: ${x.getClass.getName}", s.instruction.token)
-    }
-
-  /// custom generators for particular Commands
-  def generateCall(call: prim._call, args: Seq[String])
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val callCommand = s"ProcedurePrims.callCommand(${ReporterPrims.callArgs(call.name, args)})"
-    if (!procContext.isProcedure && compilerContext.blockLevel < 2) {
-      callCommand
-    } else {
-      val interrupt = if (compilerFlags.propagationStyle == WidgetPropagation && compilerContext.blockLevel == 1) {
-        "StopInterrupt"
-      } else {
-        "DeathInterrupt"
-      }
-      s"var R = $callCommand; if (R === $interrupt) { return R; }"
-    }
-  }
-
-  def generateSet(s: Statement)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    def arg(i: Int) = handlers.reporter(s.args(i))
-    s.args(0).asInstanceOf[ReporterApp].reporter match {
-      case p: prim._letvariable =>
-        val name = JSIdentProvider(p.let.name)
-        s"""$name = ${arg(1)}; ProcedurePrims.stack().currentContext().updateStringRunVar("${p.let.name}", $name);"""
-      case p: prim._procedurevariable =>
-        val name = JSIdentProvider(p.name)
-        s"$name = ${arg(1)};"
-      case p: prim._lambdavariable =>
-        s"${JSIdentProvider(p.name)} = ${arg(1)};"
-      case ov: prim._observervariable =>
-        s"""world.observer.setVariable("${ov.displayName.toLowerCase}", ${arg(1)});"""
-      case VariableSetter(setValue) =>
-        setValue(arg(1))
-      case x =>
-        failCompilation("This isn't something you can use \"set\" on.", s.instruction.token)
-    }
-  }
-
-  def generateLoop(w: Statement)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val body = handlers.commands(w.args(0))
-    s"""|while (true) {
-        |${indented(body)}
-        |};""".stripMargin
-  }
-
-  def generateRepeat(w: Statement)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val count = handlers.reporter(w.args(0))
-    val body = handlers.commands(w.args(1))
-    val i = handlers.unusedVarname(w.command.token, "index")
-    val j = handlers.unusedVarname(w.command.token, "repeatcount")
-    s"""|for (let $i = 0, $j = StrictMath.floor($count); $i < $j; $i++) {
-        |${indented(body)}
-        |}""".stripMargin
-  }
-
-  def generateWhile(w: Statement)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val pred = handlers.reporter(w.args(0))
-    val body = handlers.commands(w.args(1))
-    s"""|while ($pred) {
-        |${indented(body)}
-        |}""".stripMargin
-  }
-
-  def generateIf(s: Statement)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val pred = handlers.reporter(s.args(0))
-    val body = handlers.commands(s.args(1))
-    s"""|if ($pred) {
-        |${indented(body)}
-        |}""".stripMargin
-  }
-
-  def generateIfElse(s: Statement)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-      val clauses = List.range(0, s.args.length - 1, 2).map { i =>
-        val bool = s.args(i)
-        if (!(bool.isInstanceOf[ReporterApp] || bool.isInstanceOf[ReporterBlock])) {
-          failCompilation("IFELSE expected a reporter here but got a block.", bool.start, bool.end, bool.filename)
-        }
-        val cmd = s.args(i + 1)
-        if (!cmd.isInstanceOf[CommandBlock]) {
-          failCompilation("IFELSE expected a command block here but got a TRUE/FALSE.", cmd.start, cmd.end, cmd.filename)
-        }
-        val pred      = handlers.reporter(bool)
-        val thenBlock = handlers.commands(cmd)
-        s"""|if ($pred) {
-            |${indented(thenBlock)}
-            |}""".stripMargin
-      }
-      val elseBlock = if (s.args.length % 2 == 0)
-        ""
-      else {
-        val elseBlock = handlers.commands(s.args(s.args.length - 1))
-        s"""|else {
-            |${indented(elseBlock)}
-            |}""".stripMargin
-      }
-      s"""|${clauses.mkString(" else ")}
-          |${elseBlock}""".stripMargin
-  }
-
-  def generateCarefully(s: Statement, c: prim._carefully)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val errorName   = handlers.unusedVarname(s.command.token, "error")
-    val doCarefully = handlers.commands(s.args(0))
-    val handleError = handlers.commands(s.args(1)).replaceAll(s"_error_${c.let.hashCode()}", errorName)
-    s"""
-       |try {
-       |${indented(doCarefully)}
-       |} catch ($errorName) {
-       |${indented(handleError)}
-       |}
-     """.stripMargin
-  }
-
-  def generateCreateLink(s: Statement, name: String, breedName: String)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val other = handlers.reporter(s.args(0))
-    // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
-    val nonEmptyCommandBlock = s.args(1).asInstanceOf[CommandBlock].statements.stmts.nonEmpty
-    val body = handlers.fun(s.args(1))
-    addAskContext(s"LinkPrims.$name($other, ${jsString(fixBN(breedName))})", body, nonEmptyCommandBlock)
-  }
-
-  def generateCreateTurtles(s: Statement, ordered: Boolean)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val n = handlers.reporter(s.args(0))
-    val name = if (ordered) "createOrderedTurtles" else "createTurtles"
-    val breed =
-      s.command match {
-        case x: prim._createturtles => x.breedName
-        case x: prim._createorderedturtles => x.breedName
-        case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
-      }
-    val body = handlers.fun(s.args(1))
-    addAskContext(s"world.turtleManager.$name($n, ${jsString(breed)})", body, true)
-  }
-
-  def optimalGenerateCreateTurtles(s: Statement, ordered: Boolean)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val n = handlers.reporter(s.args(0))
-    val name = if (ordered) "createOrderedTurtles" else "createTurtles"
-    val breed =
-      s.command match {
-        case x: Optimizer._crtfast => x.breedName
-        case x: Optimizer._crofast => x.breedName
-        case x                     => throw new IllegalArgumentException(s"How did you get here with class of type ${x.getClass.getName}")
-      }
-    s"world.turtleManager.$name($n, ${jsString(breed)});"
-  }
-
-  def generateSprout(s: Statement)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val n = handlers.reporter(s.args(0))
-    val body = handlers.fun(s.args(1))
-    val breedName = s.command.asInstanceOf[prim._sprout].breedName
-    val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
-    val sprouted = s"SelfManager.self().sprout($n, ${jsString(trueBreedName)})"
-    addAskContext(sprouted, body, true)
-  }
-
-  def optimalGenerateSprout(s: Statement)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val n = handlers.reporter(s.args(0))
-    val breedName =
-      s.command match {
-        case x: Optimizer._sproutfast => x.breedName
-        case x                        => throw new IllegalArgumentException(s"How did you get here with class of type ${x.getClass.getName}")
-      }
-    val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
-    s"SelfManager.self().sprout($n, ${jsString(trueBreedName)});"
-  }
-
-  def generateHatch(s: Statement, breedName: String)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val n = handlers.reporter(s.args(0))
-    val body = handlers.fun(s.args(1))
-    addAskContext(s"SelfManager.self().hatch($n, ${jsString(breedName)})", body, true)
-  }
-
-  def optimalGenerateHatch(s: Statement, breedName: String)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val n = handlers.reporter(s.args(0))
-    s"SelfManager.self().hatch($n, ${jsString(breedName)});"
-  }
-
-  def generateEvery(w: Statement)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val time = handlers.reporter(w.args(0))
-    val body = handlers.commands(w.args(1))
-    val everyId = handlers.nextEveryID()
-    s"""|if (Prims.isThrottleTimeElapsed("$everyId", workspace.selfManager.self(), $time)) {
-        |  Prims.resetThrottleTimerFor("$everyId", workspace.selfManager.self());
-        |${indented(body)}
-        |}""".stripMargin
-  }
-
-  def addAskContext(agents: String, code: String, shuffle: Boolean): String =
-    addReturn(s"ProcedurePrims.ask($agents, $code, $shuffle)")
-
-  def addReturn(code: String): String = {
-    s"var R = $code; if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }"
-  }
 
 }
 

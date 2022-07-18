@@ -57,13 +57,13 @@ ProcedurePrims.defineCommand("setup", 211, 587, (function() {
     if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("density"))) {
       PrimChecks.patch.setVariable(361, 367, "pcolor", 45);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(301, 304, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number"), ""), function() {
     PrimChecks.turtleOrLink.setVariable(449, 454, "color", 9.9);
     PrimChecks.turtle.setXY(465, 470, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
     PrimChecks.turtle.setVariable(503, 512, "next-task", PrimChecks.task.checked(513, 514, function() { var R = ProcedurePrims.callCommand("search-for-chip"); if (R === DeathInterrupt) { return R; } }, "[ -> search-for-chip ]", false, false));
     PrimChecks.turtle.setVariable(544, 548, "size", 5);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(417, 431, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 595, 730, (function() {
@@ -76,7 +76,7 @@ ProcedurePrims.defineCommand("go", 595, 730, (function() {
       var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
     }
     SelfManager.self()._optimalFdOne();
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(600, 603, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("wiggle", 738, 796, (function() {

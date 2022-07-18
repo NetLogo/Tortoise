@@ -116,7 +116,7 @@ ProcedurePrims.defineCommand("setup", 3, 278, (function() {
       PrimChecks.turtleOrLink.setVariable(177, 182, "color", 125);
     }
     PrimChecks.turtle.setXY(230, 235, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(23, 37, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 286, 425, (function() {
@@ -127,15 +127,15 @@ ProcedurePrims.defineCommand("go", 286, 425, (function() {
     SelfManager.self().right(RandomPrims.randomLong(50));
     SelfManager.self().right(-(RandomPrims.randomLong(50)));
     SelfManager.self()._optimalFdOne();
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(341, 344, R); return R; }
   var R = ProcedurePrims.callCommand("birth"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("death"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("birth", 473, 525, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    var R = ProcedurePrims.ask(SelfManager.self().hatch(RandomPrims.randomLong(5), ""), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(SelfManager.self().hatch(RandomPrims.randomLong(5), ""), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(499, 504, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(481, 484, R); return R; }
 }))
 ProcedurePrims.defineCommand("death", 660, 771, (function() {
   let totalHturtles = PrimChecks.agentset.count(world.turtles()); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL-TURTLES", totalHturtles);
@@ -143,7 +143,7 @@ ProcedurePrims.defineCommand("death", 660, 771, (function() {
     if (Prims.gt(PrimChecks.math.random(723, 729, PrimChecks.validator.checkArg('RANDOM', 723, 729, 1, totalHturtles)), world.observer.getGlobal("number"))) {
       return SelfManager.self().die();
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(702, 705, R); return R; }
 }))
 world.observer.setVariable("colors", 5);
 world.observer.setVariable("number", 500);

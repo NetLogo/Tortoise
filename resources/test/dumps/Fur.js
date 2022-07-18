@@ -55,7 +55,7 @@ ProcedurePrims.defineCommand("setup", 237, 880, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(352, 367, "inner-neighbors", PrimChecks.procedure.callReporter(368, 378, "ellipse-in", world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
     PrimChecks.patch.setVariable(515, 530, "outer-neighbors", PrimChecks.procedure.callReporter(531, 543, "ellipse-ring", world.observer.getGlobal("outer-radius-x"), world.observer.getGlobal("outer-radius-y"), world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(328, 331, R); return R; }
   if (PrimChecks.agentset.anyWith(null, null, world.patches(), function() {
     return PrimChecks.agentset.optimizeCount(null, null, PrimChecks.patch.getVariable(644, 659, "outer-neighbors"), 0, (a, b) => a === b);
   })) {
@@ -75,14 +75,14 @@ ProcedurePrims.defineCommand("restart", 1086, 1232, (function() {
     else {
       PrimChecks.patch.setVariable(1201, 1207, "pcolor", 0);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1096, 1099, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 1240, 1322, (function() {
-  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("pick-new-color"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("pick-new-color"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1245, 1248, R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(1296, 1302, "pcolor", PrimChecks.patch.getVariable(1303, 1312, "new-color"));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1278, 1281, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("pick-new-color", 1330, 1895, (function() {

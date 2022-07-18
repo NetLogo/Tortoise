@@ -73,7 +73,7 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 80, 173, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("setup-road"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("setup-road"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(100, 103, R); return R; }
   var R = ProcedurePrims.callCommand("setup-cars"); if (R === DeathInterrupt) { return R; }
   world.observer.watch(world.observer.getGlobal("sample-car"));
   world.ticker.reset();
@@ -97,9 +97,9 @@ ProcedurePrims.defineCommand("setup-cars", 270, 914, (function() {
     PrimChecks.turtle.setVariable(791, 802, "speed-limit", 1);
     PrimChecks.turtle.setVariable(813, 822, "speed-min", 0);
     var R = ProcedurePrims.callCommand("separate-cars"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(600, 614, R); return R; }
   world.observer.setVariable("sample-car", PrimChecks.list.oneOf(864, 870, world.turtles()));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 881, 884, 1904, world.observer.getGlobal("sample-car")), function() { PrimChecks.turtleOrLink.setVariable(902, 907, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 881, 884, 1904, world.observer.getGlobal("sample-car")), function() { PrimChecks.turtleOrLink.setVariable(902, 907, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(881, 884, R); return R; }
 }))
 ProcedurePrims.defineCommand("separate-cars", 1028, 1124, (function() {
   if (SelfPrims._optimalAnyOther(SelfManager.self().turtlesHere())) {
@@ -123,7 +123,7 @@ ProcedurePrims.defineCommand("go", 1132, 1586, (function() {
       PrimChecks.turtle.setVariable(1542, 1547, "speed", PrimChecks.turtle.getVariable(1548, 1559, "speed-limit"));
     }
     SelfManager.self().fd(PrimChecks.turtle.getVariable(1569, 1574, "speed"));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1211, 1214, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("slow-down-car", 1594, 1764, (function(carHahead) {

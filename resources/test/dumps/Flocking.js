@@ -57,13 +57,13 @@ ProcedurePrims.defineCommand("setup", 125, 358, (function() {
     PrimChecks.turtle.setVariable(247, 251, "size", 1.5);
     PrimChecks.turtle.setXY(280, 285, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
     PrimChecks.turtle.setVariable(320, 330, "flockmates", new TurtleSet([], world));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(145, 159, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 366, 663, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("flock"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("flock"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(371, 374, R); return R; }
   for (let _index_475_481 = 0, _repeatcount_475_481 = StrictMath.floor(5); _index_475_481 < _repeatcount_475_481; _index_475_481++) {
-    var R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self()._optimalFdLessThan1(0.2); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self()._optimalFdLessThan1(0.2); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(486, 489, R); return R; }
     Prims.display();
   }
   world.ticker.tick();

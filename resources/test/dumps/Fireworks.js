@@ -65,7 +65,7 @@ ProcedurePrims.defineCommand("go", 774, 1120, (function() {
       world.observer.setVariable("countdown", PrimChecks.math.minus(1063, 1064, PrimChecks.validator.checkArg('-', 1063, 1064, 1, world.observer.getGlobal("countdown")), 1));
     }
   }
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("projectile-motion"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("projectile-motion"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1079, 1082, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("init-rockets", 1267, 1665, (function() {
@@ -78,7 +78,7 @@ ProcedurePrims.defineCommand("init-rockets", 1267, 1665, (function() {
     PrimChecks.turtleOrLink.setVariable(1547, 1552, "color", PrimChecks.math.plus(1558, 1559, PrimChecks.validator.checkArg('+', 1558, 1559, 1, PrimChecks.turtle.getVariable(1554, 1557, "col")), 2));
     PrimChecks.turtle.setVariable(1571, 1575, "size", 2);
     PrimChecks.turtle.setVariable(1586, 1600, "terminal-y-vel", PrimChecks.math.randomFloat(4));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1298, 1312, R); return R; }
 }))
 ProcedurePrims.defineCommand("projectile-motion", 1820, 2171, (function() {
   PrimChecks.turtle.setVariable(1863, 1868, "y-vel", PrimChecks.math.minus(1876, 1877, PrimChecks.validator.checkArg('-', 1876, 1877, 1, PrimChecks.turtle.getVariable(1870, 1875, "y-vel")), PrimChecks.math.div(1887, 1888, PrimChecks.validator.checkArg('/', 1887, 1888, 1, world.observer.getGlobal("gravity")), 5)));
@@ -111,7 +111,7 @@ ProcedurePrims.defineCommand("explode", 2296, 2569, (function() {
     else {
       SelfManager.self().penManager.raisePen();
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2325, 2336, R); return R; }
 }))
 ProcedurePrims.defineCommand("fade", 2692, 2822, (function() {
   PrimChecks.turtle.setVariable(2720, 2723, "dim", PrimChecks.math.minus(2728, 2729, PrimChecks.validator.checkArg('-', 2728, 2729, 1, PrimChecks.turtle.getVariable(2724, 2727, "dim")), PrimChecks.math.div(2743, 2744, PrimChecks.validator.checkArg('/', 2743, 2744, 1, world.observer.getGlobal("fade-amount")), 10)));

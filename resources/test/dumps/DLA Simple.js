@@ -52,12 +52,12 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 3, 267, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 89, 92, 1904, world.getPatchAt(0, 0)), function() { PrimChecks.patch.setVariable(113, 119, "pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 89, 92, 1904, world.getPatchAt(0, 0)), function() { PrimChecks.patch.setVariable(113, 119, "pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(89, 92, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-particles"), ""), function() {
     PrimChecks.turtleOrLink.setVariable(171, 176, "color", 15);
     PrimChecks.turtle.setVariable(189, 193, "size", 1.5);
     PrimChecks.turtle.setXY(219, 224, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(132, 146, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 275, 594, (function() {
@@ -69,7 +69,7 @@ ProcedurePrims.defineCommand("go", 275, 594, (function() {
       PrimChecks.patch.setVariable(509, 515, "pcolor", 55);
       return SelfManager.self().die();
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(280, 283, R); return R; }
   world.ticker.tick();
 }))
 world.observer.setVariable("wiggle-angle", 60);

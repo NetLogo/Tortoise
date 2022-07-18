@@ -96,7 +96,7 @@ ProcedurePrims.defineCommand("setup-world", 1249, 1389, (function() {
   world.observer.setVariable("darkening?", true);
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(1370, 1376, "pcolor", PrimChecks.procedure.callReporter(1377, 1386, "env-color"));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1352, 1355, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-moths", 1397, 1594, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-moths"), "MOTHS"), function() {
@@ -105,7 +105,7 @@ ProcedurePrims.defineCommand("setup-moths", 1397, 1594, (function() {
     var R = ProcedurePrims.callCommand("moths-pick-shape"); if (R === DeathInterrupt) { return R; }
     PrimChecks.turtle.setVariable(1511, 1514, "age", RandomPrims.randomLong(3));
     PrimChecks.turtle.setXY(1560, 1565, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1411, 1423, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 1602, 1767, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("MOTHS"), function() {
@@ -113,7 +113,7 @@ ProcedurePrims.defineCommand("go", 1602, 1767, (function() {
     var R = ProcedurePrims.callCommand("moths-grim-reaper"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("moths-get-eaten"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("moths-age"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1607, 1610, R); return R; }
   if (world.observer.getGlobal("cycle-pollution?")) {
     var R = ProcedurePrims.callCommand("cycle-pollution"); if (R === DeathInterrupt) { return R; }
   }
@@ -141,7 +141,7 @@ ProcedurePrims.defineCommand("moths-mate", 1830, 2461, (function() {
       PrimChecks.turtle.setVariable(2357, 2360, "age", 0);
       SelfManager.self().right(PrimChecks.math.randomFloat(360));
       SelfManager.self()._optimalFdOne();
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1891, 1896, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("moths-get-eaten", 2551, 2676, (function() {
@@ -180,7 +180,7 @@ ProcedurePrims.defineCommand("pollute-world", 3530, 3742, (function() {
     world.observer.setVariable("darkness", PrimChecks.math.plus(3654, 3655, PrimChecks.validator.checkArg('+', 3654, 3655, 1, world.observer.getGlobal("darkness")), PrimChecks.validator.checkArg('+', 3654, 3655, 1, PrimChecks.procedure.callReporter(3656, 3665, "delta-env"))));
     var R = ProcedurePrims.ask(world.patches(), function() {
       PrimChecks.patch.setVariable(3689, 3695, "pcolor", PrimChecks.procedure.callReporter(3696, 3705, "env-color"));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3671, 3674, R); return R; }
   }
   else {
     world.observer.setVariable("darkening?", false);
@@ -191,7 +191,7 @@ ProcedurePrims.defineCommand("clean-up-world", 3848, 4054, (function() {
     world.observer.setVariable("darkness", PrimChecks.math.minus(3967, 3968, PrimChecks.validator.checkArg('-', 3967, 3968, 1, world.observer.getGlobal("darkness")), PrimChecks.validator.checkArg('-', 3967, 3968, 1, PrimChecks.procedure.callReporter(3969, 3978, "delta-env"))));
     var R = ProcedurePrims.ask(world.patches(), function() {
       PrimChecks.patch.setVariable(4002, 4008, "pcolor", PrimChecks.procedure.callReporter(4009, 4018, "env-color"));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3984, 3987, R); return R; }
   }
   else {
     world.observer.setVariable("darkening?", true);

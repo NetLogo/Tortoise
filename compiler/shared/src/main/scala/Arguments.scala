@@ -8,6 +8,7 @@ import org.nlogo.core.{
 , Expression
 , Instruction
 , ReporterApp
+, ReporterBlock
 , Syntax
 }
 
@@ -90,7 +91,11 @@ case class Arguments(handlers: Handlers, a: Application, sourceInfo: SourceInfor
   (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext) {
 
   def get(i: Int): String =
-    handlers.reporter(a.args(i))
+    a.args(i) match {
+      case r: ReporterApp   => handlers.reporter(r)
+      case b: ReporterBlock => handlers.reporter(b)
+      case c: CommandBlock  => handlers.commands(c)
+    }
 
   def all: Seq[String] =
     a.args.collect {

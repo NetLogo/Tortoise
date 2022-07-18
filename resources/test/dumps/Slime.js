@@ -56,8 +56,8 @@ ProcedurePrims.defineCommand("setup", 27, 207, (function() {
     PrimChecks.turtleOrLink.setVariable(81, 86, "color", 15);
     PrimChecks.turtle.setVariable(99, 103, "size", 2);
     PrimChecks.turtle.setXY(128, 133, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(180, 188, "chemical", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(47, 61, R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(180, 188, "chemical", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(162, 165, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 215, 807, (function() {
@@ -68,12 +68,12 @@ ProcedurePrims.defineCommand("go", 215, 807, (function() {
     SelfManager.self().right(PrimChecks.math.plus(422, 423, PrimChecks.math.minus(394, 395, PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 368, 380, 1, world.observer.getGlobal("wiggle-angle"))), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 396, 408, 1, world.observer.getGlobal("wiggle-angle")))), PrimChecks.validator.checkArg('+', 422, 423, 1, world.observer.getGlobal("wiggle-bias"))));
     SelfManager.self()._optimalFdOne();
     PrimChecks.patch.setVariable(453, 461, "chemical", PrimChecks.math.plus(471, 472, PrimChecks.validator.checkArg('+', 471, 472, 1, PrimChecks.patch.getVariable(462, 470, "chemical")), 2));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(220, 223, R); return R; }
   world.topology.diffuse("chemical", 1, false)
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(640, 648, "chemical", PrimChecks.math.mult(658, 659, PrimChecks.validator.checkArg('*', 658, 659, 1, PrimChecks.patch.getVariable(649, 657, "chemical")), 0.9));
     PrimChecks.patch.setVariable(713, 719, "pcolor", ColorModel.scaleColor(55, PrimChecks.patch.getVariable(738, 746, "chemical"), 0.1, 3));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(620, 623, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("turn-toward-chemical", 815, 1279, (function() {

@@ -58,21 +58,21 @@ ProcedurePrims.defineCommand("setup", 71, 231, (function() {
     PrimChecks.turtle.setXY(162, 167, PrimChecks.validator.checkArg('SETXY', 162, 167, 1, world.observer.getGlobal("init-x")), PrimChecks.validator.checkArg('SETXY', 162, 167, 1, world.observer.getGlobal("init-y")));
     PrimChecks.turtle.setVariable(190, 197, "heading", 0);
     SelfManager.self().penManager.lowerPen();
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(91, 105, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 296, 676, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setVariable(325, 329, "new?", false);
     SelfManager.self().penManager.lowerPen();
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(301, 304, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(408, 412, world.turtles(), function() {
     return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 415, 418, 2, PrimChecks.turtle.getVariable(419, 423, "new?")));
   }), function() {
     SelfManager.self().fd(4);
     SelfManager.self().right(15);
     SelfManager.self().fd(8);
-    var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { PrimChecks.turtle.setVariable(476, 480, "new?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { PrimChecks.turtle.setVariable(476, 480, "new?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(462, 467, R); return R; }
     PrimChecks.turtleOrLink.setVariable(496, 501, "color", PrimChecks.math.plus(509, 510, PrimChecks.validator.checkArg('+', 509, 510, 1, PrimChecks.turtleOrLink.getVariable(503, 508, "color")), PrimChecks.validator.checkArg('+', 509, 510, 1, world.observer.getGlobal("color-inc"))));
     SelfManager.self().right(180);
     SelfManager.self().jumpIfAble(8);
@@ -80,11 +80,11 @@ ProcedurePrims.defineCommand("go", 296, 676, (function() {
     SelfManager.self().right(-(15));
     SelfManager.self().fd(4);
     SelfManager.self().right(-(15));
-    var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { PrimChecks.turtle.setVariable(602, 606, "new?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() { PrimChecks.turtle.setVariable(602, 606, "new?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(588, 593, R); return R; }
     PrimChecks.turtleOrLink.setVariable(622, 627, "color", PrimChecks.math.plus(635, 636, PrimChecks.validator.checkArg('+', 635, 636, 1, PrimChecks.turtleOrLink.getVariable(629, 634, "color")), PrimChecks.validator.checkArg('+', 635, 636, 1, world.observer.getGlobal("color-inc"))));
     SelfManager.self().fd(8);
     return SelfManager.self().die();
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(396, 399, R); return R; }
   world.ticker.tick();
 }))
 world.observer.setVariable("color-inc", 7);

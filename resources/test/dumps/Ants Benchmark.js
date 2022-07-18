@@ -82,7 +82,7 @@ ProcedurePrims.defineCommand("setup-turtles", 377, 555, (function() {
     SelfManager.self().right(PrimChecks.math.randomFloat(360));
     PrimChecks.turtleOrLink.setVariable(512, 517, "color", 15);
     PrimChecks.turtle.setVariable(530, 544, "carrying-food?", false);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(427, 430, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-patches", 563, 710, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
@@ -92,7 +92,7 @@ ProcedurePrims.defineCommand("setup-patches", 563, 710, (function() {
     var R = ProcedurePrims.callCommand("setup-nest"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("setup-food"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("update-display"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(579, 582, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-nest", 718, 947, (function() {
   PrimChecks.patch.setVariable(803, 808, "nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
@@ -134,9 +134,9 @@ ProcedurePrims.defineCommand("update-display", 1523, 1930, (function() {
   }
 }))
 ProcedurePrims.defineCommand("go", 2020, 2163, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("go-turtles"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("go-turtles"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2044, 2047, R); return R; }
   world.topology.diffuse("chemical", PrimChecks.math.div(2106, 2107, PrimChecks.validator.checkArg('/', 2106, 2107, 1, world.observer.getGlobal("diffusion-rate")), 100), false)
-  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("go-patches"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("go-patches"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2115, 2118, R); return R; }
   world.ticker.tick();
   var R = ProcedurePrims.callCommand("do-plotting"); if (R === DeathInterrupt) { return R; }
 }))

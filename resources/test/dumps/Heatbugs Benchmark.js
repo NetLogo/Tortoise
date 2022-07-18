@@ -69,15 +69,15 @@ ProcedurePrims.defineCommand("setup", 262, 842, (function() {
       PrimChecks.turtle.setVariable(533, 543, "ideal-temp", PrimChecks.math.plus(561, 562, PrimChecks.validator.checkArg('+', 561, 562, 1, world.observer.getGlobal("min-ideal-temp")), PrimChecks.math.random(563, 569, PrimChecks.math.abs(PrimChecks.math.minus(591, 592, PrimChecks.validator.checkArg('-', 591, 592, 1, world.observer.getGlobal("max-ideal-temp")), PrimChecks.validator.checkArg('-', 591, 592, 1, world.observer.getGlobal("min-ideal-temp")))))));
       PrimChecks.turtle.setVariable(620, 631, "output-heat", PrimChecks.math.plus(648, 649, PrimChecks.validator.checkArg('+', 648, 649, 1, world.observer.getGlobal("min-output-heat")), PrimChecks.math.random(650, 656, PrimChecks.math.abs(PrimChecks.math.minus(678, 679, PrimChecks.validator.checkArg('-', 678, 679, 1, world.observer.getGlobal("max-output-heat")), PrimChecks.validator.checkArg('-', 678, 679, 1, world.observer.getGlobal("min-output-heat")))))));
       PrimChecks.turtle.setVariable(707, 718, "unhappiness", PrimChecks.math.abs(PrimChecks.math.minus(735, 736, PrimChecks.validator.checkArg('-', 735, 736, 1, PrimChecks.turtle.getVariable(724, 734, "ideal-temp")), PrimChecks.validator.checkArg('-', 735, 736, 1, PrimChecks.patch.getVariable(737, 741, "temp")))));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(437, 443, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(404, 407, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 850, 1041, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(world.turtles()))) {
     return PrimChecks.procedure.stop(877, 881);
   }
   world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"), false)
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("step"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("step"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(948, 951, R); return R; }
   var R = ProcedurePrims.callCommand("recolor-patches"); if (R === DeathInterrupt) { return R; }
   world.ticker.tick();
 }))
@@ -85,7 +85,7 @@ ProcedurePrims.defineCommand("recolor-patches", 1049, 1314, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(1152, 1156, "temp", PrimChecks.math.mult(1162, 1163, PrimChecks.validator.checkArg('*', 1162, 1163, 1, PrimChecks.patch.getVariable(1157, 1161, "temp")), PrimChecks.math.minus(1167, 1168, 1, PrimChecks.validator.checkArg('-', 1167, 1168, 1, world.observer.getGlobal("evaporation-rate")))));
     PrimChecks.patch.setVariable(1276, 1282, "pcolor", ColorModel.scaleColor(15, PrimChecks.patch.getVariable(1299, 1303, "temp"), 0, 500));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1067, 1070, R); return R; }
 }))
 ProcedurePrims.defineCommand("step", 1322, 1878, (function() {
   PrimChecks.turtle.setVariable(1495, 1506, "unhappiness", PrimChecks.math.abs(PrimChecks.math.minus(1523, 1524, PrimChecks.validator.checkArg('-', 1523, 1524, 1, PrimChecks.turtle.getVariable(1512, 1522, "ideal-temp")), PrimChecks.validator.checkArg('-', 1523, 1524, 1, PrimChecks.patch.getVariable(1525, 1529, "temp")))));

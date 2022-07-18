@@ -86,26 +86,26 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 116, 493, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
-  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-recyclers"), "RECYCLERS"), function() { PrimChecks.turtleOrLink.setVariable(214, 219, "color", 105); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-wastefuls"), "WASTEFULS"), function() { PrimChecks.turtleOrLink.setVariable(272, 277, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-recyclers"), "RECYCLERS"), function() { PrimChecks.turtleOrLink.setVariable(214, 219, "color", 105); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(173, 189, R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-wastefuls"), "WASTEFULS"), function() { PrimChecks.turtleOrLink.setVariable(272, 277, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(231, 247, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setVariable(310, 314, "size", 1.5);
     PrimChecks.turtle.setXY(341, 346, RandomPrims.randomInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomInRange(world.topology.minPycor, world.topology.maxPycor));
     PrimChecks.turtle.setVariable(381, 387, "energy", PrimChecks.math.div(406, 407, PrimChecks.validator.checkArg('/', 406, 407, 1, world.observer.getGlobal("max-stored-energy")), 2));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(288, 291, R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(438, 451, "resource-type", "new");
     var R = ProcedurePrims.callCommand("update-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(416, 419, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 502, 912, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("RECYCLERS"), function() {
     var R = ProcedurePrims.callCommand("recycler-process-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(507, 510, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("WASTEFULS"), function() {
     var R = ProcedurePrims.callCommand("wasteful-process-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(556, 559, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
     if (Prims.gt(PrimChecks.turtle.getVariable(638, 644, "energy"), world.observer.getGlobal("max-stored-energy"))) {
@@ -114,17 +114,17 @@ ProcedurePrims.defineCommand("go", 502, 912, (function() {
     if (Prims.lt(PrimChecks.turtle.getVariable(712, 718, "energy"), 0)) {
       return SelfManager.self().die();
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(607, 610, R); return R; }
   if (world.observer.getGlobal("show-energy?")) {
     var R = ProcedurePrims.ask(world.turtles(), function() {
       PrimChecks.turtleOrLink.setVariable(790, 795, "label", PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 797, 802, 1, PrimChecks.turtle.getVariable(803, 809, "energy"))));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(772, 775, R); return R; }
   }
   else {
-    var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtleOrLink.setVariable(839, 844, "label", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtleOrLink.setVariable(839, 844, "label", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(821, 824, R); return R; }
   }
   var R = ProcedurePrims.callCommand("update-environment"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("update-patch"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("update-patch"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(876, 879, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("move", 920, 1403, (function() {
@@ -197,12 +197,12 @@ ProcedurePrims.defineCommand("update-environment", 2402, 2850, (function() {
     if (Prims.lt(RandomPrims.randomLong(100), PrimChecks.math.div(2518, 2519, PrimChecks.validator.checkArg('/', 2518, 2519, 1, world.observer.getGlobal("resource-regeneration")), 10))) {
       PrimChecks.patch.setVariable(2536, 2549, "resource-type", "new");
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2423, 2426, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(2705, 2709, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(2712, 2725, "resource-type"), "waste"); }), function() {
     if ((Prims.equality(RandomPrims.randomLong(5), 0) && Prims.lt(RandomPrims.randomLong(100), PrimChecks.math.div(2805, 2806, PrimChecks.validator.checkArg('/', 2805, 2806, 1, world.observer.getGlobal("resource-regeneration")), 10)))) {
       PrimChecks.patch.setVariable(2824, 2837, "resource-type", "new");
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2693, 2696, R); return R; }
 }))
 world.observer.setVariable("num-recyclers", 25);
 world.observer.setVariable("num-wastefuls", 25);

@@ -77,7 +77,7 @@ ProcedurePrims.defineCommand("setup", 429, 629, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("population"), ""), function() {
     PrimChecks.turtle.setVariable(517, 521, "size", 2);
     PrimChecks.turtleOrLink.setVariable(557, 562, "color", 15);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(483, 497, R); return R; }
   var R = ProcedurePrims.callCommand("setup-patches"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
@@ -86,7 +86,7 @@ ProcedurePrims.defineCommand("setup-patches", 637, 715, (function() {
     var R = ProcedurePrims.callCommand("setup-nest"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("setup-food"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(653, 656, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-nest", 723, 962, (function() {
   PrimChecks.patch.setVariable(825, 830, "nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
@@ -140,12 +140,12 @@ ProcedurePrims.defineCommand("go", 1976, 2416, (function() {
     }
     var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
     SelfManager.self()._optimalFdOne();
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2000, 2003, R); return R; }
   world.topology.diffuse("chemical", PrimChecks.math.div(2279, 2280, PrimChecks.validator.checkArg('/', 2279, 2280, 1, world.observer.getGlobal("diffusion-rate")), 100), false)
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(2308, 2316, "chemical", PrimChecks.math.div(2353, 2354, PrimChecks.math.mult(2326, 2327, PrimChecks.validator.checkArg('*', 2326, 2327, 1, PrimChecks.patch.getVariable(2317, 2325, "chemical")), PrimChecks.math.minus(2333, 2334, 100, PrimChecks.validator.checkArg('-', 2333, 2334, 1, world.observer.getGlobal("evaporation-rate")))), 100));
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2288, 2291, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("return-to-nest", 2424, 2676, (function() {

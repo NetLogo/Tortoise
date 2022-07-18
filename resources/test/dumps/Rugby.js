@@ -57,7 +57,7 @@ ProcedurePrims.defineCommand("setup", 1220, 1435, (function() {
   world.observer.setVariable("current-max", 0);
   world.observer.setVariable("best-dist", -1);
   world.observer.setVariable("kicks", 0);
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1321, 1324, 1904, world.observer.getGlobal("try-line")), function() { PrimChecks.patch.setVariable(1340, 1345, "score", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1321, 1324, 1904, world.observer.getGlobal("try-line")), function() { PrimChecks.patch.setVariable(1340, 1345, "score", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1321, 1324, R); return R; }
   var R = ProcedurePrims.callCommand("find-analytic-solution"); if (R === DeathInterrupt) { return R; }
   if (world.observer.getGlobal("show-level-curves?")) {
     var R = ProcedurePrims.callCommand("draw-level-curves"); if (R === DeathInterrupt) { return R; }
@@ -72,11 +72,11 @@ ProcedurePrims.defineCommand("setup-field", 1443, 1886, (function() {
     if (((Prims.equality(PrimChecks.patch.getVariable(1583, 1588, "pycor"), world.topology.minPycor) && Prims.gte(PrimChecks.patch.getVariable(1614, 1619, "pxcor"), world.observer.getGlobal("goal-pos"))) && Prims.lt(PrimChecks.patch.getVariable(1645, 1650, "pxcor"), PrimChecks.math.plus(1663, 1664, PrimChecks.validator.checkArg('+', 1663, 1664, 1, world.observer.getGlobal("goal-pos")), PrimChecks.validator.checkArg('+', 1663, 1664, 1, world.observer.getGlobal("goal-size")))))) {
       PrimChecks.patch.setVariable(1687, 1693, "pcolor", 55);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1510, 1513, R); return R; }
   world.observer.setVariable("try-line", PrimChecks.agentset.with(1728, 1732, world.patches(), function() {
     return (Prims.equality(PrimChecks.patch.getVariable(1735, 1740, "pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(PrimChecks.patch.getVariable(1757, 1763, "pcolor"), 0));
   }));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1776, 1779, 1904, world.observer.getGlobal("try-line")), function() { PrimChecks.patch.setVariable(1795, 1801, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1776, 1779, 1904, world.observer.getGlobal("try-line")), function() { PrimChecks.patch.setVariable(1795, 1801, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1776, 1779, R); return R; }
   world.observer.setVariable("histogram-area", PrimChecks.agentset.with(1840, 1844, world.patches(), function() {
     return (Prims.lt(PrimChecks.patch.getVariable(1847, 1852, "pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(PrimChecks.patch.getVariable(1869, 1875, "pcolor"), 0));
   }));
@@ -88,13 +88,13 @@ ProcedurePrims.defineCommand("setup-balls", 1970, 2176, (function() {
       PrimChecks.turtleOrLink.setVariable(2063, 2068, "color", 25);
       PrimChecks.turtle.setVariable(2090, 2101, "start-patch", SelfManager.self().getPatchHere());
       PrimChecks.turtle.setVariable(2127, 2134, "heading", PrimChecks.math.plus(2153, 2154, PrimChecks.math.randomFloat(90), 90));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2040, 2046, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2021, 2024, R); return R; }
   var R = ProcedurePrims.callCommand("plot-scores"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("go", 2184, 2345, (function() {
   while (PrimChecks.agentset.any(world.turtles())) {
-    var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2216, 2219, R); return R; }
     Prims.display();
   }
   world.observer.setVariable("kicks", PrimChecks.math.plus(2271, 2272, PrimChecks.validator.checkArg('+', 2271, 2272, 1, world.observer.getGlobal("kicks")), PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 2273, 2278, 112, world.observer.getGlobal("try-line")))));
@@ -116,7 +116,7 @@ ProcedurePrims.defineCommand("check-patch", 3132, 3497, (function(theHpatch) {
   if (Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 3281, 3283, 1904, theHpatch), function() { return PrimChecks.patch.getVariable(3273, 3279, "pcolor"); }), 55)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3437, 3440, 1904, PrimChecks.turtle.getVariable(3441, 3452, "start-patch")), function() {
       PrimChecks.patch.setVariable(3467, 3472, "score", PrimChecks.math.plus(3479, 3480, PrimChecks.validator.checkArg('+', 3479, 3480, 1, PrimChecks.patch.getVariable(3473, 3478, "score")), 1));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3437, 3440, R); return R; }
     return SelfManager.self().die();
   }
 }))
@@ -138,7 +138,7 @@ ProcedurePrims.defineReporter("next-patch", 3625, 4005, (function() {
 ProcedurePrims.defineCommand("plot-scores", 4045, 4912, (function() {
   world.observer.setVariable("current-max", PrimChecks.list.max(4125, 4128, PrimChecks.validator.checkArg('MAX', 4125, 4128, 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4137, 4139, 1904, world.observer.getGlobal("try-line")), function() { return PrimChecks.patch.getVariable(4130, 4135, "score"); }))));
   if (Prims.equality(world.observer.getGlobal("current-max"), 0)) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4179, 4182, 1904, world.observer.getGlobal("histogram-area")), function() { PrimChecks.patch.setVariable(4204, 4210, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4179, 4182, 1904, world.observer.getGlobal("histogram-area")), function() { PrimChecks.patch.setVariable(4204, 4210, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4179, 4182, R); return R; }
     return PrimChecks.procedure.stop(4223, 4227);
   }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4287, 4290, 1904, world.observer.getGlobal("try-line")), function() {
@@ -146,14 +146,14 @@ ProcedurePrims.defineCommand("plot-scores", 4045, 4912, (function() {
       world.observer.setVariable("best-dist", PrimChecks.patch.getVariable(4355, 4360, "pycor"));
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4369, 4372, 1904, SelfManager.self().patchAt(2, 0)), function() {
         PrimChecks.patch.setVariable(4392, 4398, "plabel", PrimChecks.patch.getVariable(4399, 4404, "pycor"));
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4369, 4372, R); return R; }
     }
     else {
       if (!Prims.equality(PrimChecks.patch.getVariable(4420, 4426, "pcolor"), 125)) {
-        var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4448, 4451, 1904, SelfManager.self().patchAt(2, 0)), function() { PrimChecks.patch.setVariable(4471, 4477, "plabel", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+        var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4448, 4451, 1904, SelfManager.self().patchAt(2, 0)), function() { PrimChecks.patch.setVariable(4471, 4477, "plabel", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4448, 4451, R); return R; }
       }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4287, 4290, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4493, 4496, 1904, world.observer.getGlobal("histogram-area")), function() {
     if (Prims.gt(PrimChecks.patch.getVariable(4553, 4558, "pxcor"), PrimChecks.math.minus(4572, 4573, PrimChecks.validator.checkArg('-', 4572, 4573, 1, world.observer.getGlobal("kick-line")), PrimChecks.math.div(4645, 4646, PrimChecks.math.mult(4619, 4620, PrimChecks.validator.checkArg('*', 4619, 4620, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4584, 4586, 1904, SelfManager.self().patchAt(PrimChecks.math.minus(4607, 4608, PrimChecks.validator.checkArg('-', 4607, 4608, 1, world.observer.getGlobal("kick-line")), PrimChecks.validator.checkArg('-', 4607, 4608, 1, PrimChecks.patch.getVariable(4609, 4614, "pxcor"))), 0)), function() { return PrimChecks.patch.getVariable(4577, 4582, "score"); })), PrimChecks.math.minus(4632, 4633, PrimChecks.validator.checkArg('-', 4632, 4633, 1, world.observer.getGlobal("kick-line")), world.topology.minPxcor)), PrimChecks.validator.checkArg('/', 4645, 4646, 1, world.observer.getGlobal("current-max")))))) {
       if (Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4745, 4747, 1904, SelfManager.self().patchAt(PrimChecks.math.minus(4768, 4769, PrimChecks.validator.checkArg('-', 4768, 4769, 1, world.observer.getGlobal("kick-line")), PrimChecks.validator.checkArg('-', 4768, 4769, 1, PrimChecks.patch.getVariable(4770, 4775, "pxcor"))), 0)), function() { return PrimChecks.patch.getVariable(4738, 4743, "score"); }), world.observer.getGlobal("current-max"))) {
@@ -166,17 +166,17 @@ ProcedurePrims.defineCommand("plot-scores", 4045, 4912, (function() {
     else {
       PrimChecks.patch.setVariable(4894, 4900, "pcolor", 0);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4493, 4496, R); return R; }
 }))
 ProcedurePrims.defineCommand("find-analytic-solution", 4920, 5248, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(4957, 4961, world.patches(), function() { return Prims.gt(PrimChecks.patch.getVariable(4963, 4968, "pycor"), world.topology.minPycor); }), function() { var R = ProcedurePrims.callCommand("calc-goal-angle"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(4957, 4961, world.patches(), function() { return Prims.gt(PrimChecks.patch.getVariable(4963, 4968, "pycor"), world.topology.minPycor); }), function() { var R = ProcedurePrims.callCommand("calc-goal-angle"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4945, 4948, R); return R; }
   let winningHpatch = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 5086, 5096, 112, world.observer.getGlobal("try-line")), function() { return PrimChecks.patch.getVariable(5107, 5117, "goal-angle"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("WINNING-PATCH", winningHpatch);
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5121, 5124, 1904, winningHpatch), function() {
     PrimChecks.patch.setVariable(5147, 5153, "pcolor", 125);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5166, 5169, 1904, SelfManager.self().patchAt(2, 0)), function() {
       PrimChecks.patch.setVariable(5189, 5195, "plabel", PrimChecks.patch.getVariable(5196, 5201, "pycor"));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5166, 5169, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5121, 5124, R); return R; }
   world.observer.setVariable("analytic", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 5231, 5233, 1904, winningHpatch), function() { return PrimChecks.patch.getVariable(5223, 5228, "pycor"); }));
 }))
 ProcedurePrims.defineCommand("draw-level-curves", 5256, 5415, (function() {
@@ -186,7 +186,7 @@ ProcedurePrims.defineCommand("draw-level-curves", 5256, 5415, (function() {
     if (Prims.gt(PrimChecks.patch.getVariable(5343, 5353, "goal-angle"), 270)) {
       PrimChecks.patch.setVariable(5372, 5378, "pcolor", PrimChecks.math.mult(5405, 5406, PrimChecks.math.minus(5384, 5385, 360, PrimChecks.math.mod(5397, 5400, PrimChecks.validator.checkArg('MOD', 5397, 5400, 1, PrimChecks.patch.getVariable(5386, 5396, "goal-angle")), 10)), 0.8));
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5276, 5279, R); return R; }
 }))
 ProcedurePrims.defineCommand("calc-goal-angle", 5465, 5727, (function() {
   PrimChecks.patch.setVariable(5487, 5497, "left-angle", PrimChecks.turtle.towardsXY(5499, 5508, PrimChecks.math.minus(5519, 5520, PrimChecks.validator.checkArg('-', 5519, 5520, 1, world.observer.getGlobal("goal-pos")), 0.5), PrimChecks.math.plus(5565, 5566, world.topology.minPycor, 0.5)));

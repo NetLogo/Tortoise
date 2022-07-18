@@ -65,14 +65,14 @@ ProcedurePrims.defineCommand("setup", 149, 292, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(196, 201, "state", PrimChecks.math.random(202, 208, PrimChecks.math.plus(212, 213, PrimChecks.validator.checkArg('+', 212, 213, 1, world.observer.getGlobal("n")), 1)));
     PrimChecks.patch.setVariable(257, 263, "pcolor", ColorModel.scaleColor(15, PrimChecks.patch.getVariable(280, 285, "state"), 0, world.observer.getGlobal("n")));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(174, 177, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 300, 571, (function() {
-  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("find-new-state"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("find-new-state"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(356, 359, R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(505, 510, "state", PrimChecks.patch.getVariable(511, 520, "new-state"));
     PrimChecks.patch.setVariable(529, 535, "pcolor", ColorModel.scaleColor(15, PrimChecks.patch.getVariable(552, 557, "state"), 0, world.observer.getGlobal("n")));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(485, 488, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("find-new-state", 579, 1094, (function() {

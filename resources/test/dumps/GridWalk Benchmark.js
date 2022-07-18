@@ -65,12 +65,12 @@ ProcedurePrims.defineCommand("setup", 125, 219, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(1000, ""), function() {
     SelfManager.self().moveTo(PrimChecks.list.oneOf(173, 179, world.patches()));
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 192, 196, 768, PrimChecks.list.oneOf(197, 203, SelfManager.self().getNeighbors4())));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(150, 153, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 227, 293, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 250, 254, 768, PrimChecks.list.oneOf(255, 261, SelfManager.self().getNeighbors4())));
     SelfManager.self()._optimalFdOne();
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(232, 235, R); return R; }
   world.ticker.tick();
 }))

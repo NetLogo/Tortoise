@@ -81,29 +81,29 @@ ProcedurePrims.defineCommand("setup", 209, 646, (function() {
     PrimChecks.turtle.setVariable(403, 407, "size", 3);
     PrimChecks.turtle.setVariable(456, 469, "my-group-site", PrimChecks.list.oneOf(470, 476, PrimChecks.validator.checkArg('ONE-OF', 470, 476, 120, world.observer.getGlobal("group-sites"))));
     SelfManager.self().moveTo(PrimChecks.turtle.getVariable(501, 514, "my-group-site"));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("update-happiness"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(311, 325, R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("update-happiness"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(521, 524, R); return R; }
   var R = ProcedurePrims.callCommand("count-boring-groups"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("update-labels"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.callCommand("spread-out-vertically"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(594, 597, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 654, 1039, (function() {
   if (PrimChecks.agentset.all(662, 666, world.turtles(), function() { return PrimChecks.turtle.getVariable(676, 682, "happy?"); })) {
     return PrimChecks.procedure.stop(690, 694);
   }
-  var R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self().moveTo(PrimChecks.turtle.getVariable(766, 779, "my-group-site")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("update-happiness"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("leave-if-unhappy"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self().moveTo(PrimChecks.turtle.getVariable(766, 779, "my-group-site")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(744, 747, R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("update-happiness"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(829, 832, R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("leave-if-unhappy"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(864, 867, R); return R; }
   var R = ProcedurePrims.callCommand("find-new-groups"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("update-labels"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("count-boring-groups"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setVariable(977, 990, "my-group-site", SelfManager.self().getPatchHere());
     var R = ProcedurePrims.callCommand("spread-out-vertically"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(955, 958, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("update-happiness", 1047, 1365, (function() {
@@ -128,7 +128,7 @@ ProcedurePrims.defineCommand("find-new-groups", 1557, 1777, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 1706, 1710, 112, malcontents)))) {
     return PrimChecks.procedure.stop(1725, 1729);
   }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1734, 1737, 1904, malcontents), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1734, 1737, 1904, malcontents), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1734, 1737, R); return R; }
   var R = ProcedurePrims.callCommand("find-new-groups"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineReporter("group-site?", 1792, 2517, (function() {
@@ -162,7 +162,7 @@ ProcedurePrims.defineCommand("count-boring-groups", 2975, 3169, (function() {
     else {
       PrimChecks.patch.setVariable(3079, 3091, "plabel-color", 9.9);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2997, 3000, R); return R; }
   world.observer.setVariable("boring-groups", PrimChecks.agentset.countWith(null, null, world.observer.getGlobal("group-sites"), function() { return Prims.equality(PrimChecks.patch.getVariable(3148, 3160, "plabel-color"), 5); }));
 }))
 ProcedurePrims.defineReporter("boring?", 3184, 3518, (function() {
@@ -171,7 +171,7 @@ ProcedurePrims.defineReporter("boring?", 3184, 3518, (function() {
 ProcedurePrims.defineCommand("update-labels", 3526, 3592, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3542, 3545, 1904, world.observer.getGlobal("group-sites")), function() {
     PrimChecks.patch.setVariable(3564, 3570, "plabel", PrimChecks.agentset.count(SelfManager.self().turtlesHere()));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3542, 3545, R); return R; }
 }))
 ProcedurePrims.defineCommand("choose-sex", 3775, 3838, (function() {
   PrimChecks.turtleOrLink.setVariable(3813, 3818, "color", PrimChecks.list.oneOf(3819, 3825, [135, 105]));

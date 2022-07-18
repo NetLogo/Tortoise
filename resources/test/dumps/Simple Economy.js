@@ -82,23 +82,23 @@ ProcedurePrims.defineCommand("setup", 27, 270, (function() {
     PrimChecks.turtleOrLink.setVariable(118, 123, "color", 55);
     PrimChecks.turtle.setVariable(138, 142, "size", 2);
     PrimChecks.turtle.setXY(227, 232, PrimChecks.validator.checkArg('SETXY', 227, 232, 1, PrimChecks.turtle.getVariable(233, 239, "wealth")), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(47, 61, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 278, 531, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(339, 343, world.turtles(), function() { return Prims.gt(PrimChecks.turtle.getVariable(346, 352, "wealth"), 0); }), function() { var R = ProcedurePrims.callCommand("transact"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(339, 343, world.turtles(), function() { return Prims.gt(PrimChecks.turtle.getVariable(346, 352, "wealth"), 0); }), function() { var R = ProcedurePrims.callCommand("transact"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(327, 330, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (Prims.lte(PrimChecks.turtle.getVariable(482, 488, "wealth"), world.topology.maxPxcor)) {
       PrimChecks.turtle.setVariable(508, 512, "xcor", PrimChecks.turtle.getVariable(513, 519, "wealth"));
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(465, 468, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("transact", 539, 662, (function() {
   PrimChecks.turtle.setVariable(591, 597, "wealth", PrimChecks.math.minus(605, 606, PrimChecks.validator.checkArg('-', 605, 606, 1, PrimChecks.turtle.getVariable(598, 604, "wealth")), 1));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 611, 614, 1904, PrimChecks.list.oneOf(615, 621, SelfPrims.other(world.turtles()))), function() {
     PrimChecks.turtle.setVariable(642, 648, "wealth", PrimChecks.math.plus(656, 657, PrimChecks.validator.checkArg('+', 656, 657, 1, PrimChecks.turtle.getVariable(649, 655, "wealth")), 1));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(611, 614, R); return R; }
 }))
 ProcedurePrims.defineReporter("top-10-pct-wealth", 730, 826, (function() {
   return PrimChecks.procedure.report(750, 756, PrimChecks.list.sum(757, 760, PrimChecks.validator.checkArg('SUM', 757, 760, 8, PrimChecks.agentset.of(PrimChecks.agentset.maxNOf(775, 783, world.turtles(), PrimChecks.math.mult(799, 800, PrimChecks.agentset.count(world.turtles()), 0.1), function() { return PrimChecks.turtle.getVariable(817, 823, "wealth"); }), function() { return PrimChecks.turtle.getVariable(763, 769, "wealth"); }))));

@@ -86,10 +86,10 @@ ProcedurePrims.defineCommand("setup", 379, 1576, (function() {
       else {
         PrimChecks.patch.setVariable(846, 855, "countdown", PrimChecks.math.random(856, 862, PrimChecks.validator.checkArg('RANDOM', 856, 862, 1, world.observer.getGlobal("grass-regrowth-time"))));
       }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(706, 709, R); return R; }
   }
   else {
-    var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(983, 989, "pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(983, 989, "pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(965, 968, R); return R; }
   }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-sheep"), "SHEEP"), function() {
     PrimChecks.turtleOrLink.setVariable(1104, 1109, "shape", "sheep");
@@ -98,14 +98,14 @@ ProcedurePrims.defineCommand("setup", 379, 1576, (function() {
     PrimChecks.turtleOrLink.setVariable(1181, 1192, "label-color", PrimChecks.math.minus(1198, 1199, 105, 2));
     PrimChecks.turtle.setVariable(1210, 1216, "energy", PrimChecks.math.random(1217, 1223, PrimChecks.math.mult(1227, 1228, 2, PrimChecks.validator.checkArg('*', 1227, 1228, 1, world.observer.getGlobal("sheep-gain-from-food")))));
     PrimChecks.turtle.setXY(1255, 1260, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1005, 1017, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-wolves"), "WOLVES"), function() {
     PrimChecks.turtleOrLink.setVariable(1394, 1399, "shape", "wolf");
     PrimChecks.turtleOrLink.setVariable(1415, 1420, "color", 0);
     PrimChecks.turtle.setVariable(1435, 1439, "size", 2);
     PrimChecks.turtle.setVariable(1467, 1473, "energy", PrimChecks.math.random(1474, 1480, PrimChecks.math.mult(1484, 1485, 2, PrimChecks.validator.checkArg('*', 1484, 1485, 1, world.observer.getGlobal("wolf-gain-from-food")))));
     PrimChecks.turtle.setXY(1511, 1516, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1292, 1305, R); return R; }
   var R = ProcedurePrims.callCommand("display-labels"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
@@ -125,16 +125,16 @@ ProcedurePrims.defineCommand("go", 1584, 2758, (function() {
       var R = ProcedurePrims.callCommand("death"); if (R === DeathInterrupt) { return R; }
     }
     var R = ProcedurePrims.callCommand("reproduce-sheep"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1865, 1868, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("WOLVES"), function() {
     var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
     PrimChecks.turtle.setVariable(2425, 2431, "energy", PrimChecks.math.minus(2439, 2440, PrimChecks.validator.checkArg('-', 2439, 2440, 1, PrimChecks.turtle.getVariable(2432, 2438, "energy")), 1));
     var R = ProcedurePrims.callCommand("eat-sheep"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("death"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("reproduce-wolves"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2395, 2398, R); return R; }
   if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
-    var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("grow-grass"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("grow-grass"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2704, 2707, R); return R; }
   }
   world.ticker.tick();
   var R = ProcedurePrims.callCommand("display-labels"); if (R === DeathInterrupt) { return R; }
@@ -156,7 +156,7 @@ ProcedurePrims.defineCommand("reproduce-sheep", 3041, 3346, (function() {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       SelfManager.self().right(PrimChecks.math.randomFloat(360));
       SelfManager.self()._optimalFdOne();
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3255, 3260, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("reproduce-wolves", 3354, 3656, (function() {
@@ -165,13 +165,13 @@ ProcedurePrims.defineCommand("reproduce-wolves", 3354, 3656, (function() {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       SelfManager.self().right(PrimChecks.math.randomFloat(360));
       SelfManager.self()._optimalFdOne();
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3566, 3571, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("eat-sheep", 3664, 3978, (function() {
   let prey = PrimChecks.list.oneOf(3703, 3709, SelfManager.self().breedHere("SHEEP")); ProcedurePrims.stack().currentContext().registerStringRunVar("PREY", prey);
   if (!Prims.equality(prey, Nobody)) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3839, 3842, 1904, prey), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3839, 3842, 1904, prey), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3839, 3842, R); return R; }
     PrimChecks.turtle.setVariable(3909, 3915, "energy", PrimChecks.math.plus(3923, 3924, PrimChecks.validator.checkArg('+', 3923, 3924, 1, PrimChecks.turtle.getVariable(3916, 3922, "energy")), PrimChecks.validator.checkArg('+', 3923, 3924, 1, world.observer.getGlobal("wolf-gain-from-food"))));
   }
 }))
@@ -200,15 +200,15 @@ ProcedurePrims.defineReporter("grass", 4386, 4500, (function() {
   }
 }))
 ProcedurePrims.defineCommand("display-labels", 4509, 4706, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtleOrLink.setVariable(4544, 4549, "label", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtleOrLink.setVariable(4544, 4549, "label", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4526, 4529, R); return R; }
   if (world.observer.getGlobal("show-energy?")) {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("WOLVES"), function() {
       PrimChecks.turtleOrLink.setVariable(4596, 4601, "label", PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 4602, 4607, 1, PrimChecks.turtle.getVariable(4608, 4614, "energy"))));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4579, 4582, R); return R; }
     if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
       var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SHEEP"), function() {
         PrimChecks.turtleOrLink.setVariable(4679, 4684, "label", PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 4685, 4690, 1, PrimChecks.turtle.getVariable(4691, 4697, "energy"))));
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4663, 4666, R); return R; }
     }
   }
 }))

@@ -52,23 +52,23 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup-square", 3, 494, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().sprout(1, "TURTLES"); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().sprout(1, "TURTLES"); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(168, 171, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors4()), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors4()), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(438, 455, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(424, 427, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-hex", 502, 1072, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().sprout(1, "TURTLES"); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().sprout(1, "TURTLES"); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(664, 667, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(736, 753, R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(773, 790, R); return R; }
     if (Prims.equality(PrimChecks.math.mod(819, 822, PrimChecks.validator.checkArg('MOD', 819, 822, 1, PrimChecks.patch.getVariable(813, 818, "pxcor")), 2), 0)) {
-      var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-      var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(837, 854, R); return R; }
+      var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(878, 895, R); return R; }
       PrimChecks.turtle.setVariable(1032, 1036, "ycor", PrimChecks.math.minus(1042, 1043, PrimChecks.validator.checkArg('-', 1042, 1043, 1, PrimChecks.turtle.getVariable(1037, 1041, "ycor")), 0.5));
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(718, 721, R); return R; }
   world.ticker.reset();
 }))

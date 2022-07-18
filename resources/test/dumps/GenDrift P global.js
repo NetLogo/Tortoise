@@ -113,13 +113,13 @@ ProcedurePrims.defineCommand("setup", 3, 202, (function() {
     if (Prims.equality(PrimChecks.patch.getVariable(88, 94, "pcolor"), 75)) {
       PrimChecks.patch.setVariable(173, 179, "pcolor", 125);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(23, 26, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 210, 276, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
     PrimChecks.patch.setVariable(233, 239, "pcolor", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 249, 251, 1904, PrimChecks.list.oneOf(252, 258, world.patches())), function() { return PrimChecks.patch.getVariable(241, 247, "pcolor"); }));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(215, 218, R); return R; }
   world.ticker.tick();
 }))
 world.observer.setVariable("colors", 5);
