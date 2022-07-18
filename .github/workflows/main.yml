@@ -46,11 +46,6 @@ jobs:
           readlink -f `which javac`
           javac -version
 
-      - name: Lint
-        run: |
-          ./sbt.sh netLogoWeb/scalastyle compilerCore/scalastyle compilerJVM/scalastyle compilerJS/scalastyle macrosCore/scalastyle
-          cd engine; yarn install; grunt coffeelint
-
       - name: Compile All
         run: |
           ./sbt.sh "compilerJVM / Test / compile"
@@ -63,6 +58,32 @@ jobs:
         with:
           path: ./*
           key: ${{ github.sha }}
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/cache@v2
+        id: restore-build
+        with:
+          path: ./*
+          key: ${{ github.sha }}
+
+      - uses: olafurpg/setup-scala@v13
+        with:
+          java-version: graalvm@20.0.0
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Scalastyle
+        run: |
+          ./sbt.sh netLogoWeb/scalastyle compilerCore/scalastyle compilerJVM/scalastyle compilerJS/scalastyle macrosCore/scalastyle
+
+      - name: Coffeelint
+        run: |
+          cd engine; yarn install; grunt coffeelint
 
   test-compiler:
     runs-on: ubuntu-latest
