@@ -103,8 +103,8 @@ class MathChecks
   random: (sourceStart, sourceEnd, n) ->
     @randomPrims.random(@validator.checkLong('random', sourceStart, sourceEnd, n))
 
-  # (Number) => Number
-  randomExponential: (mean) ->
+  # (Int, Int, Number) => Number
+  randomExponential: (sourceStart, sourceEnd, mean) ->
     @validator.checkNumber('random-exponential', sourceStart, sourceEnd, @randomPrims.randomExponential(mean))
 
   # (Number) => Number
