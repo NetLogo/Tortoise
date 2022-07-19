@@ -86,7 +86,7 @@ class Validator
 
   # (String, Int, Int, Any, Array[NLType]) => Unit
   throwTypeError: (prim, sourceStart, SourceEnd, value, expectedTypes...) ->
-    throw exceptions.runtime(@typeError(prim, value, expectedTypes), prim, sourceStart, SourceEnd)
+    throw exceptions.runtime(@typeError(prim, value, expectedTypes), prim, maybe(sourceStart), maybe(SourceEnd))
     return
 
   # (Array[Array[NLType]]) => (String, Array[Any]) => Unit
