@@ -116,46 +116,46 @@ ProcedurePrims.defineCommand("setup", 1622, 2623, (function() {
   world.observer.setGlobal("speed-factor", 0.05);
   world.observer.setGlobal("max-speed", 10);
   world.observer.setGlobal("max-vision", 10);
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(1907, 1913, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1889, 1892, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-bugs"), "BUGS"), function() {
-    PrimChecks.turtle.setVariable("speed", world.observer.getGlobal("initial-bug-speed"));
+    PrimChecks.turtle.setVariable(1976, 1981, "speed", world.observer.getGlobal("initial-bug-speed"));
     var R = ProcedurePrims.callCommand("attach-vision-cone"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1946, 1957, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BUGS"), function() {
-    PrimChecks.turtle.setVariable("vision", world.observer.getGlobal("initial-bug-vision"));
-    PrimChecks.turtleOrLink.setVariable("shape", "bug");
-    PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtle.setVariable(2042, 2048, "vision", world.observer.getGlobal("initial-bug-vision"));
+    PrimChecks.turtleOrLink.setVariable(2076, 2081, "shape", "bug");
+    PrimChecks.turtle.setXY(2092, 2097, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2023, 2026, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "PLAYERS"), function() {
-    PrimChecks.turtleOrLink.setVariable("shape", "bird");
-    PrimChecks.turtleOrLink.setVariable("color", 35);
-    PrimChecks.turtleOrLink.setVariable("hidden?", true);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtleOrLink.setVariable(2260, 2265, "shape", "bird");
+    PrimChecks.turtleOrLink.setVariable(2281, 2286, "color", 35);
+    PrimChecks.turtleOrLink.setVariable(2301, 2308, "hidden?", true);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2233, 2247, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-birds"), "BIRDS"), function() {
-    PrimChecks.turtle.setVariable("vision", world.observer.getGlobal("initial-bird-vision"));
-    PrimChecks.turtleOrLink.setVariable("shape", "bird-stationary");
-    PrimChecks.turtleOrLink.setVariable("color", 35);
-    PrimChecks.turtleOrLink.setVariable("hidden?", false);
-    PrimChecks.turtle.setXY(RandomPrims.randomLong(100), RandomPrims.randomLong(100));
-    PrimChecks.turtle.setVariable("speed", world.observer.getGlobal("initial-bird-speed"));
+    PrimChecks.turtle.setVariable(2357, 2363, "vision", world.observer.getGlobal("initial-bird-vision"));
+    PrimChecks.turtleOrLink.setVariable(2392, 2397, "shape", "bird-stationary");
+    PrimChecks.turtleOrLink.setVariable(2424, 2429, "color", 35);
+    PrimChecks.turtleOrLink.setVariable(2444, 2451, "hidden?", false);
+    PrimChecks.turtle.setXY(2462, 2467, RandomPrims.randomLong(100), RandomPrims.randomLong(100));
+    PrimChecks.turtle.setVariable(2498, 2503, "speed", world.observer.getGlobal("initial-bird-speed"));
     var R = ProcedurePrims.callCommand("attach-vision-cone"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2321, 2333, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("VISION-CONES"), function() {
     var R = ProcedurePrims.callCommand("set-visualize-vision-cone"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2553, 2556, R); return R; }
   world.ticker.reset();
   var R = ProcedurePrims.callCommand("do-plots"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("attach-vision-cone", 2632, 2863, (function() {
-  let parentHvision = PrimChecks.turtle.getVariable("vision"); ProcedurePrims.stack().currentContext().registerStringRunVar("PARENT-VISION", parentHvision);
+  let parentHvision = PrimChecks.turtle.getVariable(2671, 2677, "vision"); ProcedurePrims.stack().currentContext().registerStringRunVar("PARENT-VISION", parentHvision);
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-    PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("VISION-CONES"));
-    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS"), function() { SelfManager.self().tie(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    PrimChecks.turtleOrLink.setVariable("shape", "vision cone");
-    PrimChecks.turtleOrLink.setVariable("color", 5);
-    PrimChecks.turtle.setVariable("size", parentHvision);
+    PrimChecks.turtleOrLink.setVariable(2699, 2704, "breed", world.turtleManager.turtlesOfBreed("VISION-CONES"));
+    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS"), function() { SelfManager.self().tie(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2722, 2738, R); return R; }
+    PrimChecks.turtleOrLink.setVariable(2760, 2765, "shape", "vision cone");
+    PrimChecks.turtleOrLink.setVariable(2788, 2793, "color", 5);
+    PrimChecks.turtle.setVariable(2808, 2812, "size", parentHvision);
     var R = ProcedurePrims.callCommand("set-visualize-vision-cone"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2680, 2685, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 2940, 3117, (function() {
   var R = ProcedurePrims.callCommand("check-visualize-vision-cone-change"); if (R === DeathInterrupt) { return R; }
@@ -171,15 +171,15 @@ ProcedurePrims.defineCommand("go", 2940, 3117, (function() {
 }))
 ProcedurePrims.defineCommand("update-variables", 3126, 3417, (function() {
   if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("BUGS"))) {
-    world.observer.setGlobal("avg-bug-speed", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return PrimChecks.turtle.getVariable("speed"); }))));
-    world.observer.setGlobal("avg-bug-vision", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return PrimChecks.turtle.getVariable("vision"); }))));
+    world.observer.setGlobal("avg-bug-speed", PrimChecks.list.mean(3185, 3189, PrimChecks.validator.checkArg('MEAN', 3185, 3189, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return PrimChecks.turtle.getVariable(3191, 3196, "speed"); }))));
+    world.observer.setGlobal("avg-bug-vision", PrimChecks.list.mean(3227, 3231, PrimChecks.validator.checkArg('MEAN', 3227, 3231, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return PrimChecks.turtle.getVariable(3233, 3239, "vision"); }))));
   }
   else {
     world.observer.setGlobal("avg-bug-speed", 0);
   }
   if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("BIRDS"))) {
-    world.observer.setGlobal("avg-bird-speed", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable("speed"); }))));
-    world.observer.setGlobal("avg-bird-vision", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable("vision"); }))));
+    world.observer.setGlobal("avg-bird-speed", PrimChecks.list.mean(3321, 3325, PrimChecks.validator.checkArg('MEAN', 3321, 3325, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable(3327, 3332, "speed"); }))));
+    world.observer.setGlobal("avg-bird-vision", PrimChecks.list.mean(3366, 3370, PrimChecks.validator.checkArg('MEAN', 3366, 3370, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable(3372, 3378, "vision"); }))));
   }
   else {
     world.observer.setGlobal("avg-bird-speed", 0);
@@ -187,15 +187,15 @@ ProcedurePrims.defineCommand("update-variables", 3126, 3417, (function() {
 }))
 ProcedurePrims.defineCommand("reproduce-birds", 3425, 3715, (function() {
   let worstHbird = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("WORST-BIRD", worstHbird);
-  if (((Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("total-caught")), PrimChecks.validator.checkArg('MOD', 1, world.observer.getGlobal("reproduce-birds-after-eating"))), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("BIRDS")))) {
-    worstHbird = PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable("eaten"); }); ProcedurePrims.stack().currentContext().updateStringRunVar("WORST-BIRD", worstHbird);
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, worstHbird), function() {
+  if (((Prims.equality(PrimChecks.math.mod(3484, 3487, PrimChecks.validator.checkArg('MOD', 3484, 3487, 1, world.observer.getGlobal("total-caught")), PrimChecks.validator.checkArg('MOD', 3484, 3487, 1, world.observer.getGlobal("reproduce-birds-after-eating"))), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("BIRDS")))) {
+    worstHbird = PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable(3598, 3603, "eaten"); }); ProcedurePrims.stack().currentContext().updateStringRunVar("WORST-BIRD", worstHbird);
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3609, 3612, 1904, worstHbird), function() {
       var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
-        PrimChecks.turtleOrLink.setVariable("color", 15);
+        PrimChecks.turtleOrLink.setVariable(3661, 3666, "color", 15);
         return SelfManager.self().die();
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3633, 3636, R); return R; }
       return SelfManager.self().die();
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3609, 3612, R); return R; }
     var R = ProcedurePrims.callCommand("reproduce-one-bird"); if (R === DeathInterrupt) { return R; }
   }
 }))
@@ -203,27 +203,27 @@ ProcedurePrims.defineCommand("move-bugs", 3723, 4807, (function() {
   let targetHheading = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET-HEADING", targetHheading);
   let candidateHpredators = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("CANDIDATE-PREDATORS", candidateHpredators);
   let predator = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("PREDATOR", predator);
-  let allHpredators = PrimChecks.agentset.turtleSet(world.turtleManager.turtlesOfBreed("BIRDS"), world.turtleManager.turtlesOfBreed("PLAYERS")); ProcedurePrims.stack().currentContext().registerStringRunVar("ALL-PREDATORS", allHpredators);
+  let allHpredators = PrimChecks.agentset.turtleSet(3832, 3842, world.turtleManager.turtlesOfBreed("BIRDS"), world.turtleManager.turtlesOfBreed("PLAYERS")); ProcedurePrims.stack().currentContext().registerStringRunVar("ALL-PREDATORS", allHpredators);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BUGS"), function() {
-    SelfManager.self().fd(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("speed-factor"))));
-    if (PrimChecks.agentset.any(SelfManager.self().inCone(allHpredators, PrimChecks.turtle.getVariable("vision"), 120))) {
-      candidateHpredators = SelfManager.self().inCone(allHpredators, PrimChecks.turtle.getVariable("vision"), 120); ProcedurePrims.stack().currentContext().updateStringRunVar("CANDIDATE-PREDATORS", candidateHpredators);
-      if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "any") && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, candidateHpredators)))) {
-        predator = PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, candidateHpredators)); ProcedurePrims.stack().currentContext().updateStringRunVar("PREDATOR", predator);
+    SelfManager.self().fd(PrimChecks.math.mult(4243, 4244, PrimChecks.validator.checkArg('*', 4243, 4244, 1, PrimChecks.turtle.getVariable(4237, 4242, "speed")), PrimChecks.validator.checkArg('*', 4243, 4244, 1, world.observer.getGlobal("speed-factor"))));
+    if (PrimChecks.agentset.any(SelfManager.self().inCone(allHpredators, PrimChecks.turtle.getVariable(4298, 4304, "vision"), 120))) {
+      candidateHpredators = SelfManager.self().inCone(allHpredators, PrimChecks.turtle.getVariable(4364, 4370, "vision"), 120); ProcedurePrims.stack().currentContext().updateStringRunVar("CANDIDATE-PREDATORS", candidateHpredators);
+      if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "any") && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 4417, 4421, 112, candidateHpredators)))) {
+        predator = PrimChecks.list.oneOf(4465, 4471, PrimChecks.validator.checkArg('ONE-OF', 4465, 4471, 120, candidateHpredators)); ProcedurePrims.stack().currentContext().updateStringRunVar("PREDATOR", predator);
       }
-      if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "nearest") && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, candidateHpredators)))) {
-        predator = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 112, candidateHpredators), function() { return SelfManager.self().distance(SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("PREDATOR", predator);
+      if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "nearest") && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 4537, 4541, 112, candidateHpredators)))) {
+        predator = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 4585, 4595, 112, candidateHpredators), function() { return SelfManager.self().distance(SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("PREDATOR", predator);
       }
-      targetHheading = PrimChecks.math.plus(180, PrimChecks.turtle.towards(PrimChecks.validator.checkArg('TOWARDS', 768, predator))); ProcedurePrims.stack().currentContext().updateStringRunVar("TARGET-HEADING", targetHheading);
-      PrimChecks.turtle.setVariable("heading", targetHheading);
-      PrimChecks.turtleOrLink.setVariable("label-color", 0);
-      PrimChecks.turtleOrLink.setVariable("label", "!");
+      targetHheading = PrimChecks.math.plus(4666, 4667, 180, PrimChecks.turtle.towards(4668, 4675, PrimChecks.validator.checkArg('TOWARDS', 4668, 4675, 768, predator))); ProcedurePrims.stack().currentContext().updateStringRunVar("TARGET-HEADING", targetHheading);
+      PrimChecks.turtle.setVariable(4697, 4704, "heading", targetHheading);
+      PrimChecks.turtleOrLink.setVariable(4731, 4742, "label-color", 0);
+      PrimChecks.turtleOrLink.setVariable(4760, 4765, "label", "!");
     }
     else {
       var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
-      PrimChecks.turtleOrLink.setVariable("label", "");
+      PrimChecks.turtleOrLink.setVariable(4792, 4797, "label", "");
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4218, 4221, R); return R; }
 }))
 ProcedurePrims.defineCommand("move-birds", 4815, 6236, (function() {
   let preyHagent = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("PREY-AGENT", preyHagent);
@@ -232,53 +232,53 @@ ProcedurePrims.defineCommand("move-birds", 4815, 6236, (function() {
   let assignedHtarget_Q = false; ProcedurePrims.stack().currentContext().registerStringRunVar("ASSIGNED-TARGET?", assignedHtarget_Q);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BIRDS"), function() {
     candidateHbugs = SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("BUGS"), world.observer.getGlobal("initial-bird-vision"), 120); ProcedurePrims.stack().currentContext().updateStringRunVar("CANDIDATE-BUGS", candidateHbugs);
-    if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, candidateHbugs))) {
-      closestHbug = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 112, candidateHbugs), function() { return SelfManager.self().distance(SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("CLOSEST-BUG", closestHbug);
-      if ((Prims.equality(PrimChecks.turtle.getVariable("target"), Nobody) && Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "lock on one"))) {
+    if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 5377, 5381, 112, candidateHbugs))) {
+      closestHbug = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 5421, 5431, 112, candidateHbugs), function() { return SelfManager.self().distance(SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("CLOSEST-BUG", closestHbug);
+      if ((Prims.equality(PrimChecks.turtle.getVariable(5476, 5482, "target"), Nobody) && Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "lock on one"))) {
         preyHagent = closestHbug; ProcedurePrims.stack().currentContext().updateStringRunVar("PREY-AGENT", preyHagent);
-        PrimChecks.turtle.setVariable("target", preyHagent);
-        PrimChecks.turtle.setVariable("heading", PrimChecks.turtle.towards(PrimChecks.validator.checkArg('TOWARDS', 768, preyHagent)));
-        PrimChecks.turtleOrLink.setVariable("label-color", PrimChecks.math.minus(15, 2));
-        PrimChecks.turtleOrLink.setVariable("label", "!");
+        PrimChecks.turtle.setVariable(5583, 5589, "target", preyHagent);
+        PrimChecks.turtle.setVariable(5613, 5620, "heading", PrimChecks.turtle.towards(5621, 5628, PrimChecks.validator.checkArg('TOWARDS', 5621, 5628, 768, preyHagent)));
+        PrimChecks.turtleOrLink.setVariable(5652, 5663, "label-color", PrimChecks.math.minus(5668, 5669, 15, 2));
+        PrimChecks.turtleOrLink.setVariable(5684, 5689, "label", "!");
         assignedHtarget_Q = true; ProcedurePrims.stack().currentContext().updateStringRunVar("ASSIGNED-TARGET?", assignedHtarget_Q);
       }
-      if ((Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "closest") && !Prims.equality(PrimChecks.turtle.getVariable("target"), closestHbug))) {
+      if ((Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "closest") && !Prims.equality(PrimChecks.turtle.getVariable(5784, 5790, "target"), closestHbug))) {
         preyHagent = closestHbug; ProcedurePrims.stack().currentContext().updateStringRunVar("PREY-AGENT", preyHagent);
-        PrimChecks.turtle.setVariable("target", preyHagent);
-        PrimChecks.turtle.setVariable("heading", PrimChecks.turtle.towards(PrimChecks.validator.checkArg('TOWARDS', 768, preyHagent)));
-        PrimChecks.turtleOrLink.setVariable("label-color", PrimChecks.math.minus(15, 2));
-        PrimChecks.turtleOrLink.setVariable("label", "!");
+        PrimChecks.turtle.setVariable(5856, 5862, "target", preyHagent);
+        PrimChecks.turtle.setVariable(5894, 5901, "heading", PrimChecks.turtle.towards(5902, 5909, PrimChecks.validator.checkArg('TOWARDS', 5902, 5909, 768, preyHagent)));
+        PrimChecks.turtleOrLink.setVariable(5933, 5944, "label-color", PrimChecks.math.minus(5949, 5950, 15, 2));
+        PrimChecks.turtleOrLink.setVariable(5965, 5970, "label", "!");
         assignedHtarget_Q = true; ProcedurePrims.stack().currentContext().updateStringRunVar("ASSIGNED-TARGET?", assignedHtarget_Q);
       }
       if (!Prims.equality(assignedHtarget_Q, false)) {
-        PrimChecks.turtle.setVariable("target", Nobody);
-        PrimChecks.turtleOrLink.setVariable("label", "");
+        PrimChecks.turtle.setVariable(6069, 6075, "target", Nobody);
+        PrimChecks.turtleOrLink.setVariable(6095, 6100, "label", "");
         var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
       }
     }
     else {
-      PrimChecks.turtle.setVariable("target", Nobody);
-      PrimChecks.turtleOrLink.setVariable("label", "");
+      PrimChecks.turtle.setVariable(6149, 6155, "target", Nobody);
+      PrimChecks.turtleOrLink.setVariable(6173, 6178, "label", "");
       var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
     }
-    SelfManager.self().fd(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("speed-factor"))));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    SelfManager.self().fd(PrimChecks.math.mult(6215, 6216, PrimChecks.validator.checkArg('*', 6215, 6216, 1, PrimChecks.turtle.getVariable(6209, 6214, "speed")), PrimChecks.validator.checkArg('*', 6215, 6216, 1, world.observer.getGlobal("speed-factor"))));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5292, 5295, R); return R; }
 }))
 ProcedurePrims.defineCommand("wiggle", 6244, 6367, (function() {
   if (world.observer.getGlobal("wiggle?")) {
-    SelfManager.self().right(PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.math.randomFloat(30), 0.05), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("speed-factor"))));
-    SelfManager.self().right(-(PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.math.randomFloat(30), 0.05), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("speed-factor")))));
+    SelfManager.self().right(PrimChecks.math.div(6299, 6300, PrimChecks.math.mult(6293, 6294, PrimChecks.math.randomFloat(30), 0.05), PrimChecks.validator.checkArg('/', 6299, 6300, 1, world.observer.getGlobal("speed-factor"))));
+    SelfManager.self().right(-(PrimChecks.math.div(6347, 6348, PrimChecks.math.mult(6341, 6342, PrimChecks.math.randomFloat(30), 0.05), PrimChecks.validator.checkArg('/', 6347, 6348, 1, world.observer.getGlobal("speed-factor")))));
   }
 }))
 ProcedurePrims.defineCommand("move-player", 6375, 6520, (function() {
   if (MousePrims.isInside()) {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PLAYERS"), function() {
-      PrimChecks.turtle.setXY(MousePrims.getX(), MousePrims.getY());
-      PrimChecks.turtleOrLink.setVariable("hidden?", false);
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      PrimChecks.turtle.setXY(6432, 6437, MousePrims.getX(), MousePrims.getY());
+      PrimChecks.turtleOrLink.setVariable(6464, 6471, "hidden?", false);
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6418, 6421, R); return R; }
   }
   else {
-    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PLAYERS"), function() { PrimChecks.turtleOrLink.setVariable("hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PLAYERS"), function() { PrimChecks.turtleOrLink.setVariable(6505, 6512, "hidden?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6487, 6490, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("check-player-caught", 6528, 7830, (function() {
@@ -287,35 +287,35 @@ ProcedurePrims.defineCommand("check-player-caught", 6528, 7830, (function() {
   let snapHmouseHxcor = MousePrims.getX(); ProcedurePrims.stack().currentContext().registerStringRunVar("SNAP-MOUSE-XCOR", snapHmouseHxcor);
   let snapHmouseHycor = MousePrims.getY(); ProcedurePrims.stack().currentContext().registerStringRunVar("SNAP-MOUSE-YCOR", snapHmouseHycor);
   if ((MousePrims.isDown() && MousePrims.isInside())) {
-    localHbugs = PrimChecks.agentset.breedOn("BUGS", PrimChecks.validator.checkArg('BUGS-ON', 816, world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 1, snapHmouseHxcor), PrimChecks.validator.checkArg('PATCH', 1, snapHmouseHycor)))); ProcedurePrims.stack().currentContext().updateStringRunVar("LOCAL-BUGS", localHbugs);
-    if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, localHbugs))) {
-      world.observer.setGlobal("total-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-caught")), 1));
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, localHbugs))), function() {
-        speedHofHcaught = PrimChecks.turtle.getVariable("speed"); ProcedurePrims.stack().currentContext().updateStringRunVar("SPEED-OF-CAUGHT", speedHofHcaught);
+    localHbugs = PrimChecks.agentset.breedOn("BUGS", PrimChecks.validator.checkArg('BUGS-ON', 6875, 6882, 816, world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 6883, 6888, 1, snapHmouseHxcor), PrimChecks.validator.checkArg('PATCH', 6883, 6888, 1, snapHmouseHycor)))); ProcedurePrims.stack().currentContext().updateStringRunVar("LOCAL-BUGS", localHbugs);
+    if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 6929, 6933, 112, localHbugs))) {
+      world.observer.setGlobal("total-caught", PrimChecks.math.plus(6985, 6986, PrimChecks.validator.checkArg('+', 6985, 6986, 1, world.observer.getGlobal("total-caught")), 1));
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7052, 7055, 1904, PrimChecks.list.oneOf(7056, 7062, PrimChecks.validator.checkArg('ONE-OF', 7056, 7062, 120, localHbugs))), function() {
+        speedHofHcaught = PrimChecks.turtle.getVariable(7105, 7110, "speed"); ProcedurePrims.stack().currentContext().updateStringRunVar("SPEED-OF-CAUGHT", speedHofHcaught);
         if (Prims.equality(speedHofHcaught, 1)) {
-          world.observer.setGlobal("total-speed-6-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-6-caught")), 1));
+          world.observer.setGlobal("total-speed-6-caught", PrimChecks.math.plus(7193, 7194, PrimChecks.validator.checkArg('+', 7193, 7194, 1, world.observer.getGlobal("total-speed-6-caught")), 1));
         }
         if (Prims.equality(speedHofHcaught, 2)) {
-          world.observer.setGlobal("total-speed-5-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-5-caught")), 1));
+          world.observer.setGlobal("total-speed-5-caught", PrimChecks.math.plus(7282, 7283, PrimChecks.validator.checkArg('+', 7282, 7283, 1, world.observer.getGlobal("total-speed-5-caught")), 1));
         }
         if (Prims.equality(speedHofHcaught, 3)) {
-          world.observer.setGlobal("total-speed-4-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-4-caught")), 1));
+          world.observer.setGlobal("total-speed-4-caught", PrimChecks.math.plus(7371, 7372, PrimChecks.validator.checkArg('+', 7371, 7372, 1, world.observer.getGlobal("total-speed-4-caught")), 1));
         }
         if (Prims.equality(speedHofHcaught, 4)) {
-          world.observer.setGlobal("total-speed-3-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-3-caught")), 1));
+          world.observer.setGlobal("total-speed-3-caught", PrimChecks.math.plus(7460, 7461, PrimChecks.validator.checkArg('+', 7460, 7461, 1, world.observer.getGlobal("total-speed-3-caught")), 1));
         }
         if (Prims.equality(speedHofHcaught, 5)) {
-          world.observer.setGlobal("total-speed-2-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-2-caught")), 1));
+          world.observer.setGlobal("total-speed-2-caught", PrimChecks.math.plus(7549, 7550, PrimChecks.validator.checkArg('+', 7549, 7550, 1, world.observer.getGlobal("total-speed-2-caught")), 1));
         }
         if (Prims.equality(speedHofHcaught, 6)) {
-          world.observer.setGlobal("total-speed-1-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-1-caught")), 1));
+          world.observer.setGlobal("total-speed-1-caught", PrimChecks.math.plus(7638, 7639, PrimChecks.validator.checkArg('+', 7638, 7639, 1, world.observer.getGlobal("total-speed-1-caught")), 1));
         }
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
-          PrimChecks.turtleOrLink.setVariable("color", 15);
+          PrimChecks.turtleOrLink.setVariable(7681, 7686, "color", 15);
           return SelfManager.self().die();
-        }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+        }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7653, 7656, R); return R; }
         return SelfManager.self().die();
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7052, 7055, R); return R; }
       var R = ProcedurePrims.callCommand("reproduce-one-bug"); if (R === DeathInterrupt) { return R; }
     }
   }
@@ -324,112 +324,112 @@ ProcedurePrims.defineCommand("check-bird-catch", 7839, 8853, (function() {
   let speedHofHcaught = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("SPEED-OF-CAUGHT", speedHofHcaught);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BIRDS"), function() {
     if (PrimChecks.agentset.any(SelfManager.self().breedHere("BUGS"))) {
-      world.observer.setGlobal("total-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-caught")), 1));
-      PrimChecks.turtle.setVariable("eaten", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("eaten")), 1));
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(SelfManager.self().breedHere("BUGS"))), function() {
-        speedHofHcaught = PrimChecks.turtle.getVariable("speed"); ProcedurePrims.stack().currentContext().updateStringRunVar("SPEED-OF-CAUGHT", speedHofHcaught);
+      world.observer.setGlobal("total-caught", PrimChecks.math.plus(7956, 7957, PrimChecks.validator.checkArg('+', 7956, 7957, 1, world.observer.getGlobal("total-caught")), 1));
+      PrimChecks.turtle.setVariable(7971, 7976, "eaten", PrimChecks.math.plus(7984, 7985, PrimChecks.validator.checkArg('+', 7984, 7985, 1, PrimChecks.turtle.getVariable(7978, 7983, "eaten")), 1));
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8051, 8054, 1904, PrimChecks.list.oneOf(8055, 8061, SelfManager.self().breedHere("BUGS"))), function() {
+        speedHofHcaught = PrimChecks.turtle.getVariable(8102, 8107, "speed"); ProcedurePrims.stack().currentContext().updateStringRunVar("SPEED-OF-CAUGHT", speedHofHcaught);
         if (Prims.equality(speedHofHcaught, 1)) {
-          world.observer.setGlobal("total-speed-6-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-6-caught")), 1));
+          world.observer.setGlobal("total-speed-6-caught", PrimChecks.math.plus(8190, 8191, PrimChecks.validator.checkArg('+', 8190, 8191, 1, world.observer.getGlobal("total-speed-6-caught")), 1));
         }
         if (Prims.equality(speedHofHcaught, 2)) {
-          world.observer.setGlobal("total-speed-5-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-5-caught")), 1));
+          world.observer.setGlobal("total-speed-5-caught", PrimChecks.math.plus(8279, 8280, PrimChecks.validator.checkArg('+', 8279, 8280, 1, world.observer.getGlobal("total-speed-5-caught")), 1));
         }
         if (Prims.equality(speedHofHcaught, 3)) {
-          world.observer.setGlobal("total-speed-4-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-4-caught")), 1));
+          world.observer.setGlobal("total-speed-4-caught", PrimChecks.math.plus(8368, 8369, PrimChecks.validator.checkArg('+', 8368, 8369, 1, world.observer.getGlobal("total-speed-4-caught")), 1));
         }
         if (Prims.equality(speedHofHcaught, 4)) {
-          world.observer.setGlobal("total-speed-3-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-3-caught")), 1));
+          world.observer.setGlobal("total-speed-3-caught", PrimChecks.math.plus(8457, 8458, PrimChecks.validator.checkArg('+', 8457, 8458, 1, world.observer.getGlobal("total-speed-3-caught")), 1));
         }
         if (Prims.equality(speedHofHcaught, 5)) {
-          world.observer.setGlobal("total-speed-2-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-2-caught")), 1));
+          world.observer.setGlobal("total-speed-2-caught", PrimChecks.math.plus(8546, 8547, PrimChecks.validator.checkArg('+', 8546, 8547, 1, world.observer.getGlobal("total-speed-2-caught")), 1));
         }
         if (Prims.equality(speedHofHcaught, 6)) {
-          world.observer.setGlobal("total-speed-1-caught", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("total-speed-1-caught")), 1));
+          world.observer.setGlobal("total-speed-1-caught", PrimChecks.math.plus(8635, 8636, PrimChecks.validator.checkArg('+', 8635, 8636, 1, world.observer.getGlobal("total-speed-1-caught")), 1));
         }
         var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
-          PrimChecks.turtleOrLink.setVariable("color", 15);
+          PrimChecks.turtleOrLink.setVariable(8679, 8684, "color", 15);
           return SelfManager.self().die();
-        }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+        }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8651, 8654, R); return R; }
         return SelfManager.self().die();
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-      PrimChecks.turtle.setVariable("target", Nobody);
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8051, 8054, R); return R; }
+      PrimChecks.turtle.setVariable(8725, 8731, "target", Nobody);
       var R = ProcedurePrims.callCommand("reproduce-one-bug"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7882, 7885, R); return R; }
 }))
 ProcedurePrims.defineCommand("reproduce-one-bug", 8950, 9096, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("BUGS"))), function() {
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8970, 8973, 1904, PrimChecks.list.oneOf(8974, 8980, world.turtleManager.turtlesOfBreed("BUGS"))), function() {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       var R = ProcedurePrims.callCommand("mutate-offspring-bug"); if (R === DeathInterrupt) { return R; }
-      PrimChecks.turtle.setVariable("heading", PrimChecks.math.randomFloat(360));
+      PrimChecks.turtle.setVariable(9035, 9042, "heading", PrimChecks.math.randomFloat(360));
       var R = ProcedurePrims.callCommand("attach-vision-cone"); if (R === DeathInterrupt) { return R; }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8992, 8997, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8970, 8973, R); return R; }
 }))
 ProcedurePrims.defineCommand("reproduce-one-bird", 9104, 9373, (function() {
   let birdHenergyHsplit = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("BIRD-ENERGY-SPLIT", birdHenergyHsplit);
-  if (PrimChecks.agentset.optimizeCount(world.turtleManager.turtlesOfBreed("BIRDS"), 0, (a, b) => a > b)) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.turtleManager.turtlesOfBreed("BIRDS"))), function() {
-      birdHenergyHsplit = PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, PrimChecks.turtle.getVariable("eaten")), 2); ProcedurePrims.stack().currentContext().updateStringRunVar("BIRD-ENERGY-SPLIT", birdHenergyHsplit);
-      PrimChecks.turtle.setVariable("eaten", birdHenergyHsplit);
+  if (PrimChecks.agentset.optimizeCount(null, null, world.turtleManager.turtlesOfBreed("BIRDS"), 0, (a, b) => a > b)) {
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9171, 9174, 1904, PrimChecks.list.oneOf(9175, 9181, world.turtleManager.turtlesOfBreed("BIRDS"))), function() {
+      birdHenergyHsplit = PrimChecks.math.div(9223, 9224, PrimChecks.validator.checkArg('/', 9223, 9224, 1, PrimChecks.turtle.getVariable(9217, 9222, "eaten")), 2); ProcedurePrims.stack().currentContext().updateStringRunVar("BIRD-ENERGY-SPLIT", birdHenergyHsplit);
+      PrimChecks.turtle.setVariable(9236, 9241, "eaten", birdHenergyHsplit);
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
         var R = ProcedurePrims.callCommand("mutate-offspring-bird"); if (R === DeathInterrupt) { return R; }
-        PrimChecks.turtle.setVariable("heading", PrimChecks.math.randomFloat(360));
+        PrimChecks.turtle.setVariable(9308, 9315, "heading", PrimChecks.math.randomFloat(360));
         var R = ProcedurePrims.callCommand("attach-vision-cone"); if (R === DeathInterrupt) { return R; }
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9264, 9269, R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9171, 9174, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("mutate-offspring-bug", 9381, 9843, (function() {
   if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-    PrimChecks.turtle.setVariable("vision", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("vision")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("bug-vision-mutation")))));
+    PrimChecks.turtle.setVariable(9433, 9439, "vision", PrimChecks.math.plus(9448, 9449, PrimChecks.validator.checkArg('+', 9448, 9449, 1, PrimChecks.turtle.getVariable(9441, 9447, "vision")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 9450, 9462, 1, world.observer.getGlobal("bug-vision-mutation")))));
   }
   else {
-    PrimChecks.turtle.setVariable("vision", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("vision")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("bug-vision-mutation")))));
+    PrimChecks.turtle.setVariable(9494, 9500, "vision", PrimChecks.math.minus(9509, 9510, PrimChecks.validator.checkArg('-', 9509, 9510, 1, PrimChecks.turtle.getVariable(9502, 9508, "vision")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 9511, 9523, 1, world.observer.getGlobal("bug-vision-mutation")))));
   }
-  if (Prims.gt(PrimChecks.turtle.getVariable("vision"), world.observer.getGlobal("max-vision"))) {
-    PrimChecks.turtle.setVariable("vision", world.observer.getGlobal("max-vision"));
+  if (Prims.gt(PrimChecks.turtle.getVariable(9552, 9558, "vision"), world.observer.getGlobal("max-vision"))) {
+    PrimChecks.turtle.setVariable(9577, 9583, "vision", world.observer.getGlobal("max-vision"));
   }
-  if (Prims.lt(PrimChecks.turtle.getVariable("vision"), 0)) {
-    PrimChecks.turtle.setVariable("vision", 0);
+  if (Prims.lt(PrimChecks.turtle.getVariable(9601, 9607, "vision"), 0)) {
+    PrimChecks.turtle.setVariable(9617, 9623, "vision", 0);
   }
   if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-    PrimChecks.turtle.setVariable("speed", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("bug-speed-mutation")))));
+    PrimChecks.turtle.setVariable(9659, 9664, "speed", PrimChecks.math.plus(9672, 9673, PrimChecks.validator.checkArg('+', 9672, 9673, 1, PrimChecks.turtle.getVariable(9666, 9671, "speed")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 9674, 9686, 1, world.observer.getGlobal("bug-speed-mutation")))));
   }
   else {
-    PrimChecks.turtle.setVariable("speed", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("bug-speed-mutation")))));
+    PrimChecks.turtle.setVariable(9718, 9723, "speed", PrimChecks.math.minus(9731, 9732, PrimChecks.validator.checkArg('-', 9731, 9732, 1, PrimChecks.turtle.getVariable(9725, 9730, "speed")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 9733, 9745, 1, world.observer.getGlobal("bug-speed-mutation")))));
   }
-  if (Prims.gt(PrimChecks.turtle.getVariable("speed"), world.observer.getGlobal("max-speed"))) {
-    PrimChecks.turtle.setVariable("speed", world.observer.getGlobal("max-speed"));
+  if (Prims.gt(PrimChecks.turtle.getVariable(9774, 9779, "speed"), world.observer.getGlobal("max-speed"))) {
+    PrimChecks.turtle.setVariable(9797, 9802, "speed", world.observer.getGlobal("max-speed"));
   }
-  if (Prims.lt(PrimChecks.turtle.getVariable("speed"), 0)) {
-    PrimChecks.turtle.setVariable("speed", 0);
+  if (Prims.lt(PrimChecks.turtle.getVariable(9819, 9824, "speed"), 0)) {
+    PrimChecks.turtle.setVariable(9834, 9839, "speed", 0);
   }
 }))
 ProcedurePrims.defineCommand("mutate-offspring-bird", 9852, 10326, (function() {
   if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-    PrimChecks.turtle.setVariable("vision", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("vision")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("bird-vision-mutation")))));
+    PrimChecks.turtle.setVariable(9905, 9911, "vision", PrimChecks.math.plus(9920, 9921, PrimChecks.validator.checkArg('+', 9920, 9921, 1, PrimChecks.turtle.getVariable(9913, 9919, "vision")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 9922, 9934, 1, world.observer.getGlobal("bird-vision-mutation")))));
   }
   else {
-    PrimChecks.turtle.setVariable("vision", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("vision")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("bird-vision-mutation")))));
+    PrimChecks.turtle.setVariable(9968, 9974, "vision", PrimChecks.math.minus(9983, 9984, PrimChecks.validator.checkArg('-', 9983, 9984, 1, PrimChecks.turtle.getVariable(9976, 9982, "vision")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 9985, 9997, 1, world.observer.getGlobal("bird-vision-mutation")))));
   }
-  if (Prims.gt(PrimChecks.turtle.getVariable("vision"), world.observer.getGlobal("max-vision"))) {
-    PrimChecks.turtle.setVariable("vision", world.observer.getGlobal("max-vision"));
+  if (Prims.gt(PrimChecks.turtle.getVariable(10028, 10034, "vision"), world.observer.getGlobal("max-vision"))) {
+    PrimChecks.turtle.setVariable(10053, 10059, "vision", world.observer.getGlobal("max-vision"));
   }
-  if (Prims.lt(PrimChecks.turtle.getVariable("vision"), 0)) {
-    PrimChecks.turtle.setVariable("vision", 0);
+  if (Prims.lt(PrimChecks.turtle.getVariable(10077, 10083, "vision"), 0)) {
+    PrimChecks.turtle.setVariable(10093, 10099, "vision", 0);
   }
   if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-    PrimChecks.turtle.setVariable("speed", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("bird-speed-mutation")))));
+    PrimChecks.turtle.setVariable(10138, 10143, "speed", PrimChecks.math.plus(10151, 10152, PrimChecks.validator.checkArg('+', 10151, 10152, 1, PrimChecks.turtle.getVariable(10145, 10150, "speed")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 10153, 10165, 1, world.observer.getGlobal("bird-speed-mutation")))));
   }
   else {
-    PrimChecks.turtle.setVariable("speed", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 1, world.observer.getGlobal("bird-speed-mutation")))));
+    PrimChecks.turtle.setVariable(10200, 10205, "speed", PrimChecks.math.minus(10213, 10214, PrimChecks.validator.checkArg('-', 10213, 10214, 1, PrimChecks.turtle.getVariable(10207, 10212, "speed")), PrimChecks.math.randomFloat(PrimChecks.validator.checkArg('RANDOM-FLOAT', 10215, 10227, 1, world.observer.getGlobal("bird-speed-mutation")))));
   }
-  if (Prims.gt(PrimChecks.turtle.getVariable("speed"), world.observer.getGlobal("max-speed"))) {
-    PrimChecks.turtle.setVariable("speed", world.observer.getGlobal("max-speed"));
+  if (Prims.gt(PrimChecks.turtle.getVariable(10256, 10261, "speed"), world.observer.getGlobal("max-speed"))) {
+    PrimChecks.turtle.setVariable(10279, 10284, "speed", world.observer.getGlobal("max-speed"));
   }
-  if (Prims.lt(PrimChecks.turtle.getVariable("speed"), 0)) {
-    PrimChecks.turtle.setVariable("speed", 0);
+  if (Prims.lt(PrimChecks.turtle.getVariable(10301, 10306, "speed"), 0)) {
+    PrimChecks.turtle.setVariable(10316, 10321, "speed", 0);
   }
 }))
 ProcedurePrims.defineCommand("check-visualize-vision-cone-change", 10410, 10783, (function() {
@@ -437,57 +437,57 @@ ProcedurePrims.defineCommand("check-visualize-vision-cone-change", 10410, 10783,
     world.observer.setGlobal("old-show-initial-bug-vision-cone?", world.observer.getGlobal("show-vision-cone?"));
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("VISION-CONES"), function() {
       var R = ProcedurePrims.callCommand("set-visualize-vision-cone"); if (R === DeathInterrupt) { return R; }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(10573, 10576, R); return R; }
   }
   if (!Prims.equality(world.observer.getGlobal("old-vision-cone-distance"), world.observer.getGlobal("initial-bug-vision"))) {
     world.observer.setGlobal("old-vision-cone-distance", world.observer.getGlobal("initial-bug-vision"));
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("VISION-CONES"), function() {
       var R = ProcedurePrims.callCommand("set-visualize-vision-cone"); if (R === DeathInterrupt) { return R; }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(10734, 10737, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("set-visualize-vision-cone", 10792, 11010, (function() {
-  let parentHvision = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.list.oneOf(LinkPrims.inLinkNeighbors("LINKS"))), function() { return PrimChecks.turtle.getVariable("vision"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("PARENT-VISION", parentHvision);
+  let parentHvision = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 10847, 10849, 1904, PrimChecks.list.oneOf(10850, 10856, LinkPrims.inLinkNeighbors("LINKS"))), function() { return PrimChecks.turtle.getVariable(10839, 10845, "vision"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("PARENT-VISION", parentHvision);
   if (world.observer.getGlobal("show-vision-cone?")) {
-    PrimChecks.turtleOrLink.setVariable("hidden?", false);
-    PrimChecks.turtle.setVariable("size", PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, parentHvision)));
+    PrimChecks.turtleOrLink.setVariable(10915, 10922, "hidden?", false);
+    PrimChecks.turtle.setVariable(10933, 10937, "size", PrimChecks.math.mult(10940, 10941, 2, PrimChecks.validator.checkArg('*', 10940, 10941, 1, parentHvision)));
   }
   else {
-    PrimChecks.turtleOrLink.setVariable("hidden?", true);
-    PrimChecks.turtle.setVariable("size", PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, parentHvision)));
+    PrimChecks.turtleOrLink.setVariable(10968, 10975, "hidden?", true);
+    PrimChecks.turtle.setVariable(10985, 10989, "size", PrimChecks.math.mult(10992, 10993, 2, PrimChecks.validator.checkArg('*', 10992, 10993, 1, parentHvision)));
   }
 }))
 ProcedurePrims.defineCommand("recolor-shade", 11020, 11136, (function() {
-  PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(111, PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("speed"))));
+  PrimChecks.turtleOrLink.setVariable(11115, 11120, "color", PrimChecks.math.plus(11126, 11127, 111, PrimChecks.validator.checkArg('+', 11126, 11127, 1, PrimChecks.turtle.getVariable(11128, 11133, "speed"))));
 }))
 ProcedurePrims.defineCommand("recolor-rainbow", 11144, 11608, (function() {
-  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 6)) {
-    PrimChecks.turtleOrLink.setVariable("color", 15);
+  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 11186, 11191, 1, PrimChecks.turtle.getVariable(11192, 11197, "speed"))), 6)) {
+    PrimChecks.turtleOrLink.setVariable(11209, 11214, "color", 15);
   }
-  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 5)) {
-    PrimChecks.turtleOrLink.setVariable("color", 25);
+  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 11227, 11232, 1, PrimChecks.turtle.getVariable(11233, 11238, "speed"))), 5)) {
+    PrimChecks.turtleOrLink.setVariable(11250, 11255, "color", 25);
   }
-  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 4)) {
-    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.minus(45, 1));
+  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 11271, 11276, 1, PrimChecks.turtle.getVariable(11277, 11282, "speed"))), 4)) {
+    PrimChecks.turtleOrLink.setVariable(11294, 11299, "color", PrimChecks.math.minus(11308, 11309, 45, 1));
   }
-  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 3)) {
-    PrimChecks.turtleOrLink.setVariable("color", 55);
+  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 11392, 11397, 1, PrimChecks.turtle.getVariable(11398, 11403, "speed"))), 3)) {
+    PrimChecks.turtleOrLink.setVariable(11415, 11420, "color", 55);
   }
-  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 2)) {
-    PrimChecks.turtleOrLink.setVariable("color", 105);
+  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 11435, 11440, 1, PrimChecks.turtle.getVariable(11441, 11446, "speed"))), 2)) {
+    PrimChecks.turtleOrLink.setVariable(11458, 11463, "color", 105);
   }
-  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 1)) {
-    PrimChecks.turtleOrLink.setVariable("color", 115);
+  if (Prims.equality(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 11477, 11482, 1, PrimChecks.turtle.getVariable(11483, 11488, "speed"))), 1)) {
+    PrimChecks.turtleOrLink.setVariable(11500, 11505, "color", 115);
   }
-  if (Prims.gte(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 7)) {
-    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.minus(5, 2));
+  if (Prims.gte(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 11521, 11526, 1, PrimChecks.turtle.getVariable(11527, 11532, "speed"))), 7)) {
+    PrimChecks.turtleOrLink.setVariable(11545, 11550, "color", PrimChecks.math.minus(11556, 11557, 5, 2));
   }
-  if (Prims.lt(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 1, PrimChecks.turtle.getVariable("speed"))), 1)) {
-    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(5, 2));
+  if (Prims.lt(PrimChecks.math.floor(PrimChecks.validator.checkArg('FLOOR', 11568, 11573, 1, PrimChecks.turtle.getVariable(11574, 11579, "speed"))), 1)) {
+    PrimChecks.turtleOrLink.setVariable(11591, 11596, "color", PrimChecks.math.plus(11602, 11603, 5, 2));
   }
 }))
 ProcedurePrims.defineCommand("do-plots", 11686, 12440, (function() {
-  if (Prims.equality(PrimChecks.math.mod(world.ticker.tickCount(), 100), 1)) {
+  if (Prims.equality(PrimChecks.math.mod(11706, 11709, world.ticker.tickCount(), 100), 1)) {
     plotManager.setCurrentPlot("Avg. Vision vs. Time");
     plotManager.setCurrentPen("bugs");
     if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("BUGS"))) {
@@ -532,41 +532,41 @@ ProcedurePrims.defineCommand("plot-caught", 12448, 12874, (function() {
 }))
 ProcedurePrims.defineCommand("plot-populations", 12882, 13332, (function() {
   plotManager.setCurrentPen("speed=1");
-  plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("speed"), 1); }));
+  plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable(12959, 12964, "speed"), 1); }));
   plotManager.setCurrentPen("speed=2");
-  plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("speed"), 2); }));
+  plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable(13031, 13036, "speed"), 2); }));
   plotManager.setCurrentPen("speed=3");
-  plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("speed"), 3); }));
+  plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable(13103, 13108, "speed"), 3); }));
   plotManager.setCurrentPen("speed=4");
-  plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("speed"), 4); }));
+  plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable(13175, 13180, "speed"), 4); }));
   plotManager.setCurrentPen("speed=5");
-  plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("speed"), 5); }));
+  plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable(13247, 13252, "speed"), 5); }));
   plotManager.setCurrentPen("speed=6");
-  plotManager.plotValue(PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable("speed"), 6); }));
+  plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("BUGS"), function() { return Prims.equality(PrimChecks.turtle.getVariable(13319, 13324, "speed"), 6); }));
 }))
 ProcedurePrims.defineCommand("plot-histograms-bugs-speed", 13340, 13736, (function() {
   plotManager.setHistogramBarCount(10);
   plotManager.setCurrentPen("#");
   plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
-  plotManager.drawHistogramFrom(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return PrimChecks.turtle.getVariable("speed"); }));
+  plotManager.drawHistogramFrom(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return PrimChecks.turtle.getVariable(13685, 13690, "speed"); }));
 }))
 ProcedurePrims.defineCommand("plot-histograms-initial-bug-vision", 13744, 14117, (function() {
   plotManager.setHistogramBarCount(10);
   plotManager.setCurrentPen("#");
   plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
-  plotManager.drawHistogramFrom(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return PrimChecks.turtle.getVariable("vision"); }));
+  plotManager.drawHistogramFrom(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BUGS"), function() { return PrimChecks.turtle.getVariable(14099, 14105, "vision"); }));
 }))
 ProcedurePrims.defineCommand("plot-histograms-initial-bird-speed", 14126, 14499, (function() {
   plotManager.setHistogramBarCount(10);
   plotManager.setCurrentPen("#");
   plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
-  plotManager.drawHistogramFrom(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable("speed"); }));
+  plotManager.drawHistogramFrom(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable(14481, 14486, "speed"); }));
 }))
 ProcedurePrims.defineCommand("plot-histograms-initial-bird-vision", 14507, 14882, (function() {
   plotManager.setHistogramBarCount(10);
   plotManager.setCurrentPen("#");
   plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
-  plotManager.drawHistogramFrom(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable("vision"); }));
+  plotManager.drawHistogramFrom(PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable(14863, 14869, "vision"); }));
 }))
 world.observer.setGlobal("number-bugs", 30);
 world.observer.setGlobal("number-birds", 10);

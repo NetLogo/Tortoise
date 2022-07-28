@@ -32,24 +32,24 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('food-in-pile1', plotOps.makePenOps, false, new PenBundle.State(85, 1, PenBundle.DisplayMode.Line), function() {}, function() {
     return ProcedurePrims.runInPlotContext('Food in each pile', 'food-in-pile1', function() {
-      plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable("pcolor"), 85); }), function() { return PrimChecks.patch.getVariable("food"); }))));;
+      plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(46, 49, PrimChecks.validator.checkArg('SUM', 46, 49, 8, PrimChecks.agentset.of(PrimChecks.agentset.with(68, 72, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(74, 80, "pcolor"), 85); }), function() { return PrimChecks.patch.getVariable(51, 55, "food"); }))));;
     });
   }),
   new PenBundle.Pen('food-in-pile2', plotOps.makePenOps, false, new PenBundle.State(95, 1, PenBundle.DisplayMode.Line), function() {}, function() {
     return ProcedurePrims.runInPlotContext('Food in each pile', 'food-in-pile2', function() {
-      plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable("pcolor"), 95); }), function() { return PrimChecks.patch.getVariable("food"); }))));;
+      plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(46, 49, PrimChecks.validator.checkArg('SUM', 46, 49, 8, PrimChecks.agentset.of(PrimChecks.agentset.with(68, 72, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(74, 80, "pcolor"), 95); }), function() { return PrimChecks.patch.getVariable(51, 55, "food"); }))));;
     });
   }),
   new PenBundle.Pen('food-in-pile3', plotOps.makePenOps, false, new PenBundle.State(105, 1, PenBundle.DisplayMode.Line), function() {}, function() {
     return ProcedurePrims.runInPlotContext('Food in each pile', 'food-in-pile3', function() {
-      plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable("pcolor"), 105); }), function() { return PrimChecks.patch.getVariable("food"); }))));;
+      plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(46, 49, PrimChecks.validator.checkArg('SUM', 46, 49, 8, PrimChecks.agentset.of(PrimChecks.agentset.with(68, 72, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(74, 80, "pcolor"), 105); }), function() { return PrimChecks.patch.getVariable(51, 55, "food"); }))));;
     });
   })];
   var setup   = function() {};
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "food", false, true, 0, 50, 0, 120, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [   chemical             ;; amount of chemical on this patch   food                 ;; amount of food on this patch (0, 1, or 2)   nest?                ;; true on nest patches, false elsewhere   nest-scent           ;; number that is higher closer to the nest   food-source-number   ;; number (1, 2, or 3) to identify the food sources ]  ;;;;;;;;;;;;;;;;;;;;;;;; ;;; Setup procedures ;;; ;;;;;;;;;;;;;;;;;;;;;;;;  to setup   clear-all   set-default-shape turtles \"bug\"   create-turtles population   [ set size 2         ;; easier to see     set color red  ]   ;; red = not carrying food   setup-patches   reset-ticks end  to setup-patches   ask patches   [ setup-nest     setup-food     recolor-patch ] end  to setup-nest  ;; patch procedure   ;; set nest? variable to true inside the nest, false elsewhere   set nest? (distancexy 0 0) < 5   ;; spread a nest-scent over the whole world -- stronger near the nest   set nest-scent 200 - distancexy 0 0 end  to setup-food  ;; patch procedure   ;; setup food source one on the right   if (distancexy (0.6 * max-pxcor) 0) < 5   [ set food-source-number 1 ]   ;; setup food source two on the lower-left   if (distancexy (-0.6 * max-pxcor) (-0.6 * max-pycor)) < 5   [ set food-source-number 2 ]   ;; setup food source three on the upper-left   if (distancexy (-0.8 * max-pxcor) (0.8 * max-pycor)) < 5   [ set food-source-number 3 ]   ;; set \"food\" at sources to either 1 or 2, randomly   if food-source-number > 0   [ set food one-of [1 2] ] end  to recolor-patch  ;; patch procedure   ;; give color to nest and food sources   ifelse nest?   [ set pcolor violet ]   [ ifelse food > 0     [ if food-source-number = 1 [ set pcolor cyan ]       if food-source-number = 2 [ set pcolor sky  ]       if food-source-number = 3 [ set pcolor blue ] ]     ;; scale color to show chemical concentration     [ set pcolor scale-color green chemical 0.1 5 ] ] end  ;;;;;;;;;;;;;;;;;;;;; ;;; Go procedures ;;; ;;;;;;;;;;;;;;;;;;;;;  to go  ;; forever button   ask turtles   [ if who >= ticks [ stop ] ;; delay initial departure     ifelse color = red     [ look-for-food  ]       ;; not carrying food? look for it     [ return-to-nest ]       ;; carrying food? take it back to nest     wiggle     fd 1 ]   diffuse chemical (diffusion-rate / 100)   ask patches   [ set chemical chemical * (100 - evaporation-rate) / 100  ;; slowly evaporate chemical     recolor-patch ]   tick end  to return-to-nest  ;; turtle procedure   ifelse nest?   [ ;; drop food and head out again     set color red     rt 180 ]   [ set chemical chemical + 60  ;; drop some chemical     uphill-nest-scent ]         ;; head toward the greatest value of nest-scent end  to look-for-food  ;; turtle procedure   if food > 0   [ set color orange + 1     ;; pick up food     set food food - 1        ;; and reduce the food source     rt 180                   ;; and turn around     stop ]   ;; go in the direction where the chemical smell is strongest   if (chemical >= 0.05) and (chemical < 2)   [ uphill-chemical ] end  ;; sniff left and right, and go where the strongest smell is to uphill-chemical  ;; turtle procedure   let scent-ahead chemical-scent-at-angle   0   let scent-right chemical-scent-at-angle  45   let scent-left  chemical-scent-at-angle -45   if (scent-right > scent-ahead) or (scent-left > scent-ahead)   [ ifelse scent-right > scent-left     [ rt 45 ]     [ lt 45 ] ] end  ;; sniff left and right, and go where the strongest smell is to uphill-nest-scent  ;; turtle procedure   let scent-ahead nest-scent-at-angle   0   let scent-right nest-scent-at-angle  45   let scent-left  nest-scent-at-angle -45   if (scent-right > scent-ahead) or (scent-left > scent-ahead)   [ ifelse scent-right > scent-left     [ rt 45 ]     [ lt 45 ] ] end  to wiggle  ;; turtle procedure   rt random 40   lt random 40   if not can-move? 1 [ rt 180 ] end  to-report nest-scent-at-angle [angle]   let p patch-right-and-ahead angle 1   if p = nobody [ report 0 ]   report [nest-scent] of p end  to-report chemical-scent-at-angle [angle]   let p patch-right-and-ahead angle 1   if p = nobody [ report 0 ]   report [chemical] of p end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":257,"top":10,"right":762,"bottom":516,"dimensions":{"minPxcor":-35,"maxPxcor":35,"minPycor":-35,"maxPycor":35,"patchSize":7,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":46,"top":71,"right":126,"bottom":104,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"diffusion-rate","left":31,"top":106,"right":221,"bottom":139,"display":"diffusion-rate","min":"0","max":"99","default":50,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"evaporation-rate","left":31,"top":141,"right":221,"bottom":174,"display":"evaporation-rate","min":"0","max":"99","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":136,"top":71,"right":211,"bottom":104,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"200","compiledStep":"1","variable":"population","left":31,"top":36,"right":221,"bottom":69,"display":"population","min":"0","max":"200","default":125,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Food in each pile', 'food-in-pile1', function() {     plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(\"pcolor\"), 85); }), function() { return PrimChecks.patch.getVariable(\"food\"); }))));;   }); }","display":"food-in-pile1","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = cyan]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Food in each pile', 'food-in-pile2', function() {     plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(\"pcolor\"), 95); }), function() { return PrimChecks.patch.getVariable(\"food\"); }))));;   }); }","display":"food-in-pile2","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = sky]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Food in each pile', 'food-in-pile3', function() {     plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(\"pcolor\"), 105); }), function() { return PrimChecks.patch.getVariable(\"food\"); }))));;   }); }","display":"food-in-pile3","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = blue]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Food in each pile","left":5,"top":197,"right":248,"bottom":476,"xAxis":"time","yAxis":"food","xmin":0,"xmax":50,"ymin":0,"ymax":120,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"food-in-pile1","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = cyan]","type":"pen"},{"display":"food-in-pile2","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = sky]","type":"pen"},{"display":"food-in-pile3","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = blue]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["diffusion-rate", "evaporation-rate", "population"], ["diffusion-rate", "evaporation-rate", "population"], ["chemical", "food", "nest?", "nest-scent", "food-source-number"], -35, 35, -35, 35, 7, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [   chemical             ;; amount of chemical on this patch   food                 ;; amount of food on this patch (0, 1, or 2)   nest?                ;; true on nest patches, false elsewhere   nest-scent           ;; number that is higher closer to the nest   food-source-number   ;; number (1, 2, or 3) to identify the food sources ]  ;;;;;;;;;;;;;;;;;;;;;;;; ;;; Setup procedures ;;; ;;;;;;;;;;;;;;;;;;;;;;;;  to setup   clear-all   set-default-shape turtles \"bug\"   create-turtles population   [ set size 2         ;; easier to see     set color red  ]   ;; red = not carrying food   setup-patches   reset-ticks end  to setup-patches   ask patches   [ setup-nest     setup-food     recolor-patch ] end  to setup-nest  ;; patch procedure   ;; set nest? variable to true inside the nest, false elsewhere   set nest? (distancexy 0 0) < 5   ;; spread a nest-scent over the whole world -- stronger near the nest   set nest-scent 200 - distancexy 0 0 end  to setup-food  ;; patch procedure   ;; setup food source one on the right   if (distancexy (0.6 * max-pxcor) 0) < 5   [ set food-source-number 1 ]   ;; setup food source two on the lower-left   if (distancexy (-0.6 * max-pxcor) (-0.6 * max-pycor)) < 5   [ set food-source-number 2 ]   ;; setup food source three on the upper-left   if (distancexy (-0.8 * max-pxcor) (0.8 * max-pycor)) < 5   [ set food-source-number 3 ]   ;; set \"food\" at sources to either 1 or 2, randomly   if food-source-number > 0   [ set food one-of [1 2] ] end  to recolor-patch  ;; patch procedure   ;; give color to nest and food sources   ifelse nest?   [ set pcolor violet ]   [ ifelse food > 0     [ if food-source-number = 1 [ set pcolor cyan ]       if food-source-number = 2 [ set pcolor sky  ]       if food-source-number = 3 [ set pcolor blue ] ]     ;; scale color to show chemical concentration     [ set pcolor scale-color green chemical 0.1 5 ] ] end  ;;;;;;;;;;;;;;;;;;;;; ;;; Go procedures ;;; ;;;;;;;;;;;;;;;;;;;;;  to go  ;; forever button   ask turtles   [ if who >= ticks [ stop ] ;; delay initial departure     ifelse color = red     [ look-for-food  ]       ;; not carrying food? look for it     [ return-to-nest ]       ;; carrying food? take it back to nest     wiggle     fd 1 ]   diffuse chemical (diffusion-rate / 100)   ask patches   [ set chemical chemical * (100 - evaporation-rate) / 100  ;; slowly evaporate chemical     recolor-patch ]   tick end  to return-to-nest  ;; turtle procedure   ifelse nest?   [ ;; drop food and head out again     set color red     rt 180 ]   [ set chemical chemical + 60  ;; drop some chemical     uphill-nest-scent ]         ;; head toward the greatest value of nest-scent end  to look-for-food  ;; turtle procedure   if food > 0   [ set color orange + 1     ;; pick up food     set food food - 1        ;; and reduce the food source     rt 180                   ;; and turn around     stop ]   ;; go in the direction where the chemical smell is strongest   if (chemical >= 0.05) and (chemical < 2)   [ uphill-chemical ] end  ;; sniff left and right, and go where the strongest smell is to uphill-chemical  ;; turtle procedure   let scent-ahead chemical-scent-at-angle   0   let scent-right chemical-scent-at-angle  45   let scent-left  chemical-scent-at-angle -45   if (scent-right > scent-ahead) or (scent-left > scent-ahead)   [ ifelse scent-right > scent-left     [ rt 45 ]     [ lt 45 ] ] end  ;; sniff left and right, and go where the strongest smell is to uphill-nest-scent  ;; turtle procedure   let scent-ahead nest-scent-at-angle   0   let scent-right nest-scent-at-angle  45   let scent-left  nest-scent-at-angle -45   if (scent-right > scent-ahead) or (scent-left > scent-ahead)   [ ifelse scent-right > scent-left     [ rt 45 ]     [ lt 45 ] ] end  to wiggle  ;; turtle procedure   rt random 40   lt random 40   if not can-move? 1 [ rt 180 ] end  to-report nest-scent-at-angle [angle]   let p patch-right-and-ahead angle 1   if p = nobody [ report 0 ]   report [nest-scent] of p end  to-report chemical-scent-at-angle [angle]   let p patch-right-and-ahead angle 1   if p = nobody [ report 0 ]   report [chemical] of p end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":257,"top":10,"right":762,"bottom":516,"dimensions":{"minPxcor":-35,"maxPxcor":35,"minPycor":-35,"maxPycor":35,"patchSize":7,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":46,"top":71,"right":126,"bottom":104,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"diffusion-rate","left":31,"top":106,"right":221,"bottom":139,"display":"diffusion-rate","min":"0","max":"99","default":50,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"evaporation-rate","left":31,"top":141,"right":221,"bottom":174,"display":"evaporation-rate","min":"0","max":"99","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":136,"top":71,"right":211,"bottom":104,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"200","compiledStep":"1","variable":"population","left":31,"top":36,"right":221,"bottom":69,"display":"population","min":"0","max":"200","default":125,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Food in each pile', 'food-in-pile1', function() {     plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(46, 49, PrimChecks.validator.checkArg('SUM', 46, 49, 8, PrimChecks.agentset.of(PrimChecks.agentset.with(68, 72, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(74, 80, \"pcolor\"), 85); }), function() { return PrimChecks.patch.getVariable(51, 55, \"food\"); }))));;   }); }","display":"food-in-pile1","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = cyan]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Food in each pile', 'food-in-pile2', function() {     plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(46, 49, PrimChecks.validator.checkArg('SUM', 46, 49, 8, PrimChecks.agentset.of(PrimChecks.agentset.with(68, 72, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(74, 80, \"pcolor\"), 95); }), function() { return PrimChecks.patch.getVariable(51, 55, \"food\"); }))));;   }); }","display":"food-in-pile2","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = sky]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Food in each pile', 'food-in-pile3', function() {     plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.sum(46, 49, PrimChecks.validator.checkArg('SUM', 46, 49, 8, PrimChecks.agentset.of(PrimChecks.agentset.with(68, 72, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(74, 80, \"pcolor\"), 105); }), function() { return PrimChecks.patch.getVariable(51, 55, \"food\"); }))));;   }); }","display":"food-in-pile3","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = blue]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Food in each pile","left":5,"top":197,"right":248,"bottom":476,"xAxis":"time","yAxis":"food","xmin":0,"xmax":50,"ymin":0,"ymax":120,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"food-in-pile1","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = cyan]","type":"pen"},{"display":"food-in-pile2","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = sky]","type":"pen"},{"display":"food-in-pile3","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks sum [food] of patches with [pcolor = blue]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["diffusion-rate", "evaporation-rate", "population"], ["diffusion-rate", "evaporation-rate", "population"], ["chemical", "food", "nest?", "nest-scent", "food-source-number"], -35, 35, -35, 35, 7, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -75,9 +75,9 @@ ProcedurePrims.defineCommand("setup", 429, 629, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("population"), ""), function() {
-    PrimChecks.turtle.setVariable("size", 2);
-    PrimChecks.turtleOrLink.setVariable("color", 15);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtle.setVariable(517, 521, "size", 2);
+    PrimChecks.turtleOrLink.setVariable(557, 562, "color", 15);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(483, 497, R); return R; }
   var R = ProcedurePrims.callCommand("setup-patches"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
@@ -86,53 +86,53 @@ ProcedurePrims.defineCommand("setup-patches", 637, 715, (function() {
     var R = ProcedurePrims.callCommand("setup-nest"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("setup-food"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(653, 656, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-nest", 723, 962, (function() {
-  PrimChecks.patch.setVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
-  PrimChecks.patch.setVariable("nest-scent", PrimChecks.math.minus(200, SelfManager.self().distanceXY(0, 0)));
+  PrimChecks.patch.setVariable(825, 830, "nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
+  PrimChecks.patch.setVariable(930, 940, "nest-scent", PrimChecks.math.minus(945, 946, 200, SelfManager.self().distanceXY(0, 0)));
 }))
 ProcedurePrims.defineCommand("setup-food", 970, 1497, (function() {
-  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(0.6, world.topology.maxPxcor), 0), 5)) {
-    PrimChecks.patch.setVariable("food-source-number", 1);
+  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(1063, 1064, 0.6, world.topology.maxPxcor), 0), 5)) {
+    PrimChecks.patch.setVariable(1091, 1109, "food-source-number", 1);
   }
-  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(-0.6, world.topology.maxPxcor), PrimChecks.math.mult(-0.6, world.topology.maxPycor)), 5)) {
-    PrimChecks.patch.setVariable("food-source-number", 2);
+  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(1182, 1183, -0.6, world.topology.maxPxcor), PrimChecks.math.mult(1201, 1202, -0.6, world.topology.maxPycor)), 5)) {
+    PrimChecks.patch.setVariable(1227, 1245, "food-source-number", 2);
   }
-  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(-0.8, world.topology.maxPxcor), PrimChecks.math.mult(0.8, world.topology.maxPycor)), 5)) {
-    PrimChecks.patch.setVariable("food-source-number", 3);
+  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(1320, 1321, -0.8, world.topology.maxPxcor), PrimChecks.math.mult(1338, 1339, 0.8, world.topology.maxPycor)), 5)) {
+    PrimChecks.patch.setVariable(1364, 1382, "food-source-number", 3);
   }
-  if (Prims.gt(PrimChecks.patch.getVariable("food-source-number"), 0)) {
-    PrimChecks.patch.setVariable("food", PrimChecks.list.oneOf([1, 2]));
+  if (Prims.gt(PrimChecks.patch.getVariable(1446, 1464, "food-source-number"), 0)) {
+    PrimChecks.patch.setVariable(1477, 1481, "food", PrimChecks.list.oneOf(1482, 1488, [1, 2]));
   }
 }))
 ProcedurePrims.defineCommand("recolor-patch", 1505, 1901, (function() {
-  if (PrimChecks.patch.getVariable("nest?")) {
-    PrimChecks.patch.setVariable("pcolor", 115);
+  if (PrimChecks.patch.getVariable(1589, 1594, "nest?")) {
+    PrimChecks.patch.setVariable(1603, 1609, "pcolor", 115);
   }
   else {
-    if (Prims.gt(PrimChecks.patch.getVariable("food"), 0)) {
-      if (Prims.equality(PrimChecks.patch.getVariable("food-source-number"), 1)) {
-        PrimChecks.patch.setVariable("pcolor", 85);
+    if (Prims.gt(PrimChecks.patch.getVariable(1630, 1634, "food"), 0)) {
+      if (Prims.equality(PrimChecks.patch.getVariable(1648, 1666, "food-source-number"), 1)) {
+        PrimChecks.patch.setVariable(1677, 1683, "pcolor", 85);
       }
-      if (Prims.equality(PrimChecks.patch.getVariable("food-source-number"), 2)) {
-        PrimChecks.patch.setVariable("pcolor", 95);
+      if (Prims.equality(PrimChecks.patch.getVariable(1700, 1718, "food-source-number"), 2)) {
+        PrimChecks.patch.setVariable(1729, 1735, "pcolor", 95);
       }
-      if (Prims.equality(PrimChecks.patch.getVariable("food-source-number"), 3)) {
-        PrimChecks.patch.setVariable("pcolor", 105);
+      if (Prims.equality(PrimChecks.patch.getVariable(1752, 1770, "food-source-number"), 3)) {
+        PrimChecks.patch.setVariable(1781, 1787, "pcolor", 105);
       }
     }
     else {
-      PrimChecks.patch.setVariable("pcolor", ColorModel.scaleColor(55, PrimChecks.patch.getVariable("chemical"), 0.1, 5));
+      PrimChecks.patch.setVariable(1857, 1863, "pcolor", ColorModel.scaleColor(55, PrimChecks.patch.getVariable(1882, 1890, "chemical"), 0.1, 5));
     }
   }
 }))
 ProcedurePrims.defineCommand("go", 1976, 2416, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    if (Prims.gte(PrimChecks.turtle.getVariable("who"), world.ticker.tickCount())) {
-      return PrimChecks.procedure.stop();
+    if (Prims.gte(PrimChecks.turtle.getVariable(2019, 2022, "who"), world.ticker.tickCount())) {
+      return PrimChecks.procedure.stop(2034, 2038);
     }
-    if (Prims.equality(PrimChecks.turtleOrLink.getVariable("color"), 15)) {
+    if (Prims.equality(PrimChecks.turtleOrLink.getVariable(2079, 2084, "color"), 15)) {
       var R = ProcedurePrims.callCommand("look-for-food"); if (R === DeathInterrupt) { return R; }
     }
     else {
@@ -140,39 +140,39 @@ ProcedurePrims.defineCommand("go", 1976, 2416, (function() {
     }
     var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
     SelfManager.self()._optimalFdOne();
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  world.topology.diffuse("chemical", PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("diffusion-rate")), 100), false)
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2000, 2003, R); return R; }
+  world.topology.diffuse("chemical", PrimChecks.math.div(2279, 2280, PrimChecks.validator.checkArg('/', 2279, 2280, 1, world.observer.getGlobal("diffusion-rate")), 100), false)
   var R = ProcedurePrims.ask(world.patches(), function() {
-    PrimChecks.patch.setVariable("chemical", PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.patch.getVariable("chemical")), PrimChecks.math.minus(100, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("evaporation-rate")))), 100));
+    PrimChecks.patch.setVariable(2308, 2316, "chemical", PrimChecks.math.div(2353, 2354, PrimChecks.math.mult(2326, 2327, PrimChecks.validator.checkArg('*', 2326, 2327, 1, PrimChecks.patch.getVariable(2317, 2325, "chemical")), PrimChecks.math.minus(2333, 2334, 100, PrimChecks.validator.checkArg('-', 2333, 2334, 1, world.observer.getGlobal("evaporation-rate")))), 100));
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2288, 2291, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("return-to-nest", 2424, 2676, (function() {
-  if (PrimChecks.patch.getVariable("nest?")) {
-    PrimChecks.turtleOrLink.setVariable("color", 15);
+  if (PrimChecks.patch.getVariable(2469, 2474, "nest?")) {
+    PrimChecks.turtleOrLink.setVariable(2519, 2524, "color", 15);
     SelfManager.self().right(180);
   }
   else {
-    PrimChecks.patch.setVariable("chemical", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("chemical")), 60));
+    PrimChecks.patch.setVariable(2550, 2558, "chemical", PrimChecks.math.plus(2568, 2569, PrimChecks.validator.checkArg('+', 2568, 2569, 1, PrimChecks.patch.getVariable(2559, 2567, "chemical")), 60));
     var R = ProcedurePrims.callCommand("uphill-nest-scent"); if (R === DeathInterrupt) { return R; }
   }
 }))
 ProcedurePrims.defineCommand("look-for-food", 2684, 3024, (function() {
-  if (Prims.gt(PrimChecks.patch.getVariable("food"), 0)) {
-    PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(25, 1));
-    PrimChecks.patch.setVariable("food", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("food")), 1));
+  if (Prims.gt(PrimChecks.patch.getVariable(2724, 2728, "food"), 0)) {
+    PrimChecks.turtleOrLink.setVariable(2741, 2746, "color", PrimChecks.math.plus(2754, 2755, 25, 1));
+    PrimChecks.patch.setVariable(2786, 2790, "food", PrimChecks.math.minus(2796, 2797, PrimChecks.validator.checkArg('-', 2796, 2797, 1, PrimChecks.patch.getVariable(2791, 2795, "food")), 1));
     SelfManager.self().right(180);
-    return PrimChecks.procedure.stop();
+    return PrimChecks.procedure.stop(2889, 2893);
   }
-  if ((Prims.gte(PrimChecks.patch.getVariable("chemical"), 0.05) && Prims.lt(PrimChecks.patch.getVariable("chemical"), 2))) {
+  if ((Prims.gte(PrimChecks.patch.getVariable(2965, 2973, "chemical"), 0.05) && Prims.lt(PrimChecks.patch.getVariable(2988, 2996, "chemical"), 2))) {
     var R = ProcedurePrims.callCommand("uphill-chemical"); if (R === DeathInterrupt) { return R; }
   }
 }))
 ProcedurePrims.defineCommand("uphill-chemical", 3093, 3397, (function() {
-  let scentHahead = PrimChecks.procedure.callReporter("chemical-scent-at-angle", 0); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-AHEAD", scentHahead);
-  let scentHright = PrimChecks.procedure.callReporter("chemical-scent-at-angle", 45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-RIGHT", scentHright);
-  let scentHleft = PrimChecks.procedure.callReporter("chemical-scent-at-angle", -45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-LEFT", scentHleft);
+  let scentHahead = PrimChecks.procedure.callReporter(3148, 3171, "chemical-scent-at-angle", 0); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-AHEAD", scentHahead);
+  let scentHright = PrimChecks.procedure.callReporter(3194, 3217, "chemical-scent-at-angle", 45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-RIGHT", scentHright);
+  let scentHleft = PrimChecks.procedure.callReporter(3240, 3263, "chemical-scent-at-angle", -45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-LEFT", scentHleft);
   if ((Prims.gt(scentHright, scentHahead) || Prims.gt(scentHleft, scentHahead))) {
     if (Prims.gt(scentHright, scentHleft)) {
       SelfManager.self().right(45);
@@ -183,9 +183,9 @@ ProcedurePrims.defineCommand("uphill-chemical", 3093, 3397, (function() {
   }
 }))
 ProcedurePrims.defineCommand("uphill-nest-scent", 3466, 3760, (function() {
-  let scentHahead = PrimChecks.procedure.callReporter("nest-scent-at-angle", 0); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-AHEAD", scentHahead);
-  let scentHright = PrimChecks.procedure.callReporter("nest-scent-at-angle", 45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-RIGHT", scentHright);
-  let scentHleft = PrimChecks.procedure.callReporter("nest-scent-at-angle", -45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-LEFT", scentHleft);
+  let scentHahead = PrimChecks.procedure.callReporter(3523, 3542, "nest-scent-at-angle", 0); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-AHEAD", scentHahead);
+  let scentHright = PrimChecks.procedure.callReporter(3565, 3584, "nest-scent-at-angle", 45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-RIGHT", scentHright);
+  let scentHleft = PrimChecks.procedure.callReporter(3607, 3626, "nest-scent-at-angle", -45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-LEFT", scentHleft);
   if ((Prims.gt(scentHright, scentHahead) || Prims.gt(scentHleft, scentHahead))) {
     if (Prims.gt(scentHright, scentHleft)) {
       SelfManager.self().right(45);
@@ -205,16 +205,16 @@ ProcedurePrims.defineCommand("wiggle", 3768, 3858, (function() {
 ProcedurePrims.defineReporter("nest-scent-at-angle", 3873, 3995, (function(angle) {
   let p = SelfManager.self().patchRightAndAhead(angle, 1); ProcedurePrims.stack().currentContext().registerStringRunVar("P", p);
   if (Prims.equality(p, Nobody)) {
-    return PrimChecks.procedure.report(0);
+    return PrimChecks.procedure.report(3957, 3963, 0);
   }
-  return PrimChecks.procedure.report(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p), function() { return PrimChecks.patch.getVariable("nest-scent"); }));
+  return PrimChecks.procedure.report(3970, 3976, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 3990, 3992, 1904, p), function() { return PrimChecks.patch.getVariable(3978, 3988, "nest-scent"); }));
 }))
 ProcedurePrims.defineReporter("chemical-scent-at-angle", 4010, 4134, (function(angle) {
   let p = SelfManager.self().patchRightAndAhead(angle, 1); ProcedurePrims.stack().currentContext().registerStringRunVar("P", p);
   if (Prims.equality(p, Nobody)) {
-    return PrimChecks.procedure.report(0);
+    return PrimChecks.procedure.report(4098, 4104, 0);
   }
-  return PrimChecks.procedure.report(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p), function() { return PrimChecks.patch.getVariable("chemical"); }));
+  return PrimChecks.procedure.report(4111, 4117, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4129, 4131, 1904, p), function() { return PrimChecks.patch.getVariable(4119, 4127, "chemical"); }));
 }))
 world.observer.setGlobal("diffusion-rate", 50);
 world.observer.setGlobal("evaporation-rate", 10);

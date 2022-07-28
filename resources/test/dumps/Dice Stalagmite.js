@@ -33,12 +33,12 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0, 1, PenBundle.DisplayMode.Bar), function() {}, function() {
     return ProcedurePrims.runInPlotContext('Single Dice', 'default', function() {
       plotManager.drawHistogramFrom(world.observer.getGlobal("single-outcomes"));
-      let maxbar = PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 8, world.observer.getGlobal("single-outcomes"))); ProcedurePrims.stack().currentContext().registerStringRunVar("MAXBAR", maxbar);
-      let maxrange = PrimChecks.list.length(PrimChecks.list.filter(PrimChecks.task.checked(function(outcome) {
-        PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
-        return Prims.equality(outcome, PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, maxbar)));
-      }, "[ outcome -> outcome = item 0 maxbar ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("single-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("MAXRANGE", maxrange);
-      plotManager.setYRange(0, PrimChecks.list.max(ListPrims.list(51, maxrange)));;
+      let maxbar = PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 70, 75, 8, world.observer.getGlobal("single-outcomes"))); ProcedurePrims.stack().currentContext().registerStringRunVar("MAXBAR", maxbar);
+      let maxrange = PrimChecks.list.length(PrimChecks.list.filter(112, 118, PrimChecks.task.checked(119, 120, function(outcome) {
+        PrimChecks.procedure.runArgCountCheck('runresult', 132, 155, 1, arguments.length);
+        return Prims.equality(outcome, PrimChecks.list.item(142, 146, 0, PrimChecks.validator.checkArg('ITEM', 142, 146, 12, maxbar)));
+      }, "[ outcome -> outcome = item 0 maxbar ]", true, false), PrimChecks.validator.checkArg('FILTER', 112, 118, 8, world.observer.getGlobal("single-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("MAXRANGE", maxrange);
+      plotManager.setYRange(0, PrimChecks.list.max(193, 196, ListPrims.list(51, maxrange)));;
     });
   })];
   var setup   = function() {};
@@ -50,19 +50,19 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0, 1, PenBundle.DisplayMode.Bar), function() {}, function() {
     return ProcedurePrims.runInPlotContext('Pair Sums', 'default', function() {
       plotManager.drawHistogramFrom(world.observer.getGlobal("pair-outcomes"));
-      let maxbar = PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 8, world.observer.getGlobal("pair-outcomes"))); ProcedurePrims.stack().currentContext().registerStringRunVar("MAXBAR", maxbar);
-      let maxrange = PrimChecks.list.length(PrimChecks.list.filter(PrimChecks.task.checked(function(outcome) {
-        PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
-        return Prims.equality(outcome, PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, maxbar)));
-      }, "[ outcome -> outcome = item 0 maxbar ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("MAXRANGE", maxrange);
-      plotManager.setYRange(0, PrimChecks.list.max(ListPrims.list(51, maxrange)));;
+      let maxbar = PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 68, 73, 8, world.observer.getGlobal("pair-outcomes"))); ProcedurePrims.stack().currentContext().registerStringRunVar("MAXBAR", maxbar);
+      let maxrange = PrimChecks.list.length(PrimChecks.list.filter(108, 114, PrimChecks.task.checked(115, 116, function(outcome) {
+        PrimChecks.procedure.runArgCountCheck('runresult', 128, 151, 1, arguments.length);
+        return Prims.equality(outcome, PrimChecks.list.item(138, 142, 0, PrimChecks.validator.checkArg('ITEM', 138, 142, 12, maxbar)));
+      }, "[ outcome -> outcome = item 0 maxbar ]", true, false), PrimChecks.validator.checkArg('FILTER', 108, 114, 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("MAXRANGE", maxrange);
+      plotManager.setYRange(0, PrimChecks.list.max(187, 190, ListPrims.list(51, maxrange)));;
     });
   })];
   var setup   = function() {};
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Dice Total", "Count", false, true, 2, 13, 0, 51, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "paired-dice", singular: "paired-die", varNames: ["pair-sum"] }, { name: "single-dice", singular: "single-die", varNames: [] }, { name: "stacked-dice", singular: "stacked-die", varNames: [] }])(["die-value"], [])('globals [   generators        ;; agentset of two patches where the dice first appear   top-row           ;; agentset of just the top row of patches   single-outcomes   ;; list of single dice values   pair-outcomes     ;; list of dice pair sums ]  patches-own [   column            ;; what number (single die or sum of pair) this column of patches is for ]  breed [paired-dice paired-die]   ;; dice considered as part of pairs breed [single-dice single-die]   ;; dice considered singly breed [stacked-dice stacked-die] ;; dice that have stopped moving  ;; all three breeds have this variable turtles-own [   die-value        ;; 1 through 6 ]  paired-dice-own [   pair-sum         ;; 2 through 12 ]  to setup   clear-all   set single-outcomes []   set pair-outcomes []   ;; assign outcomes to columns   ask patches with [pxcor > 4] [     set column floor ((pxcor - 1) / 2)   ]   ask patches with [pxcor < -4] [     set column pxcor - min-pxcor  + 1   ]   ;; color patches   ask patches [ set pcolor gray + 3 ]   ask patches with [column != 0] [     ifelse column mod 2 = 0       [ set pcolor gray ]       [ set pcolor brown - 1 ]   ]   ;; set up agentsets   set top-row patches with [pycor = max-pycor]   set generators top-row with [pxcor = -1 or pxcor = 0]   ;; start clock and plot initial state   reset-ticks end  to go   if stop-at-top? and any? turtles-on top-row [     user-message \"The top has been reached. Turn STOP-AT-TOP? off to keep going.\"     stop   ]   if not stop-at-top? [     bump-down stacked-dice with [pxcor < 0]     bump-down stacked-dice with [pxcor > 0]   ]   roll-dice   while [any? single-dice or any? paired-dice] [     move-paired-dice     move-single-dice     display    ;; force the view to update, so we see the dice move smoothly   ]   tick end  ;; creates a new pair of dice (both singles and pairs) to roll-dice   ;; ask each generator patch to create two paired dice   ask generators [     sprout-paired-dice 1 [       set color white       set die-value 1 + random 6       set shape word \"die \" die-value       set heading 90     ]   ]   ;; clone the paired dice to make the single dice   ask paired-dice [     hatch-single-dice 1 [       set heading 270       ;; changing breeds resets our shape, so we must explicitly adopt       ;; our parent\'s shape       set shape [shape] of myself     ]   ]   ;; set the sum variable of the pairs   let total sum [die-value] of paired-dice   ask paired-dice [ set pair-sum total ]   ;; add to outcomes lists   set pair-outcomes lput total pair-outcomes   ask single-dice [ set single-outcomes lput die-value single-outcomes ] end  to move-paired-dice   ;; if either of the two dice isn\'t at the right column yet,   ;; both dice move   ifelse any? paired-dice with [pair-sum != column]     [ ask paired-dice [ fd 1 ] ]     ;; otherwise both dice fall     [ ask paired-dice [         ;; if at the bottom of the view, check if we should go \"underwater\"         if pycor = min-pycor [ paired-die-check-visible ]         fall       ]     ] end  to move-single-dice   ;; two single dice may be falling in the same column, so we have   ;; to make sure that the bottom one moves before the top one,   ;; otherwise they could get confused   let how-many count single-dice   if how-many > 0 [     ask min-one-of single-dice [pycor] [ move-single-die ]   ]   if how-many > 1 [     ask max-one-of single-dice [pycor] [ move-single-die ]   ] end  to move-single-die  ;; single-die procedure   ifelse die-value != column     [ fd 1 ]     [ ;; if at the bottom of the view, check if we should go \"underwater\"       if pycor = min-pycor [ single-die-check-visible ]       fall     ] end  to fall  ;; single-die or paired-die procedure   set heading 180   ifelse (pycor > min-pycor) and (not any? stacked-dice-on patch-ahead 1)     [ fd 1 ]     ;; stop falling     [ ;; changing breeds resets our shape, so we have to remember our old shape       let old-shape shape       set breed stacked-dice       set shape old-shape     ] end  ;; determines if my column is tall enough to be seen to single-die-check-visible  ;; single-die procedure   if single-outcomes = [] [ stop ]   let mode first modes single-outcomes   let height-of-tallest-column length filter [ outcome -> outcome = mode] single-outcomes   let height-of-my-column length filter [ outcome -> outcome = die-value] single-outcomes   if (height-of-tallest-column - height-of-my-column) >= world-height - 2 [ die ] end  ;; determines if my column is tall enough to be seen to paired-die-check-visible  ;; paired-die procedure   if pair-outcomes = [] [ stop ]   let mode first modes pair-outcomes   let height-of-tallest-column length filter [ outcome -> outcome = mode ] pair-outcomes   let height-of-my-column length filter [ outcome -> outcome = pair-sum ] pair-outcomes   if (height-of-tallest-column - height-of-my-column) >= world-height - 2 [ die ] end  to bump-down [candidates]   while [any? candidates with [pycor = max-pycor - 2]] [     ask candidates [       if pycor = min-pycor [ die ]       fd 1     ]   ] end   ; Copyright 2005 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":177,"top":39,"right":555,"bottom":568,"dimensions":{"minPxcor":-10,"maxPxcor":26,"minPycor":0,"maxPycor":51,"patchSize":10,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":11,"top":10,"right":90,"bottom":43,"display":"Setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":92,"top":10,"right":171,"bottom":43,"display":"Go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Single Dice', 'default', function() {     plotManager.drawHistogramFrom(world.observer.getGlobal(\"single-outcomes\"));     let maxbar = PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 8, world.observer.getGlobal(\"single-outcomes\"))); ProcedurePrims.stack().currentContext().registerStringRunVar(\"MAXBAR\", maxbar);     let maxrange = PrimChecks.list.length(PrimChecks.list.filter(PrimChecks.task.checked(function(outcome) {       PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);       return Prims.equality(outcome, PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, maxbar)));     }, \"[ outcome -> outcome = item 0 maxbar ]\", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal(\"single-outcomes\")))); ProcedurePrims.stack().currentContext().registerStringRunVar(\"MAXRANGE\", maxrange);     plotManager.setYRange(0, PrimChecks.list.max(ListPrims.list(51, maxrange)));;   }); }","display":"default","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"histogram single-outcomes let maxbar modes single-outcomes let maxrange length filter [ outcome -> outcome = item 0 maxbar ] single-outcomes set-plot-y-range 0 max list 51 maxrange","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Single Dice","left":11,"top":48,"right":171,"bottom":590,"xAxis":"Die Value","yAxis":"Count","xmin":1,"xmax":7,"ymin":0,"ymax":51,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"histogram single-outcomes let maxbar modes single-outcomes let maxrange length filter [ outcome -> outcome = item 0 maxbar ] single-outcomes set-plot-y-range 0 max list 51 maxrange","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Pair Sums', 'default', function() {     plotManager.drawHistogramFrom(world.observer.getGlobal(\"pair-outcomes\"));     let maxbar = PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 8, world.observer.getGlobal(\"pair-outcomes\"))); ProcedurePrims.stack().currentContext().registerStringRunVar(\"MAXBAR\", maxbar);     let maxrange = PrimChecks.list.length(PrimChecks.list.filter(PrimChecks.task.checked(function(outcome) {       PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);       return Prims.equality(outcome, PrimChecks.list.item(0, PrimChecks.validator.checkArg('ITEM', 12, maxbar)));     }, \"[ outcome -> outcome = item 0 maxbar ]\", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal(\"pair-outcomes\")))); ProcedurePrims.stack().currentContext().registerStringRunVar(\"MAXRANGE\", maxrange);     plotManager.setYRange(0, PrimChecks.list.max(ListPrims.list(51, maxrange)));;   }); }","display":"default","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"histogram pair-outcomes let maxbar modes pair-outcomes let maxrange length filter [ outcome -> outcome = item 0 maxbar ] pair-outcomes set-plot-y-range 0 max list 51 maxrange","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Pair Sums","left":562,"top":49,"right":783,"bottom":593,"xAxis":"Dice Total","yAxis":"Count","xmin":2,"xmax":13,"ymin":0,"ymax":51,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"histogram pair-outcomes let maxbar modes pair-outcomes let maxrange length filter [ outcome -> outcome = item 0 maxbar ] pair-outcomes set-plot-y-range 0 max list 51 maxrange","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"stop-at-top?","left":374,"top":4,"right":498,"bottom":37,"display":"stop-at-top?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["stop-at-top?", "generators", "top-row", "single-outcomes", "pair-outcomes"], ["stop-at-top?"], ["column"], -10, 26, 0, 51, 10, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "paired-dice", singular: "paired-die", varNames: ["pair-sum"] }, { name: "single-dice", singular: "single-die", varNames: [] }, { name: "stacked-dice", singular: "stacked-die", varNames: [] }])(["die-value"], [])('globals [   generators        ;; agentset of two patches where the dice first appear   top-row           ;; agentset of just the top row of patches   single-outcomes   ;; list of single dice values   pair-outcomes     ;; list of dice pair sums ]  patches-own [   column            ;; what number (single die or sum of pair) this column of patches is for ]  breed [paired-dice paired-die]   ;; dice considered as part of pairs breed [single-dice single-die]   ;; dice considered singly breed [stacked-dice stacked-die] ;; dice that have stopped moving  ;; all three breeds have this variable turtles-own [   die-value        ;; 1 through 6 ]  paired-dice-own [   pair-sum         ;; 2 through 12 ]  to setup   clear-all   set single-outcomes []   set pair-outcomes []   ;; assign outcomes to columns   ask patches with [pxcor > 4] [     set column floor ((pxcor - 1) / 2)   ]   ask patches with [pxcor < -4] [     set column pxcor - min-pxcor  + 1   ]   ;; color patches   ask patches [ set pcolor gray + 3 ]   ask patches with [column != 0] [     ifelse column mod 2 = 0       [ set pcolor gray ]       [ set pcolor brown - 1 ]   ]   ;; set up agentsets   set top-row patches with [pycor = max-pycor]   set generators top-row with [pxcor = -1 or pxcor = 0]   ;; start clock and plot initial state   reset-ticks end  to go   if stop-at-top? and any? turtles-on top-row [     user-message \"The top has been reached. Turn STOP-AT-TOP? off to keep going.\"     stop   ]   if not stop-at-top? [     bump-down stacked-dice with [pxcor < 0]     bump-down stacked-dice with [pxcor > 0]   ]   roll-dice   while [any? single-dice or any? paired-dice] [     move-paired-dice     move-single-dice     display    ;; force the view to update, so we see the dice move smoothly   ]   tick end  ;; creates a new pair of dice (both singles and pairs) to roll-dice   ;; ask each generator patch to create two paired dice   ask generators [     sprout-paired-dice 1 [       set color white       set die-value 1 + random 6       set shape word \"die \" die-value       set heading 90     ]   ]   ;; clone the paired dice to make the single dice   ask paired-dice [     hatch-single-dice 1 [       set heading 270       ;; changing breeds resets our shape, so we must explicitly adopt       ;; our parent\'s shape       set shape [shape] of myself     ]   ]   ;; set the sum variable of the pairs   let total sum [die-value] of paired-dice   ask paired-dice [ set pair-sum total ]   ;; add to outcomes lists   set pair-outcomes lput total pair-outcomes   ask single-dice [ set single-outcomes lput die-value single-outcomes ] end  to move-paired-dice   ;; if either of the two dice isn\'t at the right column yet,   ;; both dice move   ifelse any? paired-dice with [pair-sum != column]     [ ask paired-dice [ fd 1 ] ]     ;; otherwise both dice fall     [ ask paired-dice [         ;; if at the bottom of the view, check if we should go \"underwater\"         if pycor = min-pycor [ paired-die-check-visible ]         fall       ]     ] end  to move-single-dice   ;; two single dice may be falling in the same column, so we have   ;; to make sure that the bottom one moves before the top one,   ;; otherwise they could get confused   let how-many count single-dice   if how-many > 0 [     ask min-one-of single-dice [pycor] [ move-single-die ]   ]   if how-many > 1 [     ask max-one-of single-dice [pycor] [ move-single-die ]   ] end  to move-single-die  ;; single-die procedure   ifelse die-value != column     [ fd 1 ]     [ ;; if at the bottom of the view, check if we should go \"underwater\"       if pycor = min-pycor [ single-die-check-visible ]       fall     ] end  to fall  ;; single-die or paired-die procedure   set heading 180   ifelse (pycor > min-pycor) and (not any? stacked-dice-on patch-ahead 1)     [ fd 1 ]     ;; stop falling     [ ;; changing breeds resets our shape, so we have to remember our old shape       let old-shape shape       set breed stacked-dice       set shape old-shape     ] end  ;; determines if my column is tall enough to be seen to single-die-check-visible  ;; single-die procedure   if single-outcomes = [] [ stop ]   let mode first modes single-outcomes   let height-of-tallest-column length filter [ outcome -> outcome = mode] single-outcomes   let height-of-my-column length filter [ outcome -> outcome = die-value] single-outcomes   if (height-of-tallest-column - height-of-my-column) >= world-height - 2 [ die ] end  ;; determines if my column is tall enough to be seen to paired-die-check-visible  ;; paired-die procedure   if pair-outcomes = [] [ stop ]   let mode first modes pair-outcomes   let height-of-tallest-column length filter [ outcome -> outcome = mode ] pair-outcomes   let height-of-my-column length filter [ outcome -> outcome = pair-sum ] pair-outcomes   if (height-of-tallest-column - height-of-my-column) >= world-height - 2 [ die ] end  to bump-down [candidates]   while [any? candidates with [pycor = max-pycor - 2]] [     ask candidates [       if pycor = min-pycor [ die ]       fd 1     ]   ] end   ; Copyright 2005 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":177,"top":39,"right":555,"bottom":568,"dimensions":{"minPxcor":-10,"maxPxcor":26,"minPycor":0,"maxPycor":51,"patchSize":10,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":11,"top":10,"right":90,"bottom":43,"display":"Setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":92,"top":10,"right":171,"bottom":43,"display":"Go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Single Dice', 'default', function() {     plotManager.drawHistogramFrom(world.observer.getGlobal(\"single-outcomes\"));     let maxbar = PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 70, 75, 8, world.observer.getGlobal(\"single-outcomes\"))); ProcedurePrims.stack().currentContext().registerStringRunVar(\"MAXBAR\", maxbar);     let maxrange = PrimChecks.list.length(PrimChecks.list.filter(112, 118, PrimChecks.task.checked(119, 120, function(outcome) {       PrimChecks.procedure.runArgCountCheck('runresult', 132, 155, 1, arguments.length);       return Prims.equality(outcome, PrimChecks.list.item(142, 146, 0, PrimChecks.validator.checkArg('ITEM', 142, 146, 12, maxbar)));     }, \"[ outcome -> outcome = item 0 maxbar ]\", true, false), PrimChecks.validator.checkArg('FILTER', 112, 118, 8, world.observer.getGlobal(\"single-outcomes\")))); ProcedurePrims.stack().currentContext().registerStringRunVar(\"MAXRANGE\", maxrange);     plotManager.setYRange(0, PrimChecks.list.max(193, 196, ListPrims.list(51, maxrange)));;   }); }","display":"default","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"histogram single-outcomes let maxbar modes single-outcomes let maxrange length filter [ outcome -> outcome = item 0 maxbar ] single-outcomes set-plot-y-range 0 max list 51 maxrange","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Single Dice","left":11,"top":48,"right":171,"bottom":590,"xAxis":"Die Value","yAxis":"Count","xmin":1,"xmax":7,"ymin":0,"ymax":51,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"histogram single-outcomes let maxbar modes single-outcomes let maxrange length filter [ outcome -> outcome = item 0 maxbar ] single-outcomes set-plot-y-range 0 max list 51 maxrange","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Pair Sums', 'default', function() {     plotManager.drawHistogramFrom(world.observer.getGlobal(\"pair-outcomes\"));     let maxbar = PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 68, 73, 8, world.observer.getGlobal(\"pair-outcomes\"))); ProcedurePrims.stack().currentContext().registerStringRunVar(\"MAXBAR\", maxbar);     let maxrange = PrimChecks.list.length(PrimChecks.list.filter(108, 114, PrimChecks.task.checked(115, 116, function(outcome) {       PrimChecks.procedure.runArgCountCheck('runresult', 128, 151, 1, arguments.length);       return Prims.equality(outcome, PrimChecks.list.item(138, 142, 0, PrimChecks.validator.checkArg('ITEM', 138, 142, 12, maxbar)));     }, \"[ outcome -> outcome = item 0 maxbar ]\", true, false), PrimChecks.validator.checkArg('FILTER', 108, 114, 8, world.observer.getGlobal(\"pair-outcomes\")))); ProcedurePrims.stack().currentContext().registerStringRunVar(\"MAXRANGE\", maxrange);     plotManager.setYRange(0, PrimChecks.list.max(187, 190, ListPrims.list(51, maxrange)));;   }); }","display":"default","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"histogram pair-outcomes let maxbar modes pair-outcomes let maxrange length filter [ outcome -> outcome = item 0 maxbar ] pair-outcomes set-plot-y-range 0 max list 51 maxrange","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Pair Sums","left":562,"top":49,"right":783,"bottom":593,"xAxis":"Dice Total","yAxis":"Count","xmin":2,"xmax":13,"ymin":0,"ymax":51,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"histogram pair-outcomes let maxbar modes pair-outcomes let maxrange length filter [ outcome -> outcome = item 0 maxbar ] pair-outcomes set-plot-y-range 0 max list 51 maxrange","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"stop-at-top?","left":374,"top":4,"right":498,"bottom":37,"display":"stop-at-top?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["stop-at-top?", "generators", "top-row", "single-outcomes", "pair-outcomes"], ["stop-at-top?"], ["column"], -10, 26, 0, 51, 10, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -88,35 +88,35 @@ ProcedurePrims.defineCommand("setup", 701, 1311, (function() {
   world.clearAll();
   world.observer.setGlobal("single-outcomes", []);
   world.observer.setGlobal("pair-outcomes", []);
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.gt(PrimChecks.patch.getVariable("pxcor"), 4); }), function() {
-    PrimChecks.patch.setVariable("column", PrimChecks.math.floor(PrimChecks.math.div(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("pxcor")), 1), 2)));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return Prims.lt(PrimChecks.patch.getVariable("pxcor"), -4); }), function() {
-    PrimChecks.patch.setVariable("column", PrimChecks.math.plus(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.patch.getVariable("pxcor")), world.topology.minPxcor), 1));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("pcolor", PrimChecks.math.plus(5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() { return !Prims.equality(PrimChecks.patch.getVariable("column"), 0); }), function() {
-    if (Prims.equality(PrimChecks.math.mod(PrimChecks.validator.checkArg('MOD', 1, PrimChecks.patch.getVariable("column")), 2), 0)) {
-      PrimChecks.patch.setVariable("pcolor", 5);
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(813, 817, world.patches(), function() { return Prims.gt(PrimChecks.patch.getVariable(819, 824, "pxcor"), 4); }), function() {
+    PrimChecks.patch.setVariable(840, 846, "column", PrimChecks.math.floor(PrimChecks.math.div(866, 867, PrimChecks.math.minus(861, 862, PrimChecks.validator.checkArg('-', 861, 862, 1, PrimChecks.patch.getVariable(855, 860, "pxcor")), 1), 2)));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(801, 804, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(889, 893, world.patches(), function() { return Prims.lt(PrimChecks.patch.getVariable(895, 900, "pxcor"), -4); }), function() {
+    PrimChecks.patch.setVariable(917, 923, "column", PrimChecks.math.plus(943, 944, PrimChecks.math.minus(930, 931, PrimChecks.validator.checkArg('-', 930, 931, 1, PrimChecks.patch.getVariable(924, 929, "pxcor")), world.topology.minPxcor), 1));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(877, 880, R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(990, 996, "pcolor", PrimChecks.math.plus(1002, 1003, 5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(972, 975, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(1022, 1026, world.patches(), function() { return !Prims.equality(PrimChecks.patch.getVariable(1028, 1034, "column"), 0); }), function() {
+    if (Prims.equality(PrimChecks.math.mod(1061, 1064, PrimChecks.validator.checkArg('MOD', 1061, 1064, 1, PrimChecks.patch.getVariable(1054, 1060, "column")), 2), 0)) {
+      PrimChecks.patch.setVariable(1083, 1089, "pcolor", 5);
     }
     else {
-      PrimChecks.patch.setVariable("pcolor", PrimChecks.math.minus(35, 1));
+      PrimChecks.patch.setVariable(1109, 1115, "pcolor", PrimChecks.math.minus(1122, 1123, 35, 1));
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  world.observer.setGlobal("top-row", PrimChecks.agentset.with(world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable("pycor"), world.topology.maxPycor); }));
-  world.observer.setGlobal("generators", PrimChecks.agentset.with(PrimChecks.validator.checkArg('WITH', 112, world.observer.getGlobal("top-row")), function() {
-    return (Prims.equality(PrimChecks.patch.getVariable("pxcor"), -1) || Prims.equality(PrimChecks.patch.getVariable("pxcor"), 0));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1010, 1013, R); return R; }
+  world.observer.setGlobal("top-row", PrimChecks.agentset.with(1176, 1180, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(1182, 1187, "pycor"), world.topology.maxPycor); }));
+  world.observer.setGlobal("generators", PrimChecks.agentset.with(1226, 1230, PrimChecks.validator.checkArg('WITH', 1226, 1230, 112, world.observer.getGlobal("top-row")), function() {
+    return (Prims.equality(PrimChecks.patch.getVariable(1232, 1237, "pxcor"), -1) || Prims.equality(PrimChecks.patch.getVariable(1246, 1251, "pxcor"), 0));
   }));
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 1319, 1772, (function() {
-  if ((PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("stop-at-top?")) && PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(PrimChecks.validator.checkArg('TURTLES-ON', 1904, world.observer.getGlobal("top-row")))))) {
+  if ((PrimChecks.validator.checkArg('AND', 1340, 1343, 2, world.observer.getGlobal("stop-at-top?")) && PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(PrimChecks.validator.checkArg('TURTLES-ON', 1349, 1359, 1904, world.observer.getGlobal("top-row")))))) {
     UserDialogPrims.confirm("The top has been reached. Turn STOP-AT-TOP? off to keep going.");
-    return PrimChecks.procedure.stop();
+    return PrimChecks.procedure.stop(1456, 1460);
   }
-  if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("stop-at-top?")))) {
-    var R = ProcedurePrims.callCommand("bump-down", PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("STACKED-DICE"), function() { return Prims.lt(PrimChecks.patch.getVariable("pxcor"), 0); })); if (R === DeathInterrupt) { return R; }
-    var R = ProcedurePrims.callCommand("bump-down", PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("STACKED-DICE"), function() { return Prims.gt(PrimChecks.patch.getVariable("pxcor"), 0); })); if (R === DeathInterrupt) { return R; }
+  if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 1470, 1473, 2, world.observer.getGlobal("stop-at-top?")))) {
+    var R = ProcedurePrims.callCommand("bump-down", PrimChecks.agentset.with(1516, 1520, world.turtleManager.turtlesOfBreed("STACKED-DICE"), function() { return Prims.lt(PrimChecks.patch.getVariable(1522, 1527, "pxcor"), 0); })); if (R === DeathInterrupt) { return R; }
+    var R = ProcedurePrims.callCommand("bump-down", PrimChecks.agentset.with(1560, 1564, world.turtleManager.turtlesOfBreed("STACKED-DICE"), function() { return Prims.gt(PrimChecks.patch.getVariable(1566, 1571, "pxcor"), 0); })); if (R === DeathInterrupt) { return R; }
   }
   var R = ProcedurePrims.callCommand("roll-dice"); if (R === DeathInterrupt) { return R; }
   while ((PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("SINGLE-DICE")) || PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("PAIRED-DICE")))) {
@@ -127,117 +127,117 @@ ProcedurePrims.defineCommand("go", 1319, 1772, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("roll-dice", 1835, 2601, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.observer.getGlobal("generators")), function() {
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1903, 1906, 1904, world.observer.getGlobal("generators")), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "PAIRED-DICE"), function() {
-      PrimChecks.turtleOrLink.setVariable("color", 9.9);
-      PrimChecks.turtle.setVariable("die-value", PrimChecks.math.plus(1, RandomPrims.randomLong(6)));
-      PrimChecks.turtleOrLink.setVariable("shape", StringPrims.word("die ", PrimChecks.turtle.getVariable("die-value")));
-      PrimChecks.turtle.setVariable("heading", 90);
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      PrimChecks.turtleOrLink.setVariable(1957, 1962, "color", 9.9);
+      PrimChecks.turtle.setVariable(1979, 1988, "die-value", PrimChecks.math.plus(1991, 1992, 1, RandomPrims.randomLong(6)));
+      PrimChecks.turtleOrLink.setVariable(2012, 2017, "shape", StringPrims.word("die ", PrimChecks.turtle.getVariable(2030, 2039, "die-value")));
+      PrimChecks.turtle.setVariable(2050, 2057, "heading", 90);
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1924, 1942, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1903, 1906, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() {
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, "SINGLE-DICE"), function() {
-      PrimChecks.turtle.setVariable("heading", 270);
-      PrimChecks.turtleOrLink.setVariable("shape", PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable("shape"); }));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  let total = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { return PrimChecks.turtle.getVariable("die-value"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL", total);
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { PrimChecks.turtle.setVariable("pair-sum", total); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  world.observer.setGlobal("pair-outcomes", PrimChecks.list.lput(total, PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("pair-outcomes"))));
+      PrimChecks.turtle.setVariable(2178, 2185, "heading", 270);
+      PrimChecks.turtleOrLink.setVariable(2299, 2304, "shape", PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable(2306, 2311, "shape"); }));
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2146, 2163, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2124, 2127, R); return R; }
+  let total = PrimChecks.list.sum(2384, 2387, PrimChecks.validator.checkArg('SUM', 2384, 2387, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { return PrimChecks.turtle.getVariable(2389, 2398, "die-value"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL", total);
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { PrimChecks.turtle.setVariable(2439, 2447, "pair-sum", total); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2417, 2420, R); return R; }
+  world.observer.setGlobal("pair-outcomes", PrimChecks.list.lput(total, PrimChecks.validator.checkArg('LPUT', 2503, 2507, 8, world.observer.getGlobal("pair-outcomes"))));
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() {
-    world.observer.setGlobal("single-outcomes", PrimChecks.list.lput(PrimChecks.turtle.getVariable("die-value"), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("single-outcomes"))));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    world.observer.setGlobal("single-outcomes", PrimChecks.list.lput(PrimChecks.turtle.getVariable(2573, 2582, "die-value"), PrimChecks.validator.checkArg('LPUT', 2568, 2572, 8, world.observer.getGlobal("single-outcomes"))));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2530, 2533, R); return R; }
 }))
 ProcedurePrims.defineCommand("move-paired-dice", 2609, 3010, (function() {
-  if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() {
-    return !Prims.equality(PrimChecks.turtle.getVariable("pair-sum"), PrimChecks.patch.getVariable("column"));
+  if (PrimChecks.agentset.anyWith(null, null, world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() {
+    return !Prims.equality(PrimChecks.turtle.getVariable(2740, 2748, "pair-sum"), PrimChecks.patch.getVariable(2752, 2758, "column"));
   })) {
-    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2766, 2769, R); return R; }
   }
   else {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAIRED-DICE"), function() {
-      if (Prims.equality(PrimChecks.patch.getVariable("pycor"), world.topology.minPycor)) {
+      if (Prims.equality(PrimChecks.patch.getVariable(2936, 2941, "pycor"), world.topology.minPycor)) {
         var R = ProcedurePrims.callCommand("paired-die-check-visible"); if (R === DeathInterrupt) { return R; }
       }
       var R = ProcedurePrims.callCommand("fall"); if (R === DeathInterrupt) { return R; }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2831, 2834, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("move-single-dice", 3018, 3404, (function() {
   let howHmany = PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SINGLE-DICE")); ProcedurePrims.stack().currentContext().registerStringRunVar("HOW-MANY", howHmany);
   if (Prims.gt(howHmany, 0)) {
-    var R = ProcedurePrims.ask(PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable("pycor"); }), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable(3290, 3295, "pycor"); }), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3262, 3265, R); return R; }
   }
   if (Prims.gt(howHmany, 1)) {
-    var R = ProcedurePrims.ask(PrimChecks.agentset.maxOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable("pycor"); }), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.agentset.maxOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable(3373, 3378, "pycor"); }), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3345, 3348, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("move-single-die", 3412, 3642, (function() {
-  if (!Prims.equality(PrimChecks.turtle.getVariable("die-value"), PrimChecks.patch.getVariable("column"))) {
+  if (!Prims.equality(PrimChecks.turtle.getVariable(3462, 3471, "die-value"), PrimChecks.patch.getVariable(3475, 3481, "column"))) {
     SelfManager.self()._optimalFdOne();
   }
   else {
-    if (Prims.equality(PrimChecks.patch.getVariable("pycor"), world.topology.minPycor)) {
+    if (Prims.equality(PrimChecks.patch.getVariable(3578, 3583, "pycor"), world.topology.minPycor)) {
       var R = ProcedurePrims.callCommand("single-die-check-visible"); if (R === DeathInterrupt) { return R; }
     }
     var R = ProcedurePrims.callCommand("fall"); if (R === DeathInterrupt) { return R; }
   }
 }))
 ProcedurePrims.defineCommand("fall", 3650, 3986, (function() {
-  PrimChecks.turtle.setVariable("heading", 180);
-  if ((Prims.gt(PrimChecks.patch.getVariable("pycor"), world.topology.minPycor) && PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.agentset.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1)))))) {
+  PrimChecks.turtle.setVariable(3700, 3707, "heading", 180);
+  if ((Prims.gt(PrimChecks.patch.getVariable(3722, 3727, "pycor"), world.topology.minPycor) && PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.agentset.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1)))))) {
     SelfManager.self()._optimalFdOne();
   }
   else {
-    let oldHshape = PrimChecks.turtleOrLink.getVariable("shape"); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-SHAPE", oldHshape);
-    PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("STACKED-DICE"));
-    PrimChecks.turtleOrLink.setVariable("shape", oldHshape);
+    let oldHshape = PrimChecks.turtleOrLink.getVariable(3919, 3924, "shape"); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-SHAPE", oldHshape);
+    PrimChecks.turtleOrLink.setVariable(3935, 3940, "breed", world.turtleManager.turtlesOfBreed("STACKED-DICE"));
+    PrimChecks.turtleOrLink.setVariable(3964, 3969, "shape", oldHshape);
   }
 }))
 ProcedurePrims.defineCommand("single-die-check-visible", 4047, 4433, (function() {
   if (Prims.equality(world.observer.getGlobal("single-outcomes"), [])) {
-    return PrimChecks.procedure.stop();
+    return PrimChecks.procedure.stop(4125, 4129);
   }
-  let mode = PrimChecks.list.first(PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 8, world.observer.getGlobal("single-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("MODE", mode);
-  let heightHofHtallestHcolumn = PrimChecks.list.length(PrimChecks.list.filter(PrimChecks.task.checked(function(outcome) {
-    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
+  let mode = PrimChecks.list.first(4143, 4148, PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 4149, 4154, 8, world.observer.getGlobal("single-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("MODE", mode);
+  let heightHofHtallestHcolumn = PrimChecks.list.length(PrimChecks.list.filter(4209, 4215, PrimChecks.task.checked(4216, 4217, function(outcome) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 4229, 4243, 1, arguments.length);
     return Prims.equality(outcome, mode);
-  }, "[ outcome -> outcome = mode ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("single-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-TALLEST-COLUMN", heightHofHtallestHcolumn);
-  let heightHofHmyHcolumn = PrimChecks.list.length(PrimChecks.list.filter(PrimChecks.task.checked(function(outcome) {
-    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
-    return Prims.equality(outcome, PrimChecks.turtle.getVariable("die-value"));
-  }, "[ outcome -> outcome = die-value ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("single-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-MY-COLUMN", heightHofHmyHcolumn);
-  if (Prims.gte(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, heightHofHtallestHcolumn), PrimChecks.validator.checkArg('-', 1, heightHofHmyHcolumn)), PrimChecks.math.minus(world.topology.height, 2))) {
+  }, "[ outcome -> outcome = mode ]", true, false), PrimChecks.validator.checkArg('FILTER', 4209, 4215, 8, world.observer.getGlobal("single-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-TALLEST-COLUMN", heightHofHtallestHcolumn);
+  let heightHofHmyHcolumn = PrimChecks.list.length(PrimChecks.list.filter(4294, 4300, PrimChecks.task.checked(4301, 4302, function(outcome) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 4314, 4333, 1, arguments.length);
+    return Prims.equality(outcome, PrimChecks.turtle.getVariable(4324, 4333, "die-value"));
+  }, "[ outcome -> outcome = die-value ]", true, false), PrimChecks.validator.checkArg('FILTER', 4294, 4300, 8, world.observer.getGlobal("single-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-MY-COLUMN", heightHofHmyHcolumn);
+  if (Prims.gte(PrimChecks.math.minus(4382, 4383, PrimChecks.validator.checkArg('-', 4382, 4383, 1, heightHofHtallestHcolumn), PrimChecks.validator.checkArg('-', 4382, 4383, 1, heightHofHmyHcolumn)), PrimChecks.math.minus(4421, 4422, world.topology.height, 2))) {
     return SelfManager.self().die();
   }
 }))
 ProcedurePrims.defineCommand("paired-die-check-visible", 4494, 4873, (function() {
   if (Prims.equality(world.observer.getGlobal("pair-outcomes"), [])) {
-    return PrimChecks.procedure.stop();
+    return PrimChecks.procedure.stop(4570, 4574);
   }
-  let mode = PrimChecks.list.first(PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("MODE", mode);
-  let heightHofHtallestHcolumn = PrimChecks.list.length(PrimChecks.list.filter(PrimChecks.task.checked(function(outcome) {
-    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
+  let mode = PrimChecks.list.first(4588, 4593, PrimChecks.list.modes(PrimChecks.validator.checkArg('MODES', 4594, 4599, 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("MODE", mode);
+  let heightHofHtallestHcolumn = PrimChecks.list.length(PrimChecks.list.filter(4652, 4658, PrimChecks.task.checked(4659, 4660, function(outcome) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 4672, 4686, 1, arguments.length);
     return Prims.equality(outcome, mode);
-  }, "[ outcome -> outcome = mode ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-TALLEST-COLUMN", heightHofHtallestHcolumn);
-  let heightHofHmyHcolumn = PrimChecks.list.length(PrimChecks.list.filter(PrimChecks.task.checked(function(outcome) {
-    PrimChecks.procedure.runArgCountCheck('runresult', 1, arguments.length);
-    return Prims.equality(outcome, PrimChecks.turtle.getVariable("pair-sum"));
-  }, "[ outcome -> outcome = pair-sum ]", true, false), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-MY-COLUMN", heightHofHmyHcolumn);
-  if (Prims.gte(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, heightHofHtallestHcolumn), PrimChecks.validator.checkArg('-', 1, heightHofHmyHcolumn)), PrimChecks.math.minus(world.topology.height, 2))) {
+  }, "[ outcome -> outcome = mode ]", true, false), PrimChecks.validator.checkArg('FILTER', 4652, 4658, 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-TALLEST-COLUMN", heightHofHtallestHcolumn);
+  let heightHofHmyHcolumn = PrimChecks.list.length(PrimChecks.list.filter(4736, 4742, PrimChecks.task.checked(4743, 4744, function(outcome) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 4756, 4774, 1, arguments.length);
+    return Prims.equality(outcome, PrimChecks.turtle.getVariable(4766, 4774, "pair-sum"));
+  }, "[ outcome -> outcome = pair-sum ]", true, false), PrimChecks.validator.checkArg('FILTER', 4736, 4742, 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-MY-COLUMN", heightHofHmyHcolumn);
+  if (Prims.gte(PrimChecks.math.minus(4822, 4823, PrimChecks.validator.checkArg('-', 4822, 4823, 1, heightHofHtallestHcolumn), PrimChecks.validator.checkArg('-', 4822, 4823, 1, heightHofHmyHcolumn)), PrimChecks.math.minus(4861, 4862, world.topology.height, 2))) {
     return SelfManager.self().die();
   }
 }))
 ProcedurePrims.defineCommand("bump-down", 4881, 5038, (function(candidates) {
-  while (PrimChecks.agentset.anyWith(candidates, function() {
-    return Prims.equality(PrimChecks.patch.getVariable("pycor"), PrimChecks.math.minus(world.topology.maxPycor, 2));
+  while (PrimChecks.agentset.anyWith(null, null, candidates, function() {
+    return Prims.equality(PrimChecks.patch.getVariable(4935, 4940, "pycor"), PrimChecks.math.minus(4953, 4954, world.topology.maxPycor, 2));
   })) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, candidates), function() {
-      if (Prims.equality(PrimChecks.patch.getVariable("pycor"), world.topology.minPycor)) {
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4965, 4968, 1904, candidates), function() {
+      if (Prims.equality(PrimChecks.patch.getVariable(4991, 4996, "pycor"), world.topology.minPycor)) {
         return SelfManager.self().die();
       }
       SelfManager.self()._optimalFdOne();
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4965, 4968, R); return R; }
   }
 }))
 world.observer.setGlobal("stop-at-top?", false);

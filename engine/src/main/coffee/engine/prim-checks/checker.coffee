@@ -1,6 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ checks } = require('../core/typechecker')
+{ Something } = require('brazier/maybe')
+
+{ checks }                       = require('../core/typechecker')
+{ exceptionFactory: exceptions } = require('util/exception')
 
 AgentSetChecks  = require('./agentset-checks')
 ColorChecks     = require('./color-checks')
@@ -33,16 +36,21 @@ class Checker
     @task      = new TaskChecks(@validator)
 
     @turtleOrLink = {
-      getVariable: (name) =>
+      getVariable: (sourceStart, sourceEnd, name) =>
         bundle = if checks.isTurtle(getSelf()) then @turtle else @link
-        bundle.getVariable(name)
-      setVariable: (name, value) =>
+        bundle.getVariable(sourceStart, sourceEnd, name)
+
+      setVariable: (sourceStart, sourceEnd, name, value) =>
         bundle = if checks.isTurtle(getSelf()) then @turtle else @link
-        bundle.setVariable(name, value)
+        bundle.setVariable(sourceStart, sourceEnd, name, value)
     }
 
-  # (String) => Unit
-  imperfectImport: (primName) ->
-    @validator.error(primName, 'Unfortunately, no perfect equivalent to `_` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.', primName)
+  # (Int, Int, String) => Unit
+  errorPrim: (sourceStart, sourceEnd, message) ->
+    throw exceptions.runtime(message, "error", Something(sourceStart), Something(sourceEnd))
+
+  # (String, Int, Int) => Unit
+  imperfectImport: (primName, sourceStart, sourceEnd) ->
+    @validator.error(primName, sourceStart, sourceEnd, 'Unfortunately, no perfect equivalent to `_` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.', primName)
 
 module.exports = Checker

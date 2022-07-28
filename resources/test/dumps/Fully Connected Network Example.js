@@ -53,9 +53,9 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 3, 207, (function() {
   world.clearAll();
   world.turtleManager.createTurtles(world.observer.getGlobal("num-nodes"), "");
-  LayoutManager.layoutCircle(world.turtles(), PrimChecks.math.minus(PrimChecks.math.div(world.topology.width, 2), 1));
+  LayoutManager.layoutCircle(world.turtles(), PrimChecks.math.minus(119, 120, PrimChecks.math.div(115, 116, world.topology.width, 2), 1));
   var R = ProcedurePrims.ask(world.turtles(), function() {
-    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfPrims.other(world.turtles()), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(SelfPrims.other(world.turtles()), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(173, 190, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(159, 162, R); return R; }
 }))
 world.observer.setGlobal("num-nodes", 16);

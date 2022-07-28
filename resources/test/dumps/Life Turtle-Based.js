@@ -28,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "cells", singular: "cell", varNames: [] }, { name: "babies", singular: "baby", varNames: [] }])([], [])('breed [cells cell]    ;; living cells breed [babies baby]   ;; show where a cell will be born  globals [   erasing?        ;; is the current draw-cells mouse click erasing or adding? ]  patches-own [   live-neighbors  ;; count of how many neighboring cells are alive ]  to setup-blank   clear-all   set-default-shape cells \"circle\"   set-default-shape babies \"dot\"   ask patches     [ set live-neighbors 0 ]   reset-ticks end  to setup-random   setup-blank   ;; create initial babies   ask patches     [ if random-float 100 < initial-density       [ sprout-babies 1 ] ]   ;; grow the babies into adult cells   go   reset-ticks  ;; set the tick counter back to 0 end  ;; this procedure is called when a cell is about to become alive to birth  ;; patch procedure   sprout-babies 1   [ ;; soon-to-be-cells are lime     set color lime + 1 ]  ;; + 1 makes the lime a bit lighter end  to go   ;; get rid of the dying cells from the previous tick   ask cells with [color = gray]     [ die ]   ;; babies become alive   ask babies     [ set breed cells       set color white ]   ;; All the live cells count how many live neighbors they have.   ;; Note we don\'t bother doing this for every patch, only for   ;; the ones that are actually adjacent to at least one cell.   ;; This should make the program run faster.   ask cells     [ ask neighbors       [ set live-neighbors live-neighbors + 1 ] ]   ;; Starting a new \"ask\" here ensures that all the cells   ;; finish executing the first ask before any of them start executing   ;; the second ask.   ;; Here we handle the death rule.   ask cells     [ ifelse live-neighbors = 2 or live-neighbors = 3       [ set color white ]       [ set color gray ] ] ;; gray cells will die next round                            ;; Now we handle the birth rule.   ask patches     [ if not any? cells-here and live-neighbors = 3       [ birth ]     ;; While we\'re doing \"ask patches\", we might as well     ;; reset the live-neighbors counts for the next generation.     set live-neighbors 0 ]   tick end  ;; user adds or removes cells with the mouse to draw-cells   ifelse mouse-down? [     if erasing? = 0 [       set erasing? any? cells-on patch mouse-xcor mouse-ycor     ]     ask patch mouse-xcor mouse-ycor [       ifelse erasing? [         erase       ] [         draw       ]     ]     display   ] [     set erasing? 0   ] end  ;; user adds a cell with the mouse to draw  ;; patch procedure   if not any? cells-here     [ ask turtles-here [ die ]  ;; old cells and babies go away       sprout-cells 1 [ set color white ]       update       ask neighbors [ update ] ] end  ;; user removes a cell with the mouse to erase  ;; patch procedure   ask turtles-here [ die ]   update   ask neighbors [ update ] end  ;; this isn\'t called from GO.  it\'s only used for ;; bringing individual patches up to date in response to ;; the user adding or removing cells with the mouse. to update  ;; patch procedure   ask babies-here     [ die ]   let n count cells-on neighbors   ifelse any? cells-here     [ ifelse n = 2 or n = 3       [ ask cells-here [ set color white ] ]       [ ask cells-here [ set color gray  ] ] ]     [ if n = 3       [ sprout-babies 1         [ set color lime + 1 ] ] ]   set live-neighbors 0  ;; reset for next time through \"go\" end   ; Copyright 2005 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":290,"top":10,"right":795,"bottom":516,"dimensions":{"minPxcor":-35,"maxPxcor":35,"minPycor":-35,"maxPycor":35,"patchSize":7,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":15,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"0.1","variable":"initial-density","left":125,"top":72,"right":281,"bottom":105,"display":"initial-density","min":"0","max":"100","default":35,"step":"0.1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup-random\"); if (R === StopInterrupt) { return R; }","source":"setup-random","left":16,"top":73,"right":118,"bottom":106,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":17,"top":227,"right":121,"bottom":265,"display":"go-once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":127,"top":227,"right":231,"bottom":265,"display":"go-forever","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed(\"CELLS\")), PrimChecks.agentset.count(world.patches())), 100)","source":"(count cells / count patches) * 100","left":67,"top":274,"right":170,"bottom":319,"display":"current density","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup-blank\"); if (R === StopInterrupt) { return R; }","source":"setup-blank","left":16,"top":37,"right":118,"bottom":70,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"When this button is down, you can add or remove cells by holding down the mouse button and \"drawing\".","left":131,"top":136,"right":288,"bottom":206,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"draw-cells\"); if (R === StopInterrupt) { return R; }","source":"draw-cells","left":16,"top":144,"right":119,"bottom":179,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["initial-density", "erasing?"], ["initial-density"], ["live-neighbors"], -35, 35, -35, 35, 7, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "cells", singular: "cell", varNames: [] }, { name: "babies", singular: "baby", varNames: [] }])([], [])('breed [cells cell]    ;; living cells breed [babies baby]   ;; show where a cell will be born  globals [   erasing?        ;; is the current draw-cells mouse click erasing or adding? ]  patches-own [   live-neighbors  ;; count of how many neighboring cells are alive ]  to setup-blank   clear-all   set-default-shape cells \"circle\"   set-default-shape babies \"dot\"   ask patches     [ set live-neighbors 0 ]   reset-ticks end  to setup-random   setup-blank   ;; create initial babies   ask patches     [ if random-float 100 < initial-density       [ sprout-babies 1 ] ]   ;; grow the babies into adult cells   go   reset-ticks  ;; set the tick counter back to 0 end  ;; this procedure is called when a cell is about to become alive to birth  ;; patch procedure   sprout-babies 1   [ ;; soon-to-be-cells are lime     set color lime + 1 ]  ;; + 1 makes the lime a bit lighter end  to go   ;; get rid of the dying cells from the previous tick   ask cells with [color = gray]     [ die ]   ;; babies become alive   ask babies     [ set breed cells       set color white ]   ;; All the live cells count how many live neighbors they have.   ;; Note we don\'t bother doing this for every patch, only for   ;; the ones that are actually adjacent to at least one cell.   ;; This should make the program run faster.   ask cells     [ ask neighbors       [ set live-neighbors live-neighbors + 1 ] ]   ;; Starting a new \"ask\" here ensures that all the cells   ;; finish executing the first ask before any of them start executing   ;; the second ask.   ;; Here we handle the death rule.   ask cells     [ ifelse live-neighbors = 2 or live-neighbors = 3       [ set color white ]       [ set color gray ] ] ;; gray cells will die next round                            ;; Now we handle the birth rule.   ask patches     [ if not any? cells-here and live-neighbors = 3       [ birth ]     ;; While we\'re doing \"ask patches\", we might as well     ;; reset the live-neighbors counts for the next generation.     set live-neighbors 0 ]   tick end  ;; user adds or removes cells with the mouse to draw-cells   ifelse mouse-down? [     if erasing? = 0 [       set erasing? any? cells-on patch mouse-xcor mouse-ycor     ]     ask patch mouse-xcor mouse-ycor [       ifelse erasing? [         erase       ] [         draw       ]     ]     display   ] [     set erasing? 0   ] end  ;; user adds a cell with the mouse to draw  ;; patch procedure   if not any? cells-here     [ ask turtles-here [ die ]  ;; old cells and babies go away       sprout-cells 1 [ set color white ]       update       ask neighbors [ update ] ] end  ;; user removes a cell with the mouse to erase  ;; patch procedure   ask turtles-here [ die ]   update   ask neighbors [ update ] end  ;; this isn\'t called from GO.  it\'s only used for ;; bringing individual patches up to date in response to ;; the user adding or removing cells with the mouse. to update  ;; patch procedure   ask babies-here     [ die ]   let n count cells-on neighbors   ifelse any? cells-here     [ ifelse n = 2 or n = 3       [ ask cells-here [ set color white ] ]       [ ask cells-here [ set color gray  ] ] ]     [ if n = 3       [ sprout-babies 1         [ set color lime + 1 ] ] ]   set live-neighbors 0  ;; reset for next time through \"go\" end   ; Copyright 2005 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":290,"top":10,"right":795,"bottom":516,"dimensions":{"minPxcor":-35,"maxPxcor":35,"minPycor":-35,"maxPycor":35,"patchSize":7,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":15,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"0.1","variable":"initial-density","left":125,"top":72,"right":281,"bottom":105,"display":"initial-density","min":"0","max":"100","default":35,"step":"0.1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup-random\"); if (R === StopInterrupt) { return R; }","source":"setup-random","left":16,"top":73,"right":118,"bottom":106,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":17,"top":227,"right":121,"bottom":265,"display":"go-once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":127,"top":227,"right":231,"bottom":265,"display":"go-forever","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"PrimChecks.math.mult(79, 80, PrimChecks.math.div(62, 63, PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed(\"CELLS\")), PrimChecks.agentset.count(world.patches())), 100)","source":"(count cells / count patches) * 100","left":67,"top":274,"right":170,"bottom":319,"display":"current density","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup-blank\"); if (R === StopInterrupt) { return R; }","source":"setup-blank","left":16,"top":37,"right":118,"bottom":70,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"When this button is down, you can add or remove cells by holding down the mouse button and \"drawing\".","left":131,"top":136,"right":288,"bottom":206,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"draw-cells\"); if (R === StopInterrupt) { return R; }","source":"draw-cells","left":16,"top":144,"right":119,"bottom":179,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["initial-density", "erasing?"], ["initial-density"], ["live-neighbors"], -35, 35, -35, 35, 7, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -54,7 +54,7 @@ ProcedurePrims.defineCommand("setup-blank", 273, 422, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CELLS").getSpecialName(), "circle")
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("BABIES").getSpecialName(), "dot")
-  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable("live-neighbors", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(389, 403, "live-neighbors", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(367, 370, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-random", 430, 664, (function() {
@@ -63,53 +63,53 @@ ProcedurePrims.defineCommand("setup-random", 430, 664, (function() {
     if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("initial-density"))) {
       SelfManager.self().sprout(1, "BABIES");
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(486, 489, R); return R; }
   var R = ProcedurePrims.callCommand("go"); if (R === DeathInterrupt) { return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("birth", 737, 876, (function() {
-  var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "BABIES"), function() { PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(65, 1)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "BABIES"), function() { PrimChecks.turtleOrLink.setVariable(822, 827, "color", PrimChecks.math.plus(833, 834, 65, 1)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(765, 778, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 884, 2025, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("CELLS"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable("color"), 5); }), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(954, 958, world.turtleManager.turtlesOfBreed("CELLS"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(960, 965, "color"), 5); }), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(944, 947, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BABIES"), function() {
-    PrimChecks.turtleOrLink.setVariable("breed", world.turtleManager.turtlesOfBreed("CELLS"));
-    PrimChecks.turtleOrLink.setVariable("color", 9.9);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtleOrLink.setVariable(1034, 1039, "breed", world.turtleManager.turtlesOfBreed("CELLS"));
+    PrimChecks.turtleOrLink.setVariable(1056, 1061, "color", 9.9);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1013, 1016, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CELLS"), function() {
     var R = ProcedurePrims.ask(SelfManager.self().getNeighbors(), function() {
-      PrimChecks.patch.setVariable("live-neighbors", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.patch.getVariable("live-neighbors")), 1));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      PrimChecks.patch.setVariable(1351, 1365, "live-neighbors", PrimChecks.math.plus(1381, 1382, PrimChecks.validator.checkArg('+', 1381, 1382, 1, PrimChecks.patch.getVariable(1366, 1380, "live-neighbors")), 1));
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1325, 1328, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1309, 1312, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CELLS"), function() {
-    if ((Prims.equality(PrimChecks.patch.getVariable("live-neighbors"), 2) || Prims.equality(PrimChecks.patch.getVariable("live-neighbors"), 3))) {
-      PrimChecks.turtleOrLink.setVariable("color", 9.9);
+    if ((Prims.equality(PrimChecks.patch.getVariable(1600, 1614, "live-neighbors"), 2) || Prims.equality(PrimChecks.patch.getVariable(1622, 1636, "live-neighbors"), 3))) {
+      PrimChecks.turtleOrLink.setVariable(1653, 1658, "color", 9.9);
     }
     else {
-      PrimChecks.turtleOrLink.setVariable("color", 5);
+      PrimChecks.turtleOrLink.setVariable(1679, 1684, "color", 5);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1577, 1580, R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
-    if ((PrimChecks.math.not(PrimChecks.agentset.any(SelfManager.self().breedHere("CELLS"))) && Prims.equality(PrimChecks.patch.getVariable("live-neighbors"), 3))) {
+    if ((PrimChecks.math.not(PrimChecks.agentset.any(SelfManager.self().breedHere("CELLS"))) && Prims.equality(PrimChecks.patch.getVariable(1835, 1849, "live-neighbors"), 3))) {
       var R = ProcedurePrims.callCommand("birth"); if (R === DeathInterrupt) { return R; }
     }
-    PrimChecks.patch.setVariable("live-neighbors", 0);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.patch.setVariable(1999, 2013, "live-neighbors", 0);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1790, 1793, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("draw-cells", 2078, 2355, (function() {
   if (MousePrims.isDown()) {
     if (Prims.equality(world.observer.getGlobal("erasing?"), 0)) {
-      world.observer.setGlobal("erasing?", PrimChecks.agentset.any(PrimChecks.agentset.breedOn("CELLS", PrimChecks.validator.checkArg('CELLS-ON', 816, world.getPatchAt(MousePrims.getX(), MousePrims.getY())))));
+      world.observer.setGlobal("erasing?", PrimChecks.agentset.any(PrimChecks.agentset.breedOn("CELLS", PrimChecks.validator.checkArg('CELLS-ON', 2158, 2166, 816, world.getPatchAt(MousePrims.getX(), MousePrims.getY())))));
     }
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(MousePrims.getX(), MousePrims.getY())), function() {
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2205, 2208, 1904, world.getPatchAt(MousePrims.getX(), MousePrims.getY())), function() {
       if (world.observer.getGlobal("erasing?")) {
         var R = ProcedurePrims.callCommand("erase"); if (R === DeathInterrupt) { return R; }
       }
       else {
         var R = ProcedurePrims.callCommand("draw"); if (R === DeathInterrupt) { return R; }
       }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2205, 2208, R); return R; }
     Prims.display();
   }
   else {
@@ -118,33 +118,33 @@ ProcedurePrims.defineCommand("draw-cells", 2078, 2355, (function() {
 }))
 ProcedurePrims.defineCommand("draw", 2398, 2599, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(SelfManager.self().breedHere("CELLS")))) {
-    var R = ProcedurePrims.ask(SelfManager.self().turtlesHere(), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-    var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "CELLS"), function() { PrimChecks.turtleOrLink.setVariable("color", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(SelfManager.self().turtlesHere(), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2454, 2457, R); return R; }
+    var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "CELLS"), function() { PrimChecks.turtleOrLink.setVariable(2539, 2544, "color", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2518, 2530, R); return R; }
     var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; }
-    var R = ProcedurePrims.ask(SelfManager.self().getNeighbors(), function() { var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(SelfManager.self().getNeighbors(), function() { var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2572, 2575, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("erase", 2645, 2734, (function() {
-  var R = ProcedurePrims.ask(SelfManager.self().turtlesHere(), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(SelfManager.self().turtlesHere(), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2673, 2676, R); return R; }
   var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(SelfManager.self().getNeighbors(), function() { var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(SelfManager.self().getNeighbors(), function() { var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2709, 2712, R); return R; }
 }))
 ProcedurePrims.defineCommand("update", 2902, 3271, (function() {
-  var R = ProcedurePrims.ask(SelfManager.self().breedHere("BABIES"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(SelfManager.self().breedHere("BABIES"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2931, 2934, R); return R; }
   let n = PrimChecks.agentset.count(PrimChecks.agentset.breedOn("CELLS", SelfManager.self().getNeighbors())); ProcedurePrims.stack().currentContext().registerStringRunVar("N", n);
   if (PrimChecks.agentset.any(SelfManager.self().breedHere("CELLS"))) {
     if ((Prims.equality(n, 2) || Prims.equality(n, 3))) {
-      var R = ProcedurePrims.ask(SelfManager.self().breedHere("CELLS"), function() { PrimChecks.turtleOrLink.setVariable("color", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(SelfManager.self().breedHere("CELLS"), function() { PrimChecks.turtleOrLink.setVariable(3074, 3079, "color", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3053, 3056, R); return R; }
     }
     else {
-      var R = ProcedurePrims.ask(SelfManager.self().breedHere("CELLS"), function() { PrimChecks.turtleOrLink.setVariable("color", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(SelfManager.self().breedHere("CELLS"), function() { PrimChecks.turtleOrLink.setVariable(3119, 3124, "color", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3098, 3101, R); return R; }
     }
   }
   else {
     if (Prims.equality(n, 3)) {
-      var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "BABIES"), function() { PrimChecks.turtleOrLink.setVariable("color", PrimChecks.math.plus(65, 1)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "BABIES"), function() { PrimChecks.turtleOrLink.setVariable(3190, 3195, "color", PrimChecks.math.plus(3201, 3202, 65, 1)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3160, 3173, R); return R; }
     }
   }
-  PrimChecks.patch.setVariable("live-neighbors", 0);
+  PrimChecks.patch.setVariable(3217, 3231, "live-neighbors", 0);
 }))
 world.observer.setGlobal("initial-density", 35);

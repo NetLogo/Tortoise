@@ -76,11 +76,6 @@ module.exports =
         notImplemented('display', undefined)
       return
 
-    # (String) => Unit
-    error: (message) ->
-      throw exceptions.runtime(message, "error")
-      return
-
     # (Any) => Boolean
     ifElseValueBooleanCheck: (b) ->
       @booleanCheck(b, "IFELSE-VALUE")

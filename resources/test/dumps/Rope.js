@@ -54,48 +54,48 @@ ProcedurePrims.defineCommand("setup", 215, 585, (function() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.topology.width, ""), function() {
-    PrimChecks.turtle.setVariable("xcor", PrimChecks.turtle.getVariable("who"));
-    PrimChecks.turtleOrLink.setVariable("color", 15);
-    PrimChecks.turtle.setVariable("size", 1.5);
-    if (Prims.equality(PrimChecks.patch.getVariable("pxcor"), world.topology.maxPxcor)) {
-      PrimChecks.turtleOrLink.setVariable("color", 105);
+    PrimChecks.turtle.setVariable(309, 313, "xcor", PrimChecks.turtle.getVariable(314, 317, "who"));
+    PrimChecks.turtleOrLink.setVariable(326, 331, "color", 15);
+    PrimChecks.turtle.setVariable(344, 348, "size", 1.5);
+    if (Prims.equality(PrimChecks.patch.getVariable(396, 401, "pxcor"), world.topology.maxPxcor)) {
+      PrimChecks.turtleOrLink.setVariable(426, 431, "color", 105);
     }
-    if (Prims.equality(PrimChecks.patch.getVariable("pxcor"), world.topology.minPxcor)) {
-      PrimChecks.turtleOrLink.setVariable("color", 55);
+    if (Prims.equality(PrimChecks.patch.getVariable(485, 490, "pxcor"), world.topology.minPxcor)) {
+      PrimChecks.turtleOrLink.setVariable(515, 520, "color", 55);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(272, 286, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 593, 1852, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable("color"), 55); }), function() {
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(610, 614, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(616, 621, "color"), 55); }), function() {
     if (Prims.gt(world.ticker.tickCount(), 100)) {
-      PrimChecks.turtle.setVariable("ypos", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("amplitude")), PrimChecks.math.sin(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("frequency")), world.ticker.tickCount()))));
+      PrimChecks.turtle.setVariable(773, 777, "ypos", PrimChecks.math.mult(788, 789, PrimChecks.validator.checkArg('*', 788, 789, 1, world.observer.getGlobal("amplitude")), PrimChecks.math.sin(PrimChecks.math.mult(805, 806, PrimChecks.validator.checkArg('*', 805, 806, 1, world.observer.getGlobal("frequency")), world.ticker.tickCount()))));
     }
     else {
-      PrimChecks.turtle.setVariable("ypos", PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.div(world.ticker.tickCount(), 100), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("amplitude"))), PrimChecks.math.sin(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("frequency")), world.ticker.tickCount()))));
+      PrimChecks.turtle.setVariable(829, 833, "ypos", PrimChecks.math.mult(860, 861, PrimChecks.math.mult(848, 849, PrimChecks.math.div(841, 842, world.ticker.tickCount(), 100), PrimChecks.validator.checkArg('*', 848, 849, 1, world.observer.getGlobal("amplitude"))), PrimChecks.math.sin(PrimChecks.math.mult(877, 878, PrimChecks.validator.checkArg('*', 877, 878, 1, world.observer.getGlobal("frequency")), world.ticker.tickCount()))));
     }
-    if (!Prims.equality(SelfManager.self().patchAt(0, PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ypos")), PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ycor")))), Nobody)) {
-      PrimChecks.turtle.setVariable("ycor", PrimChecks.turtle.getVariable("ypos"));
+    if (!Prims.equality(SelfManager.self().patchAt(0, PrimChecks.math.minus(916, 917, PrimChecks.validator.checkArg('-', 916, 917, 1, PrimChecks.turtle.getVariable(911, 915, "ypos")), PrimChecks.validator.checkArg('-', 916, 917, 1, PrimChecks.turtle.getVariable(918, 922, "ycor")))), Nobody)) {
+      PrimChecks.turtle.setVariable(992, 996, "ycor", PrimChecks.turtle.getVariable(997, 1001, "ypos"));
       SelfManager.self().hideTurtle(false);
     }
     else {
       SelfManager.self().hideTurtle(true);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable("color"), 15); }), function() {
-    PrimChecks.turtle.setVariable("yvel", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("yvel")), PrimChecks.math.plus(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getTurtle(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("who")), 1))), function() { return PrimChecks.turtle.getVariable("ypos"); })), PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ypos"))), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, PrimChecks.turtle.getTurtle(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("who")), 1))), function() { return PrimChecks.turtle.getVariable("ypos"); })), PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ypos"))))));
-    PrimChecks.turtle.setVariable("yvel", PrimChecks.math.mult(PrimChecks.math.div(PrimChecks.math.minus(1000, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("friction"))), 1000), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("yvel"))));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable("color"), 15); }), function() {
-    PrimChecks.turtle.setVariable("ypos", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("ypos")), PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("yvel"))));
-    if (!Prims.equality(SelfManager.self().patchAt(0, PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ypos")), PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("ycor")))), Nobody)) {
-      PrimChecks.turtle.setVariable("ycor", PrimChecks.turtle.getVariable("ypos"));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(598, 601, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(1064, 1068, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(1070, 1075, "color"), 15); }), function() {
+    PrimChecks.turtle.setVariable(1242, 1246, "yvel", PrimChecks.math.plus(1252, 1253, PrimChecks.validator.checkArg('+', 1252, 1253, 1, PrimChecks.turtle.getVariable(1247, 1251, "yvel")), PrimChecks.math.plus(1295, 1296, PrimChecks.math.minus(1287, 1288, PrimChecks.validator.checkArg('-', 1287, 1288, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1264, 1266, 1904, PrimChecks.turtle.getTurtle(1268, 1274, PrimChecks.math.minus(1280, 1281, PrimChecks.validator.checkArg('-', 1280, 1281, 1, PrimChecks.turtle.getVariable(1276, 1279, "who")), 1))), function() { return PrimChecks.turtle.getVariable(1258, 1262, "ypos"); })), PrimChecks.validator.checkArg('-', 1287, 1288, 1, PrimChecks.turtle.getVariable(1289, 1293, "ypos"))), PrimChecks.math.minus(1350, 1351, PrimChecks.validator.checkArg('-', 1350, 1351, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1327, 1329, 1904, PrimChecks.turtle.getTurtle(1331, 1337, PrimChecks.math.plus(1343, 1344, PrimChecks.validator.checkArg('+', 1343, 1344, 1, PrimChecks.turtle.getVariable(1339, 1342, "who")), 1))), function() { return PrimChecks.turtle.getVariable(1321, 1325, "ypos"); })), PrimChecks.validator.checkArg('-', 1350, 1351, 1, PrimChecks.turtle.getVariable(1352, 1356, "ypos"))))));
+    PrimChecks.turtle.setVariable(1367, 1371, "yvel", PrimChecks.math.mult(1399, 1400, PrimChecks.math.div(1391, 1392, PrimChecks.math.minus(1379, 1380, 1000, PrimChecks.validator.checkArg('-', 1379, 1380, 1, world.observer.getGlobal("friction"))), 1000), PrimChecks.validator.checkArg('*', 1399, 1400, 1, PrimChecks.turtle.getVariable(1401, 1405, "yvel"))));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1052, 1055, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(1564, 1568, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(1570, 1575, "color"), 15); }), function() {
+    PrimChecks.turtle.setVariable(1623, 1627, "ypos", PrimChecks.math.plus(1633, 1634, PrimChecks.validator.checkArg('+', 1633, 1634, 1, PrimChecks.turtle.getVariable(1628, 1632, "ypos")), PrimChecks.validator.checkArg('+', 1633, 1634, 1, PrimChecks.turtle.getVariable(1635, 1639, "yvel"))));
+    if (!Prims.equality(SelfManager.self().patchAt(0, PrimChecks.math.minus(1715, 1716, PrimChecks.validator.checkArg('-', 1715, 1716, 1, PrimChecks.turtle.getVariable(1710, 1714, "ypos")), PrimChecks.validator.checkArg('-', 1715, 1716, 1, PrimChecks.turtle.getVariable(1717, 1721, "ycor")))), Nobody)) {
+      PrimChecks.turtle.setVariable(1787, 1791, "ycor", PrimChecks.turtle.getVariable(1792, 1796, "ypos"));
       SelfManager.self().hideTurtle(false);
     }
     else {
       SelfManager.self().hideTurtle(true);
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1552, 1555, R); return R; }
   world.ticker.tick();
 }))
 world.observer.setGlobal("friction", 24);

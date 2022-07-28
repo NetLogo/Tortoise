@@ -82,83 +82,83 @@ ProcedurePrims.defineCommand("clear", 399, 437, (function() {
 ProcedurePrims.defineCommand("test-literal", 445, 569, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
-    PrimChecks.turtle.setVariable("size", 15);
-    PrimChecks.turtle.setVariable("heading", 45);
-    PrimChecks.turtleOrLink.setVariable("color", 15);
+    PrimChecks.turtle.setVariable(495, 499, "size", 15);
+    PrimChecks.turtle.setVariable(511, 518, "heading", 45);
+    PrimChecks.turtleOrLink.setVariable(530, 535, "color", 15);
     SelfManager.self().stamp();
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(468, 482, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-number", 577, 699, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
-    PrimChecks.turtle.setVariable("size", 15);
-    PrimChecks.turtle.setVariable("heading", 45);
-    PrimChecks.turtleOrLink.setVariable("color", 15);
+    PrimChecks.turtle.setVariable(626, 630, "size", 15);
+    PrimChecks.turtle.setVariable(642, 649, "heading", 45);
+    PrimChecks.turtleOrLink.setVariable(661, 666, "color", 15);
     SelfManager.self().stamp();
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(599, 613, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgb", 707, 835, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
-    PrimChecks.turtle.setVariable("size", 15);
-    PrimChecks.turtle.setVariable("heading", 45);
-    PrimChecks.turtleOrLink.setVariable("color", [215, 50, 41]);
+    PrimChecks.turtle.setVariable(753, 757, "size", 15);
+    PrimChecks.turtle.setVariable(769, 776, "heading", 45);
+    PrimChecks.turtleOrLink.setVariable(788, 793, "color", [215, 50, 41]);
     SelfManager.self().stamp();
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(726, 740, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgba-opaque", 843, 983, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
-    PrimChecks.turtle.setVariable("size", 15);
-    PrimChecks.turtle.setVariable("heading", 45);
-    PrimChecks.turtleOrLink.setVariable("color", [215, 50, 41, 255]);
+    PrimChecks.turtle.setVariable(897, 901, "size", 15);
+    PrimChecks.turtle.setVariable(913, 920, "heading", 45);
+    PrimChecks.turtleOrLink.setVariable(932, 937, "color", [215, 50, 41, 255]);
     SelfManager.self().stamp();
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(870, 884, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgba-transparent", 991, 1134, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
-    PrimChecks.turtle.setVariable("size", 15);
-    PrimChecks.turtle.setVariable("heading", 45);
-    PrimChecks.turtleOrLink.setVariable("color", [215, 50, 41, 0]);
+    PrimChecks.turtle.setVariable(1050, 1054, "size", 15);
+    PrimChecks.turtle.setVariable(1066, 1073, "heading", 45);
+    PrimChecks.turtleOrLink.setVariable(1085, 1090, "color", [215, 50, 41, 0]);
     SelfManager.self().stamp();
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1023, 1037, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgba-swap-to-blue", 1142, 1318, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
-    PrimChecks.turtle.setVariable("size", 15);
-    PrimChecks.turtle.setVariable("heading", 45);
-    PrimChecks.turtleOrLink.setVariable("color", [215, 50, 41, 255]);
+    PrimChecks.turtle.setVariable(1202, 1206, "size", 15);
+    PrimChecks.turtle.setVariable(1218, 1225, "heading", 45);
+    PrimChecks.turtleOrLink.setVariable(1237, 1242, "color", [215, 50, 41, 255]);
     SelfManager.self().stamp();
-    PrimChecks.turtleOrLink.setVariable("color", [41, 50, 215, 255]);
+    PrimChecks.turtleOrLink.setVariable(1277, 1282, "color", [41, 50, 215, 255]);
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1175, 1189, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgba-swap-to-transparent", 1326, 1509, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
-    PrimChecks.turtle.setVariable("size", 15);
-    PrimChecks.turtle.setVariable("heading", 45);
-    PrimChecks.turtleOrLink.setVariable("color", [215, 50, 41, 255]);
+    PrimChecks.turtle.setVariable(1393, 1397, "size", 15);
+    PrimChecks.turtle.setVariable(1409, 1416, "heading", 45);
+    PrimChecks.turtleOrLink.setVariable(1428, 1433, "color", [215, 50, 41, 255]);
     SelfManager.self().stamp();
-    PrimChecks.turtleOrLink.setVariable("color", [215, 50, 41, 100]);
+    PrimChecks.turtleOrLink.setVariable(1468, 1473, "color", [215, 50, 41, 100]);
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1366, 1380, R); return R; }
 }))
 ProcedurePrims.defineCommand("test-rgba-swap-to-opaque", 1517, 1695, (function() {
   var R = ProcedurePrims.callCommand("clear"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
-    PrimChecks.turtle.setVariable("size", 15);
-    PrimChecks.turtle.setVariable("heading", 45);
-    PrimChecks.turtleOrLink.setVariable("color", [215, 50, 41, 100]);
+    PrimChecks.turtle.setVariable(1579, 1583, "size", 15);
+    PrimChecks.turtle.setVariable(1595, 1602, "heading", 45);
+    PrimChecks.turtleOrLink.setVariable(1614, 1619, "color", [215, 50, 41, 100]);
     SelfManager.self().stamp();
-    PrimChecks.turtleOrLink.setVariable("color", [215, 50, 41, 255]);
+    PrimChecks.turtleOrLink.setVariable(1654, 1659, "color", [215, 50, 41, 255]);
     SelfManager.self().fd(10);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1552, 1566, R); return R; }
 }))
