@@ -457,13 +457,16 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
 
   @JSExport
   def nextLong(n: Double): Double =
-    nextLong(n.toLong).toDouble
+    nextLongEx(n.toLong).toDouble
 
   /**
    * Returns a long drawn uniformly from 0 to n-1.  Suffice it to say,
    * n must be > 0, or an IllegalArgumentException is raised.
    */
-  def nextLong(n: Long): Long = {
+  // the goofy name is because this is not a method on `Random` in Java 11, but it is a
+  // method on `Random` (via `RandomGenerator`) on Java 17.  We want to support both J11
+  // and J17 if we can, so we rename this.  -Jeremy B September 2022
+  private def nextLongEx(n: Long): Long = {
 
     if (n <= 0) throw new IllegalArgumentException("n must be positive")
 
