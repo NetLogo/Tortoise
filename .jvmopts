@@ -1,0 +1,5 @@
+-Xms8M
+-Xmx3096M
+-Xss8M
+-Djava.awt.headless=true
+-Dfile.encoding=UTF-8

@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  GRAAL_HOME: /home/runner/.jabba/jdk/graalvm@20.0.0
+  GRAAL_URL: https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-22.2.0/graalvm-ce-java17-linux-amd64-22.2.0.tar.gz
+  GRAAL_HOME: /home/runner/.jabba/jdk/graalvm@22.2.0
   SBT_OPTS: -Dsbt.log.noformat=true
 
 jobs:
@@ -23,7 +24,10 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
 
       # Node.js setup should come after GraalVM setup as GraalVM includes a conflicting `node` binary
       # and we want the "regular" node version to "win".  -Jeremy B June 2021
@@ -71,7 +75,10 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
 
       - uses: actions/setup-node@v2
         with:
@@ -97,7 +104,10 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
 
       - name: Compiler JVM Tests
         run: |
@@ -120,7 +130,10 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
 
       - name: NetLogo Web Fast Tests
         run: |
@@ -139,7 +152,10 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
 
       - name: NetLogo Web Command Tests
         run: |
@@ -157,7 +173,10 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
 
       - name: Model JS Dumps
         run: |
@@ -180,7 +199,10 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
 
       - name: Model Docking Tests ${{ matrix.test }}
         run: ./sbt.sh "netLogoWeb / testOnly *TestModels -- ${{ matrix.test }}"

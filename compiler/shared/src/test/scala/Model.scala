@@ -433,7 +433,10 @@ object Model {
     ),
     Model(
       path = "models/Curricular Models/BEAGLE Evolution/Fish Tank Genetic Drift.nlogo",
-      repetitions = 60
+      repetitions = 60,
+      // this model uses `every` when this value is `true`, which causes intermittent
+      // fails when comparing to desktop.  -Jeremy B September 2022
+      setup = "set auto-replace? false"
     ),
     Model(
       path = "models/Curricular Models/Connected Chemistry/Connected Chemistry Reversible Reaction.nlogo",

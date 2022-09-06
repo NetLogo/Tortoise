@@ -2,9 +2,9 @@ import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import sbtcrossproject.CrossProject
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 
-val nlDependencyVersion       = "6.2.2-2f651c5"
+val nlDependencyVersion       = "6.3.0-beta1-184a727"
 
-val parserJsDependencyVersion = "0.3.0-2f651c5"
+val parserJsDependencyVersion = "0.4.0-184a727"
 
 val scalazVersion             = "7.2.34"
 
@@ -58,7 +58,8 @@ stylecheck := {
   (engine       / Compile / scalastyle).toTask("").value
 }
 
-lazy val root = (project in file("."))
+lazy val rootFile = file(".")
+lazy val root     = (project in rootFile)
 
 // These projects are just for scalastyle on shared sources
 lazy val compilerCore = (project in file("compiler/shared")).
@@ -141,6 +142,14 @@ lazy val netLogoWeb: Project = (project in file("netlogo-web")).
     libraryDependencies ++= Seq(
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test"
     ),
+
+    Test / javaOptions ++= Seq(
+      "--add-opens", "java.base/sun.net.www.protocol.http=ALL-UNNAMED"
+    , "-Xss8m"
+    ),
+    Test / baseDirectory := rootFile,
+    Test / fork := true,
+
     // these tasks force the regeneration of the tortoise.js source on each build
     Compile / resourceGenerators += Def.task {
       (compilerJS / Compile / fullOptJS).value
@@ -150,6 +159,7 @@ lazy val netLogoWeb: Project = (project in file("netlogo-web")).
       IO.copy(copies)
       copies.map(_._2)
     }.taskValue,
+
     Compile / resourceGenerators += Def.task {
       (engine / Compile / build).value
       val sourceFile = (engine / Compile / classDirectory).value / "js" / "tortoise" / "shim" / "engine-scala.js"
@@ -160,6 +170,7 @@ lazy val netLogoWeb: Project = (project in file("netlogo-web")).
       IO.copyFile(engineSource, engineDest)
       Seq()
     }.taskValue,
+
     cleanGeneratedSources := { IO.delete(resourceManaged.value) },
     cleanFiles            += resourceManaged.value,
     compile               := ((Compile / compile).dependsOn(

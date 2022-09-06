@@ -265,7 +265,8 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
 
     require(!opened)
 
-    val source    = FileIO.fileToString(path)(UTF8)
+    val absoPath  = java.nio.file.Path.of(path).toAbsolutePath.toString
+    val source    = FileIO.fileToString(absoPath)(UTF8)
     val newSource = addRequiredExtensions(source.replaceAll("""\sdisplay\s""", ""), requiredExts)
     val model     = ModelReader.parseModel(newSource, workspace.parser, Map())
 

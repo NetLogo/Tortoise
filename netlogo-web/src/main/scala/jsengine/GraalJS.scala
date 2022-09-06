@@ -14,7 +14,7 @@ class GraalJS {
   var baos = new ByteArrayOutputStream
   var jsRuntime = Context.newBuilder("js")
     .option("js.global-property", "true")
-    .option("js.ecmascript-version", "2020")
+    .option("js.ecmascript-version", "latest")
     .out(baos)
     .allowAllAccess(true)
     .build
@@ -24,7 +24,12 @@ class GraalJS {
   def reset(): Unit = {
     baos = new ByteArrayOutputStream
     jsRuntime.close()
-    jsRuntime = Context.newBuilder("js").option("js.global-property", "true").out(baos).allowAllAccess(true).build
+    jsRuntime = Context.newBuilder("js")
+      .option("js.global-property", "true")
+      .option("js.ecmascript-version", "latest")
+      .out(baos)
+      .allowAllAccess(true)
+      .build
     setupTortoise()
     ()
   }
