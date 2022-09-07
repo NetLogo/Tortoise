@@ -71,7 +71,7 @@ ProcedurePrims.defineCommand("setup-turtles", 953, 1400, (function() {
       SelfManager.self().moveTo(PrimChecks.list.oneOf(1341, 1347, PrimChecks.validator.checkArg('ONE-OF', 1341, 1347, 120, regionHpatches)));
       PrimChecks.turtleOrLink.setVariable(1373, 1378, "color", PrimChecks.math.plus(1386, 1387, PrimChecks.validator.checkArg('+', 1386, 1387, 1, PrimChecks.patch.getVariable(1379, 1385, "pcolor")), 3));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1281, 1295, R); return R; }
-  }, "[ region-number -> let patches with [ region = region-number ] create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1146, 1153, R); return R; }
+  }, "[ region-number -> let region-patches patches with [ region = region-number ] create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1146, 1153, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 1408, 1441, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1413, 1416, R); return R; }

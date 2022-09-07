@@ -148,7 +148,7 @@ ProcedurePrims.defineCommand("find-top-species", 981, 1282, (function() {
     if (Prims.gt(howHmany, winningHamount)) {
       winningHamount = howHmany; ProcedurePrims.stack().currentContext().updateStringRunVar("WINNING-AMOUNT", winningHamount);
     }
-  }, "[ c -> let count turtles with [ color = c ] if how-many > winning-amount [ set winning-amount how-many ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1075, 1082, R); return R; }
+  }, "[ c -> let how-many count turtles with [ color = c ] if how-many > winning-amount [ set winning-amount how-many ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1075, 1082, R); return R; }
   world.observer.setGlobal("max-percent", PrimChecks.math.div(1265, 1266, PrimChecks.math.mult(1248, 1249, 100, PrimChecks.validator.checkArg('*', 1248, 1249, 1, winningHamount)), PrimChecks.agentset.count(world.turtles())));
 }))
 ProcedurePrims.defineCommand("place-wall", 1698, 2202, (function() {
