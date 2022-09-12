@@ -52,35 +52,35 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 54, 412, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 1, world.observer.getGlobal("start-x")), PrimChecks.validator.checkArg('PATCH', 1, world.observer.getGlobal("start-y")))), function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(92, 98, "pcolor", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(74, 77, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 108, 111, 1904, world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 112, 117, 1, world.observer.getGlobal("start-x")), PrimChecks.validator.checkArg('PATCH', 112, 117, 1, world.observer.getGlobal("start-y")))), function() { PrimChecks.patch.setVariable(140, 146, "pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(108, 111, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "SEARCHERS"), function() {
-    PrimChecks.turtle.setVariable("heading", 0);
-    SelfManager.self().setVariable("color", 15);
-    PrimChecks.turtle.setVariable("size", 0.2);
-    SelfManager.self().setVariable("shape", "circle");
-    PrimChecks.turtle.setXY(PrimChecks.validator.checkArg('SETXY', 1, world.observer.getGlobal("start-x")), PrimChecks.validator.checkArg('SETXY', 1, world.observer.getGlobal("start-y")));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtle.setVariable(188, 195, "heading", 0);
+    PrimChecks.turtleOrLink.setVariable(206, 211, "color", 15);
+    PrimChecks.turtle.setVariable(224, 228, "size", 0.2);
+    PrimChecks.turtleOrLink.setVariable(241, 246, "shape", "circle");
+    PrimChecks.turtle.setXY(260, 265, PrimChecks.validator.checkArg('SETXY', 260, 265, 1, world.observer.getGlobal("start-x")), PrimChecks.validator.checkArg('SETXY', 260, 265, 1, world.observer.getGlobal("start-y")));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(157, 173, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, "CENTERS"), function() {
-    SelfManager.self().setVariable("color", 105);
-    PrimChecks.turtle.setVariable("size", 0.1);
-    SelfManager.self().setVariable("shape", "circle");
-    PrimChecks.turtle.setXY(PrimChecks.validator.checkArg('SETXY', 1, world.observer.getGlobal("start-x")), PrimChecks.validator.checkArg('SETXY', 1, world.observer.getGlobal("start-y")));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtleOrLink.setVariable(317, 322, "color", 105);
+    PrimChecks.turtle.setVariable(336, 340, "size", 0.1);
+    PrimChecks.turtleOrLink.setVariable(353, 358, "shape", "circle");
+    PrimChecks.turtle.setXY(372, 377, PrimChecks.validator.checkArg('SETXY', 372, 377, 1, world.observer.getGlobal("start-x")), PrimChecks.validator.checkArg('SETXY', 372, 377, 1, world.observer.getGlobal("start-y")));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(288, 302, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 420, 934, (function() {
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(548, 554, "pcolor", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(530, 533, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CENTERS"), function() {
-    PrimChecks.turtle.setXY(PrimChecks.validator.checkArg('SETXY', 1, world.observer.getGlobal("start-x")), PrimChecks.validator.checkArg('SETXY', 1, world.observer.getGlobal("start-y")));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtle.setXY(652, 657, PrimChecks.validator.checkArg('SETXY', 652, 657, 1, world.observer.getGlobal("start-x")), PrimChecks.validator.checkArg('SETXY', 652, 657, 1, world.observer.getGlobal("start-y")));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(638, 641, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SEARCHERS"), function() {
-    PrimChecks.turtle.setXY(PrimChecks.validator.checkArg('SETXY', 1, world.observer.getGlobal("start-x")), PrimChecks.validator.checkArg('SETXY', 1, world.observer.getGlobal("start-y")));
-    SelfManager.self().setPatchVariable("pcolor", 55);
+    PrimChecks.turtle.setXY(701, 706, PrimChecks.validator.checkArg('SETXY', 701, 706, 1, world.observer.getGlobal("start-x")), PrimChecks.validator.checkArg('SETXY', 701, 706, 1, world.observer.getGlobal("start-y")));
+    PrimChecks.patch.setVariable(754, 760, "pcolor", 55);
     SelfManager.self().right(5);
     SelfManager.self().fd(world.observer.getGlobal("distance-of-travel"));
-    SelfManager.self().setPatchVariable("pcolor", 0);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.patch.setVariable(910, 916, "pcolor", 0);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(679, 682, R); return R; }
   world.ticker.tick();
 }))
 world.observer.setGlobal("distance-of-travel", 1);

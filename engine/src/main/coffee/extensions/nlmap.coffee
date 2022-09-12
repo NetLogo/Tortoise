@@ -46,6 +46,28 @@ importMap = (exportedObj, reify) ->
   Object.keys(exportedObj.data).map( (k) -> out[k] = reify(exportedObj.data[k]) )
   toMap(out)
 
+# Array[String]
+keyBlacklist =
+  [ "__defineGetter__"
+  , "__defineSetter__"
+  , "__lookupGetter__"
+  , "__lookupSetter__"
+  , "__proto__"
+  , "constructor"
+  , "hasOwnProperty"
+  , "isPrototypeOf"
+  , "propertyIsEnumerable"
+  , "toLocaleString"
+  , "toString"
+  , "valueOf"
+  ]
+
+# (String) => String
+keyBlacklistError = (key) ->
+  str = "\"#{key}\" is a protected key and cannot be accessed.  Try using a \
+different key."
+  exceptions.extension(str)
+
 module.exports = {
 
   porter: new SingleObjectExtensionPorter(extensionName, isMap, dumpMap, exportMap, formatMap, readMap, importMap)
@@ -56,7 +78,10 @@ module.exports = {
     fromList = (list) ->
       out = newMap()
       for [k, v] in list
-        out[k] = v
+        if k in keyBlacklist
+          throw keyBlacklistError(k)
+        else
+          out[k] = v
       out
 
     # (NLMap) => List[(String, Any)]
@@ -66,22 +91,33 @@ module.exports = {
 
     # (NLMap, String, Any) -> NLMap
     add = (nlMap, key, value) ->
-      out = newMap()
-      for k of nlMap
-        out[k] = nlMap[k]
-      out[key] = value
-      out
+      if key in keyBlacklist
+        throw keyBlacklistError(key)
+      else
+        out = newMap()
+        for k of nlMap
+          out[k] = nlMap[k]
+        out[key] = value
+        out
 
     # (NLMap, String) => Any
     get = (nlMap, key) ->
-      nlMap[key] ? throw exceptions.extension("#{key} does not exist in this map")
+      if key in keyBlacklist
+        throw keyBlacklistError(key)
+      else if not nlMap[key]?
+        throw exceptions.extension("#{key} does not exist in this map")
+      else
+        nlMap[key]
 
     # (NLMap, String) => NLMap
     remove = (nlMap, key) ->
-      out = newMap()
-      for k of nlMap when k isnt key
-        out[k] = nlMap[k]
-      out
+      if key in keyBlacklist
+        throw keyBlacklistError(key)
+      else
+        out = newMap()
+        for k of nlMap when k isnt key
+          out[k] = nlMap[k]
+        out
 
     # NLMap => String
     mapToJson = (nlMap) ->
@@ -105,7 +141,9 @@ module.exports = {
     # String => NLMap
     jsonToMap = (json) ->
       JSON.parse(json, (key, value) ->
-        if (typeof value is 'object')
+        if key in keyBlacklist
+          throw keyBlacklistError(key)
+        else if (typeof value is 'object')
           toMap(value)
         else
           value

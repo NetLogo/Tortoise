@@ -1,55 +1,89 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ fold } = require('brazierjs/maybe')
+
 { TopologyInterrupt, TowardsInterrupt } = require('util/interrupts')
+
+# (() => Agent, Validator) => (String, Map[Any, String]) => (Any) => Unit
+genSetter = (getSelf, validator) -> (name, mappings) ->
+  (value) =>
+    turtle = getSelf()
+    fold(->)(
+      (error) =>
+        msg        = mappings.get(error)
+        defaultMsg = "An unknown error occurred when setting the '#{name}' of \
+'#{turtle}': #{error}"
+        validator.error('set', null, null, msg ? defaultMsg)
+    )(turtle.setIfValid(name, value))
+    return
 
 class TurtleChecks
 
-  _getterChecks: null
-  _setterChecks: null
+  _getterChecks: null # Map[String, (Any) => Unit]
+  _setterChecks: null # Map[String, (Any) => Unit]
 
-  constructor: (@validator, @getSelf) ->
+  # (Validator, () => Agent, TurtleManager, BreedManager)
+  constructor: (@validator, @getSelf, @turtleManager, @breedManager) ->
+
     @_getterChecks = new Map()
-    @_setterChecks = new Map()
-    @_setterChecks.set("xcor", @makeCheckedSetter("xcor", 'Cannot move turtle beyond the world_s edge.'))
-    @_setterChecks.set("ycor", @makeCheckedSetter("ycor", 'Cannot move turtle beyond the world_s edge.'))
 
-  makeCheckedSetter: (name, error) ->
-    (value) =>
-      turtle = @getSelf()
-      if not turtle.setIfValid(name, value)
-        @validator.error('set', error)
-      return
+    cannotMoveMsg       = "Cannot move turtle beyond the world_s edge."
+    invalidRGBMsg       = "An rgb list must contain 3 or 4 numbers 0-255"
+    invalidRGBNumberMsg = "RGB values must be 0-255"
 
-  # (Number, Number) => Unit
-  setXY: (x, y) ->
-    result = @getSelf().setXY(x, y)
-    if (result is TopologyInterrupt)
-      @validator.error('setxy', 'The point [ _ , _ ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.', x, y)
+    corSetterMappings   = new Map([ [TopologyInterrupt   , cannotMoveMsg]])
+    colorSetterMappings = new Map([ ["Invalid RGB format", invalidRGBMsg]
+                                  , ["Invalid RGB number", invalidRGBNumberMsg]])
 
-    return
+    asSetter     = genSetter(@getSelf, @validator)
+    toSetterPair = ([varName, mappings]) -> [varName, asSetter(varName, mappings)]
 
-  # (Agent) => Number
-  towards: (agent) ->
-    heading = @getSelf().towards(agent)
-    if heading is TowardsInterrupt
-      [x, y] = agent.getCoords()
-      @validator.error('towards', 'No heading is defined from a point (_,_) to that same point.', x, y)
-    heading
+    @_setterChecks =
+      new Map(
+        [ ["xcor"       ,   corSetterMappings]
+        , ["ycor"       ,   corSetterMappings]
+        , ["color"      , colorSetterMappings]
+        , ["label-color", colorSetterMappings]
+        ].map(toSetterPair)
+      )
 
-  # (Number, Number) => Number
-  towardsXY: (x, y) ->
-    heading = @getSelf().towardsXY(x, y)
-    if heading is TowardsInterrupt
-      @validator.error('towardsxy', 'No heading is defined from a point (_,_) to that same point.', x, y)
-    heading
+  # (Int, Int, Number) => Agent
+  getTurtle: (sourceStart, sourceEnd, id) ->
+    if not Number.isInteger(id)
+      @validator.error('turtle', sourceStart, sourceEnd, '_ is not an integer', id)
+    @turtleManager.getTurtle(id)
 
-  # (String, Any) => Unit
-  setVariable: (name, value) ->
+  # (Int, Int, String, Number) => Agent
+  getTurtleOfBreed: (sourceStart, sourceEnd, breedName, id) ->
+    agent   = @getTurtle(sourceStart, sourceEnd, id)
+    isValid = agent.id isnt -1
+    if isValid and agent.getBreedName().toUpperCase() isnt breedName.toUpperCase()
+      lowerName      = breedName.toLowerCase()
+      targetSingular = @breedManager.get(breedName).singular.toUpperCase()
+      turtleStr      = "#{agent.getBreedNameSingular()} #{agent.id}"
+      @validator.error(lowerName, sourceStart, sourceEnd, '_ is not a _', turtleStr, targetSingular)
+    agent
+
+  # (Int, Int, String) => Any
+  getVariable: (sourceStart, sourceEnd, name) ->
     turtle = @getSelf()
     if not turtle.hasVariable(name)
       msgKey    = "_ breed does not own variable _"
       upperName = name.toUpperCase()
-      @validator.error('set', msgKey, turtle.getBreedName(), upperName)
+      @validator.error(upperName, sourceStart, sourceEnd, msgKey, turtle.getBreedName(), upperName)
+    else if @_getterChecks.has(name)
+      check = @_getterChecks.get(name)
+      check(name)
+    else
+      turtle.getVariable(name)
+
+  # (Int, Int, String, Any) => Unit
+  setVariable: (sourceStart, sourceEnd, name, value) ->
+    turtle = @getSelf()
+    if not turtle.hasVariable(name)
+      msgKey    = "_ breed does not own variable _"
+      upperName = name.toUpperCase()
+      @validator.error('set', sourceStart, sourceEnd, msgKey, turtle.getBreedName(), upperName)
     else if @_setterChecks.has(name)
       check = @_setterChecks.get(name)
       check(value)
@@ -58,17 +92,27 @@ class TurtleChecks
 
     return
 
-  # (String) => Any
-  getVariable: (name) ->
-    turtle = @getSelf()
-    if not turtle.hasVariable(name)
-      msgKey    = "_ breed does not own variable _"
-      upperName = name.toUpperCase()
-      @validator.error(upperName, msgKey, turtle.getBreedName(), upperName)
-    else if @_getterChecks.has(name)
-      check = @_getterChecks.get(name)
-      check(name)
-    else
-      turtle.getVariable(name)
+  # (Int, Int, Number, Number) => Unit
+  setXY: (sourceStart, sourceEnd, x, y) ->
+    result = @getSelf().setXY(x, y)
+    if (result is TopologyInterrupt)
+      @validator.error('setxy', sourceStart, sourceEnd, 'The point [ _ , _ ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.', x, y)
+
+    return
+
+  # (Int, Int, Agent) => Number
+  towards: (sourceStart, sourceEnd, agent) ->
+    heading = @getSelf().towards(agent)
+    if heading is TowardsInterrupt
+      [x, y] = agent.getCoords()
+      @validator.error('towards', sourceStart, sourceEnd, 'No heading is defined from a point (_,_) to that same point.', x, y)
+    heading
+
+  # (Int, Int, Number, Number) => Number
+  towardsXY: (sourceStart, sourceEnd, x, y) ->
+    heading = @getSelf().towardsXY(x, y)
+    if heading is TowardsInterrupt
+      @validator.error('towardsxy', sourceStart, sourceEnd, 'No heading is defined from a point (_,_) to that same point.', x, y)
+    heading
 
 module.exports = TurtleChecks

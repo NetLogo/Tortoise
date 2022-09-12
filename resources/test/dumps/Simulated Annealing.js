@@ -61,65 +61,65 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 69, 275, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.nOf(PrimChecks.math.div(PrimChecks.agentset.count(world.patches()), 2), world.patches())), function() { SelfManager.self().setPatchVariable("brightness", 1); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("update-visual"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  world.observer.setGlobal("global-energy", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter("find-energy"); }))));
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 89, 92, 1904, PrimChecks.list.nOf(93, 97, PrimChecks.math.div(115, 116, PrimChecks.agentset.count(world.patches()), 2), world.patches())), function() { PrimChecks.patch.setVariable(140, 150, "brightness", 1); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(89, 92, R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("update-visual"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(159, 162, R); return R; }
+  world.observer.setGlobal("global-energy", PrimChecks.list.sum(210, 213, PrimChecks.validator.checkArg('SUM', 210, 213, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter(215, 226, "find-energy"); }))));
   world.observer.setGlobal("temperature", 1);
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 284, 527, (function() {
   for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, PrimChecks.list.oneOf(world.patches())), function() { var R = ProcedurePrims.callCommand("try-swap"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 309, 312, 1904, PrimChecks.list.oneOf(313, 319, world.patches())), function() { var R = ProcedurePrims.callCommand("try-swap"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(309, 312, R); return R; }
   }
-  world.observer.setGlobal("temperature", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("temperature")), PrimChecks.math.minus(1, PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("cooling-rate")), 100))));
-  world.observer.setGlobal("global-energy", PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter("find-energy"); }))));
+  world.observer.setGlobal("temperature", PrimChecks.math.mult(441, 442, PrimChecks.validator.checkArg('*', 441, 442, 1, world.observer.getGlobal("temperature")), PrimChecks.math.minus(446, 447, 1, PrimChecks.math.div(461, 462, PrimChecks.validator.checkArg('/', 461, 462, 1, world.observer.getGlobal("cooling-rate")), 100))));
+  world.observer.setGlobal("global-energy", PrimChecks.list.sum(489, 492, PrimChecks.validator.checkArg('SUM', 489, 492, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter(494, 505, "find-energy"); }))));
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("update-visual", 535, 605, (function() {
-  SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("brightness")), 9.9));
+  PrimChecks.patch.setVariable(555, 561, "pcolor", PrimChecks.math.mult(573, 574, PrimChecks.validator.checkArg('*', 573, 574, 1, PrimChecks.patch.getVariable(562, 572, "brightness")), 9.9));
 }))
 ProcedurePrims.defineReporter("accept-change?", 1002, 1189, (function(oldHenergy, newHenergy) {
-  return PrimChecks.procedure.report(((Prims.lt(newHenergy, oldHenergy) || (PrimChecks.validator.checkArg('AND', 2, world.observer.getGlobal("accept-equal-changes?")) && Prims.equality(newHenergy, oldHenergy))) || Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("temperature"))));
+  return PrimChecks.procedure.report(1045, 1051, ((Prims.lt(newHenergy, oldHenergy) || (PrimChecks.validator.checkArg('AND', 1113, 1116, 2, world.observer.getGlobal("accept-equal-changes?")) && Prims.equality(newHenergy, oldHenergy))) || Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("temperature"))));
 }))
 ProcedurePrims.defineCommand("try-swap", 1197, 1800, (function() {
-  let p2 = PrimChecks.list.oneOf(SelfManager.self().inRadius(world.patches(), world.observer.getGlobal("swap-radius"))); ProcedurePrims.stack().currentContext().registerStringRunVar("P2", p2);
-  if (Prims.equality(SelfManager.self().getPatchVariable("brightness"), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p2), function() { return SelfManager.self().getPatchVariable("brightness"); }))) {
-    return PrimChecks.procedure.stop();
+  let p2 = PrimChecks.list.oneOf(1215, 1221, SelfManager.self().inRadius(world.patches(), world.observer.getGlobal("swap-radius"))); ProcedurePrims.stack().currentContext().registerStringRunVar("P2", p2);
+  if (Prims.equality(PrimChecks.patch.getVariable(1260, 1270, "brightness"), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1286, 1288, 1904, p2), function() { return PrimChecks.patch.getVariable(1274, 1284, "brightness"); }))) {
+    return PrimChecks.procedure.stop(1338, 1342);
   }
-  let affectedHpatches = PrimChecks.agentset.patchSet(SelfManager.self(), p2, SelfManager.self().getNeighbors4(), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p2), function() { return SelfManager.self().getNeighbors4(); })); ProcedurePrims.stack().currentContext().registerStringRunVar("AFFECTED-PATCHES", affectedHpatches);
-  let oldHenergy = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, affectedHpatches), function() { return PrimChecks.procedure.callReporter("find-energy"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-ENERGY", oldHenergy);
+  let affectedHpatches = PrimChecks.agentset.patchSet(1482, 1491, SelfManager.self(), p2, SelfManager.self().getNeighbors4(), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1525, 1527, 1904, p2), function() { return SelfManager.self().getNeighbors4(); })); ProcedurePrims.stack().currentContext().registerStringRunVar("AFFECTED-PATCHES", affectedHpatches);
+  let oldHenergy = PrimChecks.list.sum(1550, 1553, PrimChecks.validator.checkArg('SUM', 1550, 1553, 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1568, 1570, 1904, affectedHpatches), function() { return PrimChecks.procedure.callReporter(1555, 1566, "find-energy"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-ENERGY", oldHenergy);
   var R = ProcedurePrims.callCommand("swap-values", SelfManager.self(), p2); if (R === DeathInterrupt) { return R; }
-  let newHenergy = PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, affectedHpatches), function() { return PrimChecks.procedure.callReporter("find-energy"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-ENERGY", newHenergy);
-  if (PrimChecks.procedure.callReporter("accept-change?", oldHenergy, newHenergy)) {
+  let newHenergy = PrimChecks.list.sum(1627, 1630, PrimChecks.validator.checkArg('SUM', 1627, 1630, 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1645, 1647, 1904, affectedHpatches), function() { return PrimChecks.procedure.callReporter(1632, 1643, "find-energy"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-ENERGY", newHenergy);
+  if (PrimChecks.procedure.callReporter(1675, 1689, "accept-change?", oldHenergy, newHenergy)) {
     var R = ProcedurePrims.callCommand("update-visual"); if (R === DeathInterrupt) { return R; }
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, p2), function() { var R = ProcedurePrims.callCommand("update-visual"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1739, 1742, 1904, p2), function() { var R = ProcedurePrims.callCommand("update-visual"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1739, 1742, R); return R; }
   }
   else {
     var R = ProcedurePrims.callCommand("swap-values", SelfManager.self(), p2); if (R === DeathInterrupt) { return R; }
   }
 }))
 ProcedurePrims.defineCommand("swap-values", 1808, 1942, (function(p1, p2) {
-  let temp = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p1), function() { return SelfManager.self().getPatchVariable("brightness"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("TEMP", temp);
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, p1), function() {
-    SelfManager.self().setPatchVariable("brightness", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p2), function() { return SelfManager.self().getPatchVariable("brightness"); }));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, p2), function() { SelfManager.self().setPatchVariable("brightness", temp); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  let temp = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1856, 1858, 1904, p1), function() { return PrimChecks.patch.getVariable(1843, 1853, "brightness"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("TEMP", temp);
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1864, 1867, 1904, p1), function() {
+    PrimChecks.patch.setVariable(1877, 1887, "brightness", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1901, 1903, 1904, p2), function() { return PrimChecks.patch.getVariable(1889, 1899, "brightness"); }));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1864, 1867, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1911, 1914, 1904, p2), function() { PrimChecks.patch.setVariable(1924, 1934, "brightness", temp); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1911, 1914, R); return R; }
 }))
 ProcedurePrims.defineReporter("find-energy", 2070, 2565, (function() {
   let unhappiness = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("UNHAPPINESS", unhappiness);
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchNorth()), function() {
-    unhappiness = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, unhappiness), PrimChecks.math.pow(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("brightness")), PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchSouth()), function() {
-    unhappiness = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, unhappiness), PrimChecks.math.pow(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("brightness")), PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchEast()), function() {
-    unhappiness = PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, unhappiness), 1), PrimChecks.math.pow(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("brightness")), PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, SelfManager.self()._optimalPatchWest()), function() {
-    unhappiness = PrimChecks.math.minus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, unhappiness), 1), PrimChecks.math.pow(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("brightness")), PrimChecks.validator.checkArg('-', 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return SelfManager.self().getPatchVariable("brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  return PrimChecks.procedure.report(unhappiness);
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2125, 2128, 1904, SelfManager.self()._optimalPatchNorth()), function() {
+    unhappiness = PrimChecks.math.plus(2172, 2173, PrimChecks.validator.checkArg('+', 2172, 2173, 1, unhappiness), PrimChecks.math.pow(2212, 2213, PrimChecks.math.minus(2186, 2187, PrimChecks.validator.checkArg('-', 2186, 2187, 1, PrimChecks.patch.getVariable(2175, 2185, "brightness")), PrimChecks.validator.checkArg('-', 2186, 2187, 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(2189, 2199, "brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2125, 2128, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2220, 2223, 1904, SelfManager.self()._optimalPatchSouth()), function() {
+    unhappiness = PrimChecks.math.plus(2268, 2269, PrimChecks.validator.checkArg('+', 2268, 2269, 1, unhappiness), PrimChecks.math.pow(2308, 2309, PrimChecks.math.minus(2282, 2283, PrimChecks.validator.checkArg('-', 2282, 2283, 1, PrimChecks.patch.getVariable(2271, 2281, "brightness")), PrimChecks.validator.checkArg('-', 2282, 2283, 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(2285, 2295, "brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2220, 2223, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2316, 2319, 1904, SelfManager.self()._optimalPatchEast()), function() {
+    unhappiness = PrimChecks.math.minus(2367, 2368, PrimChecks.math.plus(2363, 2364, PrimChecks.validator.checkArg('+', 2363, 2364, 1, unhappiness), 1), PrimChecks.math.pow(2407, 2408, PrimChecks.math.minus(2381, 2382, PrimChecks.validator.checkArg('-', 2381, 2382, 1, PrimChecks.patch.getVariable(2370, 2380, "brightness")), PrimChecks.validator.checkArg('-', 2381, 2382, 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(2384, 2394, "brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2316, 2319, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2415, 2418, 1904, SelfManager.self()._optimalPatchWest()), function() {
+    unhappiness = PrimChecks.math.minus(2467, 2468, PrimChecks.math.plus(2463, 2464, PrimChecks.validator.checkArg('+', 2463, 2464, 1, unhappiness), 1), PrimChecks.math.pow(2507, 2508, PrimChecks.math.minus(2481, 2482, PrimChecks.validator.checkArg('-', 2481, 2482, 1, PrimChecks.patch.getVariable(2470, 2480, "brightness")), PrimChecks.validator.checkArg('-', 2481, 2482, 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(2484, 2494, "brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2415, 2418, R); return R; }
+  return PrimChecks.procedure.report(2546, 2552, unhappiness);
 }))
 world.observer.setGlobal("cooling-rate", 1);
 world.observer.setGlobal("swap-radius", 1);

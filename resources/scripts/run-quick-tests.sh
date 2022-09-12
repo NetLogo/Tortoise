@@ -20,8 +20,8 @@ time ./sbt.sh \
   "netLogoWeb / testOnly *TestAgents *TestBasics *TestBooleans" \
   "netLogoWeb / testOnly *TestBreeds *TestColors *TestControl"
 time ./sbt.sh \
-  "netLogoWeb / testOnly *TestLabels *TestLists *TestMath *TestProcedures" \
-  "netLogoWeb / testOnly *TestReporters -- -z List -z Number -z String" \
+  "netLogoWeb / testOnly *TestLabels *TestLists *TestMath *TestProcedures *TestRandom" \
+  "netLogoWeb / testOnly *TestReporters" \
   "netLogoWeb / testOnly *TestCommands -- -z Agentset -z ControlStructures -z Matrix"
 time ./sbt.sh \
   "netLogoWeb / testOnly *ModelDumpTests -- -z \"Wolf Sheep Predation\"" \

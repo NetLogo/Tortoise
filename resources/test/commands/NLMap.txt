@@ -34,3 +34,108 @@ MapExtension
   str => "apples=4&oranges=6%20w%2F%20spaces%20%26%20'spec.'%20chars"
   O> set str nlmap:to-json basic
   str => "{\"url\":\"url\",\"obj\":{\"val1\":100,\"val2\":\"apples\",\"val3\":[4,5,6]}}"
+
+MapExtensionProtectedKeysAdd
+
+  extensions [nlmap]
+
+  globals [ basic ]
+
+  O> set basic (nlmap:from-list [])
+
+  nlmap:add basic "__defineGetter__"     0 => ERROR Extension exception: "__defineGetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:add basic "__defineSetter__"     0 => ERROR Extension exception: "__defineSetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:add basic "__lookupGetter__"     0 => ERROR Extension exception: "__lookupGetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:add basic "__lookupSetter__"     0 => ERROR Extension exception: "__lookupSetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:add basic "__proto__"            0 => ERROR Extension exception: "__proto__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:add basic "constructor"          0 => ERROR Extension exception: "constructor" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:add basic "hasOwnProperty"       0 => ERROR Extension exception: "hasOwnProperty" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:add basic "isPrototypeOf"        0 => ERROR Extension exception: "isPrototypeOf" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:add basic "propertyIsEnumerable" 0 => ERROR Extension exception: "propertyIsEnumerable" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:add basic "toLocaleString"       0 => ERROR Extension exception: "toLocaleString" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:add basic "toString"             0 => ERROR Extension exception: "toString" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:add basic "valueOf"              0 => ERROR Extension exception: "valueOf" is a protected key and cannot be accessed.  Try using a different key.
+
+MapExtensionProtectedKeysGet
+
+  extensions [nlmap]
+
+  globals [ basic ]
+
+  O> set basic (nlmap:from-list [])
+
+  nlmap:get basic "__defineGetter__"     => ERROR Extension exception: "__defineGetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:get basic "__defineSetter__"     => ERROR Extension exception: "__defineSetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:get basic "__lookupGetter__"     => ERROR Extension exception: "__lookupGetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:get basic "__lookupSetter__"     => ERROR Extension exception: "__lookupSetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:get basic "__proto__"            => ERROR Extension exception: "__proto__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:get basic "constructor"          => ERROR Extension exception: "constructor" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:get basic "hasOwnProperty"       => ERROR Extension exception: "hasOwnProperty" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:get basic "isPrototypeOf"        => ERROR Extension exception: "isPrototypeOf" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:get basic "propertyIsEnumerable" => ERROR Extension exception: "propertyIsEnumerable" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:get basic "toLocaleString"       => ERROR Extension exception: "toLocaleString" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:get basic "toString"             => ERROR Extension exception: "toString" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:get basic "valueOf"              => ERROR Extension exception: "valueOf" is a protected key and cannot be accessed.  Try using a different key.
+
+MapExtensionProtectedKeysRemove
+
+  extensions [nlmap]
+
+  globals [ basic ]
+
+  O> set basic (nlmap:from-list [])
+
+  nlmap:remove basic "__defineGetter__"     => ERROR Extension exception: "__defineGetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:remove basic "__defineSetter__"     => ERROR Extension exception: "__defineSetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:remove basic "__lookupGetter__"     => ERROR Extension exception: "__lookupGetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:remove basic "__lookupSetter__"     => ERROR Extension exception: "__lookupSetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:remove basic "__proto__"            => ERROR Extension exception: "__proto__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:remove basic "constructor"          => ERROR Extension exception: "constructor" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:remove basic "hasOwnProperty"       => ERROR Extension exception: "hasOwnProperty" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:remove basic "isPrototypeOf"        => ERROR Extension exception: "isPrototypeOf" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:remove basic "propertyIsEnumerable" => ERROR Extension exception: "propertyIsEnumerable" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:remove basic "toLocaleString"       => ERROR Extension exception: "toLocaleString" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:remove basic "toString"             => ERROR Extension exception: "toString" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:remove basic "valueOf"              => ERROR Extension exception: "valueOf" is a protected key and cannot be accessed.  Try using a different key.
+
+MapExtensionProtectedKeysFromJSON
+
+  extensions [nlmap]
+
+  nlmap:from-json "{\"__defineGetter__\":0}"     => ERROR Extension exception: "__defineGetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"__defineSetter__\":0}"     => ERROR Extension exception: "__defineSetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"__lookupGetter__\":0}"     => ERROR Extension exception: "__lookupGetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"__lookupSetter__\":0}"     => ERROR Extension exception: "__lookupSetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"__proto__\":0}"            => ERROR Extension exception: "__proto__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"constructor\":0}"          => ERROR Extension exception: "constructor" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"hasOwnProperty\":0}"       => ERROR Extension exception: "hasOwnProperty" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"isPrototypeOf\":0}"        => ERROR Extension exception: "isPrototypeOf" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"propertyIsEnumerable\":0}" => ERROR Extension exception: "propertyIsEnumerable" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"toLocaleString\":0}"       => ERROR Extension exception: "toLocaleString" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"toString\":0}"             => ERROR Extension exception: "toString" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"valueOf\":0}"              => ERROR Extension exception: "valueOf" is a protected key and cannot be accessed.  Try using a different key.
+
+  nlmap:from-json "{\"valid\":0,\"valueOf\":0}"                 => ERROR Extension exception: "valueOf" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"valueOf\":0,\"alsoValid\":0}"             => ERROR Extension exception: "valueOf" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-json "{\"valid\":0,\"valueOf\":0,\"alsoValid\":0}" => ERROR Extension exception: "valueOf" is a protected key and cannot be accessed.  Try using a different key.
+
+MapExtensionProtectedKeysFromList
+
+  extensions [nlmap]
+
+  nlmap:from-list [["__defineGetter__"     0]] => ERROR Extension exception: "__defineGetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["__defineSetter__"     0]] => ERROR Extension exception: "__defineSetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["__lookupGetter__"     0]] => ERROR Extension exception: "__lookupGetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["__lookupSetter__"     0]] => ERROR Extension exception: "__lookupSetter__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["__proto__"            0]] => ERROR Extension exception: "__proto__" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["constructor"          0]] => ERROR Extension exception: "constructor" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["hasOwnProperty"       0]] => ERROR Extension exception: "hasOwnProperty" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["isPrototypeOf"        0]] => ERROR Extension exception: "isPrototypeOf" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["propertyIsEnumerable" 0]] => ERROR Extension exception: "propertyIsEnumerable" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["toLocaleString"       0]] => ERROR Extension exception: "toLocaleString" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["toString"             0]] => ERROR Extension exception: "toString" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["valueOf"              0]] => ERROR Extension exception: "valueOf" is a protected key and cannot be accessed.  Try using a different key.
+
+  nlmap:from-list [["valid" 0] ["valueOf" 0]]                 => ERROR Extension exception: "valueOf" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["valueOf" 0] ["alsoValid" 0]]             => ERROR Extension exception: "valueOf" is a protected key and cannot be accessed.  Try using a different key.
+  nlmap:from-list [["valid" 0] ["valueOf" 0] ["alsoValid" 0]] => ERROR Extension exception: "valueOf" is a protected key and cannot be accessed.  Try using a different key.

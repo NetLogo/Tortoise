@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ maybe } = require('brazier/maybe')
+
 StrictMath                       = require('shim/strictmath')
 formatFloat                      = require('util/formatfloat')
 { checks, getTypeOf, types }     = require('engine/core/typechecker')
@@ -30,27 +32,28 @@ class Validator
       boolean: @makeValueTypeCheck(boolean...)
     }
 
-  # (String, Boolean, String, Array[Any]) => Unit
-  error: (prim, messageKey, messageValues...) ->
+  # (String, Int | null, Int | null, String, Array[Any]) => Unit
+  error: (prim, sourceStart, sourceEnd, messageKey, messageValues...) ->
     message = @bundle.get(messageKey, messageValues.map( (val) -> if typeof(val) is "function" then val() else val )...)
-    throw exceptions.runtime(message, prim)
+    throw exceptions.runtime(message, prim, maybe(sourceStart), maybe(sourceEnd))
 
-  # (String, Number) => Number
-  checkLong: (prim, value) ->
+  # (String, Int, Int, Number) => Number
+  checkLong: (prim, sourceStart, sourceEnd, value) ->
     if value > 9007199254740992 or value < -9007199254740992
-      @error(prim, '_ is too large to be represented exactly as an integer in NetLogo', formatFloat(value))
+      @error(prim, sourceStart, sourceEnd, '_ is too large to be represented exactly as an integer in NetLogo', formatFloat(value))
     value
 
-  # (String, Number) => Number
-  checkNumber: (prim, result) ->
+  # (String, Int, Int, Number) => Number
+  checkNumber: (prim, sourceStart, sourceEnd, result) ->
     if Number.isNaN(result)
-      @error(prim, 'math operation produced a non-number')
+      @error(prim, sourceStart, sourceEnd, 'math operation produced a non-number')
     if result is Infinity
       @raiseInfinityError(prim)
     result
 
-  raiseInfinityError: (prim) ->
-    @error(prim, 'math operation produced a number too large for NetLogo')
+  # (String, Int, Int) => Unit
+  raiseInfinityError: (prim, sourceStart, sourceEnd) ->
+    @error(prim, sourceStart, sourceEnd, 'math operation produced a number too large for NetLogo')
 
   # (String) => String
   addIndefiniteArticle: (text) ->
@@ -79,30 +82,30 @@ class Validator
   typeError: (prim, value, expectedTypes) ->
     valueText = @valueToString(value)
     expectedText = @listTypeNames(expectedTypes)
-    @bundle.get("_ expected input to be _ but got _ instead.", prim, expectedText, valueText)
+    @bundle.get("_ expected input to be _ but got _ instead.", prim.toUpperCase(), expectedText, valueText)
 
-  # (String, Any, Array[NLType]) => Unit
-  throwTypeError: (prim, value, expectedTypes...) ->
-    throw exceptions.runtime(@typeError(prim, value, expectedTypes), prim)
+  # (String, Int, Int, Any, Array[NLType]) => Unit
+  throwTypeError: (prim, sourceStart, SourceEnd, value, expectedTypes...) ->
+    throw exceptions.runtime(@typeError(prim, value, expectedTypes), prim, maybe(sourceStart), maybe(SourceEnd))
     return
 
   # (Array[Array[NLType]]) => (String, Array[Any]) => Unit
   makeArgTypeCheck: (argTypes...) ->
-    (prim, args) =>
+    (prim, sourceStart, sourceEnd, args) =>
       # We could use `zip()` or `foreach()` or whatever here, but I don't want to use anything that would
       # generate extra closures as this code will get called a whole lot.  So we'll leave it ugly but
       # hopefully "optimized" -Jeremy B December 2020
       for i in [0...argTypes.length]
-        @checkValueTypes(prim, argTypes[i], args[i])
+        @checkValueTypes(prim, sourceStart, sourceEnd, argTypes[i], args[i])
 
       return
 
   # (Array[NLType]) => (String, Any) => Any
-  makeValueTypeCheck: (allowedTypes...) -> (prim, value) =>
-    @checkValueTypes(prim, allowedTypes, value)
+  makeValueTypeCheck: (allowedTypes...) -> (prim, sourceStart, sourceEnd, value) =>
+    @checkValueTypes(prim, sourceStart, sourceEnd, allowedTypes, value)
 
-  # (String, Array[NLType], Any) => Any
-  checkValueTypes: (prim, allowedTypes, value) ->
+  # (String, Int, Int, Array[NLType], Any) => Any
+  checkValueTypes: (prim, sourceStart, sourceEnd, allowedTypes, value) ->
     # And we could use `some()` here, but that also could generate transient closure objects. -Jeremy B December 2020
     match = false
     for j in [0...allowedTypes.length]
@@ -111,7 +114,7 @@ class Validator
         break
 
     if not match
-      @throwTypeError(prim, value, allowedTypes...)
+      @throwTypeError(prim, sourceStart, sourceEnd, value, allowedTypes...)
 
     value
 
@@ -124,9 +127,9 @@ class Validator
       @_cachedRuntimeTypes.set(syntax, allowedTypes)
       allowedTypes
 
-  # (String, Int, Any) => Any
-  checkArg: (prim, syntax, argValue) ->
+  # (String, Int, Int, Int, Any) => Any
+  checkArg: (prim, sourceStart, sourceEnd, syntax, argValue) ->
     allowedTypes = @syntaxTypeToRuntimeTypes(syntax)
-    @checkValueTypes(prim, allowedTypes, argValue)
+    @checkValueTypes(prim, sourceStart, sourceEnd, allowedTypes, argValue)
 
 module.exports = Validator

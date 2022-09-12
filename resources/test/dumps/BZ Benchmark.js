@@ -51,7 +51,7 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("benchmark", 52, 141, (function() {
-  PrimChecks.math.randomSeed(5454);
+  PrimChecks.math.randomSeed(64, 75, 5454);
   workspace.timer.reset();
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
   for (let _index_105_111 = 0, _repeatcount_105_111 = StrictMath.floor(20); _index_105_111 < _repeatcount_105_111; _index_105_111++) {
@@ -63,36 +63,38 @@ ProcedurePrims.defineCommand("setup", 149, 292, (function() {
   world.clearAll();
   world.ticker.reset();
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("state", PrimChecks.math.random(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("n")), 1)));
-    SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.patch.setVariable(196, 201, "state", PrimChecks.math.random(202, 208, PrimChecks.math.plus(212, 213, PrimChecks.validator.checkArg('+', 212, 213, 1, world.observer.getGlobal("n")), 1)));
+    PrimChecks.patch.setVariable(257, 263, "pcolor", ColorModel.scaleColor(15, PrimChecks.patch.getVariable(280, 285, "state"), 0, world.observer.getGlobal("n")));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(174, 177, R); return R; }
 }))
 ProcedurePrims.defineCommand("go", 300, 571, (function() {
-  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("find-new-state"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("find-new-state"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(356, 359, R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("state", SelfManager.self().getPatchVariable("new-state"));
-    SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.patch.setVariable(505, 510, "state", PrimChecks.patch.getVariable(511, 520, "new-state"));
+    PrimChecks.patch.setVariable(529, 535, "pcolor", ColorModel.scaleColor(15, PrimChecks.patch.getVariable(552, 557, "state"), 0, world.observer.getGlobal("n")));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(485, 488, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("find-new-state", 579, 1094, (function() {
-  if (Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n"))) {
-    SelfManager.self().setPatchVariable("new-state", 0);
+  if (Prims.equality(PrimChecks.patch.getVariable(623, 628, "state"), world.observer.getGlobal("n"))) {
+    PrimChecks.patch.setVariable(652, 661, "new-state", 0);
   }
   else {
-    let a = PrimChecks.agentset.countWith(SelfManager.self().getNeighbors(), function() {
-      return (Prims.gt(SelfManager.self().getPatchVariable("state"), 0) && Prims.lt(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")));
+    let a = PrimChecks.agentset.countWith(null, null, SelfManager.self().getNeighbors(), function() {
+      return (Prims.gt(PrimChecks.patch.getVariable(712, 717, "state"), 0) && Prims.lt(PrimChecks.patch.getVariable(726, 731, "state"), world.observer.getGlobal("n")));
     }); ProcedurePrims.stack().currentContext().registerStringRunVar("A", a);
-    let b = PrimChecks.agentset.countWith(SelfManager.self().getNeighbors(), function() { return Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")); }); ProcedurePrims.stack().currentContext().registerStringRunVar("B", b);
-    if (Prims.equality(SelfManager.self().getPatchVariable("state"), 0)) {
-      SelfManager.self().setPatchVariable("new-state", PrimChecks.math.plus(PrimChecks.math.int(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, a), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("k1")))), PrimChecks.math.int(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, b), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("k2"))))));
+    let b = PrimChecks.agentset.countWith(null, null, SelfManager.self().getNeighbors(), function() {
+      return Prims.equality(PrimChecks.patch.getVariable(790, 795, "state"), world.observer.getGlobal("n"));
+    }); ProcedurePrims.stack().currentContext().registerStringRunVar("B", b);
+    if (Prims.equality(PrimChecks.patch.getVariable(827, 832, "state"), 0)) {
+      PrimChecks.patch.setVariable(864, 873, "new-state", PrimChecks.math.plus(887, 888, PrimChecks.math.int(874, 877, PrimChecks.math.div(881, 882, PrimChecks.validator.checkArg('/', 881, 882, 1, a), PrimChecks.validator.checkArg('/', 881, 882, 1, world.observer.getGlobal("k1")))), PrimChecks.math.int(889, 892, PrimChecks.math.div(896, 897, PrimChecks.validator.checkArg('/', 896, 897, 1, b), PrimChecks.validator.checkArg('/', 896, 897, 1, world.observer.getGlobal("k2"))))));
     }
     else {
-      let s = PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("state")), SelfManager.self()._optimalNSum("state")); ProcedurePrims.stack().currentContext().registerStringRunVar("S", s);
-      SelfManager.self().setPatchVariable("new-state", PrimChecks.math.plus(PrimChecks.math.int(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, s), PrimChecks.math.plus(PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, a), PrimChecks.validator.checkArg('+', 1, b)), 1))), PrimChecks.validator.checkArg('+', 1, world.observer.getGlobal("g"))));
+      let s = PrimChecks.math.plus(926, 927, PrimChecks.validator.checkArg('+', 926, 927, 1, PrimChecks.patch.getVariable(920, 925, "state")), SelfManager.self()._optimalNSum("state")); ProcedurePrims.stack().currentContext().registerStringRunVar("S", s);
+      PrimChecks.patch.setVariable(967, 976, "new-state", PrimChecks.math.plus(999, 1000, PrimChecks.math.int(977, 980, PrimChecks.math.div(984, 985, PrimChecks.validator.checkArg('/', 984, 985, 1, s), PrimChecks.math.plus(993, 994, PrimChecks.math.plus(989, 990, PrimChecks.validator.checkArg('+', 989, 990, 1, a), PrimChecks.validator.checkArg('+', 989, 990, 1, b)), 1))), PrimChecks.validator.checkArg('+', 999, 1000, 1, world.observer.getGlobal("g"))));
     }
-    if (Prims.gt(SelfManager.self().getPatchVariable("new-state"), world.observer.getGlobal("n"))) {
-      SelfManager.self().setPatchVariable("new-state", world.observer.getGlobal("n"));
+    if (Prims.gt(PrimChecks.patch.getVariable(1014, 1023, "new-state"), world.observer.getGlobal("n"))) {
+      PrimChecks.patch.setVariable(1078, 1087, "new-state", world.observer.getGlobal("n"));
     }
   }
 }))

@@ -67,7 +67,7 @@ ProcedurePrims.defineCommand("setup", 203, 272, (function() {
   var R = ProcedurePrims.callCommand("do-plotting"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("benchmark", 280, 369, (function() {
-  PrimChecks.math.randomSeed(337);
+  PrimChecks.math.randomSeed(292, 303, 337);
   workspace.timer.reset();
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
   for (let _index_332_338 = 0, _repeatcount_332_338 = StrictMath.floor(800); _index_332_338 < _repeatcount_332_338; _index_332_338++) {
@@ -78,95 +78,95 @@ ProcedurePrims.defineCommand("benchmark", 280, 369, (function() {
 ProcedurePrims.defineCommand("setup-turtles", 377, 555, (function() {
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(world.observer.getGlobal("ants"), ""), function() {
-    PrimChecks.turtle.setVariable("size", 2);
+    PrimChecks.turtle.setVariable(446, 450, "size", 2);
     SelfManager.self().right(PrimChecks.math.randomFloat(360));
-    SelfManager.self().setVariable("color", 15);
-    PrimChecks.turtle.setVariable("carrying-food?", false);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtleOrLink.setVariable(512, 517, "color", 15);
+    PrimChecks.turtle.setVariable(530, 544, "carrying-food?", false);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(427, 430, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-patches", 563, 710, (function() {
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("chemical", 0);
-    SelfManager.self().setPatchVariable("food", 0);
-    SelfManager.self().setPatchVariable("food-source-number", -1);
+    PrimChecks.patch.setVariable(601, 609, "chemical", 0);
+    PrimChecks.patch.setVariable(620, 624, "food", 0);
+    PrimChecks.patch.setVariable(635, 653, "food-source-number", -1);
     var R = ProcedurePrims.callCommand("setup-nest"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("setup-food"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("update-display"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(579, 582, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-nest", 718, 947, (function() {
-  SelfManager.self().setPatchVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
-  SelfManager.self().setPatchVariable("nest-scent", PrimChecks.math.minus(200, SelfManager.self().distanceXY(0, 0)));
+  PrimChecks.patch.setVariable(803, 808, "nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
+  PrimChecks.patch.setVariable(911, 921, "nest-scent", PrimChecks.math.minus(927, 928, 200, SelfManager.self().distanceXY(0, 0)));
 }))
 ProcedurePrims.defineCommand("setup-food", 955, 1515, (function() {
-  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(0.6, world.topology.maxPxcor), 0), 5)) {
-    SelfManager.self().setPatchVariable("food-source-number", 1);
+  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(1059, 1060, 0.6, world.topology.maxPxcor), 0), 5)) {
+    PrimChecks.patch.setVariable(1088, 1106, "food-source-number", 1);
   }
-  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(-0.6, world.topology.maxPxcor), PrimChecks.math.mult(-0.6, world.topology.maxPycor)), 5)) {
-    SelfManager.self().setPatchVariable("food-source-number", 2);
+  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(1191, 1192, -0.6, world.topology.maxPxcor), PrimChecks.math.mult(1210, 1211, -0.6, world.topology.maxPycor)), 5)) {
+    PrimChecks.patch.setVariable(1237, 1255, "food-source-number", 2);
   }
-  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(-0.8, world.topology.maxPxcor), PrimChecks.math.mult(0.8, world.topology.maxPycor)), 5)) {
-    SelfManager.self().setPatchVariable("food-source-number", 3);
+  if (Prims.lt(SelfManager.self().distanceXY(PrimChecks.math.mult(1342, 1343, -0.8, world.topology.maxPxcor), PrimChecks.math.mult(1360, 1361, 0.8, world.topology.maxPycor)), 5)) {
+    PrimChecks.patch.setVariable(1387, 1405, "food-source-number", 3);
   }
-  if (Prims.gt(SelfManager.self().getPatchVariable("food-source-number"), 0)) {
-    SelfManager.self().setPatchVariable("food", PrimChecks.math.plus(1, RandomPrims.randomLong(2)));
+  if (Prims.gt(PrimChecks.patch.getVariable(1461, 1479, "food-source-number"), 0)) {
+    PrimChecks.patch.setVariable(1493, 1497, "food", PrimChecks.math.plus(1501, 1502, 1, RandomPrims.randomLong(2)));
   }
 }))
 ProcedurePrims.defineCommand("update-display", 1523, 1930, (function() {
-  if (SelfManager.self().getPatchVariable("nest?")) {
-    SelfManager.self().setPatchVariable("pcolor", 115);
+  if (PrimChecks.patch.getVariable(1608, 1613, "nest?")) {
+    PrimChecks.patch.setVariable(1622, 1628, "pcolor", 115);
   }
   else {
-    if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
-      if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 1)) {
-        SelfManager.self().setPatchVariable("pcolor", 85);
+    if (Prims.gt(PrimChecks.patch.getVariable(1650, 1654, "food"), 0)) {
+      if (Prims.equality(PrimChecks.patch.getVariable(1670, 1688, "food-source-number"), 1)) {
+        PrimChecks.patch.setVariable(1700, 1706, "pcolor", 85);
       }
-      if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 2)) {
-        SelfManager.self().setPatchVariable("pcolor", 95);
+      if (Prims.equality(PrimChecks.patch.getVariable(1724, 1742, "food-source-number"), 2)) {
+        PrimChecks.patch.setVariable(1754, 1760, "pcolor", 95);
       }
-      if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 3)) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
+      if (Prims.equality(PrimChecks.patch.getVariable(1778, 1796, "food-source-number"), 3)) {
+        PrimChecks.patch.setVariable(1808, 1814, "pcolor", 105);
       }
     }
     else {
-      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 5));
+      PrimChecks.patch.setVariable(1838, 1844, "pcolor", ColorModel.scaleColor(55, PrimChecks.patch.getVariable(1863, 1871, "chemical"), 0.1, 5));
     }
   }
 }))
 ProcedurePrims.defineCommand("go", 2020, 2163, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("go-turtles"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  world.topology.diffuse("chemical", PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("diffusion-rate")), 100), false)
-  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("go-patches"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("go-turtles"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2044, 2047, R); return R; }
+  world.topology.diffuse("chemical", PrimChecks.math.div(2106, 2107, PrimChecks.validator.checkArg('/', 2106, 2107, 1, world.observer.getGlobal("diffusion-rate")), 100), false)
+  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("go-patches"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2115, 2118, R); return R; }
   world.ticker.tick();
   var R = ProcedurePrims.callCommand("do-plotting"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("go-turtles", 2171, 2450, (function() {
-  if (Prims.lt(PrimChecks.turtle.getVariable("who"), world.ticker.tickCount())) {
-    if (PrimChecks.turtle.getVariable("carrying-food?")) {
-      SelfManager.self().setVariable("color", PrimChecks.math.plus(25, 1));
+  if (Prims.lt(PrimChecks.turtle.getVariable(2209, 2212, "who"), world.ticker.tickCount())) {
+    if (PrimChecks.turtle.getVariable(2272, 2286, "carrying-food?")) {
+      PrimChecks.turtleOrLink.setVariable(2296, 2301, "color", PrimChecks.math.plus(2309, 2310, 25, 1));
       var R = ProcedurePrims.callCommand("return-to-nest"); if (R === DeathInterrupt) { return R; }
     }
     else {
-      SelfManager.self().setVariable("color", 15);
+      PrimChecks.turtleOrLink.setVariable(2385, 2390, "color", 15);
       var R = ProcedurePrims.callCommand("look-for-food"); if (R === DeathInterrupt) { return R; }
     }
   }
 }))
 ProcedurePrims.defineCommand("go-patches", 2458, 2618, (function() {
-  SelfManager.self().setPatchVariable("chemical", PrimChecks.math.div(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, SelfManager.self().getPatchVariable("chemical")), PrimChecks.math.minus(100, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("evaporation-rate")))), 100));
+  PrimChecks.patch.setVariable(2495, 2503, "chemical", PrimChecks.math.div(2541, 2542, PrimChecks.math.mult(2514, 2515, PrimChecks.validator.checkArg('*', 2514, 2515, 1, PrimChecks.patch.getVariable(2505, 2513, "chemical")), PrimChecks.math.minus(2521, 2522, 100, PrimChecks.validator.checkArg('-', 2521, 2522, 1, world.observer.getGlobal("evaporation-rate")))), 100));
   var R = ProcedurePrims.callCommand("update-display"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("return-to-nest", 2626, 3096, (function() {
-  if (SelfManager.self().getPatchVariable("nest?")) {
-    PrimChecks.turtle.setVariable("carrying-food?", false);
+  if (PrimChecks.patch.getVariable(2671, 2676, "nest?")) {
+    PrimChecks.turtle.setVariable(2746, 2760, "carrying-food?", false);
     SelfManager.self().right(180);
     SelfManager.self()._optimalFdOne();
   }
   else {
-    SelfManager.self().setPatchVariable("chemical", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, SelfManager.self().getPatchVariable("chemical")), PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("drop-size"))));
-    PrimChecks.turtle.setVariable("drop-size", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("drop-size")), 1.5));
-    if (Prims.lt(PrimChecks.turtle.getVariable("drop-size"), 1)) {
-      PrimChecks.turtle.setVariable("drop-size", 1);
+    PrimChecks.patch.setVariable(2795, 2803, "chemical", PrimChecks.math.plus(2814, 2815, PrimChecks.validator.checkArg('+', 2814, 2815, 1, PrimChecks.patch.getVariable(2805, 2813, "chemical")), PrimChecks.validator.checkArg('+', 2814, 2815, 1, PrimChecks.turtle.getVariable(2816, 2825, "drop-size"))));
+    PrimChecks.turtle.setVariable(2893, 2902, "drop-size", PrimChecks.math.minus(2914, 2915, PrimChecks.validator.checkArg('-', 2914, 2915, 1, PrimChecks.turtle.getVariable(2904, 2913, "drop-size")), 1.5));
+    if (Prims.lt(PrimChecks.turtle.getVariable(2929, 2938, "drop-size"), 1)) {
+      PrimChecks.turtle.setVariable(2949, 2958, "drop-size", 1);
     }
     var R = ProcedurePrims.callCommand("uphill-nest-scent"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
@@ -174,18 +174,18 @@ ProcedurePrims.defineCommand("return-to-nest", 2626, 3096, (function() {
   }
 }))
 ProcedurePrims.defineCommand("look-for-food", 3104, 3515, (function() {
-  if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
-    PrimChecks.turtle.setVariable("carrying-food?", true);
-    SelfManager.self().setPatchVariable("food", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("food")), 1));
-    PrimChecks.turtle.setVariable("drop-size", 60);
+  if (Prims.gt(PrimChecks.patch.getVariable(3145, 3149, "food"), 0)) {
+    PrimChecks.turtle.setVariable(3163, 3177, "carrying-food?", true);
+    PrimChecks.patch.setVariable(3208, 3212, "food", PrimChecks.math.minus(3219, 3220, PrimChecks.validator.checkArg('-', 3219, 3220, 1, PrimChecks.patch.getVariable(3214, 3218, "food")), 1));
+    PrimChecks.turtle.setVariable(3267, 3276, "drop-size", 60);
     SelfManager.self().right(180);
-    return PrimChecks.procedure.stop();
+    return PrimChecks.procedure.stop(3291, 3295);
   }
-  if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), 2)) {
+  if (Prims.gt(PrimChecks.patch.getVariable(3337, 3345, "chemical"), 2)) {
     SelfManager.self()._optimalFdOne();
   }
   else {
-    if (Prims.lt(SelfManager.self().getPatchVariable("chemical"), 0.05)) {
+    if (Prims.lt(PrimChecks.patch.getVariable(3374, 3382, "chemical"), 0.05)) {
       var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
       SelfManager.self()._optimalFdOne();
     }
@@ -197,9 +197,9 @@ ProcedurePrims.defineCommand("look-for-food", 3104, 3515, (function() {
 }))
 ProcedurePrims.defineCommand("uphill-chemical", 3523, 3892, (function() {
   var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
-  let scentHahead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-AHEAD", scentHahead);
-  let scentHright = PrimChecks.procedure.callReporter("chemical-scent", 45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-RIGHT", scentHright);
-  let scentHleft = PrimChecks.procedure.callReporter("chemical-scent", -45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-LEFT", scentHleft);
+  let scentHahead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return PrimChecks.patch.getVariable(3651, 3659, "chemical"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-AHEAD", scentHahead);
+  let scentHright = PrimChecks.procedure.callReporter(3696, 3710, "chemical-scent", 45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-RIGHT", scentHright);
+  let scentHleft = PrimChecks.procedure.callReporter(3731, 3745, "chemical-scent", -45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-LEFT", scentHleft);
   if ((Prims.gt(scentHright, scentHahead) || Prims.gt(scentHleft, scentHahead))) {
     if (Prims.gt(scentHright, scentHleft)) {
       SelfManager.self().right(45);
@@ -211,9 +211,9 @@ ProcedurePrims.defineCommand("uphill-chemical", 3523, 3892, (function() {
 }))
 ProcedurePrims.defineCommand("uphill-nest-scent", 3900, 4268, (function() {
   var R = ProcedurePrims.callCommand("wiggle"); if (R === DeathInterrupt) { return R; }
-  let scentHahead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return SelfManager.self().getPatchVariable("nest-scent"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-AHEAD", scentHahead);
-  let scentHright = PrimChecks.procedure.callReporter("get-nest-scent", 45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-RIGHT", scentHright);
-  let scentHleft = PrimChecks.procedure.callReporter("get-nest-scent", -45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-LEFT", scentHleft);
+  let scentHahead = PrimChecks.agentset.of(SelfManager.self().patchAhead(1), function() { return PrimChecks.patch.getVariable(4031, 4041, "nest-scent"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-AHEAD", scentHahead);
+  let scentHright = PrimChecks.procedure.callReporter(4078, 4092, "get-nest-scent", 45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-RIGHT", scentHright);
+  let scentHleft = PrimChecks.procedure.callReporter(4113, 4127, "get-nest-scent", -45); ProcedurePrims.stack().currentContext().registerStringRunVar("SCENT-LEFT", scentHleft);
   if ((Prims.gt(scentHright, scentHahead) || Prims.gt(scentHleft, scentHahead))) {
     if (Prims.gt(scentHright, scentHleft)) {
       SelfManager.self().right(45);
@@ -224,7 +224,7 @@ ProcedurePrims.defineCommand("uphill-nest-scent", 3900, 4268, (function() {
   }
 }))
 ProcedurePrims.defineCommand("wiggle", 4276, 4365, (function() {
-  SelfManager.self().right(PrimChecks.math.minus(RandomPrims.randomLong(40), RandomPrims.randomLong(40)));
+  SelfManager.self().right(PrimChecks.math.minus(4319, 4320, RandomPrims.randomLong(40), RandomPrims.randomLong(40)));
   if (PrimChecks.math.not(SelfManager.self().canMove(1))) {
     SelfManager.self().right(180);
   }
@@ -232,28 +232,28 @@ ProcedurePrims.defineCommand("wiggle", 4276, 4365, (function() {
 ProcedurePrims.defineReporter("get-nest-scent", 4380, 4502, (function(angle) {
   let p = SelfManager.self().patchRightAndAhead(angle, 1); ProcedurePrims.stack().currentContext().registerStringRunVar("P", p);
   if (!Prims.equality(p, Nobody)) {
-    return PrimChecks.procedure.report(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p), function() { return SelfManager.self().getPatchVariable("nest-scent"); }));
+    return PrimChecks.procedure.report(4464, 4470, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4484, 4486, 1904, p), function() { return PrimChecks.patch.getVariable(4472, 4482, "nest-scent"); }));
   }
-  return PrimChecks.procedure.report(0);
+  return PrimChecks.procedure.report(4493, 4499, 0);
 }))
 ProcedurePrims.defineReporter("chemical-scent", 4517, 4637, (function(angle) {
   let p = SelfManager.self().patchRightAndAhead(angle, 1); ProcedurePrims.stack().currentContext().registerStringRunVar("P", p);
   if (!Prims.equality(p, Nobody)) {
-    return PrimChecks.procedure.report(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, p), function() { return SelfManager.self().getPatchVariable("chemical"); }));
+    return PrimChecks.procedure.report(4601, 4607, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4619, 4621, 1904, p), function() { return PrimChecks.patch.getVariable(4609, 4617, "chemical"); }));
   }
-  return PrimChecks.procedure.report(0);
+  return PrimChecks.procedure.report(4628, 4634, 0);
 }))
 ProcedurePrims.defineCommand("do-plotting", 4645, 4962, (function() {
-  if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("plot?")))) {
-    return PrimChecks.procedure.stop();
+  if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 4662, 4665, 2, world.observer.getGlobal("plot?")))) {
+    return PrimChecks.procedure.stop(4674, 4678);
   }
   plotManager.setCurrentPlot("Food in each pile");
   plotManager.setCurrentPen("food-in-pile1");
-  plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 85); }));
+  plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(4786, 4792, "pcolor"), 85); }));
   plotManager.setCurrentPen("food-in-pile2");
-  plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 95); }));
+  plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(4867, 4873, "pcolor"), 95); }));
   plotManager.setCurrentPen("food-in-pile3");
-  plotManager.plotValue(PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105); }));
+  plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(4947, 4953, "pcolor"), 105); }));
 }))
 world.observer.setGlobal("diffusion-rate", 53);
 world.observer.setGlobal("evaporation-rate", 10);

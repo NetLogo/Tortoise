@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ maybe, None, isSomething } = require('brazierjs/maybe')
+
 ColorModel = require('engine/core/colormodel')
 { checks } = require('engine/core/typechecker')
 
@@ -7,7 +9,19 @@ ColorModel = require('engine/core/colormodel')
 
 { exceptionFactory: exceptions } = require('util/exception')
 
-# In this file: `this.type` is `Link`
+# (Number|RGB|RGBA) => Maybe[String]
+validateColor = (color) ->
+
+  hasBadLength    = (xs) -> xs.length isnt 3 and xs.length isnt 4
+  isBadCompNumber = (x) -> not (0 <= x <= 255)
+  isBadCompType   = (x) -> not checks.isNumber(x)
+
+  if checks.isList(color) and (hasBadLength(color) or color.some(isBadCompType))
+    maybe("Invalid RGB format")
+  else if checks.isList(color) and (color.some(isBadCompNumber))
+    maybe("Invalid RGB number")
+  else
+    None
 
 # (String) => Unit
 setShape = (shape) ->
@@ -52,11 +66,16 @@ setBreed = (breed) ->
 
   return
 
-# (Number) => Unit
+# (Number|RGB|RGBA) => Maybe[String]
 setColor = (color) ->
-  @_color = ColorModel.wrapColor(color)
-  @_genVarUpdate("color")
-  return
+
+  errorMaybe = validateColor(color)
+
+  if not isSomething(errorMaybe)
+    @_color = ColorModel.wrapColor(color)
+    @_genVarUpdate("color")
+
+  errorMaybe
 
 # (Turtle) => Unit
 setEnd1 = (turtle) ->
@@ -82,11 +101,16 @@ setLabel = (label) ->
   @_genVarUpdate("label")
   return
 
-# (Number) => Unit
+# (Number|RGB|RGBA) => Maybe[String]
 setLabelColor = (color) ->
-  @_labelcolor = ColorModel.wrapColor(color)
-  @_genVarUpdate("label-color")
-  return
+
+  errorMaybe = validateColor(color)
+
+  if not isSomething(errorMaybe)
+    @_labelcolor = ColorModel.wrapColor(color)
+    @_genVarUpdate("label-color")
+
+  errorMaybe
 
 # (Number) => Unit
 setThickness = (thickness) ->

@@ -28,7 +28,7 @@ var modelConfig =
   ).modelConfig || {};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [   vote   ;; my vote (0 or 1)   total  ;; sum of votes around me ]  to setup   clear-all   ask patches     [ set vote random 2       recolor-patch ]   reset-ticks end  to go   ;; keep track of whether any patch has changed their vote   let any-votes-changed? false   ask patches     [ set total (sum [vote] of neighbors) ]   ;; use two ask patches blocks so all patches compute \"total\"   ;; before any patches change their votes   ask patches     [ let previous-vote vote       if total > 5 [ set vote 1 ]       if total < 3 [ set vote 0 ]       if total = 4         [ if change-vote-if-tied?           [ set vote (1 - vote) ] ]       if total = 5         [ ifelse award-close-calls-to-loser?           [ set vote 0 ]           [ set vote 1 ] ]       if total = 3         [ ifelse award-close-calls-to-loser?           [ set vote 1 ]           [ set vote 0 ] ]       if vote != previous-vote         [ set any-votes-changed? true ]       recolor-patch ]   ;; if the votes have stabilized, we stop the simulation   if not any-votes-changed? [ stop ]   tick end  to recolor-patch  ;; patch procedure   ifelse vote = 0     [ set pcolor green ]     [ set pcolor blue ] end   ; Copyright 1998 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":230,"top":10,"right":691,"bottom":472,"dimensions":{"minPxcor":-75,"maxPxcor":75,"minPycor":-75,"maxPycor":75,"patchSize":3,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":51,"top":66,"right":106,"bottom":99,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":113,"top":66,"right":168,"bottom":99,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 105); })","source":"count patches with   [ pcolor = blue ]","left":21,"top":207,"right":109,"bottom":252,"display":"blue patches","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"PrimChecks.agentset.countWith(world.patches(), function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 55); })","source":"count patches with   [ pcolor = green ]","left":113,"top":207,"right":201,"bottom":252,"display":"green patches","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"change-vote-if-tied?","left":4,"top":118,"right":218,"bottom":151,"display":"change-vote-if-tied?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"award-close-calls-to-loser?","left":4,"top":152,"right":218,"bottom":185,"display":"award-close-calls-to-loser?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["change-vote-if-tied?", "award-close-calls-to-loser?"], ["change-vote-if-tied?", "award-close-calls-to-loser?"], ["vote", "total"], -75, 75, -75, 75, 3, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [   vote   ;; my vote (0 or 1)   total  ;; sum of votes around me ]  to setup   clear-all   ask patches     [ set vote random 2       recolor-patch ]   reset-ticks end  to go   ;; keep track of whether any patch has changed their vote   let any-votes-changed? false   ask patches     [ set total (sum [vote] of neighbors) ]   ;; use two ask patches blocks so all patches compute \"total\"   ;; before any patches change their votes   ask patches     [ let previous-vote vote       if total > 5 [ set vote 1 ]       if total < 3 [ set vote 0 ]       if total = 4         [ if change-vote-if-tied?           [ set vote (1 - vote) ] ]       if total = 5         [ ifelse award-close-calls-to-loser?           [ set vote 0 ]           [ set vote 1 ] ]       if total = 3         [ ifelse award-close-calls-to-loser?           [ set vote 1 ]           [ set vote 0 ] ]       if vote != previous-vote         [ set any-votes-changed? true ]       recolor-patch ]   ;; if the votes have stabilized, we stop the simulation   if not any-votes-changed? [ stop ]   tick end  to recolor-patch  ;; patch procedure   ifelse vote = 0     [ set pcolor green ]     [ set pcolor blue ] end   ; Copyright 1998 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":230,"top":10,"right":691,"bottom":472,"dimensions":{"minPxcor":-75,"maxPxcor":75,"minPycor":-75,"maxPycor":75,"patchSize":3,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":51,"top":66,"right":106,"bottom":99,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":113,"top":66,"right":168,"bottom":99,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"PrimChecks.agentset.countWith(null, null, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(72, 78, \"pcolor\"), 105); })","source":"count patches with   [ pcolor = blue ]","left":21,"top":207,"right":109,"bottom":252,"display":"blue patches","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"PrimChecks.agentset.countWith(null, null, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(72, 78, \"pcolor\"), 55); })","source":"count patches with   [ pcolor = green ]","left":113,"top":207,"right":201,"bottom":252,"display":"green patches","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"change-vote-if-tied?","left":4,"top":118,"right":218,"bottom":151,"display":"change-vote-if-tied?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"award-close-calls-to-loser?","left":4,"top":152,"right":218,"bottom":185,"display":"award-close-calls-to-loser?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["change-vote-if-tied?", "award-close-calls-to-loser?"], ["change-vote-if-tied?", "award-close-calls-to-loser?"], ["vote", "total"], -75, 75, -75, 75, 3, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -53,59 +53,59 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 84, 176, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.patches(), function() {
-    SelfManager.self().setPatchVariable("vote", RandomPrims.randomLong(2));
+    PrimChecks.patch.setVariable(126, 130, "vote", RandomPrims.randomLong(2));
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(104, 107, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 184, 1069, (function() {
   let anyHvotesHchanged_Q = false; ProcedurePrims.stack().currentContext().registerStringRunVar("ANY-VOTES-CHANGED?", anyHvotesHchanged_Q);
-  var R = ProcedurePrims.ask(world.patches(), function() { SelfManager.self().setPatchVariable("total", SelfManager.self()._optimalNSum("vote")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(302, 307, "total", SelfManager.self()._optimalNSum("vote")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(280, 283, R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() {
-    let previousHvote = SelfManager.self().getPatchVariable("vote"); ProcedurePrims.stack().currentContext().registerStringRunVar("PREVIOUS-VOTE", previousHvote);
-    if (Prims.gt(SelfManager.self().getPatchVariable("total"), 5)) {
-      SelfManager.self().setPatchVariable("vote", 1);
+    let previousHvote = PrimChecks.patch.getVariable(480, 484, "vote"); ProcedurePrims.stack().currentContext().registerStringRunVar("PREVIOUS-VOTE", previousHvote);
+    if (Prims.gt(PrimChecks.patch.getVariable(494, 499, "total"), 5)) {
+      PrimChecks.patch.setVariable(510, 514, "vote", 1);
     }
-    if (Prims.lt(SelfManager.self().getPatchVariable("total"), 3)) {
-      SelfManager.self().setPatchVariable("vote", 0);
+    if (Prims.lt(PrimChecks.patch.getVariable(528, 533, "total"), 3)) {
+      PrimChecks.patch.setVariable(544, 548, "vote", 0);
     }
-    if (Prims.equality(SelfManager.self().getPatchVariable("total"), 4)) {
+    if (Prims.equality(PrimChecks.patch.getVariable(562, 567, "total"), 4)) {
       if (world.observer.getGlobal("change-vote-if-tied?")) {
-        SelfManager.self().setPatchVariable("vote", PrimChecks.math.minus(1, PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("vote"))));
+        PrimChecks.patch.setVariable(622, 626, "vote", PrimChecks.math.minus(630, 631, 1, PrimChecks.validator.checkArg('-', 630, 631, 1, PrimChecks.patch.getVariable(632, 636, "vote"))));
       }
     }
-    if (Prims.equality(SelfManager.self().getPatchVariable("total"), 5)) {
+    if (Prims.equality(PrimChecks.patch.getVariable(651, 656, "total"), 5)) {
       if (world.observer.getGlobal("award-close-calls-to-loser?")) {
-        SelfManager.self().setPatchVariable("vote", 0);
+        PrimChecks.patch.setVariable(722, 726, "vote", 0);
       }
       else {
-        SelfManager.self().setPatchVariable("vote", 1);
+        PrimChecks.patch.setVariable(747, 751, "vote", 1);
       }
     }
-    if (Prims.equality(SelfManager.self().getPatchVariable("total"), 3)) {
+    if (Prims.equality(PrimChecks.patch.getVariable(767, 772, "total"), 3)) {
       if (world.observer.getGlobal("award-close-calls-to-loser?")) {
-        SelfManager.self().setPatchVariable("vote", 1);
+        PrimChecks.patch.setVariable(838, 842, "vote", 1);
       }
       else {
-        SelfManager.self().setPatchVariable("vote", 0);
+        PrimChecks.patch.setVariable(863, 867, "vote", 0);
       }
     }
-    if (!Prims.equality(SelfManager.self().getPatchVariable("vote"), previousHvote)) {
+    if (!Prims.equality(PrimChecks.patch.getVariable(883, 887, "vote"), previousHvote)) {
       anyHvotesHchanged_Q = true; ProcedurePrims.stack().currentContext().updateStringRunVar("ANY-VOTES-CHANGED?", anyHvotesHchanged_Q);
     }
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, anyHvotesHchanged_Q))) {
-    return PrimChecks.procedure.stop();
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(444, 447, R); return R; }
+  if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 1030, 1033, 2, anyHvotesHchanged_Q))) {
+    return PrimChecks.procedure.stop(1055, 1059);
   }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("recolor-patch", 1077, 1178, (function() {
-  if (Prims.equality(SelfManager.self().getPatchVariable("vote"), 0)) {
-    SelfManager.self().setPatchVariable("pcolor", 55);
+  if (Prims.equality(PrimChecks.patch.getVariable(1120, 1124, "vote"), 0)) {
+    PrimChecks.patch.setVariable(1139, 1145, "pcolor", 55);
   }
   else {
-    SelfManager.self().setPatchVariable("pcolor", 105);
+    PrimChecks.patch.setVariable(1164, 1170, "pcolor", 105);
   }
 }))
 world.observer.setGlobal("change-vote-if-tied?", false);

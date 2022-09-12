@@ -96,7 +96,7 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("benchmark", 1061, 1152, (function() {
-  PrimChecks.math.randomSeed(361);
+  PrimChecks.math.randomSeed(1073, 1084, 361);
   workspace.timer.reset();
   var R = ProcedurePrims.callCommand("setup"); if (R === DeathInterrupt) { return R; }
   for (let _index_1113_1119 = 0, _repeatcount_1113_1119 = StrictMath.floor(17000); _index_1113_1119 < _repeatcount_1113_1119; _index_1113_1119++) {
@@ -109,9 +109,9 @@ ProcedurePrims.defineCommand("setup", 1160, 1998, (function() {
   world.ticker.reset();
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
   world.observer.setGlobal("fade-needed?", false);
-  world.observer.setGlobal("box-edge", PrimChecks.math.minus(world.topology.maxPxcor, 1));
-  world.observer.setGlobal("length-horizontal-surface", PrimChecks.math.plus(PrimChecks.math.mult(2, PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge")), 1)), 1));
-  world.observer.setGlobal("length-vertical-surface", PrimChecks.math.plus(PrimChecks.math.mult(2, PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge")), 1)), 1));
+  world.observer.setGlobal("box-edge", PrimChecks.math.minus(1303, 1304, world.topology.maxPxcor, 1));
+  world.observer.setGlobal("length-horizontal-surface", PrimChecks.math.plus(1709, 1710, PrimChecks.math.mult(1692, 1693, 2, PrimChecks.math.minus(1704, 1705, PrimChecks.validator.checkArg('-', 1704, 1705, 1, world.observer.getGlobal("box-edge")), 1)), 1));
+  world.observer.setGlobal("length-vertical-surface", PrimChecks.math.plus(1766, 1767, PrimChecks.math.mult(1749, 1750, 2, PrimChecks.math.minus(1761, 1762, PrimChecks.validator.checkArg('-', 1761, 1762, 1, world.observer.getGlobal("box-edge")), 1)), 1));
   var R = ProcedurePrims.callCommand("make-box"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("make-particles"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("make-clocker"); if (R === DeathInterrupt) { return R; }
@@ -125,36 +125,36 @@ ProcedurePrims.defineCommand("setup", 1160, 1998, (function() {
   var R = ProcedurePrims.callCommand("do-plotting"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("update-variables", 2006, 2257, (function() {
-  world.observer.setGlobal("medium", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }));
-  world.observer.setGlobal("slow", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }));
-  world.observer.setGlobal("fast", PrimChecks.agentset.countWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }));
-  world.observer.setGlobal("avg-speed", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable("speed"); }))));
-  world.observer.setGlobal("avg-energy", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable("energy"); }))));
+  world.observer.setGlobal("medium", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(2058, 2063, "color"), 55); }));
+  world.observer.setGlobal("slow", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(2108, 2113, "color"), 105); }));
+  world.observer.setGlobal("fast", PrimChecks.agentset.countWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(2157, 2162, "color"), 15); }));
+  world.observer.setGlobal("avg-speed", PrimChecks.list.mean(2187, 2191, PrimChecks.validator.checkArg('MEAN', 2187, 2191, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(2193, 2198, "speed"); }))));
+  world.observer.setGlobal("avg-energy", PrimChecks.list.mean(2230, 2234, PrimChecks.validator.checkArg('MEAN', 2230, 2234, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(2236, 2242, "energy"); }))));
 }))
 ProcedurePrims.defineCommand("go", 2265, 2990, (function() {
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { var R = ProcedurePrims.callCommand("bounce"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { var R = ProcedurePrims.callCommand("bounce"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2270, 2273, R); return R; }
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2297, 2300, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
     if (world.observer.getGlobal("collide?")) {
       var R = ProcedurePrims.callCommand("check-for-collision"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2322, 2325, R); return R; }
   if (world.observer.getGlobal("trace?")) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.turtleManager.getTurtleOfBreed("PARTICLES", 0)), function() {
-      SelfManager.self().setPatchVariable("pcolor", 5);
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2390, 2393, 1904, PrimChecks.turtle.getTurtleOfBreed(2394, 2402, "PARTICLES", 0)), function() {
+      PrimChecks.patch.setVariable(2416, 2422, "pcolor", 5);
       world.observer.setGlobal("fade-needed?", true);
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2390, 2393, R); return R; }
   }
   let oldHclock = world.ticker.tickCount(); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-CLOCK", oldHclock);
   world.ticker.tickAdvance(world.observer.getGlobal("tick-length"));
-  if (Prims.gt(PrimChecks.math.floor(world.ticker.tickCount()), PrimChecks.math.floor(PrimChecks.math.minus(world.ticker.tickCount(), PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("tick-length")))))) {
+  if (Prims.gt(PrimChecks.math.floor(world.ticker.tickCount()), PrimChecks.math.floor(PrimChecks.math.minus(2537, 2538, world.ticker.tickCount(), PrimChecks.validator.checkArg('-', 2537, 2538, 1, world.observer.getGlobal("tick-length")))))) {
     if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("PARTICLES"))) {
-      world.observer.setGlobal("wall-hits-per-particle", PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable("wall-hits"); }))));
+      world.observer.setGlobal("wall-hits-per-particle", PrimChecks.list.mean(2617, 2621, PrimChecks.validator.checkArg('MEAN', 2617, 2621, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(2623, 2632, "wall-hits"); }))));
     }
     else {
       world.observer.setGlobal("wall-hits-per-particle", 0);
     }
-    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { PrimChecks.turtle.setVariable("wall-hits", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { PrimChecks.turtle.setVariable(2718, 2727, "wall-hits", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2692, 2695, R); return R; }
     if (world.observer.getGlobal("fade-needed?")) {
       var R = ProcedurePrims.callCommand("fade-patches"); if (R === DeathInterrupt) { return R; }
     }
@@ -163,175 +163,177 @@ ProcedurePrims.defineCommand("go", 2265, 2990, (function() {
     var R = ProcedurePrims.callCommand("do-plotting"); if (R === DeathInterrupt) { return R; }
   }
   var R = ProcedurePrims.callCommand("calculate-tick-length"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CLOCKERS"), function() { PrimChecks.turtle.setVariable("heading", PrimChecks.math.mult(world.ticker.tickCount(), 360)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("FLASHES"), function() {
-    return Prims.gt(PrimChecks.math.minus(world.ticker.tickCount(), PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("birthday"))), 0.4);
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CLOCKERS"), function() {
+    PrimChecks.turtle.setVariable(2876, 2883, "heading", PrimChecks.math.mult(2890, 2891, world.ticker.tickCount(), 360));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2857, 2860, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(2912, 2916, world.turtleManager.turtlesOfBreed("FLASHES"), function() {
+    return Prims.gt(PrimChecks.math.minus(2924, 2925, world.ticker.tickCount(), PrimChecks.validator.checkArg('-', 2924, 2925, 1, PrimChecks.turtle.getVariable(2926, 2934, "birthday"))), 0.4);
   }), function() {
-    SelfManager.self().setPatchVariable("pcolor", 45);
+    PrimChecks.patch.setVariable(2954, 2960, "pcolor", 45);
     return SelfManager.self().die();
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2900, 2903, R); return R; }
   Prims.display();
 }))
 ProcedurePrims.defineCommand("calculate-tick-length", 2998, 3150, (function() {
-  if (PrimChecks.agentset.anyWith(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.gt(PrimChecks.turtle.getVariable("speed"), 0); })) {
-    world.observer.setGlobal("tick-length", PrimChecks.math.div(1, PrimChecks.math.ceil(PrimChecks.list.max(PrimChecks.validator.checkArg('MAX', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable("speed"); }))))));
+  if (PrimChecks.agentset.anyWith(null, null, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.gt(PrimChecks.turtle.getVariable(3050, 3055, "speed"), 0); })) {
+    world.observer.setGlobal("tick-length", PrimChecks.math.div(3085, 3086, 1, PrimChecks.math.ceil(PrimChecks.list.max(3096, 3099, PrimChecks.validator.checkArg('MAX', 3096, 3099, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(3101, 3106, "speed"); }))))));
   }
   else {
     world.observer.setGlobal("tick-length", 1);
   }
 }))
 ProcedurePrims.defineCommand("calculate-pressure", 4224, 4733, (function() {
-  world.observer.setGlobal("pressure", PrimChecks.math.mult(15, PrimChecks.list.sum(PrimChecks.validator.checkArg('SUM', 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable("momentum-difference"); })))));
-  world.observer.setGlobal("pressure-history", PrimChecks.list.lput(PrimChecks.validator.checkArg('LPUT', 8191, world.observer.getGlobal("pressure")), PrimChecks.validator.checkArg('LPUT', 8, world.observer.getGlobal("pressure-history"))));
-  world.observer.setGlobal("zero-pressure-count", PrimChecks.list.length(PrimChecks.list.filter(Tasks.reporterTask(function(p) {
-    PrimChecks.procedure.runArgCountCheck(1, arguments.length);
+  world.observer.setGlobal("pressure", PrimChecks.math.mult(4368, 4369, 15, PrimChecks.list.sum(4370, 4373, PrimChecks.validator.checkArg('SUM', 4370, 4373, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return PrimChecks.turtle.getVariable(4375, 4394, "momentum-difference"); })))));
+  world.observer.setGlobal("pressure-history", PrimChecks.list.lput(world.observer.getGlobal("pressure"), PrimChecks.validator.checkArg('LPUT', 4432, 4436, 8, world.observer.getGlobal("pressure-history"))));
+  world.observer.setGlobal("zero-pressure-count", PrimChecks.list.length(PrimChecks.list.filter(4496, 4502, PrimChecks.task.checked(4503, 4504, function(p) {
+    PrimChecks.procedure.runArgCountCheck('runresult', 4512, 4517, 1, arguments.length);
     return Prims.equality(p, 0);
-  }, "[ [p] -> p = 0 ]"), PrimChecks.validator.checkArg('FILTER', 8, world.observer.getGlobal("pressure-history")))));
-  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { PrimChecks.turtle.setVariable("momentum-difference", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, "[ [p] -> p = 0 ]", true, false), PrimChecks.validator.checkArg('FILTER', 4496, 4502, 8, world.observer.getGlobal("pressure-history")))));
+  var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { PrimChecks.turtle.setVariable(4562, 4581, "momentum-difference", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4538, 4541, R); return R; }
 }))
 ProcedurePrims.defineCommand("bounce", 4741, 6490, (function() {
-  if (ColorModel.areRelatedByShade(45, SelfManager.self().getPatchVariable("pcolor"))) {
-    return PrimChecks.procedure.stop();
+  if (ColorModel.areRelatedByShade(45, PrimChecks.patch.getVariable(4922, 4928, "pcolor"))) {
+    return PrimChecks.procedure.stop(4935, 4939);
   }
   let newHpatch = SelfManager.self().patchAhead(1); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PATCH", newHpatch);
-  let newHpx = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, newHpatch), function() { return SelfManager.self().getPatchVariable("pxcor"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PX", newHpx);
-  let newHpy = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, newHpatch), function() { return SelfManager.self().getPatchVariable("pycor"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PY", newHpy);
-  if (PrimChecks.math.not(ColorModel.areRelatedByShade(45, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, newHpatch), function() { return SelfManager.self().getPatchVariable("pcolor"); })))) {
-    return PrimChecks.procedure.stop();
+  let newHpx = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4993, 4995, 1904, newHpatch), function() { return PrimChecks.patch.getVariable(4986, 4991, "pxcor"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PX", newHpx);
+  let newHpy = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 5027, 5029, 1904, newHpatch), function() { return PrimChecks.patch.getVariable(5020, 5025, "pycor"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PY", newHpy);
+  if (PrimChecks.math.not(ColorModel.areRelatedByShade(45, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 5075, 5077, 1904, newHpatch), function() { return PrimChecks.patch.getVariable(5067, 5073, "pcolor"); })))) {
+    return PrimChecks.procedure.stop(5094, 5098);
   }
-  if ((!Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, newHpx)), world.observer.getGlobal("box-edge")) && !Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, newHpy)), world.observer.getGlobal("box-edge")))) {
-    return PrimChecks.procedure.stop();
+  if ((!Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 5176, 5179, 1, newHpx)), world.observer.getGlobal("box-edge")) && !Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 5203, 5206, 1, newHpy)), world.observer.getGlobal("box-edge")))) {
+    return PrimChecks.procedure.stop(5232, 5236);
   }
-  if (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, newHpx)), world.observer.getGlobal("box-edge"))) {
-    PrimChecks.turtle.setVariable("heading", PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("heading"))));
-    PrimChecks.turtle.setVariable("wall-hits", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("wall-hits")), 1));
-    PrimChecks.turtle.setVariable("momentum-difference", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("momentum-difference")), PrimChecks.math.div(PrimChecks.math.abs(PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.sin(PrimChecks.validator.checkArg('SIN', 1, PrimChecks.turtle.getVariable("heading"))), 2), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("mass"))), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed")))), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("length-vertical-surface")))));
+  if (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 5310, 5313, 1, newHpx)), world.observer.getGlobal("box-edge"))) {
+    PrimChecks.turtle.setVariable(5343, 5350, "heading", PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 5352, 5353, 1, PrimChecks.turtle.getVariable(5354, 5361, "heading"))));
+    PrimChecks.turtle.setVariable(5373, 5382, "wall-hits", PrimChecks.math.plus(5393, 5394, PrimChecks.validator.checkArg('+', 5393, 5394, 1, PrimChecks.turtle.getVariable(5383, 5392, "wall-hits")), 1));
+    PrimChecks.turtle.setVariable(5684, 5703, "momentum-difference", PrimChecks.math.plus(5724, 5725, PrimChecks.validator.checkArg('+', 5724, 5725, 1, PrimChecks.turtle.getVariable(5704, 5723, "momentum-difference")), PrimChecks.math.div(5764, 5765, PrimChecks.math.abs(PrimChecks.math.mult(5755, 5756, PrimChecks.math.mult(5748, 5749, PrimChecks.math.mult(5744, 5745, PrimChecks.math.sin(PrimChecks.validator.checkArg('SIN', 5732, 5735, 1, PrimChecks.turtle.getVariable(5736, 5743, "heading"))), 2), PrimChecks.validator.checkArg('*', 5748, 5749, 1, PrimChecks.turtle.getVariable(5750, 5754, "mass"))), PrimChecks.validator.checkArg('*', 5755, 5756, 1, PrimChecks.turtle.getVariable(5757, 5762, "speed")))), PrimChecks.validator.checkArg('/', 5764, 5765, 1, world.observer.getGlobal("length-vertical-surface")))));
   }
-  if (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, newHpy)), world.observer.getGlobal("box-edge"))) {
-    PrimChecks.turtle.setVariable("heading", PrimChecks.math.minus(180, PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("heading"))));
-    PrimChecks.turtle.setVariable("wall-hits", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("wall-hits")), 1));
-    PrimChecks.turtle.setVariable("momentum-difference", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("momentum-difference")), PrimChecks.math.div(PrimChecks.math.abs(PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.cos(PrimChecks.validator.checkArg('COS', 1, PrimChecks.turtle.getVariable("heading"))), 2), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("mass"))), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed")))), PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("length-horizontal-surface")))));
+  if (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 5865, 5868, 1, newHpy)), world.observer.getGlobal("box-edge"))) {
+    PrimChecks.turtle.setVariable(5898, 5905, "heading", PrimChecks.math.minus(5911, 5912, 180, PrimChecks.validator.checkArg('-', 5911, 5912, 1, PrimChecks.turtle.getVariable(5913, 5920, "heading"))));
+    PrimChecks.turtle.setVariable(5932, 5941, "wall-hits", PrimChecks.math.plus(5952, 5953, PrimChecks.validator.checkArg('+', 5952, 5953, 1, PrimChecks.turtle.getVariable(5942, 5951, "wall-hits")), 1));
+    PrimChecks.turtle.setVariable(6243, 6262, "momentum-difference", PrimChecks.math.plus(6283, 6284, PrimChecks.validator.checkArg('+', 6283, 6284, 1, PrimChecks.turtle.getVariable(6263, 6282, "momentum-difference")), PrimChecks.math.div(6323, 6324, PrimChecks.math.abs(PrimChecks.math.mult(6314, 6315, PrimChecks.math.mult(6307, 6308, PrimChecks.math.mult(6303, 6304, PrimChecks.math.cos(PrimChecks.validator.checkArg('COS', 6291, 6294, 1, PrimChecks.turtle.getVariable(6295, 6302, "heading"))), 2), PrimChecks.validator.checkArg('*', 6307, 6308, 1, PrimChecks.turtle.getVariable(6309, 6313, "mass"))), PrimChecks.validator.checkArg('*', 6314, 6315, 1, PrimChecks.turtle.getVariable(6316, 6321, "speed")))), PrimChecks.validator.checkArg('/', 6323, 6324, 1, world.observer.getGlobal("length-horizontal-surface")))));
   }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 1, newHpx), PrimChecks.validator.checkArg('PATCH', 1, newHpy))), function() {
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6359, 6362, 1904, world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 6363, 6368, 1, newHpx), PrimChecks.validator.checkArg('PATCH', 6363, 6368, 1, newHpy))), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "FLASHES"), function() {
       SelfManager.self().hideTurtle(true);
-      PrimChecks.turtle.setVariable("birthday", world.ticker.tickCount());
-      SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(45, 3));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      PrimChecks.turtle.setVariable(6432, 6440, "birthday", world.ticker.tickCount());
+      PrimChecks.patch.setVariable(6468, 6474, "pcolor", PrimChecks.math.minus(6482, 6483, 45, 3));
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6389, 6403, R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6359, 6362, R); return R; }
 }))
 ProcedurePrims.defineCommand("move", 6498, 6645, (function() {
   let oldHpatch = SelfManager.self().getPatchHere(); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-PATCH", oldHpatch);
-  SelfManager.self().jumpIfAble(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("tick-length"))));
+  SelfManager.self().jumpIfAble(PrimChecks.math.mult(6567, 6568, PrimChecks.validator.checkArg('*', 6567, 6568, 1, PrimChecks.turtle.getVariable(6561, 6566, "speed")), PrimChecks.validator.checkArg('*', 6567, 6568, 1, world.observer.getGlobal("tick-length"))));
   if (!Prims.equality(SelfManager.self().getPatchHere(), oldHpatch)) {
-    PrimChecks.turtle.setVariable("last-collision", Nobody);
+    PrimChecks.turtle.setVariable(6621, 6635, "last-collision", Nobody);
   }
 }))
 ProcedurePrims.defineCommand("check-for-collision", 6653, 9524, (function() {
   if (Prims.equality(SelfPrims._optimalCountOther(SelfManager.self().breedHere("PARTICLES")), 1)) {
-    let candidate = PrimChecks.list.oneOf(PrimChecks.validator.checkArg('ONE-OF', 120, PrimChecks.agentset.otherWith(SelfManager.self().breedHere("PARTICLES"), function() {
-      return (Prims.lt(PrimChecks.turtle.getVariable("who"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtle.getVariable("who"); })) && !Prims.equality(SelfManager.myself(), PrimChecks.turtle.getVariable("last-collision")));
+    let candidate = PrimChecks.list.oneOf(9076, 9082, PrimChecks.validator.checkArg('ONE-OF', 9076, 9082, 120, PrimChecks.agentset.otherWith(null, null, SelfManager.self().breedHere("PARTICLES"), function() {
+      return (Prims.lt(PrimChecks.turtle.getVariable(9116, 9119, "who"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtle.getVariable(9123, 9126, "who"); })) && !Prims.equality(SelfManager.myself(), PrimChecks.turtle.getVariable(9152, 9166, "last-collision")));
     }))); ProcedurePrims.stack().currentContext().registerStringRunVar("CANDIDATE", candidate);
-    if ((!Prims.equality(candidate, Nobody) && (Prims.gt(PrimChecks.turtle.getVariable("speed"), 0) || Prims.gt(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, candidate), function() { return PrimChecks.turtle.getVariable("speed"); }), 0)))) {
+    if ((!Prims.equality(candidate, Nobody) && (Prims.gt(PrimChecks.turtle.getVariable(9355, 9360, "speed"), 0) || Prims.gt(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 9376, 9378, 1904, candidate), function() { return PrimChecks.turtle.getVariable(9369, 9374, "speed"); }), 0)))) {
       var R = ProcedurePrims.callCommand("collide-with", candidate); if (R === DeathInterrupt) { return R; }
-      PrimChecks.turtle.setVariable("last-collision", candidate);
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, candidate), function() { PrimChecks.turtle.setVariable("last-collision", SelfManager.myself()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+      PrimChecks.turtle.setVariable(9439, 9453, "last-collision", candidate);
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9470, 9473, 1904, candidate), function() { PrimChecks.turtle.setVariable(9490, 9504, "last-collision", SelfManager.myself()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9470, 9473, R); return R; }
     }
   }
 }))
 ProcedurePrims.defineCommand("collide-with", 10847, 13178, (function(otherHparticle) {
-  let mass2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHparticle), function() { return PrimChecks.turtle.getVariable("mass"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MASS2", mass2);
-  let speed2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHparticle), function() { return PrimChecks.turtle.getVariable("speed"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("SPEED2", speed2);
-  let heading2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1904, otherHparticle), function() { return PrimChecks.turtle.getVariable("heading"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("HEADING2", heading2);
+  let mass2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 11014, 11016, 1904, otherHparticle), function() { return PrimChecks.turtle.getVariable(11008, 11012, "mass"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MASS2", mass2);
+  let speed2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 11053, 11055, 1904, otherHparticle), function() { return PrimChecks.turtle.getVariable(11046, 11051, "speed"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("SPEED2", speed2);
+  let heading2 = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 11096, 11098, 1904, otherHparticle), function() { return PrimChecks.turtle.getVariable(11087, 11094, "heading"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("HEADING2", heading2);
   let theta = PrimChecks.math.randomFloat(360); ProcedurePrims.stack().currentContext().registerStringRunVar("THETA", theta);
-  let v1t = PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.math.cos(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, theta), PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("heading"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("V1T", v1t);
-  let v1l = PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed")), PrimChecks.math.sin(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, theta), PrimChecks.validator.checkArg('-', 1, PrimChecks.turtle.getVariable("heading"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("V1L", v1l);
-  let v2t = PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, speed2), PrimChecks.math.cos(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, theta), PrimChecks.validator.checkArg('-', 1, heading2)))); ProcedurePrims.stack().currentContext().registerStringRunVar("V2T", v2t);
-  let v2l = PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, speed2), PrimChecks.math.sin(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, theta), PrimChecks.validator.checkArg('-', 1, heading2)))); ProcedurePrims.stack().currentContext().registerStringRunVar("V2L", v2l);
-  let vcm = PrimChecks.math.div(PrimChecks.math.plus(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("mass")), PrimChecks.validator.checkArg('*', 1, v1t)), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, mass2), PrimChecks.validator.checkArg('*', 1, v2t))), PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("mass")), PrimChecks.validator.checkArg('+', 1, mass2))); ProcedurePrims.stack().currentContext().registerStringRunVar("VCM", vcm);
-  v1t = PrimChecks.math.minus(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, vcm)), PrimChecks.validator.checkArg('-', 1, v1t)); ProcedurePrims.stack().currentContext().updateStringRunVar("V1T", v1t);
-  v2t = PrimChecks.math.minus(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, vcm)), PrimChecks.validator.checkArg('-', 1, v2t)); ProcedurePrims.stack().currentContext().updateStringRunVar("V2T", v2t);
-  PrimChecks.turtle.setVariable("speed", PrimChecks.math.sqrt(PrimChecks.math.plus(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, v1t), PrimChecks.validator.checkArg('*', 1, v1t)), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, v1l), PrimChecks.validator.checkArg('*', 1, v1l)))));
-  PrimChecks.turtle.setVariable("energy", PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.mult(0.5, PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("mass"))), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed"))), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed"))));
+  let v1t = PrimChecks.math.mult(11517, 11518, PrimChecks.validator.checkArg('*', 11517, 11518, 1, PrimChecks.turtle.getVariable(11511, 11516, "speed")), PrimChecks.math.cos(PrimChecks.math.minus(11530, 11531, PrimChecks.validator.checkArg('-', 11530, 11531, 1, theta), PrimChecks.validator.checkArg('-', 11530, 11531, 1, PrimChecks.turtle.getVariable(11532, 11539, "heading"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("V1T", v1t);
+  let v1l = PrimChecks.math.mult(11559, 11560, PrimChecks.validator.checkArg('*', 11559, 11560, 1, PrimChecks.turtle.getVariable(11553, 11558, "speed")), PrimChecks.math.sin(PrimChecks.math.minus(11572, 11573, PrimChecks.validator.checkArg('-', 11572, 11573, 1, theta), PrimChecks.validator.checkArg('-', 11572, 11573, 1, PrimChecks.turtle.getVariable(11574, 11581, "heading"))))); ProcedurePrims.stack().currentContext().registerStringRunVar("V1L", v1l);
+  let v2t = PrimChecks.math.mult(11639, 11640, PrimChecks.validator.checkArg('*', 11639, 11640, 1, speed2), PrimChecks.math.cos(PrimChecks.math.minus(11652, 11653, PrimChecks.validator.checkArg('-', 11652, 11653, 1, theta), PrimChecks.validator.checkArg('-', 11652, 11653, 1, heading2)))); ProcedurePrims.stack().currentContext().registerStringRunVar("V2T", v2t);
+  let v2l = PrimChecks.math.mult(11683, 11684, PrimChecks.validator.checkArg('*', 11683, 11684, 1, speed2), PrimChecks.math.sin(PrimChecks.math.minus(11696, 11697, PrimChecks.validator.checkArg('-', 11696, 11697, 1, theta), PrimChecks.validator.checkArg('-', 11696, 11697, 1, heading2)))); ProcedurePrims.stack().currentContext().registerStringRunVar("V2L", v2l);
+  let vcm = PrimChecks.math.div(11881, 11882, PrimChecks.math.plus(11864, 11865, PrimChecks.math.mult(11857, 11858, PrimChecks.validator.checkArg('*', 11857, 11858, 1, PrimChecks.turtle.getVariable(11852, 11856, "mass")), PrimChecks.validator.checkArg('*', 11857, 11858, 1, v1t)), PrimChecks.math.mult(11873, 11874, PrimChecks.validator.checkArg('*', 11873, 11874, 1, mass2), PrimChecks.validator.checkArg('*', 11873, 11874, 1, v2t))), PrimChecks.math.plus(11889, 11890, PrimChecks.validator.checkArg('+', 11889, 11890, 1, PrimChecks.turtle.getVariable(11884, 11888, "mass")), PrimChecks.validator.checkArg('+', 11889, 11890, 1, mass2))); ProcedurePrims.stack().currentContext().registerStringRunVar("VCM", vcm);
+  v1t = PrimChecks.math.minus(12255, 12256, PrimChecks.math.mult(12249, 12250, 2, PrimChecks.validator.checkArg('*', 12249, 12250, 1, vcm)), PrimChecks.validator.checkArg('-', 12255, 12256, 1, v1t)); ProcedurePrims.stack().currentContext().updateStringRunVar("V1T", v1t);
+  v2t = PrimChecks.math.minus(12281, 12282, PrimChecks.math.mult(12275, 12276, 2, PrimChecks.validator.checkArg('*', 12275, 12276, 1, vcm)), PrimChecks.validator.checkArg('-', 12281, 12282, 1, v2t)); ProcedurePrims.stack().currentContext().updateStringRunVar("V2T", v2t);
+  PrimChecks.turtle.setVariable(12416, 12421, "speed", PrimChecks.math.sqrt(12422, 12426, PrimChecks.math.plus(12440, 12441, PrimChecks.math.mult(12433, 12434, PrimChecks.validator.checkArg('*', 12433, 12434, 1, v1t), PrimChecks.validator.checkArg('*', 12433, 12434, 1, v1t)), PrimChecks.math.mult(12447, 12448, PrimChecks.validator.checkArg('*', 12447, 12448, 1, v1l), PrimChecks.validator.checkArg('*', 12447, 12448, 1, v1l)))));
+  PrimChecks.turtle.setVariable(12461, 12467, "energy", PrimChecks.math.mult(12488, 12489, PrimChecks.math.mult(12480, 12481, PrimChecks.math.mult(12473, 12474, 0.5, PrimChecks.validator.checkArg('*', 12473, 12474, 1, PrimChecks.turtle.getVariable(12475, 12479, "mass"))), PrimChecks.validator.checkArg('*', 12480, 12481, 1, PrimChecks.turtle.getVariable(12482, 12487, "speed"))), PrimChecks.validator.checkArg('*', 12488, 12489, 1, PrimChecks.turtle.getVariable(12490, 12495, "speed"))));
   if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
-    PrimChecks.turtle.setVariable("heading", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, theta), PrimChecks.math.atan(PrimChecks.validator.checkArg('ATAN', 1, v1l), PrimChecks.validator.checkArg('ATAN', 1, v1t))));
+    PrimChecks.turtle.setVariable(12723, 12730, "heading", PrimChecks.math.minus(12738, 12739, PrimChecks.validator.checkArg('-', 12738, 12739, 1, theta), PrimChecks.math.atan(12741, 12745, PrimChecks.validator.checkArg('ATAN', 12741, 12745, 1, v1l), PrimChecks.validator.checkArg('ATAN', 12741, 12745, 1, v1t))));
   }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, otherHparticle), function() {
-    PrimChecks.turtle.setVariable("speed", PrimChecks.math.sqrt(PrimChecks.math.plus(PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, v2t), PrimChecks.validator.checkArg('*', 1, v2t)), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, v2l), PrimChecks.validator.checkArg('*', 1, v2l)))));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, otherHparticle), function() {
-    PrimChecks.turtle.setVariable("energy", PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.mult(0.5, PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("mass"))), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed"))), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed"))));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12801, 12804, 1904, otherHparticle), function() {
+    PrimChecks.turtle.setVariable(12826, 12831, "speed", PrimChecks.math.sqrt(12832, 12836, PrimChecks.math.plus(12850, 12851, PrimChecks.math.mult(12843, 12844, PrimChecks.validator.checkArg('*', 12843, 12844, 1, v2t), PrimChecks.validator.checkArg('*', 12843, 12844, 1, v2t)), PrimChecks.math.mult(12857, 12858, PrimChecks.validator.checkArg('*', 12857, 12858, 1, v2l), PrimChecks.validator.checkArg('*', 12857, 12858, 1, v2l)))));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12801, 12804, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12869, 12872, 1904, otherHparticle), function() {
+    PrimChecks.turtle.setVariable(12894, 12900, "energy", PrimChecks.math.mult(12920, 12921, PrimChecks.math.mult(12912, 12913, PrimChecks.math.mult(12905, 12906, 0.5, PrimChecks.validator.checkArg('*', 12905, 12906, 1, PrimChecks.turtle.getVariable(12907, 12911, "mass"))), PrimChecks.validator.checkArg('*', 12912, 12913, 1, PrimChecks.turtle.getVariable(12914, 12919, "speed"))), PrimChecks.validator.checkArg('*', 12920, 12921, 1, PrimChecks.turtle.getVariable(12922, 12927, "speed"))));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12869, 12872, R); return R; }
   if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, otherHparticle), function() {
-      PrimChecks.turtle.setVariable("heading", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, theta), PrimChecks.math.atan(PrimChecks.validator.checkArg('ATAN', 1, v2l), PrimChecks.validator.checkArg('ATAN', 1, v2t))));
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12962, 12965, 1904, otherHparticle), function() {
+      PrimChecks.turtle.setVariable(12987, 12994, "heading", PrimChecks.math.minus(13002, 13003, PrimChecks.validator.checkArg('-', 13002, 13003, 1, theta), PrimChecks.math.atan(13005, 13009, PrimChecks.validator.checkArg('ATAN', 13005, 13009, 1, v2l), PrimChecks.validator.checkArg('ATAN', 13005, 13009, 1, v2t))));
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12962, 12965, R); return R; }
   }
   var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, otherHparticle), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 13143, 13146, 1904, otherHparticle), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13143, 13146, R); return R; }
 }))
 ProcedurePrims.defineCommand("recolor", 13186, 13360, (function() {
-  if (Prims.lt(PrimChecks.turtle.getVariable("speed"), PrimChecks.math.mult(0.5, 10))) {
-    SelfManager.self().setVariable("color", 105);
+  if (Prims.lt(PrimChecks.turtle.getVariable(13226, 13231, "speed"), PrimChecks.math.mult(13239, 13240, 0.5, 10))) {
+    PrimChecks.turtleOrLink.setVariable(13257, 13262, "color", 105);
   }
   else {
-    if (Prims.gt(PrimChecks.turtle.getVariable("speed"), PrimChecks.math.mult(1.5, 10))) {
-      SelfManager.self().setVariable("color", 15);
+    if (Prims.gt(PrimChecks.turtle.getVariable(13287, 13292, "speed"), PrimChecks.math.mult(13300, 13301, 1.5, 10))) {
+      PrimChecks.turtleOrLink.setVariable(13318, 13323, "color", 15);
     }
     else {
-      SelfManager.self().setVariable("color", 55);
+      PrimChecks.turtleOrLink.setVariable(13342, 13347, "color", 55);
     }
   }
 }))
 ProcedurePrims.defineCommand("fade-patches", 13368, 13661, (function() {
-  let traceHpatches = PrimChecks.agentset.with(world.patches(), function() {
-    return (!Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45) && !Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
+  let traceHpatches = PrimChecks.agentset.with(13409, 13413, world.patches(), function() {
+    return (!Prims.equality(PrimChecks.patch.getVariable(13416, 13422, "pcolor"), 45) && !Prims.equality(PrimChecks.patch.getVariable(13439, 13445, "pcolor"), 0));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("TRACE-PATCHES", traceHpatches);
-  if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 112, traceHpatches))) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1904, traceHpatches), function() {
-      SelfManager.self().setPatchVariable("pcolor", PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, SelfManager.self().getPatchVariable("pcolor")), 0.4));
-      if ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2, world.observer.getGlobal("trace?"))) || Prims.equality(PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 1, SelfManager.self().getPatchVariable("pcolor"))), 0))) {
-        SelfManager.self().setPatchVariable("pcolor", 0);
+  if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 13466, 13470, 112, traceHpatches))) {
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 13491, 13494, 1904, traceHpatches), function() {
+      PrimChecks.patch.setVariable(13521, 13527, "pcolor", PrimChecks.math.minus(13537, 13538, PrimChecks.validator.checkArg('-', 13537, 13538, 1, PrimChecks.patch.getVariable(13530, 13536, "pcolor")), 0.4));
+      if ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 13557, 13560, 2, world.observer.getGlobal("trace?"))) || Prims.equality(PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 13573, 13578, 1, PrimChecks.patch.getVariable(13579, 13585, "pcolor"))), 0))) {
+        PrimChecks.patch.setVariable(13611, 13617, "pcolor", 0);
       }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13491, 13494, R); return R; }
   }
   else {
     world.observer.setGlobal("fade-needed?", false);
   }
 }))
 ProcedurePrims.defineCommand("make-box", 13718, 13906, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.agentset.with(world.patches(), function() {
-    return ((Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pxcor"))), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pycor"))), world.observer.getGlobal("box-edge"))) || (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pycor"))), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1, SelfManager.self().getPatchVariable("pxcor"))), world.observer.getGlobal("box-edge"))));
-  }), function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.agentset.with(13741, 13745, world.patches(), function() {
+    return ((Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 13750, 13753, 1, PrimChecks.patch.getVariable(13754, 13759, "pxcor"))), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 13777, 13780, 1, PrimChecks.patch.getVariable(13781, 13786, "pycor"))), world.observer.getGlobal("box-edge"))) || (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 13827, 13830, 1, PrimChecks.patch.getVariable(13831, 13836, "pycor"))), world.observer.getGlobal("box-edge")) && Prims.lte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 13854, 13857, 1, PrimChecks.patch.getVariable(13858, 13863, "pxcor"))), world.observer.getGlobal("box-edge"))));
+  }), function() { PrimChecks.patch.setVariable(13890, 13896, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13729, 13732, R); return R; }
 }))
 ProcedurePrims.defineCommand("make-particles", 13943, 14088, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(world.observer.getGlobal("number-of-particles"), "PARTICLES"), function() {
     var R = ProcedurePrims.callCommand("setup-particle"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("random-position"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13960, 13984, R); return R; }
   var R = ProcedurePrims.callCommand("calculate-tick-length"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("setup-particle", 14097, 14308, (function() {
-  PrimChecks.turtle.setVariable("speed", world.observer.getGlobal("init-particle-speed"));
-  PrimChecks.turtle.setVariable("mass", world.observer.getGlobal("particle-mass"));
-  PrimChecks.turtle.setVariable("energy", PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.mult(0.5, PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("mass"))), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed"))), PrimChecks.validator.checkArg('*', 1, PrimChecks.turtle.getVariable("speed"))));
-  PrimChecks.turtle.setVariable("last-collision", Nobody);
-  PrimChecks.turtle.setVariable("wall-hits", 0);
-  PrimChecks.turtle.setVariable("momentum-difference", 0);
+  PrimChecks.turtle.setVariable(14141, 14146, "speed", world.observer.getGlobal("init-particle-speed"));
+  PrimChecks.turtle.setVariable(14173, 14177, "mass", world.observer.getGlobal("particle-mass"));
+  PrimChecks.turtle.setVariable(14198, 14204, "energy", PrimChecks.math.mult(14225, 14226, PrimChecks.math.mult(14217, 14218, PrimChecks.math.mult(14210, 14211, 0.5, PrimChecks.validator.checkArg('*', 14210, 14211, 1, PrimChecks.turtle.getVariable(14212, 14216, "mass"))), PrimChecks.validator.checkArg('*', 14217, 14218, 1, PrimChecks.turtle.getVariable(14219, 14224, "speed"))), PrimChecks.validator.checkArg('*', 14225, 14226, 1, PrimChecks.turtle.getVariable(14227, 14232, "speed"))));
+  PrimChecks.turtle.setVariable(14240, 14254, "last-collision", Nobody);
+  PrimChecks.turtle.setVariable(14268, 14277, "wall-hits", 0);
+  PrimChecks.turtle.setVariable(14286, 14305, "momentum-difference", 0);
 }))
 ProcedurePrims.defineCommand("random-position", 14369, 14560, (function() {
-  PrimChecks.turtle.setXY(PrimChecks.math.plus(PrimChecks.math.minus(1, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge"))), PrimChecks.math.randomFloat(PrimChecks.math.minus(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("box-edge"))), 2))), PrimChecks.math.plus(PrimChecks.math.minus(1, PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge"))), PrimChecks.math.randomFloat(PrimChecks.math.minus(PrimChecks.math.mult(2, PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("box-edge"))), 2))));
-  PrimChecks.turtle.setVariable("heading", PrimChecks.math.randomFloat(360));
+  PrimChecks.turtle.setXY(14409, 14414, PrimChecks.math.plus(14431, 14432, PrimChecks.math.minus(14419, 14420, 1, PrimChecks.validator.checkArg('-', 14419, 14420, 1, world.observer.getGlobal("box-edge"))), PrimChecks.math.randomFloat(PrimChecks.math.minus(14462, 14463, PrimChecks.math.mult(14450, 14451, 2, PrimChecks.validator.checkArg('*', 14450, 14451, 1, world.observer.getGlobal("box-edge"))), 2))), PrimChecks.math.plus(14492, 14493, PrimChecks.math.minus(14480, 14481, 1, PrimChecks.validator.checkArg('-', 14480, 14481, 1, world.observer.getGlobal("box-edge"))), PrimChecks.math.randomFloat(PrimChecks.math.minus(14523, 14524, PrimChecks.math.mult(14511, 14512, 2, PrimChecks.validator.checkArg('*', 14511, 14512, 1, world.observer.getGlobal("box-edge"))), 2))));
+  PrimChecks.turtle.setVariable(14535, 14542, "heading", PrimChecks.math.randomFloat(360));
 }))
 ProcedurePrims.defineCommand("setup-plotz", 14593, 14694, (function() {
   plotManager.setCurrentPlot("Speed Counts");
-  plotManager.setYRange(0, PrimChecks.math.ceil(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("number-of-particles")), 6)));
+  plotManager.setYRange(0, PrimChecks.math.ceil(PrimChecks.math.div(14689, 14690, PrimChecks.validator.checkArg('/', 14689, 14690, 1, world.observer.getGlobal("number-of-particles")), 6)));
 }))
 ProcedurePrims.defineCommand("setup-histograms", 14702, 15549, (function() {
   plotManager.setCurrentPlot("Speed Histogram");
-  plotManager.setXRange(0, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("init-particle-speed")), 2));
-  plotManager.setYRange(0, PrimChecks.math.ceil(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("number-of-particles")), 6)));
+  plotManager.setXRange(0, PrimChecks.math.mult(14798, 14799, PrimChecks.validator.checkArg('*', 14798, 14799, 1, world.observer.getGlobal("init-particle-speed")), 2));
+  plotManager.setYRange(0, PrimChecks.math.ceil(PrimChecks.math.div(14853, 14854, PrimChecks.validator.checkArg('/', 14853, 14854, 1, world.observer.getGlobal("number-of-particles")), 6)));
   plotManager.setCurrentPen("medium");
   plotManager.setHistogramBarCount(40);
   plotManager.setCurrentPen("slow");
@@ -341,8 +343,8 @@ ProcedurePrims.defineCommand("setup-histograms", 14702, 15549, (function() {
   plotManager.setCurrentPen("init-avg-speed");
   var R = ProcedurePrims.callCommand("draw-vert-line", world.observer.getGlobal("init-avg-speed")); if (R === DeathInterrupt) { return R; }
   plotManager.setCurrentPlot("Energy Histogram");
-  plotManager.setXRange(0, PrimChecks.math.mult(PrimChecks.math.mult(PrimChecks.math.mult(0.5, PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("init-particle-speed")), 2)), PrimChecks.math.mult(PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("init-particle-speed")), 2)), PrimChecks.validator.checkArg('*', 1, world.observer.getGlobal("particle-mass"))));
-  plotManager.setYRange(0, PrimChecks.math.ceil(PrimChecks.math.div(PrimChecks.validator.checkArg('/', 1, world.observer.getGlobal("number-of-particles")), 6)));
+  plotManager.setXRange(0, PrimChecks.math.mult(15227, 15228, PrimChecks.math.mult(15199, 15200, PrimChecks.math.mult(15171, 15172, 0.5, PrimChecks.math.mult(15194, 15195, PrimChecks.validator.checkArg('*', 15194, 15195, 1, world.observer.getGlobal("init-particle-speed")), 2)), PrimChecks.math.mult(15222, 15223, PrimChecks.validator.checkArg('*', 15222, 15223, 1, world.observer.getGlobal("init-particle-speed")), 2)), PrimChecks.validator.checkArg('*', 15227, 15228, 1, world.observer.getGlobal("particle-mass"))));
+  plotManager.setYRange(0, PrimChecks.math.ceil(PrimChecks.math.div(15294, 15295, PrimChecks.validator.checkArg('/', 15294, 15295, 1, world.observer.getGlobal("number-of-particles")), 6)));
   plotManager.setCurrentPen("medium");
   plotManager.setHistogramBarCount(40);
   plotManager.setCurrentPen("slow");
@@ -354,8 +356,8 @@ ProcedurePrims.defineCommand("setup-histograms", 14702, 15549, (function() {
 }))
 ProcedurePrims.defineCommand("do-plotting", 15558, 15992, (function() {
   plotManager.setCurrentPlot("Pressure vs. Time");
-  if (Prims.gt(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, world.observer.getGlobal("pressure-history"))), 0)) {
-    plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.mean(PrimChecks.validator.checkArg('MEAN', 8, PrimChecks.procedure.callReporter("last-n", 3, world.observer.getGlobal("pressure-history")))));
+  if (Prims.gt(PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 15614, 15620, 12, world.observer.getGlobal("pressure-history"))), 0)) {
+    plotManager.plotPoint(world.ticker.tickCount(), PrimChecks.list.mean(15662, 15666, PrimChecks.validator.checkArg('MEAN', 15662, 15666, 8, PrimChecks.procedure.callReporter(15667, 15673, "last-n", 3, world.observer.getGlobal("pressure-history")))));
   }
   plotManager.setCurrentPlot("Speed Counts");
   plotManager.setCurrentPen("fast");
@@ -373,21 +375,21 @@ ProcedurePrims.defineCommand("do-plotting", 15558, 15992, (function() {
 ProcedurePrims.defineCommand("plot-histograms", 16001, 16770, (function() {
   plotManager.setCurrentPlot("Energy histogram");
   plotManager.setCurrentPen("fast");
-  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }), function() { return PrimChecks.turtle.getVariable("energy"); }));
+  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(16121, 16125, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(16127, 16132, "color"), 15); }), function() { return PrimChecks.turtle.getVariable(16099, 16105, "energy"); }));
   plotManager.setCurrentPen("medium");
-  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }), function() { return PrimChecks.turtle.getVariable("energy"); }));
+  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(16208, 16212, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(16214, 16219, "color"), 55); }), function() { return PrimChecks.turtle.getVariable(16186, 16192, "energy"); }));
   plotManager.setCurrentPen("slow");
-  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }), function() { return PrimChecks.turtle.getVariable("energy"); }));
+  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(16295, 16299, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(16301, 16306, "color"), 105); }), function() { return PrimChecks.turtle.getVariable(16273, 16279, "energy"); }));
   plotManager.setCurrentPen("avg-energy");
   plotManager.resetPen();
   var R = ProcedurePrims.callCommand("draw-vert-line", world.observer.getGlobal("avg-energy")); if (R === DeathInterrupt) { return R; }
   plotManager.setCurrentPlot("Speed histogram");
   plotManager.setCurrentPen("fast");
-  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }), function() { return PrimChecks.turtle.getVariable("speed"); }));
+  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(16499, 16503, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(16505, 16510, "color"), 15); }), function() { return PrimChecks.turtle.getVariable(16478, 16483, "speed"); }));
   plotManager.setCurrentPen("medium");
-  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }), function() { return PrimChecks.turtle.getVariable("speed"); }));
+  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(16585, 16589, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(16591, 16596, "color"), 55); }), function() { return PrimChecks.turtle.getVariable(16564, 16569, "speed"); }));
   plotManager.setCurrentPen("slow");
-  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }), function() { return PrimChecks.turtle.getVariable("speed"); }));
+  plotManager.drawHistogramFrom(PrimChecks.agentset.of(PrimChecks.agentset.with(16671, 16675, world.turtleManager.turtlesOfBreed("PARTICLES"), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(16677, 16682, "color"), 105); }), function() { return PrimChecks.turtle.getVariable(16650, 16655, "speed"); }));
   plotManager.setCurrentPen("avg-speed");
   plotManager.resetPen();
   var R = ProcedurePrims.callCommand("draw-vert-line", world.observer.getGlobal("avg-speed")); if (R === DeathInterrupt) { return R; }
@@ -399,21 +401,21 @@ ProcedurePrims.defineCommand("draw-vert-line", 16801, 16905, (function(xval) {
   plotManager.raisePen();
 }))
 ProcedurePrims.defineReporter("last-n", 16920, 17036, (function(n, theHlist) {
-  if (Prims.gte(n, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 12, theHlist)))) {
-    return PrimChecks.procedure.report(theHlist);
+  if (Prims.gte(n, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 16954, 16960, 12, theHlist)))) {
+    return PrimChecks.procedure.report(16976, 16982, theHlist);
   }
   else {
-    return PrimChecks.procedure.report(PrimChecks.procedure.callReporter("last-n", n, PrimChecks.list.butFirst('butfirst', PrimChecks.validator.checkArg('BUTFIRST', 12, theHlist))));
+    return PrimChecks.procedure.report(17000, 17006, PrimChecks.procedure.callReporter(17007, 17013, "last-n", n, PrimChecks.list.butFirst('butfirst', 17016, 17024, PrimChecks.validator.checkArg('BUTFIRST', 17016, 17024, 12, theHlist))));
   }
 }))
 ProcedurePrims.defineCommand("make-clocker", 17044, 17231, (function() {
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CLOCKERS").getSpecialName(), "clocker")
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(1, "CLOCKERS"), function() {
-    PrimChecks.turtle.setXY(PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge")), 5), PrimChecks.math.minus(PrimChecks.validator.checkArg('-', 1, world.observer.getGlobal("box-edge")), 5));
-    SelfManager.self().setVariable("color", PrimChecks.math.plus(115, 2));
-    PrimChecks.turtle.setVariable("size", 10);
-    PrimChecks.turtle.setVariable("heading", 0);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+    PrimChecks.turtle.setXY(17132, 17137, PrimChecks.math.minus(17148, 17149, PrimChecks.validator.checkArg('-', 17148, 17149, 1, world.observer.getGlobal("box-edge")), 5), PrimChecks.math.minus(17163, 17164, PrimChecks.validator.checkArg('-', 17163, 17164, 1, world.observer.getGlobal("box-edge")), 5));
+    PrimChecks.turtleOrLink.setVariable(17176, 17181, "color", PrimChecks.math.plus(17189, 17190, 115, 2));
+    PrimChecks.turtle.setVariable(17201, 17205, "size", 10);
+    PrimChecks.turtle.setVariable(17217, 17224, "heading", 0);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(17098, 17121, R); return R; }
 }))
 world.observer.setGlobal("number-of-particles", 150);
 world.observer.setGlobal("collide?", true);

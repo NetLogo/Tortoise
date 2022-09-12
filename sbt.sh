@@ -25,4 +25,4 @@ ln -s "$NODE_HOME/npm" "node_links/npm"
 
 export PATH=$PWD/node_links:$JAVA_HOME/bin:$PATH
 
-sbt -v "$@"
+sbt "$@"

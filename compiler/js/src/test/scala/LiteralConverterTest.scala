@@ -17,7 +17,7 @@ object LiteralConverterTest extends TestSuite {
     "works with simple code"-{
       val compilationRequest = modelToCompilationRequest(validModel)
       val result = LiteralConverter.compileRunString(compilationRequest, "crt 100 [ fd 100 ]", false, js.Array())
-      val expected = """(function() { var R = ProcedurePrims.ask(world.turtleManager.createTurtles(100, ""), function() { SelfManager.self().fd(100); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; } })"""
+      val expected = """(function() { var R = ProcedurePrims.ask(world.turtleManager.createTurtles(100, ""), function() { SelfManager.self().fd(100); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12, 15, R); return R; } })"""
       assert(expected == result)
     }
 

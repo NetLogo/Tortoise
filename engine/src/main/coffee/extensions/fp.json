@@ -64,5 +64,15 @@
     , "argTypes": ["list"]
     , "returnType": "list"
     }
+    , {
+      "name": "iterate"
+    , "argTypes": ["reporter", "wildcard", "number"]
+    , "returnType": "list"
+    }
+    , {
+      "name": "iterate-last"
+    , "argTypes": ["reporter", "wildcard", "number"]
+    , "returnType": "wildcard"
+    }
   ]
 }

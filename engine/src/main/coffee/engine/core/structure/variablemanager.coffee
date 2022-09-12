@@ -18,7 +18,7 @@ module.exports =
       @_addVarsBySpec(varSpecs)
       @_names = new Set(name for { name } in varSpecs)
 
-    # (String, Any) => Boolean
+    # (String, Any) => Maybe[Any]
     setIfValid: (name, value) ->
       @_validitySetters.get(name).call(@agent, value)
 
@@ -60,7 +60,7 @@ module.exports =
           else if spec instanceof MutableVariableSpec
             get = do (spec) -> (-> spec.get.call(@agent))
             set = do (spec) -> ((v) -> spec.set.call(@agent, v))
-            @_validitySetters.set(spec.name, spec.setIfValid)
+            @_validitySetters.set(spec.name, spec.set)
             { configurable: true, get, set }
           else if spec instanceof ImmutableVariableSpec
             { value: spec.get.call(@agent), writable: false }

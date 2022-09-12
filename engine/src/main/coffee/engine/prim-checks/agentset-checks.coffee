@@ -21,63 +21,63 @@ class AgentSetChecks
   @isListOfPoints: (points) ->
     points.every( (point) -> checks.isList(point) and AgentSetChecks.isPoint(point) )
 
-  # (() => Boolean) => (T) => Boolean
-  makeCheckedF: (prim, f) ->
+  # (String, Int, Int, () => Boolean) => (T) => Boolean
+  makeCheckedF: (prim, sourceStart, sourceEnd, f) ->
     () =>
       result = f()
       if not checks.isBoolean(result)
-        @validator.error(prim, '_ expected a true/false value from _, but got _ instead.', prim, @getSelf(), @dumper(result))
+        @validator.error(prim, sourceStart, sourceEnd, '_ expected a true/false value from _, but got _ instead.', prim, @getSelf(), @dumper(result))
       result
 
   # I think it's a little strange that there are three different error messages for the `*-set` agentset creation prims having bad arguments,
   # but at the moment it doesn't seem worth changing desktop to unify them.  -Jeremy B February 2021
 
-  # (PatchType | TurtleType | LinkType, PatchSetType | TurtleSetType | LinkSetType, Array[Any]) => Unit
-  setCreationListCheck: (prim, agentType, agentSetType, list) ->
+  # (String, Int, Int, PatchType | TurtleType | LinkType, PatchSetType | TurtleSetType | LinkSetType, Array[Any]) => Unit
+  setCreationListCheck: (prim, sourceStart, sourceEnd, agentType, agentSetType, list) ->
     list.forEach( (value) =>
       if checks.isList(value)
-        @setCreationListCheck(prim, agentType, agentSetType, value)
+        @setCreationListCheck(prim, sourceStart, sourceEnd, agentType, agentSetType, value)
 
       else if not agentType.isOfType(value) and not agentSetType.isOfType(value) and not checks.isNobody(value)
         if checks.isAgentSet(value)
-          @validator.error(prim, 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.', prim.toUpperCase(), agentType.niceName(), @dumper(list), @dumper(value))
+          @validator.error(prim, sourceStart, sourceEnd, 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.', prim.toUpperCase(), agentType.niceName(), @dumper(list), @dumper(value))
         else
-          @validator.error(prim, 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.', prim.toUpperCase(), agentType.niceName(), @dumper(list), @dumper(value))
+          @validator.error(prim, sourceStart, sourceEnd, 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.', prim.toUpperCase(), agentType.niceName(), @dumper(list), @dumper(value))
 
     )
 
-  # (PatchType | TurtleType | LinkType, PatchSetType | TurtleSetType | LinkSetType, Array[Any]) => Unit
-  setCreationArgsCheck: (prim, agentType, agentSetType, values) ->
+  # (String, Int, Int, PatchType | TurtleType | LinkType, PatchSetType | TurtleSetType | LinkSetType, Array[Any]) => Unit
+  setCreationArgsCheck: (prim, sourceStart, sourceEnd, agentType, agentSetType, values) ->
     values.forEach( (value) =>
       if checks.isList(value)
-        @setCreationListCheck(prim, agentType, agentSetType, value)
+        @setCreationListCheck(prim, sourceStart, sourceEnd, agentType, agentSetType, value)
 
       else if not agentType.isOfType(value) and not agentSetType.isOfType(value) and not checks.isNobody(value)
-        @validator.error(prim, '_ expected input to be a _ agentset or _ but got _ instead.', prim.toUpperCase(), agentType.niceName(), @validator.valueToString(value))
+        @validator.error(prim, sourceStart, sourceEnd, '_ expected input to be a _ agentset or _ but got _ instead.', prim.toUpperCase(), agentType.niceName(), @validator.valueToString(value))
     )
 
   # (AgentSet[T]) => Boolean
   any: (agentset) ->
     not agentset.isEmpty()
 
-  # (AgentSet[T], () => Boolean) => Boolean
-  anyOtherWith: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalAnyOtherWith(@makeCheckedF("WITH", f))
+  # (Int, Int, AgentSet[T], () => Boolean) => Boolean
+  anyOtherWith: (sourceStart, sourceEnd, agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", sourceStart, sourceEnd, Array.from(arguments).slice(2))
+    agentset._optimalAnyOtherWith(@makeCheckedF("WITH", sourceStart, sourceEnd, f))
 
-  # (AgentSet[T], () => Boolean) => Boolean
-  anyWith: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalAnyWith(@makeCheckedF("WITH", f))
+  # (Int, Int, AgentSet[T], () => Boolean) => Boolean
+  anyWith: (sourceStart, sourceEnd, agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", sourceStart, sourceEnd, Array.from(arguments).slice(2))
+    agentset._optimalAnyWith(@makeCheckedF("WITH", sourceStart, sourceEnd, f))
 
-  # (AgentSet[T], (T) => Boolean) => Boolean
-  all: (agentset, f) ->
-    agentset.agentAll(@makeCheckedF("ALL?", f))
+  # (Int, Int, AgentSet[T], (T) => Boolean) => Boolean
+  all: (sourceStart, sourceEnd, agentset, f) ->
+    agentset.agentAll(@makeCheckedF("ALL?", sourceStart, sourceEnd, f))
 
-  # (AgentSet[T], Array[Array[Number]]) => AgentSet
-  atPoints: (agentset, coords) ->
+  # (Int, Int, AgentSet[T], Array[Array[Number]]) => AgentSet
+  atPoints: (sourceStart, sourceEnd, agentset, coords) ->
     if not AgentSetChecks.isListOfPoints(coords)
-      @validator.error('at-points', 'Invalid list of points: _', @dumper(coords))
+      @validator.error('at-points', sourceStart, sourceEnd, 'Invalid list of points: _', @dumper(coords))
 
     agentset.atPoints(coords)
 
@@ -96,27 +96,27 @@ class AgentSetChecks
   count: (agentset) ->
     agentset.size()
 
-  # (AgentSet[T], () => Boolean) => Number
-  countOtherWith: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalCountOtherWith(@makeCheckedF("WITH", f))
+  # (Int, Int, AgentSet[T], () => Boolean) => Number
+  countOtherWith: (sourceStart, sourceEnd, agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", sourceStart, sourceEnd, Array.from(arguments).slice(2))
+    agentset._optimalCountOtherWith(@makeCheckedF("WITH", sourceStart, sourceEnd, f))
 
-  # (AgentSet[T], () => Boolean) => Number
-  countWith: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalCountWith(@makeCheckedF("WITH", f))
+  # (Int, Int, AgentSet[T], () => Boolean) => Number
+  countWith: (sourceStart, sourceEnd, agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", sourceStart, sourceEnd, Array.from(arguments).slice(2))
+    agentset._optimalCountWith(@makeCheckedF("WITH", sourceStart, sourceEnd, f))
 
-  # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
-  linkSet: (values...) ->
-    @setCreationArgsCheck('link-set', types.Link, types.LinkSet, values)
+  # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (Int, Int, T*) => LinkSet
+  linkSet: (sourceStart, sourceEnd, values...) ->
+    @setCreationArgsCheck('link-set', sourceStart, sourceEnd, types.Link, types.LinkSet, values)
     @prims.linkSet(values)
 
-  # (AgentSet[T], Number, (T) => Number) => AgentSet[T]
-  maxNOf: (agentset, n, f) ->
+  # (Int, Int, AgentSet[T], Number, (T) => Number) => AgentSet[T]
+  maxNOf: (sourceStart, sourceEnd, agentset, n, f) ->
     if n > agentset.size()
-      @validator.error('max-n-of', 'Requested _ random agents from a set of only _ agents.', n, agentset.size())
+      @validator.error('max-n-of', sourceStart, sourceEnd, 'Requested _ random agents from a set of only _ agents.', n, agentset.size())
     if n < 0
-      @validator.error('max-n-of', 'First input to _ can_t be negative.', "MAX-N-OF")
+      @validator.error('max-n-of', sourceStart, sourceEnd, 'First input to _ can_t be negative.', "MAX-N-OF")
 
     agentset.maxNOf(n, f)
 
@@ -124,12 +124,12 @@ class AgentSetChecks
   maxOneOf: (agentset, f) ->
     agentset.maxOneOf(f)
 
-  # (AgentSet[T], Number, (T) => Number) => AgentSet[T]
-  minNOf: (agentset, n, f) ->
+  # (Int, Int, AgentSet[T], Number, (T) => Number) => AgentSet[T]
+  minNOf: (sourceStart, sourceEnd, agentset, n, f) ->
     if n > agentset.size()
-      @validator.error('min-n-of', 'Requested _ random agents from a set of only _ agents.', n, agentset.size())
+      @validator.error('min-n-of', sourceStart, sourceEnd, 'Requested _ random agents from a set of only _ agents.', n, agentset.size())
     if n < 0
-      @validator.error('min-n-of', 'First input to _ can_t be negative.', "MIN-N-OF")
+      @validator.error('min-n-of', sourceStart, sourceEnd, 'First input to _ can_t be negative.', "MIN-N-OF")
 
     agentset.minNOf(n, f)
 
@@ -141,28 +141,28 @@ class AgentSetChecks
   of: (agentOrAgentset, f) ->
     agentOrAgentset.projectionBy(f)
 
-  # (AgentSet[T], () => Boolean) => T
-  oneOfWith: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalOneOfWith(@makeCheckedF("WITH", f))
+  # (Int, Int, AgentSet[T], () => Boolean) => T
+  oneOfWith: (sourceStart, sourceEnd, agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", sourceStart, sourceEnd, Array.from(arguments).slice(2))
+    agentset._optimalOneOfWith(@makeCheckedF("WITH", sourceStart, sourceEnd, f))
 
-  # (AgentSet[T], Number, (Number, Number) => Boolean) => Boolean
-  optimizeCount: (agentset, n, operator) ->
-    @validator.commonArgChecks.agentSet("COUNT", arguments)
+  # (Int, Int, AgentSet[T], Number, (Number, Number) => Boolean) => Boolean
+  optimizeCount: (sourceStart, sourceEnd, agentset, n, operator) ->
+    @validator.commonArgChecks.agentSet("COUNT", sourceStart, sourceEnd, Array.from(arguments).slice(2))
     agentset._optimalCheckCount(n, operator)
 
-  # (AgentSet[T], () => Boolean) => AgentSet[T]
-  otherWith: (agentset, f) ->
-    @validator.commonArgChecks.agentSet("WITH", arguments)
-    agentset._optimalOtherWith(@makeCheckedF("WITH", f))
+  # (Int, Int, AgentSet[T], () => Boolean) => AgentSet[T]
+  otherWith: (sourceStart, sourceEnd, agentset, f) ->
+    @validator.commonArgChecks.agentSet("WITH", sourceStart, sourceEnd, Array.from(arguments).slice(2))
+    agentset._optimalOtherWith(@makeCheckedF("WITH", sourceStart, sourceEnd, f))
 
-  # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
-  patchSet: (values...) ->
-    @setCreationArgsCheck('patch-set', types.Patch, types.PatchSet, values)
+  # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (Int, Int, T*) => PatchSet
+  patchSet: (sourceStart, sourceEnd, values...) ->
+    @setCreationArgsCheck('patch-set',sourceStart, sourceEnd, types.Patch, types.PatchSet, values)
     @prims.patchSet(values)
 
-  # (AgentSet[T], () => Number | String | Agent) => AgentSet[T]
-  sortOn: (agentset, f) ->
+  # (Int, Int, AgentSet[T], () => Number | String | Agent) => AgentSet[T]
+  sortOn: (sourceStart, sourceEnd, agentset, f) ->
     compare      = null
     badFirstType = false
     sortingFunc = ([[], o1], [[], o2]) =>
@@ -186,7 +186,7 @@ class AgentSetChecks
         name1 = @validator.addIndefiniteArticle(type1.niceName())
         name2 = @validator.addIndefiniteArticle(type2.niceName())
         # The order swap of `name1` and `name2` is intentional to get identical errors to desktop. -Jeremy B February 2021
-        @validator.error('sort-on', 'SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _', name2, name1)
+        @validator.error('sort-on', sourceStart, sourceEnd, 'SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _', name2, name1)
 
       compare(o1, o2)
 
@@ -199,14 +199,14 @@ class AgentSetChecks
     else
       @prims.turtlesOnAgent(agentOrAgentset)
 
-  # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
-  turtleSet: (values...) ->
-    @setCreationArgsCheck('turtle-set', types.Turtle, types.TurtleSet, values)
+  # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (Int, Int, T*) => TurtleSet
+  turtleSet: (sourceStart, sourceEnd, values...) ->
+    @setCreationArgsCheck('turtle-set', sourceStart, sourceEnd, types.Turtle, types.TurtleSet, values)
     @prims.turtleSet(values)
 
-  # (AgentSet[T], () => Boolean) => AgentSet[T]
-  with: (agentset, f) ->
-    agentset.agentFilter(@makeCheckedF("WITH", f))
+  # (Int, Int, AgentSet[T], () => Boolean) => AgentSet[T]
+  with: (sourceStart, sourceEnd, agentset, f) ->
+    agentset.agentFilter(@makeCheckedF("WITH", sourceStart, sourceEnd, f))
 
   # (AgentSet[T], () => Number) => AgentSet[T]
   withMax: (agentset, f) ->

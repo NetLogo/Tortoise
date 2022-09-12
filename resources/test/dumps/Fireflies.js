@@ -32,7 +32,7 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('flashing', plotOps.makePenOps, false, new PenBundle.State(15, 1, PenBundle.DisplayMode.Line), function() {}, function() {
     return ProcedurePrims.runInPlotContext('Flashing Fireflies', 'flashing', function() {
-      plotManager.plotValue(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }));;
+      plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(58, 63, "color"), 45); }));;
     });
   })];
   var setup   = function() {
@@ -41,7 +41,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Number", false, true, 0, 100, 0, 1500, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["clock", "threshold", "reset-level", "window"], [])('turtles-own [ clock        ;; each firefly\'s clock   threshold    ;; the clock tick at which a firefly stops its flash   reset-level  ;; the clock tick a firefly will reset to when it is triggered by other flashing   window       ;; a firefly can\'t reset its cycle if (clock <= window) ]  to setup   clear-all   create-turtles number     [ setxy random-xcor random-ycor       set shape \"butterfly\"       set clock random (round cycle-length)       set threshold flash-length       ifelse strategy = \"delay\"       [ set reset-level threshold         set window -1 ]       [ set reset-level 0         set window (threshold + 1) ]       set size 2  ;; easier to see       recolor ]   reset-ticks end  to go   ask turtles [     move     increment-clock     if ( (clock > window) and (clock >= threshold) )       [ look ]   ]   ask turtles [     recolor   ]   tick end   to recolor ; turtle procedure   ifelse (clock < threshold)     [ show-turtle       set color yellow ]     [ set color gray - 2       ifelse show-dark-fireflies?         [ show-turtle ]         [ hide-turtle ] ] end  to move ; turtle procedure   rt random-float 90 - random-float 90   fd 1 end  to increment-clock ; turtle procedure   set clock (clock + 1)   if clock = cycle-length     [ set clock 0 ] end  to look ; turtle procedure   if count turtles in-radius 1 with [color = yellow] >= flashes-to-reset     [ set clock reset-level ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":300,"top":10,"right":734,"bottom":445,"dimensions":{"minPxcor":-35,"maxPxcor":35,"minPycor":-35,"maxPycor":35,"patchSize":6,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"2000","compiledStep":"1","variable":"number","left":10,"top":10,"right":285,"bottom":43,"display":"number","min":"0","max":"2000","default":1500,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"5","compiledMax":"100","compiledStep":"1","variable":"cycle-length","left":150,"top":180,"right":285,"bottom":213,"display":"cycle-length","min":"5","max":"100","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"1","variable":"flash-length","left":55,"top":100,"right":240,"bottom":133,"display":"flash-length","min":"1","max":"10","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"3","compiledStep":"1","variable":"flashes-to-reset","left":10,"top":180,"right":144,"bottom":213,"display":"flashes-to-reset","min":"1","max":"3","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":55,"top":140,"right":143,"bottom":173,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"show-dark-fireflies?","left":55,"top":220,"right":237,"bottom":253,"display":"show-dark-fireflies?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":150,"top":140,"right":240,"bottom":173,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {   return ProcedurePrims.runInPlotContext('Flashing Fireflies', undefined, function() { plotManager.setYRange(0, world.observer.getGlobal(\"number\"));; }); }","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Flashing Fireflies', 'flashing', function() {     plotManager.plotValue(PrimChecks.agentset.countWith(world.turtles(), function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 45); }));;   }); }","display":"flashing","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = yellow]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Flashing Fireflies","left":11,"top":268,"right":286,"bottom":467,"xAxis":"Time","yAxis":"Number","xmin":0,"xmax":100,"ymin":0,"ymax":1500,"autoPlotOn":true,"legendOn":false,"setupCode":"set-plot-y-range 0 number","updateCode":"","pens":[{"display":"flashing","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = yellow]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"strategy","left":55,"top":50,"right":240,"bottom":95,"display":"strategy","choices":["delay","advance"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["number", "cycle-length", "flash-length", "flashes-to-reset", "show-dark-fireflies?", "strategy"], ["number", "cycle-length", "flash-length", "flashes-to-reset", "show-dark-fireflies?", "strategy"], [], -35, 35, -35, 35, 6, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["clock", "threshold", "reset-level", "window"], [])('turtles-own [ clock        ;; each firefly\'s clock   threshold    ;; the clock tick at which a firefly stops its flash   reset-level  ;; the clock tick a firefly will reset to when it is triggered by other flashing   window       ;; a firefly can\'t reset its cycle if (clock <= window) ]  to setup   clear-all   create-turtles number     [ setxy random-xcor random-ycor       set shape \"butterfly\"       set clock random (round cycle-length)       set threshold flash-length       ifelse strategy = \"delay\"       [ set reset-level threshold         set window -1 ]       [ set reset-level 0         set window (threshold + 1) ]       set size 2  ;; easier to see       recolor ]   reset-ticks end  to go   ask turtles [     move     increment-clock     if ( (clock > window) and (clock >= threshold) )       [ look ]   ]   ask turtles [     recolor   ]   tick end   to recolor ; turtle procedure   ifelse (clock < threshold)     [ show-turtle       set color yellow ]     [ set color gray - 2       ifelse show-dark-fireflies?         [ show-turtle ]         [ hide-turtle ] ] end  to move ; turtle procedure   rt random-float 90 - random-float 90   fd 1 end  to increment-clock ; turtle procedure   set clock (clock + 1)   if clock = cycle-length     [ set clock 0 ] end  to look ; turtle procedure   if count turtles in-radius 1 with [color = yellow] >= flashes-to-reset     [ set clock reset-level ] end   ; Copyright 1997 Uri Wilensky. ; See Info tab for full copyright and license.')([{"left":300,"top":10,"right":734,"bottom":445,"dimensions":{"minPxcor":-35,"maxPxcor":35,"minPycor":-35,"maxPycor":35,"patchSize":6,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"2000","compiledStep":"1","variable":"number","left":10,"top":10,"right":285,"bottom":43,"display":"number","min":"0","max":"2000","default":1500,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"5","compiledMax":"100","compiledStep":"1","variable":"cycle-length","left":150,"top":180,"right":285,"bottom":213,"display":"cycle-length","min":"5","max":"100","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"1","variable":"flash-length","left":55,"top":100,"right":240,"bottom":133,"display":"flash-length","min":"1","max":"10","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"3","compiledStep":"1","variable":"flashes-to-reset","left":10,"top":180,"right":144,"bottom":213,"display":"flashes-to-reset","min":"1","max":"3","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"setup\"); if (R === StopInterrupt) { return R; }","source":"setup","left":55,"top":140,"right":143,"bottom":173,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"show-dark-fireflies?","left":55,"top":220,"right":237,"bottom":253,"display":"show-dark-fireflies?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"var R = ProcedurePrims.callCommand(\"go\"); if (R === StopInterrupt) { return R; }","source":"go","left":150,"top":140,"right":240,"bottom":173,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {   return ProcedurePrims.runInPlotContext('Flashing Fireflies', undefined, function() { plotManager.setYRange(0, world.observer.getGlobal(\"number\"));; }); }","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {   return ProcedurePrims.runInPlotContext('Flashing Fireflies', 'flashing', function() {     plotManager.plotValue(PrimChecks.agentset.countWith(null, null, world.turtles(), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(58, 63, \"color\"), 45); }));;   }); }","display":"flashing","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = yellow]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Flashing Fireflies","left":11,"top":268,"right":286,"bottom":467,"xAxis":"Time","yAxis":"Number","xmin":0,"xmax":100,"ymin":0,"ymax":1500,"autoPlotOn":true,"legendOn":false,"setupCode":"set-plot-y-range 0 number","updateCode":"","pens":[{"display":"flashing","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = yellow]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"strategy","left":55,"top":50,"right":240,"bottom":95,"display":"strategy","choices":["delay","advance"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").porters())(["number", "cycle-length", "flash-length", "flashes-to-reset", "show-dark-fireflies?", "strategy"], ["number", "cycle-length", "flash-length", "flashes-to-reset", "show-dark-fireflies?", "strategy"], [], -35, 35, -35, 35, 6, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
@@ -66,41 +66,41 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 292, 693, (function() {
   world.clearAll();
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number"), ""), function() {
-    PrimChecks.turtle.setXY(RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
-    SelfManager.self().setVariable("shape", "butterfly");
-    PrimChecks.turtle.setVariable("clock", PrimChecks.math.random(PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 1, world.observer.getGlobal("cycle-length")))));
-    PrimChecks.turtle.setVariable("threshold", world.observer.getGlobal("flash-length"));
+    PrimChecks.turtle.setXY(340, 345, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
+    PrimChecks.turtleOrLink.setVariable(380, 385, "shape", "butterfly");
+    PrimChecks.turtle.setVariable(408, 413, "clock", PrimChecks.math.random(414, 420, PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 422, 427, 1, world.observer.getGlobal("cycle-length")))));
+    PrimChecks.turtle.setVariable(452, 461, "threshold", world.observer.getGlobal("flash-length"));
     if (Prims.equality(world.observer.getGlobal("strategy"), "delay")) {
-      PrimChecks.turtle.setVariable("reset-level", PrimChecks.turtle.getVariable("threshold"));
-      PrimChecks.turtle.setVariable("window", -1);
+      PrimChecks.turtle.setVariable(519, 530, "reset-level", PrimChecks.turtle.getVariable(531, 540, "threshold"));
+      PrimChecks.turtle.setVariable(553, 559, "window", -1);
     }
     else {
-      PrimChecks.turtle.setVariable("reset-level", 0);
-      PrimChecks.turtle.setVariable("window", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("threshold")), 1));
+      PrimChecks.turtle.setVariable(577, 588, "reset-level", 0);
+      PrimChecks.turtle.setVariable(603, 609, "window", PrimChecks.math.plus(621, 622, PrimChecks.validator.checkArg('+', 621, 622, 1, PrimChecks.turtle.getVariable(611, 620, "threshold")), 1));
     }
-    PrimChecks.turtle.setVariable("size", 2);
+    PrimChecks.turtle.setVariable(638, 642, "size", 2);
     var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(312, 326, R); return R; }
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 701, 860, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("increment-clock"); if (R === DeathInterrupt) { return R; }
-    if ((Prims.gt(PrimChecks.turtle.getVariable("clock"), PrimChecks.turtle.getVariable("window")) && Prims.gte(PrimChecks.turtle.getVariable("clock"), PrimChecks.turtle.getVariable("threshold")))) {
+    if ((Prims.gt(PrimChecks.turtle.getVariable(759, 764, "clock"), PrimChecks.turtle.getVariable(767, 773, "window")) && Prims.gte(PrimChecks.turtle.getVariable(780, 785, "clock"), PrimChecks.turtle.getVariable(789, 798, "threshold")))) {
       var R = ProcedurePrims.callCommand("look"); if (R === DeathInterrupt) { return R; }
     }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(R); return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(706, 709, R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(823, 826, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("recolor", 869, 1077, (function() {
-  if (Prims.lt(PrimChecks.turtle.getVariable("clock"), PrimChecks.turtle.getVariable("threshold"))) {
+  if (Prims.lt(PrimChecks.turtle.getVariable(906, 911, "clock"), PrimChecks.turtle.getVariable(914, 923, "threshold"))) {
     SelfManager.self().hideTurtle(false);
-    SelfManager.self().setVariable("color", 45);
+    PrimChecks.turtleOrLink.setVariable(953, 958, "color", 45);
   }
   else {
-    SelfManager.self().setVariable("color", PrimChecks.math.minus(5, 2));
+    PrimChecks.turtleOrLink.setVariable(978, 983, "color", PrimChecks.math.minus(989, 990, 5, 2));
     if (world.observer.getGlobal("show-dark-fireflies?")) {
       SelfManager.self().hideTurtle(false);
     }
@@ -110,18 +110,18 @@ ProcedurePrims.defineCommand("recolor", 869, 1077, (function() {
   }
 }))
 ProcedurePrims.defineCommand("move", 1085, 1155, (function() {
-  SelfManager.self().right(PrimChecks.math.minus(PrimChecks.math.randomFloat(90), PrimChecks.math.randomFloat(90)));
+  SelfManager.self().right(PrimChecks.math.minus(1130, 1131, PrimChecks.math.randomFloat(90), PrimChecks.math.randomFloat(90)));
   SelfManager.self()._optimalFdOne();
 }))
 ProcedurePrims.defineCommand("increment-clock", 1163, 1268, (function() {
-  PrimChecks.turtle.setVariable("clock", PrimChecks.math.plus(PrimChecks.validator.checkArg('+', 1, PrimChecks.turtle.getVariable("clock")), 1));
-  if (Prims.equality(PrimChecks.turtle.getVariable("clock"), world.observer.getGlobal("cycle-length"))) {
-    PrimChecks.turtle.setVariable("clock", 0);
+  PrimChecks.turtle.setVariable(1204, 1209, "clock", PrimChecks.math.plus(1217, 1218, PrimChecks.validator.checkArg('+', 1217, 1218, 1, PrimChecks.turtle.getVariable(1211, 1216, "clock")), 1));
+  if (Prims.equality(PrimChecks.turtle.getVariable(1227, 1232, "clock"), world.observer.getGlobal("cycle-length"))) {
+    PrimChecks.turtle.setVariable(1258, 1263, "clock", 0);
   }
 }))
 ProcedurePrims.defineCommand("look", 1276, 1403, (function() {
-  if (Prims.gte(PrimChecks.agentset.countWith(SelfManager.self().inRadius(world.turtles(), 1), function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }), world.observer.getGlobal("flashes-to-reset"))) {
-    PrimChecks.turtle.setVariable("clock", PrimChecks.turtle.getVariable("reset-level"));
+  if (Prims.gte(PrimChecks.agentset.countWith(null, null, SelfManager.self().inRadius(world.turtles(), 1), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(1337, 1342, "color"), 45); }), world.observer.getGlobal("flashes-to-reset"))) {
+    PrimChecks.turtle.setVariable(1383, 1388, "clock", PrimChecks.turtle.getVariable(1389, 1400, "reset-level"));
   }
 }))
 world.observer.setGlobal("number", 1500);
