@@ -21,7 +21,7 @@ class InternalException extends NetLogoException
 # Represents typical, expected runtime errors in the engine, like dividing by zero
 # or using `ask` on nobody, etc.  -Jeremy B March 2021
 class RuntimeException extends NetLogoException
-  constructor: (message, @primitive, stackTrace, stackTraceMessage, @sourceStart, @sourceEnd) ->
+  constructor: (message, @primitive, stackTrace, stackTraceMessage, @sourceStart, @sourceEnd, @messageKey) ->
     super(message, stackTrace, stackTraceMessage)
 
 class ExceptionFactory

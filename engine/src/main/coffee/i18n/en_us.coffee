@@ -83,9 +83,6 @@ bundle = {
   , 'Invalid list of points: _': (points) ->
       "Invalid list of points: #{points}"
 
-  , 'Requested _ random agents from a set of only _ agents.': (n, size) ->
-      "Requested #{n} random agents from a set of only #{size} agents."
-
   , 'First input to _ can_t be negative.': (prim) ->
       "First input to #{prim} can't be negative."
 
@@ -169,6 +166,10 @@ bundle = {
 
   , '_ cannot take a negative number.': (primName) ->
     "#{primName} cannot take a negative number."
+
+  # Dynamic Calls (TU)
+  , 'Cannot find the procedure _.': (procedureName) ->
+    "Cannot find the procedure #{procedureName}."
 }
 
 module.exports = bundle
