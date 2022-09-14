@@ -35,7 +35,7 @@ class Validator
   # (String, Int | null, Int | null, String, Array[Any]) => Unit
   error: (prim, sourceStart, sourceEnd, messageKey, messageValues...) ->
     message = @bundle.get(messageKey, messageValues.map( (val) -> if typeof(val) is "function" then val() else val )...)
-    throw exceptions.runtime(message, prim, maybe(sourceStart), maybe(sourceEnd))
+    throw exceptions.runtime(message, prim, maybe(sourceStart), maybe(sourceEnd), messageKey)
 
   # (String, Int, Int, Number) => Number
   checkLong: (prim, sourceStart, sourceEnd, value) ->
@@ -86,7 +86,7 @@ class Validator
 
   # (String, Int, Int, Any, Array[NLType]) => Unit
   throwTypeError: (prim, sourceStart, SourceEnd, value, expectedTypes...) ->
-    throw exceptions.runtime(@typeError(prim, value, expectedTypes), prim, maybe(sourceStart), maybe(SourceEnd))
+    throw exceptions.runtime(@typeError(prim, value, expectedTypes), prim, maybe(sourceStart), maybe(SourceEnd), "_ expected input to be _ but got _ instead.")
     return
 
   # (Array[Array[NLType]]) => (String, Array[Any]) => Unit
