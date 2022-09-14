@@ -181,7 +181,7 @@ class ListChecks
     switch args.length
       when 1 then @listPrims.rangeUnary(args[0])
       when 2 then @listPrims.rangeBinary(args[0], args[1])
-      else        @rangeTernary(args[0], args[1], args[2])
+      else        @rangeTernary(sourceStart, sourceEnd, args[0], args[1], args[2])
 
   # (Int, Int, Number, Number, Number) => Array[Number]
   rangeTernary: (sourceStart, sourceEnd, lowerBound, upperBound, stepSize) ->
