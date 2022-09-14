@@ -147,8 +147,8 @@
       },
       {
         "name": "is-physical?",
-        "argTypes": ["boolean"],
-        "returnType": "unit",
+        "argTypes": [],
+        "returnType": "boolean",
         "agentClassString": "-TPL"
       },
       {

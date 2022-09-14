@@ -126,7 +126,7 @@ module.exports = {
       if beats > 100 or beats < 0
         throw new Error("Beats #{volume} is too large or too small.")
       else if MIDI = getMIDI()
-        MIDI.ChangePosition(beatsToMilliseconds(beats))
+        MIDI.ChangePosition(-beatsToMilliseconds(beats))
       else
         workspace.printPrims.print("Move position back by #{beats}")
 
