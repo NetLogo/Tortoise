@@ -223,6 +223,8 @@ object SimplePrims {
 
         // Random
         case _: Optimizer._randomconst => "RandomPrims.randomLong"
+        case _: prim.etc._newseed      => "RandomPrims.generateNewSeed"
+        case _: prim.etc._randomstate  => "RandomPrims.randomState"
 
         // ColorModel
         case _: prim.etc._approximatehsb => "ColorModel.nearestColorNumberOfHSB"
@@ -241,8 +243,6 @@ object SimplePrims {
         case _: prim._patches            => "world.patches"
         case _: prim.etc._ticks          => "world.ticker.tickCount"
         case _: prim.etc._timer          => "workspace.timer.elapsed"
-        case _: prim.etc._newseed        => "Prims.generateNewSeed"
-        case _: prim.etc._randomstate    => "Random.save"
         case _: prim._greaterthan        => "Prims.gt"
         case _: prim._lessthan           => "Prims.lt"
         case _: prim.etc._greaterorequal => "Prims.gte"

@@ -1,11 +1,32 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-StrictMath = require('shim/strictmath')
-Gamma      = require('./gamma')
+{ getRandomSeedInt } = require('shim/random')
+StrictMath           = require('shim/strictmath')
+Gamma                = require('./gamma')
 
 class RandomPrims
 
   constructor: (@_rng) ->
+
+  # () => Number
+  generateNewSeed: (->
+    lastSeed = 0 # Rather than adding a global, scope this permanent state here --JAB (9/25/15)
+    helper = ->
+      # NetLogo desktop just uses a `new MersenneTwisterFast().nextInt()` here, but in NetLogo Web we have a potential
+      # issue where a model presenter might ask thousands of people to load a page at once, and that presenter might
+      # want to generate unique IDs for each viewer, and because of reduced moment-in-time time precision due to Spectre
+      # attacks and the like, multiple viewers might then get the same "random" "unique" IDs as MTF uses the
+      # moment-in-time as the seed.  The `crypto.getRandomValues()` used by `getRandomSeedInt()` is arguable a better
+      # way to fetch a seed in any case, as we can trust our platform API to get some better entropy for us than what a
+      # time stamp provides.  -Jeremy B September 2022
+      seed = getRandomSeedInt()
+      if seed isnt lastSeed
+        lastSeed = seed
+        seed
+      else
+        helper()
+    helper
+  )()
 
   # (Number) => Number
   random: (n) ->
@@ -61,5 +82,8 @@ class RandomPrims
 
   randomSeed: (seed) ->
     @_rng.setSeed(seed)
+
+  randomState: () ->
+    @_rng.exportState()
 
 module.exports = RandomPrims

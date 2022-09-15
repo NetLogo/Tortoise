@@ -193,6 +193,18 @@ if (typeof Polyglot !== "undefined") {
     return Base64.getEncoder().encodeToString(Compiler.getBytes(str));
   }
 
+  global.crypto = {
+    // only works for int32 values, just for testing, please don't ever let this into the wild.  -Jeremy B September
+    // 2022
+    getRandomValues: (arr) => {
+      arr.forEach( (_, i) => {
+        const thirtyTwoLimit = 2 ** 31
+        arr[i] = Math.floor(thirtyTwoLimit * 2 * Math.random() - thirtyTwoLimit)
+      })
+      return arr
+    }
+  }
+
   global.TextDecoder = class {
     decode(bytes) {
 

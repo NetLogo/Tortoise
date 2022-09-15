@@ -207,7 +207,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
       val (expectedModel, actualModel) = updatedJsonModels(removeB64(expectedJson), removeB64(actualJson))
 
       val headlessRNGState = workspace.world.mainRNG.save
-      val engineRNGState  = engine.eval("Random.save();").asInstanceOf[String]
+      val engineRNGState  = engine.eval("workspace.rng.exportState();").asInstanceOf[String]
 
       assert(headlessRNGState == engineRNGState, "divergent RNG state")
 

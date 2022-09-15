@@ -71,7 +71,6 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
     JsRequire("Tasks",          "engine/prim/tasks"),
     JsRequire("AgentModel",     "agentmodel"),
     JsRequire("Meta",           "meta"),
-    JsRequire("Random",         "shim/random"),
     JsRequire("StrictMath",     "shim/strictmath"),
 
     JsDepend("Extensions", "extensions/all", ".initialize", Seq("workspace"), importedExtensions.toSeq)
