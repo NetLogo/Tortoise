@@ -86,23 +86,20 @@ module.exports =
 
     # (Any, Any) => Boolean
     equality: (a, b) ->
-      if a? and b?
-        (a is b) or # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
-          checks.isBreedSet(b.getSpecialName?(), a) or
-          checks.isBreedSet(a.getSpecialName?(), b) or
-          (checks.isNobody(a) and b.isDead?()) or
-          (checks.isNobody(b) and a.isDead?()) or
-          ((checks.isTurtle(a) or (checks.isLink(a) and not checks.isNobody(b))) and a.compare(b) is EQ) or
-          (checks.isList(a) and checks.isList(b) and a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))) or
-          (checks.isAgentSet(a) and checks.isAgentSet(b) and a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and (
-            subsumes = (xs, ys) =>
-              for x, index in xs
-                if not @equality(ys[index], x)
-                  return false
-              true
-            subsumes(a.sort(), b.sort())))
-      else
-        throw exceptions.internal("Checking equality on undefined is an invalid condition")
+      (a is b) or # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
+        checks.isBreedSet(b.getSpecialName?(), a) or
+        checks.isBreedSet(a.getSpecialName?(), b) or
+        (checks.isNobody(a) and b.isDead?()) or
+        (checks.isNobody(b) and a.isDead?()) or
+        ((checks.isTurtle(a) or (checks.isLink(a) and not checks.isNobody(b))) and a.compare(b) is EQ) or
+        (checks.isList(a) and checks.isList(b) and a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))) or
+        (checks.isAgentSet(a) and checks.isAgentSet(b) and a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and (
+          subsumes = (xs, ys) =>
+            for x, index in xs
+              if not @equality(ys[index], x)
+                return false
+            true
+          subsumes(a.sort(), b.sort())))
 
     # () => String
     dateAndTime: ->
@@ -165,7 +162,13 @@ module.exports =
 
     # (Any, Any) => Boolean
     gte: (a, b) ->
-      @gt(a, b) or @equality(a, b)
+      if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
+        a >= b
+      else if typeof(a) is typeof(b) and a.compare? and b.compare?
+        result = a.compare(b) 
+        result is GTE or result is EQ
+      else
+        throw exceptions.internal("Invalid operands to `gt`")
 
     # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
     linkSet: (inputs) ->
@@ -182,7 +185,13 @@ module.exports =
 
     # (Any, Any) => Boolean
     lte: (a, b) ->
-      @lt(a, b) or @equality(a, b)
+      if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
+        a <= b
+      else if typeof(a) is typeof(b) and a.compare? and b.compare?
+        result = a.compare(b) 
+        result is LT or result is EQ
+      else
+        throw exceptions.internal("Invalid operands to `lt`")
 
     # Some complications here....
     #
