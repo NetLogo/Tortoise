@@ -475,7 +475,7 @@ object Model {
       repetitions = 80
     ),
     Model(
-      path = "models/Sample Models/Chemistry & Physics/Materials Science/Lennard-Jones.nlogo",
+      path = "models/Sample Models/Chemistry & Physics/Materials Science/Molecular Dynamics Lennard-Jones.nlogo",
       repetitions = 40
     ),
     Model(
