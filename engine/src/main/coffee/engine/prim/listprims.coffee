@@ -36,6 +36,7 @@ module.exports =
     empty: (xs) ->
       isEmpty(xs)
 
+    # ((T) => Boolean, Array[T]) => Array[T]
     filter: (f, xs) ->
       xs.filter(f)
 
@@ -185,8 +186,14 @@ module.exports =
     rangeBinary: (lowerBound, upperBound) ->
       @range(lowerBound, upperBound, 1)
 
+    # ((T, T) => U, Array[T]) => U
     reduce: (f, xs) ->
-      xs.reduce(f)
+      # Most of the time NetLogo functions don't care about the extra args JavaScript passes in for `reduce`, but with
+      # variadic concise prims those args need to be stripped off.  -Jeremy B October 2022
+      if (f.isVariadic)
+        xs.reduce( (previous, current, i, arr) -> f(previous, current) )
+      else
+        xs.reduce(f)
 
     # (Any, Array[Any]) => Array[Any]
     remove: (x, xs) ->
