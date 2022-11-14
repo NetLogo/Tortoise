@@ -185,9 +185,13 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
         (false, nlwOp(engine))
       } catch {
         case ex: PolyglotException =>
-          val AfterFirstColonRegex   = "^.*?: (.*)".r
-          val AfterFirstColonRegex(exMsg) = ex.getMessage
-          (true, (exMsg, ""))
+          if (ex.getMessage.contains(":")) {
+            val AfterFirstColonRegex   = "^.*?: (.*)".r
+            val AfterFirstColonRegex(exMsg) = ex.getMessage
+            (true, (exMsg, ""))
+          } else {
+            (true, (ex.getMessage, ""))
+          }
 
         case ex: Exception =>
           if (!exceptionOccurredInHeadless)
