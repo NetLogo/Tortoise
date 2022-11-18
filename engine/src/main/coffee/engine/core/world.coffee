@@ -216,9 +216,9 @@ module.exports =
       @_updater.clearDrawing()
       return
 
-    # (String) => Unit
-    importDrawing: (imageBase64) ->
-      @_updater.importDrawing(imageBase64)
+    # (String, Int, Int) => Unit
+    importDrawing: (imageBase64, x, y) ->
+      @_updater.importDrawing(imageBase64, x, y)
       return
 
     # () => Unit

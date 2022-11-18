@@ -44,9 +44,9 @@ module.exports =
       @_reportDrawingEvent({ type: "clear-drawing" })
       return
 
-    # (String) => Unit
-    importDrawing: (imageBase64) ->
-      @_reportDrawingEvent({ type: "import-drawing", imageBase64 })
+    # (String, Int | null, Int | null) => Unit
+    importDrawing: (imageBase64, x, y) ->
+      @_reportDrawingEvent({ type: "import-drawing", imageBase64, x, y })
       return
 
     # () => Array[Update]
