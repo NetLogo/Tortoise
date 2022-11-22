@@ -20,7 +20,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: olafurpg/setup-scala@v13
         with:
@@ -31,9 +31,11 @@ jobs:
 
       # Node.js setup should come after GraalVM setup as GraalVM includes a conflicting `node` binary
       # and we want the "regular" node version to "win".  -Jeremy B June 2021
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
 
       - name: Git Init
         run: git submodule update --init --recursive
@@ -80,9 +82,11 @@ jobs:
       - name: Install Graal.js
         run: gu install js
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
 
       - name: Scalastyle
         run: |
@@ -90,7 +94,7 @@ jobs:
 
       - name: Coffeelint
         run: |
-          cd engine; npm install; grunt coffeelint
+          cd engine; npm install; npm exec -- grunt coffeelint
 
   test-compiler:
     runs-on: ubuntu-latest
