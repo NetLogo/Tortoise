@@ -113,6 +113,12 @@ jobs:
       - name: Install Graal.js
         run: gu install js
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
+
       - name: Compiler JVM Tests
         run: |
           ./sbt.sh "compilerJVM / Test / test"
@@ -139,6 +145,12 @@ jobs:
       - name: Install Graal.js
         run: gu install js
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
+
       - name: NetLogo Web Fast Tests
         run: |
           ./sbt.sh "netLogoWeb / Test / fast"
@@ -161,6 +173,12 @@ jobs:
       - name: Install Graal.js
         run: gu install js
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
+
       - name: NetLogo Web Command Tests
         run: |
           ./sbt.sh "netLogoWeb / testOnly *TestCommands"
@@ -181,6 +199,12 @@ jobs:
 
       - name: Install Graal.js
         run: gu install js
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
 
       - name: Model JS Dumps
         run: |
@@ -207,6 +231,12 @@ jobs:
 
       - name: Install Graal.js
         run: gu install js
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
 
       - name: Model Docking Tests ${{ matrix.test }}
         run: ./sbt.sh "netLogoWeb / testOnly *TestModels -- ${{ matrix.test }}"
