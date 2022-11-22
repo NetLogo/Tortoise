@@ -94,7 +94,7 @@ jobs:
 
       - name: Coffeelint
         run: |
-          cd engine; npm install; npm exec -- grunt coffeelint
+          ./sbt.sh engine/coffeelint
 
   test-compiler:
     runs-on: ubuntu-latest
