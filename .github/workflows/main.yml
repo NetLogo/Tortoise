@@ -90,7 +90,7 @@ jobs:
 
       - name: Coffeelint
         run: |
-          cd engine; yarn install; grunt coffeelint
+          cd engine; npm install; grunt coffeelint
 
   test-compiler:
     runs-on: ubuntu-latest
