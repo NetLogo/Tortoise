@@ -165,8 +165,8 @@ module.exports =
       if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
         a >= b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
-        result = a.compare(b) 
-        result is GTE or result is EQ
+        result = a.compare(b)
+        result is GT or result is EQ
       else
         throw exceptions.internal("Invalid operands to `gt`")
 
@@ -188,7 +188,7 @@ module.exports =
       if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
         a <= b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
-        result = a.compare(b) 
+        result = a.compare(b)
         result is LT or result is EQ
       else
         throw exceptions.internal("Invalid operands to `lt`")
