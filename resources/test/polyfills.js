@@ -14,13 +14,22 @@ if (typeof Polyglot !== "undefined") {
   const Scanner  = Java.type('java.util.Scanner');
   const URL      = Java.type('java.net.URL');
 
+  const File          = Java.type('java.io.File');
+  const BufferedImage = Java.type('java.awt.image.BufferedImage');
+
   const base64ToImageData =
     function(base64) {
-
-      const trimmed = base64.split(',')[1];
+      const splits  = base64.split(',');
+      if (splits.length != 2) {
+        throw new Error(`splits not 2: ${splits.length}, ${base64.substring(0, 40)}...`)
+      }
+      const trimmed = splits[1];
       const bytes   = Base64.getDecoder().decode(trimmed);
       const bais    = new BAIS(bytes);
       const image   = ImageIO.read(bais);
+      if (image === null) {
+        throw new Error(`image was null?: ${bytes.length}, ${base64.substring(0, 40)}...`)
+      }
       bais.close();
 
       const output = [];
@@ -36,6 +45,26 @@ if (typeof Polyglot !== "undefined") {
 
       return { data: output, height: image.getHeight(), width: image.getWidth() };
 
+    }
+
+  const imageDataToBufferedImage =
+    function(imageData) {
+      const image = new BufferedImage(imageData.width, imageData.height, BufferedImage.TYPE_3BYTE_BGR)
+      for (var i = 0; i < imageData.data.length; i += 4) {
+        const color = ((imageData.data[i] & 0xFF) << 16) + ((imageData.data[i + 1] & 0xFF) << 8) + ((imageData.data[i + 2] & 0xFF))
+        const pixelIndex = i / 4
+        image.setRGB((pixelIndex % imageData.width), Math.floor(pixelIndex / imageData.width), color)
+      }
+      return image
+    }
+
+  const imageDataToBase64 =
+    function(imageData) {
+      const output = new BAOS();
+      const image  = imageDataToBufferedImage(imageData)
+      ImageIO.write(image, "png", output);
+      const base64 = Base64.getEncoder().encodeToString(output.toByteArray());
+      return `data:image/png;base64,${base64}`;
     }
 
   const exportFile =
@@ -184,6 +213,13 @@ if (typeof Polyglot !== "undefined") {
 
   const world = { resizeWorld: function(agent) {} };
 
+  // This was created to help during development of the Bitmap extension for NetLogo Web.  I'm going to leave it here in
+  // case it is useful for future debugging of that or anything else.  -Jeremy B November 2022
+  global.writeImage = function(name, imageData) {
+    const image = imageDataToBufferedImage(imageData)
+    ImageIO.write(image, "png", new File(name));
+  }
+
   global.atob = function(base64) {
     let bytes = Base64.getDecoder().decode(base64);
     return String.fromCharCode(...bytes);
@@ -191,6 +227,18 @@ if (typeof Polyglot !== "undefined") {
 
   global.btoa = function(str) {
     return Base64.getEncoder().encodeToString(Compiler.getBytes(str));
+  }
+
+  global.crypto = {
+    // only works for int32 values, just for testing, please don't ever let this into the wild.  -Jeremy B September
+    // 2022
+    getRandomValues: (arr) => {
+      arr.forEach( (_, i) => {
+        const thirtyTwoLimit = 2 ** 31
+        arr[i] = Math.floor(thirtyTwoLimit * 2 * Math.random() - thirtyTwoLimit)
+      })
+      return arr
+    }
   }
 
   global.TextDecoder = class {
@@ -265,6 +313,7 @@ if (typeof Polyglot !== "undefined") {
   global.modelConfig =
     { asyncDialog:       asyncDialog
     , base64ToImageData: base64ToImageData
+    , imageDataToBase64: imageDataToBase64
     , dialog:            dialog
     , importExport:      importExport
     , inspection:        inspection

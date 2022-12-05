@@ -3,56 +3,59 @@ import scala.sys.process._
 import Process._
 import Keys._
 
-// If you get an error like this: 'java.io.IOException: Cannot run program "yarn": error=2, No such file or directory',
-// install Yarn (see https://yarnpkg.com/en/docs/install), and then install the Grunt command line tools
-// (`sudo yarn install -g grunt-cli`).  Ensure that NodeJS is runnable by typing `node`, or Grunt will fail.  If
-// Node isn't there, try something like `sudo ln -s /usr/bin/nodejs /usr/local/bin/node` and then try again. --JAB (7/21/14) (10/18/16)
-
-lazy val yarn = inputKey[Unit]("Runs Yarn commands from within SBT")
-
-yarn := {
-  val args = sbt.complete.Parsers.spaceDelimited("<arg>").parsed
-  Process("yarn" +: args, baseDirectory.value).!(streams.value.log)
+def runNpm(log: Logger, runDir: File, args: Seq[String], env: (String, String)*): Unit = {
+  val npmArgs = Seq("npm") ++ args
+  log.info(npmArgs.mkString(" "))
+  val result = Process(npmArgs, runDir, env:_*).!(log)
+  if (result != 0) {
+    throw new MessageOnlyException("npm command indicated an unsuccessful result.")
+  }
+  ()
 }
 
-lazy val yarnInstall = taskKey[Seq[File]]("Runs `yarn install` from within SBT")
-
-yarnInstall := {
+lazy val npmInstall = taskKey[Seq[File]]("Runs `npm install` from within SBT")
+npmInstall := {
   val log = streams.value.log
-  if (!yarnIntegrity.value.exists || yarnIntegrity.value.olderThan(packageJson.value))
-    Process(Seq("yarn", "install", "--ignore-optional"), baseDirectory.value).!(log)
+  if (!npmIntegrity.value.exists || npmIntegrity.value.olderThan(packageJson.value))
+    runNpm(
+      log,
+      baseDirectory.value,
+      Seq("install", "--ignore-optional")
+    )
   nodeDeps.value
 }
 
 watchSources += packageJson.value
 
-lazy val grunt = taskKey[Unit]("Runs `grunt` from within SBT")
+lazy val coffeelint = taskKey[Unit]("lint coffeescript files")
+coffeelint := Def.task {
+  runNpm(
+    streams.value.log,
+    baseDirectory.value,
+    Seq("exec", "--", "coffeelint", "-f", "coffeelint.json", (baseDirectory.value / "src" / "main" / "coffee").toString)
+  )
+}.dependsOn(npmInstall).value
 
-grunt := {
+lazy val grunt = taskKey[Unit]("Runs `grunt` from within SBT")
+grunt := Def.task {
   val targetJS = (Compile / classDirectory).value / "js" / "tortoise-engine.js"
   val log = streams.value.log
-  installGrunt.value
   if (allJSSources.value exists (_.newerThan(targetJS)))
-    Process("grunt", baseDirectory.value).!(log)
-}
-
-grunt := (grunt.dependsOn(yarnInstall)).value
+    runNpm(
+      log,
+      baseDirectory.value,
+      Seq("exec", "--", "grunt")
+    )
+}.dependsOn(npmInstall).value
 
 watchSources ++= allJSSources.value
-
-lazy val installGrunt = Def.task[Unit] {
-  val versionStr = Try(Process(Seq("grunt", "--version")).!!).toOption getOrElse "Grunt's not there"
-  val log = streams.value.log
-  if (!versionStr.contains("grunt-cli"))
-    Process(Seq("yarn", "global", "add", "grunt-cli"), baseDirectory.value).!(log)
-}
 
 lazy val packageJson = Def.task[File] {
   baseDirectory.value / "package.json"
 }
 
-lazy val yarnIntegrity = Def.task[File] {
-  baseDirectory.value / "node_modules" / ".yarn-integrity"
+lazy val npmIntegrity = Def.task[File] {
+  baseDirectory.value / "node_modules" / ".package-lock.json"
 }
 
 lazy val nodeDeps = Def.task[Seq[File]] {

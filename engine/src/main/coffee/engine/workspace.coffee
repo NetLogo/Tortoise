@@ -9,7 +9,6 @@ Dump           = require('./dump')
 EvalPrims      = require('./prim/evalprims')
 Hasher         = require('./hasher')
 I18nBundle     = require('i18n/i18n-bundle')
-importPColors  = require('./prim/importpcolors')
 LayoutManager  = require('./prim/layoutmanager')
 LinkPrims      = require('./prim/linkprims')
 ListPrims      = require('./prim/listprims')
@@ -25,6 +24,8 @@ StringPrims    = require('./prim/stringprims')
 Timer          = require('util/timer')
 Updater        = require('./updater')
 World          = require('./core/world')
+
+{ importPColorsBase64: importPColors } = require('./prim/importpcolors')
 
 { exceptionFactory: exceptions } = require('util/exception')
 

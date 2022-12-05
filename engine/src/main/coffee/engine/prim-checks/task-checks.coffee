@@ -30,7 +30,7 @@ class TaskChecks
 
   # (String, Int, Int, Array[Int], Array[Any])
   checkVarArgs: (primName, sourceStart, sourceEnd, expectedTypes, args...) ->
-    # assume if no args given, then there is only one expected type, and it is variadic;
+    # assume if no args given, then there is only one expected type, and it is variadic
     # other checks will catch the length mismatch if not.  -Jeremy B June 2022
     if args.length isnt 0
       varStartIndex = expectedTypes.findIndex(isRepeatable)

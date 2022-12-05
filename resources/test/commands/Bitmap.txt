@@ -1,0 +1,97 @@
+Sizes
+  extensions [ bitmap fetch ]
+  globals [ image ]
+  O> fetch:file-async "test/bitmap/BitmapTest.jpg" [ base64 -> set image bitmap:from-base64 base64 ]
+  bitmap:width image => 1024
+  bitmap:height image => 768
+
+CopyToPColors
+  extensions [ bitmap fetch ]
+  globals [ image ]
+  O> fetch:file-async "test/bitmap/BitmapTest.jpg" [ base64 -> set image bitmap:from-base64 base64 ]
+  O> bitmap:copy-to-pcolors image false
+  map [p -> [pcolor] of p] (sort patches) => [0 0 0 0 0 0 0 0 0 0 0 [104 64 64] [116 30 15] [117 38 33] [196 149 141] [232 173 165] [194 211 218] [92 172 225] [90 169 225] [84 163 219] [64 117 169] [12 12 12] [147 107 108] [151 125 128] [137 61 48] [147 74 81] [163 158 38] [186 85 77] [115 188 233] [111 185 232] [139 179 214] [51 35 35] [22 18 17] [135 88 72] [159 116 107] [153 48 29] [170 66 63] [192 104 94] [147 119 22] [161 196 224] [116 122 138] [132 140 151] [119 29 18] [77 19 18] [134 75 69] [117 53 44] [138 55 51] [91 33 13] [217 140 130] [151 70 40] [228 116 96] [190 71 41] [236 179 170] [97 23 10] [82 24 13] [139 40 21] [188 169 154] [118 49 42] [101 24 18] [208 114 78] [88 27 8] [116 83 48] [200 99 79] [213 140 121] [85 32 28] [98 23 20] [158 144 141] [11 10 8] [45 16 20] [68 20 20] [143 47 33] [211 111 85] [186 106 79] [202 100 85] [202 92 55] [229 177 155] [64 19 22] [185 168 161] [86 81 77] [21 12 13] [20 12 10] [182 52 26] [228 129 100] [163 67 53] [208 111 94] [208 132 119] [227 132 64] [68 16 18] [161 163 175] [182 186 189] [197 194 189] [192 191 196] [209 197 197] [208 195 187] [161 102 62] [179 70 49] [184 72 50] [212 146 130] [149 83 48] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+  O> bitmap:copy-to-pcolors image true
+  map [p -> [pcolor] of p] (sort patches) => [0 0 0 0 0 0 0 0 0 0 0 132.2 12.6 12.8 36.7 17.9 108.5 96.3 96.2 96 105.5 0.3 133.5 4.7 33.5 133 43.3 133.6 96.9 96.7 97 131.1 0.6 34.1 35.5 13.6 14.1 134 42.7 97.7 4.3 5 12.7 11.7 132.8 33.1 13.4 21.7 17.2 23.1 16.5 23.8 18.1 12.1 11.8 13.2 37 22.3 12.3 16.3 12 33.6 16 17 12 12.2 5.3 0.2 130.7 11.6 13.4 16.3 35.2 16.2 15.8 17.9 11.5 6.4 2.8 130.3 30.5 14.1 16.8 23.4 16.4 134.6 25.9 11.5 6.1 7 7.3 7.3 7.7 37.9 34.8 23.6 23.7 17.2 34.2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+
+# Need scale to run this test
+Base64
+  extensions [ bitmap fetch ]
+  globals [ base64 image pcolors ]
+  O> fetch:file-async "test/bitmap/BitmapTest.jpg" [ b64 -> show substring b64 0 49 set image bitmap:from-base64 b64 ]
+  O> set image bitmap:from-base64 bitmap:to-base64 image
+  # O> set image bitmap:scaled image 64 48
+  # O> bitmap:copy-to-pcolors image true
+  # O> set pcolors map [ p -> [pcolor] of p ] (sort patches)
+  # O> set base64 bitmap:to-base64 image
+  # substring base64 0 49 => "data:image/png;base64,wqp3bsO/w4lQNsO/w5lzXMO/w6P"
+  # O> set image bitmap:from-base64 base64
+  # O> bitmap:copy-to-pcolors image true
+  # pcolors = map [ p -> [pcolor] of p ] (sort patches) => true
+
+ScaledUp
+  extensions [ bitmap fetch ]
+  globals [ image1 image2 ]
+  O> fetch:file-async "test/bitmap/BitmapTest.jpg" [ b64 -> set image1 bitmap:from-base64 b64 ]
+  O> set image2 bitmap:scaled image1 1333 1701
+  O> fetch:file-async "test/bitmap/BitmapTest-scaled-up.png" [ b64 -> set image1 bitmap:from-base64 b64 ]
+  bitmap:to-base64 image1 = bitmap:to-base64 image2 => true
+
+AverageColor
+  extensions [ bitmap fetch ]
+  globals [ image ]
+  O> fetch:file-async "test/bitmap/BitmapTest.jpg" [ b64 -> set image bitmap:from-base64 b64 ]
+  bitmap:average-color image => [139.44314320882162 94.44454701741536 88.15065892537434]
+
+# Cannot test without a view to get from
+# FromView
+#   extensions [ bitmap fetch ]
+#   globals [ image1 image2 ]
+#   O> fetch:file-async "test/bitmap/BitmapTest.jpg" [ b64 -> set image bitmap:from-base64 b64 ]
+#   O> bitmap:copy-to-drawing image1 0 0
+#   O> set image1 bitmap:from-view
+#   O> set image2 bitmap:import "test/bitmap/BitmapTest-view-0x0.png"
+#   bitmap:to-base64 image1 = bitmap:to-base64 image2 => true
+#   O> clear-drawing
+#   O> bitmap:copy-to-drawing image1 50 50
+#   O> set image1 bitmap:from-view
+#   O> set image2 bitmap:import "test/bitmap/BitmapTest-view-50x50.png"
+#   bitmap:to-base64 image1 = bitmap:to-base64 image2 => true
+
+DifferenceRgb
+  extensions [ bitmap fetch ]
+  globals [ image1 image2 image3 ]
+  O> fetch:file-async "test/bitmap/BitmapTest.jpg" [ b64 -> set image1 bitmap:from-base64 b64 ]
+  O> set image2 bitmap:difference-rgb image1 (bitmap:to-grayscale image1)
+  O> fetch:file-async "test/bitmap/BitmapTest-difference-rgb.png" [ b64 -> set image3 bitmap:from-base64 b64 ]
+  bitmap:to-base64 image2 = bitmap:to-base64 image3 => true
+
+Channel
+  extensions [ bitmap fetch ]
+  globals [ image1 image2 image3 ]
+  O> fetch:file-async "test/bitmap/BitmapTest.jpg" [ b64 -> set image1 bitmap:from-base64 b64 ]
+
+  O> set image2 bitmap:channel image1 0
+  O> fetch:file-async "test/bitmap/BitmapTest-alpha.png" [ b64 -> set image3 bitmap:from-base64 b64 ]
+  "alpha" = "alpha" and bitmap:to-base64 image2 = bitmap:to-base64 image3 => true
+
+  O> set image2 bitmap:channel image1 1
+  O> fetch:file-async "test/bitmap/BitmapTest-red.png" [ b64 -> set image3 bitmap:from-base64 b64 ]
+  "red" = "red" and bitmap:to-base64 image2 = bitmap:to-base64 image3 => true
+
+  O> set image2 bitmap:channel image1 2
+  O> fetch:file-async "test/bitmap/BitmapTest-green.png" [ b64 -> set image3 bitmap:from-base64 b64 ]
+  "green" = "green" and bitmap:to-base64 image2 = bitmap:to-base64 image3 => true
+
+  O> set image2 bitmap:channel image1 3
+  O> fetch:file-async "test/bitmap/BitmapTest-blue.png" [ b64 -> set image3 bitmap:from-base64 b64 ]
+  "blue" = "blue" and bitmap:to-base64 image2 = bitmap:to-base64 image3 => true
+
+ToGrayscale
+  extensions [ bitmap fetch ]
+  globals [ image1 image2 image3 ]
+  O> fetch:file-async "test/bitmap/BitmapTest.jpg" [ b64 -> set image1 bitmap:from-base64 b64 ]
+
+  O> fetch:file-async "test/bitmap/BitmapTest-grayscale.png" [ b64 -> set image3 bitmap:from-base64 b64 ]
+  O> set image2 bitmap:to-grayscale image1
+  bitmap:to-base64 image2 = bitmap:to-base64 image3 => true

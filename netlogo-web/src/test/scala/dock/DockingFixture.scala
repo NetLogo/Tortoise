@@ -185,9 +185,13 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
         (false, nlwOp(engine))
       } catch {
         case ex: PolyglotException =>
-          val AfterFirstColonRegex   = "^.*?: (.*)".r
-          val AfterFirstColonRegex(exMsg) = ex.getMessage
-          (true, (exMsg, ""))
+          if (ex.getMessage.contains(":")) {
+            val AfterFirstColonRegex   = "^.*?: (.*)".r
+            val AfterFirstColonRegex(exMsg) = ex.getMessage
+            (true, (exMsg, ""))
+          } else {
+            (true, (ex.getMessage, ""))
+          }
 
         case ex: Exception =>
           if (!exceptionOccurredInHeadless)
@@ -207,7 +211,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
       val (expectedModel, actualModel) = updatedJsonModels(removeB64(expectedJson), removeB64(actualJson))
 
       val headlessRNGState = workspace.world.mainRNG.save
-      val engineRNGState  = engine.eval("Random.save();").asInstanceOf[String]
+      val engineRNGState  = engine.eval("workspace.rng.exportState();").asInstanceOf[String]
 
       assert(headlessRNGState == engineRNGState, "divergent RNG state")
 
@@ -265,7 +269,8 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
 
     require(!opened)
 
-    val source    = FileIO.fileToString(path)(UTF8)
+    val absoPath  = java.nio.file.Path.of(path).toAbsolutePath.toString
+    val source    = FileIO.fileToString(absoPath)(UTF8)
     val newSource = addRequiredExtensions(source.replaceAll("""\sdisplay\s""", ""), requiredExts)
     val model     = ModelReader.parseModel(newSource, workspace.parser, Map())
 

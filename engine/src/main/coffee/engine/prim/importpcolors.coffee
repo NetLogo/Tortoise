@@ -73,20 +73,26 @@ genPColorUpdates = ({ height: worldHeight, minPxcor, minPycor, width: worldWidth
   [].concat(updates...).filter(({ color: [r, g, b, a] }) -> a isnt 0)
 
 # (() => Topology, () => Number, (Number, Number) => Agent, (String) => ImageData) => (Boolean) => (String) => Unit
-module.exports =
-  (getTopology, getPatchSize, getPatchAt, base64ToImageData) -> (isNetLogoColorspace) -> (base64) ->
+importPColorsBase64 = (getTopology, getPatchSize, getPatchAt, base64ToImageData) -> (isNetLogoColorspace) -> (base64) ->
+  importPColorsImage(getTopology, getPatchSize, getPatchAt, isNetLogoColorspace, base64ToImageData(base64))
 
-    { data, height, width } = base64ToImageData(base64)
-    toArray = if Array.from? then ((xs) -> Array.from(xs)) else ((xs) -> Array.prototype.slice.call(xs))
-    rgbas   = [0...(data.length / 4)].map((i) -> toArray(data.slice(i * 4, (i * 4) + 4)))
-    updates = genPColorUpdates(getTopology(), getPatchSize(), rgbas, width, height)
+# (() => Topology, () => Number, (Number, Number) => Agent, Boolean, ImageData) => Unit
+importPColorsImage = (getTopology, getPatchSize, getPatchAt, isNetLogoColorspace, { data, height, width }) ->
+  toArray = if Array.from? then ((xs) -> Array.from(xs)) else ((xs) -> Array.prototype.slice.call(xs))
+  rgbas   = [0...(data.length / 4)].map((i) -> toArray(data.slice(i * 4, (i * 4) + 4)))
+  updates = genPColorUpdates(getTopology(), getPatchSize(), rgbas, width, height)
 
-    colorGetter =
-      if isNetLogoColorspace
-        (x) -> lookupNLColor(x)
-      else
-        (x) -> ColorModel.rgbList(x)
+  colorGetter =
+    if isNetLogoColorspace
+      (x) -> lookupNLColor(x)
+    else
+      (x) -> ColorModel.rgbList(x)
 
-    updates.forEach(({ x, y, color }) -> getPatchAt(x, y).setVariable('pcolor', colorGetter(color)))
+  updates.forEach(({ x, y, color }) -> getPatchAt(x, y).setVariable('pcolor', colorGetter(color)))
 
-    return
+  return
+
+module.exports = {
+  importPColorsBase64
+, importPColorsImage
+}

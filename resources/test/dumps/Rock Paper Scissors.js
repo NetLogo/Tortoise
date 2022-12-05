@@ -10,7 +10,6 @@ var PatchSet = tortoise_require('engine/core/patchset');
 var PenBundle = tortoise_require('engine/plot/pen');
 var Plot = tortoise_require('engine/plot/plot');
 var PlotOps = tortoise_require('engine/plot/plotops');
-var Random = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 var Tasks = tortoise_require('engine/prim/tasks');
 var Turtle = tortoise_require('engine/core/turtle');
@@ -96,7 +95,7 @@ ProcedurePrims.defineCommand("go", 158, 1941, (function() {
         var R = ProcedurePrims.callCommand("select", target); if (R === DeathInterrupt) { return R; }
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1714, 1717, R); return R; }
-  }, "[ event -> ask one-of patches [ let one-of neighbors4 if event = swap-event [ swap target ] if event = reproduce-event [ reproduce target ] if event = select-event [ select target ] ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1684, 1691, R); return R; }
+  }, "[ event -> ask one-of patches [ let target one-of neighbors4 if event = swap-event [ swap target ] if event = reproduce-event [ reproduce target ] if event = select-event [ select target ] ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1684, 1691, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("swap", 1996, 2107, (function(target) {

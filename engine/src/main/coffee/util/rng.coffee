@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Random    = require('../shim/random')
-AuxRandom = require('../shim/auxrandom')
+{ newMersenneTwister } = require('../shim/random')
 
 # We need an auxiliary RNG for non-deterministic RNG events (e.g. code run within monitors),
 # so I sloppily manage what RNG is being used here.  I plan to, soon enough, clean up this
@@ -13,10 +12,12 @@ module.exports =
 
     _currentRNG: undefined # Generator
     _mainRNG:    undefined # Generator
+    _auxRNG:     undefined # Generator
 
     # () => RNG
     constructor: ->
-      @_mainRNG    = Random
+      @_mainRNG    = newMersenneTwister()
+      @_auxRNG     = newMersenneTwister()
       @_currentRNG = @_mainRNG
 
     # () => String
@@ -51,11 +52,11 @@ module.exports =
 
     # [T] @ (() => T) => T
     withAux: (f) ->
-      @_withAnother(AuxRandom)(f)
+      @_withAnother(@_auxRNG)(f)
 
     # [T] @ (() => T) => T
     withClone: (f) ->
-      @_withAnother(Random.clone())(f)
+      @_withAnother(@_mainRNG.clone())(f)
 
     # [T] @ (Generator) => (() => T) => T
     _withAnother: (rng) -> (f) =>

@@ -11,4 +11,13 @@ a different number of bits than JS integers, leading to
 different results.
 ###
 
-module.exports = MersenneTwisterFast()
+getRandomSeedInt = () ->
+  global.crypto.getRandomValues(new Int32Array(1))[0]
+
+newMersenneTwister = () ->
+  new MersenneTwisterFast(getRandomSeedInt())
+
+module.exports = {
+  newMersenneTwister
+  getRandomSeedInt
+}

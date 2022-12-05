@@ -1,0 +1,75 @@
+{
+  "name": "bitmap"
+, "prims": [
+  {
+    "name": "average-color"
+  , "argTypes": ["wildcard"]
+  , "returnType": "list"
+  }
+  , {
+    "name": "channel"
+  , "argTypes": ["wildcard", "number"]
+  , "returnType": "wildcard"
+  }
+  , {
+    "name": "copy-to-drawing"
+  , "argTypes": ["wildcard", "number", "number"]
+  , "returnType": "unit"
+  }
+  , {
+    "name": "copy-to-pcolors"
+  , "argTypes": ["wildcard", "boolean"]
+  , "returnType": "unit"
+  }
+  , {
+    "name": "difference-rgb"
+  , "argTypes": ["wildcard", "wildcard"]
+  , "returnType": "wildcard"
+  }
+  , {
+    "name": "export"
+  , "argTypes": ["wildcard", "string"]
+  , "returnType": "unit"
+  }
+  , {
+    "name": "from-base64"
+  , "argTypes": ["string"]
+  , "returnType": "wildcard"
+  }
+  , {
+    "name": "to-base64"
+  , "argTypes": ["wildcard"]
+  , "returnType": "string"
+  }
+  , {
+    "name": "from-view"
+  , "argTypes": []
+  , "returnType": "wildcard"
+  }
+  , {
+    "name": "to-grayscale"
+  , "argTypes": ["wildcard"]
+  , "returnType": "wildcard"
+  }
+  , {
+    "name": "height"
+  , "argTypes": ["wildcard"]
+  , "returnType": "number"
+  }
+  , {
+    "name": "import"
+  , "argTypes": ["string"]
+  , "returnType": "wildcard"
+  }
+  , {
+    "name": "scaled"
+  , "argTypes": ["wildcard", "number", "number"]
+  , "returnType": "wildcard"
+  }
+  , {
+    "name": "width"
+  , "argTypes": ["wildcard"]
+  , "returnType": "number"
+  }
+  ]
+}

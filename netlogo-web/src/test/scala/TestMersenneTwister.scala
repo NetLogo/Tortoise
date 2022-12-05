@@ -4,14 +4,13 @@ package org.nlogo.tortoise.nlw
 
 class TestMersenneTwister extends SimpleSuite {
 
-  engine.eval(   "Random = new tortoise_require('shim/engine-scala').MersenneTwisterFast()")
-  engine.eval("AuxRandom = new tortoise_require('shim/engine-scala').MersenneTwisterFast()")
+  engine.eval("var random = new tortoise_require('shim/engine-scala').MersenneTwisterFast()")
 
   test("setSeed") { implicit fixture =>
-    val result = fixture.eval("Random.setSeed(10); Random.nextInt()")
-    assert((1 to 10).map(_ => fixture.eval("Random.setSeed(10); Random.nextInt()")).forall(_ == result))
-    assert((1 to 10).map(_ => fixture.eval("Random.nextInt()")).forall(_ != result))
-    assert(fixture.eval("Random.setSeed(11); Random.nextInt()") != result)
+    val result = fixture.eval("random.setSeed(10); random.nextInt()")
+    assert((1 to 10).map(_ => fixture.eval("random.setSeed(10); random.nextInt()")).forall(_ == result))
+    assert((1 to 10).map(_ => fixture.eval("random.nextInt()")).forall(_ != result))
+    assert(fixture.eval("random.setSeed(11); random.nextInt()") != result)
   }
 
   // Begun, this clone war has....
@@ -19,16 +18,16 @@ class TestMersenneTwister extends SimpleSuite {
 
     val f = (name: String) => fixture.eval(s"$name.nextInt()")
 
-    fixture.eval("Random.setSeed(10)")
-    fixture.eval("var clone1 = Random.clone()")
+    fixture.eval("random.setSeed(10)")
+    fixture.eval("var clone1 = random.clone()")
     fixture.eval("var clone2 = clone1.clone()")
     fixture.eval("var clone3 = clone2.clone()")
-    fixture.eval("var clone4 = Random.clone()")
+    fixture.eval("var clone4 = random.clone()")
 
-    val rngs = Seq("Random", "clone1", "clone2", "clone3", "clone4")
+    val rngs = Seq("random", "clone1", "clone2", "clone3", "clone4")
     (1 to 1000).foreach(_ => assert(rngs.map(f).distinct.size == 1))
 
-    fixture.eval("Random.setSeed(11)")
+    fixture.eval("random.setSeed(11)")
     val Seq(resultR, result1, result2, result3, result4) = rngs.map(f)
 
     assert(Seq(result1, result2, result3, result4).distinct.size == 1)
@@ -43,7 +42,7 @@ class TestMersenneTwister extends SimpleSuite {
     Seq("nextInt()", "nextInt(1000)", "nextDouble()", "nextGaussian()") foreach {
       fCall =>
 
-        fixture.eval("clone = Random.clone()")
+        fixture.eval("clone = random.clone()")
         fixture.eval("var initialState = clone.save()")
 
         assert(fixture.eval("initialState") == fixture.eval("clone.save()"))

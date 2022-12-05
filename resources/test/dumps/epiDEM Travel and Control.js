@@ -10,7 +10,6 @@ var PatchSet = tortoise_require('engine/core/patchset');
 var PenBundle = tortoise_require('engine/plot/pen');
 var Plot = tortoise_require('engine/plot/plot');
 var PlotOps = tortoise_require('engine/plot/plotops');
-var Random = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 var Tasks = tortoise_require('engine/prim/tasks');
 var Turtle = tortoise_require('engine/core/turtle');

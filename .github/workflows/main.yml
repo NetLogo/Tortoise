@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  GRAAL_HOME: /home/runner/.jabba/jdk/graalvm@20.0.0
+  GRAAL_URL: https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-22.2.0/graalvm-ce-java17-linux-amd64-22.2.0.tar.gz
+  GRAAL_HOME: /home/runner/.jabba/jdk/graalvm@22.2.0
   SBT_OPTS: -Dsbt.log.noformat=true
 
 jobs:
@@ -19,17 +20,22 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
 
       # Node.js setup should come after GraalVM setup as GraalVM includes a conflicting `node` binary
       # and we want the "regular" node version to "win".  -Jeremy B June 2021
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
 
       - name: Git Init
         run: git submodule update --init --recursive
@@ -71,11 +77,16 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
 
-      - uses: actions/setup-node@v2
+      - name: Install Graal.js
+        run: gu install js
+
+      - uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
 
       - name: Scalastyle
         run: |
@@ -83,7 +94,7 @@ jobs:
 
       - name: Coffeelint
         run: |
-          cd engine; yarn install; grunt coffeelint
+          ./sbt.sh engine/coffeelint
 
   test-compiler:
     runs-on: ubuntu-latest
@@ -97,7 +108,16 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
 
       - name: Compiler JVM Tests
         run: |
@@ -120,7 +140,16 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
 
       - name: NetLogo Web Fast Tests
         run: |
@@ -139,7 +168,16 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
 
       - name: NetLogo Web Command Tests
         run: |
@@ -157,7 +195,16 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
 
       - name: Model JS Dumps
         run: |
@@ -180,7 +227,16 @@ jobs:
 
       - uses: olafurpg/setup-scala@v13
         with:
-          java-version: graalvm@20.0.0
+          java-version: graalvm@22.2.0=tgz+${{ env.GRAAL_URL }}
+
+      - name: Install Graal.js
+        run: gu install js
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: engine/package-lock.json
 
       - name: Model Docking Tests ${{ matrix.test }}
         run: ./sbt.sh "netLogoWeb / testOnly *TestModels -- ${{ matrix.test }}"
