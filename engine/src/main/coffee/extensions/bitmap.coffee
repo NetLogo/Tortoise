@@ -51,11 +51,11 @@ channel = (image, channel) ->
   new ImageData(newData, image.width, image.height)
 
 # (World) => (ImageData, Int, Int) => Unit
-copyToDrawing = (world) -> (image, x, y) ->
+copyToDrawing = (image, x, y) ->
   checkIsImage(image)
   # I don't love converting this back to base64 to import it, but this is the simplest way I see at the moment without
   # adding a whole new drawing event (of uncertain data type) here and in desktop.  -Jeremy B November 2022
-  world.importDrawing(toBase64(image), Math.floor(x), Math.floor(y))
+  modelConfig.importImage(toBase64(image), Math.floor(x), Math.floor(y))
   return
 
 # (World) => (ImageData, Boolean) => Unit
@@ -262,7 +262,7 @@ bitmapExtension = {
     , prims: {
         "AVERAGE-COLOR": averageColor
       , "CHANNEL": channel
-      , "COPY-TO-DRAWING": copyToDrawing(workspace.world)
+      , "COPY-TO-DRAWING": copyToDrawing
       , "COPY-TO-PCOLORS": copyToPColors(workspace.world)
       , "DIFFERENCE-RGB": differenceRgb
       , "EXPORT": exportError

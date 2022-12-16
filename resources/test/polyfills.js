@@ -179,7 +179,7 @@ if (typeof Polyglot !== "undefined") {
   const dialog =
     { confirm: function(str) { return true; }
     , input:   function(str) { return 'dummy implementation'; }
-    , notify:  function(str) {}
+    , notify:  function(str) { console.log(str); }
     , yesOrNo: function(str) { return true; }
     }
 
@@ -316,6 +316,7 @@ if (typeof Polyglot !== "undefined") {
     , imageDataToBase64: imageDataToBase64
     , dialog:            dialog
     , importExport:      importExport
+    , importImage:       () => {}
     , inspection:        inspection
     , io:                io
     , output:            output
