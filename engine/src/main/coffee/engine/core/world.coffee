@@ -329,6 +329,15 @@ module.exports =
 
     # () => Unit
     _createPatches: ->
+      # TU needs this to properly destroy unused patches. --JC (1/9/23)
+      if @_patches
+        _updater = @_updater
+        @_patches.forEach((patch) -> 
+          _updater._update("patches", patch.id, { WHO: -1 })
+          patch.id = -1
+          return
+        );
+
       nested =
         for y in [@topology.maxPycor..@topology.minPycor]
           for x in [@topology.minPxcor..@topology.maxPxcor]
