@@ -12,6 +12,7 @@ extensionName = "phys"
 exportGlobal = () ->
     if physics = getPhysics()
         physics.ExportState()
+    else {}
         
 formatGlobal = (exported) ->
     JSON.stringify(exported).replace(/,/g, "`")

@@ -1,0 +1,84 @@
+{
+    "name": "xr",
+    "prims": [
+      {
+        "name": "is-supported?",
+        "argTypes": [],
+        "returnType": "boolean",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "is-on?",
+        "argTypes": [],
+        "returnType": "boolean",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "switch",
+        "argTypes": ["boolean"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "get-gravity",
+        "argTypes": [],
+        "returnType": "list",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "get-scale",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "set-scale",
+        "argTypes": ["number"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "room-scan",
+        "argTypes": ["wildcard"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "is-room-scan-supported?",
+        "argTypes": ["number"],
+        "returnType": "boolean",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "scans",
+        "argTypes": [],
+        "returnType": "list",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "resize-world",
+        "argTypes": ["string"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "get-dimensions",
+        "argTypes": ["string"],
+        "returnType": "list",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "iterate-as-patches",
+        "argTypes": ["string", "wildcard"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "iterate-as-turtles",
+        "argTypes": ["string", "wildcard"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      }
+    ]
+  }
+  

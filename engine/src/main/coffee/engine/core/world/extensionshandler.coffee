@@ -167,7 +167,8 @@ makeImporter = (extensionPorters, extensionExports) ->
   importExt = () ->
     extensionPorters.forEach( (porter) ->
       state   = extensionExports.get(porter)
-      porter.import(state)
+      if state?
+        porter.import(state)
     )
 
   {
