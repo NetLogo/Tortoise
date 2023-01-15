@@ -99,6 +99,13 @@ module.exports = {
       else
         return []
 
+    # () => String
+    latestScan = () ->
+      if XR = getXR()
+        return XR.GetLatestScan()
+      else
+        return []
+
     # (String) -> Unit
     resizeWorld = (id) ->
       if XR = getXR()
@@ -141,6 +148,7 @@ module.exports = {
         "GET-SCALE": getScale,
         "SET-SCALE": setScale,
         "ROOM-SCAN": roomScan,
+        "LATEST-SCAN": latestScan,
         "IS-ROOM-SCAN-SUPPORTED?": isRoomScanSupported,
         "SCANS": scans,
         "RESIZE-WORLD": resizeWorld,

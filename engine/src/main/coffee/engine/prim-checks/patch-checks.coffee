@@ -38,7 +38,7 @@ class PatchChecks
     invalidRGBMsg3Or4   = "An rgb list must contain 3 or 4 numbers 0-255"
     invalidRGBNumberMsg = "RGB values must be 0-255"
 
-    pcolorMappings = new Map([ ["Invalid RGB format", invalidRGBMsg3]
+    pcolorMappings = new Map([ ["Invalid RGB format", invalidRGBMsg3Or4]
                              , ["Invalid RGB number", invalidRGBNumberMsg]
                              , ["Invalid color type", invalidColorTypeMsg]
                              ])
@@ -53,7 +53,7 @@ class PatchChecks
 
     @_setterChecks =
       new Map(
-        [ ["pcolor"      ,      pcolorMappings]
+        [ ["pcolor"      , pcolorMappings]
         , ["plabel-color", plabelColorMappings]
         ].map(toSetterPair)
       )

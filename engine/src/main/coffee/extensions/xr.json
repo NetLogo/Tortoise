@@ -56,6 +56,12 @@
         "agentClassString": "OTPL"
       },
       {
+        "name": "latest-scan",
+        "argTypes": [],
+        "returnType": "string",
+        "agentClassString": "OTPL"
+      },
+      {
         "name": "resize-world",
         "argTypes": ["string"],
         "returnType": "unit",

@@ -12,7 +12,7 @@ ColorModel = require('engine/core/colormodel')
 # (Number|RGB|RGBA, Boolean) => Maybe[String]
 validateColor = (color, isPcolor) ->
 
-  hasBadLength    = (xs) -> xs.length isnt 3 and (isPcolor or xs.length isnt 4)
+  hasBadLength    = (xs) -> xs.length isnt 3 and xs.length isnt 4
   isBadCompNumber = (x) -> not (0 <= x <= 255)
   isBadCompType   = (x) -> not checks.isNumber(x)
 
