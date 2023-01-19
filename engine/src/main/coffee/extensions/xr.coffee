@@ -47,12 +47,20 @@ module.exports = {
       else
         return false
       
-    # (Boolean) => Unit
-    switchXR = (Target) ->
+    # () => Unit
+    startXR = () ->
       if XR = getXR()
-        return XR.Switch(Target)
+        return XR.Switch(true)
       else
-        workspace.printPrims.print("Try to switch to the XR view.")
+        workspace.printPrims.print("Try to start the XR view.")
+      return
+      
+    # () => Unit
+    stopXR = () ->
+      if XR = getXR()
+        return XR.Switch(false)
+      else
+        workspace.printPrims.print("Try to stop the XR view.")
       return
 
     # () -> [Number, Number]
@@ -143,7 +151,7 @@ module.exports = {
     , prims: {
         "IS-SUPPORTED?": isSupported,
         "IS-ON?": isOn,
-        "SWITCH": switchXR,
+        "START": startXR,
         "GET-GRAVITY": getGravity,
         "GET-SCALE": getScale,
         "SET-SCALE": setScale,

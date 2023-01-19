@@ -14,8 +14,14 @@
         "agentClassString": "OTPL"
       },
       {
-        "name": "switch",
-        "argTypes": ["boolean"],
+        "name": "start",
+        "argTypes": [""],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "stop",
+        "argTypes": [""],
         "returnType": "unit",
         "agentClassString": "OTPL"
       },
@@ -82,6 +88,12 @@
       {
         "name": "iterate-as-turtles",
         "argTypes": ["string", "wildcard"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "inside-scan?",
+        "argTypes": ["string", "int", "int"],
         "returnType": "unit",
         "agentClassString": "OTPL"
       }
