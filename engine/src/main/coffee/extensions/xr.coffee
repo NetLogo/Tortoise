@@ -108,41 +108,49 @@ module.exports = {
         return []
 
     # () => String
-    latestScan = () ->
+    currentScan = () ->
       if XR = getXR()
-        return XR.GetLatestScan()
+        return XR.GetCurrentScan()
       else
         return []
 
-    # (String) -> Unit
-    resizeWorld = (id) ->
+    # (String) => Unit
+    useScan = (id) ->
       if XR = getXR()
-        XR.ResizeWorld(id)
+        return XR.SetCurrentScan(id)
       else
-        workspace.printPrims.print("Try to resize the world based on #{id}.")
+        workspace.printPrims.print("Try to set the current scan to #{id}.")
+      return
+
+    # () -> Unit
+    resizeWorld = () ->
+      if XR = getXR()
+        XR.ResizeWorld()
+      else
+        workspace.printPrims.print("Try to resize the world based on the current scan.")
       return
 
     # (String) -> List
-    getDimensions = (id) ->
+    getDimensions = () ->
       if XR = getXR()
-        return XR.GetDimensions(id)
+        return XR.GetDimensions()
       else
         return [0, 0]
       
     # (Wildcard) => Unit
-    iterateAsPatches = (id, callback) ->
+    iterateAsPatches = (callback) ->
       if XR = getXR()
-        XR.IterateAsPatches(id, callback)
+        XR.IterateAsPatches(callback)
       else
-        workspace.printPrims.print("Try to iterate on a room scan #{id} as patches.")
+        workspace.printPrims.print("Try to iterate on the current scan as patches.")
       return
 
     # (Wildcard) => Unit
-    iterateAsTurtles = (id, callback) ->
+    iterateAsTurtles = (callback) ->
       if XR = getXR()
-        XR.IterateAsTurtles(id, callback)
+        XR.IterateAsTurtles(callback)
       else
-        workspace.printPrims.print("Try to iterate on a room scan #{id} as turtles.")
+        workspace.printPrims.print("Try to iterate on the current scan as turtles.")
       return
 
     {
@@ -152,17 +160,24 @@ module.exports = {
         "IS-SUPPORTED?": isSupported,
         "IS-ON?": isOn,
         "START": startXR,
+        "STOP": stopXR,
         "GET-GRAVITY": getGravity,
         "GET-SCALE": getScale,
         "SET-SCALE": setScale,
+        "SHOW-WIREFRAMES": showWireframes,
+        "HIDE-WIREFRAMES": hideWireframes,
+        "SHOW-WIREFRAME": showWireframe,
+        "HIDE-WIREFRAME": hideWireframe,
         "ROOM-SCAN": roomScan,
-        "LATEST-SCAN": latestScan,
+        "CURRENT-SCAN": currentScan,
+        "USE-SCAN": useScan,
         "IS-ROOM-SCAN-SUPPORTED?": isRoomScanSupported,
         "SCANS": scans,
         "RESIZE-WORLD": resizeWorld,
         "GET-DIMENSIONS": getDimensions,
         "ITERATE-AS-PATCHES": iterateAsPatches,
         "ITERATE-AS-TURTLES": iterateAsTurtles,
+        "INSIDE-SCAN?": insideScan,
       }
     }
 }

@@ -15,13 +15,13 @@
       },
       {
         "name": "start",
-        "argTypes": [""],
+        "argTypes": [],
         "returnType": "unit",
         "agentClassString": "OTPL"
       },
       {
         "name": "stop",
-        "argTypes": [""],
+        "argTypes": [],
         "returnType": "unit",
         "agentClassString": "OTPL"
       },
@@ -44,10 +44,34 @@
         "agentClassString": "OTPL"
       },
       {
-        "name": "room-scan",
-        "argTypes": ["wildcard"],
+        "name": "show-wireframes",
+        "argTypes": [],
         "returnType": "unit",
         "agentClassString": "OTPL"
+      },
+      {
+        "name": "hide-wireframes",
+        "argTypes": [],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "show-wireframe",
+        "argTypes": ["string"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "hide-wireframe",
+        "argTypes": ["string"],
+        "returnType": "unit",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "room-scan",
+        "argTypes": [{ "types": ["string", "command"] }],
+        "returnType": "unit",
+        "agentClassString": "O---"
       },
       {
         "name": "is-room-scan-supported?",
@@ -62,38 +86,47 @@
         "agentClassString": "OTPL"
       },
       {
-        "name": "latest-scan",
+        "name": "current-scan",
         "argTypes": [],
         "returnType": "string",
         "agentClassString": "OTPL"
       },
       {
-        "name": "resize-world",
+        "name": "use-scan",
         "argTypes": ["string"],
+        "returnType": "boolean",
+        "agentClassString": "O---"
+      },
+      {
+        "name": "resize-world",
+        "argTypes": [{
+          "type": "number",
+          "isRepeatable": true
+        }],
         "returnType": "unit",
-        "agentClassString": "OTPL"
+        "agentClassString": "O---"
       },
       {
         "name": "get-dimensions",
-        "argTypes": ["string"],
+        "argTypes": [],
         "returnType": "list",
         "agentClassString": "OTPL"
       },
       {
         "name": "iterate-as-patches",
-        "argTypes": ["string", "wildcard"],
+        "argTypes": [{ "types": ["string", "command"] }],
         "returnType": "unit",
         "agentClassString": "OTPL"
       },
       {
         "name": "iterate-as-turtles",
-        "argTypes": ["string", "wildcard"],
+        "argTypes": [{ "types": ["string", "command"] }],
         "returnType": "unit",
         "agentClassString": "OTPL"
       },
       {
         "name": "inside-scan?",
-        "argTypes": ["string", "int", "int"],
+        "argTypes": ["number", "number"],
         "returnType": "unit",
         "agentClassString": "OTPL"
       }

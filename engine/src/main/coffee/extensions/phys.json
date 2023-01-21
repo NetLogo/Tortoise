@@ -44,6 +44,12 @@
         "agentClassString": "-TP-"
       },
       {
+        "name": "can-move?",
+        "argTypes": ["number"],
+        "returnType": "boolean",
+        "agentClassString": "-T--"
+      },
+      {
         "name": "contacts",
         "argTypes": [],
         "returnType": "agentset",
