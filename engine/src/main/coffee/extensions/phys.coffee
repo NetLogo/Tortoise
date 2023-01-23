@@ -632,7 +632,7 @@ module.exports = {
         "SET-LINEAR-DAMPING": setLinearDamping,
         "GET-ANGULAR-DAMPING": getAngularDamping,
         "SET-ANGULAR-DAMPING": setAngularDamping,
-        "CAN-MOVE": canMove,
+        "CAN-MOVE?": canMove,
         "PUSH": push,
         "APPLY-FORCE": applyForce,
         "APPLY-TORQUE": applyTorque,
