@@ -363,6 +363,13 @@ module.exports = {
         workspace.printPrims.show(SelfManager.self)("Set the angular damping to be #{value}")
       return
       
+    # (Number, Number) => Boolean
+    canMove = (steps, type) ->
+      if physics = getPhysics()
+        physics.CanMove(SelfManager.self(), steps, type)
+      else
+        SelfManager.self().canMove(steps)
+      
     # (Number) => Unit
     push = (value) ->
       if physics = getPhysics()
@@ -625,6 +632,7 @@ module.exports = {
         "SET-LINEAR-DAMPING": setLinearDamping,
         "GET-ANGULAR-DAMPING": getAngularDamping,
         "SET-ANGULAR-DAMPING": setAngularDamping,
+        "CAN-MOVE": canMove,
         "PUSH": push,
         "APPLY-FORCE": applyForce,
         "APPLY-TORQUE": applyTorque,

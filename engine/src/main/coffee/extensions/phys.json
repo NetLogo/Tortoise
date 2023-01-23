@@ -45,7 +45,10 @@
       },
       {
         "name": "can-move?",
-        "argTypes": ["number"],
+        "argTypes": [{
+          "type": "number",
+          "isRepeatable": true
+        }],
         "returnType": "boolean",
         "agentClassString": "-T--"
       },

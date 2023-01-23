@@ -85,6 +85,38 @@ module.exports = {
         workspace.printPrims.print("Try to set the mapping scale between real-world and model world to #{scale}.")
       return
 
+    # () => Unit
+    showWireframes = () ->
+      if XR = getXR()
+        XR.ShowWireframes()
+      else
+        workspace.printPrims.print("Try to ask the XR view to show all room wireframes.")
+      return
+
+    # () => Unit
+    hideWireframes = () ->
+      if XR = getXR()
+        XR.HideWireframes()
+      else
+        workspace.printPrims.print("Try to ask the XR view to hide all room wireframes.")
+      return
+
+    # (String) => Unit
+    showWireframe = (id) ->
+      if XR = getXR()
+        XR.ShowWireframe(id)
+      else
+        workspace.printPrims.print("Try to ask the XR view to show the room wireframe #{id}.")
+      return
+
+    # (String) => Unit
+    hideWireframe = (id) ->
+      if XR = getXR()
+        XR.HideWireframe(id)
+      else
+        workspace.printPrims.print("Try to ask the XR view to hide the room wireframe #{id}.")
+      return
+
     # (Wildcard) => Unit
     roomScan = (callback) ->
       if XR = getXR()
@@ -122,10 +154,10 @@ module.exports = {
         workspace.printPrims.print("Try to set the current scan to #{id}.")
       return
 
-    # () -> Unit
-    resizeWorld = () ->
+    # (Number, Number) -> Unit
+    resizeWorld = (xmin, ymin) ->
       if XR = getXR()
-        XR.ResizeWorld()
+        XR.ResizeWorld(xmin, ymin)
       else
         workspace.printPrims.print("Try to resize the world based on the current scan.")
       return
@@ -153,6 +185,20 @@ module.exports = {
         workspace.printPrims.print("Try to iterate on the current scan as turtles.")
       return
 
+    # (Number, Number) -> Boolean
+    insideScan = () ->
+      if XR = getXR()
+        return XR.InsideScan(SelfManager.self())
+      else
+        return true
+
+    # (String, String) -> Number
+    colorOf = (type, label) ->
+      if XR = getXR()
+        return XR.GetColorOf(type, label)
+      else
+        return 0
+
     {
       name: "xr"
     , clearAll: clearAll
@@ -178,6 +224,7 @@ module.exports = {
         "ITERATE-AS-PATCHES": iterateAsPatches,
         "ITERATE-AS-TURTLES": iterateAsTurtles,
         "INSIDE-SCAN?": insideScan,
+        "COLOR-OF": colorOf,
       }
     }
 }

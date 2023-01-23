@@ -94,7 +94,7 @@
       {
         "name": "use-scan",
         "argTypes": ["string"],
-        "returnType": "boolean",
+        "returnType": "unit",
         "agentClassString": "O---"
       },
       {
@@ -126,8 +126,14 @@
       },
       {
         "name": "inside-scan?",
-        "argTypes": ["number", "number"],
-        "returnType": "unit",
+        "argTypes": [],
+        "returnType": "boolean",
+        "agentClassString": "-TP-"
+      },
+      {
+        "name": "color-of",
+        "argTypes": ["string", "string"],
+        "returnType": "number",
         "agentClassString": "OTPL"
       }
     ]

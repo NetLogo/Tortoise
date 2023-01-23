@@ -160,11 +160,11 @@ module.exports =
 
     # (Number, Number) => Agent
     patchLeftAndAhead: (angle, distance) ->
-      @patchRightAndAhead(-angle, distance)
+      @patchAtHeadingAndDistance(@_heading - angle, distance)
 
     # (Number) => Agent
     patchAhead: (distance) ->
-      @patchRightAndAhead(0, distance)
+      @patchAtHeadingAndDistance(@_heading, distance)
 
     # (() => Any) => Unit
     ask: (f) ->
