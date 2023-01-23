@@ -142,7 +142,7 @@ module.exports =
 
     # (Any, Any) => Boolean
     gt: (a, b) ->
-      if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
+      if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
         a > b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is GT
@@ -151,7 +151,13 @@ module.exports =
 
     # (Any, Any) => Boolean
     gte: (a, b) ->
-      @gt(a, b) or @equality(a, b)
+      if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
+        a >= b
+      else if typeof(a) is typeof(b) and a.compare? and b.compare?
+        result = a.compare(b)
+        result is GT or result is EQ
+      else
+        throw exceptions.internal("Invalid operands to `gt`")
 
     # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
     linkSet: (inputs) ->
@@ -159,7 +165,7 @@ module.exports =
 
     # (Any, Any) => Boolean
     lt: (a, b) ->
-      if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
+      if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
         a < b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is LT
@@ -168,7 +174,13 @@ module.exports =
 
     # (Any, Any) => Boolean
     lte: (a, b) ->
-      @lt(a, b) or @equality(a, b)
+      if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
+        a <= b
+      else if typeof(a) is typeof(b) and a.compare? and b.compare?
+        result = a.compare(b)
+        result is LT or result is EQ
+      else
+        throw exceptions.internal("Invalid operands to `lt`")
 
     # Some complications here....
     #
