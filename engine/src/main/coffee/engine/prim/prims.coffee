@@ -139,7 +139,7 @@ module.exports =
 
     # (Any, Any) => Boolean
     gt: (a, b) ->
-      if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
+      if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
         a > b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is GT
@@ -148,7 +148,7 @@ module.exports =
 
     # (Any, Any) => Boolean
     gte: (a, b) ->
-      if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
+      if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
         a >= b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         result = a.compare(b)
@@ -162,7 +162,7 @@ module.exports =
 
     # (Any, Any) => Boolean
     lt: (a, b) ->
-      if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
+      if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
         a < b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is LT
@@ -171,7 +171,7 @@ module.exports =
 
     # (Any, Any) => Boolean
     lte: (a, b) ->
-      if (checks.isString(a) and checks.isString(b)) or (checks.isNumber(a) and checks.isNumber(b))
+      if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
         a <= b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         result = a.compare(b)
