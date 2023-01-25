@@ -44,6 +44,18 @@
         "agentClassString": "OTPL"
       },
       {
+        "name": "xcor",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "OTPL"
+      },
+      {
+        "name": "ycor",
+        "argTypes": [],
+        "returnType": "number",
+        "agentClassString": "OTPL"
+      },
+      {
         "name": "show-wireframes",
         "argTypes": [],
         "returnType": "unit",

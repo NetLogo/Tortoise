@@ -85,6 +85,20 @@ module.exports = {
         workspace.printPrims.print("Try to set the mapping scale between real-world and model world to #{scale}.")
       return
 
+    # () -> Number
+    xcor = () ->
+      if XR = getXR()
+        XR.GetXcor()
+      else
+        0
+
+    # () -> Number
+    ycor = () ->
+      if XR = getXR()
+        XR.GetYcor()
+      else
+        0
+
     # () => Unit
     showWireframes = () ->
       if XR = getXR()
@@ -210,6 +224,8 @@ module.exports = {
         "GET-GRAVITY": getGravity,
         "GET-SCALE": getScale,
         "SET-SCALE": setScale,
+        "XCOR": xcor,
+        "YCOR": y,
         "SHOW-WIREFRAMES": showWireframes,
         "HIDE-WIREFRAMES": hideWireframes,
         "SHOW-WIREFRAME": showWireframe,
