@@ -62,6 +62,14 @@ class ProcedurePrims
     finally
       @_stack.endCall()
 
+  # (String) => String
+  checkSyntax: (str) ->
+    try
+      @evalPrims.compileFromString(str, false, @_stack.currentContext().stringRunVars())
+      ""
+    catch e
+      e.message
+
   # (String, String | undefined, () => Any) => Any
   runInPlotContext: (plotName, penName, f) ->
     @_stack.startPlot(plotName)

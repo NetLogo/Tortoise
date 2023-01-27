@@ -235,6 +235,10 @@ trait ReporterPrims extends PrimUtils {
         val run = s"PrimChecks.procedure.runResult(${sourceInfo.start}, ${sourceInfo.end}, $argString)"
         maybeStoreProcedureArgsForRunResult(r.args(0).reportedType(), procContext, run)
 
+      case c: prim.etc._checksyntax =>
+        val check = s"ProcedurePrims.checkSyntax(${args.get(0)})"
+        maybeStoreProcedureArgsForRun(r.args(0).reportedType(), procContext, check)
+
       case l: prim._reporterlambda =>
         generateTask(sourceInfo.start, sourceInfo.end, l, r.args(0), true, l.source)
 

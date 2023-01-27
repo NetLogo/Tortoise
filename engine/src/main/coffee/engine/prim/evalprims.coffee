@@ -12,13 +12,13 @@ readFromString = (str) ->
 
 evalCache = { }
 
-# (String, Array[Widget], String, Boolean, Map[String, Any]) => Any
-runFromString = (code, widgets, runString, isRunResult, procVars) ->
-  varNames  = Array.from(procVars.keys()).sort() # must be sorted as order can vary depending on procedure structure
+# (String, Array[Widget], String, Boolean, Array[String]) => Function
+compileFromString = (code, widgets, runString, isRunResult, varNames) ->
   varString = varNames.join(' ')
   runKey    = "#{varString} => #{runString}"
-  runFun    = if (evalCache[runKey]?)
+  if (evalCache[runKey]?)
     evalCache[runKey]
+
   else
     compileParams = {
       code:         code,
@@ -28,12 +28,17 @@ runFromString = (code, widgets, runString, isRunResult, procVars) ->
       turtleShapes: [],
       linkShapes:   []
     }
-    js  = try Converter.compileRunString(compileParams, runString, isRunResult, varNames)
-    catch ex
-      throw exceptions.runtime(ex.message, if isRunResult then 'runresult' else 'run')
+    js = Converter.compileRunString(compileParams, runString, isRunResult, varNames)
     fun = globalEval(js)
     evalCache[runKey] = fun
     fun
+
+# (String, Array[Widget], String, Boolean, Map[String, Any]) => Any
+runFromString = (code, widgets, runString, isRunResult, procVars) ->
+  varNames  = Array.from(procVars.keys()).sort() # must be sorted as order can vary depending on procedure structure
+  runFun = try compileFromString(code, widgets, runString, isRunResult, varNames)
+  catch ex
+    throw exceptions.runtime(ex.message, if isRunResult then 'runresult' else 'run')
 
   result = runFun(varNames.map((vn) => procVars.get(vn))...)
 
@@ -48,3 +53,7 @@ module.exports =
     constructor: (code, widgets, @readFromString = readFromString) ->
       @runCode = (runString, isRunResult, procVars) ->
         runFromString(code, widgets, runString, isRunResult, procVars)
+
+      @compileFromString = (runString, isRunResult, procVars) ->
+        varNames  = Array.from(procVars.keys()).sort() # must be sorted
+        compileFromString(code, widgets, runString, isRunResult, varNames)
