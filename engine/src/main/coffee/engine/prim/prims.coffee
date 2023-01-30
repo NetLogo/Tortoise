@@ -173,6 +173,9 @@ module.exports =
         throw exceptions.internal("Invalid operands to `lt`")
 
     # (Any, Any) => Boolean
+    # Why don't we simply use lt + eq (and in gte's case, gt + eq?) Because it will cause many unnecessary type checks. 
+    # In many cases, the goal for those prims - very frequently executed by NL code - is not to keep short, but rather to achieve the best performance,
+    # even if it means additional amount of code. --JC (01/30/23)
     lte: (a, b) ->
       if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
         a <= b
