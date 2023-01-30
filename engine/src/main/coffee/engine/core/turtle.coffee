@@ -161,6 +161,7 @@ module.exports =
     # (Number, Number) => Agent
     # One might ask: why don't you use patchRightAndAhead here? The answer again: to reduce unnecessary function calls for frequently called prims.
     # In this case, removing the addition call does not add difficulty to maintenance; although the performance boost is supposed to be little as well.
+    # -JC (1/30/23)
     patchLeftAndAhead: (angle, distance) ->
       @patchAtHeadingAndDistance(@_heading - angle, distance)
 
