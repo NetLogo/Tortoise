@@ -73,7 +73,7 @@ class ExceptionFactory
     new InternalException(message, stackFrames, stackTraceMessage)
 
   # (String, String, Maybe[Int], Maybe[Int]) => RuntimeException
-  # Most of the existing call to this function have not been changed to i18n + messageKey. 
+  # Most of the existing call to this function have not been changed to i18n + messageKey.
   # They should be gradually switched to validator.error(). - JC 02/11/23
   runtime: (message, primitive, sourceStart = None, sourceEnd = None, messageKey = None) ->
     stackFrames       = @getStackTrace()
