@@ -170,4 +170,5 @@ module.exports =
       updater
       userDialogPrims
       world
+      i18nBundle
     }

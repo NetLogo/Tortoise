@@ -25,5 +25,11 @@ class I18nBundle
 
     message = bundle[key]
     message(args...)
+  
+  switch: (locale) ->
+    try
+      @_current = require('i18n/' + locale)
+    catch
+      @_current = EN_US
 
 module.exports = I18nBundle
