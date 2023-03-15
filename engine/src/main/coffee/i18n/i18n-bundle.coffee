@@ -21,6 +21,7 @@ BUNDLES = {
 class I18nBundle
 
   _current = null
+  _warnings = new Set()
 
   constructor: () ->
     @_current = EN_US
@@ -36,12 +37,18 @@ class I18nBundle
     message = bundle[key]
     message(args...)
 
+  supports: (locale) ->
+    BUNDLES.hasOwnProperty(locale)
+
   switch: (locale) ->
-    l = locale.toLowerCase()
-    if BUNDLES.hasOwnProperty(l)
-      @_current = BUNDLES[l]
+    if @supports(locale)
+      @_current = BUNDLES[locale]
+
     else
-      console.warn("Unsupported locale '#{l}', reverting to 'en_us'.")
+      if not @_warnings.has(locale)
+        @_warning.add(locale)
+        console.warn("Unsupported locale '#{locale}', reverting to 'en_us'.")
+
       @_current = EN_US
 
 module.exports = I18nBundle
