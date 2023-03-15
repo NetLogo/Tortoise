@@ -2,9 +2,11 @@
 
 bundle = {
 
+  identifier: 'zh_cn'
+
   # Math Prims
 
-    'atan is undefined when both inputs are zero.': () ->
+  , 'atan is undefined when both inputs are zero.': () ->
       "当两个输入值都为 0 时，atan 函数没有定义。"
 
   , '_ isn_t a valid base for a logarithm.': (b) ->
@@ -166,7 +168,7 @@ bundle = {
 
   , '_ cannot take a negative number.': (primName) ->
     "#{primName} 不能取负值。"
-    
+
   # Dynamic Calls (TU)
   , 'Cannot find the procedure _.': (procedureName) ->
     "无法找到函数 #{procedureName}."

@@ -2,9 +2,11 @@
 
 bundle = {
 
+  identifier: 'en_us'
+
   # Math Prims
 
-    'atan is undefined when both inputs are zero.': () ->
+  , 'atan is undefined when both inputs are zero.': () ->
       "atan is undefined when both inputs are zero."
 
   , '_ isn_t a valid base for a logarithm.': (b) ->
