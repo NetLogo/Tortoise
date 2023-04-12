@@ -1,0 +1,184 @@
+StringEndsWithSuccess
+  extensions [string]
+  "abcdefghijklmnop" string:ends-with? "lmnop" => true
+  "abc" string:ends-with? "abc" => true
+  "a" string:ends-with? "a" => true
+  "a" string:ends-with? "" => true
+  "" string:ends-with? "" => true
+
+StringEndsWithFailure
+  extensions [string]
+  "abcdefghijklmnop" string:ends-with? "lmno" => false
+  "ab" string:ends-with? "abc" => false
+  "" string:ends-with? "a" => false
+
+StringExplode
+  extensions [string]
+  string:explode "abc" => ["a" "b" "c"]
+  string:explode "ab" => ["a" "b"]
+  string:explode "a" => ["a"]
+  string:explode "" => []
+
+StringFromList
+  extensions [string]
+  string:from-list [] => ""
+  string:from-list ["a" "bc" "def"] => "abcdef"
+  string:from-list ["" "" "" "" ""] => ""
+  string:from-list [1 "2" " 3 "] => "12 3 "
+  string:from-list [[] [] []] => "[][][]"
+  string:from-list [[1] [2 [3.4] 5]] => "[1][2 [3.4] 5]"
+  string:from-list [nobody nobody] => "nobodynobody"
+
+StringFromFileSuccess
+  extensions [string]
+  string:from-file "./extensions/string/test/test-input.txt" => ERROR Extension exception: There are no local files to access in a web application.  To get the contents of a text file as a string on NetLogo Web try the Fetch extension instead.
+
+StringFromFileFailure
+  extensions [string]
+  string:from-file "./extensions/string/test/test-input.tx" => ERROR Extension exception: There are no local files to access in a web application.  To get the contents of a text file as a string on NetLogo Web try the Fetch extension instead.
+
+StringHashCode
+  extensions [string]
+  string:hash-code "apple" => 93029210
+
+StringLowerCase
+  extensions [string]
+  string:lower-case "ABC" => "abc"
+  string:lower-case "AB" => "ab"
+  string:lower-case "A" => "a"
+  string:lower-case "aBc" => "abc"
+  string:lower-case "aBC" => "abc"
+  string:lower-case "ABc" => "abc"
+  string:lower-case "AbC" => "abc"
+  string:lower-case "ABc" => "abc"
+  string:lower-case "abC" => "abc"
+  string:lower-case "abc" => "abc"
+  string:lower-case "Ab" => "ab"
+  string:lower-case "aB" => "ab"
+  string:lower-case "ab" => "ab"
+  string:lower-case "a" => "a"
+  string:lower-case "" => ""
+
+StringMD5
+  extensions [string]
+  string:message-digest-5 "apple" => "1f3870be274f6c49b3e31a0c6728957f"
+
+StringRegExMatchSuccess
+  extensions [string]
+  string:rex-match? ".*\\|.*" "monkeys|are cool" => true
+  string:rex-match? ".*\\|.*" "monkeys|are|awesome" => true
+  string:rex-match? "monkeys" "monkeys" => true
+  string:rex-match? "monkeys." "monkeys!" => true
+  string:rex-match? ".*" "" => true
+  string:rex-match? ".*" "monkeys" => true
+  string:rex-match? ".?" "a" => true
+  string:rex-match? ".?" "" => true
+
+StringRegExMatchFailure
+  extensions [string]
+  string:rex-match? ".*\\|.*" "monkeys are cool" => false
+  string:rex-match? "monkeys" "monkeys!" => false
+  string:rex-match? "monkeys." "monkeys" => false
+  string:rex-match? "monkeys." "monkeys!!" => false
+  string:rex-match? "monkeys" "imonkeys" => false
+  string:rex-match? ".monkeys" "imonkey" => false
+  string:rex-match? ".monkeys" "iimonkeys" => false
+  string:rex-match? ".+" "" => false
+
+StringRegExReplaceAll
+  extensions [string]
+  string:rex-replace-all " " "Ihatespaces" "_" => "Ihatespaces"
+  string:rex-replace-all " " "   Ihatespaces" "_" => "___Ihatespaces"
+  string:rex-replace-all " " "Ihatespaces " "_" => "Ihatespaces_"
+  string:rex-replace-all " " " Ihatespaces    " "_" => "_Ihatespaces____"
+  string:rex-replace-all " " "I hate spaces" "_" => "I_hate_spaces"
+  string:rex-replace-all " " " I hate spaces" "_" => "_I_hate_spaces"
+  string:rex-replace-all " " "I hate spaces    " "_" => "I_hate_spaces____"
+  string:rex-replace-all " " "  I hate spaces     " "_" => "__I_hate_spaces_____"
+  string:rex-replace-all "i" "i like: imps" "a" => "a lake: amps"
+  string:rex-replace-all "i" "e" "a" => "e"
+  string:rex-replace-all "i" "" "a" => ""
+
+StringRegExReplaceFirst
+  extensions [string]
+  string:rex-replace-first " " "Ihatespaces" "_" => "Ihatespaces"
+  string:rex-replace-first " " "   Ihatespaces" "_" => "_  Ihatespaces"
+  string:rex-replace-first " " "Ihatespaces " "_" => "Ihatespaces_"
+  string:rex-replace-first " " " Ihatespaces    " "_" => "_Ihatespaces    "
+  string:rex-replace-first " " "I hate spaces" "_" => "I_hate spaces"
+  string:rex-replace-first " " " I hate spaces" "_" => "_I hate spaces"
+  string:rex-replace-first " " "I hate spaces    " "_" => "I_hate spaces    "
+  string:rex-replace-first " " "  I hate spaces     " "_" => "_ I hate spaces     "
+  string:rex-replace-first "i" "i like: imps" "a" => "a like: imps"
+  string:rex-replace-first "i" "e" "a" => "e"
+  string:rex-replace-first "i" "" "a" => ""
+
+StringRegExSplit
+  extensions [string]
+  string:rex-split "apples|oranges|grapes" "\\|" => ["apples" "oranges" "grapes"]
+  string:rex-split "apples|oranges|grapes" "oranges" => ["apples|" "|grapes"]
+  string:rex-split "|" "\\|" => []
+  string:rex-split "oranges" "oranges" => []
+  string:rex-split "orange" "oranges" => ["orange"]
+  string:rex-split "" "\\|" => [""]
+  string:rex-split "" "oranges" => [""]
+
+StringStartsWithSuccess
+  extensions [string]
+  "abcdefghijklmnop" string:starts-with? "abcd" => true
+  "abc" string:starts-with? "abc" => true
+  "a" string:starts-with? "a" => true
+  "a" string:starts-with? "" => true
+  "" string:starts-with? "" => true
+
+StringStartsWithFailure
+  extensions [string]
+  "abcdefghijklmnop" string:starts-with? "bcde" => false
+  "ab" string:starts-with? "abc" => false
+  "" string:starts-with? "a" => false
+
+StringTrim
+  extensions [string]
+  string:trim "       a b c d e f g h  " => "a b c d e f g h"
+  string:trim "a b c d e f g h       " => "a b c d e f g h"
+  string:trim "   a b c d e f g h" => "a b c d e f g h"
+  string:trim "a b c d e f g h" => "a b c d e f g h"
+  string:trim "    ahhhhh            " => "ahhhhh"
+  string:trim "ahhhhh      " => "ahhhhh"
+  string:trim " ahhhhh" => "ahhhhh"
+  string:trim "ahhhhh" => "ahhhhh"
+  string:trim "" => ""
+
+StringUpperCase
+  extensions [string]
+  string:upper-case "ABC" => "ABC"
+  string:upper-case "AB" => "AB"
+  string:upper-case "A" => "A"
+  string:upper-case "aBc" => "ABC"
+  string:upper-case "aBC" => "ABC"
+  string:upper-case "ABc" => "ABC"
+  string:upper-case "AbC" => "ABC"
+  string:upper-case "ABc" => "ABC"
+  string:upper-case "abC" => "ABC"
+  string:upper-case "abc" => "ABC"
+  string:upper-case "Ab" => "AB"
+  string:upper-case "aB" => "AB"
+  string:upper-case "ab" => "AB"
+  string:upper-case "a" => "A"
+  string:upper-case "" => ""
+
+StringSplitOn
+  extensions [string]
+  string:split-on "," "test,cat,dog" => ["test" "cat" "dog"]
+  string:split-on "," "test,cat.dog" => ["test" "cat.dog"]
+  string:split-on "," "test.cat.dog" => ["test.cat.dog"]
+  string:split-on "," "test,,cat,dog" => ["test" "" "cat" "dog"]
+  string:split-on "," ",,,," => ["" "" "" "" ""]
+  string:split-on "," " , , , , " => [" " " " " " " " " "]
+  string:split-on "," " , , ,,"   => [" " " " " " "" ""]
+  string:split-on "," "A,B,C,,"   => ["A" "B" "C" "" ""]
+  string:split-on "," "A,B,,,,,,C,," => ["A" "B" "" "" "" "" "" "C" "" ""]
+  string:split-on ",," "A,,B" => ["A" "B"]
+  string:split-on ",,," "A,,B" => ["A,,B"]
+  string:split-on "" "" => [""]
+  string:split-on "d" "" => [""]

@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-extensionPaths = ['array', 'bitmap', 'codap', 'csv', 'encode', 'dialog', 'export-the', 'fetch', 'fp', 'http-req', 'import-a', 'logging', 'matrix', 'mini-csv', 'nlmap', 'nt', 'palette', 'send-to', 'sound', 'store', 'table']
+extensionPaths = ['array', 'bitmap', 'codap', 'csv', 'encode', 'dialog', 'export-the', 'fetch', 'fp', 'http-req', 'import-a', 'logging', 'matrix', 'mini-csv', 'nlmap', 'nt', 'palette', 'send-to', 'sound', 'store', 'string', 'table']
 
 module.exports = {
 

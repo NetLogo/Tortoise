@@ -1,0 +1,21 @@
+{
+  "name": "string",
+  "prims": [
+    { "name": "explode", "argTypes": ["string"], "returnType": "list" }
+  , { "name": "from-file", "argTypes": ["string"], "returnType": "string" }
+  , { "name": "from-list", "argTypes": ["list"], "returnType": "string" }
+  , { "name": "hash-code", "argTypes": ["string"], "returnType": "number" }
+  , { "name": "md5", "argTypes": ["string"], "returnType": "string" }
+  , { "name": "message-digest-5", "argTypes": ["string"], "returnType": "string" }
+  , { "name": "rex-match?", "argTypes": ["string", "string"], "returnType": "boolean" }
+  , { "name": "rex-replace-first", "argTypes": ["string", "string", "string"], "returnType": "string" }
+  , { "name": "rex-replace-all", "argTypes": ["string", "string", "string"], "returnType": "string" }
+  , { "name": "rex-split", "argTypes": ["string", "string"], "returnType": "list" }
+  , { "name": "starts-with?", "argTypes": ["string", "string"], "isInfix": true, "returnType": "boolean" }
+  , { "name": "ends-with?", "argTypes": ["string", "string"], "isInfix": true, "returnType": "boolean" }
+  , { "name": "trim", "argTypes": ["string"], "returnType": "string" }
+  , { "name": "upper-case", "argTypes": ["string"], "returnType": "string" }
+  , { "name": "lower-case", "argTypes": ["string"], "returnType": "string" }
+  , { "name": "split-on", "argTypes": ["string", "string"], "returnType": "list" }
+  ]
+}
