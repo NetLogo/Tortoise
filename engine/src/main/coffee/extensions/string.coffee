@@ -40,9 +40,6 @@ rexReplaceAll = (rex, s, sub) ->
   s.replaceAll(re, sub)
 
 rexSplit = (s, rex) ->
-  # This check is to match Java's behavior for compatibility with desktop
-  if escapeRegEx(s) is rex
-    return []
   re = new RegExp(rex)
   s.split(re)
 
@@ -66,7 +63,8 @@ splitOn = (sub, s) ->
   # This check is to match Java's behavior for compatibility with desktop
   if escaped is s
     return ['']
-  s.split(new RegExp(escaped))
+  re = new RegExp(escaped)
+  s.split(re)
 
 module.exports = {
   init: (workspace) ->
