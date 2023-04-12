@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ escapeRegEx } = require('util/regex')
+
 class StringPrims
 
   constructor: (@_dump) ->
@@ -25,7 +27,7 @@ class StringPrims
 
   # (String, String) => String
   remove: (chunk, text) ->
-    text.replace(new RegExp(chunk, "g"), "")
+    text.replace(new RegExp(escapeRegEx(chunk), "g"), "")
 
   # (Number, String) => String
   removeItem: (n, text) ->
