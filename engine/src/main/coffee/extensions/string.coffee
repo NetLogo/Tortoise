@@ -3,9 +3,7 @@
 cryptoMd5 = require("crypto-js/md5")
 
 { exceptionFactory: exceptions } = require('util/exception')
-
-escapeRegEx = (s) ->
-  s.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&')
+{ escapeRegEx } = require('util/regex')
 
 explode = (s) ->
   [...s]
