@@ -90,6 +90,7 @@ object SimplePrims {
         case _: prim.etc._tan               => "PrimChecks.math.tan"
 
         // Agentset
+        case _: prim._whoarenot     => "PrimChecks.agentset.whoAreNot"
         case _: prim.etc._atpoints  => "PrimChecks.agentset.atPoints"
 
         // Turtle

@@ -81,6 +81,17 @@ module.exports =
     iterator: ->
       new Iterator(@_agentArr[..])
 
+    # (Agent) => AbstractAgentSet[T]
+    remove: (agent) ->
+      results = @_unsafeIterator().filter((a) -> agent isnt a)
+      @_generateFrom(results)
+
+    # (Agent) => AbstractAgentSet[T]
+    removeAll: (removeSet) ->
+      removeIter = removeSet._unsafeIterator()
+      results = @_unsafeIterator().filter((a) -> not removeIter.contains(a))
+      @_generateFrom(results)
+
     # This is marked "private" and named "unsafe" for a reason.  Since it does not copy the underlying agent array
     # it should only be used internally by the agent set when the resulting Iterator will immediately calculate or
     # tranform to a new value for the consumer.  --JMB, August 2018

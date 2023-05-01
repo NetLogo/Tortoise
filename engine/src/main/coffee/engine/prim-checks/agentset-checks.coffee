@@ -204,6 +204,13 @@ class AgentSetChecks
     @setCreationArgsCheck('turtle-set', sourceStart, sourceEnd, types.Turtle, types.TurtleSet, values)
     @prims.turtleSet(values)
 
+  # (Int, Int, AgentSet[T], Agent | AgentSet[U]) => AgentSet[T]
+  whoAreNot: (sourceStart, sourceEnd, source, remove) ->
+    if checks.isAgentSet(remove)
+      source.removeAll(remove)
+    else
+      source.remove(remove)
+
   # (Int, Int, AgentSet[T], () => Boolean) => AgentSet[T]
   with: (sourceStart, sourceEnd, agentset, f) ->
     agentset.agentFilter(@makeCheckedF("WITH", sourceStart, sourceEnd, f))
