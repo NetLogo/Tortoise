@@ -6,9 +6,9 @@ val nlDependencyVersion       = "6.3.0-6ff5470"
 
 val parserJsDependencyVersion = "0.4.0-6ff5470"
 
-val scalazVersion             = "7.2.34"
+val scalazVersion             = "7.2.35"
 
-val playJsonVersion           = "2.9.2"
+val playJsonVersion           = "2.9.4"
 
 val commonSettings =
   Seq(
@@ -17,7 +17,7 @@ val commonSettings =
     version       := "1.0",
 
     crossPaths    := false, // we're not cross-building for different Scala versions
-    scalaVersion  := "2.12.15",
+    scalaVersion  := "2.12.17",
     scalacOptions ++=
       "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
 
@@ -26,10 +26,10 @@ val commonSettings =
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
       "com.typesafe.play" %% "play-json"       % playJsonVersion,
-      "com.lihaoyi"       %% "scalatags"       % "0.11.1"   % "test",
-      "org.scalatest"     %% "scalatest"       % "3.2.12"   % "test",
+      "com.lihaoyi"       %% "scalatags"       % "0.12.0"   % "test",
+      "org.scalatest"     %% "scalatest"       % "3.2.16"   % "test",
       "org.scalatestplus" %% "scalacheck-1-15" % "3.2.11.0" % "test",
-      "org.skyscreamer"   %  "jsonassert"      % "1.5.0"    % "test",
+      "org.skyscreamer"   %  "jsonassert"      % "1.5.1"    % "test",
       "org.reflections"   %  "reflections"     % "0.9.12"   % "test",
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"
     ),
