@@ -54,7 +54,7 @@ module.exports =
     # () => Unit
     reset: () ->
       for varName of Object.keys(@_values)
-        delete @_values[varName] if not @_setters.has(varName)
+        delete @_values[varName] if not @_setters.hasOwnProperty(varName)
       return
 
     # ExtraVariableSpec is no longer a thing. We only care about built-in variables as special cases. --John Chen May 2023
