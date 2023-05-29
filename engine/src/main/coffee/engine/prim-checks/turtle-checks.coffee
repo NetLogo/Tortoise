@@ -14,7 +14,7 @@ genSetter = (getSelf, validator) -> (name, mappings) ->
         defaultMsg = "An unknown error occurred when setting the '#{name}' of \
 '#{turtle}': #{error}"
         validator.error('set', null, null, msg ? defaultMsg)
-    )(turtle.setVariable(name, value))
+    )(turtle._varManager.setIfValid(name, value))
     return
 
 class TurtleChecks

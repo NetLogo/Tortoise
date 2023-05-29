@@ -14,18 +14,20 @@ module.exports =
   class VariableManager
 
     _values:          null      # Map[String, Any]
+    _validitySetters: null      # Map[String, (Any) => Boolean]
 
     # The general idea here is to simplify and streamline the manager, so it no longer validates the variable names.
     # We validate the variable names in prim checks, and had no checks for globals anyway. So why bother? --John Chen May 2023
     # (Agent, Array[VariableSpec[_]]) => VariableManager
     constructor: (@agent, varSpecs) ->
       @_values          = new Map()
+      @_validitySetters = new Map()
       @_addVarsBySpec(varSpecs)
 
     # (String) => Any
     getVariable: (varName) ->
       if @hasOwnProperty(varName)
-        @_varManager[varName]
+        @[varName]
       else
         value = @_values.get(varName)
         if typeof MyVariable isnt "undefined"
@@ -41,15 +43,19 @@ module.exports =
     # (String, Any) => Unit
     setVariable: (varName, value) ->
       if @hasOwnProperty(varName)
-        @_varManager[varName] = value
+        @[varName] = value
       else @_values.set(varName, value)
       return
+    
+    # (String, Any) => Maybe[Any]
+    setIfValid: (name, value) ->
+      @_validitySetters.get(name).call(@agent, value)
 
     # () => (String) => Any
     setVariableWrapper: () ->
       (varName, value) => @setVariable(varName, value)
 
-    # (Array[VariableSpec]) => Unit
+    # () => Unit
     reset: () ->
       @_values.clear()
       return
@@ -62,6 +68,7 @@ module.exports =
           if spec instanceof MutableVariableSpec
             get = do (spec) -> (-> spec.get.call(@agent))
             set = do (spec) -> ((v) -> spec.set.call(@agent, v))
+            @_validitySetters.set(spec.name, spec.set)
             { configurable: true, get, set }
           else if spec instanceof ImmutableVariableSpec
             { value: spec.get.call(@agent), writable: false }

@@ -80,8 +80,8 @@ module.exports =
     constructor: (breedObjs, turtlesOwns = [], linksOwns = []) ->
 
       defaultBreeds = {
-        TURTLES: new Breed("turtles", "turtle", this, turtlesOwns, [], undefined, "default"),
-        LINKS:   new Breed("links",   "link",   this, linksOwns,   [], false,     "default")
+        TURTLES: new Breed("turtles", "turtle", this, turtlesOwns, turtleBuiltins, undefined, "default"),
+        LINKS:   new Breed("links",   "link",   this, linksOwns,   linkBuiltins,   false,     "default")
       }
 
       @_breeds = foldl(
