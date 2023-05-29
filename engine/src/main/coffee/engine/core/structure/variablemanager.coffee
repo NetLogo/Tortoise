@@ -30,7 +30,7 @@ module.exports =
         @[varName]
       else
         value = @_values.get(varName)
-        if typeof MyVariable isnt "undefined"
+        if typeof value isnt "undefined"
           value
         else
           @_values.set(varName, 0)
