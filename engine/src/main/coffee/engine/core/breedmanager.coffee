@@ -14,11 +14,12 @@ class Breed
 
   # By caching the variable list here, we prevent frequent re-concat of the two lists -- John Chen May 2023
   # (String, String, BreedManager, Array[String], Boolean, String, Array[Agent]) => Breed
-  constructor: (@originalName, @originalSingular, @_manager, @varNames = [], defaultVarNames = [], @_isDirectedLinkBreed, @_shape = undefined, @members = []) ->
+  constructor: (@originalName, @originalSingular, @_manager, @varNames = [], @defaultVarNames = [], @_isDirectedLinkBreed, @_shape = undefined, @members = []) ->
     @name     = @originalName.toUpperCase()
     @singular = @originalSingular.toLowerCase()
     @ordinal  = getNextOrdinal()
-    @allVarNames = @varNames.concat(defaultVarNames)
+    @customVarNames = @varNames.concat(@defaultVarNames)
+    @allVarNames = @varNames.concat(@defaultVarNames).concat(@_isDirectedLinkBreed? ? linkBuiltins : turtleBuiltins)
 
   # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
   # default shape --JAB (5/27/14)
@@ -80,14 +81,14 @@ module.exports =
     constructor: (breedObjs, turtlesOwns = [], linksOwns = []) ->
 
       defaultBreeds = {
-        TURTLES: new Breed("turtles", "turtle", this, turtlesOwns, turtleBuiltins, undefined, "default"),
-        LINKS:   new Breed("links",   "link",   this, linksOwns,   linkBuiltins,   false,     "default")
+        TURTLES: new Breed("turtles", "turtle", this, turtlesOwns, [], undefined, "default"),
+        LINKS:   new Breed("links",   "link",   this, linksOwns,   [],   false,     "default")
       }
 
       @_breeds = foldl(
         (acc, breedObj) =>
           trueVarNames    = breedObj.varNames ? []
-          defaultNames    = if breedObj.isDirected? then linksOwns.concat(linkBuiltins) else turtlesOwns.concat(turtleBuiltins)
+          defaultNames    = if breedObj.isDirected? then linksOwns else turtlesOwns
           breed           = new Breed(breedObj.name, breedObj.singular, this, trueVarNames, defaultNames, breedObj.isDirected)
           acc[breed.name] = breed
           acc
