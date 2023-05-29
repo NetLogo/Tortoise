@@ -7,8 +7,8 @@
 { exceptionFactory: exceptions } = require('util/exception')
 
 module.exports =
-  # I re-implemented the variable manager as two tiers: Map for custom variables; and Object.defineProperty for built-in variables. 
-  # This allows for higher performance, less memory consumption, both in terms of creation of VarManagers, and in terms of memory consumption. 
+  # I re-implemented the variable manager as two tiers: Map for custom variables; and Object.defineProperty for built-in variables.
+  # This allows for higher performance, less memory consumption, both in terms of creation of VarManagers, and in terms of memory consumption.
   # The final straw: if you define a turtle variable calls "has", it breaks the entire system!
   # A related article: https://www.zhenghao.io/posts/object-vs-map --John Chen May 2023
   class VariableManager
@@ -26,7 +26,7 @@ module.exports =
 
     # (String) => Any
     getVariable: (varName) ->
-      if @hasOwnProperty(varName)
+      if @_validitySetters.has(varName)
         @[varName]
       else
         value = @_values.get(varName)
@@ -42,7 +42,7 @@ module.exports =
 
     # (String, Any) => Unit
     setVariable: (varName, value) ->
-      if @hasOwnProperty(varName)
+      if @_validitySetters.has(varName)
         @[varName] = value
       else @_values.set(varName, value)
       return

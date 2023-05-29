@@ -60,7 +60,7 @@ class LinkChecks
       check = @_setterChecks.get(name)
       check(value)
     else
-      link.setVariable(name, value)
+      link._varManager.setVariable(name, value)
 
     return
 
@@ -72,6 +72,6 @@ class LinkChecks
       upperName = name.toUpperCase()
       @validator.error(upperName, sourceStart, sourceEnd, msgKey, link.getBreedName(), upperName)
     else
-      link.getVariable(name)
+      link._varManager.getVariable(name)
 
 module.exports = LinkChecks

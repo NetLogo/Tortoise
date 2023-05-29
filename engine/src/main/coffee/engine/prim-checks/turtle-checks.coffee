@@ -71,7 +71,7 @@ class TurtleChecks
       upperName = name.toUpperCase()
       @validator.error(upperName, sourceStart, sourceEnd, msgKey, turtle.getBreedName(), upperName)
     else
-      turtle.getVariable(name)
+      turtle._varManager.getVariable(name)
 
   # (Int, Int, String, Any) => Unit
   setVariable: (sourceStart, sourceEnd, name, value) ->
@@ -84,7 +84,7 @@ class TurtleChecks
       check = @_setterChecks.get(name)
       check(value)
     else
-      turtle.setVariable(name, value)
+      turtle._varManager.setVariable(name, value)
 
     return
 
