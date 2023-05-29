@@ -19,7 +19,8 @@ class Breed
     @singular = @originalSingular.toLowerCase()
     @ordinal  = getNextOrdinal()
     @customVarNames = @varNames.concat(@defaultVarNames)
-    @allVarNames = @varNames.concat(@defaultVarNames).concat(@_isDirectedLinkBreed? ? linkBuiltins : turtleBuiltins)
+    @allVarNames = @varNames.concat(@defaultVarNames)
+      .concat(if typeof(@_isDirectedLinkBreed) is "undefined" then turtleBuiltins else linkBuiltins)
 
   # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
   # default shape --JAB (5/27/14)
