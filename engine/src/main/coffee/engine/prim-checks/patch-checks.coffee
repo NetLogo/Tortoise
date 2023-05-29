@@ -20,7 +20,7 @@ genSetter = (getSelf, validator) -> (name, mappings) -> (value) ->
 
       validator.error('set', null, null, msg ? defaultMsg, environment)
 
-  )(pot.setPatchVariableIfValid(name, value))
+  )(pot.setPatchVariable(name, value))
 
   return
 

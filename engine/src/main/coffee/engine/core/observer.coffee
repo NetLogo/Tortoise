@@ -78,13 +78,17 @@ module.exports.Observer = class Observer
 
       @resetPerspective()
 
-      globalSpecs       = @_globalNames.map((name) -> new ExtraVariableSpec(name))
-      @_varManager      = new VariableManager(this, globalSpecs)
+      @_varManager      = new VariableManager(this, [])
+      # I am hoping that this would reduce layers of calls. --John Chen May 2023
+      @getGlobal  = @_varManager.getVariable
+      @getVariable  = @_varManager.getVariable
+      @setGlobal  = @_varManager.setVariable
+      @setVariable  = @_varManager.setVariable
       @_codeGlobalNames = difference(@_globalNames)(@_interfaceGlobalNames)
 
     # () => Unit
     clearCodeGlobals: ->
-      forEach((name) => @_varManager[name] = 0; return)(@_codeGlobalNames)
+      forEach((name) => @_varManager.setVariable(name, 0); return)(@_codeGlobalNames)
       return
 
     # (Turtle) => Unit
@@ -93,14 +97,6 @@ module.exports.Observer = class Observer
       @_targetAgent = turtle
       @_updatePerspective()
       return
-
-    # (String) => Any
-    getGlobal: (varName) ->
-      @_varManager[varName]
-
-    # (String) => Any
-    getVariable: (varName) ->
-      @getGlobal(varName)
 
     # () => Perspective
     getPerspective: ->
@@ -127,16 +123,6 @@ module.exports.Observer = class Observer
       @_updatePerspective()
       return
 
-    # (String, Any) => Unit
-    setGlobal: (varName, value) ->
-      @_varManager[varName] = value
-      return
-
-    # (String, Any) => Unit
-    setVariable: (varName, value) ->
-      @setGlobal(varName, value)
-      return
-
     # () => Agent
     subject: ->
       @_targetAgent ? Nobody
@@ -149,7 +135,7 @@ module.exports.Observer = class Observer
 
     # () => Array[String]
     varNames: ->
-      @_varManager.names()
+      @_globalNames
 
     # (Agent) => Unit
     watch: (agent) ->

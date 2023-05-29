@@ -38,7 +38,10 @@ module.exports =
       @_updateVarsByName = genUpdate(this)
 
       varNames     = @_varNamesForBreed(breed)
-      @_varManager = @_genVarManager(varNames)
+      @_varManager = @_genVarManager()
+      # I am hoping that this would reduce layers of calls. --John Chen May 2023
+      @getVariable  = @_varManager.getVariable
+      @setVariable  = @_varManager.setVariable
 
       Setters.setBreed.call(this, breed)
       @end1.linkManager.add(this)
@@ -62,19 +65,6 @@ module.exports =
     # Unit -> String
     getName: ->
       @_name
-
-    # (String) => Any
-    getVariable: (varName) ->
-      @_varManager[varName]
-
-    # (String, Any) => Unit
-    setVariable: (varName, value) ->
-      @_varManager[varName] = value
-      return
-
-    # (String, Any) => Maybe[Any]
-    setIfValid: (varName, value) ->
-      @_varManager.setIfValid(varName, value)
 
     # () => DeathInterrupt
     die: ->
@@ -224,11 +214,10 @@ module.exports =
       @_registerDeath(@id)
       return
 
+    # We no longer build a list of varspecs and store them for each variable. This should reduce n(agent number)*m(variable number)+1 object allocations/stores. --John Chen May 2023
     # (Array[String]) => VariableManager
-    _genVarManager: (extraVarNames) ->
-      extraSpecs = extraVarNames.map((name) -> new ExtraVariableSpec(name))
-      allSpecs   = VariableSpecs.concat(extraSpecs)
-      new VariableManager(this, allSpecs)
+    _genVarManager: () ->
+      new VariableManager(this, VariableSpecs)
 
     # (String) => Unit
     _genVarUpdate: (varName) ->

@@ -14,18 +14,17 @@ genSetter = (getSelf, validator) -> (name, mappings) ->
         defaultMsg = "An unknown error occurred when setting the '#{name}' of \
 '#{turtle}': #{error}"
         validator.error('set', null, null, msg ? defaultMsg)
-    )(turtle.setIfValid(name, value))
+    )(turtle.setVariable(name, value))
     return
 
 class TurtleChecks
 
-  _getterChecks: null # Map[String, (Any) => Unit]
   _setterChecks: null # Map[String, (Any) => Unit]
 
   # (Validator, () => Agent, TurtleManager, BreedManager)
   constructor: (@validator, @getSelf, @turtleManager, @breedManager) ->
 
-    @_getterChecks = new Map()
+    # Removed the getter check since it is never used and I cannot imagine the scenario of using it - John Chen May 2023
 
     cannotMoveMsg       = "Cannot move turtle beyond the world_s edge."
     invalidRGBMsg       = "An rgb list must contain 3 or 4 numbers 0-255"
@@ -71,9 +70,6 @@ class TurtleChecks
       msgKey    = "_ breed does not own variable _"
       upperName = name.toUpperCase()
       @validator.error(upperName, sourceStart, sourceEnd, msgKey, turtle.getBreedName(), upperName)
-    else if @_getterChecks.has(name)
-      check = @_getterChecks.get(name)
-      check(name)
     else
       turtle.getVariable(name)
 

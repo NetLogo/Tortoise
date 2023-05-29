@@ -109,10 +109,6 @@ setBreed = (breed) ->
     trueBreed.add(this)
     @_breed?.remove(this)
 
-    newNames = @_varNamesForBreed(trueBreed)
-    oldNames = @_varNamesForBreed(@_breed)
-    @_varManager.refineBy(oldNames, newNames)
-
   @_breed = trueBreed
   @_genVarUpdate("breed")
 

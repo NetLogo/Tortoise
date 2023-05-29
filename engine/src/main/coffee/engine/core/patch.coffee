@@ -24,30 +24,14 @@ module.exports =
       @_turtles          = []
       @_varManager       = @_genVarManager(@world.patchesOwnNames)
 
+      # I am hoping that this would reduce layers of calls. --John Chen May 2023
+      @getPatchVariable  = @_varManager.getVariable
+      @getVariable  = @_varManager.getVariable
+      @setPatchVariable  = @_varManager.setVariable
+      @setVariable  = @_varManager.setVariable
+
     getName: ->
       "patch #{@pxcor} #{@pycor}"
-
-    # (String) => Any
-    getVariable: (varName) ->
-      @_varManager[varName]
-
-    # (String, Any) => Unit
-    setVariable: (varName, value) ->
-      @_varManager[varName] = value
-      return
-
-    # (String) => Any
-    getPatchVariable: (varName) ->
-      @_varManager[varName]
-
-    # (String, Any) => Unit
-    setPatchVariable: (varName, value) ->
-      @_varManager[varName] = value
-      return
-
-    # (String, Any) => Maybe[Any]
-    setPatchVariableIfValid: (varName, value) ->
-      @_varManager.setIfValid(varName, value)
 
     # (Turtle) => Unit
     untrackTurtle: (turtle) ->
@@ -158,7 +142,7 @@ module.exports =
 
     # () => Unit
     reset: ->
-      @_varManager.reset(@world.patchesOwnNames)
+      @_varManager.reset()
       Setters.setPcolor.call(this, 0)
       Setters.setPlabel.call(this, '')
       Setters.setPlabelColor.call(this, 9.9)
@@ -172,11 +156,10 @@ module.exports =
     varNames: ->
       @_varManager.names()
 
+    # We no longer build a list of varspecs and store them for each variable. This should reduce n(agent number)*m(variable number)+1 object allocations/stores. --John Chen May 2023
     # Array[String] => VariableManager
-    _genVarManager: (extraVarNames) ->
-      extraSpecs = extraVarNames.map((name) -> new ExtraVariableSpec(name))
-      allSpecs   = VariableSpecs.concat(extraSpecs)
-      new VariableManager(this, allSpecs)
+    _genVarManager: () ->
+      new VariableManager(this, VariableSpecs)
 
     # (String) => Unit
     _genVarUpdate: (varName) ->

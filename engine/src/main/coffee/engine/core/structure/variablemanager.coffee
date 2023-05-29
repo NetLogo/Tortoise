@@ -7,57 +7,51 @@
 { exceptionFactory: exceptions } = require('util/exception')
 
 module.exports =
+  # I re-implemented the variable manager as two tiers: Map for custom variables; and Object.defineProperty for built-in variables. 
+  # This allows for higher performance, less memory consumption, both in terms of creation of VarManagers, and in terms of memory consumption. 
+  # The final straw: if you define a turtle variable calls "has", it breaks the entire system!
+  # A related article: https://www.zhenghao.io/posts/object-vs-map --John Chen May 2023
   class VariableManager
 
-    _names:           undefined # Set[String]
-    _validitySetters: null      # Map[String, (Any) => Boolean]
+    _values:          null      # Map[String, Any]
 
+    # The general idea here is to simplify and streamline the manager, so it no longer validates the variable names.
+    # We validate the variable names in prim checks, and had no checks for globals anyway. So why bother? --John Chen May 2023
     # (Agent, Array[VariableSpec[_]]) => VariableManager
     constructor: (@agent, varSpecs) ->
-      @_validitySetters = new Map()
+      @_values          = new Map()
       @_addVarsBySpec(varSpecs)
-      @_names = new Set(name for { name } in varSpecs)
 
-    # (String, Any) => Maybe[Any]
-    setIfValid: (name, value) ->
-      @_validitySetters.get(name).call(@agent, value)
+    # (String) => Any
+    getVariable: (varName) ->
+      if @hasOwnProperty(varName)
+        @_varManager[varName]
+      else
+        value = _values.get(varName)
+        if typeof MyVariable isnt "undefined"
+          value
+        else
+          _values.set(varName, 0)
+          0
 
-    # () => Boolean
-    has: (varName) ->
-      @_names.has(varName)
-
-    # () => Array[String]
-    names: ->
-      Array.from(@_names)
-
-    # (Array[String], Array[String]) => Unit
-    refineBy: (oldNames, newNames) ->
-      invalidatedSetter = (name) -> (value) -> throw exceptions.internal("#{name} is no longer a valid variable.")
-
-      obsoletedNames = difference(oldNames)(newNames)
-      freshNames     = difference(newNames)(oldNames)
-      specs          = freshNames.map((name) -> new ExtraVariableSpec(name))
-
-      for name in obsoletedNames
-        @_defineProperty(name, { get: undefined, set: invalidatedSetter(name), configurable: true })
-
-      @_addVarsBySpec(specs)
-      @_names = new Set(difference(@names())(obsoletedNames).concat(freshNames))
-
+    # (String, Any) => Unit
+    setVariable: (varName, value) ->
+      if @hasOwnProperty(varName)
+        @_varManager[varName] = value
+      else _values.set(varName, value)
       return
 
     # (Array[VariableSpec]) => Unit
-    reset: (varNames) ->
-      varNames.forEach( (name) => this[name] = 0 )
+    reset: () ->
+      _values.clear()
       return
 
+    # ExtraVariableSpec is no longer a thing. We only care about built-in variables as special cases. --John Chen May 2023
     # (Array[VariableSpec]) => Unit
     _addVarsBySpec: (varSpecs) ->
       for spec in varSpecs
         obj =
-          if spec instanceof ExtraVariableSpec
-            { configurable: true, value: 0, writable: true }
-          else if spec instanceof MutableVariableSpec
+          if spec instanceof MutableVariableSpec
             get = do (spec) -> (-> spec.get.call(@agent))
             set = do (spec) -> ((v) -> spec.set.call(@agent, v))
             @_validitySetters.set(spec.name, spec.set)

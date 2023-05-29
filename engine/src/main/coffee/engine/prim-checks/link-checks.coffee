@@ -14,7 +14,7 @@ genSetter = (getSelf, validator) -> (name, mappings) ->
         defaultMsg = "An unknown error occurred when setting the '#{name}' of \
 '#{link}': #{error}"
         validator.error('set', null, null, msg ? defaultMsg)
-    )(link.setIfValid(name, value))
+    )(link.setVariable(name, value))
     return
 
 class LinkChecks
