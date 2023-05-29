@@ -79,11 +79,11 @@ module.exports.Observer = class Observer
       @resetPerspective()
 
       @_varManager      = new VariableManager(this, [])
-      # I am hoping that this would reduce layers of calls. --John Chen May 2023
-      @getGlobal  = @_varManager.getVariable
-      @getVariable  = @_varManager.getVariable
-      @setGlobal  = @_varManager.setVariable
-      @setVariable  = @_varManager.setVariable
+      # No, this is not reducing calls. I am too lazy to revert this change now. --John Chen May 2023
+      @getVariable  = @_varManager.getVariableWrapper()
+      @setVariable  = @_varManager.setVariableWrapper()
+      @getGlobal  = @getVariable
+      @setGlobal  = @setVariable
       @_codeGlobalNames = difference(@_globalNames)(@_interfaceGlobalNames)
 
     # () => Unit

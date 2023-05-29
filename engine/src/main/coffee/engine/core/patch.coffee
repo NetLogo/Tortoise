@@ -24,11 +24,11 @@ module.exports =
       @_turtles          = []
       @_varManager       = @_genVarManager()
 
-      # I am hoping that this would reduce layers of calls. --John Chen May 2023
-      @getPatchVariable  = @_varManager.getVariable
-      @getVariable  = @_varManager.getVariable
-      @setPatchVariable  = @_varManager.setVariable
-      @setVariable  = @_varManager.setVariable
+      # No, this is not reducing calls. I am too lazy to revert this change now. --John Chen May 2023
+      @getVariable  = @_varManager.getVariableWrapper()
+      @setVariable  = @_varManager.setVariableWrapper()
+      @getPatchVariable  = @getVariable
+      @setPatchVariable  = @setVariable
 
     getName: ->
       "patch #{@pxcor} #{@pycor}"

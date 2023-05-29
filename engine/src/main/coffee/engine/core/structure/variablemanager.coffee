@@ -27,23 +27,31 @@ module.exports =
       if @hasOwnProperty(varName)
         @_varManager[varName]
       else
-        value = _values.get(varName)
+        value = @_values.get(varName)
         if typeof MyVariable isnt "undefined"
           value
         else
-          _values.set(varName, 0)
+          @_values.set(varName, 0)
           0
+    
+    # () => (String) => Any
+    getVariableWrapper: () ->
+      (varName) => @getVariable(varName)
 
     # (String, Any) => Unit
     setVariable: (varName, value) ->
       if @hasOwnProperty(varName)
         @_varManager[varName] = value
-      else _values.set(varName, value)
+      else @_values.set(varName, value)
       return
+
+    # () => (String) => Any
+    setVariableWrapper: () ->
+      (varName, value) => @setVariable(varName, value)
 
     # (Array[VariableSpec]) => Unit
     reset: () ->
-      _values.clear()
+      @_values.clear()
       return
 
     # ExtraVariableSpec is no longer a thing. We only care about built-in variables as special cases. --John Chen May 2023

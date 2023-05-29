@@ -53,9 +53,9 @@ module.exports =
       @linkManager = new TurtleLinkManager(@id, @world)
 
       @_varManager = @_genVarManager()
-      # I am hoping that this would reduce layers of calls. --John Chen May 2023
-      @getVariable  = @_varManager.getVariable
-      @setVariable  = @_varManager.setVariable
+      # No, this is not reducing calls. I am too lazy to revert this change now. --John Chen May 2023
+      @getVariable  = @_varManager.getVariableWrapper()
+      @setVariable  = @_varManager.setVariableWrapper()
 
       Setters.setBreed.call(this, breed)
 
@@ -386,11 +386,11 @@ module.exports =
 
     # () => Boolean
     hasVariable: (varName) ->
-      breed.allVarNames.includes(varName)
+      @_breed.allVarNames.includes(varName)
 
     # () => Array[String]
     varNames: ->
-      breed.allVarNames
+      @_breed.allVarNames
 
     # (StampMode) => Unit
     _drawStamp: (mode) ->
