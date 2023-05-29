@@ -26,7 +26,7 @@ module.exports =
 
     # (String) => Any
     getVariable: (varName) ->
-      if @_validitySetters.has(varName)
+      if @hasOwnProperty(varName)
         @[varName]
       else
         value = @_values.get(varName)
@@ -42,7 +42,7 @@ module.exports =
 
     # (String, Any) => Unit
     setVariable: (varName, value) ->
-      if @_validitySetters.has(varName)
+      if @hasOwnProperty(varName)
         @[varName] = value
       else @_values.set(varName, value)
       return

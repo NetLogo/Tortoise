@@ -52,13 +52,13 @@ class LinkChecks
   # (Int, Int, String, Any) => Unit
   setVariable: (sourceStart, sourceEnd, name, value) ->
     link = @getSelf()
-    if not link.hasVariable(name)
+    if @_setterChecks.has(name)
+      check = @_setterChecks.get(name)
+      check(value)
+    else if not link.hasVariable(name)
       msgKey    = "_ breed does not own variable _"
       upperName = name.toUpperCase()
       @validator.error('set', sourceStart, sourceEnd, msgKey, link.getBreedName(), upperName)
-    else if @_setterChecks.has(name)
-      check = @_setterChecks.get(name)
-      check(value)
     else
       link._varManager.setVariable(name, value)
 

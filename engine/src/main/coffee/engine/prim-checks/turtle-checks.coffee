@@ -76,13 +76,13 @@ class TurtleChecks
   # (Int, Int, String, Any) => Unit
   setVariable: (sourceStart, sourceEnd, name, value) ->
     turtle = @getSelf()
+    if @_setterChecks.has(name)
+      check = @_setterChecks.get(name)
+      check(value)
     if not turtle.hasVariable(name)
       msgKey    = "_ breed does not own variable _"
       upperName = name.toUpperCase()
       @validator.error('set', sourceStart, sourceEnd, msgKey, turtle.getBreedName(), upperName)
-    else if @_setterChecks.has(name)
-      check = @_setterChecks.get(name)
-      check(value)
     else
       turtle._varManager.setVariable(name, value)
 
