@@ -79,7 +79,7 @@ class TurtleChecks
     if @_setterChecks.has(name)
       check = @_setterChecks.get(name)
       check(value)
-    if not turtle.hasVariable(name)
+    else if not turtle.hasVariable(name)
       msgKey    = "_ breed does not own variable _"
       upperName = name.toUpperCase()
       @validator.error('set', sourceStart, sourceEnd, msgKey, turtle.getBreedName(), upperName)
