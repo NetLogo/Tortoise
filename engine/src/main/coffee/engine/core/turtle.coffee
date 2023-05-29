@@ -334,7 +334,8 @@ module.exports =
       shape    = if breed is @_breed then @_givenShape else undefined
       turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, shape, (self) => @penManager.clone(@_genUpdate(self)))
       forEach((varName) =>
-        turtle.setVariable(varName, @getVariable(varName) ? 0)
+        if varName isnt "who"
+          turtle.setVariable(varName, @getVariable(varName) ? 0)
         return
       )(breed.allVarNames)
       turtle

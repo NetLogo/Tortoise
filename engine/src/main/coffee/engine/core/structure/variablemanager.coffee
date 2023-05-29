@@ -21,8 +21,8 @@ module.exports =
     # We validate the variable names in prim checks, and had no checks for globals anyway. So why bother? --John Chen May 2023
     # (Agent, Array[VariableSpec[_]]) => VariableManager
     constructor: (@agent, varSpecs) ->
-      @_values          = new Object(null);
-      @_setters         = new Object(null);
+      @_values          = new Object(null)
+      @_setters         = new Object(null)
       @_addVarsBySpec(varSpecs)
 
     # (String) => Any
