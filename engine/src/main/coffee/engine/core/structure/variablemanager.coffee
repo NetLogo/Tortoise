@@ -53,8 +53,9 @@ module.exports =
 
     # () => Unit
     reset: () ->
-      for varName of Object.keys(@_values)
-        delete @_values[varName] if not @_setters.hasOwnProperty(varName)
+      # Why did Coffeescript chose a different behavior of for..of and for..in than Javascript? This is very confusing. -- John Chen May 2023
+      for varName in Object.keys(@_values)
+        delete @_values[varName]
       return
 
     # ExtraVariableSpec is no longer a thing. We only care about built-in variables as special cases. --John Chen May 2023
