@@ -45,8 +45,8 @@ class I18nBundle
       @_current = BUNDLES[locale]
 
     else
-      if not @_warnings.has(locale)
-        @_warning.add(locale)
+      if not _warnings.has(locale)
+        _warning.add(locale)
         console.warn("Unsupported locale '#{locale}', reverting to 'en_us'.")
 
       @_current = EN_US
