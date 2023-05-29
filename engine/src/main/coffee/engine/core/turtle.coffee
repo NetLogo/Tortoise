@@ -307,7 +307,7 @@ module.exports =
 
     # (String, Any) => Maybe[Any]
     setPatchVariableIfValid: (varName, value) ->
-      @getPatchHere().setIfValid(varName, value)
+      @getPatchHere().setPatchVariableIfValid(varName, value)
 
     # () => PatchSet
     getNeighbors: ->
