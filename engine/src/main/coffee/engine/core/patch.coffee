@@ -22,7 +22,7 @@ module.exports =
     constructor: (@id, @pxcor, @pycor, @world, @_genUpdate, @_declareNonBlackPatch, @_decrementPatchLabelCount
                 , @_incrementPatchLabelCount, @_pcolor = 0.0, @_plabel = "", @_plabelcolor = 9.9) ->
       @_turtles          = []
-      @_varManager       = @_genVarManager(@world.patchesOwnNames)
+      @_varManager       = @_genVarManager()
 
       # I am hoping that this would reduce layers of calls. --John Chen May 2023
       @getPatchVariable  = @_varManager.getVariable
@@ -150,11 +150,11 @@ module.exports =
 
     # () => Boolean
     hasVariable: (varName) ->
-      @_varManager.has(varName)
+      @world.patchesVariables.includes(varName)
 
     # () => Array[String]
     varNames: ->
-      @_varManager.names()
+      @world.patchesVariables
 
     # We no longer build a list of varspecs and store them for each variable. This should reduce n(agent number)*m(variable number)+1 object allocations/stores. --John Chen May 2023
     # Array[String] => VariableManager

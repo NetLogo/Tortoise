@@ -3,6 +3,7 @@
 { foldl, isEmpty, last, map, sortedIndexBy, toObject } = require('brazierjs/array')
 { pipeline                                           } = require('brazierjs/function')
 { values                                             } = require('brazierjs/object')
+{ linkBuiltins, turtleBuiltins                       } = require('./structure/builtins')
 
 count = 0
 getNextOrdinal = -> count++
@@ -11,11 +12,13 @@ class Breed
 
   ordinal: undefined # Number
 
+  # By caching the variable list here, we prevent frequent re-concat of the two lists -- John Chen May 2023
   # (String, String, BreedManager, Array[String], Boolean, String, Array[Agent]) => Breed
-  constructor: (@originalName, @originalSingular, @_manager, @varNames = [], @_isDirectedLinkBreed, @_shape = undefined, @members = []) ->
+  constructor: (@originalName, @originalSingular, @_manager, @varNames = [], defaultVarNames = [], @_isDirectedLinkBreed, @_shape = undefined, @members = []) ->
     @name     = @originalName.toUpperCase()
     @singular = @originalSingular.toLowerCase()
     @ordinal  = getNextOrdinal()
+    @allVarNames = @varNames.concat(defaultVarNames)
 
   # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
   # default shape --JAB (5/27/14)
@@ -77,14 +80,15 @@ module.exports =
     constructor: (breedObjs, turtlesOwns = [], linksOwns = []) ->
 
       defaultBreeds = {
-        TURTLES: new Breed("turtles", "turtle", this, turtlesOwns, undefined, "default"),
-        LINKS:   new Breed("links",   "link",   this, linksOwns,   false,     "default")
+        TURTLES: new Breed("turtles", "turtle", this, turtlesOwns, [], undefined, "default"),
+        LINKS:   new Breed("links",   "link",   this, linksOwns,   [], false,     "default")
       }
 
       @_breeds = foldl(
         (acc, breedObj) =>
           trueVarNames    = breedObj.varNames ? []
-          breed           = new Breed(breedObj.name, breedObj.singular, this, trueVarNames, breedObj.isDirected)
+          defaultNames    = if breedObj.isDirected? then linksOwns.concat(linkBuiltins) else turtlesOwns.concat(turtleBuiltins)
+          breed           = new Breed(breedObj.name, breedObj.singular, this, trueVarNames, defaultNames, breedObj.isDirected)
           acc[breed.name] = breed
           acc
       )(defaultBreeds)(breedObjs)

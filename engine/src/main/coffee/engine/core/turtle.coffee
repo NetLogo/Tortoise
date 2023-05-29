@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-AbstractAgentSet  = require('./abstractagentset')
 ColorModel        = require('engine/core/colormodel')
 TurtleLinkManager = require('./turtlelinkmanager')
 TurtleSet         = require('./turtleset')
@@ -53,7 +52,6 @@ module.exports =
       @penManager  = genPenManager(this)
       @linkManager = new TurtleLinkManager(@id, @world)
 
-      varNames     = @_varNamesForBreed(breed)
       @_varManager = @_genVarManager()
       # I am hoping that this would reduce layers of calls. --John Chen May 2023
       @getVariable  = @_varManager.getVariable
@@ -335,20 +333,11 @@ module.exports =
     _makeTurtleCopy: (breed) ->
       shape    = if breed is @_breed then @_givenShape else undefined
       turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, shape, (self) => @penManager.clone(@_genUpdate(self)))
-      varNames = @_varNamesForBreed(breed)
       forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName) ? 0)
         return
-      )(varNames)
+      )(breed.allVarNames)
       turtle
-
-    # (Breed) => Array[String]
-    _varNamesForBreed: (breed) ->
-      turtlesBreed = @world.breedManager.turtles()
-      if breed is turtlesBreed or not breed?
-        turtlesBreed.varNames
-      else
-        turtlesBreed.varNames.concat(breed.varNames)
 
     # (Turtle|Patch) => Unit
     moveTo: (agent) ->
@@ -397,11 +386,11 @@ module.exports =
 
     # () => Boolean
     hasVariable: (varName) ->
-      @_varManager.has(varName)
+      breed.allVarNames.includes(varName)
 
     # () => Array[String]
     varNames: ->
-      @_varManager.names()
+      breed.allVarNames
 
     # (StampMode) => Unit
     _drawStamp: (mode) ->

@@ -54,7 +54,6 @@ module.exports =
           if spec instanceof MutableVariableSpec
             get = do (spec) -> (-> spec.get.call(@agent))
             set = do (spec) -> ((v) -> spec.set.call(@agent, v))
-            @_validitySetters.set(spec.name, spec.set)
             { configurable: true, get, set }
           else if spec instanceof ImmutableVariableSpec
             { value: spec.get.call(@agent), writable: false }

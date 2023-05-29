@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-AbstractAgentSet = require('./abstractagentset')
 ColorModel       = require('./colormodel')
 linkCompare      = require('./structure/linkcompare')
 VariableManager  = require('./structure/variablemanager')
@@ -37,7 +36,6 @@ module.exports =
                 , @tiemode = "none") ->                                                                        # String
       @_updateVarsByName = genUpdate(this)
 
-      varNames     = @_varNamesForBreed(breed)
       @_varManager = @_genVarManager()
       # I am hoping that this would reduce layers of calls. --John Chen May 2023
       @getVariable  = @_varManager.getVariable
@@ -175,11 +173,11 @@ module.exports =
 
     # () => Boolean
     hasVariable: (varName) ->
-      @_varManager.has(varName)
+      breed.allVarNames.includes(varName)
 
     # () => Array[String]
     varNames: ->
-      @_varManager.names()
+      breed.allVarNames
 
     # (StampMode) => Unit
     _drawStamp: (mode) ->
@@ -200,14 +198,6 @@ module.exports =
     _refreshName: ->
       @_name = "#{@_breed.singular} #{@end1.id} #{@end2.id}"
       return
-
-    # (Breed) => Array[String]
-    _varNamesForBreed: (breed) ->
-      linksBreed = @world.breedManager.links()
-      if breed is linksBreed or not breed?
-        linksBreed.varNames
-      else
-        linksBreed.varNames.concat(breed.varNames)
 
     # () => Unit
     _seppuku: ->
