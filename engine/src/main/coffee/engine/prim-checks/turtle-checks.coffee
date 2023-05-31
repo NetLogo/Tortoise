@@ -80,7 +80,8 @@ class TurtleChecks
     turtle = @getSelf()
     if @_setterChecks.has(name)
       if !checks.isTurtle(turtle)
-        @validator.error('set', sourceStart, sourceEnd, '_ does not exist in _.', name.toUpperCase(), turtle.getBreedName())
+        @validator.error('set', sourceStart, sourceEnd, '_ does not exist in _.', name.toUpperCase(),
+          if turtle is 0 then "OBSERVER" else turtle.getBreedName())
       else
         check = @_setterChecks.get(name)
         check(value)
