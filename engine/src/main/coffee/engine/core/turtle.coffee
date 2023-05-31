@@ -53,7 +53,7 @@ module.exports =
       @linkManager = new TurtleLinkManager(@id, @world)
 
       @_varManager = @_genVarManager()
-      # No, this is not reducing calls. I am too lazy to revert this change now. --John Chen May 2023
+      # This is reducing calls anyway. --John Chen May 2023
       @getVariable  = @_varManager.getVariableWrapper()
       @setVariable  = @_varManager.setVariableWrapper()
 

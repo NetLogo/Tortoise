@@ -62,8 +62,11 @@ class PatchChecks
   setVariable: (sourceStart, sourceEnd, name, value) ->
     patchOrTurtle = @getSelf()
     if @_setterChecks.has(name)
-      check = @_setterChecks.get(name)
-      check(value)
+      if !checks.isPatch(patchOrTurtle) && !checks.isTurtle(patchOrTurtle)
+        @validator.error('set', sourceStart, sourceEnd, '_ does not exist in _.', name.toUpperCase(), patchOrTurtle.getBreedName())
+      else
+        check = @_setterChecks.get(name)
+        check(value)
     else
       patchOrTurtle.setPatchVariable(name, value)
 
@@ -71,6 +74,6 @@ class PatchChecks
 
   # (Int, Int, String) => Any
   getVariable: (sourceStart, sourceEnd, name) ->
-    @getSelf().getPatchVariable(name)
+    @getSelf().getPatchVariable(name, sourceStart, sourceEnd)
 
 module.exports = PatchChecks

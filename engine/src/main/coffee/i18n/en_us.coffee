@@ -32,6 +32,11 @@ bundle = {
   , 'Color must be a number or a valid RGB/A color list with 3 - 4 numbers that have values between 0 and 255.': () ->
       'Color must be a number or a valid RGB/A color list with 3 - 4 numbers that have values between 0 and 255.'
 
+  # Type Check
+
+  , '_ does not exist in _.': (v, b) ->
+      "Variable #{v} does not exist in breed #{b}."
+
   # Other Prims
 
   , 'random-normal_s second input can_t be negative.': () ->

@@ -27,6 +27,11 @@ bundle = {
   , 'Can_t take logarithm of _.': (n) ->
       "无法为值 #{n} 取对数。"
 
+  # Type Check
+
+  , '_ does not exist in _.': (v, b) ->
+      "#{breed} 中不存在变量 #{v}。"
+
   # Color Prims
 
   , 'Color must be a number or a valid RGB/A color list with 3 - 4 numbers that have values between 0 and 255.': () ->

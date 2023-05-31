@@ -4,6 +4,8 @@
 
 { TopologyInterrupt, TowardsInterrupt } = require('util/interrupts')
 
+{ checks } = require('engine/core/typechecker')
+
 # (() => Agent, Validator) => (String, Map[Any, String]) => (Any) => Unit
 genSetter = (getSelf, validator) -> (name, mappings) ->
   (value) =>
@@ -77,12 +79,14 @@ class TurtleChecks
   setVariable: (sourceStart, sourceEnd, name, value) ->
     turtle = @getSelf()
     if @_setterChecks.has(name)
-      check = @_setterChecks.get(name)
-      check(value)
+      if !checks.isTurtle(turtle)
+        @validator.error('set', sourceStart, sourceEnd, '_ does not exist in _.', name.toUpperCase(), turtle.getBreedName())
+      else
+        check = @_setterChecks.get(name)
+        check(value)
     else if not turtle.hasVariable(name)
       msgKey    = "_ breed does not own variable _"
-      upperName = name.toUpperCase()
-      @validator.error('set', sourceStart, sourceEnd, msgKey, turtle.getBreedName(), upperName)
+      @validator.error('set', sourceStart, sourceEnd, msgKey, turtle.getBreedName(), name.toUpperCase())
     else
       turtle._varManager.setVariable(name, value)
 

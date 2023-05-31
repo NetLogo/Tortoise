@@ -4,6 +4,8 @@
 
 { TowardsInterrupt } = require('util/interrupts')
 
+{ checks } = require('engine/core/typechecker')
+
 # (() => Agent, Validator) => (String, Map[Any, String]) => (Any) => Unit
 genSetter = (getSelf, validator) -> (name, mappings) ->
   (value) =>
@@ -53,12 +55,14 @@ class LinkChecks
   setVariable: (sourceStart, sourceEnd, name, value) ->
     link = @getSelf()
     if @_setterChecks.has(name)
-      check = @_setterChecks.get(name)
-      check(value)
+      if !checks.isLink(link)
+        @validator.error('set', sourceStart, sourceEnd, '_ does not exist in _.', name.toUpperCase(), link.getBreedName())
+      else
+        check = @_setterChecks.get(name)
+        check(value)
     else if not link.hasVariable(name)
       msgKey    = "_ breed does not own variable _"
-      upperName = name.toUpperCase()
-      @validator.error('set', sourceStart, sourceEnd, msgKey, link.getBreedName(), upperName)
+      @validator.error('set', sourceStart, sourceEnd, msgKey, link.getBreedName(), name.toUpperCase())
     else
       link._varManager.setVariable(name, value)
 

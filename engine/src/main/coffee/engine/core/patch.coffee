@@ -24,14 +24,19 @@ module.exports =
       @_turtles          = []
       @_varManager       = @_genVarManager()
 
-      # No, this is not reducing calls. I am too lazy to revert this change now. --John Chen May 2023
+      # This is reducing calls anyway. --John Chen May 2023
       @getVariable  = @_varManager.getVariableWrapper()
       @setVariable  = @_varManager.setVariableWrapper()
       @getPatchVariable  = @getVariable
       @setPatchVariable  = @setVariable
 
+    # () => String
     getName: ->
       "patch #{@pxcor} #{@pycor}"
+
+    # () => String
+    getBreedName: ->
+      "patches"
 
     # (String, Any) => Maybe[Any]
     setPatchVariableIfValid: (varName, value) ->

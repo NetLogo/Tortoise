@@ -37,7 +37,7 @@ module.exports =
       @_updateVarsByName = genUpdate(this)
 
       @_varManager = @_genVarManager()
-      # No, this is not reducing calls. I am too lazy to revert this change now. --John Chen May 2023
+      # This is reducing calls anyway. --John Chen May 2023
       @getVariable  = @_varManager.getVariableWrapper()
       @setVariable  = @_varManager.setVariableWrapper()
 
@@ -46,6 +46,11 @@ module.exports =
       @end2.linkManager.add(this)
       @updateEndRelatedVars()
       @_updateVarsByName("directed?")
+
+    # This is the cheapest way to demonstrate reasonable error messages. It involves no extra checks! --John Chen May 2023
+    # (String) => Error
+    getPatchVariable: (name, sourceStart, sourceEnd) ->
+      PrimChecks.validator.error('get', sourceStart, sourceEnd, '_ does not exist in _.', name.toUpperCase(), @getBreedName())
 
     # () => String
     getBreedName: ->
