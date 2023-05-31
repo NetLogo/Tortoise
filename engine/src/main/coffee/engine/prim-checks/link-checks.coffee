@@ -55,7 +55,7 @@ class LinkChecks
   setVariable: (sourceStart, sourceEnd, name, value) ->
     link = @getSelf()
     if @_setterChecks.has(name)
-      if !checks.isLink(link)
+      if not checks.isLink(link)
         @validator.error('set', sourceStart, sourceEnd, '_ does not exist in _.', name.toUpperCase(),
           if link is 0 then "OBSERVER" else link.getBreedName())
       else

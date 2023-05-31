@@ -62,7 +62,7 @@ class PatchChecks
   setVariable: (sourceStart, sourceEnd, name, value) ->
     patchOrTurtle = @getSelf()
     if @_setterChecks.has(name)
-      if !checks.isPatch(patchOrTurtle) && !checks.isTurtle(patchOrTurtle)
+      if not checks.isPatch(patchOrTurtle) and not checks.isTurtle(patchOrTurtle)
         @validator.error('set', sourceStart, sourceEnd, '_ does not exist in _.', name.toUpperCase(),
           if patchOrTurtle is 0 then "OBSERVER" else patchOrTurtle.getBreedName())
       else
