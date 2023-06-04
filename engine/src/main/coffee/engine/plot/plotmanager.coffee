@@ -2,11 +2,11 @@
 
 { DisplayMode: { displayModeFromNum } } = require('./pen')
 
-{ filter, forEach, map, toObject, zip }               = require('brazierjs/array')
-{ flip, pipeline }                                    = require('brazierjs/function')
-{ flatMap: flatMapMaybe, fold, map: mapMaybe, maybe } = require('brazierjs/maybe')
-{ values }                                            = require('brazierjs/object')
-{ isNumber }                                          = require('brazierjs/type')
+{ filter, forEach, map, toObject, zip }                     = require('brazierjs/array')
+{ flip, pipeline }                                          = require('brazierjs/function')
+{ flatMap: flatMapMaybe, fold, map: mapMaybe, maybe, None } = require('brazierjs/maybe')
+{ values }                                                  = require('brazierjs/object')
+{ isNumber }                                                = require('brazierjs/type')
 
 { exceptionFactory: exceptions } = require('util/exception')
 
@@ -20,6 +20,13 @@ module.exports = class PlotManager
     toName             = (p) -> p.name.toUpperCase()
     @_currentPlotMaybe = maybe(plots[plots.length - 1])
     @_plotMap          = pipeline(map(toName), flip(zip)(plots), toObject)(plots)
+
+  # (Plot) => Unit
+  addPlot: (plot) ->
+    name = plot.name.toUpperCase()
+    if not @_plotMap[name]?
+      @_plotMap[name] = plot
+    return
 
   # () => Unit
   clearAllPlots: ->
@@ -114,6 +121,16 @@ module.exports = class PlotManager
   # () => Unit
   raisePen: ->
     @_withPlot((plot) -> plot.raisePen())
+    return
+
+  # (String) => Unit
+  removePlot: (name) ->
+    upperName = name.toUpperCase()
+    target    = @_lookupPlot(upperName)
+    if target?
+      f = (p) -> if p is target then @_currentPlotMaybe = None
+      fold(->)(f)(@_currentPlotMaybe)
+      delete @_plotMap[upperName]
     return
 
   # () => Unit
