@@ -90,6 +90,15 @@ class Compiler {
 
   }
 
+  def plotsToJS(widgets: Seq[CompiledWidget]): String = {
+    val globalModelConfig = JsStatement("global.modelConfig", Polyfills.content)
+    TortoiseLoader.integrateSymbols(
+         PlotCompiler.formatPlots(widgets)
+      :+ globalModelConfig
+      :+ resolveModelConfig
+    )
+  }
+
   def compileReporter(
     logo:          String,
     oldProcedures: ProceduresMap = NoProcedures,
