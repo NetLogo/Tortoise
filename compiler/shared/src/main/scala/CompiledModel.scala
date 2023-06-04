@@ -4,7 +4,7 @@ package org.nlogo.tortoise.compiler
 
 import
   org.nlogo.{ core, parse },
-    core.{ model, CompilerException, Model, View },
+    core.{ model, CompilerException, Model, Plot, View, Widget },
     model.ModelReader,
     parse.CompilerUtilities
 
@@ -61,10 +61,13 @@ object CompiledModel {
       CompiledModel(compiler.toJS(compilation), compilation, c)
   }
 
-  def fromNlogoContents(contents: String, compiler: Compiler)
+  def fromNlogoContents(contents: String, compiler: Compiler, extraWidgets: Seq[Widget] = Seq())
     (implicit compilerFlags: CompilerFlags): ValidationNel[Exception, CompiledModel] = {
     val validation =
-      try fromModel(ModelReader.parseModel(contents, CompilerUtilities, Map()), compiler)
+      try {
+        val model = ModelReader.parseModel(contents, CompilerUtilities, Map())
+        fromModel(model.copy(widgets = model.widgets ++ extraWidgets), compiler)
+      }
       catch {
         case e: RuntimeException => e.failureNel
       }
@@ -80,6 +83,19 @@ object CompiledModel {
     val CompiledModel(_, compilation, compiler) = oldModel
     val model                                   = compilation.model
     fromModel(model.copy(code = netlogoCode), compiler)
+  }
+
+  def plotsToJS(plots: Seq[Plot], oldModel: CompiledModel)
+    (implicit compilerFlags: CompilerFlags): CompileResult[String] = {
+    val CompiledModel(_, compilation, compiler) = oldModel
+    val model                                   = compilation.model
+    validate(compiler) {
+      (c) =>
+        val nonPlots    = model.widgets.filterNot(_.isInstanceOf[Plot])
+        val newWidgets  = nonPlots ++ plots
+        val compilation = c.compileProcedures(model.copy(widgets = newWidgets))
+        compiler.plotsToJS(compilation.widgets)
+    }
   }
 
   private def validate[T](compiler: Compiler)
