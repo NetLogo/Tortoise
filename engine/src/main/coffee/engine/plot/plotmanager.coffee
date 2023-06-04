@@ -96,8 +96,8 @@ module.exports = class PlotManager
 
   # (ExportedPlotManager) => Unit
   importState: ({ currentPlotNameOrNull, plots }) ->
-    plots.forEach((plot) => @_plotMap[plot.name.toUpperCase()]?.importState(plot))
-    @_currentPlotMaybe = flatMapMaybe((name) => maybe(@_plotMap[name.toUpperCase()]))(maybe(currentPlotNameOrNull))
+    plots.forEach((plot) => @_lookupPlot(plot.name)?.importState(plot))
+    @_currentPlotMaybe = flatMapMaybe((name) => maybe(@_lookupPlot(name)))(maybe(currentPlotNameOrNull))
     return
 
   # () => Boolean
@@ -145,7 +145,7 @@ module.exports = class PlotManager
 
   # (String) => Unit
   setCurrentPlot: (name) ->
-    plot = @_plotMap[name.toUpperCase()]
+    plot = @_lookupPlot(name)
     if plot?
       @_currentPlotMaybe = maybe(plot)
     else
@@ -198,7 +198,7 @@ module.exports = class PlotManager
   # [T] @ (String, String) => (() => T) => T
   withTemporaryContext: (plotName, penName) -> (f) =>
     oldPlotMaybe       = @_currentPlotMaybe
-    tempPlotMaybe      = maybe(@_plotMap[plotName.toUpperCase()])
+    tempPlotMaybe      = maybe(@_lookupPlot(plotName))
     @_currentPlotMaybe = tempPlotMaybe
     result =
       if penName?
@@ -212,6 +212,18 @@ module.exports = class PlotManager
   _forAllPlots: (f) ->
     pipeline(values, forEach(f))(@_plotMap)
     return
+
+  # (String) => Plot
+  _lookupPlot: (name) ->
+
+    upperName = name.toUpperCase()
+    plot      = @_plotMap[upperName]
+
+    if plot?
+      plot
+    else
+      f = ([k, v]) -> k.match("__HNW_ROLE_[^_]+_#{upperName}")?
+      Object.entries(@_plotMap).find(f)?[1]
 
   # [T] @ ((Plot) => T) => T
   _withPlot: (f) ->
