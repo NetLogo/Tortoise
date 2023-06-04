@@ -275,4 +275,4 @@ module.exports = class Plot
 
   # [T] @ ((Pen) => T) => T
   _withPen: (f) ->
-    fold(-> throw exceptions.runtime("Plot '#{@name}' has no pens!", "plot"))(f)(@_currentPenMaybe)
+    fold(=> throw exceptions.runtime("Plot '#{@name}' has no pens!", "plot"))(f)(@_currentPenMaybe)
