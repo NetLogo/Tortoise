@@ -34,11 +34,10 @@ class PatchChecks
     @_setterChecks = new Map()
 
     invalidColorTypeMsg = "can't set _ variable _ to non-number _"
-    invalidRGBMsg3      = "An rgb list must contain 3 numbers 0-255"
     invalidRGBMsg3Or4   = "An rgb list must contain 3 or 4 numbers 0-255"
     invalidRGBNumberMsg = "RGB values must be 0-255"
 
-    pcolorMappings = new Map([ ["Invalid RGB format", invalidRGBMsg3]
+    pcolorMappings = new Map([ ["Invalid RGB format", invalidRGBMsg3Or4]
                              , ["Invalid RGB number", invalidRGBNumberMsg]
                              , ["Invalid color type", invalidColorTypeMsg]
                              ])

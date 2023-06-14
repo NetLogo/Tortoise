@@ -9,10 +9,10 @@ ColorModel = require('engine/core/colormodel')
 { maybe, None, isSomething } = require('brazierjs/maybe')
 { isArray, isNumber }        = require('brazierjs/type')
 
-# (Number|RGB|RGBA, Boolean) => Maybe[String]
-validateColor = (color, isPcolor) ->
+# (Number|RGB|RGBA) => Maybe[String]
+validateColor = (color) ->
 
-  hasBadLength    = (xs) -> xs.length isnt 3 and (isPcolor or xs.length isnt 4)
+  hasBadLength    = (xs) -> not [3, 4].includes(xs.length)
   isBadCompNumber = (x) -> not (0 <= x <= 255)
   isBadCompType   = (x) -> not checks.isNumber(x)
 
@@ -28,7 +28,7 @@ validateColor = (color, isPcolor) ->
 # (Number|RGB|RGBA) => Maybe[String]
 setPcolor = (color) ->
 
-  errorMaybe = validateColor(color, true)
+  errorMaybe = validateColor(color)
 
   if not isSomething(errorMaybe)
     wrappedColor = ColorModel.wrapColor(color)
@@ -59,7 +59,7 @@ setPlabel = (label) ->
 # (Number|RGB|RGBA) => Maybe[String]
 setPlabelColor = (color) ->
 
-  errorMaybe = validateColor(color, false)
+  errorMaybe = validateColor(color)
 
   if not isSomething(errorMaybe)
     @_plabelcolor = ColorModel.wrapColor(color)
