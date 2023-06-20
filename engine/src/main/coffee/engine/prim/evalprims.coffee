@@ -10,10 +10,12 @@ readFromString = (str) ->
   catch ex
     throw exceptions.internal(ex.message)
 
-evalCache = { }
+runEvalCache = { }
+runResultEvalCache = { }
 
 # (String, Array[Widget], String, Boolean, Array[String]) => Function
 compileFromString = (code, widgets, runString, isRunResult, varNames) ->
+  evalCache = if isRunResult then runResultEvalCache else runEvalCache
   varString = varNames.join(' ')
   runKey    = "#{varString} => #{runString}"
   if (evalCache[runKey]?)
