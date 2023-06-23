@@ -35,50 +35,56 @@ module.exports =
     createLinksWith: (otherTurtles, breedName) ->
       @_linkManager.createUndirectedLinks(@_self(), otherTurtles.shuffled(), breedName)
 
-    # (String, Turtle) => Boolean
-    isInLinkNeighbor: (breedName, otherTurtle) ->
-      @_self().linkManager.isInLinkNeighbor(breedName, otherTurtle)
+    # IN OR OUT
 
     # (String, Turtle) => Boolean
     isLinkNeighbor: (breedName, otherTurtle) ->
       @_self().linkManager.isLinkNeighbor(breedName, otherTurtle)
+
+    # (String, Turtle) => Link
+    linkWith: (breedName, otherTurtle) ->
+      @_self().linkManager.linkWith(breedName, otherTurtle)
+
+    # (String) => TurtleSet
+    linkNeighbors: (breedName) ->
+      @_self().linkManager.linkNeighbors(breedName)
+
+    # (String) => LinkSet
+    myLinks: (breedName) ->
+      @_self().linkManager.myLinks(breedName)
+
+    # OUT ONLY
 
     # (String, Turtle) => Boolean
     isOutLinkNeighbor: (breedName, otherTurtle) ->
       @_self().linkManager.isOutLinkNeighbor(breedName, otherTurtle)
 
     # (String, Turtle) => Link
-    inLinkFrom: (breedName, otherTurtle) ->
-      @_self().linkManager.inLinkFrom(breedName, otherTurtle)
-
-    # (String, Turtle) => Link
-    linkWith: (breedName, otherTurtle) ->
-      @_self().linkManager.linkWith(breedName, otherTurtle)
-
-    # (String, Turtle) => Link
     outLinkTo: (breedName, otherTurtle) ->
       @_self().linkManager.outLinkTo(breedName, otherTurtle)
-
-    # (String) => TurtleSet
-    inLinkNeighbors: (breedName) ->
-      @_self().linkManager.inLinkNeighbors(breedName)
-
-    # (String) => TurtleSet
-    linkNeighbors: (breedName) ->
-      @_self().linkManager.linkNeighbors(breedName)
 
     # (String) => TurtleSet
     outLinkNeighbors: (breedName) ->
       @_self().linkManager.outLinkNeighbors(breedName)
 
     # (String) => LinkSet
-    myInLinks: (breedName) ->
-      @_self().linkManager.myInLinks(breedName)
-
-    # (String) => LinkSet
-    myLinks: (breedName) ->
-      @_self().linkManager.myLinks(breedName)
-
-    # (String) => LinkSet
     myOutLinks: (breedName) ->
       @_self().linkManager.myOutLinks(breedName)
+
+    # IN ONLY
+
+    # (String, Turtle) => Boolean
+    isInLinkNeighbor: (breedName, otherTurtle) ->
+      otherTurtle.linkManager.isOutLinkNeighbor(breedName, @_self())
+
+    # (String, Turtle) => Link
+    inLinkFrom: (breedName, otherTurtle) ->
+      otherTurtle.linkManager.outLinkTo(breedName, @_self())
+
+    # (String) => TurtleSet
+    inLinkNeighbors: (breedName) ->
+      @_self().linkManager.inLinkNeighbors(breedName)
+
+    # (String) => LinkSet
+    myInLinks: (breedName) ->
+      @_self().linkManager.myInLinks(breedName)

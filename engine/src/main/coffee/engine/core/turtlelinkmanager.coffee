@@ -48,25 +48,15 @@ module.exports =
 
       return
 
-    # (String, Turtle) => Link
-    inLinkFrom: (breedName, otherTurtle) ->
-      @_findLink(otherTurtle, breedName, In)
-
-    # (String) => TurtleSet
-    inLinkNeighbors: (breedName) ->
-      @_neighbors(breedName, In)
-
-    # (String, Turtle) => Boolean
-    isInLinkNeighbor: (breedName, turtle) ->
-      @inLinkFrom(breedName, turtle) isnt Nobody
+    # IN OR OUT
 
     # (String, Turtle) => Boolean
     isLinkNeighbor: (breedName, turtle) ->
-      @isOutLinkNeighbor(breedName, turtle) or @isInLinkNeighbor(breedName, turtle)
-
-    # (String, Turtle) => Boolean
-    isOutLinkNeighbor: (breedName, turtle) ->
-      @outLinkTo(breedName, turtle) isnt Nobody
+      for link in @_links
+        if (breedName is "LINKS") or (breedName is link.getBreedName())
+          if otherEnd(@_ownerID)(link).id is turtle.id
+            return true
+      false
 
     # (String, Turtle) => Link
     linkWith: (breedName, otherTurtle) ->
@@ -77,24 +67,51 @@ module.exports =
       @_neighbors(breedName, All)
 
     # (String) => LinkSet
-    myInLinks: (breedName) ->
-      new LinkSet(@_links.filter(linkBreedMatches(breedName)(In)(@_ownerID)), @_world)
-
-    # (String) => LinkSet
     myLinks: (breedName) ->
       new LinkSet(@_links.filter(linkBreedMatches(breedName)(All)(@_ownerID)), @_world)
 
-    # (String) => LinkSet
-    myOutLinks: (breedName) ->
-      new LinkSet(@_links.filter(linkBreedMatches(breedName)(Out)(@_ownerID)), @_world)
+    # OUT ONLY
+
+    # (String, Turtle) => Boolean
+    isOutLinkNeighbor: (breedName, turtle) ->
+      for link in @_links
+        if (breedName is "LINKS") or (breedName is link.getBreedName())
+          if link.isDirected
+            if link.end1.id is @_ownerID and link.end2.id is turtle.id
+              return true
+          else
+            if otherEnd(@_ownerID)(link).id is turtle.id
+              return true
+
+      false
+
+    # (String, Turtle) => Link
+    outLinkTo: (breedName, otherTurtle) ->
+      @_findLink(otherTurtle, breedName, Out)
 
     # (String) => TurtleSet
     outLinkNeighbors: (breedName) ->
       @_neighbors(breedName, Out)
 
-    # (String, Turtle) => Link
-    outLinkTo: (breedName, otherTurtle) ->
-      @_findLink(otherTurtle, breedName, Out)
+    # (String) => LinkSet
+    myOutLinks: (breedName) ->
+      new LinkSet(@_links.filter(linkBreedMatches(breedName)(Out)(@_ownerID)), @_world)
+
+    # IN ONLY
+
+    # To mirror (pun intended) desktop's implementation of these prims, we don't have separate
+    # versions of `isInLinkNeighbor()` and `inLinkFrom()`, we just flip the caller/callee in
+    # LinkPrims to the `isOutLinkNeighbor()` and `outLinkTo()` calls.  -Jeremy B June 2023
+
+    # (String) => TurtleSet
+    inLinkNeighbors: (breedName) ->
+      @_neighbors(breedName, In)
+
+    # (String) => LinkSet
+    myInLinks: (breedName) ->
+      new LinkSet(@_links.filter(linkBreedMatches(breedName)(In)(@_ownerID)), @_world)
+
+    # END LINK INTERROGATION PRIMITIVE METHODS
 
     # (Link) => Unit
     remove: (link) ->
