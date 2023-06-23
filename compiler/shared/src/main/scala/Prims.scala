@@ -478,22 +478,16 @@ trait CommandPrims extends PrimUtils {
       s"world.turtleManager.$name($n, ${jsString(breed)});"
     }
 
-    def generateSprout: String = {
+    def generateSprout(breedName: String): String = {
       val n    = args.get(0)
       val body = handlers.fun(s.args(1))
-      val breedName = s.command.asInstanceOf[prim._sprout].breedName
       val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
       val sprouted = s"SelfManager.self().sprout($n, ${jsString(trueBreedName)})"
       addAskContext(sprouted, body, true)
     }
 
-    def optimalGenerateSprout: String = {
+    def optimalGenerateSprout(breedName: String): String = {
       val n = args.get(0)
-      val breedName =
-        s.command match {
-          case x: Optimizer._sproutfast => x.breedName
-          case x                        => throw new IllegalArgumentException(s"How did you get here with class of type ${x.getClass.getName}")
-        }
       val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
       s"SelfManager.self().sprout($n, ${jsString(trueBreedName)});"
     }
@@ -544,8 +538,8 @@ trait CommandPrims extends PrimUtils {
       case _: prim._createorderedturtles => generateCreateTurtles(ordered = true)
       case _: Optimizer._crtfast         => optimalGenerateCreateTurtles(ordered = false)
       case _: Optimizer._crofast         => optimalGenerateCreateTurtles(ordered = true)
-      case _: prim._sprout               => generateSprout
-      case _: Optimizer._sproutfast      => optimalGenerateSprout
+      case s: prim._sprout               => generateSprout(s.breedName)
+      case s: Optimizer._sproutfast      => optimalGenerateSprout(s.breedName)
       case p: prim.etc._createlinkfrom   => generateCreateLink("createLinkFrom",  p.breedName)
       case p: prim.etc._createlinksfrom  => generateCreateLink("createLinksFrom", p.breedName)
       case p: prim.etc._createlinkto     => generateCreateLink("createLinkTo",    p.breedName)
