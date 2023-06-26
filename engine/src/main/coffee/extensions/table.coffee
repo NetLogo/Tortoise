@@ -159,14 +159,17 @@ module.exports = {
     # (Table, Any) => Any
     get = (table, key) ->
       checkInput({table: table})
-      if key not instanceof Array
-        return table.get(key)
-
-      originKey = getOriginKey(table, key)
-      if originKey?
-        table.get(originKey)
+      value = if key not instanceof Array
+        table.get(key)
       else
+        originKey = getOriginKey(table, key)
+        if originKey?
+          table.get(originKey)
+
+      if not value?
         throw exceptions.extension("No value for #{key} in table.")
+
+      value
 
     # (Table, Any) => Boolean
     hasKey = (table, key) ->

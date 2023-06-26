@@ -225,3 +225,9 @@ JsonParse-Failure
   globals [glob1]
   O> set glob1 0
   table:to-json glob1 => ERROR Extension exception: 0 is not a table
+
+QuickUndefinedCheck
+  extensions [ table ]
+  globals [ t1 v1 ]
+  O> set t1 table:make
+  O> set v1 table:get t1 "Test" => ERROR Extension exception: No value for Test in table.
