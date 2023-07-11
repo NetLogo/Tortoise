@@ -13,11 +13,13 @@ module.exports =
     _currentRNG: undefined # Generator
     _mainRNG:    undefined # Generator
     _auxRNG:     undefined # Generator
+    _plotRNG:    undefined # Generator
 
     # () => RNG
     constructor: ->
-      @_mainRNG    = newMersenneTwister()
-      @_auxRNG     = newMersenneTwister()
+      @_mainRNG = newMersenneTwister()
+      @_auxRNG  = newMersenneTwister()
+      @_plotRNG = @_mainRNG.clone()
       @_currentRNG = @_mainRNG
 
     # () => String
@@ -48,11 +50,17 @@ module.exports =
     # (Number) => Unit
     setSeed: (seed) ->
       @_currentRNG.setSeed(seed)
+      if @_currentRNG is @_mainRNG
+        @_plotRNG.setSeed(seed)
       return
 
     # [T] @ (() => T) => T
     withAux: (f) ->
       @_withAnother(@_auxRNG)(f)
+
+    # [T] @ (() => T) => T
+    withPlot: (f) ->
+      @_withAnother(@_plotRNG)(f)
 
     # [T] @ (() => T) => T
     withClone: (f) ->

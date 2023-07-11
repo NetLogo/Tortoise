@@ -74,7 +74,7 @@ class ProcedurePrims
   runInPlotContext: (plotName, penName, f) ->
     @_stack.startPlot(plotName)
     try
-      @rng.withClone( () => @plotManager.withTemporaryContext(plotName, penName)(f) )
+      @rng.withPlot( () => @plotManager.withTemporaryContext(plotName, penName)(f) )
     finally
       @_stack.endCall()
 

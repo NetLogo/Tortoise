@@ -452,7 +452,6 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
     z ^= (z >>> 18)
 
     (y.toLong << 32) + z
-
   }
 
   @JSExport
