@@ -45,7 +45,7 @@ class WidgetCompiler(
         val Seq(compiledSetup, compiledUpdate) =
           Seq("setup" -> p.setupCode, "update" -> p.updateCode).map {
             case (name, code) =>
-              compileInContext(code, cleanDisplay).contextualizeError("plot", cleanDisplay, name)
+              compileInPlotContext(code, cleanDisplay).contextualizeError("plot", cleanDisplay, name)
           }
 
         val compilation =
@@ -107,12 +107,15 @@ class WidgetCompiler(
 
   private def compileMonitor(m: Monitor): ExceptionValidation[SourceCompilation] =
     compileReporter(m.source.getOrElse(""))
+      .map( (f) => s"ProcedurePrims.rng.withAux(${thunkifyFunction(f)})" )
       .contextualizeError("monitor", m.display.orElse(m.source).getOrElse(""), "reporter")
       .map(SourceCompilation.apply _)
 
   private def compileSlider(s: Slider): ExceptionValidation[SliderCompilation] = {
     def sliderError(name: String, reporter: String): ExceptionValidation[String] =
-      compileReporter(reporter).contextualizeError("slider", s.display.getOrElse(s.varName), name)
+      compileReporter(reporter)
+        .map( (f) => s"ProcedurePrims.rng.withAux(${thunkifyFunction(f)})" )
+        .contextualizeError("slider", s.display.getOrElse(s.varName), name)
 
     val Seq(max, min, step) =
       Seq("min" -> s.min, "max" -> s.max, "step" -> s.step).map((sliderError _).tupled)
@@ -123,14 +126,14 @@ class WidgetCompiler(
   private def compilePen(ownerName: String)(pen: Pen): CompiledPen = {
     val Seq(setup, update) = Seq("setup" -> pen.setupCode, "update" -> pen.updateCode).map {
       case (name, code) =>
-        compileInContext(code,  ownerName, Option(pen.display))
+        compileInPlotContext(code,  ownerName, Option(pen.display))
           .contextualizeError("pen", Option(pen.display).getOrElse(""), name)
     }
 
     new CompiledPen(pen, Apply[ExceptionValidation].apply2(setup, update)(UpdateableCompilation.apply))
   }
 
-  private def compileInContext(code: String, plotNameRaw: String, penNameOpt: Option[String] = None): CompiledStringV = {
+  private def compileInPlotContext(code: String, plotNameRaw: String, penNameOpt: Option[String] = None): CompiledStringV = {
     val penName       = penNameOpt map (name => s"'$name'") getOrElse "undefined"
     val inPlotContext = (f: String) => s"ProcedurePrims.runInPlotContext('$plotNameRaw', $penName, $f)"
     if (code.trim.isEmpty)
