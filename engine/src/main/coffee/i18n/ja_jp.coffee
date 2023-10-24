@@ -1,7 +1,7 @@
 
 bundle = {
 
-  identifier: 'jp_jp'
+  identifier: 'ja_jp'
 
     , 'atan is undefined when both inputs are zero.': () -> 
       "atan は両方の入力値が 0 であるときは定義することができません。" 

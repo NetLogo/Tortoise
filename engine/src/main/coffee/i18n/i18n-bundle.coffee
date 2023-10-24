@@ -7,7 +7,7 @@ EN_US = require('./en_us')
 # would be a good time to revisit this.  -Jeremy B March 2023
 ZH_CN = require('./zh_cn')
 ES_ES = require('./es_es')
-JP_JP = require('./jp_jp')
+JA_JP = require('./ja_jp')
 PT_PT = require('./pt_pt')
 
 
@@ -15,7 +15,7 @@ BUNDLES = {
   'en_us': EN_US
 , 'zh_cn': ZH_CN
 , 'es_es' : ES_ES
-, 'jp_jp' : JP_JP
+, 'ja_jp' : JA_JP
 , 'pt_pt' : PT_PT
 }
 
