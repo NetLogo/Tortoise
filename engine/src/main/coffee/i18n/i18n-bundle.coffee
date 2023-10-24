@@ -6,10 +6,17 @@ EN_US = require('./en_us')
 # getting the dyanmic `require()` working with Tortoise's packaging.  *TODO*: Once we've switched over to ES modules
 # would be a good time to revisit this.  -Jeremy B March 2023
 ZH_CN = require('./zh_cn')
+ES_ES = require('./es_es')
+JP_JP = require('./jp_jp')
+PT_PT = require('./pt_pt')
+
 
 BUNDLES = {
   'en_us': EN_US
 , 'zh_cn': ZH_CN
+, 'es_es' : ES_ES
+, 'jp_jp' : JP_JP
+, 'pt_pt' : PT_PT
 }
 
 { exceptionFactory: exceptions } = require('util/exception')
