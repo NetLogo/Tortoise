@@ -66,7 +66,7 @@ bundle = {
     "#{prim} expectabla un verdad/falso valor de #{item}, pero encuentro #{value} en vez."
 
 , 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.': (prim, agentType, list, value) ->
-    "Los inputs del listo #{prim} solamente puede contener un link, link agentset, o elementos de un listo. "
+    "Los inputs del listo #{prim} solamente puede contener un #{agentType}, #{agentType} agentset, o elementos de un listo. "
 
 , 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.': (prim, agentType, list, value) ->
     "Los inputs de #{prim} olamente puede contener un link, link agentset, o elementos de un listo.  El listo #{agentType} contiene un otro tipo de agentset: #{list}."

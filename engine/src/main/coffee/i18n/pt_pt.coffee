@@ -63,10 +63,10 @@ bundle = {
     "#{prim} esperava um valor de verdadeiro/falso (true/false) de #{item}, mas no lugar disso recebeu #{value}."
 
 , 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained _ which is NOT a _ or _ agentset.': (prim, agentType, list, value) ->
-    "Entradas de lista para #{prim} devem somente conter link, link agentset, ou elementos de lista.  A lista #{agentType} continha #{list} que NÃO é um link ou link agentset."
+    "Entradas de lista para #{prim} devem somente conter #{agentType}, #{agentType} agentset, ou elementos de lista.  A lista #{list} continha #{value} que NÃO é um #{agentType} ou #{agentType} agentset."
 
 , 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.': (prim, agentType, list, value) ->
-    "Entradas de lista para #{prim} devem somente conter link, link agentset, ou elementos de lista.  A lista #{agentType} continha um tipo diferente de agentset: #{list}."
+    "Entradas de lista para #{prim} devem somente conter #{agentType}, #{agentType} agentset, ou elementos de lista.  A lista #{list} continha um tipo diferente de agentset: #{value}."
 
 , 'anonymous procedure expected _ inputs, but only got _': (needed, given) ->
     "o procedimento anônimo esperava 1 entrada, mas obteve apenas 0"
