@@ -211,6 +211,13 @@ module.exports =
       )
       return
 
+    # This is a "legacy prim" that could be auto-inserted by the code converter in NetLogo 5 -Jeremy B 2023
+    # () => Unit
+    clearAllAndResetTicks: ->
+      @clearAll()
+      @ticker.reset()
+      return
+
     # () => Unit
     clearDrawing: ->
       @_updater.clearDrawing()
