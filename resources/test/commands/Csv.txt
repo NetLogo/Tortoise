@@ -60,6 +60,10 @@ from-string
   extensions [ csv ]
   csv:from-string "1,2,3\n3,4,5" => [[1 2 3] [3 4 5]]
   csv:from-string "1,2,\"3\n4\"\n5,6,7" => [[1 2 "3\n4"] [5 6 7]]
+  csv:from-string "1a." => [["1a."]]
+  csv:from-string "0x23" => [["0x23"]]
+  (csv:from-string "1a." "|") => [["1a."]]
+  (csv:from-string "1a." "/") => [["1a."]]
 
 from-string-empty
   extensions [ csv ]

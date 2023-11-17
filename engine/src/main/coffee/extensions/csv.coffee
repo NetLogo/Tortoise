@@ -16,9 +16,14 @@ tryParseFloat = (value) ->
   if (value.includes(","))
     return null
 
-  maybeFloat = Number.parseFloat(value)
-  if (not Number.isNaN(maybeFloat))
-    return maybeFloat
+  # So.  JavaScript's number parsers.  `Number()` will parse things like hex values, which we don't want.
+  # `Number.parseFloat()` doesn't do the extended number notation, but is lenient with trailing non-number chars, like
+  # `"100abcdef"` is `100` for some reason, which we do not want.  So.  We check both and use the `parseFloat()` value if
+  # they both agree the value is the same, actual number.  -Jeremy B November 2023
+  maybeFloat1 = Number(value)
+  maybeFloat2 = Number.parseFloat(value)
+  if (not (Number.isNaN(maybeFloat1) or Number.isNaN(maybeFloat2)) and maybeFloat1 is maybeFloat2)
+    return maybeFloat2
 
   return null
 
