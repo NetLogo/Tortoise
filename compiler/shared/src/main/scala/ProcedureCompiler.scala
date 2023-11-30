@@ -18,10 +18,12 @@ class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlag
   private def compileProcedureDef(originalPd: ProcedureDefinition)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): CompiledProcedure = {
 
-    val pd = if (compilerFlags.optimizationsEnabled)
-      Optimizer(originalPd)
-    else
-      originalPd
+    val pd = MultiAssignTransformer(
+      if (compilerFlags.optimizationsEnabled)
+        Optimizer(originalPd)
+      else
+        originalPd
+    )
     val name       = pd.procedure.name.toLowerCase
     val safeName   = JSIdentProvider(name)
     handlers.resetEveryID(safeName)

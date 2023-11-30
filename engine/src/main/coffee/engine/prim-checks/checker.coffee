@@ -7,6 +7,7 @@
 
 AgentSetChecks  = require('./agentset-checks')
 ColorChecks     = require('./color-checks')
+ControlChecks   = require('./control-checks')
 LinkChecks      = require('./link-checks')
 ListChecks      = require('./list-checks')
 MathChecks      = require('./math-checks')
@@ -34,6 +35,7 @@ class Checker
     @patch     = new PatchChecks(@validator, getSelf)
     @link      = new LinkChecks(@validator, getSelf, selfPrims)
     @task      = new TaskChecks(@validator)
+    @control   = new ControlChecks(@validator)
 
     @turtleOrLink = {
       getVariable: (sourceStart, sourceEnd, name) =>

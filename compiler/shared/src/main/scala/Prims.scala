@@ -257,7 +257,7 @@ trait ReporterPrims extends PrimUtils {
         generateNotImplementedStub(r.reporter.getClass.getName.drop(1))
 
       case _                                        =>
-        failCompilation(s"unimplemented primitive: ${r.instruction.token.text}", r.instruction.token)
+        failCompilation(s"unimplemented primitive: ${r.instruction}", r.instruction.token)
 
     }
   }
@@ -564,11 +564,19 @@ trait CommandPrims extends PrimUtils {
       case _: prim._report               => s"return PrimChecks.procedure.report(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)});"
       case _: prim.etc._ignore           => s"${args.get(0)};"
 
-      case l: prim._let                  =>
+      case l: prim._let =>
         l.let.map(inner => {
           val name = JSIdentProvider(inner.name)
           s"""let $name = ${args.get(0)}; ProcedurePrims.stack().currentContext().registerStringRunVar("${inner.name}", $name);"""
         }).getOrElse("")
+
+      case m: prim._multilet =>
+        val namesString = m.lets.map( (l) => JSIdentProvider(l._2.name) ).mkString(", ")
+        val regsString  = m.lets.map( (l) =>
+          s"""ProcedurePrims.stack().currentContext().registerStringRunVar("${l._2.name}", ${JSIdentProvider(l._2.name)});"""
+        ).mkString(" ")
+        val argsString = s"PrimChecks.control.multiLetHasEnoughArgs(${sourceInfo.start}, ${sourceInfo.end}, ${m.lets.length}, ${args.get(0)})"
+        s"let [$namesString] = $argsString; $regsString"
 
       case _: prim.etc._withlocalrandomness =>
         s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
@@ -592,7 +600,7 @@ trait CommandPrims extends PrimUtils {
         s"${generateNotImplementedStub(s.command.getClass.getName.drop(1))};"
 
       case _                                        =>
-        failCompilation(s"unimplemented primitive: ${s.instruction.token.text}", s.instruction.token)
+        failCompilation(s"unimplemented primitive: ${s.instruction}", s.instruction.token)
 
     }
 

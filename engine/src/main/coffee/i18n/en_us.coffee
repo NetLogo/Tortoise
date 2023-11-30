@@ -169,9 +169,13 @@ bundle = {
 , '_ cannot take a negative number.': (primName) ->
   "#{primName} cannot take a negative number."
 
+, 'The list of values for LET must be at least as long as the list of names.  We need _ value(s) but only got _ from the list _.': (varCount, argsLength, argsList) ->
+  "The list of values for LET must be at least as long as the list of names.  We need #{varCount} value(s) but only got #{argsLength} from the list #{argsList}."
+
   # Dynamic Calls (TU)
 , 'Cannot find the procedure _.': (procedureName) ->
   "Cannot find the procedure #{procedureName}."
+
 }
 
 module.exports = bundle
