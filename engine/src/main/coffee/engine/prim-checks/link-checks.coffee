@@ -4,6 +4,8 @@
 
 { TowardsInterrupt } = require('util/interrupts')
 
+{ checks } = require('engine/core/typechecker')
+
 # (() => Agent, Validator) => (String, Map[Any, String]) => (Any) => Unit
 genSetter = (getSelf, validator) -> (name, mappings) ->
   (value) =>
@@ -14,7 +16,7 @@ genSetter = (getSelf, validator) -> (name, mappings) ->
         defaultMsg = "An unknown error occurred when setting the '#{name}' of \
 '#{link}': #{error}"
         validator.error('set', null, null, msg ? defaultMsg)
-    )(link.setIfValid(name, value))
+    )(link._varManager.setIfValid(name, value))
     return
 
 class LinkChecks
@@ -52,15 +54,18 @@ class LinkChecks
   # (Int, Int, String, Any) => Unit
   setVariable: (sourceStart, sourceEnd, name, value) ->
     link = @getSelf()
-    if not link.hasVariable(name)
+    if @_setterChecks.has(name)
+      if not checks.isLink(link)
+        @validator.error('set', sourceStart, sourceEnd, '_ does not exist in _.', name.toUpperCase(),
+          if link is 0 then "OBSERVER" else link.getBreedName())
+      else
+        check = @_setterChecks.get(name)
+        check(value)
+    else if not link.hasVariable(name)
       msgKey    = "_ breed does not own variable _"
-      upperName = name.toUpperCase()
-      @validator.error('set', sourceStart, sourceEnd, msgKey, link.getBreedName(), upperName)
-    else if @_setterChecks.has(name)
-      check = @_setterChecks.get(name)
-      check(value)
+      @validator.error('set', sourceStart, sourceEnd, msgKey, link.getBreedName(), name.toUpperCase())
     else
-      link.setVariable(name, value)
+      link._varManager.setVariable(name, value)
 
     return
 
@@ -72,6 +77,6 @@ class LinkChecks
       upperName = name.toUpperCase()
       @validator.error(upperName, sourceStart, sourceEnd, msgKey, link.getBreedName(), upperName)
     else
-      link.getVariable(name)
+      link._varManager.getVariable(name)
 
 module.exports = LinkChecks

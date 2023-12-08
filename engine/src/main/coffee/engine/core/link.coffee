@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-AbstractAgentSet = require('./abstractagentset')
 ColorModel       = require('./colormodel')
 linkCompare      = require('./structure/linkcompare')
 VariableManager  = require('./structure/variablemanager')
@@ -37,14 +36,21 @@ module.exports =
                 , @tiemode = "none") ->                                                                        # String
       @_updateVarsByName = genUpdate(this)
 
-      varNames     = @_varNamesForBreed(breed)
-      @_varManager = @_genVarManager(varNames)
+      @_varManager = @_genVarManager()
+      # This is reducing calls anyway. --John Chen May 2023
+      @getVariable  = @_varManager.getVariableWrapper()
+      @setVariable  = @_varManager.setVariableWrapper()
 
       Setters.setBreed.call(this, breed)
       @end1.linkManager.add(this)
       @end2.linkManager.add(this)
       @updateEndRelatedVars()
       @_updateVarsByName("directed?")
+
+    # This is the cheapest way to demonstrate reasonable error messages. It involves no extra checks! --John Chen May 2023
+    # (String) => Error
+    getPatchVariable: (name, sourceStart, sourceEnd) ->
+      PrimChecks.validator.error('get', sourceStart, sourceEnd, '_ does not exist in _.', name.toUpperCase(), @getBreedName())
 
     # () => String
     getBreedName: ->
@@ -62,19 +68,6 @@ module.exports =
     # Unit -> String
     getName: ->
       @_name
-
-    # (String) => Any
-    getVariable: (varName) ->
-      @_varManager[varName]
-
-    # (String, Any) => Unit
-    setVariable: (varName, value) ->
-      @_varManager[varName] = value
-      return
-
-    # (String, Any) => Maybe[Any]
-    setIfValid: (varName, value) ->
-      @_varManager.setIfValid(varName, value)
 
     # () => DeathInterrupt
     die: ->
@@ -185,11 +178,11 @@ module.exports =
 
     # () => Boolean
     hasVariable: (varName) ->
-      @_varManager.has(varName)
+      @_breed.allVarNames.includes(varName)
 
     # () => Array[String]
     varNames: ->
-      @_varManager.names()
+      @_breed.allVarNames
 
     # (StampMode) => Unit
     _drawStamp: (mode) ->
@@ -211,24 +204,15 @@ module.exports =
       @_name = "#{@_breed.singular} #{@end1.id} #{@end2.id}"
       return
 
-    # (Breed) => Array[String]
-    _varNamesForBreed: (breed) ->
-      linksBreed = @world.breedManager.links()
-      if breed is linksBreed or not breed?
-        linksBreed.varNames
-      else
-        linksBreed.varNames.concat(breed.varNames)
-
     # () => Unit
     _seppuku: ->
       @_registerDeath(@id)
       return
 
+    # We no longer build a list of varspecs and store them for each variable. This should reduce n(agent number)*m(variable number)+1 object allocations/stores. --John Chen May 2023
     # (Array[String]) => VariableManager
-    _genVarManager: (extraVarNames) ->
-      extraSpecs = extraVarNames.map((name) -> new ExtraVariableSpec(name))
-      allSpecs   = VariableSpecs.concat(extraSpecs)
-      new VariableManager(this, allSpecs)
+    _genVarManager: () ->
+      new VariableManager(this, VariableSpecs)
 
     # (String) => Unit
     _genVarUpdate: (varName) ->

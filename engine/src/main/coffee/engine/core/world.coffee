@@ -46,6 +46,7 @@ module.exports =
     # Optimization-related variables
     _patchesAllBlack:   undefined # Boolean
     _patchesWithLabels: undefined # Number
+    patchesVariables:   undefined # Array[String]
 
     constructor: (
       miniWorkspace        # MiniWorkspace
@@ -80,6 +81,7 @@ module.exports =
 
       @_patchesAllBlack   = true
       @_patchesWithLabels = 0
+      @patchesVariables = @patchesOwnNames.concat(patchBuiltins)
 
       @_updater.collectUpdates()
       @_updater.registerWorldState({
