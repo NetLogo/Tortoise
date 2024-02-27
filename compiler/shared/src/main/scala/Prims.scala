@@ -253,8 +253,7 @@ trait ReporterPrims extends PrimUtils {
       case ra: prim.etc._range =>
         generateRange(sourceInfo.start, sourceInfo.end, useCompileArgs, args.checked, ra.syntax)
 
-      // This is very unfortunately named, since in this case it's used for `set`, not `let`.   Ugh.  -Jeremy B December 2023
-      case mli: prim._multiletitem =>
+      case mli: prim._multiassignitem =>
         s"__MULTI_SET_ARRAY.shift()"
 
       case _ if compilerFlags.generateUnimplemented =>
