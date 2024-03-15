@@ -119,9 +119,10 @@ object SimplePrims {
       PartialFunction.condOpt(r) {
 
         // Agentset
-        case _: prim._any           => "PrimChecks.agentset.any"
-        case _: prim._count         => "PrimChecks.agentset.count"
-        case _: prim.etc._turtleson => "PrimChecks.agentset.turtlesOn"
+        case _: prim._any               => "PrimChecks.agentset.any"
+        case _: prim._count             => "PrimChecks.agentset.count"
+        case _: prim._turtleson         => "PrimChecks.agentset.turtlesOn"
+        case _: Optimizer._anyturtleson => "PrimChecks.agentset.anyTurtlesOn"
 
         // List / String
         case _: prim.etc._empty            => "PrimChecks.list.empty"

@@ -235,10 +235,27 @@ module.exports =
     turtlesOnAgent: (agent) ->
       agent.turtlesHere()
 
+    # (Patch|Turtle) => Boolean
+    anyTurtlesOnAgent: (agent) ->
+      checks.isTurtle(agent) or not agent.turtlesHere().isEmpty()
+
     # (PatchSet|TurtleSet) => TurtleSet
     turtlesOnAgentSet: (agents) ->
       turtles = flatMap((agent) -> agent.turtlesHere().toArray())(agents.iterator().toArray())
-      new TurtleSet(turtles, @_world)
+      new TurtleSet(Array.from(new Set(turtles)), @_world)
+
+    # (PatchSet|TurtleSet) => Boolean
+    anyTurtlesOnAgentSet: (agents) ->
+      if checks.isTurtleSet(agents)
+        return not agents.isEmpty()
+
+      # This is intentionally written as a loop for the `_anyturtleson` compiler optimization early exit -Jeremy B March
+      # 2024
+      for agent in agents
+        if not agent.turtlesHere().isEmpty()
+          return true
+
+      false
 
     _hasWaited: false
 

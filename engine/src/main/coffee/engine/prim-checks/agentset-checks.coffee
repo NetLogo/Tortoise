@@ -199,6 +199,13 @@ class AgentSetChecks
     else
       @prims.turtlesOnAgent(agentOrAgentset)
 
+  # (Agent | AgentSet) => Boolean
+  anyTurtlesOn: (agentOrAgentset) ->
+    if checks.isAgentSet(agentOrAgentset)
+      @prims.anyTurtlesOnAgentSet(agentOrAgentset)
+    else
+      @prims.anyTurtlesOnAgent(agentOrAgentset)
+
   # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (Int, Int, T*) => TurtleSet
   turtleSet: (sourceStart, sourceEnd, values...) ->
     @setCreationArgsCheck('turtle-set', sourceStart, sourceEnd, types.Turtle, types.TurtleSet, values)
