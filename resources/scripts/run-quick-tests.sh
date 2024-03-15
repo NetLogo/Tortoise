@@ -10,6 +10,7 @@
 
 time ./sbt.sh \
   netLogoWeb/scalastyle compilerCore/scalastyle compilerJVM/scalastyle compilerJS/scalastyle macrosCore/scalastyle \
+  "engine / coffeelint" \
   "compilerJS  / Test / compile" \
   "compilerJS  / Test / test" \
   "compilerJVM / Test / compile" \
