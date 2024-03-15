@@ -109,7 +109,7 @@ ProcedurePrims.defineCommand("setup", 701, 1311, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("go", 1319, 1772, (function() {
-  if ((PrimChecks.validator.checkArg('AND', 1340, 1343, 2, world.observer.getGlobal("stop-at-top?")) && PrimChecks.agentset.any(PrimChecks.agentset.turtlesOn(PrimChecks.validator.checkArg('TURTLES-ON', 1349, 1359, 1904, world.observer.getGlobal("top-row")))))) {
+  if ((PrimChecks.validator.checkArg('AND', 1340, 1343, 2, world.observer.getGlobal("stop-at-top?")) && PrimChecks.agentset.anyTurtlesOn(PrimChecks.validator.checkArg('TURTLES-ON', 1349, 1359, 1904, world.observer.getGlobal("top-row"))))) {
     UserDialogPrims.confirm("The top has been reached. Turn STOP-AT-TOP? off to keep going.");
     return PrimChecks.procedure.stop(1456, 1460);
   }
