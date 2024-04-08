@@ -83,14 +83,10 @@ class AgentSetChecks
 
   # (String, Patch | Turtle | PatchSet | TurtleSet) => AgentSet
   breedOn: (breedName, target) ->
-    if checks.isPatch(target)
-      @prims.breedOnPatch(breedName, target)
-    else if checks.isTurtle(target)
-      @prims.breedOnTurtle(breedName, target)
-    else if checks.isPatchSet(target)
-      @prims.breedOnPatchSet(breedName, target)
-    else if checks.isTurtleSet(target)
-      @prims.breedOnTurtleSet(breedName, target)
+    if checks.isAgentSet(target)
+      @prims.breedOnAgentSet(breedName, target)
+    else
+      @prims.breedOnAgent(breedName, target)
 
   # (AgentSet[T]) => Number
   count: (agentset) ->

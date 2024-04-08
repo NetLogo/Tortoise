@@ -337,6 +337,10 @@ module.exports =
     breedHere: (breedName) ->
       @getPatchHere().breedHere(breedName)
 
+    # (String) => Array[Turtle]
+    breedHereArray: (breedName) ->
+      @getPatchHere().breedHereArray(breedName)
+
     # (Number, String) => TurtleSet
     hatch: (n, breedName) ->
       num         = if n >= 0 then n else 0

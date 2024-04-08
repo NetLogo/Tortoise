@@ -38,26 +38,15 @@ module.exports =
     boom: ->
       throw exceptions.runtime("boom!", "boom")
 
-    # (String, Array[Patch]) -> TurtleSet
-    breedOn: (breedName, patches) ->
-      turtles = flatMap((p) -> p.breedHereArray(breedName))(patches)
+    # (String, Agent) -> TurtleSet
+    breedOnAgent: (breedName, agent) ->
+      turtles = agent.breedHereArray(breedName)
       new TurtleSet(turtles, @_world)
 
-    # (String, Patch) => TurtleSet
-    breedOnPatch: (breedName, patch) ->
-      @breedOn(breedName, [patch])
-
-    # (String, Turtle) => TurtleSet
-    breedOnTurtle: (breedName, turtle) ->
-      @breedOn(breedName, [turtle.getPatchHere()])
-
-    # (String, PatchSet) => TurtleSet
-    breedOnPatchSet: (breedName, patchSet) ->
-      @breedOn(breedName, patchSet.toArray())
-
-    # (String, TurtleSet) => TurtleSet
-    breedOnTurtleSet: (breedName, turtleSet) ->
-      @breedOn(breedName, map((t) -> t.getPatchHere())(turtleSet.iterator().toArray()))
+    # (String, AgentSet) -> TurtleSet
+    breedOnAgentSet: (breedName, agents) ->
+      turtles = flatMap((p) -> p.breedHereArray(breedName))(agents.toArray())
+      new TurtleSet(turtles, @_world)
 
     # (Any, String) => Boolean
     booleanCheck: (b, primName) ->
