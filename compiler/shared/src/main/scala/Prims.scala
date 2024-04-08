@@ -207,7 +207,7 @@ trait ReporterPrims extends PrimUtils {
       case p: prim.etc._linkbreedsingular => s"world.linkManager.getLink(${args.get(0)}, ${args.get(1)}, ${jsString(p.breedName)})"
       case b: prim.etc._breedat           => s"SelfManager.self().breedAt(${jsString(b.breedName)}, ${args.get(0)}, ${args.get(1)})"
       case b: prim.etc._breedhere         => s"SelfManager.self().breedHere(${jsString(b.breedName)})"
-      case b: prim.etc._breedon           => s"PrimChecks.agentset.breedOn(${jsString(b.breedName)}, ${args.makeCheckedOp(0)})"
+      case b: prim._breedon               => s"PrimChecks.agentset.breedOn(${jsString(b.breedName)}, ${args.makeCheckedOp(0)})"
       case b: prim.etc._isbreed           => s"NLType.checks.isBreed(${jsString(b.breedName)}, ${args.get(0)})"
 
       // List prims
