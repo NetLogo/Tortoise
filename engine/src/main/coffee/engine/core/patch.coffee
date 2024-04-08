@@ -115,6 +115,14 @@ module.exports =
     breedHereArray: (breedName) ->
       filter((turtle) -> turtle.getBreedName() is breedName)(@_turtles)
 
+    # (String) => Boolean
+    anyBreedHere: (breedName) ->
+      for turtle in @_turtles
+        if turtle.getBreedName() is breedName
+          return true
+
+      false
+
     # (Number, Number) => TurtleSet
     turtlesAt: (dx, dy) ->
       @patchAt(dx, dy).turtlesHere()

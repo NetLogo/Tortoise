@@ -43,10 +43,32 @@ module.exports =
       turtles = agent.breedHereArray(breedName)
       new TurtleSet(turtles, @_world)
 
+    # (String, Turtle | Patch) -> TurtleSet
+    anyBreedOnAgent: (breedName, agent) ->
+      agent.anyBreedHere(breedName)
+
     # (String, AgentSet) -> TurtleSet
     breedOnAgentSet: (breedName, agents) ->
       turtles = flatMap((p) -> p.breedHereArray(breedName))(agents.toArray())
       new TurtleSet(turtles, @_world)
+
+    # (String, TurtleSet | PatchSet) -> Boolean
+    anyBreedOnAgentSet: (breedName, agents) ->
+      if checks.isPatchSet(agents)
+        for patch in agents.toArray()
+          if patch.anyBreedHere(breedName)
+            return true
+
+      else
+        seenPatches = []
+        for turtle in agents.toArray()
+          patch = turtle.getPatchHere()
+          if not seenPatches.includes(patch)
+            seenPatches.push(patch)
+            if patch.anyBreedHere(breedName)
+              return true
+
+      false
 
     # (Any, String) => Boolean
     booleanCheck: (b, primName) ->

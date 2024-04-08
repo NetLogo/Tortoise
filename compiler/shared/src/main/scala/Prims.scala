@@ -208,6 +208,7 @@ trait ReporterPrims extends PrimUtils {
       case b: prim.etc._breedat           => s"SelfManager.self().breedAt(${jsString(b.breedName)}, ${args.get(0)}, ${args.get(1)})"
       case b: prim.etc._breedhere         => s"SelfManager.self().breedHere(${jsString(b.breedName)})"
       case b: prim._breedon               => s"PrimChecks.agentset.breedOn(${jsString(b.breedName)}, ${args.makeCheckedOp(0)})"
+      case b: Optimizer._anybreedon       => s"PrimChecks.agentset.anyBreedOn(${jsString(b.breedName)}, ${args.makeCheckedOp(0)})"
       case b: prim.etc._isbreed           => s"NLType.checks.isBreed(${jsString(b.breedName)}, ${args.get(0)})"
 
       // List prims

@@ -88,6 +88,13 @@ class AgentSetChecks
     else
       @prims.breedOnAgent(breedName, target)
 
+  # (String, Patch | Turtle | PatchSet | TurtleSet) => Boolean
+  anyBreedOn: (breedName, target) ->
+    if checks.isAgentSet(target)
+      @prims.anyBreedOnAgentSet(breedName, target)
+    else
+      @prims.anyBreedOnAgent(breedName, target)
+
   # (AgentSet[T]) => Number
   count: (agentset) ->
     agentset.size()

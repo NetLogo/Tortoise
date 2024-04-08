@@ -8,7 +8,7 @@ import
 
 import
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, CommandBlock, ReporterBlock },
-    prim.{ _any, _const, _count, _createorderedturtles, _createturtles, _equal, _fd, _greaterthan, _hatch, _lessthan,
+    prim.{ _any, _breedon, _const, _count, _createorderedturtles, _createturtles, _equal, _fd, _greaterthan, _hatch, _lessthan,
       _neighbors, _neighbors4, _not, _notequal, _observervariable, _of, _oneof, _other, _patchat, _patches, _patchvariable,
       _procedurevariable, _random, _sprout, _sum, _turtleson, _with }
 
@@ -351,6 +351,24 @@ object Optimizer {
     }
   }
 
+  class _anybreedon(val breedName: String) extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType | Syntax.AgentType), ret = Syntax.BooleanType)
+  }
+
+  // _any(_breedon) => _anybreedon
+  object AnyBreedOnTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _any, Seq(ReporterApp(to: _breedon, breedonArgs, _)), _) =>
+          val r = new _anybreedon(to.breedName)
+          r.token = to.token
+          ra.copy(reporter = r, args = breedonArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
   class NeighborTransformer extends AstTransformer {
     def visitNeighbor(ra: ReporterApp, check: Reporter => Boolean, make: String => Reporter): ReporterApp = {
       ra match {
@@ -514,6 +532,7 @@ object Optimizer {
      AnyWith4Transformer       .visitProcedureDefinition   andThen
      AnyWith5Transformer       .visitProcedureDefinition   andThen
      AnyTurtlesOnTransformer   .visitProcedureDefinition   andThen
+     AnyBreedOnTransformer     .visitProcedureDefinition   andThen
      OptimizeCountTransformer  .visitProcedureDefinition   andThen
      RandomConstTransformer    .visitProcedureDefinition
     )(pd)
