@@ -184,7 +184,7 @@ ProcedurePrims.defineCommand("move-single-die", 3412, 3642, (function() {
 }))
 ProcedurePrims.defineCommand("fall", 3650, 3986, (function() {
   PrimChecks.turtle.setVariable(3700, 3707, "heading", 180);
-  if ((Prims.gt(PrimChecks.patch.getVariable(3722, 3727, "pycor"), world.topology.minPycor) && PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.agentset.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1)))))) {
+  if ((Prims.gt(PrimChecks.patch.getVariable(3722, 3727, "pycor"), world.topology.minPycor) && PrimChecks.math.not(PrimChecks.agentset.anyBreedOn("STACKED-DICE", SelfManager.self().patchAhead(1))))) {
     SelfManager.self()._optimalFdOne();
   }
   else {

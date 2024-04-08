@@ -99,7 +99,7 @@ ProcedurePrims.defineCommand("go", 884, 2025, (function() {
 ProcedurePrims.defineCommand("draw-cells", 2078, 2355, (function() {
   if (MousePrims.isDown()) {
     if (Prims.equality(world.observer.getGlobal("erasing?"), 0)) {
-      world.observer.setGlobal("erasing?", PrimChecks.agentset.any(PrimChecks.agentset.breedOn("CELLS", PrimChecks.validator.checkArg('CELLS-ON', 2158, 2166, 816, world.getPatchAt(MousePrims.getX(), MousePrims.getY())))));
+      world.observer.setGlobal("erasing?", PrimChecks.agentset.anyBreedOn("CELLS", PrimChecks.validator.checkArg('CELLS-ON', 2158, 2166, 1904, world.getPatchAt(MousePrims.getX(), MousePrims.getY()))));
     }
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2205, 2208, 1904, world.getPatchAt(MousePrims.getX(), MousePrims.getY())), function() {
       if (world.observer.getGlobal("erasing?")) {
