@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-AbstractAgentSet  = require('./abstractagentset')
 ColorModel        = require('engine/core/colormodel')
 TurtleLinkManager = require('./turtlelinkmanager')
 TurtleSet         = require('./turtleset')
@@ -53,8 +52,10 @@ module.exports =
       @penManager  = genPenManager(this)
       @linkManager = new TurtleLinkManager(@id, @world)
 
-      varNames     = @_varNamesForBreed(breed)
-      @_varManager = @_genVarManager(varNames)
+      @_varManager = @_genVarManager()
+      # This is reducing calls anyway. --John Chen May 2023
+      @getVariable  = @_varManager.getVariableWrapper()
+      @setVariable  = @_varManager.setVariableWrapper()
 
       Setters.setBreed.call(this, breed)
 
@@ -291,19 +292,6 @@ module.exports =
         @world.observer.unfocus(this)
       return DeathInterrupt
 
-    # (String) => Any
-    getVariable: (varName) ->
-      @_varManager[varName]
-
-    # (String, Any) => Unit
-    setVariable: (varName, value) ->
-      @_varManager[varName] = value
-      return
-
-    # (String, Any) => Maybe[Any]
-    setIfValid: (varName, value) ->
-      @_varManager.setIfValid(varName, value)
-
     # () => Patch
     getPatchHere: ->
       @world.getPatchAt(@xcor, @ycor)
@@ -357,20 +345,11 @@ module.exports =
     _makeTurtleCopy: (breed) ->
       shape    = if breed is @_breed then @_givenShape else undefined
       turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, shape, (self) => @penManager.clone(@_genUpdate(self)))
-      varNames = @_varNamesForBreed(breed)
       forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName) ? 0)
         return
-      )(varNames)
+      )(breed.customVarNames)
       turtle
-
-    # (Breed) => Array[String]
-    _varNamesForBreed: (breed) ->
-      turtlesBreed = @world.breedManager.turtles()
-      if breed is turtlesBreed or not breed?
-        turtlesBreed.varNames
-      else
-        turtlesBreed.varNames.concat(breed.varNames)
 
     # (Turtle|Patch) => Unit
     moveTo: (agent) ->
@@ -419,11 +398,11 @@ module.exports =
 
     # () => Boolean
     hasVariable: (varName) ->
-      @_varManager.has(varName)
+      @_breed.allVarNames.includes(varName)
 
     # () => Array[String]
     varNames: ->
-      @_varManager.names()
+      @_breed.allVarNames
 
     # (StampMode) => Unit
     _drawStamp: (mode) ->
@@ -508,11 +487,10 @@ module.exports =
     _uniqueTurtles: (turtles) ->
       uniqueBy((t) -> t.id)(turtles)
 
+    # We no longer build a list of varspecs and store them for each variable. This should reduce n(agent number)*m(variable number)+1 object allocations/stores. --John Chen May 2023
     # (Array[String]) => VariableManager
-    _genVarManager: (extraVarNames) ->
-      extraSpecs = extraVarNames.map((name) -> new ExtraVariableSpec(name))
-      allSpecs   = VariableSpecs.concat(extraSpecs)
-      new VariableManager(this, allSpecs)
+    _genVarManager: () ->
+      new VariableManager(this, VariableSpecs)
 
     # (String) => Unit
     _genVarUpdate: (varName) ->

@@ -5,13 +5,13 @@
 { StopInterrupt }     = require('util/interrupts')
 
 class ProcedurePrims
-  _commands:  null # Map[String, Reporter]
-  _reporters: null # Map[String, Command]
+  _commands:  null # Record[String, Reporter]
+  _reporters: null # Record[String, Command]
   _stack:     null # ProcedureStack
 
   constructor: (@evalPrims, @plotManager, @rng) ->
-    @_commands  = new Map()
-    @_reporters = new Map()
+    @_commands  = new Object(null)
+    @_reporters = new Object(null)
     @_stack     = new ProcedureStack()
 
   # () => ProcedureStack
@@ -20,12 +20,12 @@ class ProcedurePrims
 
   # (String, Int, Int, () => Unit) => Unit
   defineCommand: (name, start, end, command) ->
-    @_commands.set(name, new Command(name, start, end, command))
+    @_commands[name] = new Command(name, start, end, command)
     return
 
   # (String, Int, Int, () => Any) => Unit
   defineReporter: (name, start, end, reporter) ->
-    @_reporters.set(name, new Reporter(name, start, end, reporter))
+    @_reporters[name] = new Reporter(name, start, end, reporter)
     return
 
   # (Agent|AgentSet, () => Any, Boolean) => Unit | DeathInterrupt
@@ -38,29 +38,37 @@ class ProcedurePrims
 
   # (String) => Boolean
   hasCommand: (name) ->
-    @_commands.has(name)
+    @_commands.hasOwnProperty(name)
 
   # (String) => Boolean
   hasReporter: (name) ->
-    @_reporters.has(name)
+    @_reporters.hasOwnProperty(name)
 
   # (String, Array[Any]) => StopInterrupt | undefined
   callCommand: (name, args...) ->
-    command = @_commands.get(name)
+    command = @_commands[name]
     @_stack.startCommand(command)
     try
       command.call(args...)
     finally
       @_stack.endCall()
+  
+  # (String, Array[Any]) => StopInterrupt | undefined
+  callCommandRaw: (name, args...) ->
+    @_commands[name].call(args...)
 
   # (String, Array[Any]) => Any
   callReporter: (name, args...) ->
-    reporter = @_reporters.get(name)
+    reporter = @_reporters[name]
     @_stack.startReporter(reporter)
     try
       reporter.call(args...)
     finally
       @_stack.endCall()
+
+  # (String, Array[Any]) => StopInterrupt | undefined
+  callReporterRaw: (name, args...) ->
+    @_reporters[name].call(args...)
 
   # (String) => String
   checkSyntax: (str) ->
