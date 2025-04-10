@@ -30,6 +30,8 @@ jobs:
           gu install js
           echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
 
+      - uses: sbt/setup-sbt@v1
+
       # Node.js setup should come after GraalVM setup as GraalVM includes a conflicting `node` binary
       # and we want the "regular" node version to "win".  -Jeremy B June 2021
       - uses: actions/setup-node@v3
@@ -93,6 +95,8 @@ jobs:
           gu install js
           echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
 
+      - uses: sbt/setup-sbt@v1
+
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
@@ -127,6 +131,8 @@ jobs:
           gu install js
           echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
 
+      - uses: sbt/setup-sbt@v1
+
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
@@ -156,6 +162,8 @@ jobs:
         with:
           version: '22.2.0'
           java-version: '17'
+
+      - uses: sbt/setup-sbt@v1
 
       - name: Install Graal.js
         run: |
@@ -193,6 +201,8 @@ jobs:
           gu install js
           echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
 
+      - uses: sbt/setup-sbt@v1
+
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
@@ -222,6 +232,8 @@ jobs:
         run: |
           gu install js
           echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
+
+      - uses: sbt/setup-sbt@v1
 
       - uses: actions/setup-node@v3
         with:
@@ -257,6 +269,8 @@ jobs:
         run: |
           gu install js
           echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
+
+      - uses: sbt/setup-sbt@v1
 
       - uses: actions/setup-node@v3
         with:
