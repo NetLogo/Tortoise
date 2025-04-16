@@ -63,7 +63,7 @@ object BrowserCompilerTest extends TestSuite {
     }
 
     "testModelHasView"-{
-      withWidget(compileModel(validModel), "view", view => assert(view[Int]("left") == 0))
+      withWidget(compileModel(validModel), "view", view => assert(view[Int]("x") == 0))
     }
 
     "testModelWithCompileWidget"-{

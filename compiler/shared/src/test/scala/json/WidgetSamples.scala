@@ -56,10 +56,10 @@ object WidgetSamples {
 
   def locatableJsObject(fs: (String, TortoiseJson)*): JsObject =
     JsObject(fields(
-      "left"      -> JsInt(1),
-      "top"       -> JsInt(2),
-      "right"     -> JsInt(3),
-      "bottom"    -> JsInt(4)) ++ fs)
+      "x"      -> JsInt(1),
+      "y"       -> JsInt(2),
+      "width"     -> JsInt(3),
+      "height"    -> JsInt(4)) ++ fs)
 
   def widgetJsons: Map[String, JsObject] = Map(
 

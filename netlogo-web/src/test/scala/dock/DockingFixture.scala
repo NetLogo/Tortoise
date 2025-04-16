@@ -265,12 +265,10 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
 
   def open(path: String, dimensions: Option[(Int, Int, Int, Int)], shouldAutoInstallLibs: Boolean, requiredExts: Set[String]): Unit = {
 
-    import scala.io.Codec.UTF8
-
     require(!opened)
 
     val absoPath  = java.nio.file.Path.of(path).toAbsolutePath.toString
-    val source    = FileIO.fileToString(absoPath)(UTF8)
+    val source    = FileIO.fileToString(absoPath, "UTF-8")
     val newSource = addRequiredExtensions(source.replaceAll("""\sdisplay\s""", ""), requiredExts)
     val model     = ModelReader.parseModel(newSource, workspace.parser, Map())
 
