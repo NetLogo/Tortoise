@@ -255,7 +255,7 @@ trait ReporterPrims extends PrimUtils {
         generateRange(sourceInfo.start, sourceInfo.end, useCompileArgs, args.checked, ra.syntax)
 
       case mli: prim._multiassignitem =>
-        s"__MULTI_SET_ARRAY.shift()"
+        "__MULTI_SET_ARRAY.shift()"
 
       case _ if compilerFlags.generateUnimplemented =>
         generateNotImplementedStub(r.reporter.getClass.getName.drop(1))
@@ -377,7 +377,7 @@ trait CommandPrims extends PrimUtils {
 
     def generateMultiSet(setCount: Int): String = {
       val arrayString = s"[__MULTI_SET_ARRAY] = [${args.get(0)}];"
-      val checkString = s"PrimChecks.control.multiLetHasEnoughArgs('SET', ${sourceInfo.start}, ${sourceInfo.end}, ${setCount}, __MULTI_SET_ARRAY);"
+      val checkString = s"PrimChecks.control.multiAssignHasEnoughArgs('SET', ${sourceInfo.start}, ${sourceInfo.end}, ${setCount}, __MULTI_SET_ARRAY);"
       s"$arrayString\n$checkString"
     }
 
@@ -586,7 +586,7 @@ trait CommandPrims extends PrimUtils {
         val regsString  = m.lets.map( (l) =>
           s"""ProcedurePrims.stack().currentContext().registerStringRunVar("${l._2.name}", ${JSIdentProvider(l._2.name)});"""
         ).mkString(" ")
-        val argsString = s"PrimChecks.control.multiLetHasEnoughArgs('LET', ${sourceInfo.start}, ${sourceInfo.end}, ${m.lets.length}, ${args.get(0)})"
+        val argsString = s"PrimChecks.control.multiAssignHasEnoughArgs('LET', ${sourceInfo.start}, ${sourceInfo.end}, ${m.lets.length}, ${args.get(0)})"
         s"let [$namesString] = $argsString; $regsString"
 
       case _: prim.etc._withlocalrandomness =>
