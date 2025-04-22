@@ -375,10 +375,42 @@ trait CommandPrims extends PrimUtils {
       }
     }
 
-    def generateMultiSet(setCount: Int): String = {
-      val arrayString = s"[__MULTI_SET_ARRAY] = [${args.get(0)}];"
-      val checkString = s"PrimChecks.control.multiAssignHasEnoughArgs('SET', ${sourceInfo.start}, ${sourceInfo.end}, ${setCount}, __MULTI_SET_ARRAY);"
-      s"$arrayString\n$checkString"
+    def generateMultiLet(multiLet: prim._multilet): String = {
+      def serializeLetStructure(ml: prim._multilet): String = {
+        ml.lets.map( (sl) => sl match {
+          case nl: prim._multilet => serializeLetStructure(nl)
+          case _                 => "0" // This could be `null` or `undefined` or `[]` since we don't need the var name, but this seems short and sweet.
+        }).mkString("[", ", ", "]")
+      }
+      def letVarsToJSArray(ml: prim._multilet): String = {
+        ml.lets.map( (sl) => sl match {
+          case nl: prim._multilet => letVarsToJSArray(nl)
+          case _                  => JSIdentProvider(sl.letList)
+        }).mkString("[", ", ", "]")
+      }
+      def flattenLetVars(l: prim._abstractlet): Seq[String] = l match {
+        case nl: prim._multilet => nl.lets.flatten(flattenLetVars(_))
+        case _                  => Seq(l.letList)
+      }
+      val letList: Seq[String] = multiLet.lets.flatten(flattenLetVars(_))
+      val regsString  = letList.map( (l) =>
+        s"""ProcedurePrims.stack().currentContext().registerStringRunVar("${l}", ${JSIdentProvider(l)});"""
+      ).mkString(" ")
+      val letStructure = serializeLetStructure(multiLet)
+      val argsString = s"PrimChecks.control.multiAssignHasEnoughArgs(${sourceInfo.start}, ${sourceInfo.end}, $letStructure, ${args.get(0)})"
+      val namesString = letVarsToJSArray(multiLet)
+      s"let $namesString = $argsString; $regsString"
+    }
+
+    def generateMultiSet(multiSet: prim._multiset): String = {
+      def serializeSetStructure(ms: prim._multiset): String = {
+        ms.sets.map( (ss) => ss match {
+          case ns: prim._multiset => serializeSetStructure(ns)
+          case _                  => "0" // This could be `null` or `undefined` or `[]` since we don't need the var name, but this seems short and sweet.
+        }).mkString("[", ", ", "]")
+      }
+      val varsString = serializeSetStructure(multiSet)
+      s"[__MULTI_SET_ARRAY] = [PrimChecks.control.linearizeAndValidateArgs(${sourceInfo.start}, ${sourceInfo.end}, $varsString, ${args.get(0)})];"
     }
 
     def generateLoop: String = {
@@ -537,7 +569,8 @@ trait CommandPrims extends PrimUtils {
       case SimplePrims.CheckedPassThroughCommand(op) => s"$op(${args.commasChecked});"
 
       case _: prim._set                  => generateSet
-      case m: prim._multiset             => generateMultiSet(m.sets.length)
+      case m: prim._multiset             => generateMultiSet(m)
+      case m: prim._multiassignnest      => ""
       case _: prim.etc._loop             => generateLoop
       case _: prim._repeat               => generateRepeat
       case _: prim.etc._while            => generateWhile
@@ -575,19 +608,13 @@ trait CommandPrims extends PrimUtils {
       case _: prim._report               => s"return PrimChecks.procedure.report(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)});"
       case _: prim.etc._ignore           => s"${args.get(0)};"
 
+      case m: prim._multilet => generateMultiLet(m)
       case l: prim._let =>
         l.let.map(inner => {
           val name = JSIdentProvider(inner.name)
           s"""let $name = ${args.get(0)}; ProcedurePrims.stack().currentContext().registerStringRunVar("${inner.name}", $name);"""
         }).getOrElse("")
 
-      case m: prim._multilet =>
-        val namesString = m.lets.map( (l) => JSIdentProvider(l._2.name) ).mkString(", ")
-        val regsString  = m.lets.map( (l) =>
-          s"""ProcedurePrims.stack().currentContext().registerStringRunVar("${l._2.name}", ${JSIdentProvider(l._2.name)});"""
-        ).mkString(" ")
-        val argsString = s"PrimChecks.control.multiAssignHasEnoughArgs('LET', ${sourceInfo.start}, ${sourceInfo.end}, ${m.lets.length}, ${args.get(0)})"
-        s"let [$namesString] = $argsString; $regsString"
 
       case _: prim.etc._withlocalrandomness =>
         s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"

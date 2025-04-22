@@ -2,9 +2,14 @@ import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import sbtcrossproject.CrossProject
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 
-val nlDependencyVersion       = "7.0.0-bef3c9d"
+// For anyone who happens to stumble onto this commit for any reason, note that the below NetLogo headless/parser version/commit
+// is not mainline.  It was done as a small side-branch to allow the nested multi-assign changes to go in here in Tortoise
+// cleanly as part of NL7 updates, then those changes were rebased to mainline NetLogo.  The commit should be on an archived
+// branch in the NetLogo repo (`multi-assign-cleanup`).  -Jeremy B April 2025
 
-val parserJsDependencyVersion = "0.4.0-bef3c9d"
+val nlDependencyVersion       = "7.0.0-3d3af69"
+
+val parserJsDependencyVersion = "0.4.0-3d3af69"
 
 val scalazVersion             = "7.2.35"
 
