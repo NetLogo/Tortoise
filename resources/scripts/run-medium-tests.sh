@@ -8,11 +8,11 @@
 
 time ./sbt.sh \
   netLogoWeb/scalastyle compilerCore/scalastyle compilerJVM/scalastyle compilerJS/scalastyle macrosCore/scalastyle \
-  compilerJS/test:compile \
-  compilerJS/test:test \
-  compilerJVM/test:compile \
-  compilerJVM/test:test \
-  netLogoWeb/test:compile \
-  netLogoWeb/test:medium \
-  "netLogoWeb/testOnly *ModelDumpTests" \
-  "netLogoWeb/testOnly *TestModels -- -z 0 -z 1"
+  "compilerJS / Test / compile" \
+  "compilerJS / Test / test" \
+  "compilerJVM / Test / compile" \
+  "compilerJVM / Test / test" \
+  "netLogoWeb / Test / compile" \
+  "netLogoWeb / Test / medium" \
+  "netLogoWeb / testOnly *ModelDumpTests" \
+  "netLogoWeb / testOnly *TestModels -- -z 0 -z 1"
