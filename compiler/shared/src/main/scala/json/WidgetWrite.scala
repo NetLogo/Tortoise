@@ -70,6 +70,11 @@ object WidgetWrite {
     def apply(s: Option[String]): TortoiseJson = JsString(s.get)
   }
 
+  implicit object intOption2Json extends OptionWriter[Int] {
+    // in general, get is not safe, but we're checking it in write
+    def apply(i: Option[Int]): TortoiseJson = JsString(i.get.toString)
+  }
+
   implicit object chooseable2Json extends JsonWriter[Chooseable] {
     def apply(c: Chooseable): TortoiseJson =
       c match {

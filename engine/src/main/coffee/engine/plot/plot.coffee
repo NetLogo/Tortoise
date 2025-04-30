@@ -19,8 +19,11 @@ module.exports = class Plot
 
   name: undefined # String
 
-  # (String, Array[Pen], PlotOps, String, String, Boolean, Number, Number, Number, Number, () => (Unit | StopInterrupt), () => (Unit | StopInterrupt)) => Plot
-  constructor: (@name, pens = [], @_ops, @xLabel, @yLabel, @isLegendEnabled = true, @isAutoplotting = true, @xMin = 0, @xMax = 10, @yMin = 0, @yMax = 10, @_setupThis = (->), @_updateThis = (->)) ->
+  # (String, Array[Pen], PlotOps, String, String, Boolean, Boolean, Boolean,
+  #    Number, Number, Number, Number, () => (Unit | StopInterrupt), () => (Unit | StopInterrupt)) => Plot
+  constructor: (@name, pens = [], @_ops, @xLabel, @yLabel, @isLegendEnabled = true, @isAutoPlotX = true, @isAutoPlotY = true,
+    @xMin = 0, @xMax = 10, @yMin = 0, @yMax = 10, @_setupThis = (->), @_updateThis = (->)) ->
+
     toName            = (p) -> p.name.toUpperCase()
     @_currentPenMaybe = maybe(pens[0])
     @_originalBounds  = [@xMin, @xMax, @yMin, @yMax]
@@ -59,7 +62,8 @@ module.exports = class Plot
 
   # () => Unit
   disableAutoplotting: ->
-    @isAutoplotting = false
+    @isAutoPlotX = false
+    @isAutoPlotY = false
     return
 
   # (Array[Number]) => Unit
@@ -76,8 +80,12 @@ module.exports = class Plot
 
   # () => Unit
   enableAutoplotting: ->
-    @isAutoplotting = true
+    @isAutoPlotX = true
+    @isAutoPlotY = true
     return
+
+  isAutoPlotting: ->
+    @isAutoPlotX and @isAutoPlotY
 
   # () => Maybe[Pen]
   getCurrentPenMaybe: ->
@@ -92,7 +100,7 @@ module.exports = class Plot
     pipeline(@_getPenMaybeByName, isSomething)(name)
 
   # (ExportedPlot) => Unit
-  importState: ({ currentPenNameOrNull, @isAutoplotting, isLegendOpen: @isLegendEnabled, pens
+  importState: ({ currentPenNameOrNull, @isAutoPlotX, @isAutoPlotY, isLegendOpen: @isLegendEnabled, pens
                 , @xMax, @xMin, @yMax, @yMin }) ->
     pens.forEach((pen) => @_createAndReturnTemporaryPen(pen.name).importState(pen))
     @_currentPenMaybe = @_getPenMaybeByName(currentPenNameOrNull)
@@ -229,9 +237,10 @@ module.exports = class Plot
   # (Pen) => Unit
   _verifyHistogramSize: (pen) ->
     isWithinBounds = ({ x }) => x >= @xMin and x <= @xMax
-    penYMax        = pipeline(filter(isWithinBounds), map((p) -> p.y), maxBy(id), fold(-> 0)(id))(pen.getPoints())
-    if penYMax > @yMax and @isAutoplotting
-      @yMax = penYMax
+    if @isAutoPlotY
+      penYMax = pipeline(filter(isWithinBounds), map((p) -> p.y), maxBy(id), fold(-> 0)(id))(pen.getPoints())
+      if penYMax > @yMax
+        @yMax = penYMax
     @_resize()
     return
 
@@ -264,9 +273,10 @@ module.exports = class Plot
     # If bounds extended, we must resize, regardless of whether or not autoplotting is enabled, because some
     # libraries force autoscaling, but we only _expand_ the boundaries when autoplotting. --JAB (10/10/14)
     if newXMin isnt @xMin or newXMax isnt @xMax or newYMin isnt @yMin or newYMax isnt @yMax
-      if @isAutoplotting
+      if @isAutoPlotX
         @xMin = newXMin
         @xMax = newXMax
+      if @isAutoPlotY
         @yMin = newYMin
         @yMax = newYMax
       @_resize()

@@ -301,9 +301,11 @@ formatAgents = (agents, schemafy, builtinsNames, ownsNames, formatAnyValue) ->
   "#{keysRow}#{onNextLineIfNotEmpty(valuesRows)}"
 
 # (ExportedPlot) => String
-formatPlotData = ({ currentPenNameOrNull, isAutoplotting, isLegendOpen, name, pens, xMax, xMin, yMax, yMin }) ->
+formatPlotData = ({ currentPenNameOrNull, isAutoPlotX, isAutoPlotY, isLegendOpen, name, pens, xMax, xMin, yMax, yMin }) ->
 
   currentPenStr = currentPenNameOrNull ? ''
+
+  isAutoplot = isAutoPlotX and isAutoPlotY
 
   convertedPlot =
     {
@@ -311,7 +313,7 @@ formatPlotData = ({ currentPenNameOrNull, isAutoplotting, isLegendOpen, name, pe
       'x max':          [xMax          , formatNumber ]
       'y min':          [yMin          , formatNumber ]
       'y max':          [yMax          , formatNumber ]
-      'autoplot?':      [isAutoplotting, formatBoolean]
+      'autoplot?':      [isAutoplot    , formatBoolean]
       'current pen':    [currentPenStr , formatString ]
       'legend open?':   [isLegendOpen  , formatBoolean]
       'number of pens': [pens.length   , formatNumber ]

@@ -109,7 +109,7 @@ toExportedPen = ({ color, interval, isPenDown, mode, penName, points, x }) ->
 
 # (Object[Any]) => ExportedPlot
 toExportedPlot = ({ currentPen, isAutoplot, isLegendOpen, name, pens, xMax, xMin, yMax, yMin }) ->
-  new ExportedPlot( fold(-> null)(id)(currentPen), isAutoplot, isLegendOpen
+  new ExportedPlot( fold(-> null)(id)(currentPen), isAutoplot, isAutoplot, isLegendOpen
                   , name, pens.map(toExportedPen), xMax, xMin, yMax, yMin)
 
 # (Object[Any]) => ExportedPlotManager

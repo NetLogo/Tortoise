@@ -15,9 +15,9 @@ import
 
 object WidgetSamples {
 
-  val slider         = Slider(Option("foobar"), 1, 2, 3, 4, Option("abc"), "5", "25", 10.0, "1", Some("bazzes"), Horizontal)
-  val reporterSlider = Slider(Option("foobar"), 1, 2, 3, 4, Option("abc"), "0", "count turtles", 10.0, "count turtles / 100", Some("bazzes"), Horizontal)
-  val switch         = Switch(Option("foobar"), 1, 2, 3, 4, Option("abc"), true)
+  val slider         = Slider(Option("foobar"), 1, 2, 3, 4, false, Option("abc"), "5", "25", 10.0, "1", Some("bazzes"), Horizontal)
+  val reporterSlider = Slider(Option("foobar"), 1, 2, 3, 4, false, Option("abc"), "0", "count turtles", 10.0, "count turtles / 100", Some("bazzes"), Horizontal)
+  val switch         = Switch(Option("foobar"), 1, 2, 3, 4, false, Option("abc"), true)
   val buttonNoName   = Button(Option("foobar"), 1, 2, 3, 4, None, false, Turtle, Option('A'))
   val buttonWithName = Button(Option("foobar"), 1, 2, 3, 4, Some("press this"), false)
   val chooser        = {
@@ -26,22 +26,22 @@ object WidgetSamples {
       Chooseable("def"),
       Chooseable(LogoList("xyz")),
       Chooseable(Boolean.box(false)))
-    Chooser(Option("foobar"), 1, 2, 3, 4, Option("abc"), choices, 0)
+    Chooser(Option("foobar"), 1, 2, 3, 4, false, Option("abc"), choices, 0)
   }
-  val inputBoxNumber = InputBox(Option("foobar"), 1, 2, 3, 4, NumericInput(25.0, NumberLabel))
-  val inputBoxColor  = InputBox(Option("foobar"), 1, 2, 3, 4, NumericInput(15, ColorLabel))
-  val inputBoxString = InputBox(Option("foobar"), 1, 2, 3, 4, StringInput("baz", StringLabel, false))
-  val monitor        = Monitor(Some("reporter"), 1, 2, 3, 4, Option("abc"), 3, 10)
-  val monitorNil     = Monitor(Some("reporter"), 1, 2, 3, 4, None, 3, 10)
+  val inputBoxNumber = InputBox(Option("foobar"), 1, 2, 3, 4, false, NumericInput(25.0, NumberLabel))
+  val inputBoxColor  = InputBox(Option("foobar"), 1, 2, 3, 4, false, NumericInput(15, ColorLabel))
+  val inputBoxString = InputBox(Option("foobar"), 1, 2, 3, 4, false, StringInput("baz", StringLabel, false))
+  val monitor        = Monitor(Some("reporter"), 1, 2, 3, 4, false, Option("abc"), 3, 10)
+  val monitorNil     = Monitor(Some("reporter"), 1, 2, 3, 4, false, None, 3, 10)
   val plot           = {
     val pen = Pen("abc", 2, 0, 15, true, "setup", "update")
-    Plot(Option("abc"), 1, 2, 3, 4,
+    Plot(Option("abc"), 1, 2, 3, 4, false,
       Option("time"), Option("height"), 0, 100, 50, 200,
-      autoPlotOn = true, legendOn = false,
+      autoPlotX = true, autoPlotY = true, legendOn = false,
       setupCode = "setup", updateCode = "update", pens = List(pen))
   }
   val ouput          = Output(1, 2, 3, 4, 10)
-  val textBox        = TextBox(Option("abc"), 1, 2, 3, 4, 10, 25.0, false)
+  val textBox        = TextBox(Option("abc"), 1, 2, 3, 4, 10, false)
   val view           = View(1, 2, 3, 4, WorldDimensions(10, 9, 8, 7, 25.0, true, false), 8, UpdateMode.Continuous, false, Option("tocks"), 50.0)
 
   val penJson = JsObject(fields(
@@ -64,6 +64,7 @@ object WidgetSamples {
   def widgetJsons: Map[String, JsObject] = Map(
 
     "slider" -> locatableJsObject(
+      "oldSize"   -> JsBool(false),
       "type"      -> JsString("slider"),
       "display"   -> JsString("abc"),
       "variable"  -> JsString("foobar"),
@@ -75,6 +76,7 @@ object WidgetSamples {
       "step"      -> JsString("1")),
 
     "switch" -> locatableJsObject(
+      "oldSize"   -> JsBool(false),
       "type"     -> JsString("switch"),
       "display"  -> JsString("abc"),
       "variable" -> JsString("foobar"),
@@ -97,6 +99,7 @@ object WidgetSamples {
       "buttonKind"             -> JsString("Observer")),
 
     "chooser" -> locatableJsObject(
+      "oldSize"       -> JsBool(false),
       "type"          -> JsString("chooser"),
       "display"       -> JsString("abc"),
       "variable"      -> JsString("foobar"),
@@ -109,15 +112,17 @@ object WidgetSamples {
       ))),
 
     "inputBox[number]" -> locatableJsObject(
-        "type"       -> JsString("inputBox"),
-        "variable"   -> JsString("foobar"),
-        "boxedValue" -> JsObject(fields(
-          "value" -> JsDouble(25.0),
-          "type"  -> JsString(NumberLabel.display)
-        ))
+      "oldSize"   -> JsBool(false),
+      "type"       -> JsString("inputBox"),
+      "variable"   -> JsString("foobar"),
+      "boxedValue" -> JsObject(fields(
+        "value" -> JsDouble(25.0),
+        "type"  -> JsString(NumberLabel.display)
+      ))
     ),
 
     "inputBox[color]" -> locatableJsObject(
+      "oldSize"   -> JsBool(false),
       "type"      -> JsString("inputBox"),
       "variable"  -> JsString("foobar"),
       "boxedValue" -> JsObject(fields(
@@ -127,6 +132,7 @@ object WidgetSamples {
     ),
 
     "inputBox[string]" -> locatableJsObject(
+      "oldSize"   -> JsBool(false),
       "type"      -> JsString("inputBox"),
       "variable"  -> JsString("foobar"),
       "boxedValue" -> JsObject(fields(
@@ -137,6 +143,7 @@ object WidgetSamples {
     ),
 
     "monitor" -> locatableJsObject(
+      "oldSize"   -> JsBool(false),
       "type"      -> JsString("monitor"),
       "display"   -> JsString("abc"),
       "source"    -> JsString("reporter"),
@@ -144,36 +151,38 @@ object WidgetSamples {
       "fontSize"  -> JsInt(10)),
 
     "monitorNil" -> locatableJsObject(
+      "oldSize"   -> JsBool(false),
       "type"      -> JsString("monitor"),
       "source"    -> JsString("reporter"),
       "precision" -> JsInt(3),
       "fontSize"  -> JsInt(10)),
 
     "plot" -> locatableJsObject(
-        "type"       -> JsString("plot"),
-        "display"    -> JsString("abc"),
-        "xAxis"      -> JsString("time"),
-        "yAxis"      -> JsString("height"),
-        "xmin"       -> JsDouble(0),
-        "xmax"       -> JsDouble(100),
-        "ymin"       -> JsDouble(50),
-        "ymax"       -> JsDouble(200),
-        "autoPlotOn" -> JsBool(true),
-        "legendOn"   -> JsBool(false),
-        "setupCode"  -> JsString("setup"),
-        "updateCode" -> JsString("update"),
-        "pens"       -> JsArray(Seq(penJson))),
+      "oldSize"    -> JsBool(false),
+      "type"       -> JsString("plot"),
+      "display"    -> JsString("abc"),
+      "xAxis"      -> JsString("time"),
+      "yAxis"      -> JsString("height"),
+      "xmin"       -> JsDouble(0),
+      "xmax"       -> JsDouble(100),
+      "ymin"       -> JsDouble(50),
+      "ymax"       -> JsDouble(200),
+      "autoPlotX"  -> JsBool(true),
+      "autoPlotY"  -> JsBool(true),
+      "legendOn"   -> JsBool(false),
+      "setupCode"  -> JsString("setup"),
+      "updateCode" -> JsString("update"),
+      "pens"       -> JsArray(Seq(penJson))),
 
     "output" -> locatableJsObject(
       "type"     -> JsString("output"),
       "fontSize" -> JsInt(10)),
 
     "textBox" -> locatableJsObject(
-      "type"        -> JsString("textBox"),
-      "display"     -> JsString("abc"),
-      "fontSize"    -> JsInt(10),
-      "color"       -> JsDouble(25.0),
-      "transparent" -> JsBool(false)),
+      "type"     -> JsString("textBox"),
+      "display"  -> JsString("abc"),
+      "fontSize" -> JsInt(10),
+      "markdown" -> JsBool(false)),
 
     "view"    -> locatableJsObject(
       "type"               -> JsString("view"),

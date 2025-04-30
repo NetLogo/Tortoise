@@ -4,8 +4,13 @@ package org.nlogo.tortoise.nlw
 package dock
 
 import org.nlogo.core.{ Model, Output, Pen, Plot, View }
+import org.nlogo.workspace.ExtensionInstaller
 
 class TestExtensionImportExport extends DockingSuite {
+
+  // In theory these are auto-installed by the `shouldAutoInstallLibs`, something about the API 6.1 and the NetLogo
+  // version of 7 is causing a hiccup.  This is just a workaround and should be fixed at some point.  -Jeremy B May 2025
+  ExtensionInstaller.main(Seq("array", "table", "export-the", "import-a", "matrix").toArray)
 
   val model = Model(
     code = "extensions [array table export-the import-a matrix] globals [x y z]"

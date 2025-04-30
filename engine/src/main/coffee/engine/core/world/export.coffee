@@ -167,7 +167,8 @@ exportPlot = (plot) ->
     new ExportedPen(color, interval, isPenDown, mode, name, points, x)
 
   currentPenNameOrNull = fold(-> null)((cp) -> cp.name)(plot.getCurrentPenMaybe())
-  isAutoplotting       = plot.isAutoplotting
+  isAutoPlotX          = plot.isAutoPlotX
+  isAutoPlotY          = plot.isAutoPlotY
   isLegendOpen         = plot.isLegendEnabled
   name                 = plot.name
   pens                 = plot.getPens().map(exportPen)
@@ -176,7 +177,7 @@ exportPlot = (plot) ->
   yMax                 = plot.yMax
   yMin                 = plot.yMin
 
-  new ExportedPlot(currentPenNameOrNull, isAutoplotting, isLegendOpen, name, pens, xMax, xMin, yMax, yMin)
+  new ExportedPlot(currentPenNameOrNull, isAutoPlotX, isAutoPlotY, isLegendOpen, name, pens, xMax, xMin, yMax, yMin)
 
 # (String) => ExportedPlot
 exportRawPlot = (plotName) ->

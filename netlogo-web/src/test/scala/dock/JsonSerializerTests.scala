@@ -17,7 +17,7 @@ class JsonSerializerTests extends AnyFunSuite with Matchers {
 
   test("JsonSerializer shapes") {
 
-    val shapeList = new ShapeList(AgentKind.Turtle, shapesToMap(Model.defaultShapes))
+    val shapeList = new ShapeList(AgentKind.Turtle, shapesToMap(Model.defaultTurtleShapes))
 
     val shapes = Seq(
         "default" ->

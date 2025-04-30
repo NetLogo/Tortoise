@@ -93,6 +93,20 @@ object WidgetRead {
                 case other                        => other.toString.failureNel
               }
   }
+  implicit object tortoiseJs2OptionInt extends JsonReader[TortoiseJson, Option[Int]] {
+    override def read(key: String, json: Option[TortoiseJson]): ValidationNel[String, Option[Int]] =
+      json.map(j =>
+          apply(j).leftMap(value => NonEmptyList(s"$value is an invalid value for $key")))
+            .getOrElse(None.successNel)
+
+            def apply(t: TortoiseJson): ValidationNel[String, Option[Int]] =
+              t match {
+                case JsNull          => None.successNel
+                case JsString("NIL") => None.successNel
+                case JsString(s)     => Some(s.toInt).successNel
+                case other           => other.toString.failureNel
+              }
+  }
 
   implicit object tortoiseJs2Direction extends JsonReader[TortoiseJson, Direction] {
     def apply(t: TortoiseJson): ValidationNel[String, Direction] = t match {

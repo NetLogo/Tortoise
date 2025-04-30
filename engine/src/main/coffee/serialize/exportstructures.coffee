@@ -69,9 +69,9 @@ module.exports.ExportedPen =
 
 module.exports.ExportedPlot =
   class
-    # ( String, Boolean, Boolean, String, Array[ExportedPen]
+    # ( String, Boolean, Boolean, Boolean, String, Array[ExportedPen]
     # , Number, Number, Number, Number)
-    constructor: ( @currentPenNameOrNull, @isAutoplotting, @isLegendOpen, @name, @pens
+    constructor: ( @currentPenNameOrNull, @isAutoPlotX, @isAutoPlotY, @isLegendOpen, @name, @pens
                  , @xMax, @xMin, @yMax, @yMin) ->
 
 module.exports.ExportedPlotManager =

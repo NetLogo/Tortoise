@@ -7,7 +7,7 @@ import
     exceptions.TestPendingException
 
 import
-  org.nlogo.headless.test.{ AbstractFixture, Command, Finder, LanguageTest, NormalMode, CommandTests, TestMode, ReporterTests }
+  org.nlogo.headless.test.{ AbstractFixture, Command, Finder, LanguageTest, NormalMode, TestMode }
 
 import
   org.nlogo.tortoise.tags.{ LanguageTest => TortoiseLanguageTag}
@@ -65,15 +65,78 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
     throw new TestPendingException
   }
 
+  // This silly little class exists to pull out language test files from dependencies, specifically headless and
+  // netLogoWeb.  The language tests are shared from the NetLogo repo to here via this method.  The Reflections
+  // dependency used to handle this, but it broke for unclear reasons during unrelated changes, and since it's
+  // unsupported it seems best to just replace it with this quick-and-dirty function.  This probably all made way more
+  // sense when headless was a seperate repo, too, but now it feels like there should be a much more straightforward
+  // way.  -Jeremy B May 2025
+  protected def getLanguageTestByClass[T](path: String, klass: Class[T]) = {
+    import java.io.{ BufferedReader, File, InputStreamReader }
+    import java.nio.file.{ Files, Path, Paths }
+    import java.util.stream.Collectors
+    import scala.collection.JavaConverters._
+    import java.util.jar.{ JarFile }
+
+    val loader = klass.getClassLoader()
+    val jarUrl = klass.getProtectionDomain().getCodeSource().getLocation()
+    val jarCheck = new File(jarUrl.getPath())
+
+    val suites: Iterator[(String, String)] = if (jarCheck.isDirectory()) {
+      val checkPath = Path.of(jarUrl.getPath(), path).toString()
+      val testsDir = new File(checkPath)
+      if (!testsDir.exists) {
+        Seq().iterator
+      } else {
+        val files = testsDir.listFiles()
+        val prefix = s"${checkPath}/"
+
+        files.iterator
+          .filter( (e) => !e.isDirectory() )
+          .map   ( (e) => e.getPath() )
+          .filter( (e) => e.endsWith(".txt") )
+          .map   ( (e) => {
+            (e.stripPrefix(prefix).stripSuffix(".txt"), Files.readString(Paths.get(e)))
+          })
+      }
+    } else {
+      val jarFile = new JarFile(new File(jarUrl.toURI()))
+      val entries = jarFile.entries()
+      val prefix = s"${path}/"
+
+      entries.asScala
+        .filter( (e) => !e.isDirectory() )
+        .map   ( (e) => e.getName() )
+        .filter( (e) => e.startsWith(prefix) && e.endsWith(".txt") )
+        .map   ( (e) => {
+          val stream = loader.getResourceAsStream(e)
+          val reader = new BufferedReader(new InputStreamReader(stream))
+          (e.stripPrefix(prefix).stripSuffix(".txt"), reader.lines().collect(Collectors.toList()).asScala.mkString("\n"))
+        })
+    }
+
+    suites.toSeq.sorted
+  }
+
+  protected def getLanguageTestResources(path: String) = {
+    val headlessSuites = getLanguageTestByClass(path, classOf[org.nlogo.headless.test.LanguageTest])
+    val webSuites = getLanguageTestByClass(path, getClass())
+    headlessSuites ++ webSuites
+  }
+
 }
 
-class TestReporters extends ReporterTests with TortoiseFinder {
+class TestReporters extends Finder with TortoiseFinder {
+  override def files = getLanguageTestResources("reporters")
+
   override val freebies = Map(
     "Version::Version_2D" -> "Assumes JVM NetLogo version numbers"
   )
 }
 
-class TestCommands extends CommandTests with TortoiseFinder {
+class TestCommands extends Finder with TortoiseFinder {
+  override def files = getLanguageTestResources("commands")
+
   import Freebies._
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)

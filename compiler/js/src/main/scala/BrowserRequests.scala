@@ -29,7 +29,7 @@ case class ExportRequest(
       code         = code,
       widgets      = widgets.toList,
       info         = info                       getOrElse "",
-      turtleShapes = turtleShapes.map(_.toList) getOrElse Model.defaultShapes,
+      turtleShapes = turtleShapes.map(_.toList) getOrElse Model.defaultTurtleShapes,
       linkShapes   = linkShapes.map(_.toList)   getOrElse Model.defaultLinkShapes,
       version      = version                    getOrElse ExportRequest.NlogoFileVersion)
 }
@@ -72,7 +72,7 @@ case class CompilationRequest(
       code         = code,
       widgets      = widgets.toList,
       info         = info                       getOrElse "",
-      turtleShapes = turtleShapes.map(_.toList) getOrElse Model.defaultShapes,
+      turtleShapes = turtleShapes.map(_.toList) getOrElse Model.defaultTurtleShapes,
       linkShapes   = linkShapes.map(_.toList)   getOrElse Model.defaultLinkShapes)
 }
 

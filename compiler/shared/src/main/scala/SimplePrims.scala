@@ -209,7 +209,7 @@ object SimplePrims {
         case _: prim._patchat                        => "SelfManager.self().patchAt"
 
         // Plotting
-        case _: prim.etc._autoplot      => "plotManager.isAutoplotting"
+        case _: prim.etc._autoplot      => "plotManager.isAutoPlotting()"
         case _: prim.etc._plotname      => "plotManager.getPlotName"
         case _: prim.etc._plotpenexists => "plotManager.hasPenWithName"
         case _: prim.etc._plotxmax      => "plotManager.getPlotXMax"

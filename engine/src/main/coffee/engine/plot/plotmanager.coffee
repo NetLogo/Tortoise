@@ -101,8 +101,8 @@ module.exports = class PlotManager
     return
 
   # () => Boolean
-  isAutoplotting: ->
-    @_withPlot((plot) -> plot.isAutoplotting)
+  isAutoPlotting: ->
+    @_withPlot((plot) -> plot.isAutoPlotting)
 
   # () => Unit
   lowerPen: ->

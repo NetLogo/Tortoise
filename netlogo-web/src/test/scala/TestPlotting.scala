@@ -47,25 +47,33 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
     implicit val e = engine
 
     setPlot(ClassHistogram.name)
-    assertAutoplottingness(ClassHistogram.isAutoplotting)
+    assertBoolean("isAutoPlotX", ClassHistogram.isAutoPlotX)
+    assertBoolean("isAutoPlotY", ClassHistogram.isAutoPlotY)
 
     setPlot(ClassPlot.name)
-    assertAutoplottingness(ClassPlot.isAutoplotting)
+    assertBoolean("isAutoPlotX", ClassPlot.isAutoPlotX)
+    assertBoolean("isAutoPlotY", ClassPlot.isAutoPlotY)
 
     setPlot(Gini.name)
-    assertAutoplottingness(Gini.isAutoplotting)
+    assertBoolean("isAutoPlotX", Gini.isAutoPlotX)
+    assertBoolean("isAutoPlotY", Gini.isAutoPlotY)
 
     setPlot(Lorenz.name)
-    assertAutoplottingness(Lorenz.isAutoplotting)
+    assertBoolean("isAutoPlotX", Lorenz.isAutoPlotX)
+    assertBoolean("isAutoPlotY", Lorenz.isAutoPlotY)
 
     setPlot(Default.name)
-    assertAutoplottingness(Default.isAutoplotting)
+    assertBoolean("isAutoPlotX", Default.isAutoPlotX)
+    assertBoolean("isAutoPlotY", Default.isAutoPlotY)
     disableAutoplotting()
-    assertIsntAutoplotting()
+    assertIsFalse("isAutoPlotX")
+    assertIsFalse("isAutoPlotY")
     disableAutoplotting()
-    assertIsntAutoplotting()
+    assertIsFalse("isAutoPlotX")
+    assertIsFalse("isAutoPlotY")
     enableAutoplotting()
-    assertIsAutoplotting()
+    assertIsTrue("isAutoPlotX")
+    assertIsTrue("isAutoPlotY")
 
     ()
 
@@ -530,12 +538,13 @@ trait PlottingHelpers {
   protected object Plots {
 
     object ClassPlot {
-      val name           = "Class Plot"
-      val isAutoplotting = true
-      val xmin           = 0
-      val xmax           = 50
-      val ymin           = 0
-      val ymax           = 250
+      val name        = "Class Plot"
+      val isAutoPlotX = true
+      val isAutoPlotY = true
+      val xmin        = 0
+      val xmax        = 50
+      val ymin        = 0
+      val ymax        = 250
       object Pens {
         object Low {
           val name     = "low"
@@ -559,12 +568,13 @@ trait PlottingHelpers {
     }
 
     object ClassHistogram {
-      val name           = "Class Histogram"
-      val isAutoplotting = false
-      val xmin           = 0
-      val xmax           = 3
-      val ymin           = 0
-      val ymax           = 250
+      val name        = "Class Histogram"
+      val isAutoPlotX = false
+      val isAutoPlotY = false
+      val xmin        = 0
+      val xmax        = 3
+      val ymin        = 0
+      val ymax        = 250
       object Pens {
         object Default {
           val name     = "default"
@@ -576,12 +586,13 @@ trait PlottingHelpers {
     }
 
     object Lorenz {
-      val name           = "Lorenz Curve"
-      val isAutoplotting = false
-      val xmin           = 0
-      val xmax           = 100
-      val ymin           = 0
-      val ymax           = 100
+      val name        = "Lorenz Curve"
+      val isAutoPlotX = false
+      val isAutoPlotY = false
+      val xmin        = 0
+      val xmax        = 100
+      val ymin        = 0
+      val ymax        = 100
       object Pens {
         object Lorenz {
           val name     = "lorenz"
@@ -599,12 +610,13 @@ trait PlottingHelpers {
     }
 
     object Gini {
-      val name           = "Gini-Index v. Time"
-      val isAutoplotting = true
-      val xmin           = 0
-      val xmax           = 50
-      val ymin           = 0
-      val ymax           = 1
+      val name        = "Gini-Index v. Time"
+      val isAutoPlotX = true
+      val isAutoPlotY = true
+      val xmin        = 0
+      val xmax        = 50
+      val ymin        = 0
+      val ymax        = 1
       object Pens {
         object Default {
           val name     = "default"
@@ -634,7 +646,7 @@ trait PlottingHelpers {
   }
 
 
-  protected def assertAutoplottingness(ness: Boolean) (implicit e: GraalJS): Unit = { assertResult(Boolean.box(ness))(evalJS(s"$pathToPlot.isAutoplotting"))                                          ; () }
+  protected def assertBoolean(field: String, ness: Boolean) (implicit e: GraalJS): Unit = { assertResult(Boolean.box(ness))(evalJS(s"$pathToPlot.$field"))                                          ; () }
   protected def assertColorIs(color: Double)          (implicit e: GraalJS): Unit = { assertResult(Double.box(color))(evalJS(s"$pathToPen.getColor()"))                                               ; () }
   protected def assertDisplayModeIs(mode: DisplayMode)(implicit e: GraalJS): Unit = {
     assertResult(
@@ -643,8 +655,8 @@ trait PlottingHelpers {
     ()
   }
   protected def assertIntervalIs(interval: Double)    (implicit e: GraalJS): Unit = { assertResult(Double.box(interval))(evalJS(s"$pathToState.interval"))                                            ; () }
-  protected def assertIsAutoplotting()                (implicit e: GraalJS): Unit = { assertAutoplottingness(true)                                                                                    ; () }
-  protected def assertIsntAutoplotting()              (implicit e: GraalJS): Unit = { assertAutoplottingness(false)                                                                                   ; () }
+  protected def assertIsTrue(field: String)           (implicit e: GraalJS): Unit = { assertBoolean(field, true)                                                                                    ; () }
+  protected def assertIsFalse(field: String)          (implicit e: GraalJS): Unit = { assertBoolean(field, false)                                                                                   ; () }
   protected def assertIsntTemp()                      (implicit e: GraalJS): Unit = { assertResult(Boolean.box(false))(evalJS(s"$pathToPen.isTemp"))                                                  ; () }
   protected def assertIsTemp()                        (implicit e: GraalJS): Unit = { assertResult(Boolean.box(true))(evalJS(s"$pathToPen.isTemp"))                                                   ; () }
   protected def assertPenExists(penName: String)      (implicit e: GraalJS): Unit = { assertResult(Boolean.box(true))(evalNLReporter(s"""plot-pen-exists? "$penName""""))                             ; () }

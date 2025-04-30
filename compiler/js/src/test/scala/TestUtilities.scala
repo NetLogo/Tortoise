@@ -92,7 +92,7 @@ object TestUtilities {
       info         = "some model info here",
       version      = NlogoFileVersion,
       linkShapes   = CModel.defaultLinkShapes :+ linkShape,
-      turtleShapes = CModel.defaultShapes :+ vectorShape)
+      turtleShapes = CModel.defaultTurtleShapes :+ vectorShape)
   }
 
   val widgetyModel: CModel =

@@ -78,7 +78,7 @@ object PlotCompiler {
 
       val args =
         Seq("name", "pens", "plotOps", jsString(sanitizeNil(xAxis.getOrElse(""))),
-            jsString(sanitizeNil(yAxis.getOrElse(""))), legendOn, autoPlotOn, xmin,
+            jsString(sanitizeNil(yAxis.getOrElse(""))), legendOn, autoPlotX, autoPlotY, xmin,
             xmax, ymin, ymax, "setup", "update").mkString(", ")
 
       val plotConstructor =
