@@ -2,9 +2,13 @@ import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import sbtcrossproject.CrossProject
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 
-val nlDependencyVersion       = "7.0.0-internal1-a87d725"
+// For anyone who happens to stumble onto this commit for any reason, note that the below NetLogo headless/parser
+// version/commit is not mainline.  It was done as a small side-branch to allow a jump line drawing change to go in here
+// in Tortoise cleanly as part of NL7 updates, then those changes were rebased to mainline NetLogo afterwards.  The
+// commit should be on an archived branch in the NetLogo repo (`jump-draw-order`).  -Jeremy B April 2025
+val nlDependencyVersion       = "7.0.0-internal1-11801ee"
 
-val parserJsDependencyVersion = "0.4.0-a87d725"
+val parserJsDependencyVersion = "0.4.0-11801ee"
 
 val scalazVersion             = "7.2.35"
 

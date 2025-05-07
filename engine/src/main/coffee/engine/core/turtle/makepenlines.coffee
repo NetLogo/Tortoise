@@ -5,6 +5,8 @@ NLMath = require('util/nlmath')
 class Trail
   constructor: (@x1, @y1, @x2, @y2, @dist) ->
 
+  equals: (t2) ->
+    @x1 is t2.x1 and @x2 is t2.x2 and @y1 is t2.y1 and @y2 is t2.y2
 
 # Ugh, Model Runs outputs the wrong updates for this
 # Make some simple tests
@@ -74,18 +76,23 @@ makePenLines = (x, y, heading, jumpDist, minX, maxX, minY, maxY) ->
 # ((Number, Number, Number) => Array[Trail], (Number) => Number, (Number) => Number) => (Number, Number, Number, Array[Trail]) => Array[Trail]
 makePenLinesHelper = (makeTrailsBy, lazyWrapX, lazyWrapY) ->
   inner = (x, y, jumpDist, acc) ->
+    trails = makeTrailsBy(x, y, jumpDist)
+    trail  = trails.sort(({ dist: distA }, { dist: distB }) -> if distA < distB then -1 else if distA is distB then 0 else 1)[0]
 
-    trails       = makeTrailsBy(x, y, jumpDist)
-    trail        = trails.sort(({ dist: distA }, { dist: distB }) -> if distA < distB then -1 else if distA is distB then 0 else 1)[0]
-    newAcc       = acc.concat([trail])
-    nextJumpDist = if jumpDist >= 0 then (jumpDist - trail.dist) else (jumpDist + trail.dist)
+    if acc.some( (t) -> t.equals(trail) )
+      acc
 
-    if nextJumpDist is 0
-      newAcc
     else
-      newX = lazyWrapX(trail.x2)
-      newY = lazyWrapY(trail.y2)
-      inner(newX, newY, nextJumpDist, newAcc)
+      acc.push(trail)
+      nextJumpDist = if jumpDist >= 0 then (jumpDist - trail.dist) else (jumpDist + trail.dist)
+
+      if nextJumpDist is 0
+        acc
+
+      else
+        newX = lazyWrapX(trail.x2)
+        newY = lazyWrapY(trail.y2)
+        inner(newX, newY, nextJumpDist, acc)
 
   inner
 
