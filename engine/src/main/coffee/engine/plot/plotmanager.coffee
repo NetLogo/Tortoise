@@ -48,6 +48,16 @@ module.exports = class PlotManager
     @_withPlot((plot) -> plot.disableAutoplotting())
     return
 
+  # () => Unit
+  disableAutoplotX: ->
+    @_withPlot((plot) -> plot.disableAutoplotX())
+    return
+
+  # () => Unit
+  disableAutoplotY: ->
+    @_withPlot((plot) -> plot.disableAutoplotY())
+    return
+
   # (Array[Any]) => Unit
   drawHistogramFrom: (list) ->
     @_withPlot(
@@ -60,6 +70,16 @@ module.exports = class PlotManager
   # () => Unit
   enableAutoplotting: ->
     @_withPlot((plot) -> plot.enableAutoplotting())
+    return
+
+  # () => Unit
+  enableAutoplotX: ->
+    @_withPlot((plot) -> plot.enableAutoplotX())
+    return
+
+  # () => Unit
+  enableAutoplotY: ->
+    @_withPlot((plot) -> plot.enableAutoplotY())
     return
 
   # () => Maybe[Plot]
@@ -102,7 +122,15 @@ module.exports = class PlotManager
 
   # () => Boolean
   isAutoPlotting: ->
-    @_withPlot((plot) -> plot.isAutoPlotting)
+    @_withPlot((plot) -> plot.isAutoPlotting())
+
+  # () => Boolean
+  isAutoPlotX: ->
+    @_withPlot((plot) -> plot.isAutoPlotX)
+
+  # () => Boolean
+  isAutoPlotY: ->
+    @_withPlot((plot) -> plot.isAutoPlotY)
 
   # () => Unit
   lowerPen: ->

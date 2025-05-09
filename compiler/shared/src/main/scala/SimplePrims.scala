@@ -209,7 +209,9 @@ object SimplePrims {
         case _: prim._patchat                        => "SelfManager.self().patchAt"
 
         // Plotting
-        case _: prim.etc._autoplot      => "plotManager.isAutoPlotting()"
+        case _: prim.etc._autoplot      => "plotManager.isAutoPlotting"
+        case _: prim.etc._autoplotx     => "plotManager.isAutoPlotX"
+        case _: prim.etc._autoploty     => "plotManager.isAutoPlotY"
         case _: prim.etc._plotname      => "plotManager.getPlotName"
         case _: prim.etc._plotpenexists => "plotManager.hasPenWithName"
         case _: prim.etc._plotxmax      => "plotManager.getPlotXMax"
@@ -378,7 +380,11 @@ object SimplePrims {
 
         // Plotting
         case _: prim.etc._autoplotoff            => "plotManager.disableAutoplotting"
+        case _: prim.etc._autoplotxoff           => "plotManager.disableAutoplotX"
+        case _: prim.etc._autoplotyoff           => "plotManager.disableAutoplotY"
         case _: prim.etc._autoploton             => "plotManager.enableAutoplotting"
+        case _: prim.etc._autoplotxon            => "plotManager.enableAutoplotX"
+        case _: prim.etc._autoplotyon            => "plotManager.enableAutoplotY"
         case _: prim.etc._clearallplots          => "plotManager.clearAllPlots"
         case _: prim.etc._clearplot              => "plotManager.clearPlot"
         case _: prim.etc._createtemporaryplotpen => "plotManager.createTemporaryPen"

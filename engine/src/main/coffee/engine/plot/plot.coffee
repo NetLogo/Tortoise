@@ -66,6 +66,16 @@ module.exports = class Plot
     @isAutoPlotY = false
     return
 
+  # () => Unit
+  disableAutoplotX: ->
+    @isAutoPlotX = false
+    return
+
+  # () => Unit
+  disableAutoplotY: ->
+    @isAutoPlotY = false
+    return
+
   # (Array[Number]) => Unit
   drawHistogramFrom: (list) ->
     @_withPen(
@@ -84,6 +94,17 @@ module.exports = class Plot
     @isAutoPlotY = true
     return
 
+  # () => Unit
+  enableAutoplotX: ->
+    @isAutoPlotX = true
+    return
+
+  # () => Unit
+  enableAutoplotY: ->
+    @isAutoPlotY = true
+    return
+
+  # () => Boolean
   isAutoPlotting: ->
     @isAutoPlotX and @isAutoPlotY
 
