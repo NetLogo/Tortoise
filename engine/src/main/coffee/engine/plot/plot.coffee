@@ -231,6 +231,31 @@ module.exports = class Plot
   _resize: ->
     @_ops.resize(@xMin, @xMax, @yMin, @yMax)
 
+  # The below functions `_prettyRange()` and `_expandRange()` are copied directly from the NetLogo desktop versions.
+  # More comments on them are in that repo.  -Jeremy B May 2025
+
+  # (Number) -> Number
+  _prettyRange: (range) ->
+    tmag = Math.pow(10, Math.floor(Math.log10(range)) - 1) * 2
+    Math.ceil(range / tmag) * tmag
+
+  # (Number, Number, Number) -> Number
+  _expandRange: (min, max, newValue) ->
+    shift = -min
+    tempMin = 0
+    tempMax = max + shift
+    tempValue = newValue + shift
+    if tempValue < 0
+      tempRange = tempMax - tempValue
+      newRange = @_prettyRange(tempRange)
+      newMin = (tempMax - newRange) - shift
+      newMin
+    else
+      tempRange = tempValue - tempMin
+      newRange  = @_prettyRange(tempRange)
+      newMax    = (newRange + tempMin) - shift
+      newMax
+
   # Histograms can only change the size of the plot by increasing the maximum Y value
   # (and only when autoplotting is on). --JAB (2/11/15)
   #
@@ -240,35 +265,29 @@ module.exports = class Plot
     if @isAutoPlotY
       penYMax = pipeline(filter(isWithinBounds), map((p) -> p.y), maxBy(id), fold(-> 0)(id))(pen.getPoints())
       if penYMax > @yMax
-        @yMax = penYMax
+        @yMax = @_expandRange(@yMin, @yMax, penYMax)
     @_resize()
     return
 
   # (Number, Number) => Unit
   _verifySize: (x, y) ->
 
-    bumpMin = ([newMin, currentMin], currentMax) ->
+    bumpMin = (newMin, currentMin, currentMax) =>
       if newMin < currentMin
-        range         = currentMax - newMin
-        expandedRange = range * 1.2
-        newValue      = currentMax - expandedRange
-        StrictMath.floor(newValue)
+        @_expandRange(currentMin, currentMax, newMin)
       else
         currentMin
 
-    bumpMax = ([newMax, currentMax], currentMin) ->
+    bumpMax = (newMax, currentMin, currentMax) =>
       if newMax > currentMax
-        range         = newMax - currentMin
-        expandedRange = range * 1.2
-        newValue      = currentMin + expandedRange
-        StrictMath.ceil(newValue)
+        @_expandRange(currentMin, currentMax, newMax)
       else
         currentMax
 
-    newXMin = bumpMin([x, @xMin], @xMax)
-    newXMax = bumpMax([x, @xMax], @xMin)
-    newYMin = bumpMin([y, @yMin], @yMax)
-    newYMax = bumpMax([y, @yMax], @yMin)
+    newXMin = bumpMin(x, @xMin, @xMax)
+    newXMax = bumpMax(x, @xMin, @xMax)
+    newYMin = bumpMin(y, @yMin, @yMax)
+    newYMax = bumpMax(y, @yMin, @yMax)
 
     # If bounds extended, we must resize, regardless of whether or not autoplotting is enabled, because some
     # libraries force autoscaling, but we only _expand_ the boundaries when autoplotting. --JAB (10/10/14)
@@ -276,9 +295,11 @@ module.exports = class Plot
       if @isAutoPlotX
         @xMin = newXMin
         @xMax = newXMax
+
       if @isAutoPlotY
         @yMin = newYMin
         @yMax = newYMax
+
       @_resize()
 
     return

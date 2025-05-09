@@ -435,50 +435,50 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
       plot(n)
     }
 
-    assertAxisRangeIs(0, 62)(e, X)
-    assertAxisRangeIs(0, 63)(e, Y)
+    assertAxisRangeIs(0, 60)(e, X)
+    assertAxisRangeIs(0, 60)(e, Y)
 
     plotxy(Plots.Gini.xmax + 20, Plots.Gini.xmax + 20)
 
-    assertAxisRangeIs(0, 84)(e, X)
-    assertAxisRangeIs(0, 84)(e, Y)
+    assertAxisRangeIs(0, 70)(e, X)
+    assertAxisRangeIs(0, 70)(e, Y)
 
     setAxisRange(10, 80)(e, X)
 
     assertAxisRangeIs(10, 80)(e, X)
-    assertAxisRangeIs(0, 84)(e, Y)
+    assertAxisRangeIs(0, 70)(e, Y)
 
     plot(1)
 
     assertAxisRangeIs(10, 80)(e, X)
-    assertAxisRangeIs(0, 84)(e, Y)
+    assertAxisRangeIs(0, 70)(e, Y)
 
     plotxy(81, 10)
 
-    assertAxisRangeIs(10, 96)(e, X)
-    assertAxisRangeIs(0, 84)(e, Y)
+    assertAxisRangeIs(10, 82)(e, X)
+    assertAxisRangeIs(0, 70)(e, Y)
 
     plotxy(-1, -1)
 
-    assertAxisRangeIs(-21, 96)(e, X)
-    assertAxisRangeIs(-18, 84)(e, Y)
+    assertAxisRangeIs(-2, 82)(e, X)
+    assertAxisRangeIs(-2, 70)(e, Y)
 
     disableAutoplotting()
 
     plotxy(-24, -10)
 
-    assertAxisRangeIs(-21, 96)(e, X)
-    assertAxisRangeIs(-18, 84)(e, Y)
+    assertAxisRangeIs(-2, 82)(e, X)
+    assertAxisRangeIs(-2, 70)(e, Y)
 
     plotxy(101, 120)
 
-    assertAxisRangeIs(-21, 96)(e, X)
-    assertAxisRangeIs(-18, 84)(e, Y)
+    assertAxisRangeIs(-2, 82)(e, X)
+    assertAxisRangeIs(-2, 70)(e, Y)
 
     plot(150)
 
-    assertAxisRangeIs(-21, 96)(e, X)
-    assertAxisRangeIs(-18, 84)(e, Y)
+    assertAxisRangeIs(-2, 82)(e, X)
+    assertAxisRangeIs(-2, 70)(e, Y)
 
     ()
   }
