@@ -166,7 +166,7 @@ class BrowserCompiler {
 
   @JSExport
   def compileProceduresIncremental(command: String, overriding: js.Array[String]): NativeJson = {
-    val overridingSeq: Seq[String] = overriding.map(_.toUpperCase)
+    val overridingSeq = overriding.map(_.toUpperCase).toSeq
     val results: CompiledStringV   = lastCompiledModel.compileProceduresIncremental(command, overridingSeq)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }

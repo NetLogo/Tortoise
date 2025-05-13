@@ -16,6 +16,8 @@ import org.nlogo.core.{
 , Token }
 import org.nlogo.core.prim.{ _commandlambda, _reporterlambda, Lambda }
 
+import org.nlogo.tortoise.compiler.utils.CompilerUtils
+
 trait Handlers extends EveryIDProvider {
 
   def prims: Prims
@@ -33,6 +35,8 @@ trait Handlers extends EveryIDProvider {
     val (primName, body) = lambda match {
       case _: _reporterlambda => ("runresult", s"return ${reporter(node, useCompileArgs)};")
       case _: _commandlambda  => ("run",       commands(node, useCompileArgs))
+      case _ =>
+        CompilerUtils.failCompilation(s"Unknown lambda type (not reporter or command): ${node.toString}", node.start, node.end, node.filename)
     }
     val fullBody = if (compileTimeArgs.length == 0) {
       body
@@ -56,12 +60,17 @@ trait Handlers extends EveryIDProvider {
       node match {
         case block: CommandBlock =>
           commands(block.statements, useCompileArgs)(compilerFlags, context, procContext)
+
         case statements: Statements =>
           val generatedJS =
             statements.stmts.map(prims.generateCommand(_, useCompileArgs)(compilerFlags, context, procContext))
               .filter(_.nonEmpty)
               .mkString("\n")
           generatedJS
+
+      case _ =>
+        CompilerUtils.failCompilation(s"Unknown command node: ${node.toString}", node.start, node.end, node.filename)
+
       }
     }
 
@@ -71,8 +80,13 @@ trait Handlers extends EveryIDProvider {
       node match {
         case block: ReporterBlock =>
           reporter(block.app, useCompileArgs)(compilerFlags, context, procContext)
+
         case app: ReporterApp =>
           prims.reporter(app, useCompileArgs)(compilerFlags, context, procContext)
+
+      case _ =>
+        CompilerUtils.failCompilation(s"Unknown reporter node: ${node.toString}", node.start, node.end, node.filename)
+
       }
     }
 

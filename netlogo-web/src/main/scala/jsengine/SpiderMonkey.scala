@@ -26,7 +26,7 @@ class SpiderMonkey {
     case ValidVersionRegex(x) => Try(x)
     case x                    => Try(throw new Exception(s"`spidermonkey --help` did not return a proper version number"))
   }.transform(Try(_), {
-    case ex: Exception => Try(throw new Exception(smErrorInstructions, ex))
+    case ex: Throwable => Try(throw new Exception(smErrorInstructions, ex))
   }).get
 
   private val process = Process(Seq("spidermonkey"))
@@ -48,9 +48,14 @@ class SpiderMonkey {
   // Pretty nice, huh?  --JAB (2/5/14)
   def eval(js: String): String = {
     val is = s"window=this;${SpiderMonkey.depsStr};$js".toIS
-    val ValidResultRegex(result) = (process #< is).lineStream.toList.init.last
-    is.close()
-    result
+    (process #< is).lazyLines.toList.init.last match {
+      case ValidResultRegex(result) =>
+        is.close()
+        result
+
+      case _ =>
+        throw new Exception("I dunno, man, I dunno.")
+    }
   }
 
   private implicit class Str2IS(str: String) {

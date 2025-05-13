@@ -81,8 +81,8 @@ class WidgetCompilerTest extends AnyFunSuite {
 
   def assertContains(jsObject: JavascriptObject, jsonObject: JsObject): Unit = {
     assert(
-      jsObject.jsonSerializableSubobject.props.filterKeys(jsonObject.props.keySet.contains) ==
-        jsonObject.props)
+      jsObject.jsonSerializableSubobject.props.view.filterKeys(jsonObject.props.keySet.contains).toMap ==
+        jsonObject.props.toMap)
     ()
   }
 

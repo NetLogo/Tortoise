@@ -15,8 +15,7 @@ import
     sc.mutable.Queue
 
 import
-  scalaz.{ NonEmptyList, Validation },
-    Validation.FlatMap.ValidationFlatMapRequested
+  scalaz.Validation.FlatMap.ValidationFlatMapRequested
 
 import
   org.nlogo.tortoise.compiler.CompiledModel
@@ -47,7 +46,7 @@ object Benchmarker extends App {
 
   private val compiler = new org.nlogo.tortoise.compiler.Compiler()
 
-  val (dirStr, models, numIterations, numTicks, enginesAndEvals, comment) = processArgs(args)
+  val (dirStr, models, numIterations, numTicks, enginesAndEvals, comment) = processArgs(args.toIndexedSeq)
 
   val dir       = new File(dirStr)
   val benchFile = new File(dir, "engine-benchmarks.txt")
@@ -73,7 +72,7 @@ object Benchmarker extends App {
   val versionStr = {
     val isClean  = Process("git diff --quiet --exit-code HEAD").! == 0
     val dirtyStr = if (isClean) "" else "-dirty"
-    val sha      = Process("git rev-parse HEAD").lineStream.head take 7
+    val sha      = Process("git rev-parse HEAD").lazyLines.head take 7
     s"$sha$dirtyStr"
   }
 
@@ -129,7 +128,7 @@ object Benchmarker extends App {
           } yield s"${model.compiledCode};$caJS;$seedJS;$timerJS;$setupJS;(function() { $repeatJS; })();$resultJS;"
         }
 
-        val js = jsV valueOr { case NonEmptyList(head, _) => throw head }
+        val js = jsV.valueOr( (e) => throw e.head )
 
         val results = enginesAndEvals.toSeq map {
           case (engine, f) => {
@@ -161,18 +160,24 @@ object Benchmarker extends App {
     val queue = new Queue[File]
     queue.enqueue(dir)
 
-    while (queue.length > 0) {
-      val folder = queue.dequeue
+    var file: File = null
+
+    while (queue.length > 0 && file == null) {
+      val folder = queue.dequeue()
       for (entry <- folder.listFiles()) {
         if (entry.isDirectory()) {
           queue.enqueue(entry)
         } else if (entry.getName() == s"$filename.nlogo") {
-          return new File(s"${folder.getAbsolutePath}/$filename.nlogo")
+          file = new File(s"${folder.getAbsolutePath}/$filename.nlogo")
         }
       }
     }
 
-    throw new Exception(s"$filename.nlogo not found in models folder.")
+    if (file == null) {
+      throw new Exception(s"$filename.nlogo not found in models folder.")
+    }
+
+    file
   }
 
   private def round(num: Double, places: Int): Double =
@@ -194,7 +199,7 @@ object Benchmarker extends App {
         pairs
     }
 
-    val dirStr :: others = args.toList
+    val dirStr :: others = args.toList: @unchecked
 
     val engineLookup = (companion: JSEngineCompanion) => engineToEvalMap filter { case (k, _) => k == companion }
 

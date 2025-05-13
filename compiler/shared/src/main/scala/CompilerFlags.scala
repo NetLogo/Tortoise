@@ -13,7 +13,7 @@ case class CompilerFlags(
 
 object CompilerFlags {
 
-  implicit val Default = CompilerFlags(generateUnimplemented = false)
+  implicit val Default: CompilerFlags = CompilerFlags(generateUnimplemented = false)
 
   sealed trait PropagationStyle
   // never propagate out stops from called procedures

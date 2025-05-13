@@ -31,7 +31,7 @@ private[tortoise] trait TestLogger extends BrowserReporter {
         super.eval(script)
       }
     }
-    e.setupTortoise
+    e.setupTortoise()
     e
   }
 

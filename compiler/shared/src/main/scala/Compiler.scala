@@ -127,7 +127,7 @@ class Compiler {
     overriding:    Seq[String]   = Seq()
   )(implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String = {
 
-    extensionManager.retainExtensionsOnNextCompile
+    extensionManager.retainExtensionsOnNextCompile()
 
     val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
       frontEnd.frontEnd(
@@ -168,7 +168,7 @@ class Compiler {
 
     val (procedureDefs, program, procedures) =
       {
-        val prog  = Program.empty.copy(interfaceGlobals = model.interfaceGlobals)
+        val prog  = Program.empty().copy(interfaceGlobals = model.interfaceGlobals)
         val procs = FrontEndInterface.NoProcedures
         compileMoreProcedures(model, prog, procs)
       }

@@ -10,8 +10,6 @@ import
 
 object Jsonify {
 
-  import scala.language.experimental.{ macros => enableMacros }
-
   def writer[T, S]: T => S = macro writableInternal[T, S]
 
   def reader[T, S]: T => ValidationNel[String, S] = macro readableInternal[T, S]
@@ -79,7 +77,7 @@ object Jsonify {
             def apply($writtenObject: $typeToJsonify): TortoiseJson = {
               val seq = Seq[(String, Option[org.nlogo.tortoise.compiler.json.TortoiseJson])](..$allElems)
                   org.nlogo.tortoise.compiler.json.TortoiseJson.JsObject(ListMap(seq.collect {
-                    case (a, Some(b)) => (a, b)
+                    case (__a, Some(__b)) => (__a, __b)
                   }: _*))
                 }
             }
@@ -108,7 +106,7 @@ object Jsonify {
 
   private def downCamelCaseTypeName(c: BlackBoxContext)(t: c.Type) = {
     val shortName = t.toString.split('.').last
-    shortName.head.toLower + shortName.tail
+    s"${shortName.head.toLower}${shortName.tail}"
   }
 
 }

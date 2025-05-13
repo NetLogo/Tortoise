@@ -14,11 +14,11 @@ class V8 {
 
   private val ValidVersionRegex = """(v\d[\d.]*)""".r
 
-  val versionNumber = Try(Process(Seq("node", "--version")).lineStream.toList.last).flatMap {
+  val versionNumber = Try(Process(Seq("node", "--version")).lazyLines.toList.last).flatMap {
     case ValidVersionRegex(x) => Try(s"Node.js $x")
     case x                    => Try(throw new Exception(s"'$x' is not a proper version number"))
   }.transform(Try(_), {
-    case ex: Exception => Try(throw new Exception("Node.js does not appear to be installed correctly on this machine.", ex))
+    case ex: Throwable => Try(throw new Exception("Node.js does not appear to be installed correctly on this machine.", ex))
   }).get
 
   private val process = Process(Seq("node", "-p", "--use_strict"))
@@ -27,7 +27,7 @@ class V8 {
   def eval(js: String): String = {
 
     val is     = s"var window=global;var ${V8.depsStr};$js".toIS
-    val result = (process #< is).lineStream.toList.mkString("\n")
+    val result = (process #< is).lazyLines.toList.mkString("\n")
     is.close()
 
     // It's a hack, but... whatevs for now. --JAB (1/30/14)

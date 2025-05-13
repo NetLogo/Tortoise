@@ -18,8 +18,8 @@ object WidgetSamples {
   val slider         = Slider(Option("foobar"), 1, 2, 3, 4, false, Option("abc"), "5", "25", 10.0, "1", Some("bazzes"), Horizontal)
   val reporterSlider = Slider(Option("foobar"), 1, 2, 3, 4, false, Option("abc"), "0", "count turtles", 10.0, "count turtles / 100", Some("bazzes"), Horizontal)
   val switch         = Switch(Option("foobar"), 1, 2, 3, 4, false, Option("abc"), true)
-  val buttonNoName   = Button(Option("foobar"), 1, 2, 3, 4, None, false, Turtle, Option('A'))
-  val buttonWithName = Button(Option("foobar"), 1, 2, 3, 4, Some("press this"), false)
+  val buttonNoName   = Button(Option("foobar"), 1, 2, 3, 4, false, None, false, Turtle, Option('A'))
+  val buttonWithName = Button(Option("foobar"), 1, 2, 3, 4, false, Some("press this"), false)
   val chooser        = {
     val choices = List(
       Chooseable(Double.box(10.0)),
@@ -76,13 +76,14 @@ object WidgetSamples {
       "step"      -> JsString("1")),
 
     "switch" -> locatableJsObject(
-      "oldSize"   -> JsBool(false),
+      "oldSize"  -> JsBool(false),
       "type"     -> JsString("switch"),
       "display"  -> JsString("abc"),
       "variable" -> JsString("foobar"),
       "on"       -> JsBool(true)),
 
     "buttonNoName" -> locatableJsObject(
+      "oldSize"                -> JsBool(false),
       "type"                   -> JsString("button"),
       "source"                 -> JsString("foobar"),
       "forever"                -> JsBool(false),
@@ -91,6 +92,7 @@ object WidgetSamples {
       "actionKey"              -> JsString("A")),
 
     "buttonWithName" -> locatableJsObject(
+      "oldSize"                -> JsBool(false),
       "type"                   -> JsString("button"),
       "display"                -> JsString("press this"),
       "source"                 -> JsString("foobar"),

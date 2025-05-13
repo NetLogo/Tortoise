@@ -5,16 +5,16 @@ package org.nlogo.tortoise.compiler
 import
   JavascriptObject.JsFunction
 
-import
-  json.{ JsonWriter, TortoiseJson },
-    JsonWriter._,
-    TortoiseJson.JsObject
+import json.TortoiseJson.JsObject
 
 import
   JsOps.{ jsArrayString, sanitizeNil, thunkifyFunction, thunkifyProcedure }
 
 import
-  org.nlogo.core.{ Button, CompilerException, Monitor, Pen, Plot, Slider, Token, Widget }
+  org.nlogo.core.{ Button, Monitor, Pen, Plot, Slider, Widget }
+
+import
+  org.nlogo.tortoise.compiler.utils.CompilerUtils
 
 import
   scalaz.{ Apply, Scalaz, Success, ValidationNel },
@@ -42,11 +42,8 @@ class WidgetCompiler(
       case p: Plot    =>
         val cleanDisplay = sanitizeNil(p.display.getOrElse(""))
 
-        val Seq(compiledSetup, compiledUpdate) =
-          Seq("setup" -> p.setupCode, "update" -> p.updateCode).map {
-            case (name, code) =>
-              compileInPlotContext(code, cleanDisplay).contextualizeError("plot", cleanDisplay, name)
-          }
+        val compiledSetup  = compileInPlotContext(p.setupCode,  cleanDisplay).contextualizeError("plot", cleanDisplay, "setup")
+        val compiledUpdate = compileInPlotContext(p.updateCode, cleanDisplay).contextualizeError("plot", cleanDisplay, "update")
 
         val compilation =
           Apply[ExceptionValidation].apply2(compiledSetup, compiledUpdate)(
@@ -60,15 +57,15 @@ class WidgetCompiler(
     }
 
   private def validatePlots(widgets: Seq[Widget]): Unit = {
-    val invalidPlots =
-      widgets.filter(_.isInstanceOf[Plot]).groupBy {
-        case p: Plot => p.display
-      }.filter(_._2.size > 1)
+    val plots = widgets.flatMap({
+      case p: Plot => Some(p)
+      case _       => None
+    })
+    val invalidPlots = plots.groupBy( (p) => p.display ).filter(_._2.size > 1)
     if (invalidPlots.nonEmpty) {
-      import Token.Eof
       val message =
         s"Having multiple plots with same display name is not supported. Duplicate names detected: ${invalidPlots.keys.mkString(", ")}"
-      throw new CompilerException(message, Eof.start, Eof.end, Eof.filename)
+      CompilerUtils.failCompilation(message)
     }
   }
 
@@ -117,18 +114,20 @@ class WidgetCompiler(
         .map( (f) => s"ProcedurePrims.rng.withAux(${thunkifyFunction(f)})" )
         .contextualizeError("slider", s.display.getOrElse(s.varName), name)
 
-    val Seq(max, min, step) =
-      Seq("min" -> s.min, "max" -> s.max, "step" -> s.step).map((sliderError _).tupled)
+    val min  = sliderError("min",  s.min)
+    val max  = sliderError("max",  s.max)
+    val step = sliderError("step", s.step)
 
     Apply[ExceptionValidation].apply3(max, min, step)(SliderCompilation.apply)
   }
 
   private def compilePen(ownerName: String)(pen: Pen): CompiledPen = {
-    val Seq(setup, update) = Seq("setup" -> pen.setupCode, "update" -> pen.updateCode).map {
-      case (name, code) =>
-        compileInPlotContext(code,  ownerName, Option(pen.display))
-          .contextualizeError("pen", Option(pen.display).getOrElse(""), name)
-    }
+    def comp(name: String, code: String) =
+      compileInPlotContext(code, ownerName, Option(pen.display))
+        .contextualizeError("pen", Option(pen.display).getOrElse(""), name)
+
+    val setup  = comp("setup",  pen.setupCode)
+    val update = comp("update", pen.updateCode)
 
     new CompiledPen(pen, Apply[ExceptionValidation].apply2(setup, update)(UpdateableCompilation.apply))
   }

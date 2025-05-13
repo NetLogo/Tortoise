@@ -28,7 +28,7 @@ class TestMersenneTwister extends SimpleSuite {
     (1 to 1000).foreach(_ => assert(rngs.map(f).distinct.size == 1))
 
     fixture.eval("random.setSeed(11)")
-    val Seq(resultR, result1, result2, result3, result4) = rngs.map(f)
+    val Seq(resultR, result1, result2, result3, result4) = rngs.map(f): @unchecked
 
     assert(Seq(result1, result2, result3, result4).distinct.size == 1)
     assert(resultR != result1)

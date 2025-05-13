@@ -114,7 +114,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   def compare(reporter: String) =
     compareMunged(reporter, id, id)
 
-  def compareMunged(reporter: String, mungeExpected: (String) => String, mungeActual: (String) => String) {
+  def compareMunged(reporter: String, mungeExpected: (String) => String, mungeActual: (String) => String): Unit = {
     runReporterMunged(Reporter(reporter,
         try {
           val expected = Dump.logoObject(workspace.report(reporter))
@@ -132,7 +132,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   override def runReporter(reporter: Reporter, mode: TestMode) =
     runReporterMunged(reporter, mode, id)
 
-  def runReporterMunged(reporter: Reporter, mode: TestMode, mungeActual: (String) => String) {
+  def runReporterMunged(reporter: Reporter, mode: TestMode, mungeActual: (String) => String): Unit = {
     if (!opened) declare(Model())
     netLogoCode ++= s"${reporter.reporter}\n"
     val compiledJS = tortoiseCompiler.compileReporter(
@@ -171,7 +171,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
     val (headlessException, exceptionOccurredInHeadless) =
       try {
         nldOp(workspace)
-        (Unit, false)
+        ((), false)
       } catch {
         case ex: Exception =>
           (ex.getMessage, true)
@@ -185,12 +185,13 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
         (false, nlwOp(engine))
       } catch {
         case ex: PolyglotException =>
-          if (ex.getMessage.contains(":")) {
-            val AfterFirstColonRegex   = "^.*?: (.*)".r
-            val AfterFirstColonRegex(exMsg) = ex.getMessage
-            (true, (exMsg, ""))
-          } else {
-            (true, (ex.getMessage, ""))
+          val AfterFirstColonRegex = "^.*?: (.*)".r
+          ex.getMessage match {
+            case AfterFirstColonRegex(exMsg) =>
+              (true, (exMsg, ""))
+
+            case _ =>
+              (true, (ex.getMessage, ""))
           }
 
         case ex: Exception =>
@@ -206,7 +207,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
       if (!errorMessagesMatch(headlessException.asInstanceOf[String], actualOutput))
         throw new TestFailedException(s"""Exception in JS was "$actualOutput" but exception in headless was "$headlessException" """, 7)
     } else {
-      assertResult(expectedOutput)(evalJS("world._getOutput()").asInstanceOf[String].replaceAllLiterally("\\n", "\n"))
+      assertResult(expectedOutput)(evalJS("world._getOutput()").asInstanceOf[String].replace("\\n", "\n"))
       val removeB64 = (str: String) => str.replaceAll("""("imageBase64":\s*").*?"""", """$1"""")
       val (expectedModel, actualModel) = updatedJsonModels(removeB64(expectedJson), removeB64(actualJson))
 
@@ -254,7 +255,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   // use single-patch world by default to keep generated JSON to a minimum
   override val defaultView = core.View.square(0)
 
-  override def open(path: String, shouldAutoInstallLibs: Boolean = false) {
+  override def open(path: String, shouldAutoInstallLibs: Boolean = false): Unit = {
     require(!opened)
     super.open(path, shouldAutoInstallLibs)
   }
@@ -284,13 +285,13 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
 
   }
 
-  override def openModel(model: Model, shouldAutoInstallLibs: Boolean = false) {
+  override def openModel(model: Model, shouldAutoInstallLibs: Boolean = false): Unit = {
     require(!opened)
     super.openModel(model, shouldAutoInstallLibs)
     declareHelper(model)
   }
 
-  override def declare(model: Model) {
+  override def declare(model: Model): Unit = {
     require(!opened)
     super.declare(model)
     declareHelper(model)
@@ -306,9 +307,9 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
        |  });
        |}""".stripMargin
 
-  implicit val compilerFlags = CompilerFlags.Default.copy(onTickCallback = runMonitors)
+  implicit val compilerFlags: CompilerFlags = CompilerFlags.Default.copy(onTickCallback = runMonitors)
 
-  def declareHelper(model: Model) {
+  def declareHelper(model: Model): Unit = {
     netLogoCode ++= s"${model.code}\n"
     val result = tortoiseCompiler.compileProcedures(model)
     val js     = tortoiseCompiler.toJS(result)

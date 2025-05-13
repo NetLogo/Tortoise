@@ -23,16 +23,21 @@ class TestTime extends SimpleSuite with ScalaCheckDrivenPropertyChecks {
           assert(DateRegex.pattern.matcher(timeStr).matches(),
                  s"'$timeStr' didn't meet expected format of 'hh:mm:ss.SSS a dd-MMM-yyyy'")
 
-          val DateRegex(hours, minutes, seconds, millis, date, month, year) = timeStr
+          timeStr match {
+            case DateRegex(hours, minutes, seconds, millis, date, month, year) =>
 
-          assertWithinRange(hours.  toInt, 1,    12)
-          assertWithinRange(minutes.toInt, 0,    59)
-          assertWithinRange(seconds.toInt, 0,    59)
-          assertWithinRange(millis. toInt, 0,    999)
-          assertWithinRange(date.   toInt, 1,    31)
-          assertWithinRange(year.   toInt, 2015, 2999)
+              assertWithinRange(hours.  toInt, 1,    12)
+              assertWithinRange(minutes.toInt, 0,    59)
+              assertWithinRange(seconds.toInt, 0,    59)
+              assertWithinRange(millis. toInt, 0,    999)
+              assertWithinRange(date.   toInt, 1,    31)
+              assertWithinRange(year.   toInt, 2015, 2999)
 
-          assert(months(month), s"Value '$month' is not within '$months'")
+              assert(months(month), s"Value '$month' is not within '$months'")
+
+            case _ =>
+              throw new Exception(s"Time string was not in proper format: $timeStr")
+          }
 
       }
 

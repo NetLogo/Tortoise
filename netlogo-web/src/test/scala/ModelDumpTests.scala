@@ -14,6 +14,8 @@ import jsengine.GraalJS
 
 import org.graalvm.polyglot.Value
 
+import scala.jdk.CollectionConverters._
+
 import org.scalatest.exceptions.TestFailedException
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -27,7 +29,7 @@ import
 class ModelDumpTests extends AnyFunSuite {
 
   def graalValueToSequence(value: Value): Seq[Value] = {
-    0l.to(value.getArraySize - 1).map( value.getArrayElement )
+    0L.to(value.getArraySize - 1).map( value.getArrayElement )
   }
 
   val engine       = new GraalJS()
@@ -39,8 +41,7 @@ class ModelDumpTests extends AnyFunSuite {
     engine.put("__modelCode", modelCode)
     val value = engine.evalRaw("(function() { __compilation = __bc.fromNlogo(__modelCode); return __compilation; })()")
     val compilation = value.as(classOf[JMap[String, AnyRef]])
-    import scala.collection.JavaConverters.mapAsScalaMap
-    val widgetString = mapAsScalaMap(compilation)("widgets").toString
+    val widgetString = compilation.asScala("widgets").toString
     val widgets      = graalValueToSequence(engine.evalRaw(widgetString)).map( (w) => w.as(classOf[JMap[String, AnyRef]]) )
     (compilation, widgets)
   }
@@ -52,10 +53,9 @@ class ModelDumpTests extends AnyFunSuite {
     test(s"compiled model javascript tests for ${model.filename}", SlowTest) {
       println(model.path)
       try {
-        import scala.collection.JavaConverters.mapAsScalaMap
         val modelContents                 = Source.fromFile(model.path).mkString
         val (compilationResultJ, widgets) = compilationFunction(modelContents)
-        val compilationResult             = mapAsScalaMap(compilationResultJ)
+        val compilationResult             = compilationResultJ.asScala
         val modelResult                   = compilationResult("model").asInstanceOf[JMap[String,AnyRef]]
         assert(modelResult.get("success").asInstanceOf[Boolean])
 

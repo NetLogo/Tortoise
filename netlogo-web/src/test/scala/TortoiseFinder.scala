@@ -75,7 +75,7 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
     import java.io.{ BufferedReader, File, InputStreamReader }
     import java.nio.file.{ Files, Path, Paths }
     import java.util.stream.Collectors
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     import java.util.jar.{ JarFile }
 
     val loader = klass.getClassLoader()

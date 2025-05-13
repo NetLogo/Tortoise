@@ -154,7 +154,7 @@ module.exports =
         # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
         @turtleManager._clearTurtlesSuspended()
 
-        @changeTopology(wrapsInX, wrapsInY, minPxcor, maxPxcor, minPycor, maxPycor)
+        @setTopology(wrapsInX, wrapsInY, minPxcor, maxPxcor, minPycor, maxPycor)
         @_createPatches()
         @_declarePatchesAllBlack()
         @_resetPatchLabelCount()
@@ -163,7 +163,7 @@ module.exports =
       return
 
     # (Boolean, Boolean, Number, Number, Number, Number) => Unit
-    changeTopology: (wrapsInX, wrapsInY, minX = @topology.minPxcor, maxX = @topology.maxPxcor, minY = @topology.minPycor, maxY = @topology.maxPycor) ->
+    setTopology: (wrapsInX, wrapsInY, minX = @topology.minPxcor, maxX = @topology.maxPxcor, minY = @topology.minPycor, maxY = @topology.maxPycor) ->
       @topology = topologyFactory(wrapsInX, wrapsInY, minX, maxX, minY, maxY, @patches, @getPatchAt)
       @_updater.updated(this)("wrappingAllowedInX", "wrappingAllowedInY")
       return

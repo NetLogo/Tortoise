@@ -11,7 +11,6 @@ import
 import org.nlogo.core.{
   AstNode
 , CommandBlock
-, CompilerException
 , Expression
 , prim
 , Reporter
@@ -19,9 +18,10 @@ import org.nlogo.core.{
 , ReporterBlock
 , Statement
 , Syntax
-, Token
 }
 import org.nlogo.core.prim.Lambda
+
+import org.nlogo.tortoise.compiler.utils.CompilerUtils.failCompilation
 
 // The Prim traits are split apart as follows
 //                  JsOps
@@ -39,12 +39,6 @@ import org.nlogo.core.prim.Lambda
 // in the future after a scala.js upgrade shows that it won't break stuff (RG 3/30/2015)
 trait PrimUtils {
   def handlers: Handlers
-
-  protected def failCompilation(msg: String, token: Token): Nothing =
-    failCompilation(msg, token.start, token.end, token.filename)
-
-  protected def failCompilation(msg: String, start: Int, end: Int, filename: String): Nothing =
-    throw new CompilerException(msg, start, end, filename)
 
   protected def fixBN(breedName: String): String =
     Option(breedName) filter (_.nonEmpty) getOrElse "LINKS"
@@ -248,8 +242,10 @@ trait ReporterPrims extends PrimUtils {
 
       case x: prim._externreport =>
         val ExtensionPrimRegex = """_externreport\(([^:]+):([^)]+)\)""".r
-        val ExtensionPrimRegex(extName, primName) = x.toString
-        s"Extensions[${jsString(extName)}].prims[${jsString(primName)}](${args.commas})"
+        (x.toString: @unchecked) match {
+          case ExtensionPrimRegex(extName, primName) =>
+            s"Extensions[${jsString(extName)}].prims[${jsString(primName)}](${args.commas})"
+        }
 
       case ra: prim.etc._range =>
         generateRange(sourceInfo.start, sourceInfo.end, useCompileArgs, args.checked, ra.syntax)
@@ -631,8 +627,10 @@ trait CommandPrims extends PrimUtils {
 
       case x: prim._extern =>
         val ExtensionPrimRegex = """_extern\(([^:]+):([^)]+)\)""".r
-        val ExtensionPrimRegex(extName, primName) = x.toString
-        s"Extensions[${jsString(extName)}].prims[${jsString(primName)}](${args.commas});"
+        (x.toString: @unchecked) match {
+          case ExtensionPrimRegex(extName, primName) =>
+            s"Extensions[${jsString(extName)}].prims[${jsString(primName)}](${args.commas});"
+        }
 
       case _ if compilerFlags.generateUnimplemented =>
         s"${generateNotImplementedStub(s.command.getClass.getName.drop(1))};"

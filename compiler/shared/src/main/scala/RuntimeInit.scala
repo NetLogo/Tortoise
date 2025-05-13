@@ -121,8 +121,12 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
     val view = model.view
     import view._
 
-    Seq(globalNames, interfaceGlobalNames, patchesOwnNames, minPxcor, maxPxcor, minPycor, maxPycor, patchSize,
-      wrappingAllowedInX, wrappingAllowedInY, "turtleShapes", "linkShapes", onTickFunction).map(_.toString)
+    Seq(
+      globalNames, interfaceGlobalNames, patchesOwnNames
+    , minPxcor.toString, maxPxcor.toString, minPycor.toString, maxPycor.toString, patchSize.toString
+    , wrappingAllowedInX.toString, wrappingAllowedInY.toString
+    , "turtleShapes", "linkShapes", onTickFunction
+    )
   }
 
   private def shapeList(shapes: ShapeList): String =
@@ -132,7 +136,7 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
       "{}"
 
   private def workspaceDeclare(declarationName: String): JsDeclare = {
-    val camelCased = declarationName.head.toLower + declarationName.tail
+    val camelCased = s"${declarationName.head.toLower}${declarationName.tail}"
     JsDeclare(declarationName, s"workspace.$camelCased", Seq("workspace"))
   }
 

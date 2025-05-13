@@ -189,7 +189,7 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
    */
   @JSExport
   def save(): String = {
-    val gaussianStr = if (__nextNextGaussian == __nextNextGaussian.toInt) (__nextNextGaussian + ".0") else __nextNextGaussian
+    val gaussianStr = if (__nextNextGaussian == __nextNextGaussian.toInt) (s"${__nextNextGaussian}.0") else __nextNextGaussian
     val result: StringBuilder = new StringBuilder(MersenneTwisterFast.IDENTIFIER + " " + __mag01(0) + " " + __mag01(1) + " " + mti + " " + gaussianStr + " " + __haveNextNextGaussian)
     var i: Int = 0
     while (i < MersenneTwisterFast.N) {
@@ -205,7 +205,7 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
    * It was not in Sean's original code.
    */
   @JSExport
-  def load(s: String) {
+  def load(s: String): Unit = {
 
     val tokenizer = s.split("\\s")
     val identifier: String = tokenizer(0)
@@ -249,7 +249,7 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
     setSeed(seed.toLong)
   }
 
-  override def setSeed(seed: Long) {
+  override def setSeed(seed: Long): Unit = {
     __haveNextNextGaussian = false
     __nextNextGaussian = 0
     __mt = new Array[Int](MersenneTwisterFast.N)
@@ -342,7 +342,7 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
 
   }
 
-  override def nextBytes(bytes: Array[Byte]) {
+  override def nextBytes(bytes: Array[Byte]): Unit = {
 
     var y: Int = 0
     var x: Int = 0
@@ -451,7 +451,8 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
     z ^= (z << 15) & MersenneTwisterFast.TEMPERING_MASK_C
     z ^= (z >>> 18)
 
-    (y.toLong << 32) + z
+    // Changed from original code for a bugfix, see "Hoo, boy!" in desktop's MTF -Jeremy B May 2025
+    (y.toLong << 32) | (z.toLong & 0x00000000ffffffffL)
   }
 
   @JSExport
@@ -537,7 +538,8 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
       z ^= (z << 15) & MersenneTwisterFast.TEMPERING_MASK_C
       z ^= (z >>> 18)
 
-      bits = ((y.toLong << 32) + z) >>> 1
+      // Changed from original code for a bugfix, see "Hoo, boy!" in desktop's MTF -Jeremy B May 2025
+      bits = ((y.toLong << 32) | (z.toLong & 0x00000000ffffffffL)) >>> 1
       value = bits % n
 
     } while (bits - value + (n - 1) < 0)

@@ -17,6 +17,9 @@ import
 import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsNull, JsObject, JsString }
 
+import
+  org.nlogo.tortoise.compiler.utils.CompilerUtils
+
 object WidgetWrite {
 
   implicit object direction2Json extends JsonWriter[Direction] {
@@ -54,9 +57,15 @@ object WidgetWrite {
 
   implicit object dims2Json extends JsonWriter[WorldDimensions] {
     def apply(wd: WorldDimensions): TortoiseJson = {
-      val JsObject(props) = Jsonify.writer[WorldDimensions, TortoiseJson](wd)
-      val pairsWithoutTypeField = props.filterKeys(_ != "type").toSeq
-      JsObject(fields(pairsWithoutTypeField: _*))
+      Jsonify.writer[WorldDimensions, TortoiseJson](wd) match {
+        case JsObject(props) =>
+          val pairsWithoutTypeField = props.view.filterKeys(_ != "type").toSeq
+          JsObject(fields(pairsWithoutTypeField: _*))
+
+        case _ =>
+          CompilerUtils.failCompilation(s"Invalid properties for writing world dimensions: ${wd}")
+
+      }
     }
   }
 

@@ -44,6 +44,8 @@ import org.nlogo.core.Syntax.{
 , VoidType
 }
 
+import org.nlogo.tortoise.compiler.utils.CompilerUtils.failCompilation
+
 case class ExtensionPrim(primitive: Primitive, name: String)
 
 trait Extension {
@@ -63,7 +65,7 @@ object CreateExtension {
       }
       override def getPrims: Seq[ExtensionPrim] = {
         try {
-          jsExt("prims").as[JsArray].value.map(convertToExtensionPrim)
+          jsExt("prims").as[JsArray].value.map(convertToExtensionPrim).toSeq
         } catch {
           case e: Exception => throw new Exception(s"Problem parsing extension definition JSON.  ${e.getMessage}", e)
         }
@@ -180,7 +182,6 @@ object CreateExtension {
 
 class NLWExtensionManager extends ExtensionManager {
 
-  import org.nlogo.core.{ CompilerException, Token }
   import org.nlogo.tortoise.macros.ExtDefReader
   import scala.collection.mutable.{ Map => MMap, Set => MSet }
 
@@ -194,7 +195,7 @@ class NLWExtensionManager extends ExtensionManager {
   override def finishFullCompilation(): Unit = ()
 
   override def importExtension(extName: String, errors: ErrorSource): Unit = {
-    val extension    = extNameToExtMap.getOrElse(extName, throwCompilerError(s"No such extension: ${extName}"))
+    val extension    = extNameToExtMap.getOrElse(extName, failCompilation(s"No such extension: ${extName}"))
     val extPrimPairs = extension.getPrims.map(prim => (extension.getName, prim))
     val shoutedPairs = extPrimPairs.map { case (extName, ExtensionPrim(prim, name)) => (s"$extName:$name".toUpperCase, prim) }
     primNameToPrimMap ++= shoutedPairs
@@ -227,8 +228,5 @@ class NLWExtensionManager extends ExtensionManager {
       primNameToPrimMap.clear()
     }
   }
-
-  private def throwCompilerError(cause: String) =
-    throw new CompilerException(cause, Token.Eof.start, Token.Eof.end, Token.Eof.filename)
 
 }

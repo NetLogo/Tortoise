@@ -41,7 +41,7 @@ object JSEngine {
     override protected type T = GraalEngine
     override def cleanSlate: T = {
       val graal = (new GraalJS)
-      graal.setupTortoise
+      graal.setupTortoise()
       graal
     }
     override def version: String = cleanSlate.engine.versionNumber

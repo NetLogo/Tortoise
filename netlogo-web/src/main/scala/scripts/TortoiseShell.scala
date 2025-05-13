@@ -16,12 +16,12 @@ object TortoiseShell extends workspace.Shell {
 
   val jsRuntime = new GraalJS
 
-  def main(argv: Array[String]) {
+  def main(argv: Array[String]): Unit = {
     workspace.AbstractWorkspace.setHeadlessProperty()
 
     val compiler = new Compiler()
     val compilation = compiler.compileProcedures(defaultModel)
-    jsRuntime.setupTortoise
+    jsRuntime.setupTortoise()
     jsRuntime.eval(compiler.toJS(compilation))
     System.err.println("Tortoise Shell 1.0")
     for(line <- input.takeWhile(!isQuit(_)))
@@ -30,7 +30,7 @@ object TortoiseShell extends workspace.Shell {
       }
   }
 
-  def run(js: String) {
+  def run(js: String): Unit = {
     printingExceptions {
       val (output, json) = jsRuntime.run(js)
       Seq(output)
@@ -39,7 +39,7 @@ object TortoiseShell extends workspace.Shell {
     }
   }
 
-  private def printingExceptions(body: => Unit) {
+  private def printingExceptions(body: => Unit): Unit = {
     try body
     catch { case e: Exception => println(e) }
   }

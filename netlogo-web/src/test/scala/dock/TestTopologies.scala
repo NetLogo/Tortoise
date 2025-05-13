@@ -9,7 +9,7 @@ class TestTopologies extends DockingSuite {
 
   val default = View(dimensions = WorldDimensions(minPxcor = -8, maxPxcor = 9, minPycor = -10, maxPycor = 11))
 
-  def inAllTopologies(name: String, decls: String = "", baseView: View = default)(fn: DockingFixture => Unit) {
+  def inAllTopologies(name: String, decls: String = "", baseView: View = default)(fn: DockingFixture => Unit): Unit = {
     case class Topo(name: String, wrapX: Boolean, wrapY: Boolean) {
       val view = baseView.copy(dimensions = baseView.dimensions.copy(wrappingAllowedInX = wrapX, wrappingAllowedInY = wrapY))
     }

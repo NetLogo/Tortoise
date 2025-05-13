@@ -41,7 +41,7 @@ object LiteralConverter {
 
   private def nlToJS(value: => AnyRef): AnyRef = {
 
-    import scala.scalajs.js.JSConverters.genTravConvertible2JSRichGenTrav
+    import scala.scalajs.js.JSConverters.iterableOnceConvertible2JSRichIterableOnce
 
     def nlValueToJSValue: PartialFunction[AnyRef, AnyRef] = {
       case l: LogoList => l.toList.map(nlValueToJSValue).toJSArray

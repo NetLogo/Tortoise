@@ -2,15 +2,11 @@ import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import sbtcrossproject.CrossProject
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 
-// For anyone who happens to stumble onto this commit for any reason, note that the below NetLogo headless/parser
-// version/commit is not mainline.  It was done as a small side-branch to allow a jump line drawing change to go in here
-// in Tortoise cleanly as part of NL7 updates, then those changes were rebased to mainline NetLogo afterwards.  The
-// commit should be on an archived branch in the NetLogo repo (`jump-draw-order`).  -Jeremy B April 2025
-val nlDependencyVersion       = "7.0.0-internal1-48f3951"
+val nlDependencyVersion       = "7.0.0-beta1-2bad0d8"
 
-val parserJsDependencyVersion = "0.4.0-48f3951"
+val parserJsDependencyVersion = "0.4.0-2bad0d8"
 
-val scalazVersion             = "7.2.35"
+val scalazVersion             = "7.2.36"
 
 val playJsonVersion           = "2.9.4"
 
@@ -21,9 +17,9 @@ val commonSettings =
     version       := "1.0",
 
     crossPaths    := false, // we're not cross-building for different Scala versions
-    scalaVersion  := "2.12.17",
+    scalaVersion  := "2.13.16",
     scalacOptions ++=
-      "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
+      "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_".split(" ").toSeq,
 
     resolvers     += "netlogoheadless" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/",
     libraryDependencies ++= Seq(
@@ -32,7 +28,7 @@ val commonSettings =
       "com.typesafe.play" %% "play-json"       % playJsonVersion,
       "com.lihaoyi"       %% "scalatags"       % "0.12.0"   % "test",
       "org.scalatest"     %% "scalatest"       % "3.2.16"   % "test",
-      "org.scalatestplus" %% "scalacheck-1-15" % "3.2.11.0" % "test",
+      "org.scalatestplus" %% "scalacheck-1-18" % "3.2.19.0" % "test",
       "org.skyscreamer"   %  "jsonassert"      % "1.5.1"    % "test",
       "org.reflections"   %  "reflections"     % "0.9.12"   % "test",
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"

@@ -7,9 +7,6 @@ import
   org.nlogo.core.Shape.{ Circle, Element, Line, Polygon, Rectangle, RgbColor }
 
 import
-  scala.language.implicitConversions
-
-import
   TortoiseJson.{ fields, JsArray, JsBool, JsField, JsInt, JsObject, JsString }
 
 import

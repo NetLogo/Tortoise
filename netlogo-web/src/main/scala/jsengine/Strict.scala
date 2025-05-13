@@ -23,7 +23,7 @@ object Strict {
   // Don't bother trying to add `max` or `min`.  They're variadic in JS and binary on the JVM.
   // Doesn't translate well. --JAB (2/18/15)
   def pow(x: Double, y: Double):   Double = StrictMath.pow(x, y)
-  def round(x: Double):            Double = StrictMath.round(x)
+  def round(x: Double):            Double = StrictMath.round(x).toDouble
   def sin(x: Double):              Double = StrictMath.sin(x)
   def sqrt(x: Double):             Double = StrictMath.sqrt(x)
   def tan(x: Double):              Double = StrictMath.tan(x)

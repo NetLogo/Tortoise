@@ -350,12 +350,14 @@ object BrowserCompilerTest extends TestSuite {
       assert(JsArray(expectedGlobalVars) == globalVars)
 
       val turtleVars = toTortoise(compiler.listTurtleVars())
-      val expectedTurtleVars = Seq("gourds", "who", "ycor", "breed", "xcor", "size", "label-color"
-      , "pen-size", "color", "shape", "label", "hidden?", "heading", "pen-mode").map(JsString.apply)
+      val expectedTurtleVars = Seq(
+        "who", "color", "heading", "xcor", "ycor", "shape", "label", "label-color"
+      , "breed", "hidden?", "size", "pen-size", "pen-mode", "gourds"
+      ).map(JsString.apply)
       assert(JsArray(expectedTurtleVars) == turtleVars)
 
       val patchVars = toTortoise(compiler.listPatchVars())
-      val expectedPatchVars = Seq("pxcor", "plabel-color", "pcolor", "mites", "plabel", "pycor").map(JsString.apply)
+      val expectedPatchVars = Seq("pxcor", "pycor", "pcolor", "plabel", "plabel-color", "mites").map(JsString.apply)
       assert(JsArray(expectedPatchVars) == patchVars)
 
       val wolvesOwnVars = toTortoise(compiler.listOwnVarsForBreed("wolves"))
@@ -373,8 +375,10 @@ object BrowserCompilerTest extends TestSuite {
       assert(JsArray(expectedTurtleVars ++ expectedBirdsVars) == birdsVars)
 
       val linkVars = toTortoise(compiler.listLinkVars())
-      val expectedLinkVars = Seq("breed", "label-color", "thickness", "color", "shape", "label"
-      , "hidden?", "tie-mode", "end1", "end2").map(JsString.apply)
+      val expectedLinkVars = Seq(
+        "end1", "end2", "color", "label", "label-color"
+      , "hidden?", "breed", "thickness", "shape", "tie-mode"
+      ).map(JsString.apply)
       assert(JsArray(expectedLinkVars) == linkVars)
 
       val streetsOwnVars = toTortoise(compiler.listLinkOwnVarsForBreed("streets"))

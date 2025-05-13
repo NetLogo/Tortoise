@@ -15,7 +15,7 @@ import
   org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import
-  scala.collection.JavaConverters._
+  scala.jdk.CollectionConverters._
 
 import
   TortoiseLoader.{ integrateSymbols, dependencySorted }
@@ -145,7 +145,7 @@ class TortoiseLoaderPropertyTests extends AnyFunSuite with ScalaCheckDrivenPrope
     deps     <- treeCompilation
   } yield JsDeclare(provides, "", deps.map(_.provides)) :: deps
 
-  def decl(genDeps: Gen[Seq[String]]): Gen[JsDeclare] = for {
+  def decl(genDeps: Gen[scala.collection.immutable.Seq[String]]): Gen[JsDeclare] = for {
     provides <- compilationIdent
     deps     <- genDeps
   } yield JsDeclare(provides, "", deps)
@@ -158,8 +158,9 @@ class TortoiseLoaderPropertyTests extends AnyFunSuite with ScalaCheckDrivenPrope
   def acyclicCompilation: Gen[CompilationList] =
     Gen.listOf(treeCompilation).flatMap { trees =>
       val tree = trees.foldLeft(List[CompilationUnit]())(_ ++ _)
-      decl(Gen.someOf(tree).map(_.map(_.provides))).map(_ :: tree)
-    }.map(shuffle).suchThat(isValidDependencyTree)
+      val r = Gen.someOf(tree).map(_.map(_.provides).toSeq)
+      decl(r).map(_ :: tree)
+    }.map(shuffle(_)).suchThat(isValidDependencyTree(_))
 
   def cyclicCompilation: Gen[CompilationList] =
     acyclicCompilation

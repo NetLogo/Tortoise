@@ -13,6 +13,8 @@ import
 import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsObject, JsString }
 
+import scala.collection.immutable.ArraySeq
+
 sealed trait DrawingActionConverter[T <: DrawingAction] extends JsonConverter[T] {
 
   protected def `type`: String
@@ -92,7 +94,7 @@ class SetColorsConverter(override protected val target: SetColors) extends Drawi
 
 class ReadImageConverter(override protected val target: ReadImage) extends DrawingActionConverter[ReadImage] {
   override protected val `type`     = "read-image"
-  override protected val extraProps = JsObject(fields("imageBytes" -> JsArray(target.imageBytes.map(x => JsInt(x)))))
+  override protected val extraProps = JsObject(fields("imageBytes" -> JsArray(ArraySeq.unsafeWrapArray(target.imageBytes.map(x => JsInt(x))))))
 }
 
 class SendPixelsConverter(override protected val target: SendPixels) extends DrawingActionConverter[SendPixels] {

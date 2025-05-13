@@ -21,7 +21,7 @@ class TestEngine extends AnyFunSuite {
 
   test("empty world") {
     val jsRuntime = new GraalJS
-    jsRuntime.setupTortoise
+    jsRuntime.setupTortoise()
     jsRuntime.eval(s"""
       |${Polyfills.content}
       |var workspace = tortoise_require('engine/workspace')({})([])([], [])('')({})([])([], [], [], -1, 1, -1, 1, 1, true, true);

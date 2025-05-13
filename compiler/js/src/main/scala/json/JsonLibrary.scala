@@ -8,6 +8,8 @@ import
 import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsNull, JsObject, JsString }
 
+import org.nlogo.tortoise.compiler.utils.CompilerUtils
+
 object JsonLibrary {
 
   type Native = JAny
@@ -22,9 +24,10 @@ object JsonLibrary {
       case JsString(s)     => JAny.fromString(s)
       case JsBool(b)       => JAny.fromBoolean(b)
       case JsArray(a)      => JArray(a.map(toNative): _*)
-      case JsObject(props) => Dictionary(props.toMap.mapValues(toNative).toSeq: _*)
+      case JsObject(props) => Dictionary(props.toMap.view.mapValues(toNative).toSeq: _*)
     }
 
+  // scalastyle:off cyclomatic.complexity
   def toTortoise(nativeValue: Native): TortoiseJson =
     (nativeValue, typeOf(nativeValue)) match {
       // scalastyle:off null
@@ -46,7 +49,11 @@ object JsonLibrary {
         val d        = JAny.wrapDictionary(nativeValue.asInstanceOf[Dictionary[Native]])
         val mappings = d.keys.map(k => k -> toTortoise(d(k)))
         JsObject(fields(mappings.toSeq: _*))
+
+      case _ =>
+        CompilerUtils.failCompilation(s"Unknown native value type encountered: ${nativeValue.toString}")
     }
+  // scalastyle:on cyclomatic.complexity
 
   def nativeToString(n: Native): String =
     JSON.stringify(n)

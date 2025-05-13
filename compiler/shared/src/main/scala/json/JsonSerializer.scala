@@ -16,7 +16,7 @@ import
       Mirrorables.{ Link, Observer, Patch, Turtle, World }
 
 import
-  scala.collection.immutable.ListMap
+  scala.collection.immutable.{ ArraySeq, ListMap }
 
 import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsNull, JsObject, JsString }
@@ -64,7 +64,7 @@ object JsonSerializer {
     val fieldsByKind: Map[Kind, ListMap[String, TortoiseJson]] =
       (births ++ changes ++ deaths)
         .groupBy(_._1) // group by kinds
-        .mapValues(v => fields(v.map(_._2).sortBy(_._1).map(t => (t._1.toString, t._2)): _*)) // remove kind from pairs
+        .view.mapValues(v => fields(v.map(_._2).sortBy(_._1).map(t => (t._1.toString, t._2)): _*)).toMap // remove kind from pairs
 
     val keysToKind = Seq(
       "turtles"  -> Turtle,
@@ -107,16 +107,19 @@ object JsonSerializer {
 
   private val scalaPrimsToJson: PartialFunction[AnyRef, TortoiseJson] = {
     case (x: AnyRef, y: AnyRef) => JsArray(List(toJValue(x), toJValue(y)))
-    case s: Seq[_]              => JsArray((s.toVector map { case v: AnyRef => toJValue(v) }).toList)
+    case s: Seq[_]              => JsArray((s.toVector.map( (i) => (i: @unchecked) match { case v: AnyRef => toJValue(v) })).toList)
     case Some(x: AnyRef)        => toJValue(x)
     case None                   => JsNull
   }
 
   def getImplicitVariables(kind: Kind): Seq[String] =
     kind match {
-      case Turtle => AgentVariables.getImplicitTurtleVariables
-      case Patch  => AgentVariables.getImplicitPatchVariables
-      case Link   => AgentVariables.getImplicitLinkVariables ++ Array("SIZE", "HEADING", "MIDPOINTX", "MIDPOINTY", "DIRECTED?")
+      case Turtle =>
+        ArraySeq.unsafeWrapArray(AgentVariables.getImplicitTurtleVariables)
+      case Patch  =>
+        ArraySeq.unsafeWrapArray(AgentVariables.getImplicitPatchVariables)
+      case Link   =>
+        ArraySeq.unsafeWrapArray(AgentVariables.getImplicitLinkVariables ++ Array("SIZE", "HEADING", "MIDPOINTX", "MIDPOINTY", "DIRECTED?"))
       // Note that all cases can be replaced by _. However, we don't deal with linethickness yet, need to address that.
       case _      => 0 until kind.Variables.maxId map (kind.Variables.apply(_).toString)
     }

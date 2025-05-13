@@ -755,7 +755,7 @@ trait PlottingHelpers {
         |};""".stripMargin
 
     val engine = new GraalJS
-    engine.setupTortoise
+    engine.setupTortoise()
     engine.eval(preCode)
     engine
 

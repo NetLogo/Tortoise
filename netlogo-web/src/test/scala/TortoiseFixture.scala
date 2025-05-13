@@ -25,7 +25,7 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
 
   private val compiler = new Compiler()
 
-  private var program: Program = Program.empty
+  private var program: Program = Program.empty()
   private var procs: ProceduresMap = NoProcedures
 
   private def modelJS(model: CModel): String = {
@@ -105,10 +105,14 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
     }
     catch {
       case ex: PolyglotException if AfterFirstColonRegex.findFirstIn(ex.getMessage).isDefined =>
-        val AfterFirstColonRegex(exMessage) = ex.getMessage
-        val message = msg.replaceAll("\\\\n", "\n")
-        assertResult(message)(exMessage)
-        ()
+        ex.getMessage match {
+          case AfterFirstColonRegex(exMessage) =>
+            val message = msg.replaceAll("\\\\n", "\n")
+            assertResult(message)(exMessage)
+            ()
+
+          case _ => throw new Exception("Polyglot exception wasn't in expected format.")
+        }
       case ex: PolyglotException if ex.getGuestObject != null && ex.getGuestObject.hasMember("message") && ex.getGuestObject.getMember("message") != null =>
         val exMessage = ex.getGuestObject.getMember("message").toString
         val message = msg.replaceAll("\\\\n", "\n")

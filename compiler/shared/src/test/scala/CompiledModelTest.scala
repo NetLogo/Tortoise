@@ -126,7 +126,7 @@ class CompiledModelTest extends AnyFunSuite {
                       genActualValidation: (String) => CompileResult[String]): Unit = {
     val expectedCode = genExpectedStr(code)
     val actualCode   =
-      genActualValidation(code) valueOr { case NonEmptyList(head, _) => fail(codeFailedWithError(code, head)) }
+      genActualValidation(code).valueOr( (e) => fail(codeFailedWithError(code, e.head)) )
     assertResult(expectedCode)(actualCode)
     ()
   }
@@ -155,7 +155,7 @@ class CompiledModelTest extends AnyFunSuite {
   }
 
   private def unsafeGenModelFromCode(code: String): CompiledModel =
-    CompiledModel.fromCode(code, compiler) valueOr { case NonEmptyList(head, _) => throw head }
+    CompiledModel.fromCode(code, compiler).valueOr( (e) => throw e.head )
 
   private val codeToModel = (code: String) =>
     CModel(code, List(View.square(16)))

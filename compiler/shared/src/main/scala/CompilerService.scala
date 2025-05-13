@@ -11,12 +11,9 @@ package org.nlogo.tortoise.compiler
 import
   scala.io.Source
 
-import
-  scalaz.NonEmptyList
-
 object CompilerService {
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
 
     val input =
       args match {
@@ -28,9 +25,7 @@ object CompilerService {
 
     val compiler = new Compiler()
 
-    val model = CompiledModel.fromNlogoContents(nlogo, compiler) valueOr {
-      case NonEmptyList(head, _) => throw head
-    }
+    val model = CompiledModel.fromNlogoContents(nlogo, compiler).valueOr( (e) => { throw e.head })
 
     // scalastyle:off regex
     println(model.compiledCode)

@@ -76,10 +76,13 @@ object PlotCompiler {
       val (plotPens, penErrors) = formatObjectsAndErrors(compiledPens.map(renderPen),
         jsArrayString(_, "\n"), es => alertFailure(es.mkString(", ")))
 
-      val args =
-        Seq("name", "pens", "plotOps", jsString(sanitizeNil(xAxis.getOrElse(""))),
-            jsString(sanitizeNil(yAxis.getOrElse(""))), legendOn, autoPlotX, autoPlotY, xmin,
-            xmax, ymin, ymax, "setup", "update").mkString(", ")
+      val args: Seq[String] =
+        Seq("name", "pens", "plotOps"
+        , jsString(sanitizeNil(xAxis.getOrElse(""))), jsString(sanitizeNil(yAxis.getOrElse("")))
+        , legendOn.toString, autoPlotX.toString, autoPlotY.toString
+        , xmin.toString, xmax.toString, ymin.toString, ymax.toString
+        , "setup", "update"
+        )
 
       val plotConstructor =
         s"""|var name    = '$cleanDisplay';
@@ -87,7 +90,7 @@ object PlotCompiler {
             |var pens    = $plotPens;$penErrors
             |var setup   = $compiledSetup;
             |var update  = $compiledUpdate;
-            |return new Plot($args);""".stripMargin
+            |return new Plot(${args.mkString(", ")});""".stripMargin
 
       SuccessfulComponent(s"(${jsFunction(body = plotConstructor)})()")
 

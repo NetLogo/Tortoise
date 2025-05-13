@@ -28,7 +28,7 @@ object JsonLibrary {
       case JsString(s)     => JString(s)
       case JsBool(b)       => JBoolean(b)
       case JsArray(a)      => JArray(a.map(toNative))
-      case JsObject(props) => JObject(props.toMap.mapValues(toNative).toSeq)
+      case JsObject(props) => JObject(props.toMap.view.mapValues(toNative).toSeq)
     }
 
   def toTortoise(nativeValue: Native): TortoiseJson =

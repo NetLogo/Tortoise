@@ -20,7 +20,7 @@ class TestModels extends DockingSuite {
   for (model <- nonExportables) {
     val testName = s"0: no export - ${model.name}"
     test(testName, SlowTest) { implicit fixture =>
-      engine.reset
+      engine.reset()
 
       println(testName)
 
@@ -90,7 +90,7 @@ class TestModels extends DockingSuite {
     count = count + 1
     val testName = s"$chunk: export-world - ${name}"
     test(testName, SlowTest) { implicit fixture =>
-      engine.reset
+      engine.reset()
 
       println(testName)
 
@@ -128,7 +128,7 @@ class TestModels extends DockingSuite {
 
     // Just check the patch size (not the image base64) --JAB (2/12/19)
     val transformDrawing =
-      (str: String) => (str: scala.collection.immutable.StringOps).lines.toSeq.init.mkString("\n")
+      (str: String) => (str: scala.collection.immutable.StringOps).linesIterator.toSeq.init.mkString("\n")
 
     // Trim off plot bounds --JAB (1/3/18)
     val transformPlots =
