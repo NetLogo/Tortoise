@@ -22,6 +22,7 @@ import org.nlogo.core.model.ModelReader
 import org.nlogo.parse.CompilerUtilities
 
 import scala.collection.immutable.ListMap
+import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 import scala.scalajs.js
@@ -54,7 +55,7 @@ class BrowserCompiler {
     val compilationResult =
       for {
         tortoiseReq   <- readNative[JsObject](compilationRequest)
-        parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
+        parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
         compiledModel =  CompiledModel.fromModel(parsedRequest.toModel, compiler).leftMap(_.map(ex => ex: Exception))
         compilation   <- transformErrorsAndUpdateModel(
           compiledModel,
@@ -76,7 +77,7 @@ class BrowserCompiler {
       for {
         commands      <- readArray[String](commandJson, "commands")
         tortoiseReq   <- readNative[JsObject](compilationRequest)
-        parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
+        parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
         compiledModel =  CompiledModel.fromNlogoContents(contents, compiler, parsedRequest.widgets)
         compilation   <- transformErrorsAndUpdateModel(compiledModel, compileExtras(commands, Seq()))
       } yield compilation
@@ -95,7 +96,7 @@ class BrowserCompiler {
     val model =
       for {
         tortoiseReq   <- readNative[JsObject](exportRequest)
-        parsedRequest <- ExportRequest.read(tortoiseReq).leftMap(_.map(FailureString))
+        parsedRequest <- ExportRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
       } yield ModelReader.formatModel(parsedRequest.toModel)
 
     JsonLibrary.toNative(model.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
@@ -320,7 +321,7 @@ class BrowserCompiler {
 
     readNative[JsArray](native).orElse(defaultError.failureNel).flatMap {
       arr =>
-        val validations = arr.elems.map(e => JsonReader.read(e)(ev).bimap(_ map FailureString, List(_)))
+        val validations = arr.elems.map(e => JsonReader.read(e)(using ev).bimap(_.map(FailureString.apply), List(_)))
         validations.foldLeft(List.empty[A].successNel[FailureString])(_ +++ _).leftMap(_.map(fail => fail: TortoiseFailure))
     }.leftMap(_.map(fail => fail: TortoiseFailure))
 
@@ -335,7 +336,7 @@ class BrowserCompiler {
   }
 
   private def readNative[A](n: NativeJson)(implicit ev: JsonReader[TortoiseJson, A]): ValidationNel[TortoiseFailure, A] =
-    JsonReader.read(toTortoise(n))(ev).leftMap(_.map(s => FailureString(s)))
+    JsonReader.read(toTortoise(n))(using ev).leftMap(_.map(s => FailureString(s)))
 
 }
 

@@ -44,7 +44,7 @@ class SimpleFixture(compiler: Compiler, engine: GraalJS) {
 
   private val compileCommands = compiler.compileRawCommands(_: String, procedures, program)
   private val compileReporter = compiler.compileReporter(_: String, procedures, program)
-  val eval                    = engine.eval _
+  val eval                    = engine.eval
 
   private val compilation = Compilation(Seq(), Seq(), Seq(), Model(), procedures, program)
   private val js          = compiler.toJS(compilation)

@@ -7,12 +7,12 @@ import utest._
 import scala.scalajs.js
 
 import org.nlogo.tortoise.compiler.TestUtilities.{
-  modelToCompilationRequest
-, validModel
+  modelToCompilationRequest,
+  validModel
 }
 
 object LiteralConverterTest extends TestSuite {
-  def tests = TestSuite {
+  def tests = utest.Tests {
 
     "works with simple code"-{
       val compilationRequest = modelToCompilationRequest(validModel)

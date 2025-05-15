@@ -5,15 +5,16 @@ package org.nlogo.tortoise.compiler
 import JsOps.{ jsArrayString, jsFunction }
 
 import org.nlogo.core.{
-  AstNode
-, CommandBlock
-, Dump
-, LogoList
-, Nobody => NlogoNobody
-, ReporterApp
-, ReporterBlock
-, Statements
-, Token }
+  AstNode,
+  CommandBlock,
+  Dump,
+  LogoList,
+  Nobody => NlogoNobody,
+  ReporterApp,
+  ReporterBlock,
+  Statements,
+  Token
+}
 import org.nlogo.core.prim.{ _commandlambda, _reporterlambda, Lambda }
 
 import org.nlogo.tortoise.compiler.utils.CompilerUtils
@@ -59,11 +60,11 @@ trait Handlers extends EveryIDProvider {
     incrementingContext { context =>
       node match {
         case block: CommandBlock =>
-          commands(block.statements, useCompileArgs)(compilerFlags, context, procContext)
+          commands(block.statements, useCompileArgs)(using compilerFlags, context, procContext)
 
         case statements: Statements =>
           val generatedJS =
-            statements.stmts.map(prims.generateCommand(_, useCompileArgs)(compilerFlags, context, procContext))
+            statements.stmts.map(prims.generateCommand(_, useCompileArgs)(using compilerFlags, context, procContext))
               .filter(_.nonEmpty)
               .mkString("\n")
           generatedJS
@@ -79,10 +80,10 @@ trait Handlers extends EveryIDProvider {
     incrementingContext { context =>
       node match {
         case block: ReporterBlock =>
-          reporter(block.app, useCompileArgs)(compilerFlags, context, procContext)
+          reporter(block.app, useCompileArgs)(using compilerFlags, context, procContext)
 
         case app: ReporterApp =>
-          prims.reporter(app, useCompileArgs)(compilerFlags, context, procContext)
+          prims.reporter(app, useCompileArgs)(using compilerFlags, context, procContext)
 
       case _ =>
         CompilerUtils.failCompilation(s"Unknown reporter node: ${node.toString}", node.start, node.end, node.filename)

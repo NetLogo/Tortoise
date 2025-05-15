@@ -9,6 +9,9 @@ import
 import
   org.nlogo.core.CompilerException
 
+import
+  scala.language.implicitConversions
+
 sealed trait TortoiseFailure
 case class FailureString(str: String) extends TortoiseFailure
 case class FailureException(exception: Throwable) extends TortoiseFailure

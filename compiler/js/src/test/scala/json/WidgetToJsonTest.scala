@@ -21,7 +21,7 @@ import
   WidgetToJson.{ read => readWidget, widget2Json }
 
 object WidgetToJsonTest extends TestSuite {
-  val tests = TestSuite {
+  val tests = utest.Tests {
     "test serialization, deserialization, round-tripping"-{
       (widgetJsons zip testWidgets).foreach {
         case ((name, json), (_, widget)) =>
@@ -41,18 +41,18 @@ object WidgetToJsonTest extends TestSuite {
       }
     }
 
-  "fails to read without a type"-{
-    val error = "Widgets must be represented as a JSON Object with type specified".failureNel
-    assert(error == readWidget(JsObject(fields())))
-  }
+    "fails to read without a type"-{
+      val error = "Widgets must be represented as a JSON Object with type specified".failureNel
+      assert(error == readWidget(JsObject(fields())))
+    }
 
-  "errors when reading bad output"-{
-    val expected = "could not convert JsNull$ to int".failureNel
-    val result   = WidgetToJson.read(locatableJsObject(
-      "type"     -> JsString("output"),
-      "fontSize" -> JsNull
-    ))
-    assert(expected == result)
-  }
+    "errors when reading bad output"-{
+      val expected = "could not convert JsNull$ to int".failureNel
+      val result   = WidgetToJson.read(locatableJsObject(
+        "type"     -> JsString("output"),
+        "fontSize" -> JsNull
+      ))
+      assert(expected == result)
+    }
   }
 }

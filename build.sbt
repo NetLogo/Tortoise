@@ -2,13 +2,13 @@ import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import sbtcrossproject.CrossProject
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 
-val nlDependencyVersion       = "7.0.0-beta1-2bad0d8"
+val nlDependencyVersion       = "7.0.0-beta1-6d02429"
 
-val parserJsDependencyVersion = "0.4.0-2bad0d8"
+val parserJsDependencyVersion = "0.4.0-6d02429"
 
 val scalazVersion             = "7.2.36"
 
-val playJsonVersion           = "2.9.4"
+val playJsonVersion           = "2.10.6"
 
 val commonSettings =
   Seq(
@@ -17,9 +17,9 @@ val commonSettings =
     version       := "1.0",
 
     crossPaths    := false, // we're not cross-building for different Scala versions
-    scalaVersion  := "2.13.16",
+    scalaVersion  := "3.7.0",
     scalacOptions ++=
-      "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_".split(" ").toSeq,
+      "-deprecation -unchecked -feature -explain -encoding us-ascii -Xfatal-warnings".split(" ").toSeq,
 
     resolvers     += "netlogoheadless" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/",
     libraryDependencies ++= Seq(
@@ -30,7 +30,6 @@ val commonSettings =
       "org.scalatest"     %% "scalatest"       % "3.2.16"   % "test",
       "org.scalatestplus" %% "scalacheck-1-18" % "3.2.19.0" % "test",
       "org.skyscreamer"   %  "jsonassert"      % "1.5.1"    % "test",
-      "org.reflections"   %  "reflections"     % "0.9.12"   % "test",
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"
     ),
 
@@ -44,7 +43,6 @@ val commonSettings =
     onLoadMessage   := "",
 
     Test / testOptions += Tests.Argument("-oT"),
-    Compile / console / scalacOptions := scalacOptions.value.filterNot(_ == "-Xlint")
   )
 
 lazy val stylecheck = taskKey[Unit]("Run all sub-project scalastyle checks.")
@@ -121,7 +119,7 @@ lazy val macros = CrossProject("macros", file("macros"))(JSPlatform, JVMPlatform
   settings(commonSettings: _*).
   settings(
     libraryDependencies ++= Seq(
-      "org.scala-lang" %  "scala-reflect" % scalaVersion.value,
+      // "org.scala-lang" %  "scala-reflect" % scalaVersion.value,
       "org.scalaz"     %% "scalaz-core"   % scalazVersion),
     (Compile / compile) := ((Compile / compile) dependsOn (root / recompileWhenExtensionsChange)).value
   )

@@ -36,10 +36,7 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
   override def runTest(t: LanguageTest, mode: TestMode): Unit =
     loggingFailures(t.suiteName, t.testName, { super.runTest(t, mode) })
 
-  override protected def test(name: String, otherTags: Tag*)
-                             (testFun: => Any)
-                             (implicit pos: org.scalactic.source.Position): Unit =
-    super.test(name, (Seq(TortoiseLanguageTag) ++ otherTags):_*)(testFun)(pos)
+  override def extraTags: Seq[Tag] = Seq(TortoiseLanguageTag)
 
   override def withFixture[T](name: String)(body: (AbstractFixture) => T): T =
     freebies.get(name.stripSuffix(" (NormalMode)")) match {

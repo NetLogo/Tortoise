@@ -17,7 +17,7 @@ import
   org.nlogo.tortoise.macros.json.Jsonify
 
 import
-  scalaz.{ Scalaz, Validation, NonEmptyList, ValidationNel },
+  scalaz.{ Scalaz, Success, Validation, NonEmptyList, ValidationNel },
     Validation.FlatMap.ValidationFlatMapRequested,
     Scalaz.ToValidationOps
 
@@ -66,17 +66,17 @@ object WidgetRead {
 
   implicit object tortoiseJs2OptionString extends JsonReader[TortoiseJson, Option[String]] {
     override def read(key: String, json: Option[TortoiseJson]): ValidationNel[String, Option[String]] =
-      json.map(j =>
+      json.map( j =>
           apply(j).leftMap(value => NonEmptyList(s"$value is an invalid value for $key")))
             .getOrElse(None.successNel)
 
-            def apply(t: TortoiseJson): ValidationNel[String, Option[String]] =
-              t match {
-                case JsNull          => None.successNel
-                case JsString("NIL") => None.successNel
-                case JsString(s)     => Some(s).successNel
-                case other           => other.toString.failureNel
-              }
+    def apply(t: TortoiseJson): ValidationNel[String, Option[String]] =
+      t match {
+        case JsNull          => None.successNel
+        case JsString("NIL") => None.successNel
+        case JsString(s)     => Some(s).successNel
+        case other           => other.toString.failureNel
+      }
   }
 
   implicit object tortoiseJs2OptionChar extends JsonReader[TortoiseJson, Option[Char]] {
@@ -85,13 +85,13 @@ object WidgetRead {
           apply(j).leftMap(value => NonEmptyList(s"$value is an invalid value for $key")))
             .getOrElse(None.successNel)
 
-            def apply(t: TortoiseJson): ValidationNel[String, Option[Char]] =
-              t match {
-                case JsNull                       => None.successNel
-                case JsString("NIL")              => None.successNel
-                case JsString(s) if s.length == 1 => Some(s.head).successNel
-                case other                        => other.toString.failureNel
-              }
+    def apply(t: TortoiseJson): ValidationNel[String, Option[Char]] =
+      t match {
+        case JsNull                       => None.successNel
+        case JsString("NIL")              => None.successNel
+        case JsString(s) if s.length == 1 => Some(s.head).successNel
+        case other                        => other.toString.failureNel
+      }
   }
   implicit object tortoiseJs2OptionInt extends JsonReader[TortoiseJson, Option[Int]] {
     override def read(key: String, json: Option[TortoiseJson]): ValidationNel[String, Option[Int]] =
@@ -99,13 +99,13 @@ object WidgetRead {
           apply(j).leftMap(value => NonEmptyList(s"$value is an invalid value for $key")))
             .getOrElse(None.successNel)
 
-            def apply(t: TortoiseJson): ValidationNel[String, Option[Int]] =
-              t match {
-                case JsNull          => None.successNel
-                case JsString("NIL") => None.successNel
-                case JsString(s)     => Some(s.toInt).successNel
-                case other           => other.toString.failureNel
-              }
+    def apply(t: TortoiseJson): ValidationNel[String, Option[Int]] =
+      t match {
+        case JsNull          => None.successNel
+        case JsString("NIL") => None.successNel
+        case JsString(s)     => Some(s.toInt).successNel
+        case other           => other.toString.failureNel
+      }
   }
 
   implicit object tortoiseJs2Direction extends JsonReader[TortoiseJson, Direction] {
@@ -158,7 +158,7 @@ object WidgetRead {
       case JsInt(i)       => ChooseableDouble(i.toDouble).successNel
       case JsString(s)    => ChooseableString(s).successNel
       case JsBool(b)      => ChooseableBoolean(b).successNel
-      case JsArray(elems) => toLogoList(elems).map(ChooseableList)
+      case JsArray(elems) => toLogoList(elems).map(ChooseableList.apply)
       case other          => s"Could not convert $other to a chooseable value".failureNel
     }
 

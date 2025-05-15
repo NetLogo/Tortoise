@@ -25,7 +25,7 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
   testPlotting("Nully calls don't explode") { (engine) =>
     implicit val e = engine
     setPlot(Plots.ClassHistogram.name)
-    assertResult(false)(evalJS(s"$pathToPlot.hasPenWithName(undefined)"))
+    assertResult(false)(evalJS(s"$pathToPlot.hasPenWithName(undefined)").asInstanceOf[Boolean])
     ()
   }
 
@@ -111,8 +111,8 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
     createTempPen(tempPenName)
 
     setPlot(Lorenz.name)
-    setAxisRange(-10, -9)(e, X)
-    setAxisRange(9,   10)(e, Y)
+    setAxisRange(-10, -9)(using e, X)
+    setAxisRange(9,   10)(using e, Y)
 
     clearPlot()
 
@@ -124,8 +124,8 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
       assertPenProperties(Equal.name, false, Equal.color, Equal.interval, Equal.mode, Down)
     }
 
-    assertAxisRangeIs(Lorenz.xmin, Lorenz.xmax)(e, X)
-    assertAxisRangeIs(Lorenz.ymin, Lorenz.ymax)(e, Y)
+    assertAxisRangeIs(Lorenz.xmin, Lorenz.xmax)(using e, X)
+    assertAxisRangeIs(Lorenz.ymin, Lorenz.ymax)(using e, Y)
 
     setPlot(ClassPlot.name)
     assertPenExists(tempPenName)
@@ -248,7 +248,7 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
     // Test `histogram` with negative xMin
     // Buckets should be: { -25: [-123], 0: [0, 1, 2, 2, 2, 2], 1: [5], 3: [19] }
     clearPlot()
-    setAxisRange(-125, 20)(e, X)
+    setAxisRange(-125, 20)(using e, X)
     setInterval(5)
     histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
     assertXYs(-125 -> 1, 0 -> 6, 5 -> 1, 15 -> 1)
@@ -402,8 +402,8 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
 
     }
 
-    runForAxis(xmin, xmax)(X)
-    runForAxis(ymin, ymax)(Y)
+    runForAxis(xmin, xmax)(using X)
+    runForAxis(ymin, ymax)(using Y)
 
     ()
 
@@ -435,50 +435,50 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
       plot(n)
     }
 
-    assertAxisRangeIs(0, 60)(e, X)
-    assertAxisRangeIs(0, 60)(e, Y)
+    assertAxisRangeIs(0, 60)(using e, X)
+    assertAxisRangeIs(0, 60)(using e, Y)
 
     plotxy(Plots.Gini.xmax + 20, Plots.Gini.xmax + 20)
 
-    assertAxisRangeIs(0, 70)(e, X)
-    assertAxisRangeIs(0, 70)(e, Y)
+    assertAxisRangeIs(0, 70)(using e, X)
+    assertAxisRangeIs(0, 70)(using e, Y)
 
-    setAxisRange(10, 80)(e, X)
+    setAxisRange(10, 80)(using e, X)
 
-    assertAxisRangeIs(10, 80)(e, X)
-    assertAxisRangeIs(0, 70)(e, Y)
+    assertAxisRangeIs(10, 80)(using e, X)
+    assertAxisRangeIs(0, 70)(using e, Y)
 
     plot(1)
 
-    assertAxisRangeIs(10, 80)(e, X)
-    assertAxisRangeIs(0, 70)(e, Y)
+    assertAxisRangeIs(10, 80)(using e, X)
+    assertAxisRangeIs(0, 70)(using e, Y)
 
     plotxy(81, 10)
 
-    assertAxisRangeIs(10, 82)(e, X)
-    assertAxisRangeIs(0, 70)(e, Y)
+    assertAxisRangeIs(10, 82)(using e, X)
+    assertAxisRangeIs(0, 70)(using e, Y)
 
     plotxy(-1, -1)
 
-    assertAxisRangeIs(-2, 82)(e, X)
-    assertAxisRangeIs(-2, 70)(e, Y)
+    assertAxisRangeIs(-2, 82)(using e, X)
+    assertAxisRangeIs(-2, 70)(using e, Y)
 
     disableAutoplotting()
 
     plotxy(-24, -10)
 
-    assertAxisRangeIs(-2, 82)(e, X)
-    assertAxisRangeIs(-2, 70)(e, Y)
+    assertAxisRangeIs(-2, 82)(using e, X)
+    assertAxisRangeIs(-2, 70)(using e, Y)
 
     plotxy(101, 120)
 
-    assertAxisRangeIs(-2, 82)(e, X)
-    assertAxisRangeIs(-2, 70)(e, Y)
+    assertAxisRangeIs(-2, 82)(using e, X)
+    assertAxisRangeIs(-2, 70)(using e, Y)
 
     plot(150)
 
-    assertAxisRangeIs(-2, 82)(e, X)
-    assertAxisRangeIs(-2, 70)(e, Y)
+    assertAxisRangeIs(-2, 82)(using e, X)
+    assertAxisRangeIs(-2, 70)(using e, Y)
 
     ()
   }
@@ -492,30 +492,30 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
 
     // the interval is 1 so this would make buckets past the max x range
     // and should not auto-scale because it's a histogram -Jeremy B Octover 2020
-    histogram( (0 to 100).map( n => (n % 10).toDouble ): _* )
+    histogram( (0 to 100).map( n => (n % 10).toDouble )* )
 
-    assertAxisRangeIs(0, 3)(e, X)
-    assertAxisRangeIs(0, 250)(e, Y)
+    assertAxisRangeIs(0, 3)(using e, X)
+    assertAxisRangeIs(0, 250)(using e, Y)
 
     // make it easier to overflow Y -Jeremy B Octover 2020
-    setAxisRange(0, 10)(e, Y)
-    histogram( (0 to 100).map( n => (n % 3).toDouble ): _* )
+    setAxisRange(0, 10)(using e, Y)
+    histogram( (0 to 100).map( n => (n % 3).toDouble )* )
 
-    assertAxisRangeIs(0, 3)(e, X)
-    assertAxisRangeIs(0, 34)(e, Y)
+    assertAxisRangeIs(0, 3)(using e, X)
+    assertAxisRangeIs(0, 34)(using e, Y)
 
     disableAutoplotting()
 
-    setAxisRange(0, 10)(e, Y)
-    histogram( (0 to 100).map( n => (n % 3).toDouble ): _* )
+    setAxisRange(0, 10)(using e, Y)
+    histogram( (0 to 100).map( n => (n % 3).toDouble )* )
 
-    assertAxisRangeIs(0, 3)(e, X)
-    assertAxisRangeIs(0, 10)(e, Y)
+    assertAxisRangeIs(0, 3)(using e, X)
+    assertAxisRangeIs(0, 10)(using e, Y)
 
-    histogram( (0 to 100).map( n => (n % 10).toDouble ): _* )
+    histogram( (0 to 100).map( n => (n % 10).toDouble )* )
 
-    assertAxisRangeIs(0, 3)(e, X)
-    assertAxisRangeIs(0, 10)(e, Y)
+    assertAxisRangeIs(0, 3)(using e, X)
+    assertAxisRangeIs(0, 10)(using e, Y)
 
     ()
   }
@@ -668,8 +668,8 @@ trait PlottingHelpers {
     ()
   }
   protected def assertPenNameIs(name: String)         (implicit e: GraalJS): Unit = { assertResult(name)(evalJS(s"$pathToPen.name"))                                                                  ; () }
-  protected def assertPlotNameIs(name: String)        (implicit e: GraalJS): Unit = { assertResult(name)(evalNLReporter("plot-name"))                                                                 ; () }
-  protected def assertYs(ys: Int*)                    (implicit e: GraalJS): Unit = { assertXYs(ys.zipWithIndex map (_.swap): _*)                                                                     ; () }
+  protected def assertPlotNameIs(name: String)        (implicit e: GraalJS): Unit = { assertResult(name)(evalNLReporter("plot-name"))                                                           ; () }
+  protected def assertYs(ys: Int*)                    (implicit e: GraalJS): Unit = { assertXYs(ys.zipWithIndex map (_.swap)*)                                                                       ; () }
 
   protected def assertAxisRangeIs(min: Double, max: Double)(implicit e: GraalJS, axis: Axis): Unit = {
     assertResult(Double.box(min), s"(${axis.toAxisStr} axis min check)")(evalNLReporter(s"plot-${axis.toAxisStr}-min"))
@@ -762,7 +762,7 @@ trait PlottingHelpers {
   }
 
   protected def testPlotting(name: String, tags: Tag*)(testFun: (GraalJS) => Unit): Unit = {
-    test(name, tags: _*) {
+    test(name, tags*) {
       engine.eval(model.compiledCode)
       testFun(engine)
     }

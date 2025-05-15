@@ -42,7 +42,7 @@ object Benchmarker extends App {
       "Heatbugs Benchmark"
     )
 
-  private val engineToEvalMap = Seq(GraalJS, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
+  private val engineToEvalMap = Seq(GraalJS, SpiderMonkey, V8).map(engine => engine -> engine.freshEval).toMap
 
   private val compiler = new org.nlogo.tortoise.compiler.Compiler()
 

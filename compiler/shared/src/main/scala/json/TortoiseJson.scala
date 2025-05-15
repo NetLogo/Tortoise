@@ -19,7 +19,7 @@ object TortoiseJson {
   case class  JsObject(props: ListMap[String, TortoiseJson]) extends TortoiseJson
 
   def fields(pairs: (String, TortoiseJson)*): ListMap[String, TortoiseJson] =
-    ListMap(pairs: _*)
+    ListMap(pairs*)
 
   class JsField(name: String) {
     def unapply(props: Map[String, TortoiseJson]): Option[TortoiseJson] = props.get(name)

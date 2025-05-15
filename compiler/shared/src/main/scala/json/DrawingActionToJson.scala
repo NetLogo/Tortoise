@@ -13,7 +13,11 @@ import
 import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsObject, JsString }
 
-import scala.collection.immutable.ArraySeq
+import
+  scala.collection.immutable.ArraySeq
+
+import
+  scala.language.implicitConversions
 
 sealed trait DrawingActionConverter[T <: DrawingAction] extends JsonConverter[T] {
 
@@ -57,7 +61,7 @@ object DrawingActionToJsonConverters {
       case x: SendPixels    => new SendPixelsConverter(x)
       case x: SetColors     => new SetColorsConverter(x)
       case x: StampImage    => new StampImageConverter(x)
-      case x                => throw new Exception(s"Serialize this mysterious drawing action: $x")
+      case null             => throw new Exception(s"null drawing action encountered")
     }
   // scalastyle:on cyclomatic.complexity
 
@@ -123,7 +127,7 @@ class StampImageConverter(override protected val target: StampImage) extends Dra
         import t._
         val obj =
           JsObject(fields(
-            "color"     -> JsArray(colorList(color) map JsInt),
+            "color"     -> JsArray(colorList(color) map JsInt.apply),
             "heading"   -> JsDouble(heading),
             "size"      -> JsDouble(size),
             "x"         -> JsDouble(x),
@@ -138,7 +142,7 @@ class StampImageConverter(override protected val target: StampImage) extends Dra
         import l._
         val obj =
           JsObject(fields(
-            "color"     -> JsArray(colorList(color) map JsInt),
+            "color"     -> JsArray(colorList(color) map JsInt.apply),
             "heading"   -> JsDouble(heading),
             "midpointX" -> JsDouble(midpointX),
             "midpointY" -> JsDouble(midpointY),
@@ -176,7 +180,7 @@ class DrawLineConverter(override protected val target: DrawLine) extends Drawing
     JsObject(fields(
       "fromX"   -> JsDouble(x1),
       "fromY"   -> JsDouble(y1),
-      "rgb"     -> JsArray(colorList(penColor) map JsInt),
+      "rgb"     -> JsArray(colorList(penColor) map JsInt.apply),
       "size"    -> JsDouble(penSize),
       "toX"     -> JsDouble(x2),
       "toY"     -> JsDouble(y2),

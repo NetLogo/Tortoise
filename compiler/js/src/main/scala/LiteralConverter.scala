@@ -67,7 +67,7 @@ object LiteralConverter {
 
     val jsV = for {
       tortoiseReq   <- JsonReader.read[JsObject](toTortoise(compilationRequest)).leftMap(_.map(s => FailureString(s)))
-      parsedReq     <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
+      parsedReq     <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
       model         =  parsedReq.toModel
       compiledModel <- CompiledModel.fromModel(model, compiler)
       jsV           <- compiledModel.compileRunProcedure(code, isRunResult)

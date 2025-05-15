@@ -24,7 +24,7 @@ object Optimizer {
   object Fd1Transformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
-        case Statement(command: _fd, Seq(ReporterApp(reporter: _const, _, _)), _) if reporter.value == 1 =>
+        case Statement(command: _fd, Seq(ReporterApp(reporter: _const, _, _)), _) if reporter.value.equals(1) =>
           statement.copy(command = new _fdone, args = Seq())
         case _ => super.visitStatement(statement)
       }
@@ -284,7 +284,7 @@ object Optimizer {
         case ReporterApp(_: _notequal, Seq(
               ReporterApp(_: _count, Seq(ReporterApp(_: _with, withArgs, _)), _),
               ReporterApp(reporter: _const, _, _)
-            ), _) if reporter.value == 0 =>
+            ), _) if reporter.value.equals(0) =>
           ra.copy(reporter = new _anywith, args = withArgs)
         case _ => super.visitReporterApp(ra)
       }
@@ -298,7 +298,7 @@ object Optimizer {
         case ReporterApp(_: _greaterthan, Seq(
               ReporterApp(_: _count, Seq(ReporterApp(_: _with, withArgs, _)), _),
               ReporterApp(reporter: _const, _, _)
-            ), _) if reporter.value == 0 =>
+            ), _) if reporter.value.equals(0) =>
           ra.copy(reporter = new _anywith, args = withArgs)
         case _ => super.visitReporterApp(ra)
       }
@@ -312,7 +312,7 @@ object Optimizer {
         case ReporterApp(_: _lessthan, Seq(
               ReporterApp(reporter: _const, _, _),
               ReporterApp(_: _count, Seq(ReporterApp(_: _with, withArgs, _)), _)
-            ), _) if reporter.value == 0 =>
+            ), _) if reporter.value.equals(0) =>
           ra.copy(reporter = new _anywith, args = withArgs)
         case _ => super.visitReporterApp(ra)
       }
@@ -326,7 +326,7 @@ object Optimizer {
         case ReporterApp(_: _equal, Seq(
               ReporterApp(_: _count, Seq(ReporterApp(_: _with, withArgs, _)), _),
               ReporterApp(reporter: _const, _, _)
-            ), _) if reporter.value == 0 =>
+            ), _) if reporter.value.equals(0) =>
           ra.copy(reporter = new _not, args = Seq(ra.copy(reporter = new _anywith, args = withArgs)))
         case _ => super.visitReporterApp(ra)
       }
@@ -508,7 +508,7 @@ object Optimizer {
   // scalastyle:on class.name
 
   def apply(pd: ProcedureDefinition): ProcedureDefinition =
-    (Fd1Transformer            .visitProcedureDefinition _ andThen
+    (Fd1Transformer            .visitProcedureDefinition   andThen
      FdLessThan1Transformer    .visitProcedureDefinition   andThen
      WithTransformer           .visitProcedureDefinition   andThen
      CrtFastTransformer        .visitProcedureDefinition   andThen

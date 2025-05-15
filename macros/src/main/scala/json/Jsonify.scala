@@ -2,111 +2,113 @@
 
 package org.nlogo.tortoise.macros.json
 
-import
-  scala.reflect.macros.blackbox.{ Context => BlackBoxContext }
+import scalaz.ValidationNel
 
-import
-  scalaz.ValidationNel
+import scala.quoted.{ Expr, Quotes, Type }
 
 object Jsonify {
 
-  def writer[T, S]: T => S = macro writableInternal[T, S]
+  inline def writer[T, S]: T => S = ${ writableCode[T, S] }
 
-  def reader[T, S]: T => ValidationNel[String, S] = macro readableInternal[T, S]
+  def writableCode[T, S](using Type[T], Type[S], Quotes): Expr[T => S] = ???
 
-  def readableInternal[T: c.WeakTypeTag, S: c.WeakTypeTag](c: BlackBoxContext)(implicit inputType: c.WeakTypeTag[T], resultType: c.WeakTypeTag[S]): c.Tree = {
+  inline def reader[T, S]: T => ValidationNel[String, S] = ${ readableCode[T, S] }
 
-      import c.universe._
+  def readableCode[T, S](using Type[T], Type[S], Quotes): Expr[T => ValidationNel[String, S]] = ???
 
-      val json = TermName(c.freshName("json"))
+  // def readableInternal[T: c.WeakTypeTag, S: c.WeakTypeTag](c: BlackBoxContext)(implicit inputType: c.WeakTypeTag[T], resultType: c.WeakTypeTag[S]): c.Tree = {
 
-      val treeOpt = withConstructorProperties(c)(resultType.tpe) {
-        (target, propertyName, propertyKey) =>
-          val propValue = TermName(c.freshName("prop"))
-          val readField = q"JsonReader.readField[$target]($json, $propertyKey)"
-          (fq"$propValue <- $readField", q"$propertyName = $propValue")
-      }
+  //     import c.universe._
 
-      treeOpt.map {
-        constructorElems =>
-          val name = TermName(c.freshName("reader"))
-          q"""{
-            import org.nlogo.tortoise.compiler.json.JsonReader
-            import scalaz.Validation.FlatMap.ValidationFlatMapRequested
-            implicit object $name extends JsonReader[${inputType.tpe}, ${resultType.tpe}]{
-              def apply($json: ${inputType.tpe}) =
-                for (..${constructorElems.map(_._1)})
-                  yield new ${resultType.tpe}(..${constructorElems.map(_._2)})
-            }
-            $name
-          }"""
-      } getOrElse c.abort(c.enclosingPosition, s"Could not find constructor for ${resultType.tpe}")
+  //     val json = TermName(c.freshName("json"))
 
-  }
+  //     val treeOpt = withConstructorProperties(c)(resultType.tpe) {
+  //       (target, propertyName, propertyKey) =>
+  //         val propValue = TermName(c.freshName("prop"))
+  //         val readField = q"JsonReader.readField[$target]($json, $propertyKey)"
+  //         (fq"$propValue <- $readField", q"$propertyName = $propValue")
+  //     }
 
-  def writableInternal[T: c.WeakTypeTag, S: c.WeakTypeTag](c: BlackBoxContext)(implicit toBeWritten: c.WeakTypeTag[T]): c.Tree = {
+  //     treeOpt.map {
+  //       constructorElems =>
+  //         val name = TermName(c.freshName("reader"))
+  //         q"""{
+  //           import org.nlogo.tortoise.compiler.json.JsonReader
+  //           import scalaz.Validation.FlatMap.ValidationFlatMapRequested
+  //           implicit object $name extends JsonReader[${inputType.tpe}, ${resultType.tpe}]{
+  //             def apply($json: ${inputType.tpe}) =
+  //               for (..${constructorElems.map(_._1)})
+  //                 yield new ${resultType.tpe}(..${constructorElems.map(_._2)})
+  //           }
+  //           $name
+  //         }"""
+  //     } getOrElse c.abort(c.enclosingPosition, s"Could not find constructor for ${resultType.tpe}")
 
-    import c.universe._
+  // }
 
-    val typeToJsonify = toBeWritten.tpe
-    val writerType    = c.mirror.staticClass("org.nlogo.tortoise.compiler.json.JsonWriter").toType
+  // def writableInternal[T: c.WeakTypeTag, S: c.WeakTypeTag](c: BlackBoxContext)(implicit toBeWritten: c.WeakTypeTag[T]): c.Tree = {
 
-    if (typeToJsonify.typeSymbol.asClass.isCaseClass) {
+  //   import c.universe._
 
-      val writtenObject = TermName(c.freshName("target"))
+  //   val typeToJsonify = toBeWritten.tpe
+  //   val writerType    = c.mirror.staticClass("org.nlogo.tortoise.compiler.json.JsonWriter").toType
 
-      val treeOpt = withConstructorProperties(c)(typeToJsonify) {
-        (from, propertyName, propertyKey) =>
-          val converter = c.inferImplicitValue(appliedType(writerType, from))
-          if (converter != EmptyTree)
-            q"$propertyKey -> $converter.write($writtenObject.$propertyName)"
-          else
-            c.abort(c.enclosingPosition, s"Please supply JsonWriter[$from] or JsonWriter[Option[$from]] for field $propertyKey")
-      }
+  //   if (typeToJsonify.typeSymbol.asClass.isCaseClass) {
 
-      treeOpt.map {
-        constructorConversions =>
+  //     val writtenObject = TermName(c.freshName("target"))
 
-          val typeElement = q"${"type"} -> Some(${downCamelCaseTypeName(c)(typeToJsonify)})"
-          val allElems    = constructorConversions :+ typeElement
-          val name        = TermName(c.freshName("writer"))
+  //     val treeOpt = withConstructorProperties(c)(typeToJsonify) {
+  //       (from, propertyName, propertyKey) =>
+  //         val converter = c.inferImplicitValue(appliedType(writerType, from))
+  //         if (converter != EmptyTree)
+  //           q"$propertyKey -> $converter.write($writtenObject.$propertyName)"
+  //         else
+  //           c.abort(c.enclosingPosition, s"Please supply JsonWriter[$from] or JsonWriter[Option[$from]] for field $propertyKey")
+  //     }
 
-          q"""{
-            implicit object $name extends JsonWriter[$typeToJsonify] {
-            import collection.immutable.ListMap
-            def apply($writtenObject: $typeToJsonify): TortoiseJson = {
-              val seq = Seq[(String, Option[org.nlogo.tortoise.compiler.json.TortoiseJson])](..$allElems)
-                  org.nlogo.tortoise.compiler.json.TortoiseJson.JsObject(ListMap(seq.collect {
-                    case (__a, Some(__b)) => (__a, __b)
-                  }: _*))
-                }
-            }
-            $name
-          }"""
+  //     treeOpt.map {
+  //       constructorConversions =>
 
-      } getOrElse c.abort(c.enclosingPosition, s"unable to find case class constructor")
+  //         val typeElement = q"${"type"} -> Some(${downCamelCaseTypeName(c)(typeToJsonify)})"
+  //         val allElems    = constructorConversions :+ typeElement
+  //         val name        = TermName(c.freshName("writer"))
 
-    } else
-      c.abort(c.enclosingPosition, s"Only case classes may be jsonified")
+  //         q"""{
+  //           implicit object $name extends JsonWriter[$typeToJsonify] {
+  //           import collection.immutable.ListMap
+  //           def apply($writtenObject: $typeToJsonify): TortoiseJson = {
+  //             val seq = Seq[(String, Option[org.nlogo.tortoise.compiler.json.TortoiseJson])](..$allElems)
+  //                 org.nlogo.tortoise.compiler.json.TortoiseJson.JsObject(ListMap(seq.collect {
+  //                   case (__a, Some(__b)) => (__a, __b)
+  //                 }: _*))
+  //               }
+  //           }
+  //           $name
+  //         }"""
 
-  }
+  //     } getOrElse c.abort(c.enclosingPosition, s"unable to find case class constructor")
 
-  private def withConstructorProperties[T](c: BlackBoxContext)(constructedType: c.Type)(f: (c.Type, c.TermName, String) => T): Option[Seq[T]] =
-    constructedType.decls.find(_.isConstructor).map {
-      constructor =>
-        val typeMap = (constructedType.etaExpand.typeParams zip constructedType.typeArgs).toMap
-        constructor.asMethod.paramLists.head.map {
-          p =>
-            val tpe               = typeMap.getOrElse(p.typeSignature.typeSymbol, p.typeSignature)
-            val propertyName      = p.name.toTermName
-            val propertyStringKey = propertyName.decodedName.toString
-            f(tpe, propertyName, propertyStringKey)
-        }
-    }
+  //   } else
+  //     c.abort(c.enclosingPosition, s"Only case classes may be jsonified")
 
-  private def downCamelCaseTypeName(c: BlackBoxContext)(t: c.Type) = {
-    val shortName = t.toString.split('.').last
-    s"${shortName.head.toLower}${shortName.tail}"
-  }
+  // }
+
+  // private def withConstructorProperties[T](c: BlackBoxContext)(constructedType: c.Type)(f: (c.Type, c.TermName, String) => T): Option[Seq[T]] =
+  //   constructedType.decls.find(_.isConstructor).map {
+  //     constructor =>
+  //       val typeMap = (constructedType.etaExpand.typeParams zip constructedType.typeArgs).toMap
+  //       constructor.asMethod.paramLists.head.map {
+  //         p =>
+  //           val tpe               = typeMap.getOrElse(p.typeSignature.typeSymbol, p.typeSignature)
+  //           val propertyName      = p.name.toTermName
+  //           val propertyStringKey = propertyName.decodedName.toString
+  //           f(tpe, propertyName, propertyStringKey)
+  //       }
+  //   }
+
+  // private def downCamelCaseTypeName(c: BlackBoxContext)(t: c.Type) = {
+  //   val shortName = t.toString.split('.').last
+  //   s"${shortName.head.toLower}${shortName.tail}"
+  // }
 
 }

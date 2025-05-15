@@ -17,6 +17,9 @@ import
     Scalaz.ToValidationOps
 
 import
+  scala.language.implicitConversions
+
+import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsObject, JsString }
 
 sealed trait ShapeConverter[T <: Shape] extends JsonConverter[T]
@@ -99,7 +102,7 @@ object ShapeToJsonConverters {
 
   private def readShapes[T](reader: JsonSequenceReader[T], shapes: TortoiseJson): ValidationNel[String, Seq[T]] = {
     shapes match {
-      case JsObject(props) => reader(JsArray(props.map((addNameToObject _).tupled).toSeq))
+      case JsObject(props) => reader(JsArray(props.map((addNameToObject).tupled).toSeq))
       case json            => reader(json)
     }
   }

@@ -143,7 +143,7 @@ class WidgetCompilerTest extends AnyFunSuite {
             val compiledWidget = compileWidget(widget)
             assertHasWidgetData(compiledWidget, widget)
             assertIsFailure(compiledWidget)
-            assertHasErrors(compiledWidget, errors: _*)
+            assertHasErrors(compiledWidget, errors*)
           }
       }
 

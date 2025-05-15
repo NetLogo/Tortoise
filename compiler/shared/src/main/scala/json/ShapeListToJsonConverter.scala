@@ -6,6 +6,9 @@ import
   org.nlogo.core.ShapeList
 
 import
+  scala.language.implicitConversions
+
+import
   ShapeToJsonConverters.shape2Json
 
 import
@@ -17,6 +20,6 @@ object ShapeListToJsonConverter {
 
   class JsonWritableShapeList(shapeList: ShapeList) extends JsonWritable {
     def toJsonObj: JsObject =
-      JsObject(fields(shapeList.shapes map(shape => shape.name -> shape.toJsonObj): _*))
+      JsObject(fields(shapeList.shapes map(shape => shape.name -> shape.toJsonObj)*))
   }
 }

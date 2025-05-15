@@ -3,13 +3,13 @@
 package org.nlogo.tortoise.compiler
 
 import org.nlogo.core.{
-  Application
-, CommandBlock
-, Expression
-, Instruction
-, ReporterApp
-, ReporterBlock
-, Syntax
+  Application,
+  CommandBlock,
+  Expression,
+  Instruction,
+  ReporterApp,
+  ReporterBlock,
+  Syntax
 }
 
 import org.nlogo.tortoise.compiler.utils.CompilerUtils

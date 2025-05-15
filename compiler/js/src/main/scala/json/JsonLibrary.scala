@@ -23,8 +23,8 @@ object JsonLibrary {
       case JsDouble(d)     => JAny.fromDouble(d)
       case JsString(s)     => JAny.fromString(s)
       case JsBool(b)       => JAny.fromBoolean(b)
-      case JsArray(a)      => JArray(a.map(toNative): _*)
-      case JsObject(props) => Dictionary(props.toMap.view.mapValues(toNative).toSeq: _*)
+      case JsArray(a)      => JArray(a.map(toNative)*)
+      case JsObject(props) => Dictionary(props.toMap.view.mapValues(toNative).toSeq*)
     }
 
   // scalastyle:off cyclomatic.complexity
@@ -48,7 +48,7 @@ object JsonLibrary {
         // Pattern match impossible, since `Dictionary` is raw JS --JAB (4/27/15)
         val d        = JAny.wrapDictionary(nativeValue.asInstanceOf[Dictionary[Native]])
         val mappings = d.keys.map(k => k -> toTortoise(d(k)))
-        JsObject(fields(mappings.toSeq: _*))
+        JsObject(fields(mappings.toSeq*))
 
       case _ =>
         CompilerUtils.failCompilation(s"Unknown native value type encountered: ${nativeValue.toString}")

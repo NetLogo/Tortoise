@@ -137,14 +137,15 @@ class TestModels extends DockingSuite {
     val ignore = (_: String) => ""
 
     val transformers: Map[String, (String) => String] =
-      Map( "RANDOM STATE" -> identity _
-         , "GLOBALS"      -> identity _
-         , "TURTLES"      -> identity _
-         , "PATCHES"      -> identity _
-         , "LINKS"        -> identity _
+      val strIdent = (s: String) => identity(s)
+      Map( "RANDOM STATE" -> strIdent
+         , "GLOBALS"      -> strIdent
+         , "TURTLES"      -> strIdent
+         , "PATCHES"      -> strIdent
+         , "LINKS"        -> strIdent
          , "DRAWING"      -> transformDrawing
          , "PLOTS"        -> transformPlots
-         , "OUTPUT"       -> identity _
+         , "OUTPUT"       -> strIdent
          , "EXTENSIONS"   -> ignore
          )
 

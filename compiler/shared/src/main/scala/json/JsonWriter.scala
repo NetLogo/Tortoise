@@ -3,6 +3,9 @@
 package org.nlogo.tortoise.compiler.json
 
 import
+  scala.language.implicitConversions
+
+import
   JsonLibrary.{ nativeToString, toNative }
 
 import

@@ -60,11 +60,7 @@ object WidgetWrite {
       Jsonify.writer[WorldDimensions, TortoiseJson](wd) match {
         case JsObject(props) =>
           val pairsWithoutTypeField = props.view.filterKeys(_ != "type").toSeq
-          JsObject(fields(pairsWithoutTypeField: _*))
-
-        case _ =>
-          CompilerUtils.failCompilation(s"Invalid properties for writing world dimensions: ${wd}")
-
+          JsObject(fields(pairsWithoutTypeField*))
       }
     }
   }

@@ -24,10 +24,10 @@ import
 object JsonSerializer {
 
   def serialize(u: Update): String =
-    (serializeToJsObject _ andThen toNative andThen nativeToString)(u)
+    (serializeToJsObject andThen toNative andThen nativeToString)(u)
 
   def serialize(v: AnyRef): String =
-    (toJValue _ andThen toNative andThen nativeToString)(v)
+    (toJValue andThen toNative andThen nativeToString)(v)
 
   def serializeWithViewUpdates(update: Update, viewUpdates: Seq[DrawingAction] = Seq()): String = {
     import DrawingActionToJsonConverters.drawingAction2Json
@@ -44,7 +44,7 @@ object JsonSerializer {
         Birth(AgentKey(kind, id), values) <- update.births.sortBy(_.agent.id)
         varNames  = getImplicitVariables(kind)
         varFields = varNames zip values.map(toJValue)
-      } yield kind -> ((id, JsObject(fields(varFields: _*))))
+      } yield kind -> ((id, JsObject(fields(varFields*))))
 
     def changes: Seq[(Kind, (Long, TortoiseJson))] =
       for {
@@ -54,7 +54,7 @@ object JsonSerializer {
           Change(varIndex, value) <- changes
           varName = if (varNames.length > varIndex) varNames(varIndex) else varIndex.toString
         } yield varName -> toJValue(value)
-      } yield kind -> ((id, JsObject(fields(implicitVars: _*))))
+      } yield kind -> ((id, JsObject(fields(implicitVars*))))
 
     def deaths: Seq[(Kind, (Long, TortoiseJson))] =
       for {
@@ -64,7 +64,7 @@ object JsonSerializer {
     val fieldsByKind: Map[Kind, ListMap[String, TortoiseJson]] =
       (births ++ changes ++ deaths)
         .groupBy(_._1) // group by kinds
-        .view.mapValues(v => fields(v.map(_._2).sortBy(_._1).map(t => (t._1.toString, t._2)): _*)).toMap // remove kind from pairs
+        .view.mapValues(v => fields(v.map(_._2).sortBy(_._1).map(t => (t._1.toString, t._2))*)).toMap // remove kind from pairs
 
     val keysToKind = Seq(
       "turtles"  -> Turtle,
@@ -80,7 +80,7 @@ object JsonSerializer {
         objectFields = fieldsByKind.getOrElse(kind, fields())
       } yield key -> JsObject(objectFields)
 
-    JsObject(fields(objectsByKey: _*))
+    JsObject(fields(objectsByKey*))
   }
 
   def toJValue(v: AnyRef): TortoiseJson =
@@ -99,7 +99,7 @@ object JsonSerializer {
   private val logoPrimsToJson: PartialFunction[AnyRef, TortoiseJson] = {
     import ShapeToJsonConverters.shape2Json
     {
-      case s: ShapeList => JsObject(fields(s.shapes.map(shape => shape.name -> shape.toJsonObj): _*))
+      case s: ShapeList => JsObject(fields(s.shapes.map(shape => shape.name -> shape.toJsonObj)*))
       case s: Shape     => s.toJsonObj
       case l: LogoList  => JsArray((l.toVector map toJValue).toList)
     }

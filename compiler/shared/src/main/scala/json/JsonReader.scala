@@ -3,6 +3,9 @@
 package org.nlogo.tortoise.compiler.json
 
 import
+  scala.language.implicitConversions
+
+import
   scala.reflect.ClassTag
 
 import
@@ -86,7 +89,7 @@ trait JsonReader[T <: TortoiseJson, S] extends (T => ValidationNel[String, S]) {
   def read(key: String, json: Option[T]): ValidationNel[String, S] =
     json.toSuccess(NonEmptyList(s"could not find key $key")).flatMap(apply)
 
-  protected def incompatibleClass(from: Class[_], to: Class[_]): ValidationNel[String, S] =
+  protected def incompatibleClass(from: Class[?], to: Class[?]): ValidationNel[String, S] =
     s"could not convert ${from.getSimpleName} to ${to.getSimpleName}".failureNel
 
 }
@@ -101,7 +104,7 @@ object JsonReader extends LowPriorityImplicitReaders {
 
   class RichJsObject(json: JsObject) {
     def apply[A](s: String)(implicit ev: JsonReader[TortoiseJson, A]): A =
-      JsonReader.readField(json, s)(ev).getOrElse(throw new Exception(s"not able to find value for $s"))
+      JsonReader.readField(json, s)(using ev).getOrElse(throw new Exception(s"not able to find value for $s"))
   }
 
   class RichJsArray(json: JsArray) {
@@ -125,7 +128,7 @@ object JsonReader extends LowPriorityImplicitReaders {
 
     def apply(json: TortoiseJson): ValidationNel[String, Seq[T]] =
       json match {
-        case JsArray(elems) => elems.map(convertElem).toList.sequenceU
+        case JsArray(elems) => elems.map(convertElem).toList.sequence
         case other          => nonArrayErrorString(other).failureNel[Seq[T]]
       }
   }

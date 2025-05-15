@@ -17,6 +17,9 @@ import
   scalaz.{ NonEmptyList, ValidationNel }
 
 import
+  scala.language.implicitConversions
+
+import
   WidgetCompilation.{ PlotWidgetCompilation, UpdateableCompilation }
 
 case class CompiledWidget(widgetData: Widget, widgetCompilation: ValidationNel[Exception, WidgetCompilation])

@@ -98,9 +98,9 @@ class CompiledModelTest extends AnyFunSuite {
 
     val (compileFunc, modelCompileFunc) =
       if (isReporter)
-        (compiler.compileReporter _, model.compileReporter _)
+        (compiler.compileReporter, model.compileReporter)
       else
-        (compiler.compileCommands _, model.compileCommand(_: String))
+        (compiler.compileCommands, model.compileCommand(_: String))
 
     val genJS = compileFunc(_: String, model.procedures, model.program)
 
@@ -113,9 +113,9 @@ class CompiledModelTest extends AnyFunSuite {
                             compilerFlags: CompilerFlags = CompilerFlags.Default): Unit = {
 
     val genJS         = (codeToModel                                                  andThen
-                        ((m: CModel) => compiler.compileProcedures(m)(compilerFlags)) andThen
+                        ((m: CModel) => compiler.compileProcedures(m)(using compilerFlags)) andThen
                         compiler.toJS)(_)
-    val genValidation = (code: String) => CompiledModel.fromCode(code, compiler)(compilerFlags) map (_.compiledCode)
+    val genValidation = (code: String) => CompiledModel.fromCode(code, compiler)(using compilerFlags) map (_.compiledCode)
 
     runTest(modelCode, genJS, genValidation)
 

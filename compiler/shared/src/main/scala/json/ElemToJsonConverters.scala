@@ -13,6 +13,9 @@ import
   scalaz.{ Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
+import
+  scala.language.implicitConversions
+
 sealed trait ElemConverter[T <: Element] extends JsonConverter[T] {
 
   protected def typ: String = target.getClass.getSimpleName.toString.toLowerCase
@@ -55,8 +58,8 @@ object ElemToJsonConverters {
   class PolygonConverter(override protected val target: Polygon) extends ElemConverter[Polygon] {
     override protected val typ        = "polygon"
     override protected val extraProps = JsObject(fields(
-      "xcors" -> JsArray(target.xCoords map JsInt),
-      "ycors" -> JsArray(target.yCoords map JsInt)
+      "xcors" -> JsArray(target.xCoords map JsInt.apply),
+      "ycors" -> JsArray(target.yCoords map JsInt.apply)
     ))
   }
 

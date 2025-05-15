@@ -5,19 +5,14 @@ package org.nlogo.tortoise.macros
 import java.io.{ File, FilenameFilter }
 
 import scala.io.Source
-import scala.reflect.macros.whitebox.Context
+
+import scala.quoted.{ Expr, Quotes }
 
 object ExtDefReader {
 
-  def getAll(): Seq[String] = macro getAll_impl
+  inline def getAll(): Seq[String] = ${ getAllCode() }
 
-
-  // scalastyle:off method.name
-  def getAll_impl(c: Context)(): c.Expr[Seq[String]] = {
-  // scalastyle:on method.name
-
-    import c.universe._
-
+  def getAllCode()(using Quotes): Expr[Seq[String]] = {
     val fileFilter =
       new FilenameFilter {
         override def accept(dir: File, name: String) = name.endsWith(".json")
@@ -33,7 +28,7 @@ object ExtDefReader {
           out
       }
 
-    c.Expr[Seq[String]](q"Seq(..$extDefs)")
+    Expr[Seq[String]](extDefs)
 
   }
 

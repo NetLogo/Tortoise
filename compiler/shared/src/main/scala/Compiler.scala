@@ -5,14 +5,14 @@ package org.nlogo.tortoise.compiler
 import
   org.nlogo.{ core, parse },
     core.{
-      AgentKind
-    , CompilerException
-    , FrontEndInterface
-    , Model
-    , ProcedureDefinition
-    , Program
-    , SourceWrapping
-    , StructureResults
+      AgentKind,
+      CompilerException,
+      FrontEndInterface,
+      Model,
+      ProcedureDefinition,
+      Program,
+      SourceWrapping,
+      StructureResults
     },
       FrontEndInterface.{ ProceduresMap, NoProcedures },
     parse.FrontEnd
@@ -179,14 +179,14 @@ class Compiler {
     val compiledWidgets =
       {
         val flags             = compilerFlags.copy(propagationStyle = WidgetPropagation)
-        val compileStoppableV = validate(s => compileCommands(s, procedures, program)(flags)) _ andThen (_.leftMap(_.map(ex => ex: Exception)))
-        val compileReporterV  = validate(s => compileReporter(s, procedures, program))        _ andThen (_.leftMap(_.map(ex => ex: Exception)))
+        val compileStoppableV = validate(s => compileCommands(s, procedures, program)(using flags)) andThen (_.leftMap(_.map(ex => ex: Exception)))
+        val compileReporterV  = validate(s => compileReporter(s, procedures, program))              andThen (_.leftMap(_.map(ex => ex: Exception)))
         new WidgetCompiler(compileStoppableV, compileReporterV).compileWidgets(model.widgets)
       }
 
     val interface =
       {
-        val validatedCompileCommand = validate(s => compileRawCommands(s, procedures, program)) _
+        val validatedCompileCommand = validate(s => compileRawCommands(s, procedures, program))
         model.interfaceGlobalCommands.map(validatedCompileCommand)
       }
 

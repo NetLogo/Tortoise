@@ -25,7 +25,7 @@ trait BrowserReporter {
     writeToFile(filename) (
       html(
         head(title("Tortoise Test Failures")),
-        body(failedSuites(failedTestReports): _*)
+        body(failedSuites(failedTestReports)*)
       )
     )
 
@@ -55,7 +55,7 @@ trait BrowserReporter {
       case (suiteName: String, testNames: Seq[String]) =>
         div(
           h3(suiteName),
-          ul(reportElements(testNames): _*)
+          ul(reportElements(testNames)*)
         )
     }.toSeq
 

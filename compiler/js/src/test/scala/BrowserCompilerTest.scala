@@ -16,20 +16,20 @@ import scala.collection.immutable.ListMap
 import utest._
 
 import org.nlogo.tortoise.compiler.TestUtilities.{
-  assertErrorMessage
-, compiledJs
-, compileModel
-, isSuccess
-, makeSuccess
-, modelToCompilationRequest
-, validModel
-, widgetyModel
-, withBrowserCompiler
-, withWidget
+  assertErrorMessage,
+  compiledJs,
+  compileModel,
+  isSuccess,
+  makeSuccess,
+  modelToCompilationRequest,
+  validModel,
+  widgetyModel,
+  withBrowserCompiler,
+  withWidget
 }
 
 object BrowserCompilerTest extends TestSuite {
-  def tests = TestSuite {
+  def tests = utest.Tests {
     "testInvalidModel"-{
       val compiledModel = compileModel("")
       assert(! isSuccess(compiledModel))
@@ -313,7 +313,7 @@ object BrowserCompilerTest extends TestSuite {
     }
 
     "introspection works"-{
-       val code = """
+      val code = """
         globals [ eggs hams ]
         turtles-own [ gourds ]
         patches-own [ mites ]
@@ -328,7 +328,7 @@ object BrowserCompilerTest extends TestSuite {
         to turtle-proc fd 1 set eggs 100 end
         to obs-proc ask turtles [ fd 1 ] set hams 100 end
         to-report luck-proc [x y] report (x + y) * eggs * hams end
-      """
+        """
       val compReq =
         toNative(JsObject(fields(
           "code"    -> JsString(code)

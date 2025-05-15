@@ -17,6 +17,9 @@ import
     Scalaz.ToValidationOps
 
 import
+  scala.language.implicitConversions
+
+import
   TortoiseJson.{ JsField, JsObject, JsString }
 
 import

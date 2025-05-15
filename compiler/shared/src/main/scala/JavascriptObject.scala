@@ -20,14 +20,14 @@ import
 // We need it because functions can't be rendered out using TortoiseJson/JsObject.
 // This gives us the freedom to combine functions and data in one object. RG 5/22/15
 class JavascriptObject(elements: JavascriptElement*) {
-  lazy val elementMap = ListMap(elements: _*)
+  lazy val elementMap = ListMap(elements*)
 
   def addFunction(key: String, function: JsFunction): JavascriptObject =
-    new JavascriptObject(((key -> function) +: elements): _*)
+    new JavascriptObject(((key -> function) +: elements)*)
 
   def addObjectProperties(jsObject: JsObject): JavascriptObject =
     new JavascriptObject(
-      (jsObject.props.toSeq.map(t => t._1 -> JsonValueElement(t._2)) ++ elements): _*)
+      (jsObject.props.toSeq.map(t => t._1 -> JsonValueElement(t._2)) ++ elements)*)
 
   def toJsString: String =
     elements.map(t => (t._2.renderField(t._1))).mkString("{", ",", "}")

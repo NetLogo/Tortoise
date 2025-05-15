@@ -173,7 +173,7 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
   // I changed it because `super.clone` simply threw
   // exceptions in the browser. --JAB (9/23/15)
   @JSExport
-  override def clone: MersenneTwisterFast = {
+  override def clone(): MersenneTwisterFast = {
     val result = new MersenneTwisterFast(seed)
     result.__mt                   = __mt.clone
     result.mti                    = mti
@@ -304,7 +304,7 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
 
   }
 
-  override def nextBoolean: Boolean = {
+  override def nextBoolean(): Boolean = {
 
     var y: Int = 0
 
@@ -386,7 +386,7 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
 
   }
 
-  override def nextLong: Long = {
+  override def nextLong(): Long = {
 
     var y: Int = 0
     var z: Int = 0
@@ -473,7 +473,10 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
     var bits: Long = 0L
     var value: Long = 0L
 
-    do {
+    // Scala 3 got rid of `do {} while ()`, so we replicate it to leave the code as close to desktop as possible.
+    // -Jeremy B May 2025
+    var check = true
+    while (check) {
 
       var y: Int = 0
       var z: Int = 0
@@ -542,7 +545,8 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
       bits = ((y.toLong << 32) | (z.toLong & 0x00000000ffffffffL)) >>> 1
       value = bits % n
 
-    } while (bits - value + (n - 1) < 0)
+      check = bits - value + (n - 1) < 0
+    }
 
     value
 
@@ -553,7 +557,7 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
    * result but 1.0 is not.
    */
   @JSExport
-  override def nextDouble: Double = {
+  override def nextDouble(): Double = {
 
     var y: Int = 0
     var z: Int = 0
@@ -623,7 +627,7 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
   }
 
   @JSExport
-  override def nextGaussian: Double = {
+  override def nextGaussian(): Double = {
     if (__haveNextNextGaussian) {
       __haveNextNextGaussian = false
       __nextNextGaussian
@@ -634,7 +638,10 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
       var v2: Double = .0
       var s: Double = .0
 
-      do {
+      // Scala 3 got rid of `do {} while ()`, so we replicate it to leave the code as close to desktop as possible.
+      // -Jeremy B May 2025
+      var check = true
+      while (check) {
 
         var y: Int = 0
         var z: Int = 0
@@ -765,7 +772,8 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
         v2 = 2 * ((((a >>> 6).toLong << 27) + (b >>> 5)) / (1L << 53).toDouble) - 1
         s = v1 * v1 + v2 * v2
 
-      } while (s >= 1 || s == 0)
+        check = s >= 1 || s == 0
+      }
 
       val multiplier: Double = MersenneMath.sqrt(-2 * MersenneMath.log(s) / s)
       __nextNextGaussian = v2 * multiplier
@@ -780,7 +788,7 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
    * Returns a random float in the half-open range from [0.0f,1.0f).  Thus 0.0f is a valid
    * result but 1.0f is not.
    */
-  override def nextFloat: Float = {
+  override def nextFloat(): Float = {
 
     var y: Int = 0
 
@@ -866,7 +874,10 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
     var bits: Int = 0
     var value: Int = 0
 
-    do {
+    // Scala 3 got rid of `do {} while ()`, so we replicate it to leave the code as close to desktop as possible.
+    // -Jeremy B May 2025
+    var check = true
+    while (check) {
 
       var y: Int = 0
 
@@ -903,7 +914,8 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
       bits  = y >>> 1
       value = bits % n
 
-    } while (bits - value + (n - 1) < 0)
+      check = (bits - value + (n - 1) < 0)
+    }
 
     value
 

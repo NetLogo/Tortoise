@@ -111,7 +111,7 @@ class TortoiseLoaderPropertyTests extends AnyFunSuite with ScalaCheckDrivenPrope
     }
   }
 
-  type CompilationUnit = Product with Serializable with TortoiseSymbol
+  type CompilationUnit = TortoiseSymbol// & Product & Serializable
   type CompilationList = List[CompilationUnit]
 
   def allProvidedIDsUnique(compilationList: List[CompilationUnit]) =
@@ -150,17 +150,19 @@ class TortoiseLoaderPropertyTests extends AnyFunSuite with ScalaCheckDrivenPrope
     deps     <- genDeps
   } yield JsDeclare(provides, "", deps)
 
-  def treeCompilation: Gen[CompilationList] =
-    Gen.oneOf(declWithDependencies, declWithoutDependencies)
+  def treeCompilation: Gen[CompilationList] = {
+    val d = Gen.oneOf(declWithDependencies, declWithoutDependencies)
       .map(shuffle)
-      .suchThat(isValidDependencyTree)
+
+    d.suchThat(isValidDependencyTree)
+  }
 
   def acyclicCompilation: Gen[CompilationList] =
     Gen.listOf(treeCompilation).flatMap { trees =>
       val tree = trees.foldLeft(List[CompilationUnit]())(_ ++ _)
       val r = Gen.someOf(tree).map(_.map(_.provides).toSeq)
       decl(r).map(_ :: tree)
-    }.map(shuffle(_)).suchThat(isValidDependencyTree(_))
+    }.map(shuffle).suchThat(isValidDependencyTree)
 
   def cyclicCompilation: Gen[CompilationList] =
     acyclicCompilation

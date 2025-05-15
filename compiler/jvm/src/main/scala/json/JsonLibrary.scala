@@ -40,7 +40,7 @@ object JsonLibrary {
       case arr: JArray  => JsArray(arr.value.map(toTortoise).toList)
       case obj: JObject =>
         val m = obj.value.keys.map((k) => k -> toTortoise(obj(k)))
-        JsObject(fields(m.toSeq: _*))
+        JsObject(fields(m.toSeq*))
       case x            => throw new Exception(s"$x is a mysterious thing")
     }
 

@@ -84,10 +84,11 @@ class WidgetCompiler(
       }
 
       val kindToAgentSetString = Map[String, String => String](
-        "OBSERVER" -> identity _,
-        "TURTLE"   -> askBlock("turtles", true)  _,
-        "PATCH"    -> askBlock("patches", false) _,
-        "LINK"     -> askBlock("links",   true)  _)
+        "OBSERVER" -> identity[String],
+        "TURTLE"   -> askBlock("turtles", true),
+        "PATCH"    -> askBlock("patches", false),
+        "LINK"     -> askBlock("links",   true)
+      )
 
       kindToAgentSetString.getOrElse(kind, fail(kind)).apply(command)
     }
@@ -99,14 +100,14 @@ class WidgetCompiler(
     val sanitized = sanitizeSource(asked)
     compileCommand(sanitized)
       .contextualizeError("button", b.display.orElse(b.source).getOrElse(""), "source")
-      .map(SourceCompilation.apply _)
+      .map(SourceCompilation.apply)
   }
 
   private def compileMonitor(m: Monitor): ExceptionValidation[SourceCompilation] =
     compileReporter(m.source.getOrElse(""))
       .map( (f) => s"ProcedurePrims.rng.withAux(${thunkifyFunction(f)})" )
       .contextualizeError("monitor", m.display.orElse(m.source).getOrElse(""), "reporter")
-      .map(SourceCompilation.apply _)
+      .map(SourceCompilation.apply)
 
   private def compileSlider(s: Slider): ExceptionValidation[SliderCompilation] = {
     def sliderError(name: String, reporter: String): ExceptionValidation[String] =

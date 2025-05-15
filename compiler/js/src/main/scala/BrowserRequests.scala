@@ -40,11 +40,11 @@ private[tortoise] trait RequestSharedImplicits {
   }
 
   implicit object optionVectorShapes extends OptionalJsonReader[Seq[VectorShape]] {
-    override val transform = readVectorShapes _
+    override val transform = readVectorShapes
   }
 
   implicit object optionLinkShapes extends OptionalJsonReader[Seq[LinkShape]] {
-    override val transform = readLinkShapes _
+    override val transform = readLinkShapes
   }
 }
 

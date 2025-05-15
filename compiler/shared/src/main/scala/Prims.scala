@@ -9,15 +9,15 @@ import
   JsOps.{ indented, jsString, jsStringEscaped }
 
 import org.nlogo.core.{
-  AstNode
-, CommandBlock
-, Expression
-, prim
-, Reporter
-, ReporterApp
-, ReporterBlock
-, Statement
-, Syntax
+  AstNode,
+  CommandBlock,
+  Expression,
+  prim,
+  Reporter,
+  ReporterApp,
+  ReporterBlock,
+  Statement,
+  Syntax
 }
 import org.nlogo.core.prim.Lambda
 
@@ -385,10 +385,10 @@ trait CommandPrims extends PrimUtils {
         }).mkString("[", ", ", "]")
       }
       def flattenLetVars(l: prim._abstractlet): Seq[String] = l match {
-        case nl: prim._multilet => nl.lets.flatten(flattenLetVars(_))
+        case nl: prim._multilet => nl.lets.flatten(using flattenLetVars(_))
         case _                  => Seq(l.letList)
       }
-      val letList: Seq[String] = multiLet.lets.flatten(flattenLetVars(_))
+      val letList: Seq[String] = multiLet.lets.flatten(using flattenLetVars(_))
       val regsString  = letList.map( (l) =>
         s"""ProcedurePrims.stack().currentContext().registerStringRunVar("${l}", ${JSIdentProvider(l)});"""
       ).mkString(" ")

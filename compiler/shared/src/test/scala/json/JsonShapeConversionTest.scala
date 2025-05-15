@@ -131,9 +131,9 @@ class JsonShapeConversionTest extends AnyFunSuite with ScalaCheckDrivenPropertyC
     value <- genJsValue
   } yield key -> value
 
-  val genJsFields = Gen.listOf(genField).map(fs => fields(fs: _*))
+  val genJsFields = Gen.listOf(genField).map(fs => fields(fs*))
 
-  val genJsObject = genJsFields.map(JsObject)
+  val genJsObject = genJsFields.map(JsObject.apply)
 
   val genInvalidFields = Gen.oneOf(invalidFieldSets)
 
@@ -151,10 +151,10 @@ class JsonShapeConversionTest extends AnyFunSuite with ScalaCheckDrivenPropertyC
     }
     Gen.oneOf(
       vectorShapes.map(shapes => JsArray(shapes.map(_.toJsonObj))),
-      vectorShapes.map(shapes => JsObject(fields(shapes.map(shapeToNamedTuple): _*))))
+      vectorShapes.map(shapes => JsObject(fields(shapes.map(shapeToNamedTuple)*))))
   }
 
-  Map[String, TortoiseJson => ValidationNel[String, _]](
+  Map[String, TortoiseJson => ValidationNel[String, ?]](
     "elements"      -> ElemToJsonConverters.read,
     "link lines"    -> ShapeToJsonConverters.readLinkLine,
     "vector shapes" -> ShapeToJsonConverters.readVectorShape,
@@ -194,7 +194,7 @@ class JsonShapeConversionTest extends AnyFunSuite with ScalaCheckDrivenPropertyC
 
   def testReversibleConversion[T](gen: Gen[T], deserialize: TortoiseJson => ValidationNel[String, T])(implicit ev: T => JsonWritable): Unit =
     forAll(gen) { e =>
-      val serialized = e.toJsonObj
+      val serialized = ev(e).toJsonObj
       val deserializedV = deserialize(serialized)
       assert(deserializedV.isSuccess, s"""|deserialization on input:
                                           |$serialized
