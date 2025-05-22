@@ -19,7 +19,7 @@ val commonSettings =
     crossPaths    := false, // we're not cross-building for different Scala versions
     scalaVersion  := "3.7.0",
     scalacOptions ++=
-      "-deprecation -unchecked -feature -explain -encoding us-ascii -Xfatal-warnings".split(" ").toSeq,
+      "-deprecation -unchecked -feature -encoding us-ascii -experimental -Xfatal-warnings".split(" ").toSeq,
 
     resolvers     += "netlogoheadless" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/",
     libraryDependencies ++= Seq(
@@ -61,15 +61,32 @@ lazy val root     = (project in rootFile)
 
 // These projects are just for scalastyle on shared sources
 lazy val compilerCore = (project in file("compiler/shared")).
-  settings(Compile / compile / skip := true)
+  settings(Compile / compile / skip := true).
+  settings((Compile / scalastyleSources) := {
+    val scalaSourceFiles = ((Compile / scalaSource).value ** "*.scala").get
+    // Avoid bug in Scalastyle can't deal with `inline def`; can't just turn it off as it blows up while parsing the
+    // file. -Jeremy B May 2025
+    scalaSourceFiles.filterNot(_.getAbsolutePath.contains("Jsonify.scala"))
+  })
 
 lazy val macrosCore = (project in file("macros")).
-  settings(Compile / compile / skip := true)
+  settings(Compile / compile / skip := true).
+  settings((Compile / scalastyleSources) := {
+    // Avoid bug in Scalastyle can't deal with `inline def`; can't just turn it off as it blows up while parsing the
+    // file. -Jeremy B May 2025
+    Seq()
+  })
 
 lazy val compiler = CrossProject("compiler", file("compiler"))(JSPlatform, JVMPlatform).crossType(CrossType.Full).
   dependsOn(macros % "compile-internal->compile;test-internal->test").
   settings(Depend.settings: _*).
   settings(commonSettings: _*).
+  settings((Compile / scalastyleSources) := {
+    val scalaSourceFiles = ((Compile / scalaSource).value ** "*.scala").get
+    // Avoid bug in Scalastyle can't deal with `inline def`; can't just turn it off as it blows up while parsing the
+    // file. -Jeremy B May 2025
+    scalaSourceFiles.filterNot(_.getAbsolutePath.contains("Jsonify.scala"))
+  }).
   jvmSettings(Depend.settings: _*).
   jvmSettings(
     name :=  "CompilerJVM",
@@ -119,7 +136,6 @@ lazy val macros = CrossProject("macros", file("macros"))(JSPlatform, JVMPlatform
   settings(commonSettings: _*).
   settings(
     libraryDependencies ++= Seq(
-      // "org.scala-lang" %  "scala-reflect" % scalaVersion.value,
       "org.scalaz"     %% "scalaz-core"   % scalazVersion),
     (Compile / compile) := ((Compile / compile) dependsOn (root / recompileWhenExtensionsChange)).value
   )

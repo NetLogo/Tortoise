@@ -12,9 +12,6 @@ import
     NumericInput.{ ColorLabel, NumberLabel }
 
 import
-  org.nlogo.tortoise.macros.json.Jsonify
-
-import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsNull, JsObject, JsString }
 
 import
@@ -52,12 +49,12 @@ object WidgetWrite {
   }
 
   implicit object pen2Json extends JsonWriter[Pen] {
-    def apply(p: Pen): TortoiseJson = Jsonify.writer[Pen, TortoiseJson](p)
+    def apply(p: Pen): TortoiseJson = PenWriter(p)
   }
 
   implicit object dims2Json extends JsonWriter[WorldDimensions] {
     def apply(wd: WorldDimensions): TortoiseJson = {
-      Jsonify.writer[WorldDimensions, TortoiseJson](wd) match {
+      WorldDimensionsWriter(wd) match {
         case JsObject(props) =>
           val pairsWithoutTypeField = props.view.filterKeys(_ != "type").toSeq
           JsObject(fields(pairsWithoutTypeField*))

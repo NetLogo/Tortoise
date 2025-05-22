@@ -61,7 +61,9 @@ object DrawingActionToJsonConverters {
       case x: SendPixels    => new SendPixelsConverter(x)
       case x: SetColors     => new SetColorsConverter(x)
       case x: StampImage    => new StampImageConverter(x)
+      // scalastyle:off null
       case null             => throw new Exception(s"null drawing action encountered")
+      // scalastyle:on null
     }
   // scalastyle:on cyclomatic.complexity
 

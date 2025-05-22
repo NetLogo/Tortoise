@@ -10,9 +10,6 @@ import
     Shape.{ Element, LinkLine, LinkShape, VectorShape }
 
 import
-  org.nlogo.tortoise.macros.json.Jsonify
-
-import
   scalaz.{ Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
@@ -109,19 +106,19 @@ object ShapeToJsonConverters {
 
   def readVectorShape(json: TortoiseJson): ValidationNel[String, VectorShape] =
     json match {
-      case j: JsObject => Jsonify.reader[JsObject, JsonVectorShape](j)
+      case j: JsObject => JsonVectorShapeReader(j)
       case other       => s"Expected shape as json object, got $other".failureNel
     }
 
   def readLinkShape(json: TortoiseJson): ValidationNel[String, LinkShape] =
     json match {
-      case j: JsObject => Jsonify.reader[JsObject, JsonLinkShape](j)
+      case j: JsObject => JsonLinkShapeReader(j)
       case other       => s"Expected shape as json object, got $other".failureNel
     }
 
   def readLinkLine(json: TortoiseJson): ValidationNel[String, LinkLine] =
     json match {
-      case j: JsObject => Jsonify.reader[JsObject, JsonLinkLine](j)
+      case j: JsObject => JsonLinkLineReader(j)
       case _           => s"Expected link line json, found: $json".failureNel
     }
 

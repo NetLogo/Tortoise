@@ -2,19 +2,14 @@
 
 package org.nlogo.tortoise.compiler
 
-import
-  json.{ JsonReader, ShapeToJsonConverters, TortoiseJson, WidgetToJson },
-    JsonReader.{ OptionalJsonReader, tortoiseJsAsStringSeq, tortoiseJs2String },
-    ShapeToJsonConverters.{ readLinkShapes, readVectorShapes },
-    TortoiseJson.JsObject,
-    WidgetToJson.{ readWidgetsJson }
+import json.{ CompilationRequestReader, ExportRequestReader, JsonReader, ShapeToJsonConverters, TortoiseJson, WidgetToJson }
+import JsonReader.{ OptionalJsonReader, tortoiseJsAsStringSeq, tortoiseJs2String }
+import ShapeToJsonConverters.{ readLinkShapes, readVectorShapes }
+import TortoiseJson.JsObject
+import WidgetToJson.{ readWidgetsJson }
 
-import
-  org.nlogo.tortoise.macros.json.Jsonify
-
-import
-  org.nlogo.core.{ Model, Shape, Widget },
-    Shape.{ LinkShape, VectorShape }
+import org.nlogo.core.{ Model, Shape, Widget }
+import Shape.{ LinkShape, VectorShape }
 
 case class ExportRequest(
   code:         String,
@@ -49,7 +44,7 @@ private[tortoise] trait RequestSharedImplicits {
 }
 
 object ExportRequest extends RequestSharedImplicits {
-  val read = Jsonify.reader[JsObject, ExportRequest]
+  val read = ExportRequestReader
   final val NlogoFileVersion = "NetLogo 6.4.0"
 }
 
@@ -81,5 +76,5 @@ object CompilationRequest extends RequestSharedImplicits {
     override val transform = tortoiseJsAsStringSeq
   }
 
-  val read = Jsonify.reader[JsObject, CompilationRequest]
+  val read = CompilationRequestReader
 }

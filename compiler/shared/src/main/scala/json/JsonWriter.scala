@@ -39,7 +39,7 @@ object JsonWriter extends LowPriorityWriterImplicits {
 
 trait LowPriorityWriterImplicits {
   implicit object string2TortoiseJs extends JsonWriter[String] {
-    def apply (s: String): TortoiseJson = JsString(s)
+    def apply(s: String): TortoiseJson  = JsString(s)
   }
 
   implicit object int2TortoiseJs extends JsonWriter[Int] {

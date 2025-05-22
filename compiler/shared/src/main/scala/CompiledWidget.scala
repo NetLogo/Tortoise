@@ -11,7 +11,15 @@ import
   org.nlogo.core.{ CompilerException, Pen, Plot, Widget }
 
 import
-  org.nlogo.tortoise.macros.json.Jsonify
+  org.nlogo.tortoise.compiler.json.PenWriter
+
+import
+  org.nlogo.tortoise.compiler.{
+    PlotWidgetCompilationWriter,
+    SliderCompilationWriter,
+    SourceCompilationWriter,
+    UpdateableCompilationWriter
+  }
 
 import
   scalaz.{ NonEmptyList, ValidationNel }
@@ -47,7 +55,7 @@ object CompiledWidget {
 
   implicit object compiledPen2Json extends JsonWriter[CompiledPen] {
     def apply(compiledPen: CompiledPen): TortoiseJson = {
-      val javascriptObject = Jsonify.writer[Pen, TortoiseJson](compiledPen.pen).asInstanceOf[JsObject]
+      val javascriptObject = PenWriter(compiledPen.pen).asInstanceOf[JsObject]
       compiledPen.updateableCompilation.fold(
         decorateFailure(javascriptObject),
         decorateSuccess(javascriptObject))
@@ -145,10 +153,10 @@ object WidgetCompilation {
     def apply(widgetCompilation: WidgetCompilation): TortoiseJson =
       widgetCompilation match {
         case NotCompiled              => JsObject(fields())
-        case s: SourceCompilation     => Jsonify.writer[SourceCompilation, TortoiseJson](s)
-        case u: UpdateableCompilation => Jsonify.writer[UpdateableCompilation, TortoiseJson](u)
-        case p: PlotWidgetCompilation => Jsonify.writer[PlotWidgetCompilation, TortoiseJson](p)
-        case s: SliderCompilation     => Jsonify.writer[SliderCompilation, TortoiseJson](s)
+        case s: SourceCompilation     => SourceCompilationWriter(s)
+        case u: UpdateableCompilation => UpdateableCompilationWriter(u)
+        case p: PlotWidgetCompilation => PlotWidgetCompilationWriter(p)
+        case s: SliderCompilation     => SliderCompilationWriter(s)
       }
   }
 }

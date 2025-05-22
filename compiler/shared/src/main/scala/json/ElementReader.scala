@@ -9,9 +9,6 @@ import
   org.nlogo.core.Shape.{ Element, RgbColor }
 
 import
-  org.nlogo.tortoise.macros.json.Jsonify
-
-import
   TortoiseJson.{ JsInt, JsObject, JsString }
 
 import
@@ -47,10 +44,10 @@ object ElementReader {
   }
 
   private lazy val readerMap: Map[String, JsObject => ElementV] = Map(
-    "line"      -> Jsonify.reader[JsObject, JsonLine],
-    "circle"    -> Jsonify.reader[JsObject, JsonCircle],
-    "rectangle" -> Jsonify.reader[JsObject, JsonRectangle],
-    "polygon"   -> Jsonify.reader[JsObject, JsonPolygon]
+    "line"      -> JsonLineReader,
+    "circle"    -> JsonCircleReader,
+    "rectangle" -> JsonRectangleReader,
+    "polygon"   -> JsonPolygonReader
   )
 
   def unapply(tpe: String): Option[JsObject => ElementV] =

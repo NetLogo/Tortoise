@@ -6,9 +6,6 @@ import
   JsonReader.JsonSequenceReader
 
 import
-  org.nlogo.tortoise.macros.json.Jsonify
-
-import
   org.nlogo.core.{ Button, Chooser, InputBox, Monitor, Output
                  , Pen, Plot, Slider, Switch, TextBox, View, Widget }
 
@@ -54,17 +51,17 @@ object WidgetToJson {
       import WidgetWrite._
       def toJsonObj: JsObject =
         (w match {
-          case b: Button   => Jsonify.writer[Button, TortoiseJson](b)
-          case c: Chooser  => Jsonify.writer[Chooser, TortoiseJson](c)
-          case i: InputBox => Jsonify.writer[InputBox, TortoiseJson](i)
-          case m: Monitor  => Jsonify.writer[Monitor, TortoiseJson](m)
-          case o: Output   => Jsonify.writer[Output, TortoiseJson](o)
-          case p: Pen      => Jsonify.writer[Pen, TortoiseJson](p)
-          case p: Plot     => Jsonify.writer[Plot, TortoiseJson](p)
-          case s: Slider   => Jsonify.writer[Slider, TortoiseJson](s)
-          case s: Switch   => Jsonify.writer[Switch, TortoiseJson](s)
-          case t: TextBox  => Jsonify.writer[TextBox, TortoiseJson](t)
-          case v: View     => Jsonify.writer[View, TortoiseJson](v)
+          case b: Button   => ButtonWriter(b)
+          case c: Chooser  => ChooserWriter(c)
+          case i: InputBox => InputBoxWriter(i)
+          case m: Monitor  => MonitorWriter(m)
+          case o: Output   => OutputWriter(o)
+          case p: Pen      => PenWriter(p)
+          case p: Plot     => PlotWriter(p)
+          case s: Slider   => SliderWriter(s)
+          case s: Switch   => SwitchWriter(s)
+          case t: TextBox  => TextBoxWriter(t)
+          case v: View     => ViewWriter(v)
           case _           => CompilerUtils.failCompilation(s"Unknown widget type encountered: ${w.toString}")
         }).asInstanceOf[JsObject]
     }

@@ -14,8 +14,6 @@ import json.TortoiseJson
 import json.TortoiseJson._
 import json.WidgetToJson
 
-import org.nlogo.tortoise.macros.json.Jsonify
-
 import org.nlogo.core.{ CompilerException, Plot }
 import org.nlogo.core.model.ModelReader
 
@@ -400,7 +398,7 @@ object BrowserCompiler {
 
   implicit object compilation2JsonWriter extends JsonWriter[ModelCompilation] {
     override def apply(success: ModelCompilation): JsObject =
-      Jsonify.writer[ModelCompilation, TortoiseJson](success).asInstanceOf[JsObject]
+      ModelCompilationWriter(success).asInstanceOf[JsObject]
   }
 
   implicit def compilationResult2Json(modelCompilationV: ValidationNel[TortoiseFailure, ModelCompilation]): JsonWritable =

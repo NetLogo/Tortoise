@@ -14,9 +14,6 @@ import
     StringInput.{ CommandLabel, StringLabel, ReporterLabel }
 
 import
-  org.nlogo.tortoise.macros.json.Jsonify
-
-import
   scalaz.{ Scalaz, Success, Validation, NonEmptyList, ValidationNel },
     Validation.FlatMap.ValidationFlatMapRequested,
     Scalaz.ToValidationOps
@@ -61,7 +58,7 @@ object WidgetRead {
 
   implicit object tortoiseJs2WorldDimensions extends JsonReader[TortoiseJson, WorldDimensions] {
     override def apply(t: TortoiseJson): ValidationNel[String, WorldDimensions] =
-      Jsonify.reader[JsObject, WorldDimensions](t.asInstanceOf[JsObject])
+      WorldDimensionsReader(t.asInstanceOf[JsObject])
   }
 
   implicit object tortoiseJs2OptionString extends JsonReader[TortoiseJson, Option[String]] {
@@ -182,7 +179,7 @@ object WidgetRead {
     def apply(json: TortoiseJson): ValidationNel[String, List[Pen]] = json match {
       case JsArray(els) => els.foldLeft(List[Pen]().successNel[String]) {
         case (acc, j@JsObject(_)) =>
-          acc.flatMap(l => Jsonify.reader[JsObject, Pen](j).map(newPen => l :+ newPen))
+          acc.flatMap(l => PenReader(j).map(newPen => l :+ newPen))
         case (acc, other) => penListError
       }
       case other => penListError
@@ -191,16 +188,16 @@ object WidgetRead {
 
   private val readerMap: Map[String, JsObject => ValidationNel[String, Widget]] = {
     Map(
-      "button"   -> Jsonify.reader[JsObject, Button],
-      "chooser"  -> Jsonify.reader[JsObject, Chooser],
-      "inputBox" -> Jsonify.reader[JsObject, InputBox],
-      "monitor"  -> Jsonify.reader[JsObject, Monitor],
-      "output"   -> Jsonify.reader[JsObject, Output],
-      "plot"     -> Jsonify.reader[JsObject, Plot],
-      "slider"   -> Jsonify.reader[JsObject, Slider],
-      "switch"   -> Jsonify.reader[JsObject, Switch],
-      "textBox"  -> Jsonify.reader[JsObject, TextBox],
-      "view"     -> Jsonify.reader[JsObject, View]
+      "button"   -> ButtonReader,
+      "chooser"  -> ChooserReader,
+      "inputBox" -> InputBoxReader,
+      "monitor"  -> MonitorReader,
+      "output"   -> OutputReader,
+      "plot"     -> PlotReader,
+      "slider"   -> SliderReader,
+      "switch"   -> SwitchReader,
+      "textBox"  -> TextBoxReader,
+      "view"     -> ViewReader
     )
   }
 
