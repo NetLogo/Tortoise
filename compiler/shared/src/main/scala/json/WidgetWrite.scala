@@ -12,7 +12,7 @@ import
     NumericInput.{ ColorLabel, NumberLabel }
 
 import
-  TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsNull, JsObject, JsString }
+  TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsNull, JsObject, JsString }
 
 import
   org.nlogo.tortoise.compiler.utils.CompilerUtils
@@ -74,7 +74,7 @@ object WidgetWrite {
 
   implicit object intOption2Json extends OptionWriter[Int] {
     // in general, get is not safe, but we're checking it in write
-    def apply(i: Option[Int]): TortoiseJson = JsString(i.get.toString)
+    def apply(i: Option[Int]): TortoiseJson = JsInt(i.get)
   }
 
   implicit object chooseable2Json extends JsonWriter[Chooseable] {
