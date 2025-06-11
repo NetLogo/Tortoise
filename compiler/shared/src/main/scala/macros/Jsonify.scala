@@ -23,8 +23,6 @@ object Jsonify {
   def writerGeneratorCode[S](pkgExpr: Expr[String])(using s: Type[S], q: Quotes): Expr[(String, String)] = {
     import q.reflect.*
 
-    implicit val i1 = WidgetWrite.intOption2Json
-
     val pkg = pkgExpr.valueOrAbort
 
     val sRepr = TypeRepr.of[S]
@@ -172,8 +170,6 @@ implicit object $objectName extends JsonReader[TortoiseJson.JsObject, $caseClass
 
   import java.io.File
   import java.nio.file.{ Files, Paths }
-// val path = Paths.get("your/directory/path")
-// Files.createDirectories(path)
 
   inline def writeFile(inline genResult: (String, String), inline dir: String = "gen-shared"): Unit = ${ writeFileCode('genResult, 'dir) }
 
