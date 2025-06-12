@@ -98,10 +98,9 @@ object WidgetRead {
 
     def apply(t: TortoiseJson): ValidationNel[String, Option[Int]] =
       t match {
-        case JsNull          => None.successNel
-        case JsString("NIL") => None.successNel
-        case JsString(s)     => Some(s.toInt).successNel
-        case other           => other.toString.failureNel
+        case JsNull   => None.successNel
+        case JsInt(i) => Some(i).successNel
+        case other    => other.toString.failureNel
       }
   }
 
