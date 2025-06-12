@@ -119,7 +119,7 @@ class WidgetCompiler(
     val max  = sliderError("max",  s.max)
     val step = sliderError("step", s.step)
 
-    Apply[ExceptionValidation].apply3(max, min, step)(SliderCompilation.apply)
+    Apply[ExceptionValidation].apply3(min, max, step)(SliderCompilation.apply)
   }
 
   private def compilePen(ownerName: String)(pen: Pen): CompiledPen = {
