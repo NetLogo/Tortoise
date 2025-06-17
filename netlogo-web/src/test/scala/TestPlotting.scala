@@ -529,10 +529,10 @@ trait PlottingHelpers {
   private val compiler = new org.nlogo.tortoise.compiler.Compiler()
 
   private val model = {
-    val input = Source.fromFile("models/Sample Models/Social Science/Economics/Wealth Distribution.nlogo")
+    val input = Source.fromFile("models/Sample Models/Social Science/Economics/Wealth Distribution.nlogox")
     val nlogo = input.mkString
     input.close()
-    CompiledModel.fromNlogoContents(nlogo, compiler) valueOr ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
+    CompiledModel.fromNlogoXMLContents(nlogo, compiler) valueOr ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
   }
 
   protected object Plots {

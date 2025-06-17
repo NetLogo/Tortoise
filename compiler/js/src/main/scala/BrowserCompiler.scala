@@ -16,6 +16,7 @@ import json.WidgetToJson
 
 import org.nlogo.core.{ CompilerException, Plot }
 import org.nlogo.core.model.ModelReader
+import org.nlogo.tortoise.compiler.xml.TortoiseModelLoader
 
 import org.nlogo.parse.CompilerUtilities
 
@@ -31,6 +32,7 @@ import scalaz.std.list._
 import scalaz.Scalaz.ToValidationOps
 import scalaz.Validation.FlatMap.ValidationFlatMapRequested
 
+// scalastyle:off number.of.methods
 @JSExportTopLevel("BrowserCompiler")
 class BrowserCompiler {
 
@@ -89,15 +91,35 @@ class BrowserCompiler {
     JsonLibrary.toNative(transformErrorsAndUpdateModel(CompiledModel.fromNlogoContents(contents, compiler)).toJsonObj)
 
   @JSExport
-  def exportNlogo(exportRequest: NativeJson): NativeJson = {
+  def fromNlogoXML(contents: String, commandJson: NativeJson
+               , compilationRequest: NativeJson = DefaultCRJS): NativeJson = {
+    val compilationResult =
+      for {
+        commands      <- readArray[String](commandJson, "commands")
+        tortoiseReq   <- readNative[JsObject](compilationRequest)
+        parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
+        compiledModel =  CompiledModel.fromNlogoXMLContents(contents, compiler, parsedRequest.widgets)
+        compilation   <- transformErrorsAndUpdateModel(compiledModel, compileExtras(commands, Seq()))
+      } yield compilation
 
-    val model =
+    JsonLibrary.toNative(compilationResult.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
+
+  }
+
+  @JSExport
+  def fromNlogoXML(contents: String): NativeJson =
+    JsonLibrary.toNative(transformErrorsAndUpdateModel(CompiledModel.fromNlogoXMLContents(contents, compiler)).toJsonObj)
+
+  @JSExport
+  def exportNlogoXML(exportRequest: NativeJson): NativeJson = {
+
+    val source =
       for {
         tortoiseReq   <- readNative[JsObject](exportRequest)
         parsedRequest <- ExportRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
-      } yield ModelReader.formatModel(parsedRequest.toModel)
+      } yield TortoiseModelLoader.write(parsedRequest.toModel)
 
-    JsonLibrary.toNative(model.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
+    JsonLibrary.toNative(source.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
 
   }
 
@@ -413,3 +435,4 @@ object BrowserCompiler {
     JsonWriter.convert(exportResult)
 
 }
+// scalastyle:on number.of.methods

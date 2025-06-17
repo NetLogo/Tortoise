@@ -2,8 +2,8 @@
 
 package org.nlogo.tortoise.compiler
 
-import org.nlogo.core.{ Slider }
-import org.nlogo.core.model.ModelReader
+import org.nlogo.core.Slider
+import org.nlogo.tortoise.compiler.xml.TortoiseModelLoader
 
 import json.JsonLibrary.{ toNative, nativeToString, toTortoise }
 import json.JsonReader.{ jsObject2RichJsObject, jsArray2RichJsArray }
@@ -106,9 +106,9 @@ object BrowserCompilerTest extends TestSuite {
     }
 
     "testReturnsErrorWhenCommandsAreOfWrongType"-{
-      val formattedModel = ModelReader.formatModel(validModel)
+      val formattedModel = TortoiseModelLoader.write(validModel)
       val commands       = toNative(JsString("foobar"))
-      val compiledModel  = withBrowserCompiler(_.fromNlogo(formattedModel, commands))
+      val compiledModel  = withBrowserCompiler(_.fromNlogoXML(formattedModel, commands))
       assert(! isSuccess(compiledModel))
       assertErrorMessage(compiledModel, "commands must be an Array of String")
     }
@@ -137,10 +137,10 @@ object BrowserCompilerTest extends TestSuite {
     }
 
     "testExportsNlogo"-{
-      val exportResult = withBrowserCompiler(_.exportNlogo(modelToCompilationRequest(validModel)))
+      val exportResult = withBrowserCompiler(_.exportNlogoXML(modelToCompilationRequest(validModel)))
       assert(exportResult[Boolean]("success"))
       val exportedNlogo = exportResult[String]("result")
-      val parsedModel = ModelReader.parseModel(exportedNlogo, StandardLiteralParser, Map())
+      val parsedModel = TortoiseModelLoader.read(exportedNlogo).get
       assert(parsedModel.code                   == validModel.code)
       assert(parsedModel.info                   == validModel.info)
       assert(parsedModel.version                == validModel.version)

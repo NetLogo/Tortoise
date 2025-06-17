@@ -10,8 +10,11 @@ import
   org.graalvm.polyglot.PolyglotException
 
 import
-  org.nlogo.tortoise.compiler.{ Compiler, CompilerFlags, WidgetCompiler, json },
-    json.JsonSerializer
+  org.nlogo.tortoise.compiler.{ Compiler, CompilerFlags, WidgetCompiler }
+import
+  org.nlogo.tortoise.compiler.json.JsonSerializer
+import
+  org.nlogo.tortoise.compiler.xml.TortoiseModelLoader
 
 import
   org.nlogo.{ core, api, headless, mirror, nvm },
@@ -261,17 +264,12 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   }
 
   def open(path: String, dimensions: Option[(Int, Int, Int, Int)], shouldAutoInstallLibs: Boolean): Unit = {
-    open(path, dimensions, shouldAutoInstallLibs, Set())
-  }
-
-  def open(path: String, dimensions: Option[(Int, Int, Int, Int)], shouldAutoInstallLibs: Boolean, requiredExts: Set[String]): Unit = {
 
     require(!opened)
 
-    val absoPath  = java.nio.file.Path.of(path).toAbsolutePath.toString
-    val source    = FileIO.fileToString(absoPath, "UTF-8")
-    val newSource = addRequiredExtensions(source.replaceAll("""\sdisplay\s""", ""), requiredExts)
-    val model     = ModelReader.parseModel(newSource, workspace.parser, Map())
+    val absoPath = java.nio.file.Path.of(path).toAbsolutePath.toString
+    val source   = FileIO.fileToString(absoPath, "UTF-8")
+    val model    = TortoiseModelLoader.read(source).get
 
     val finalModel = dimensions match {
       case None => model
@@ -332,20 +330,6 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
 
   def runJS(javascript: String): (String, String) = {
     engine.run(javascript)
-  }
-
-  private def addRequiredExtensions(source: String, requiredExts: Set[String]): String = {
-
-    val ExtRegex = """(?s)(?i)(^|.*\n)(\s*extensions\s*\[)(.*?)(\].*?\Q@#$#@#$#@\E.*)""".r
-
-    source match {
-      case ExtRegex(prefix, extDirective, exts, suffix) =>
-        val extensions = exts.trim.split("\\s+").toSet
-        s"$prefix$extDirective${(extensions | requiredExts).mkString(" ")}$suffix"
-      case _ =>
-        s"extensions [${requiredExts.mkString(" ")}]\n$source"
-    }
-
   }
 
 }

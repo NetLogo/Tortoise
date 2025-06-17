@@ -45,7 +45,7 @@ private[tortoise] trait RequestSharedImplicits {
 
 object ExportRequest extends RequestSharedImplicits {
   val read = ExportRequestReader
-  final val NlogoFileVersion = "NetLogo 6.4.0"
+  final val NlogoFileVersion = "NetLogo 7.0.0-beta0"
 }
 
 case class CompilationRequest(

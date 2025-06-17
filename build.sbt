@@ -2,9 +2,9 @@ import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import sbtcrossproject.CrossProject
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 
-val nlDependencyVersion       = "7.0.0-beta1-6d02429"
+val nlDependencyVersion       = "7.0.0-beta2-30da6bb"
 
-val parserJsDependencyVersion = "0.4.0-6d02429"
+val parserJsDependencyVersion = "0.4.0-30da6bb"
 
 val scalazVersion             = "7.2.36"
 
@@ -66,7 +66,11 @@ lazy val compilerCore = (project in file("compiler/shared")).
     val scalaSourceFiles = ((Compile / scalaSource).value ** "*.scala").get
     // Avoid bug in Scalastyle can't deal with `inline def`; can't just turn it off as it blows up while parsing the
     // file. -Jeremy B May 2025
-    scalaSourceFiles.filterNot(_.getAbsolutePath.contains("Jsonify.scala"))
+    scalaSourceFiles.filterNot( (f) => {
+      val fPath = f.getAbsolutePath
+      val ignoredFiles = Seq("Jsonify.scala", "SimpleXMLWriter.scala")
+      ignoredFiles.exists( (ignored) => fPath.contains(ignored) )
+    })
   })
 
 lazy val macrosCore = (project in file("macros")).

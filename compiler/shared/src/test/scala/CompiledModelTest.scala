@@ -41,7 +41,7 @@ class CompiledModelTest extends AnyFunSuite {
   }
 
   test("invalid model from nlogo") {
-    assert(CompiledModel.fromNlogoContents("", compiler).isFailure)
+    assert(CompiledModel.fromNlogoXMLContents("", compiler).isFailure)
   }
 
   test("model with unimplemented primitives can be compiled") {

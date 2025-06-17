@@ -5,7 +5,7 @@ package org.nlogo.tortoise.compiler
 import ExportRequest.NlogoFileVersion
 
 import org.nlogo.core.{ Model => CModel, Slider, Switch, View }
-import org.nlogo.core.model.ModelReader
+import org.nlogo.tortoise.compiler.xml.TortoiseModelLoader
 
 import json.{ JsonLibrary, JsonLinkLine, JsonLinkShape, JsonVectorShape, TortoiseJson }
 import json.JsonLibrary.{ Native => NativeJson, toNative }
@@ -45,13 +45,13 @@ object TestUtilities {
   }
 
   def compileModel(s: String): JsObject =
-    withBrowserCompiler(_.fromNlogo(s))
+    withBrowserCompiler(_.fromNlogoXML(s))
 
   def compileModel(m: CModel, commands: Seq[String] = Seq()): JsObject =
     withBrowserCompiler { b =>
-      val formattedModel    = ModelReader.formatModel(m)
+      val formattedModel    = TortoiseModelLoader.write(m)
       val formattedCommands = toNative(JsArray(commands.map(s => JsString(s))))
-      b.fromNlogo(formattedModel, formattedCommands)
+      b.fromNlogoXML(formattedModel, formattedCommands)
     }
 
   def withBrowserCompiler(f: BrowserCompiler => JsonLibrary.Native): JsObject =

@@ -2,15 +2,15 @@
 
 package org.nlogo.tortoise.compiler
 
-import
-  org.nlogo.{ core, parse },
-    core.{ model, CompilerException, Model, Plot, View, Widget },
-    model.ModelReader,
-    parse.CompilerUtilities
+import org.nlogo.core.{ CompilerException, Model, Plot, View, Widget }
+import org.nlogo.core.model.{ ModelReader, ModelXMLLoader }
 
-import
-  scalaz.{ Scalaz, ValidationNel },
-    Scalaz.ToValidationOps
+import org.nlogo.parse.CompilerUtilities
+
+import org.nlogo.tortoise.compiler.xml.TortoiseModelLoader
+
+import scalaz.{ Scalaz, ValidationNel }
+import scalaz.Scalaz.ToValidationOps
 
 case class CompiledModel(
   compiledCode:         String = "",
@@ -69,6 +69,18 @@ object CompiledModel {
         fromModel(model.copy(widgets = model.widgets ++ extraWidgets), compiler)
       }
       catch {
+        case e: RuntimeException => e.failureNel
+      }
+    validation.leftMap(_.map(ex => ex: Exception))
+  }
+
+  def fromNlogoXMLContents(contents: String, compiler: Compiler, extraWidgets: Seq[Widget] = Seq())
+    (implicit compilerFlags: CompilerFlags): ValidationNel[Exception, CompiledModel] = {
+    val validation =
+      try {
+        val model = TortoiseModelLoader.read(contents).get
+        fromModel(model.copy(widgets = model.widgets ++ extraWidgets), compiler)
+      } catch {
         case e: RuntimeException => e.failureNel
       }
     validation.leftMap(_.map(ex => ex: Exception))

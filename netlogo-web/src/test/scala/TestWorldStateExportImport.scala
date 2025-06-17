@@ -14,10 +14,10 @@ import
 class TestWorldStateExportImport extends SimpleSuite {
 
   private lazy val model = {
-    val input = Source.fromFile("resources/test/models/ExtensionStateTest.nlogo")
+    val input = Source.fromFile("resources/test/models/ExtensionStateTest.nlogox")
     val nlogo = input.mkString
     input.close()
-    CompiledModel.fromNlogoContents(nlogo, compiler) valueOr
+    CompiledModel.fromNlogoXMLContents(nlogo, compiler) valueOr
       ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
   }
 

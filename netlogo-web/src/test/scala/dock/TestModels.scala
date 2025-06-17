@@ -24,7 +24,7 @@ class TestModels extends DockingSuite {
 
       println(testName)
 
-      fixture.open(model.path, model.dimensions, true, Set())
+      fixture.open(model.path, model.dimensions, true)
       fixture.testCommand(model.setup)
       println(s"  running ${model.repetitions} reps: ")
       print("  ")

@@ -101,7 +101,7 @@ object Benchmarker extends App {
         val nlogo  = source.mkString.replaceAll("""\sdisplay\s""", "")
         source.close()
 
-        val modelV = CompiledModel.fromNlogoContents(nlogo, compiler)
+        val modelV = CompiledModel.fromNlogoXMLContents(nlogo, compiler, Seq())
 
         val benchmarkPattern = """(?s).*\n\s*to\s+benchmark\s+(?s).*\n\s*end(?s).*"""
         val benchmarkable = nlogo.matches(benchmarkPattern)
@@ -167,14 +167,14 @@ object Benchmarker extends App {
       for (entry <- folder.listFiles()) {
         if (entry.isDirectory()) {
           queue.enqueue(entry)
-        } else if (entry.getName() == s"$filename.nlogo") {
-          file = new File(s"${folder.getAbsolutePath}/$filename.nlogo")
+        } else if (entry.getName() == s"$filename.nlogox") {
+          file = new File(s"${folder.getAbsolutePath}/$filename.nlogox")
         }
       }
     }
 
     if (file == null) {
-      throw new Exception(s"$filename.nlogo not found in models folder.")
+      throw new Exception(s"$filename.nlogox not found in models folder.")
     }
 
     file

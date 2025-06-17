@@ -39,7 +39,7 @@ class ModelDumpTests extends AnyFunSuite {
   val compilationFunction: String => (JMap[String, AnyRef], Seq[JMap[String, AnyRef]]) = modelCode => {
     engine.evalRaw("__bc = new BrowserCompiler()")
     engine.put("__modelCode", modelCode)
-    val value = engine.evalRaw("(function() { __compilation = __bc.fromNlogo(__modelCode); return __compilation; })()")
+    val value = engine.evalRaw("(function() { __compilation = __bc.fromNlogoXML(__modelCode); return __compilation; })()")
     val compilation = value.as(classOf[JMap[String, AnyRef]])
     val widgetString = compilation.asScala("widgets").toString
     val widgets      = graalValueToSequence(engine.evalRaw(widgetString)).map( (w) => w.as(classOf[JMap[String, AnyRef]]) )
