@@ -25,7 +25,7 @@ class SimpleXmlWriter extends NLogoXMLWriter {
   }
 
   def startDocument(): Unit = {
-    builder.append("""<? version="1.0" encoding="utf-8" ?>""")
+    builder.append("""<?xml version="1.0" encoding="utf-8" ?>""")
   }
 
   def endDocument(): Unit = {
@@ -50,9 +50,12 @@ class SimpleXmlWriter extends NLogoXMLWriter {
 
   def endElement(e: String): Unit = {
     maybeCloseAttributes()
-    if (lastStarted != e) { linebreak() }
-    builder.append(s"</$e>")
     pop()
+    if (lastStarted != e) {
+      linebreak()
+      builder.append(margin)
+    }
+    builder.append(s"</$e>")
   }
 
   def attribute(name: String, value: String): Unit = {

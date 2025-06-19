@@ -219,12 +219,12 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
     val model = TortoiseModelLoader.read(simpleModelSource).get
     val writtenSource = TortoiseModelLoader.write(model)
 
-    val expected = """<? version="1.0" encoding="utf-8" ?>
+    val expected = """<?xml version="1.0" encoding="utf-8" ?>
 <model version="NetLogo 7.0.0-beta2" snapToGrid="false">
   <code><![CDATA[to setup end <xml-tags-don't-matter-here></xml>]]></code>
   <widgets>
     <view x="455" wrappingAllowedX="true" y="10" frameRate="30.0" minPycor="-25" height="564" showTickCounter="true" patchSize="10.9804" fontSize="14" wrappingAllowedY="true" width="564" tickCounterLabel="ticks" maxPycor="25" updateMode="1" maxPxcor="25" minPxcor="-25"></view>
-</widgets>
+  </widgets>
   <info><![CDATA[# Hello! <h1> <h2> </p>]]></info>
   <turtleShapes></turtleShapes>
   <linkShapes></linkShapes>
