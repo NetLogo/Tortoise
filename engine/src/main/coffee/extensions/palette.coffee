@@ -47,7 +47,7 @@ validateHSB = (color) ->
 isValidHSBList = (color) -> # must be a list upon import
   valid = true
   if (typeof color is "number")
-    throw exeptions.extension("Input must be an HSB list for scale-gradient-hsb.")
+    throw exceptions.extension("Input must be an HSB list for scale-gradient-hsb.")
   if (color.length is not 3)
     return false
   valid = color.every((component) ->
