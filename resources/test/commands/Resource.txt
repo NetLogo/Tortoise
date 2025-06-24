@@ -1,0 +1,10 @@
+ModelWithResources
+  OPEN> resources/test/models/ResourcesTest.nlogox
+  resource:list => ["import-image-check-1" "text-resource-check" "sample-csv"]
+  resource:get "sample-csv" => "Name,Data1,Data2,Data3\nSpaniel,“brown”,FALSE,10.4\nRetriever,“light-grey”,TRUE,22.4\nMutt,“mottled brown and black”,FALSE,18.9\n"
+  csv:from-string resource:get "sample-csv" => [["Name" "Data1" "Data2" "Data3"] ["Spaniel" "“brown”" false 10.4] ["Retriever" "“light-grey”" true 22.4] ["Mutt" "“mottled brown and black”" false 18.9]]
+  O> create-turtles 1 [ set label resource:get "text-resource-check" ]
+  O> import-a:drawing resource:get "import-image-check-1"
+  count patches with [pcolor = 0] => 1089
+  O> import-a:pcolors resource:get "import-image-check-1"
+  count patches with [pcolor = 0] => 0

@@ -20,10 +20,10 @@ if (typeof Polyglot !== "undefined") {
   const base64ToImageData =
     function(base64) {
       const splits  = base64.split(',');
-      if (splits.length != 2) {
+      if (splits.length > 2) {
         throw new Error(`splits not 2: ${splits.length}, ${base64.substring(0, 40)}...`)
       }
-      const trimmed = splits[1];
+      const trimmed = (splits.length === 1) ? splits[0] : splits[1];
       const bytes   = Base64.getDecoder().decode(trimmed);
       const bais    = new BAIS(bytes);
       const image   = ImageIO.read(bais);

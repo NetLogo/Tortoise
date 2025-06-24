@@ -147,6 +147,7 @@ object BrowserCompilerTest extends TestSuite {
       assert(parsedModel.widgets                == validModel.widgets)
       assert(parsedModel.turtleShapes.last.name == "custom")
       assert(parsedModel.linkShapes.last.name   == "custom2")
+      assert(parsedModel.resources.last.name    == "text-resource-1")
     }
 
     "testCompilationWithoutCommandsOK"-{
@@ -164,6 +165,13 @@ object BrowserCompilerTest extends TestSuite {
       assert(js.contains("custom2"))
     }
 
+    "compilation preserves external resources"-{
+      val compiledModel = withBrowserCompiler(_.fromModel(modelToCompilationRequest(validModel)))
+      assert(isSuccess(compiledModel))
+      val js = compiledJs(compiledModel)
+      assert(js.contains("pumpernickle"))
+      assert(js.contains("text-resource-1"))
+    }
 
     "testCompilationSucceedsWithJustCode"-{
       val compiledModel = withBrowserCompiler(_.fromModel(toNative(JsObject(fields(

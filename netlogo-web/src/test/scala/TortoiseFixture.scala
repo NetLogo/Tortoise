@@ -19,6 +19,9 @@ import
 import
   org.nlogo.tortoise.compiler.Compiler
 
+import
+  org.nlogo.tortoise.compiler.xml.TortoiseModelLoader
+
 import jsengine.GraalJS
 
 class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) => Nothing) extends Fixture {
@@ -140,7 +143,11 @@ private[tortoise] trait Fixture extends AbstractFixture {
 
   override def defaultView = View.square(5)
 
-  override def open(path: String, shouldAutoInstallLibs: Boolean = false): Unit = ???
+  override def open(relPath: String, shouldAutoInstallLibs: Boolean = false): Unit = {
+    val source = java.nio.file.Files.readString(java.nio.file.Paths.get(relPath))
+    val model = TortoiseModelLoader.read(source).get
+    openModel(model, shouldAutoInstallLibs)
+  }
 
   override def openModel(model: CModel, shouldAutoInstallLibs: Boolean = false): Unit =
     declare(model)

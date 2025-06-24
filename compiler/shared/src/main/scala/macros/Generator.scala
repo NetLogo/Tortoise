@@ -35,6 +35,7 @@ object Generator {
     Jsonify.writeFile(Jsonify.readerGenerator[org.nlogo.core.Switch](Seq("org.nlogo.tortoise.compiler.json.WidgetRead._")))
     Jsonify.writeFile(Jsonify.readerGenerator[org.nlogo.core.TextBox](Seq("org.nlogo.tortoise.compiler.json.WidgetRead._")))
     Jsonify.writeFile(Jsonify.readerGenerator[org.nlogo.core.View](Seq("org.nlogo.tortoise.compiler.json.WidgetRead._")))
+    Jsonify.writeFile(Jsonify.readerGenerator[org.nlogo.core.ExternalResource]())
   }
 
   def generateOtherWriters(): Unit = {

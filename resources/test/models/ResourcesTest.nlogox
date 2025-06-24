@@ -1,0 +1,893 @@
+<?xml version="1.0" encoding="utf-8"?>
+<model version="NetLogo 7.0.0-beta2" snapToGrid="true">
+  <code>extensions [ csv import-a resource ]
+
+</code>
+  <widgets>
+    <view x="368" wrappingAllowedX="true" y="10" frameRate="30.0" minPycor="-16" height="433" showTickCounter="true" patchSize="13.0" fontSize="10" wrappingAllowedY="true" width="433" tickCounterLabel="ticks" maxPycor="16" updateMode="0" maxPxcor="16" minPxcor="-16"></view>
+  </widgets>
+  <info>## WHAT IS IT?
+
+(a general understanding of what the model is trying to show or explain)
+
+## HOW IT WORKS
+
+(what rules the agents use to create the overall behavior of the model)
+
+## HOW TO USE IT
+
+(how to use the model, including a description of each of the items in the Interface tab)
+
+## THINGS TO NOTICE
+
+(suggested things for the user to notice while running the model)
+
+## THINGS TO TRY
+
+(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+
+## EXTENDING THE MODEL
+
+(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+
+## NETLOGO FEATURES
+
+(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+
+## RELATED MODELS
+
+(models in the NetLogo Models Library and elsewhere which are of related interest)
+
+## CREDITS AND REFERENCES
+
+(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+</info>
+  <turtleShapes>
+    <shape name="default" rotatable="true" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="5"></point>
+        <point x="40" y="250"></point>
+        <point x="150" y="205"></point>
+        <point x="260" y="250"></point>
+      </polygon>
+    </shape>
+    <shape name="airplane" rotatable="true" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="0"></point>
+        <point x="135" y="15"></point>
+        <point x="120" y="60"></point>
+        <point x="120" y="105"></point>
+        <point x="15" y="165"></point>
+        <point x="15" y="195"></point>
+        <point x="120" y="180"></point>
+        <point x="135" y="240"></point>
+        <point x="105" y="270"></point>
+        <point x="120" y="285"></point>
+        <point x="150" y="270"></point>
+        <point x="180" y="285"></point>
+        <point x="210" y="270"></point>
+        <point x="165" y="240"></point>
+        <point x="180" y="180"></point>
+        <point x="285" y="195"></point>
+        <point x="285" y="165"></point>
+        <point x="180" y="105"></point>
+        <point x="180" y="60"></point>
+        <point x="165" y="15"></point>
+      </polygon>
+    </shape>
+    <shape name="arrow" rotatable="true" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="0"></point>
+        <point x="0" y="150"></point>
+        <point x="105" y="150"></point>
+        <point x="105" y="293"></point>
+        <point x="195" y="293"></point>
+        <point x="195" y="150"></point>
+        <point x="300" y="150"></point>
+      </polygon>
+    </shape>
+    <shape name="box" rotatable="false" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="285"></point>
+        <point x="285" y="225"></point>
+        <point x="285" y="75"></point>
+        <point x="150" y="135"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="135"></point>
+        <point x="15" y="75"></point>
+        <point x="150" y="15"></point>
+        <point x="285" y="75"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="15" y="75"></point>
+        <point x="15" y="225"></point>
+        <point x="150" y="285"></point>
+        <point x="150" y="135"></point>
+      </polygon>
+      <line endX="150" startY="285" marked="false" color="255" endY="135" startX="150"></line>
+      <line endX="15" startY="135" marked="false" color="255" endY="75" startX="150"></line>
+      <line endX="285" startY="135" marked="false" color="255" endY="75" startX="150"></line>
+    </shape>
+    <shape name="bug" rotatable="true" editableColorIndex="0">
+      <circle x="96" y="182" marked="true" color="-1920102913" diameter="108" filled="true"></circle>
+      <circle x="110" y="127" marked="true" color="-1920102913" diameter="80" filled="true"></circle>
+      <circle x="110" y="75" marked="true" color="-1920102913" diameter="80" filled="true"></circle>
+      <line endX="80" startY="100" marked="true" color="-1920102913" endY="30" startX="150"></line>
+      <line endX="220" startY="100" marked="true" color="-1920102913" endY="30" startX="150"></line>
+    </shape>
+    <shape name="butterfly" rotatable="true" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="165"></point>
+        <point x="209" y="199"></point>
+        <point x="225" y="225"></point>
+        <point x="225" y="255"></point>
+        <point x="195" y="270"></point>
+        <point x="165" y="255"></point>
+        <point x="150" y="240"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="165"></point>
+        <point x="89" y="198"></point>
+        <point x="75" y="225"></point>
+        <point x="75" y="255"></point>
+        <point x="105" y="270"></point>
+        <point x="135" y="255"></point>
+        <point x="150" y="240"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="139" y="148"></point>
+        <point x="100" y="105"></point>
+        <point x="55" y="90"></point>
+        <point x="25" y="90"></point>
+        <point x="10" y="105"></point>
+        <point x="10" y="135"></point>
+        <point x="25" y="180"></point>
+        <point x="40" y="195"></point>
+        <point x="85" y="194"></point>
+        <point x="139" y="163"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="162" y="150"></point>
+        <point x="200" y="105"></point>
+        <point x="245" y="90"></point>
+        <point x="275" y="90"></point>
+        <point x="290" y="105"></point>
+        <point x="290" y="135"></point>
+        <point x="275" y="180"></point>
+        <point x="260" y="195"></point>
+        <point x="215" y="195"></point>
+        <point x="162" y="165"></point>
+      </polygon>
+      <polygon color="255" filled="true" marked="false">
+        <point x="150" y="255"></point>
+        <point x="135" y="225"></point>
+        <point x="120" y="150"></point>
+        <point x="135" y="120"></point>
+        <point x="150" y="105"></point>
+        <point x="165" y="120"></point>
+        <point x="180" y="150"></point>
+        <point x="165" y="225"></point>
+      </polygon>
+      <circle x="135" y="90" marked="false" color="255" diameter="30" filled="true"></circle>
+      <line endX="195" startY="105" marked="false" color="255" endY="60" startX="150"></line>
+      <line endX="105" startY="105" marked="false" color="255" endY="60" startX="150"></line>
+    </shape>
+    <shape name="car" rotatable="false" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="300" y="180"></point>
+        <point x="279" y="164"></point>
+        <point x="261" y="144"></point>
+        <point x="240" y="135"></point>
+        <point x="226" y="132"></point>
+        <point x="213" y="106"></point>
+        <point x="203" y="84"></point>
+        <point x="185" y="63"></point>
+        <point x="159" y="50"></point>
+        <point x="135" y="50"></point>
+        <point x="75" y="60"></point>
+        <point x="0" y="150"></point>
+        <point x="0" y="165"></point>
+        <point x="0" y="225"></point>
+        <point x="300" y="225"></point>
+        <point x="300" y="180"></point>
+      </polygon>
+      <circle x="180" y="180" marked="false" color="255" diameter="90" filled="true"></circle>
+      <circle x="30" y="180" marked="false" color="255" diameter="90" filled="true"></circle>
+      <polygon color="255" filled="true" marked="false">
+        <point x="162" y="80"></point>
+        <point x="132" y="78"></point>
+        <point x="134" y="135"></point>
+        <point x="209" y="135"></point>
+        <point x="194" y="105"></point>
+        <point x="189" y="96"></point>
+        <point x="180" y="89"></point>
+      </polygon>
+      <circle x="47" y="195" marked="true" color="-1920102913" diameter="58" filled="true"></circle>
+      <circle x="195" y="195" marked="true" color="-1920102913" diameter="58" filled="true"></circle>
+    </shape>
+    <shape name="circle" rotatable="false" editableColorIndex="0">
+      <circle x="0" y="0" marked="true" color="-1920102913" diameter="300" filled="true"></circle>
+    </shape>
+    <shape name="circle 2" rotatable="false" editableColorIndex="0">
+      <circle x="0" y="0" marked="true" color="-1920102913" diameter="300" filled="true"></circle>
+      <circle x="30" y="30" marked="false" color="255" diameter="240" filled="true"></circle>
+    </shape>
+    <shape name="cow" rotatable="false" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="200" y="193"></point>
+        <point x="197" y="249"></point>
+        <point x="179" y="249"></point>
+        <point x="177" y="196"></point>
+        <point x="166" y="187"></point>
+        <point x="140" y="189"></point>
+        <point x="93" y="191"></point>
+        <point x="78" y="179"></point>
+        <point x="72" y="211"></point>
+        <point x="49" y="209"></point>
+        <point x="48" y="181"></point>
+        <point x="37" y="149"></point>
+        <point x="25" y="120"></point>
+        <point x="25" y="89"></point>
+        <point x="45" y="72"></point>
+        <point x="103" y="84"></point>
+        <point x="179" y="75"></point>
+        <point x="198" y="76"></point>
+        <point x="252" y="64"></point>
+        <point x="272" y="81"></point>
+        <point x="293" y="103"></point>
+        <point x="285" y="121"></point>
+        <point x="255" y="121"></point>
+        <point x="242" y="118"></point>
+        <point x="224" y="167"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="73" y="210"></point>
+        <point x="86" y="251"></point>
+        <point x="62" y="249"></point>
+        <point x="48" y="208"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="25" y="114"></point>
+        <point x="16" y="195"></point>
+        <point x="9" y="204"></point>
+        <point x="23" y="213"></point>
+        <point x="25" y="200"></point>
+        <point x="39" y="123"></point>
+      </polygon>
+    </shape>
+    <shape name="cylinder" rotatable="false" editableColorIndex="0">
+      <circle x="0" y="0" marked="true" color="-1920102913" diameter="300" filled="true"></circle>
+    </shape>
+    <shape name="dot" rotatable="false" editableColorIndex="0">
+      <circle x="90" y="90" marked="true" color="-1920102913" diameter="120" filled="true"></circle>
+    </shape>
+    <shape name="face happy" rotatable="false" editableColorIndex="0">
+      <circle x="8" y="8" marked="true" color="-1920102913" diameter="285" filled="true"></circle>
+      <circle x="60" y="75" marked="false" color="255" diameter="60" filled="true"></circle>
+      <circle x="180" y="75" marked="false" color="255" diameter="60" filled="true"></circle>
+      <polygon color="255" filled="true" marked="false">
+        <point x="150" y="255"></point>
+        <point x="90" y="239"></point>
+        <point x="62" y="213"></point>
+        <point x="47" y="191"></point>
+        <point x="67" y="179"></point>
+        <point x="90" y="203"></point>
+        <point x="109" y="218"></point>
+        <point x="150" y="225"></point>
+        <point x="192" y="218"></point>
+        <point x="210" y="203"></point>
+        <point x="227" y="181"></point>
+        <point x="251" y="194"></point>
+        <point x="236" y="217"></point>
+        <point x="212" y="240"></point>
+      </polygon>
+    </shape>
+    <shape name="face neutral" rotatable="false" editableColorIndex="0">
+      <circle x="8" y="7" marked="true" color="-1920102913" diameter="285" filled="true"></circle>
+      <circle x="60" y="75" marked="false" color="255" diameter="60" filled="true"></circle>
+      <circle x="180" y="75" marked="false" color="255" diameter="60" filled="true"></circle>
+      <rectangle endX="240" startY="195" marked="false" color="255" endY="225" startX="60" filled="true"></rectangle>
+    </shape>
+    <shape name="face sad" rotatable="false" editableColorIndex="0">
+      <circle x="8" y="8" marked="true" color="-1920102913" diameter="285" filled="true"></circle>
+      <circle x="60" y="75" marked="false" color="255" diameter="60" filled="true"></circle>
+      <circle x="180" y="75" marked="false" color="255" diameter="60" filled="true"></circle>
+      <polygon color="255" filled="true" marked="false">
+        <point x="150" y="168"></point>
+        <point x="90" y="184"></point>
+        <point x="62" y="210"></point>
+        <point x="47" y="232"></point>
+        <point x="67" y="244"></point>
+        <point x="90" y="220"></point>
+        <point x="109" y="205"></point>
+        <point x="150" y="198"></point>
+        <point x="192" y="205"></point>
+        <point x="210" y="220"></point>
+        <point x="227" y="242"></point>
+        <point x="251" y="229"></point>
+        <point x="236" y="206"></point>
+        <point x="212" y="183"></point>
+      </polygon>
+    </shape>
+    <shape name="fish" rotatable="false" editableColorIndex="0">
+      <polygon color="-1" filled="true" marked="false">
+        <point x="44" y="131"></point>
+        <point x="21" y="87"></point>
+        <point x="15" y="86"></point>
+        <point x="0" y="120"></point>
+        <point x="15" y="150"></point>
+        <point x="0" y="180"></point>
+        <point x="13" y="214"></point>
+        <point x="20" y="212"></point>
+        <point x="45" y="166"></point>
+      </polygon>
+      <polygon color="-1" filled="true" marked="false">
+        <point x="135" y="195"></point>
+        <point x="119" y="235"></point>
+        <point x="95" y="218"></point>
+        <point x="76" y="210"></point>
+        <point x="46" y="204"></point>
+        <point x="60" y="165"></point>
+      </polygon>
+      <polygon color="-1" filled="true" marked="false">
+        <point x="75" y="45"></point>
+        <point x="83" y="77"></point>
+        <point x="71" y="103"></point>
+        <point x="86" y="114"></point>
+        <point x="166" y="78"></point>
+        <point x="135" y="60"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="30" y="136"></point>
+        <point x="151" y="77"></point>
+        <point x="226" y="81"></point>
+        <point x="280" y="119"></point>
+        <point x="292" y="146"></point>
+        <point x="292" y="160"></point>
+        <point x="287" y="170"></point>
+        <point x="270" y="195"></point>
+        <point x="195" y="210"></point>
+        <point x="151" y="212"></point>
+        <point x="30" y="166"></point>
+      </polygon>
+      <circle x="215" y="106" marked="false" color="255" diameter="30" filled="true"></circle>
+    </shape>
+    <shape name="flag" rotatable="false" editableColorIndex="0">
+      <rectangle endX="75" startY="15" marked="true" color="-1920102913" endY="300" startX="60" filled="true"></rectangle>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="90" y="150"></point>
+        <point x="270" y="90"></point>
+        <point x="90" y="30"></point>
+      </polygon>
+      <line endX="90" startY="135" marked="true" color="-1920102913" endY="135" startX="75"></line>
+      <line endX="90" startY="45" marked="true" color="-1920102913" endY="45" startX="75"></line>
+    </shape>
+    <shape name="flower" rotatable="false" editableColorIndex="0">
+      <polygon color="1504722175" filled="true" marked="false">
+        <point x="135" y="120"></point>
+        <point x="165" y="165"></point>
+        <point x="180" y="210"></point>
+        <point x="180" y="240"></point>
+        <point x="150" y="300"></point>
+        <point x="165" y="300"></point>
+        <point x="195" y="240"></point>
+        <point x="195" y="195"></point>
+        <point x="165" y="135"></point>
+      </polygon>
+      <circle x="85" y="132" marked="true" color="-1920102913" diameter="38" filled="true"></circle>
+      <circle x="130" y="147" marked="true" color="-1920102913" diameter="38" filled="true"></circle>
+      <circle x="192" y="85" marked="true" color="-1920102913" diameter="38" filled="true"></circle>
+      <circle x="85" y="40" marked="true" color="-1920102913" diameter="38" filled="true"></circle>
+      <circle x="177" y="40" marked="true" color="-1920102913" diameter="38" filled="true"></circle>
+      <circle x="177" y="132" marked="true" color="-1920102913" diameter="38" filled="true"></circle>
+      <circle x="70" y="85" marked="true" color="-1920102913" diameter="38" filled="true"></circle>
+      <circle x="130" y="25" marked="true" color="-1920102913" diameter="38" filled="true"></circle>
+      <circle x="96" y="51" marked="true" color="-1920102913" diameter="108" filled="true"></circle>
+      <circle x="113" y="68" marked="false" color="255" diameter="74" filled="true"></circle>
+      <polygon color="1504722175" filled="true" marked="false">
+        <point x="189" y="233"></point>
+        <point x="219" y="188"></point>
+        <point x="249" y="173"></point>
+        <point x="279" y="188"></point>
+        <point x="234" y="218"></point>
+      </polygon>
+      <polygon color="1504722175" filled="true" marked="false">
+        <point x="180" y="255"></point>
+        <point x="150" y="210"></point>
+        <point x="105" y="210"></point>
+        <point x="75" y="240"></point>
+        <point x="135" y="240"></point>
+      </polygon>
+    </shape>
+    <shape name="house" rotatable="false" editableColorIndex="0">
+      <rectangle endX="255" startY="120" marked="true" color="-1920102913" endY="285" startX="45" filled="true"></rectangle>
+      <rectangle endX="180" startY="210" marked="false" color="255" endY="285" startX="120" filled="true"></rectangle>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="15" y="120"></point>
+        <point x="150" y="15"></point>
+        <point x="285" y="120"></point>
+      </polygon>
+      <line endX="270" startY="120" marked="false" color="255" endY="120" startX="30"></line>
+    </shape>
+    <shape name="leaf" rotatable="false" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="210"></point>
+        <point x="135" y="195"></point>
+        <point x="120" y="210"></point>
+        <point x="60" y="210"></point>
+        <point x="30" y="195"></point>
+        <point x="60" y="180"></point>
+        <point x="60" y="165"></point>
+        <point x="15" y="135"></point>
+        <point x="30" y="120"></point>
+        <point x="15" y="105"></point>
+        <point x="40" y="104"></point>
+        <point x="45" y="90"></point>
+        <point x="60" y="90"></point>
+        <point x="90" y="105"></point>
+        <point x="105" y="120"></point>
+        <point x="120" y="120"></point>
+        <point x="105" y="60"></point>
+        <point x="120" y="60"></point>
+        <point x="135" y="30"></point>
+        <point x="150" y="15"></point>
+        <point x="165" y="30"></point>
+        <point x="180" y="60"></point>
+        <point x="195" y="60"></point>
+        <point x="180" y="120"></point>
+        <point x="195" y="120"></point>
+        <point x="210" y="105"></point>
+        <point x="240" y="90"></point>
+        <point x="255" y="90"></point>
+        <point x="263" y="104"></point>
+        <point x="285" y="105"></point>
+        <point x="270" y="120"></point>
+        <point x="285" y="135"></point>
+        <point x="240" y="165"></point>
+        <point x="240" y="180"></point>
+        <point x="270" y="195"></point>
+        <point x="240" y="210"></point>
+        <point x="180" y="210"></point>
+        <point x="165" y="195"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="135" y="195"></point>
+        <point x="135" y="240"></point>
+        <point x="120" y="255"></point>
+        <point x="105" y="255"></point>
+        <point x="105" y="285"></point>
+        <point x="135" y="285"></point>
+        <point x="165" y="240"></point>
+        <point x="165" y="195"></point>
+      </polygon>
+    </shape>
+    <shape name="line" rotatable="true" editableColorIndex="0">
+      <line endX="150" startY="0" marked="true" color="-1920102913" endY="300" startX="150"></line>
+    </shape>
+    <shape name="line half" rotatable="true" editableColorIndex="0">
+      <line endX="150" startY="0" marked="true" color="-1920102913" endY="150" startX="150"></line>
+    </shape>
+    <shape name="pentagon" rotatable="false" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="15"></point>
+        <point x="15" y="120"></point>
+        <point x="60" y="285"></point>
+        <point x="240" y="285"></point>
+        <point x="285" y="120"></point>
+      </polygon>
+    </shape>
+    <shape name="person" rotatable="false" editableColorIndex="0">
+      <circle x="110" y="5" marked="true" color="-1920102913" diameter="80" filled="true"></circle>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="105" y="90"></point>
+        <point x="120" y="195"></point>
+        <point x="90" y="285"></point>
+        <point x="105" y="300"></point>
+        <point x="135" y="300"></point>
+        <point x="150" y="225"></point>
+        <point x="165" y="300"></point>
+        <point x="195" y="300"></point>
+        <point x="210" y="285"></point>
+        <point x="180" y="195"></point>
+        <point x="195" y="90"></point>
+      </polygon>
+      <rectangle endX="172" startY="79" marked="true" color="-1920102913" endY="94" startX="127" filled="true"></rectangle>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="195" y="90"></point>
+        <point x="240" y="150"></point>
+        <point x="225" y="180"></point>
+        <point x="165" y="105"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="105" y="90"></point>
+        <point x="60" y="150"></point>
+        <point x="75" y="180"></point>
+        <point x="135" y="105"></point>
+      </polygon>
+    </shape>
+    <shape name="plant" rotatable="false" editableColorIndex="0">
+      <rectangle endX="165" startY="90" marked="true" color="-1920102913" endY="300" startX="135" filled="true"></rectangle>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="135" y="255"></point>
+        <point x="90" y="210"></point>
+        <point x="45" y="195"></point>
+        <point x="75" y="255"></point>
+        <point x="135" y="285"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="165" y="255"></point>
+        <point x="210" y="210"></point>
+        <point x="255" y="195"></point>
+        <point x="225" y="255"></point>
+        <point x="165" y="285"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="135" y="180"></point>
+        <point x="90" y="135"></point>
+        <point x="45" y="120"></point>
+        <point x="75" y="180"></point>
+        <point x="135" y="210"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="165" y="180"></point>
+        <point x="165" y="210"></point>
+        <point x="225" y="180"></point>
+        <point x="255" y="120"></point>
+        <point x="210" y="135"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="135" y="105"></point>
+        <point x="90" y="60"></point>
+        <point x="45" y="45"></point>
+        <point x="75" y="105"></point>
+        <point x="135" y="135"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="165" y="105"></point>
+        <point x="165" y="135"></point>
+        <point x="225" y="105"></point>
+        <point x="255" y="45"></point>
+        <point x="210" y="60"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="135" y="90"></point>
+        <point x="120" y="45"></point>
+        <point x="150" y="15"></point>
+        <point x="180" y="45"></point>
+        <point x="165" y="90"></point>
+      </polygon>
+    </shape>
+    <shape name="sheep" rotatable="false" editableColorIndex="15">
+      <circle x="203" y="65" marked="true" color="-1" diameter="88" filled="true"></circle>
+      <circle x="70" y="65" marked="true" color="-1" diameter="162" filled="true"></circle>
+      <circle x="150" y="105" marked="true" color="-1" diameter="120" filled="true"></circle>
+      <polygon color="-1920102913" filled="true" marked="false">
+        <point x="218" y="120"></point>
+        <point x="240" y="165"></point>
+        <point x="255" y="165"></point>
+        <point x="278" y="120"></point>
+      </polygon>
+      <circle x="214" y="72" marked="false" color="-1920102913" diameter="67" filled="true"></circle>
+      <rectangle endX="179" startY="223" marked="true" color="-1" endY="298" startX="164" filled="true"></rectangle>
+      <polygon color="-1" filled="true" marked="true">
+        <point x="45" y="285"></point>
+        <point x="30" y="285"></point>
+        <point x="30" y="240"></point>
+        <point x="15" y="195"></point>
+        <point x="45" y="210"></point>
+      </polygon>
+      <circle x="3" y="83" marked="true" color="-1" diameter="150" filled="true"></circle>
+      <rectangle endX="80" startY="221" marked="true" color="-1" endY="296" startX="65" filled="true"></rectangle>
+      <polygon color="-1" filled="true" marked="true">
+        <point x="195" y="285"></point>
+        <point x="210" y="285"></point>
+        <point x="210" y="240"></point>
+        <point x="240" y="210"></point>
+        <point x="195" y="210"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="false">
+        <point x="276" y="85"></point>
+        <point x="285" y="105"></point>
+        <point x="302" y="99"></point>
+        <point x="294" y="83"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="false">
+        <point x="219" y="85"></point>
+        <point x="210" y="105"></point>
+        <point x="193" y="99"></point>
+        <point x="201" y="83"></point>
+      </polygon>
+    </shape>
+    <shape name="square" rotatable="false" editableColorIndex="0">
+      <rectangle endX="270" startY="30" marked="true" color="-1920102913" endY="270" startX="30" filled="true"></rectangle>
+    </shape>
+    <shape name="square 2" rotatable="false" editableColorIndex="0">
+      <rectangle endX="270" startY="30" marked="true" color="-1920102913" endY="270" startX="30" filled="true"></rectangle>
+      <rectangle endX="240" startY="60" marked="false" color="255" endY="240" startX="60" filled="true"></rectangle>
+    </shape>
+    <shape name="star" rotatable="false" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="151" y="1"></point>
+        <point x="185" y="108"></point>
+        <point x="298" y="108"></point>
+        <point x="207" y="175"></point>
+        <point x="242" y="282"></point>
+        <point x="151" y="216"></point>
+        <point x="59" y="282"></point>
+        <point x="94" y="175"></point>
+        <point x="3" y="108"></point>
+        <point x="116" y="108"></point>
+      </polygon>
+    </shape>
+    <shape name="target" rotatable="false" editableColorIndex="0">
+      <circle x="0" y="0" marked="true" color="-1920102913" diameter="300" filled="true"></circle>
+      <circle x="30" y="30" marked="false" color="255" diameter="240" filled="true"></circle>
+      <circle x="60" y="60" marked="true" color="-1920102913" diameter="180" filled="true"></circle>
+      <circle x="90" y="90" marked="false" color="255" diameter="120" filled="true"></circle>
+      <circle x="120" y="120" marked="true" color="-1920102913" diameter="60" filled="true"></circle>
+    </shape>
+    <shape name="tree" rotatable="false" editableColorIndex="0">
+      <circle x="118" y="3" marked="true" color="-1920102913" diameter="94" filled="true"></circle>
+      <rectangle endX="180" startY="195" marked="false" color="-1653716737" endY="300" startX="120" filled="true"></rectangle>
+      <circle x="65" y="21" marked="true" color="-1920102913" diameter="108" filled="true"></circle>
+      <circle x="116" y="41" marked="true" color="-1920102913" diameter="127" filled="true"></circle>
+      <circle x="45" y="90" marked="true" color="-1920102913" diameter="120" filled="true"></circle>
+      <circle x="104" y="74" marked="true" color="-1920102913" diameter="152" filled="true"></circle>
+    </shape>
+    <shape name="triangle" rotatable="false" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="30"></point>
+        <point x="15" y="255"></point>
+        <point x="285" y="255"></point>
+      </polygon>
+    </shape>
+    <shape name="triangle 2" rotatable="false" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="150" y="30"></point>
+        <point x="15" y="255"></point>
+        <point x="285" y="255"></point>
+      </polygon>
+      <polygon color="255" filled="true" marked="false">
+        <point x="151" y="99"></point>
+        <point x="225" y="223"></point>
+        <point x="75" y="224"></point>
+      </polygon>
+    </shape>
+    <shape name="truck" rotatable="false" editableColorIndex="0">
+      <rectangle endX="195" startY="45" marked="true" color="-1920102913" endY="187" startX="4" filled="true"></rectangle>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="296" y="193"></point>
+        <point x="296" y="150"></point>
+        <point x="259" y="134"></point>
+        <point x="244" y="104"></point>
+        <point x="208" y="104"></point>
+        <point x="207" y="194"></point>
+      </polygon>
+      <rectangle endX="195" startY="60" marked="false" color="-1" endY="105" startX="195" filled="true"></rectangle>
+      <polygon color="255" filled="true" marked="false">
+        <point x="238" y="112"></point>
+        <point x="252" y="141"></point>
+        <point x="219" y="141"></point>
+        <point x="218" y="112"></point>
+      </polygon>
+      <circle x="234" y="174" marked="false" color="255" diameter="42" filled="true"></circle>
+      <rectangle endX="214" startY="185" marked="true" color="-1920102913" endY="194" startX="181" filled="true"></rectangle>
+      <circle x="144" y="174" marked="false" color="255" diameter="42" filled="true"></circle>
+      <circle x="24" y="174" marked="false" color="255" diameter="42" filled="true"></circle>
+      <circle x="24" y="174" marked="true" color="-1920102913" diameter="42" filled="false"></circle>
+      <circle x="144" y="174" marked="true" color="-1920102913" diameter="42" filled="false"></circle>
+      <circle x="234" y="174" marked="true" color="-1920102913" diameter="42" filled="false"></circle>
+    </shape>
+    <shape name="turtle" rotatable="true" editableColorIndex="0">
+      <polygon color="1504722175" filled="true" marked="false">
+        <point x="215" y="204"></point>
+        <point x="240" y="233"></point>
+        <point x="246" y="254"></point>
+        <point x="228" y="266"></point>
+        <point x="215" y="252"></point>
+        <point x="193" y="210"></point>
+      </polygon>
+      <polygon color="1504722175" filled="true" marked="false">
+        <point x="195" y="90"></point>
+        <point x="225" y="75"></point>
+        <point x="245" y="75"></point>
+        <point x="260" y="89"></point>
+        <point x="269" y="108"></point>
+        <point x="261" y="124"></point>
+        <point x="240" y="105"></point>
+        <point x="225" y="105"></point>
+        <point x="210" y="105"></point>
+      </polygon>
+      <polygon color="1504722175" filled="true" marked="false">
+        <point x="105" y="90"></point>
+        <point x="75" y="75"></point>
+        <point x="55" y="75"></point>
+        <point x="40" y="89"></point>
+        <point x="31" y="108"></point>
+        <point x="39" y="124"></point>
+        <point x="60" y="105"></point>
+        <point x="75" y="105"></point>
+        <point x="90" y="105"></point>
+      </polygon>
+      <polygon color="1504722175" filled="true" marked="false">
+        <point x="132" y="85"></point>
+        <point x="134" y="64"></point>
+        <point x="107" y="51"></point>
+        <point x="108" y="17"></point>
+        <point x="150" y="2"></point>
+        <point x="192" y="18"></point>
+        <point x="192" y="52"></point>
+        <point x="169" y="65"></point>
+        <point x="172" y="87"></point>
+      </polygon>
+      <polygon color="1504722175" filled="true" marked="false">
+        <point x="85" y="204"></point>
+        <point x="60" y="233"></point>
+        <point x="54" y="254"></point>
+        <point x="72" y="266"></point>
+        <point x="85" y="252"></point>
+        <point x="107" y="210"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="119" y="75"></point>
+        <point x="179" y="75"></point>
+        <point x="209" y="101"></point>
+        <point x="224" y="135"></point>
+        <point x="220" y="225"></point>
+        <point x="175" y="261"></point>
+        <point x="128" y="261"></point>
+        <point x="81" y="224"></point>
+        <point x="74" y="135"></point>
+        <point x="88" y="99"></point>
+      </polygon>
+    </shape>
+    <shape name="wheel" rotatable="false" editableColorIndex="0">
+      <circle x="3" y="3" marked="true" color="-1920102913" diameter="294" filled="true"></circle>
+      <circle x="30" y="30" marked="false" color="255" diameter="240" filled="true"></circle>
+      <line endX="150" startY="285" marked="true" color="-1920102913" endY="15" startX="150"></line>
+      <line endX="285" startY="150" marked="true" color="-1920102913" endY="150" startX="15"></line>
+      <circle x="120" y="120" marked="true" color="-1920102913" diameter="60" filled="true"></circle>
+      <line endX="79" startY="40" marked="true" color="-1920102913" endY="269" startX="216"></line>
+      <line endX="269" startY="84" marked="true" color="-1920102913" endY="221" startX="40"></line>
+      <line endX="269" startY="216" marked="true" color="-1920102913" endY="79" startX="40"></line>
+      <line endX="221" startY="40" marked="true" color="-1920102913" endY="269" startX="84"></line>
+    </shape>
+    <shape name="wolf" rotatable="false" editableColorIndex="0">
+      <polygon color="255" filled="true" marked="false">
+        <point x="253" y="133"></point>
+        <point x="245" y="131"></point>
+        <point x="245" y="133"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="2" y="194"></point>
+        <point x="13" y="197"></point>
+        <point x="30" y="191"></point>
+        <point x="38" y="193"></point>
+        <point x="38" y="205"></point>
+        <point x="20" y="226"></point>
+        <point x="20" y="257"></point>
+        <point x="27" y="265"></point>
+        <point x="38" y="266"></point>
+        <point x="40" y="260"></point>
+        <point x="31" y="253"></point>
+        <point x="31" y="230"></point>
+        <point x="60" y="206"></point>
+        <point x="68" y="198"></point>
+        <point x="75" y="209"></point>
+        <point x="66" y="228"></point>
+        <point x="65" y="243"></point>
+        <point x="82" y="261"></point>
+        <point x="84" y="268"></point>
+        <point x="100" y="267"></point>
+        <point x="103" y="261"></point>
+        <point x="77" y="239"></point>
+        <point x="79" y="231"></point>
+        <point x="100" y="207"></point>
+        <point x="98" y="196"></point>
+        <point x="119" y="201"></point>
+        <point x="143" y="202"></point>
+        <point x="160" y="195"></point>
+        <point x="166" y="210"></point>
+        <point x="172" y="213"></point>
+        <point x="173" y="238"></point>
+        <point x="167" y="251"></point>
+        <point x="160" y="248"></point>
+        <point x="154" y="265"></point>
+        <point x="169" y="264"></point>
+        <point x="178" y="247"></point>
+        <point x="186" y="240"></point>
+        <point x="198" y="260"></point>
+        <point x="200" y="271"></point>
+        <point x="217" y="271"></point>
+        <point x="219" y="262"></point>
+        <point x="207" y="258"></point>
+        <point x="195" y="230"></point>
+        <point x="192" y="198"></point>
+        <point x="210" y="184"></point>
+        <point x="227" y="164"></point>
+        <point x="242" y="144"></point>
+        <point x="259" y="145"></point>
+        <point x="284" y="151"></point>
+        <point x="277" y="141"></point>
+        <point x="293" y="140"></point>
+        <point x="299" y="134"></point>
+        <point x="297" y="127"></point>
+        <point x="273" y="119"></point>
+        <point x="270" y="105"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="-1" y="195"></point>
+        <point x="14" y="180"></point>
+        <point x="36" y="166"></point>
+        <point x="40" y="153"></point>
+        <point x="53" y="140"></point>
+        <point x="82" y="131"></point>
+        <point x="134" y="133"></point>
+        <point x="159" y="126"></point>
+        <point x="188" y="115"></point>
+        <point x="227" y="108"></point>
+        <point x="236" y="102"></point>
+        <point x="238" y="98"></point>
+        <point x="268" y="86"></point>
+        <point x="269" y="92"></point>
+        <point x="281" y="87"></point>
+        <point x="269" y="103"></point>
+        <point x="269" y="113"></point>
+      </polygon>
+    </shape>
+    <shape name="x" rotatable="false" editableColorIndex="0">
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="270" y="75"></point>
+        <point x="225" y="30"></point>
+        <point x="30" y="225"></point>
+        <point x="75" y="270"></point>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="30" y="75"></point>
+        <point x="75" y="30"></point>
+        <point x="270" y="225"></point>
+        <point x="225" y="270"></point>
+      </polygon>
+    </shape>
+  </turtleShapes>
+  <linkShapes>
+    <shape name="default" curviness="0.0">
+      <lines>
+        <line x="-0.2" visible="false">
+          <dash value="0.0"></dash>
+          <dash value="1.0"></dash>
+        </line>
+        <line x="0.0" visible="true">
+          <dash value="1.0"></dash>
+          <dash value="0.0"></dash>
+        </line>
+        <line x="0.2" visible="false">
+          <dash value="0.0"></dash>
+          <dash value="1.0"></dash>
+        </line>
+      </lines>
+      <indicator>
+        <shape name="link direction" rotatable="true" editableColorIndex="0">
+          <line endX="90" startY="150" marked="true" color="-1920102913" endY="180" startX="150"></line>
+          <line endX="210" startY="150" marked="true" color="-1920102913" endY="180" startX="150"></line>
+        </shape>
+      </indicator>
+    </shape>
+  </linkShapes>
+  <previewCommands>setup repeat 75 [ go ]</previewCommands>
+  <resources>
+    <resource name="import-image-check-1" extension="png">iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKCAYAAAB7KRYFAABSUklEQVR4Xuzdbcy3Z13Y8XuiAj4vojLd3CxBGAGHYAXGo4AEBVkIYlcpIAwmVnEFQQuVUsTeWmpb62pXKQXLgNTKg7CuE0Z5kIoFQcWhwyGogfBgXHRxyRy6dO8/1/+bHM3vzsWWHC8+b0iOk+M4zvP3vfvmn+vEu179sltPpd947SWfFzdfd/kp5fOPi/soH7jhl5d8+J1vXPL7b//VJb7v8vZrfmrJr138I0suvvjiJe9/8yuWvO3lLz6lPve7Nyz52z94x5LP/f5bl7iuuG67bU74gU85+MfFkEz5/OPiPopBLAaxGMTi+y4GsRjEYhCLQSyGbsogFgNWHNTiuuK67bbZoQw+/7i4j2IQi0EsBrH4votBLAaxGMRiEIuhmzKIxYAVB7W4rrhuu212KIPPPy7uoxjEYhCLQSy+72IQi0EsBrEYxGLopgxiMWDFQS2uK67bbpsdyuDzj4v7KAaxGMRiEIvvuxjEYhCLQSwGsRi6KYNYDFhxUIvriuu222aHMvj84+I+ikEsBrEYxOL7LgaxGMRiEItBLIZuyiAWA1Yc1OK64rrtttmhDD7/uLiPYhCLQSwGsfi+i0EsBrEYxGIQi6GbMojFgBUHtbiuuG67bXYog88/Lu6jGMRiEItBLL7vYhCLQSwGsRjEYuimDGIxYMVBLa4rrttumx3K4POPi/soBrEYxGIQi++7GMRiEItBLAaxGLopg1gMWHFQi+uK67bbZocy+Pzj4j6KQSwGsRjE4vsuBrEYxGIQi0Eshm7KIBYDVhzU4rriuu22OeGHVi655JIlrisXXXTR58XJkyeXuK54/nLZZZctufLKK5dcddVVSzxXOe+885acc845S1xXnv3sZy955jOfueTcc89d4n7L2WefveSNP/tDp5T/8JRXfujSJa//yDVLbvzjX1nynk+8dckHP33zKeXzj8sOZXBd8fzFIBaDWAxi8VzFgBVDUlxXDGIxiMUgFvdbDGIxdFMGsRjEYhCLQSyGpBi6KZ9/XHYog+uK5y8GsRjEYhCL5yoGrBiS4rpiEItBLAaxuN9iEIuhmzKIxSAWg1gMYjEkxdBN+fzjskMZXFc8fzGIxSAWg1g8VzFgxZAU1xWDWAxiMYjF/RaDWAzdlEEsBrEYxGIQiyEphm7K5x+XHcrguuL5i0EsBrEYxOK5igErhqS4rhjEYhCLQSzutxjEYuimDGIxiMUgFoNYDEkxdFM+/7jsUAbXFc9fDGIxiMUgFs9VDFgxJMV1xSAWg1gMYnG/xSAWQzdlEItBLAaxGMRiSIqhm/L5x2WHMriueP5iEItBLAaxeK5iwIohKa4rBrEYxGIQi/stBrEYuimDWAxiMYjFIBZDUgzdlM8/LjuUwXXF8xeDWAxiMYjFcxUDVgxJcV0xiMUgFoNY3G8xiMXQTRnEYhCLQSwGsRiSYuimfP5x2aEMriuevxjEYhCLQSyeqxiwYkiK64pBLAaxGMTifotBLIZuyiAWg1gMYjGIxZAUQzfl84/LDmVwXfH8xSAWg1gMYvFcxYAVQ1JcVwxiMYjFIBb3WwxiMXRTBrEYxGIQi0EshqQYuimff1xOnH/++bd+PvzYTU9a8sJ3/aslF7znhz8v3Ee5/PLLl1xxxRVLLrjggiX+A1XOOuusJY961KOWPOb005Y85CEPWeLzyzMeda8l3/vAb15y/7t//ZKnPfKeS578HfdY4j8o5eqrr17y07/5b5b4fU9d9Tsnlxjs8taPv2GJoSvv/9S7l+xQDrmPYhCLQSwGsRjEYhCLYSoGsRjE4vOLQSwGsRjEYhCLQSwGsRjEYhCL3/eUQSwGsRjEYhCLQSw7lEPuoxjEYhCLQSwGsRjEYpiKQSwGsfj8YhCLQSwGsRjEYhCLQSwGsRjE4vc9ZRCLQSwGsRjEYhDLDuWQ+ygGsRjEYhCLQSwGsRimYhCLQSw+vxjEYhCLQSwGsRjEYhCLQSwGsfh9TxnEYhCLQSwGsRjEskM55D6KQSwGsRjEYhCLQSyGqRjEYhCLzy8GsRjEYhCLQSwGsRjEYhCLQSx+31MGsRjEYhCLQSwGsexQDrmPYhCLQSwGsRjEYhCLYSoGsRjE4vOLQSwGsRjEYhCLQSwGsRjEYhCL3/eUQSwGsRjEYhCLQSw7lEPuoxjEYhCLQSwGsRjEYpiKQSwGsfj8YhCLQSwGsRjEYhCLQSwGsRjE4vc9ZRCLQSwGsRjEYhDLDuWQ+ygGsRjEYhCLQSwGsRimYhCLQSw+vxjEYhCLQSwGsRjEYhCLQSwGsfh9TxnEYhCLQSwGsRjEskM55D6KQSwGsRjEYhCLQSyGqRjEYhCLzy8GsRjEYhCLQSwGsRjEYhCLQSx+31MGsRjEYhCLQSwGsexQDrmPYhCLQSwGsRjEYhCLYSoGsRjE4vOLQSwGsRjEYhCLQSwGsRjEYhCL3/eUQSwGsRjEYhCLQSwnPNiUgSgGsZzzn8/4vHC/xYCV5z//+UschPL9D/2nSx54j29YYsDKo+/zTaeU+yiGqfyjO335kn/2TV+z5C53/qolp9/1zku+897/eMnZ333vJX4X5bo/fPmSt//Jm5cYnKn3fvKmJe6jvOWjr13iTzPLDmVwv8UgFoNY/MCLQSwGpxjEYuim3EcxiMUgFoNYDGIxiMUgFoNY/C6KQSwGpxi6KYNY3EcxiMUglh3K4H6LQSwGsfiBF4NYDE4xiMXQTbmPYhCLQSwGsRjEYhCLQSwGsfhdFINYDE4xdFMGsbiPYhCLQSw7lMH9FoNYDGLxAy8GsRicYhCLoZtyH8UgFoNYDGIxiMUgFoNYDGLxuygGsRicYuimDGJxH8UgFoNYdiiD+y0GsRjE4gdeDGIxOMUgFkM35T6KQSwGsRjEYhCLQSwGsRjE4ndRDGIxOMXQTRnE4j6KQSwGsexQBvdbDGIxiMUPvBjEYnCKQSyGbsp9FINYDGIxiMUgFoNYDGIxiMXvohjEYnCKoZsyiMV9FINYDGLZoQzutxjEYhCLH3gxiMXgFINYDN2U+ygGsRjEYhCLQSwGsRjEYhCL30UxiMXgFEM3ZRCL+ygGsRjEskMZ3G8xiMUgFj/wYhCLwSkGsRi6KfdRDGIxiMUgFoNYDGIxiMUgFr+LYhCLwSmGbsogFvdRDGIxiGWHMrjfYhCLQSx+4MUgFoNTDGIxdFPuoxjEYhCLQSwGsRjEYhCLQSx+F8UgFoNTDN2UQSzuoxjEYhDLDmVwv8UgFoNY/MCLQSwGpxjEYuim3EcxiMUgFoNYDGIxiMUgFoNY/C6KQSwGpxi6KYNY3EcxiMUglhMGYsrQFQNb/IlV+Zn3PveUMnTluc997pKnP/3pSxyYcp+7fN2Sb/6Gv7/kq770DkvudMcvWPLVX3HHJQZs6mu/6kuW3PGOdzylvuT2X7TE+yy+n+JPJIs/RS3OX/E/GIrrivNXLv/t85e8+r/8whKDWHYog0EsBrEYxGIQi0EsDlZxUItBLAaxGLopg1gM3ZRBLN5n8f0Ug1gMYnH+ikEsrivOXzGIxSAWg1h2KINBLAaxGMRiEItBLA5WcVCLQSwGsRi6KYNYDN2UQSzeZ/H9FINYDGJx/opBLK4rzl8xiMUgFoNYdiiDQSwGsRjEYhCLQSwOVnFQi0EsBrEYuimDWAzdlEEs3mfx/RSDWAxicf6KQSyuK85fMYjFIBaDWHYog0EsBrEYxGIQi0EsDlZxUItBLAaxGLopg1gM3ZRBLN5n8f0Ug1gMYnH+ikEsrivOXzGIxSAWg1h2KINBLAaxGMRiEItBLA5WcVCLQSwGsRi6KYNYDN2UQSzeZ/H9FINYDGJx/opBLK4rzl8xiMUgFoNYdiiDQSwGsRjEYhCLQSwOVnFQi0EsBrEYuimDWAzdlEEs3mfx/RSDWAxicf6KQSyuK85fMYjFIBaDWHYog0EsBrEYxGIQi0EsDlZxUItBLAaxGLopg1gM3ZRBLN5n8f0Ug1gMYnH+ikEsrivOXzGIxSAWg1h2KINBLAaxGMRiEItBLA5WcVCLQSwGsRi6KYNYDN2UQSzeZ/H9FINYDGJx/opBLK4rzl8xiMUgFoNYdiiDQSwGsRjEYhCLQSwOVnFQi0EsBrEYuimDWAzdlEEs3mfx/RSDWAxicf6KQSyuK85fMYjFIBaDWE54sGLoiuGcch/Fi5/yp4XF0BX/aFU57Stvt+Th3/KNSwxnMSTltNNOW/JlX/ZlSwxO+fI7fvESw1RcN/UVd/iSJa4r3nt56D3/4RJ/2lr8o2Tlig/+1JJL3/fCU8pwTvlHzsoOZTCIxSAWg1gMYjGIxSAWB7AYxGIQi0EshqQYxOK6KYNYXFe892IQi0EsBrEYxGLopgzdlEEsO5TBIBaDWAxiMYjFIBaDWBzAYhCLQSwGsRiSYhCL66YMYnFd8d6LQSwGsRjEYhCLoZsydFMGsexQBoNYDGIxiMUgFoNYDGJxAItBLAaxGMRiSIpBLK6bMojFdcV7LwaxGMRiEItBLIZuytBNGcSyQxkMYjGIxSAWg1gMYjGIxQEsBrEYxGIQiyEpBrG4bsogFtcV770YxGIQi0EsBrEYuilDN2UQyw5lMIjFIBaDWAxiMYjFIBYHsBjEYhCLQSyGpBjE4ropg1hcV7z3YhCLQSwGsRjEYuimDN2UQSw7lMEgFoNYDGIxiMUgFoNYHMBiEItBLAaxGJJiEIvrpgxicV3x3otBLAaxGMRiEIuhmzJ0Uwax7FAGg1gMYjGIxSAWg1gMYnEAi0EsBrEYxGJIikEsrpsyiMV1xXsvBrEYxGIQi0Eshm7K0E0ZxLJDGQxiMYjFIBaDWAxiMYjFASwGsRjEYhCLISkGsbhuyiAW1xXvvRjEYhCLQSwGsRi6KUM3ZRDLDmUwiMUgFoNYDGIxiMUgFgewGMRiEItBLIakGMTiuimDWFxXvPdiEItBLAaxGMRi6KYM3ZRBLMuhNCTHxX1MGfby1Kc+dYkfWvGPYJVv/PLbLfnWr/nCJf7krXzl7b9giQErt/+i2y0xYMWQFP84WLnnV3/hEn86Wh75jV+8xH/wyhff7u8t8SecxfMXv+/inBaDU/zJYHnXn/3HU+qtH3/Dkh3K4IdRDGIxiMUgFoNYDGIxiMUgFoNYDGIxiMXBLwaxGMRiEItBLAaxGMTi+Yvfd3FOi0EsBrEYuimDWHYogx9GMYjFIBaDWAxiMYjFIBaDWAxiMYjFIBYHvxjEYhCLQSwGsRjEYhCL5y9+38U5LQaxGMRi6KYMYtmhDH4YxSAWg1gMYjGIxSAWg1gMYjGIxSAWg1gc/GIQi0EsBrEYxGIQi0Esnr/4fRfntBjEYhCLoZsyiGWHMvhhFINYDGIxiMUgFoNYDGIxiMUgFoNYDGJx8ItBLAaxGMRiEItBLAaxeP7i912c02IQi0Eshm7KIJYdyuCHUQxiMYjFIBaDWAxiMYjFIBaDWAxiMYjFwS8GsRjEYhCLQSwGsRjE4vmL33dxTotBLAaxGLopg1h2KIMfRjGIxSAWg1gMYjGIxSAWg1gMYjGIxSAWB78YxGIQi0EsBrEYxGIQi+cvft/FOS0GsRjEYuimDGLZoQx+GMUgFoNYDGIxiMUgFoNYDGIxiMUgFoNYHPxiEItBLAaxGMRiEItBLJ6/+H0X57QYxGIQi6GbMohlhzL4YRSDWAxiMYjFIBaDWAxiMYjFIBaDWAxicfCLQSwGsRjEYhCLQSwGsXj+4vddnNNiEItBLIZuyiCWHcrgh1EMYjGIxSAWg1gMYjGIxSAWg1gMYjGIxcEvBrEYxGIQi0EsBrEYxOL5i993cU6LQSwGsRi6KYNYTvkfFzvVDF3xBRX/KFk5++yzl/hTsfLPv/6LljiAxQEsZzz4bkt8fvGnj8UBLE/+jnssefwD7rrkGY+615IXPPF+S176pAcu+ckz7r/k7O++95LT73rnJf/gS79gie+neP7y9j9585IPfvrmJe/5xFuXGLpi6KZ2KINBLAaxGMRimIpBLAax+PziYBWDWAxiMYjFIBYHvxjEYhCLQSwGsRjE4vspnr8YxGIQi0EsBrEYuqkdymAQi0EsBrEYpmIQi0EsPr84WMUgFoNYDGIxiMXBLwaxGMRiEItBLAax+H6K5y8GsRjEYhCLQSyGbmqHMhjEYhCLQSyGqRjEYhCLzy8OVjGIxSAWg1gMYnHwi0EsBrEYxGIQi0Esvp/i+YtBLAaxGMRiEIuhm9qhDAaxGMRiEIthKgaxGMTi84uDVQxiMYjFIBaDWBz8YhCLQSwGsRjEYhCL76d4/mIQi0EsBrEYxGLopnYog0EsBrEYxGKYikEsBrH4/OJgFYNYDGIxiMUgFge/GMRiEItBLAaxGMTi+ymevxjEYhCLQSwGsRi6qR3KYBCLQSwGsRimYhCLQSw+vzhYxSAWg1gMYjGIxcEvBrEYxGIQi0EsBrH4fornLwaxGMRiEItBLIZuaocyGMRiEItBLIapGMRiEIvPLw5WMYjFIBaDWAxicfCLQSwGsRjEYhCLQSy+n+L5i0EsBrEYxGIQi6Gb2qEMBrEYxGIQi2EqBrEYxOLzi4NVDGIxiMUgFoNYHPxiEItBLAaxGMRiEIvvp3j+YhCLQSwGsRjEYuimdiiDQSwGsRjEYpiKQSwGsfj84mAVg1gMYjGIxSAWB78YxGIQi0EsBrEYxOL7KZ6/GMRiEItBLAaxGLqpEwai+Ed5pnx+MXTFcE6ddtrtl/jHwcqPPf7blvhHnMrrXvT9S171nMcs+cVnPWLJL/zrhy+5/qeetuS6C56y5N//xBOWuN9y1dnfeUp5n+XHn3D6ksecftoSf9pa/Aeq+Pzy4jMfsMTgFENX3v+pdy8xxOX3PnvLkh3KYBCLQSwGsRjEYhCLg1oMSTGIxSAWg1gMYnG/xdBNeZ/FIBbDVAxiMYjF5xeDWAxiMYjFIBaDWAxi2aEMBrEYxGIQi0EsBrE4qMWQFINYDGIxiMUgFvdbDN2U91kMYjFMxSAWg1h8fjGIxSAWg1gMYjGIxSCWHcpgEItBLAaxGMRiEIuDWgxJMYjFIBaDWAxicb/F0E15n8UgFsNUDGIxiMXnF4NYDGIxiMUgFoNYDGLZoQwGsRjEYhCLQSwGsTioxZAUg1gMYjGIxSAW91sM3ZT3WQxiMUzFIBaDWHx+MYjFIBaDWAxiMYjFIJYdymAQi0EsBrEYxGIQi4NaDEkxiMUgFoNYDGJxv8XQTXmfxSAWw1QMYjGIxecXg1gMYjGIxSAWg1gMYtmhDAaxGMRiEItBLAaxOKjFkBSDWAxiMYjFIBb3WwzdlPdZDGIxTMUgFoNYfH4xiMUgFoNYDGIxiMUglh3KYBCLQSwGsRjEYhCLg1oMSTGIxSAWg1gMYnG/xdBNeZ/FIBbDVAxiMYjF5xeDWAxiMYjFIBaDWAxi2aEMBrEYxGIQi0EsBrE4qMWQFINYDGIxiMUgFvdbDN2U91kMYjFMxSAWg1h8fjGIxSAWg1gMYjGIxSCWHcpgEItBLAaxGMRiEIuDWgxJMYjFIBaDWAxicb/F0E15n8UgFsNUDGIxiMXnF4NYDGIxiMUgFoNYDGI54R/VKv60sBic42I4y6Xve+ESfypW/GNUxZCUGy5/3pK3XHrOEoNTDE55/YXPXPLGn/2hU8r9lte+8PuWXPu8f7HE0BXDWS76gYcs8aej5U53/IIl/+Rrv2KJQSwGsRicKUNXDGzxj5eVHcpgEItBLAaxGMRiEIshKQaxGMRi6KbcbzGIxSAWg1gMYjGIxSAWg1gMYjGIxSAWQzdlEItBLAax7FAGg1gMYjGIxSAWg1gMSTGIxSAWQzflfotBLAaxGMRiEItBLAaxGMRiEItBLAaxGLopg1gMYjGIZYcyGMRiEItBLAaxGMRiSIpBLAaxGLop91sMYjGIxSAWg1gMYjGIxSAWg1gMYjGIxdBNGcRiEItBLDuUwSAWg1gMYjGIxSAWQ1IMYjGIxdBNud9iEItBLAaxGMRiEItBLAaxGMRiEItBLIZuyiAWg1gMYtmhDAaxGMRiEItBLAaxGJJiEItBLIZuyv0Wg1gMYjGIxSAWg1gMYjGIxSAWg1gMYjF0UwaxGMRiEMsOZTCIxSAWg1gMYjGIxZAUg1gMYjF0U+63GMRiEItBLAaxGMRiEItBLAaxGMRiEIuhmzKIxSAWg1h2KINBLAaxGMRiEItBLIakGMRiEIuhm3K/xSAWg1gMYjGIxSAWg1gMYjGIxSAWg1gM3ZRBLAaxGMSyQxkMYjGIxSAWg1gMYjEkxSAWg1gM3ZT7LQaxGMRiEItBLAaxGMRiEItBLAaxGMRi6KYMYjGIxSCWHcpgEItBLAaxGMRiEIshKQaxGMRi6KbcbzGIxSAWg1gMYjGIxSAWg1gMYjGIxSAWQzdlEItBLAaxnPCnhf+/MojlkksuWfK0R95ziR9QMTjFnyAWAzFl6KYMXXHdlOcq3vuUgS2XPeNhS77ntNsvucudv2rJA+/xDUv8o3jl5FMetOT1H7nmlHrLR1+7xCAWA1t2KINBLAaxOFjFIBYHf8rgTBnE4ropz1W89ymDWAxiMYjFIBaDWAxiMYjF0E0ZxGIQi0EsO5TBIBaDWBysYhCLgz9lcKYMYnHdlOcq3vuUQSwGsRjEYhCLQSwGsRjEYuimDGIxiMUglh3KYBCLQSwOVjGIxcGfMjhTBrG4bspzFe99yiAWg1gMYjGIxSAWg1gMYjF0UwaxGMRiEMsOZTCIxSAWB6sYxOLgTxmcKYNYXDfluYr3PmUQi0EsBrEYxGIQi0EsBrEYuimDWAxiMYhlhzIYxGIQi4NVDGJx8KcMzpRBLK6b8lzFe58yiMUgFoNYDGIxiMUgFoNYDN2UQSwGsRjEskMZDGIxiMXBKgaxOPhTBmfKIBbXTXmu4r1PGcRiEItBLAaxGMRiEItBLIZuyiAWg1gMYtmhDAaxGMTiYBWDWBz8KYMzZRCL66Y8V/HepwxiMYjFIBaDWAxiMYjFIBZDN2UQi0EsBrHsUAaDWAxicbCKQSwO/pTBmTKIxXVTnqt471MGsRjEYhCLQSwGsRjEYhCLoZsyiMUgFoNYdiiDQSwGsThYxSAWB3/K4EwZxOK6Kc9VvPcpg1gMYjGIxSAWg1gMYjGIxdBNGcRiEItBLCf8KeCUP32c8vnFIJbnP//5Sx53v7ssefR9vmmJP3krDlYxnMVAFNcV91E8V/EnfsU/Dlbcx5RBLN5T8fnljAffbYk/aSz3v/vXL3n8A+665NmP/dYl7/nEW08p/4hYMXTFdWWHMhjEYhCLgSgOTHEAi0Esrivuo3iuYhCLQSzuY8ogFu+p+PxiEItBLAaxGMRiEIuhmzJgxSAW15UdymAQi0EsBqI4MMUBLAaxuK64j+K5ikEsBrG4jymDWLyn4vOLQSwGsRjEYhCLQSyGbsqAFYNYXFd2KINBLAaxGIjiwBQHsBjE4rriPornKgaxGMTiPqYMYvGeis8vBrEYxGIQi0EsBrEYuikDVgxicV3ZoQwGsRjEYiCKA1McwGIQi+uK+yieqxjEYhCL+5gyiMV7Kj6/GMRiEItBLAaxGMRi6KYMWDGIxXVlhzIYxGIQi4EoDkxxAItBLK4r7qN4rmIQi0Es7mPKIBbvqfj8YhCLQSwGsRjEYhCLoZsyYMUgFteVHcpgEItBLAaiODDFASwGsbiuuI/iuYpBLAaxuI8pg1i8p+Lzi0EsBrEYxGIQi0Eshm7KgBWDWFxXdiiDQSwGsRiI4sAUB7AYxOK64j6K5yoGsRjE4j6mDGLxnorPLwaxGMRiEItBLAaxGLopA1YMYnFd2aEMBrEYxGIgigNTHMBiEIvrivsonqsYxGIQi/uYMojFeyo+vxjEYhCLQSwGsRjEYuimDFgxiMV1ZYcyGMRiEIuBKA5McQCLQSyuK+6jeK5iEItBLO5jyiAW76n4/GIQi0EsBrEYxGIQi6GbMmDFIBbXlROGpPiTwfKyW358ieuK64rrin9ErPzgo79liR9kufrZj1riYJV3vfplS/xjY8XnFwMxZRCLISk+v1zzo48+pbyn4k8ui390rnztF33hEr/H4k90ywueeL8lb/34G04p/+jXlD9pLDuUwSAWP7RiEIuDVQxiMYjF5xeDM2UQi0EsPr8YuinvqRjEYhCLQSx+j8UgFoNYDN2UoZsyiGWHMhjE4odWDGJxsIpBLAax+PxicKYMYjGIxecXQzflPRWDWAxiMYjF77EYxGIQi6GbMnRTBrHsUAaDWPzQikEsDlYxiMUgFp9fDM6UQSwGsfj8YuimvKdiEItBLAax+D0Wg1gMYjF0U4ZuyiCWHcpgEIsfWjGIxcEqBrEYxOLzi8GZMojFIBafXwzdlPdUDGIxiMUgFr/HYhCLQSyGbsrQTRnEskMZDGLxQysGsThYxSAWg1h8fjE4UwaxGMTi84uhm/KeikEsBrEYxOL3WAxiMYjF0E0ZuimDWHYog0EsfmjFIBYHqxjEYhCLzy8GZ8ogFoNYfH4xdFPeUzGIxSAWg1j8HotBLAaxGLopQzdlEMsOZTCIxQ+tGMTiYBWDWAxi8fnF4EwZxGIQi88vhm7KeyoGsRjEYhCL32MxiMUgFkM3ZeimDGLZoQwGsfihFYNYHKxiEItBLD6/GJwpg1gMYvH5xdBNeU/FIBaDWAxi8XssBrEYxGLopgzdlEEsO5TBIBY/tGIQi4NVDGIxiMXnF4MzZRCLQSw+vxi6Ke+pGMRiEItBLH6PxSAWg1gM3ZShmzKIZTmUqwxTee2Hr1ziwYoXWryA4gsvfmjFQS2//u/OW3LllVcucQCLA11e8S+ftcRzFfdR/KNkxZ9mFgNbXvqkBy7xJ7DF91P8h6ycd955S8553H2X+MfGygUXXLDkTX907RJ/qlj8aeFx2aEMBrEYxGIgikEsDlYxOMUgFoNYPFdxH8UgFoNYDGIxiMUgFt9PMYjFIBaDWAxiMYjFIBaDWAzYcdmhDAaxGMRiIIpBLA5WMTjFIBaDWDxXcR/FIBaDWAxiMYjFIBbfTzGIxSAWg1gMYjGIxSAWg1gM2HHZoQwGsRjEYiCKQSwOVjE4xSAWg1g8V3EfxSAWg1gMYjGIxSAW308xiMUgFoNYDGIxiMUgFoNYDNhx2aEMBrEYxGIgikEsDlYxOMUgFoNYPFdxH8UgFoNYDGIxiMUgFt9PMYjFIBaDWAxiMYjFIBaDWAzYcdmhDAaxGMRiIIpBLA5WMTjFIBaDWDxXcR/FIBaDWAxiMYjFIBbfTzGIxSAWg1gMYjGIxSAWg1gM2HHZoQwGsRjEYiCKQSwOVjE4xSAWg1g8V3EfxSAWg1gMYjGIxSAW308xiMUgFoNYDGIxiMUgFoNYDNhx2aEMBrEYxGIgikEsDlYxOMUgFoNYPFdxH8UgFoNYDGIxiMUgFt9PMYjFIBaDWAxiMYjFIBaDWAzYcdmhDAaxGMRiIIpBLA5WMTjFIBaDWDxXcR/FIBaDWAxiMYjFIBbfTzGIxSAWg1gMYjGIxSAWg1gM2HHZoQwGsRjEYiCKQSwOVjE4xSAWg1g8V3EfxSAWg1gMYjGIxSAW308xiMUgFoNYDGIxiMUgFoNYDNhxOeGGiyEp/h9MeVFT7re4j3LPf3ynJTfccMOSt73tbUtuuPx5SwxEcQDL9T/1tCUGrPj84k8ay0+ecf8l/hSweE/FfwDK+eefv+Saa65Z8prXvGbJYx/72CXeU/E9Fr+L4vxN+R9S5S0ffe2SHcrgPopBLAaxGMRiEIsDXQxT8QMvDkzx+cUgFge6GMTiPRWDWAxiMYjFIBaDWLyn4nssfhfF+ZsyiMUglh3K4D6KQSwGsRjEYhCLA10MU/EDLw5M8fnFIBYHuhjE4j0Vg1gMYjGIxSAWg1i8p+J7LH4XxfmbMojFIJYdyuA+ikEsBrEYxGIQiwNdDFPxAy8OTPH5xSAWB7oYxOI9FYNYDGIxiMUgFoNYvKfieyx+F8X5mzKIxSCWHcrgPopBLAaxGMRiEIsDXQxT8QMvDkzx+cUgFge6GMTiPRWDWAxiMYjFIBaDWLyn4nssfhfF+ZsyiMUglh3K4D6KQSwGsRjEYhCLA10MU/EDLw5M8fnFIBYHuhjE4j0Vg1gMYjGIxSAWg1i8p+J7LH4XxfmbMojFIJYdyuA+ikEsBrEYxGIQiwNdDFPxAy8OTPH5xSAWB7oYxOI9FYNYDGIxiMUgFoNYvKfieyx+F8X5mzKIxSCWHcrgPopBLAaxGMRiEIsDXQxT8QMvDkzx+cUgFge6GMTiPRWDWAxiMYjFIBaDWLyn4nssfhfF+ZsyiMUglh3K4D6KQSwGsRjEYhCLA10MU/EDLw5M8fnFIBYHuhjE4j0Vg1gMYjGIxSAWg1i8p+J7LH4XxfmbMojFIJYdyuA+ikEsBrEYxGIQiwNdDFPxAy8OTPH5xSAWB7oYxOI9FYNYDGIxiMUgFoNYvKfieyx+F8X5mzKIxSCWE7/32VtuPZU++Ombl3iw4sH+X3PuuecuOXny5BIHtVz0Aw9Z8nNPf+gSB3rKnyAWfyJZXvWcxyx5xqPutcSfmE75k8biPRXvqbzjVSeXGLriPwDF0BXPVZyr4+J/SJUdyiGDWAxiMYjFIBaDWPxwpxzoYhCLQSwGsRi6KYNYvKfiPRWDWAxiMYjFIBbPVZyr42IQyw7lkEEsBrEYxGIQi0EsfrhTDnQxiMUgFoNYDN2UQSzeU/GeikEsBrEYxGIQi+cqztVxMYhlh3LIIBaDWAxiMYjFIBY/3CkHuhjEYhCLQSyGbsogFu+peE/FIBaDWAxiMYjFcxXn6rgYxLJDOWQQi0EsBrEYxGIQix/ulANdDGIxiMUgFkM3ZRCL91S8p2IQi0EsBrEYxOK5inN1XAxi2aEcMojFIBaDWAxiMYjFD3fKgS4GsRjEYhCLoZsyiMV7Kt5TMYjFIBaDWAxi8VzFuTouBrHsUA4ZxGIQi0EsBrEYxOKHO+VAF4NYDGIxiMXQTRnE4j0V76kYxGIQi0EsBrF4ruJcHReDWHYohwxiMYjFIBaDWAxi8cOdcqCLQSwGsRjEYuimDGLxnor3VAxiMYjFIBaDWDxXca6Oi0EsO5RDBrEYxGIQi0EsBrH44U450MUgFoNYDGIxdFMGsXhPxXsqBrEYxGIQi0Esnqs4V8fFIJYdyiGDWAxiMYjFIBaDWPxwpxzoYhCLQSwGsRi6KYNYvKfiPRWDWAxiMYjFIBbPVZyr42IQywl/qlNe/5FrTimfX/zjYMXAFn+COOWgFgem/OCjv2XJfe7ydUsec/ppSwxs8Y+rFc9ffvFZj1jy4jMfsMT7LJ6r+MfGiucqBqf4k8ZiEMurXvWqJf50tPgP2ZRzVfwPruK64rqyQznkIBQHtRjEYhCLQSwGohjE4vmLQSwGsXifxXMVg1g8VzGIxSAWg1gMYjGIxdBNOVfFgBXXFdeVHcohB6E4qMUgFoNYDGIxEMUgFs9fDGIxiMX7LJ6rGMTiuYpBLAaxGMRiEItBLIZuyrkqBqy4rriu7FAOOQjFQS0GsRjEYhCLgSgGsXj+YhCLQSzeZ/FcxSAWz1UMYjGIxSAWg1gMYjF0U85VMWDFdcV1ZYdyyEEoDmoxiMUgFoNYDEQxiMXzF4NYDGLxPovnKgaxeK5iEItBLAaxGMRiEIuhm3KuigErriuuKzuUQw5CcVCLQSwGsRjEYiCKQSyevxjEYhCL91k8VzGIxXMVg1gMYjGIxSAWg1gM3ZRzVQxYcV1xXdmhHHIQioNaDGIxiMUgFgNRDGLx/MUgFoNYvM/iuYpBLJ6rGMRiEItBLAaxGMRi6Kacq2LAiuuK68oO5ZCDUBzUYhCLQSwGsRiIYhCL5y8GsRjE4n0Wz1UMYvFcxSAWg1gMYjGIxSAWQzflXBUDVlxXXFd2KIcchOKgFoNYDGIxiMVAFINYPH8xiMUgFu+zeK5iEIvnKgaxGMRiEItBLAaxGLop56oYsOK64rqyQznkIBQHtRjEYhCLQSwGohjE4vmLQSwGsXifxXMVg1g8VzGIxSAWg1gMYjGIxdBNOVfFgBXXFdeVE/4PUx/+8w+cUv/1L35vycf/8iNL/ux//PGSmz+1xoEphqT82OO/bYmDXxzU4rpyzuPuu8SAFZ9fDFg5+ZQHLbnmRx+9xGAX33cxiOXXLv6RJW97+YuXGMRy7bXXLnG/xZ8qFn8yWPwPn/L2P3nzEv8DruxQBoNYHIRiEItBLIakGMTiumIQi0EsPr8YxGIQi0EsBrH4voshKQaxGMRiEItBLO63GMRiEItBLAaxGMSyQxkMYnEQikEsBrEYkmIQi+uKQSwGsfj8YhCLQSwGsRjE4vsuhqQYxGIQi0EsBrG432IQi0EsBrEYxGIQyw5lMIjFQSgGsRjEYkiKQSyuKwaxGMTi84tBLAaxGMRiEIvvuxiSYhCLQSwGsRjE4n6LQSwGsRjEYhCLQSw7lMEgFgehGMRiEIshKQaxuK4YxGIQi88vBrEYxGIQi0Esvu9iSIpBLAaxGMRiEIv7LQaxGMRiEItBLAax7FAGg1gchGIQi0EshqQYxOK6YhCLQSw+vxjEYhCLQSwGsfi+iyEpBrEYxGIQi0Es7rcYxGIQi0EsBrEYxLJDGQxicRCKQSwGsRiSYhCL64pBLAax+PxiEItBLAaxGMTi+y6GpBjEYhCLQSwGsbjfYhCLQSwGsRjEYhDLDmUwiMVBKAaxGMRiSIpBLK4rBrEYxOLzi0EsBrEYxGIQi++7GJJiEItBLAaxGMTifotBLAaxGMRiEItBLDuUwSAWB6EYxGIQiyEpBrG4rhjEYhCLzy8GsRjEYhCLQSy+72JIikEsBrEYxGIQi/stBrEYxGIQi0EsBrHsUAaDWByEYhCLQSyGpBjE4rpiEItBLD6/GMRiEItBLAax+L6LISkGsRjEYhCLQSzutxjEYhCLQSwGsRjEcsKf9BQ3MvWf/vTDS175/j9b8pKr37fkF27+2JI3ffhTSy6//PIlN1z+vCUOfvGPjRWDU/wjU+WNP/tDS172uLOWeK4pzz9l6IqDP+Uf6SpXXXXVkiuuuGKJQSz+cbrifos/SS52ZMrOlR3KYBCLQSwGsTj4xYEuBrEYxGIQi0EsnmvK808ZxGLopgxJMYjFIBaDWAxicb/FIBY7MmXnyg5lMIjFIBaDWBz84kAXg1gMYjGIxSAWzzXl+acMYjF0U4akGMRiEItBLAaxuN9iEIsdmbJzZYcyGMRiEItBLA5+caCLQSwGsRjEYhCL55ry/FMGsRi6KUNSDGIxiMUgFoNY3G8xiMWOTNm5skMZDGIxiMUgFge/ONDFIBaDWAxiMYjFc015/imDWAzdlCEpBrEYxGIQi0Es7rcYxGJHpuxc2aEMBrEYxGIQi4NfHOhiEItBLAaxGMTiuaY8/5RBLIZuypAUg1gMYjGIxSAW91sMYrEjU3au7FAGg1gMYjGIxcEvDnQxiMUgFoNYDGLxXFOef8ogFkM3ZUiKQSwGsRjEYhCL+y0GsdiRKTtXdiiDQSwGsRjE4uAXB7oYxGIQi0EsBrF4rinPP2UQi6GbMiTFIBaDWAxiMYjF/RaDWOzIlJ0rO5TBIBaDWAxicfCLA10MYjGIxSAWg1g815TnnzKIxdBNGZJiEItBLAaxGMTifotBLHZkys6VHcpgEItBLAaxOPjFgS4GsRjEYhCLQSyea8rzTxnEYuimDEkxiMUgFoNYDGJxv8UgFjsyZefKcihX/cp/+8CS519+85LnXPobSy666KIlv/TGDy95x29/Ysn9L7xwiT/tKn5AxUEtDn4xnOX6H3jOEoNY/u0Tnr7EdcV7Kq+/8JlL/Adgyvdd3EdxXfEf7nLllVcuOXny5BL/Q6DYkeJPpsvvffaWJf4UuuxQBoNYDGLxwy0OdDGIxSAWg1gMYjFgxSAW1xXvqRicYuimfN/FfRTXFYNYDGIxiMUgFjtSDGIxiMUglh3KYBCLQSx+uMWBLgaxGMRiEItBLAasGMTiuuI9FYNTDN2U77u4j+K6YhCLQSwGsRjEYkeKQSwGsRjEskMZDGIxiMUPtzjQxSAWg1gMYjGIxYAVg1hcV7ynYnCKoZvyfRf3UVxXDGIxiMUgFoNY7EgxiMUgFoNYdiiDQSwGsfjhFge6GMRiEItBLAaxGLBiEIvrivdUDE4xdFO+7+I+iuuKQSwGsRjEYhCLHSkGsRjEYhDLDmUwiMUgFj/c4kAXg1gMYjGIxSAWA1YMYnFd8Z6KwSmGbsr3XdxHcV0xiMUgFoNYDGKxI8UgFoNYDGLZoQwGsRjE4odbHOhiEItBLAaxGMRiwIpBLK4r3lMxOMXQTfm+i/sorisGsRjEYhCLQSx2pBjEYhCLQSw7lMEgFoNY/HCLA10MYjGIxSAWg1gMWDGIxXXFeyoGpxi6Kd93cR/FdcUgFoNYDGIxiMWOFINYDGIxiGWHMhjEYhCLH25xoItBLAaxGMRiEIsBKwaxuK54T8XgFEM35fsu7qO4rhjEYhCLQSwGsdiRYhCLQSwGsexQBoNYDGLxwy0OdDGIxSAWg1gMYjFgxSAW1xXvqRicYuimfN/FfRTXFYNYDGIxiMUgFjtSDGIxiMUglhP/66//6tYVH/3Lzy55+S1/uuSZP33TkvPPP3/JjTfeuOQz//OTS6677rolp7/oRUsc1OIf/Sr+5K24rjiAxT++VQxEed2Lvn/JtU/64SVXfd8zlxiS4rmK+y0+f8rnl4svvniJP2ksvsfyG6+9ZMn/+avPrPnrv1jyd3/3qVNqhzIYxGIQi0EsBqwYxOK6YhCLgSgOTHGgi0EsBrEYnOK5ivstPn/K5xeDWAxi8T0Wg1iOBLEciOIhhm5qhzIYxGIQi0EsBqwYxOK6YhCLgSgOTHGgi0EsBrEYnOK5ivstPn/K5xeDWAxi8T0Wg1iOBLEciOIhhm5qhzIYxGIQi0EsBqwYxOK6YhCLgSgOTHGgi0EsBrEYnOK5ivstPn/K5xeDWAxi8T0Wg1iOBLEciOIhhm5qhzIYxGIQi0EsBqwYxOK6YhCLgSgOTHGgi0EsBrEYnOK5ivstPn/K5xeDWAxi8T0Wg1iOBLEciOIhhm5qhzIYxGIQi0EsBqwYxOK6YhCLgSgOTHGgi0EsBrEYnOK5ivstPn/K5xeDWAxi8T0Wg1iOBLEciOIhhm5qhzIYxGIQi0EsBqwYxOK6YhCLgSgOTHGgi0EsBrEYnOK5ivstPn/K5xeDWAxi8T0Wg1iOBLEciOIhhm5qhzIYxGIQi0EsBqwYxOK6YhCLgSgOTHGgi0EsBrEYnOK5ivstPn/K5xeDWAxi8T0Wg1iOBLEciOIhhm5qhzIYxGIQi0EsBqwYxOK6YhCLgSgOTHGgi0EsBrEYnOK5ivstPn/K5xeDWAxi8T0Wg1iOBLEciOIhhm5qhzIYxGIQi0EsBqwYxOK6YhCLgSgOTHGgi0EsBrEYnOK5ivstPn/K5xeDWAxi8T0Wg1iOBLEciOIhhm7qxJ//9d/cuuLhr3jFkkvf/cdLDGJ58M///JJnX/zuJTfffPOSyy67bMkr3/wHS84999wlBqwYxHLV2d+5xD8iVvyJZHFQiz+RLO63uI8p77N4rvKLz3rEEvdRXFfcR/GnhcUgls/97g1rfv+tS/72o7+15uMfWPJ3n/yDJTuUwSAWg1gMYjGIxUEthqQYxOKgFgewGMTifov7mPI+i+cqBqy4j+K64j6KQSwGsRwJYjkQxUOOBLEciOIhBrHsUAaDWAxiMYjFIBYHtRiSYhCLg1ocwGIQi/st7mPK+yyeqxiw4j6K64r7KAaxGMRyJIjlQBQPORLEciCKhxjEskMZDGIxiMUgFoNYHNRiSIpBLA5qcQCLQSzut7iPKe+zeK5iwIr7KK4r7qMYxGIQy5EglgNRPORIEMuBKB5iEMsOZTCIxSAWg1gMYnFQiyEpBrE4qMUBLAaxuN/iPqa8z+K5igEr7qO4rriPYhCLQSxHglgORPGQI0EsB6J4iEEsO5TBIBaDWAxiMYjFQS2GpBjE4qAWB7AYxOJ+i/uY8j6L5yoGrLiP4rriPopBLAaxHAliORDFQ44EsRyI4iEGsexQBoNYDGIxiMUgFge1GJJiEIuDWhzAYhCL+y3uY8r7LJ6rGLDiPorrivsoBrEYxHIkiOVAFA85EsRyIIqHGMSyQxkMYjGIxSAWg1gc1GJIikEsDmpxAItBLO63uI8p77N4rmLAivsorivuoxjEYhDLkSCWA1E85EgQy4EoHmIQyw5lMIjFIBaDWAxicVCLISkGsTioxQEsBrG43+I+przP4rmKASvuo7iuuI9iEItBLEeCWA5E8ZAjQSwHoniIQSw7lMEgFoNYDGIxiMVBLYakGMTioBYHsBjE4n6L+5jyPovnKgasuI/iuuI+ikEsBrEcCWI5EMVDjgSxHIjiIQaxnPCnheUhV1yx5CVv+8iSh1111ZIHXnLJko997GNLXvrSly555zvfueSWW25ZctEPPGSJf/SruK6cfMqDlrzgifdbYsCKASsOajEQxXsqlz3jYUv8B6p4ruI+iuea8j6LP1kt/tG+8oEbfnnJ/37XNWve+7oln3vfr645EONDdiiDQSwGsRiw4sAU1xWDWAxiMYjFQBQHtTj4xXsqBrEYxOK5ivsonmvK+ywGsRjEYhDLkSCWA1E85EgQy4EoHrJDGQxiMYjFgBUHpriuGMRiEItBLAaiOKjFwS/eUzGIxSAWz1XcR/FcU95nMYjFIBaDWI4EsRyI4iFHglgORPGQHcpgEItBLAasODDFdcUgFoNYDGIxEMVBLQ5+8Z6KQSwGsXiu4j6K55ryPotBLAaxGMRyJIjlQBQPORLEciCKh+xQBoNYDGIxYMWBKa4rBrEYxGIQi4EoDmpx8Iv3VAxiMYjFcxX3UTzXlPdZDGIxiMUgliNBLAeieMiRIJYDUTxkhzIYxGIQiwErDkxxXTGIxSAWg1gMRHFQi4NfvKdiEItBLJ6ruI/iuaa8z2IQi0EsBrEcCWI5EMVDjgSxHIjiITuUwSAWg1gMWHFgiuuKQSwGsRjEYiCKg1oc/OI9FYNYDGLxXMV9FM815X0Wg1gMYjGI5UgQy4EoHnIkiOVAFA/ZoQwGsRjEYsCKA1NcVwxiMYjFIBYDURzU4uAX76kYxGIQi+cq7qN4rinvsxjEYhCLQSxHglgORPGQI0EsB6J4yA5lMIjFIBYDVhyY4rpiEItBLAaxGIjioBYHv3hPxSAWg1g8V3EfxXNNeZ/FIBaDWAxiORLEciCKhxwJYjkQxUN2KINBLAaxGLDiwBTXFYNYDGIxiMVAFAe1OPjFeyoGsRjE4rmK+yiea8r7LAaxGMRiEMuRIJYDUTzkSBDLgSgecuLM83791hXf/pKXLPEng8WfIBb/mFe56NoPLrnppptOqeuvv36JPwUsBqwYpvJjj/+2Ja4rDnQxEMWfAhbXFe+znPO4+y55xqPuteTnnv7QJQaseP7iumIQiz9BLDde8RNLvuu7vmvJR3/7piV/846rTikDW3YohwxicVCLQSwGrBjE4rpiEIsBKw5+cV3xPotBLAaxGMRiwIrnL64rBrEYxGIQi0EsBrEYuimDWHYohwxicVCLQSwGrBjE4rpiEIsBKw5+cV3xPotBLAaxGMRiwIrnL64rBrEYxGIQi0EsBrEYuimDWHYohwxicVCLQSwGrBjE4rpiEIsBKw5+cV3xPotBLAaxGMRiwIrnL64rBrEYxGIQi0EsBrEYuimDWHYohwxicVCLQSwGrBjE4rpiEIsBKw5+cV3xPotBLAaxGMRiwIrnL64rBrEYxGIQi0EsBrEYuimDWHYohwxicVCLQSwGrBjE4rpiEIsBKw5+cV3xPotBLAaxGMRiwIrnL64rBrEYxGIQi0EsBrEYuimDWHYohwxicVCLQSwGrBjE4rpiEIsBKw5+cV3xPotBLAaxGMRiwIrnL64rBrEYxGIQi0EsBrEYuimDWHYohwxicVCLQSwGrBjE4rpiEIsBKw5+cV3xPotBLAaxGMRiwIrnL64rBrEYxGIQi0EsBrEYuimDWHYohwxicVCLQSwGrBjE4rpiEIsBKw5+cV3xPotBLAaxGMRiwIrnL64rBrEYxGIQi0EsBrEYuimDWHYohwxicVCLQSwGrBjE4rpiEIsBKw5+cV3xPotBLAaxGMRiwIrnL64rBrEYxGIQi0EsBrEYuimDWE74U8By/vnnL3nTm960xCBOve2WP1vy/ve/f4k/aSz+ZKs4qOXFZz5giT9VLGfd/Q5Lznjw3ZY4gOW6C56yxAEs/nGr8pZLz1liYIv/oBQDVrynKZ9fvPdiOItzUO5973svee5zn7vkcx/4tSWGLr3n1Ut2KIMvvBjEYhCLQSwGsRjEYhCLg1ocwGIQi0EsBrEYxGIQi2Eq3tOUzy/eezGIxTkoBrEYxGIQy5EglgNRPGSHMvjCi0EsBrEYxGIQi0EsBrE4qMUBLAaxGMRiEItBLAaxGKbiPU35/OK9F4NYnINiEItBLAaxHAliORDFQ3Yogy+8GMRiEItBLAaxGMRiEIuDWhzAYhCLQSwGsRjEYhCLYSre05TPL957MYjFOSgGsRjEYhDLkSCWA1E8ZIcy+MKLQSwGsRjEYhCLQSwGsTioxQEsBrEYxGIQi0EsBrEYpuI9Tfn84r0Xg1icg2IQi0EsBrEcCWI5EMVDdiiDL7wYxGIQi0EsBrEYxGIQi4NaHMBiEItBLAaxGMRiEIthKt7TlM8v3nsxiMU5KAaxGMRiEMuRIJYDUTxkhzL4wotBLAaxGMRiEItBLAaxOKjFASwGsRjEYhCLQSwGsRim4j1N+fzivReDWJyDYhCLQSwGsRwJYjkQxUN2KIMvvBjEYhCLQSwGsRjEYhCLg1ocwGIQi0EsBrEYxGIQi2Eq3tOUzy/eezGIxTkoBrEYxGIQy5EglgNRPGSHMvjCi0EsBrEYxGIQi0EsBrE4qMUBLAaxGMRiEItBLAaxGKbiPU35/OK9F4NYnINiEItBLAaxHAliORDFQ3Yogy+8GMRiEItBLAaxGMRiEIuDWhzAYhCLQSwGsRjEYhCLYSre05TPL957MYjFOSgGsRjEYhDLkSCWA1E8ZDmUl7zmd5YYsPLMn75pyS+98cNL/GNexZ8+FvdbXnDjHyw588wzl/iTweIftyqGuHzPabdfYoiLP2UrDnTx/OWchz5mieuKYSqvfeH3LXFd8T0Ww158fvHei++7fO1977vk3s95zpKP/OaNSwxd8o+XhR3K4H6LQSwGsTioxYEpBrEYxOIgFINYHMDi+YtBLK4rhqQYxOK64nssBrH4/OK9F993MYjFIBaDWI4EsRyI4iE7lMH9FoNYDGJxUIsDUwxiMYjFQSgGsTiAxfMXg1hcVwxJMYjFdcX3WAxi8fnFey++72IQi0EsBrEcCWI5EMVDdiiD+y0GsRjE4qAWB6YYxGIQi4NQDGJxAIvnLwaxuK4YkmIQi+uK77EYxOLzi/defN/FIBaDWAxiORLEciCKh+xQBvdbDGIxiMVBLQ5MMYjFIBYHoRjE4gAWz18MYnFdMSTFIBbXFd9jMYjF5xfvvfi+i0EsBrEYxHIkiOVAFA/ZoQzutxjEYhCLg1ocmGIQi0EsDkIxiMUBLJ6/GMTiumJIikEsriu+x2IQi88v3nvxfReDWAxiMYjlSBDLgSgeskMZ3G8xiMUgFge1ODDFIBaDWByEYhCLA1g8fzGIxXXFkBSDWFxXfI/FIBafX7z34vsuBrEYxGIQy5EglgNRPGSHMrjfYhCLQSwOanFgikEsBrE4CMUgFgeweP5iEIvriiEpBrG4rvgei0EsPr9478X3XQxiMYjFIJYjQSwHonjIDmVwv8UgFoNYHNTiwBSDWAxicRCKQSwOYPH8xSAW1xVDUgxicV3xPRaDWHx+8d6L77sYxGIQi0EsR4JYDkTxkB3K4H6LQSwGsTioxYEpBrEYxOIgFINYHMDi+YtBLK4rhqQYxOK64nssBrH4/OK9F993MYjFIBaDWI4EsRyI4iEn/ONgxT/SVQxsMYjlyvd+fMkf/vdPL3n+5TcvcR/l9Be9aMl/+MNPLznjjDOWvOCJ91vy4084fcmTv+MeS/zjW+XkY89cctnjn7rEwS/X/OijlxiI42Loin+srRim4rop/7hauedXf+GS+1944ZKbb755yefe96tLjvykMexQBvdRDGIxiMUgFoNYDGIxiMUgFoNYDGIxiMUgFgN2XAxiMUzFIBbXTRnEYhCLQSwGsRjEYhDLDmVwH8UgFoNYDGIxiMUgFoNYDGIxiMUgFoNYDGIxYMfFIBbDVAxicd2UQSwGsRjEYhCLQSwGsexQBvdRDGIxiMUgFoNYDGIxiMUgFoNYDGIxiMUgFgN2XAxiMUzFIBbXTRnEYhCLQSwGsRjEYhDLDmVwH8UgFoNYDGIxiMUgFoNYDGIxiMUgFoNYDGIxYMfFIBbDVAxicd2UQSwGsRjEYhCLQSwGsexQBvdRDGIxiMUgFoNYDGIxiMUgFoNYDGIxiMUgFgN2XAxiMUzFIBbXTRnEYhCLQSwGsRjEYhDLDmVwH8UgFoNYDGIxiMUgFoNYDGIxiMUgFoNYDGIxYMfFIBbDVAxicd2UQSwGsRjEYhCLQSwGsexQBvdRDGIxiMUgFoNYDGIxiMUgFoNYDGIxiMUgFgN2XAxiMUzFIBbXTRnEYhCLQSwGsRjEYhDLDmVwH8UgFoNYDGIxiMUgFoNYDGIxiMUgFoNYDGIxYMfFIBbDVAxicd2UQSwGsRjEYhCLQSwGsexQBvdRDGIxiMUgFoNYDGIxiMUgFoNYDGIxiMUgFgN2XAxiMUzFIBbXTRnEYhCLQSwGsRjEYhDLide97nW3rnjOpb+xxCAWL6AYpnLhK397yUuuft+SF1zx3iWXvvuPl1x99dVLDHZ52iPvucQ/glUMZ/GPnJXLnvGwJQasGJLiTwaLASuGuLiuGJxi6MrPPf2hS/zJavEnnOVx97vLEn8CW558/tuWvPyWP13ysY99bMnffvS3luxQBoNYDGIxiMUgFoNYDGIxiMUgFoNYDGIxiMUgFgNWDGJxXTGIxSAWg1gMYjGIxSAWg1gMYjGIxSAWg1h2KINBLAaxGMRiEItBLAaxGMRiEItBLAaxGMRiEIsBKwaxuK4YxGIQi0EsBrEYxGIQi0EsBrEYxGIQi0EsO5TBIBaDWAxiMYjFIBaDWAxiMYjFIBaDWAxiMYjFgBWDWFxXDGIxiMUgFoNYDGIxiMUgFoNYDGIxiMUglh3KYBCLQSwGsRjEYhCLQSwGsRjEYhCLQSwGsRjEYsCKQSyuKwaxGMRiEItBLAaxGMRiEItBLAaxGMRiEMsOZTCIxSAWg1gMYjGIxSAWg1gMYjGIxSAWg1gMYjFgxSAW1xWDWAxiMYjFIBaDWAxiMYjFIBaDWAxiMYhlhzIYxGIQi0EsBrEYxGIQi0EsBrEYxGIQi0EsBrEYsGIQi+uKQSwGsRjEYhCLQSwGsRjEYhCLQSwGsRjEskMZDGIxiMUgFoNYDGIxiMUgFoNYDGIxiMUgFoNYDFgxiMV1xSAWg1gMYjGIxSAWg1gMYjGIxSAWg1gMYtmhDAaxGMRiEItBLAaxGMRiEItBLAaxGMRiEItBLAasGMTiumIQi0EsBrEYxGIQi0EsBrEYxGIQi0EsBrHsUAaDWAxiMYjFIBaDWAxiMYjFIBaDWAxiMYjFIBYDVgxicV0xiMUgFoNYDGIxiMUgFoNYDGIxiMUgFoNYTrzhDW+4dYVhKs+++N1L/CNdxYAVf0pZ3vvJm5Zcc801SwxYeeWHLl1y/fXXL/GPLpWzv/veSxyY4sAUB3/KP25VDFMxsOUXn/WIJe63eJ/l5FMetMSfrBbDWfwpajnr7ndY8r0P/OYlZ57360v8Y4bl8ssvX/KhD31oyQ5lMIjFIBaDWAxiMYjFIBYHtRjEYiCmDGIxiMUgFoNY3G/xPotBLAaxGMRiEItBLAaxGMRiEItBLAax7FAGg1gMYjGIxSAWg1gMYnFQi0EsBmLKIBaDWAxiMYjF/RbvsxjEYhCLQSwGsRjEYhCLQSwGsRjEYhDLDmUwiMUgFoNYDGIxiMUgFge1GMRiIKYMYjGIxSAWg1jcb/E+i0EsBrEYxGIQi0EsBrEYxGIQi0EsBrHsUAaDWAxiMYjFIBaDWAxicVCLQSwGYsogFoNYDGIxiMX9Fu+zGMRiEItBLAaxGMRiEItBLAaxGMRiEMsOZTCIxSAWg1gMYjGIxSAWB7UYxGIgpgxiMYjFIBaDWNxv8T6LQSwGsRjEYhCLQSwGsRjEYhCLQSwGsexQBoNYDGIxiMUgFoNYDGJxUItBLAZiyiAWg1gMYjGIxf0W77MYxGIQi0EsBrEYxGIQi0EsBrEYxGIQyw5lMIjFIBaDWAxiMYjFIBYHtRjEYiCmDGIxiMUgFoNY3G/xPotBLAaxGMRiEItBLAaxGMRiEItBLAax7FAGg1gMYjGIxSAWg1gMYnFQi0EsBmLKIBaDWAxiMYjF/RbvsxjEYhCLQSwGsRjEYhCLQSwGsRjEYhDLDmUwiMUgFoNYDGIxiMUgFge1GMRiIKYMYjGIxSAWg1jcb/E+i0EsBrEYxGIQi0EsBrEYxGIQi0EsBrGceMdnPnPrCgM29fBXvGLJRe/86BJ/wlRuvPHGJSdPnlziHxErr3nNa5YYxOI+yllnnbXEnzQWf6pYDETxp4rFIE65j+JPBovnLwaxeO/Fn1IW91HOePDdlvhT2eJ/SBXnvriuXHvttUv8D66yQxkMTjGIxSAWg1jcRzGIxQEsDlYxOMUgFkM35T6KQSyevxjE4r0Xg1jcRzGIxSAWA1ac++K6YhCLQSw7lMHgFINYDGIxiMV9FINYHMDiYBWDUwxiMXRT7qMYxOL5i0Es3nsxiMV9FINYDGIxYMW5L64rBrEYxLJDGQxOMYjFIBaDWNxHMYjFASwOVjE4xSAWQzflPopBLJ6/GMTivReDWNxHMYjFIBYDVpz74rpiEItBLDuUweAUg1gMYjGIxX0Ug1gcwOJgFYNTDGIxdFPuoxjE4vmLQSzeezGIxX0Ug1gMYjFgxbkvrisGsRjEskMZDE4xiMUgFoNY3EcxiMUBLA5WMTjFIBZDN+U+ikEsnr8YxOK9F4NY3EcxiMUgFgNWnPviumIQi0EsO5TB4BSDWAxiMYjFfRSDWBzA4mAVg1MMYjF0U+6jGMTi+YtBLN57MYjFfRSDWAxiMWDFuS+uKwaxGMSyQxkMTjGIxSAWg1jcRzGIxQEsDlYxOMUgFkM35T6KQSyevxjE4r0Xg1jcRzGIxSAWA1ac++K6YhCLQSw7lMHgFINYDGIxiMV9FINYHMDiYBWDUwxiMXRT7qMYxOL5i0Es3nsxiMV9FINYDGIxYMW5L64rBrEYxLJDGQxOMYjFIBaDWNxHMYjFASwOVjE4xSAWQzflPopBLJ6/GMTivReDWNxHMYjFIBYDVpz74rpiEItBLCf841vF0JVvf8lLlviTxnLlez++5MKb/miJfzStXHzxxUuuu+66Jf70sfjT0WIQi3/sqfgTteJAF38aVxzo42Loiucv/iS0+Mfaivc0ZWCL+y1XXnnlKfVDP/POJf4HSLFL5U1vetOSHcpgEItBLAaxGMRiEItBLA5+MYjFQS0G7LgYxOL5iyEpBrF4T1MGsbjfYuimDGIxiMUuFYNYdiiDQSwGsRjEYhCLQSwGsTj4xSAWB7UYsONiEIvnL4akGMTiPU0ZxOJ+i6GbMojFIBa7VAxi2aEMBrEYxGIQi0EsBrEYxOLgF4NYHNRiwI6LQSyevxiSYhCL9zRlEIv7LYZuyiAWg1jsUjGIZYcyGMRiEItBLAaxGMRiEIuDXwxicVCLATsuBrF4/mJIikEs3tOUQSzutxi6KYNYDGKxS8Uglh3KYBCLQSwGsRjEYhCLQSwOfjGIxUEtBuy4GMTi+YshKQaxeE9TBrG432LopgxiMYjFLhWDWHYog0EsBrEYxGIQi0EsBrE4+MUgFge1GLDjYhCL5y+GpBjE4j1NGcTifouhmzKIxSAWu1QMYtmhDAaxGMRiEItBLAaxGMTi4BeDWBzUYsCOi0Esnr8YkmIQi/c0ZRCL+y2GbsogFoNY7FIxiGWHMhjEYhCLQSwGsRjEYhCLg18MYnFQiwE7LgaxeP5iSIpBLN7TlEEs7rcYuimD+H/bu0MVKaAoAMNbfAuLVbCYFIMrguwbiGHbBss8gShTNkxYZWCEaVNMPoFMswkGX8B3UfMPH1y4YLrhK8K53Fnu+U3DSIMo7ZI0iLJCCQ2iNIjSIEqDKA2iNIjSxZcGUbqo0oD9Lw2i9PNLQyINovTvNKtBlN5XGrpZDaI0iNIuSYMoF9cfzn9GPLm9HdLFl5uvv4Z8/P57yPvjjyH9CpMcDoch/YNKQyf9cTDZbDZDnt+/N6Q/DiZdGLl59WhIAyENk/R8uX7xcEj/A5AGVvrjYNKvUkrnpEGUfqVW+m6ley/9MT5p6OTZ3d2QzskKJTSI0iBKH5A0iNIgSoMoDaI0iNIwSYMoDaL0fGkQpUGUBlEaMGkQpXPSIEqDKH230r2XBlEaMGkQpXOyQgkNojSI0gckDaI0iNIgSoMoDaI0TNIgSoMoPV8aRGkQpUGUBkwaROmcNIjSIErfrXTvpUGUBkwaROmcrFBCgygNovQBSYMoDaI0iNIgSoMoDZM0iNIgSs+XBlEaRGkQpQGTBlE6Jw2iNIjSdyvde2kQpQGTBlE6JyuU0CBKgyh9QNIgSoMoDaI0iNIgSsMkDaI0iNLzpUGUBlEaRGnApEGUzkmDKA2i9N1K914aRGnApEGUzskKJTSI0iBKH5A0iNIgSoMoDaI0iNIwSYMoDaL0fGkQpUGUBlEaMGkQpXPSIEqDKH230r2XBlEaMGkQpXOyQgkNojSI0gckDaI0iNIgSoMoDaI0TNIgSoMoPV8aRGkQpUGUBkwaROmcNIjSIErfrXTvpUGUBkwaROmcrFBCgygNovQBSYMoDaI0iNIgSoMoDZM0iNIgSs+XBlEaRGkQpQGTBlE6Jw2iNIjSdyvde2kQpQGTBlE6JyuU0CBKgyh9QNIgSoMoDaI0iNIgSsMkDaI0iNLzpUGUBlEaRGnApEGUzkmDKA2i9N1K914aRGnApEGUzskKJTSI0iBKH5A0iNIgSoMoDaI0iNIwSYMoDaL0fGkQpUGUBlEaMGkQpXPSIEqDKH230r2XBlEaMGkQpXNy0X+Q/gGkgZDXX34O6Y+DyZt334bsdrsh/YqVnM/nIQ3srO12O+Tq8YMhXWjpV+OkIZEuvvTHwaRfVZRPN5dD+rmk95XPb18O6T2k58t+vx/Sr95K9146J6fTacjTf7s5okGUy+NxyAolNIjSIEpDN6tBlAZRGkRpIKRBlC60NIjSIEqDI/1c0vtKgyi9h/R8aRClAZPuvXROGkRpEKVBlAZRViihQZQGURq6WQ2iNIjSIEoDIQ2idKGlQZQGURoc6eeS3lcaROk9pOdLgygNmHTvpXPSIEqDKA2iNIiyQgkNojSI0tDNahClQZQGURoIaRClCy0NojSI0uBIP5f0vtIgSu8hPV8aRGnApHsvnZMGURpEaRClQZQVSmgQpUGUhm5WgygNojSI0kBIgyhdaGkQpUGUBkf6uaT3lQZReg/p+dIgSgMm3XvpnDSI0iBKgygNoqxQQoMoDaI0dLMaRGkQpUGUBkIaROlCS4MoDaI0ONLPJb2vNIjSe0jPlwZRGjDp3kvnpEGUBlEaRGkQZYUSGkRpEKWhm9UgSoMoDaI0ENIgShdaGkRpEKXBkX4u6X2lQZTeQ3q+NIjSgEn3XjonDaI0iNIgSoMoK5TQIEqDKA3drAZRGkRpEKWBkAZRutDSIEqDKA2O9HNJ7ysNovQe0vOlQZQGTLr30jlpEKVBlAZRGkRZoYQGURpEaehmNYjSIEqDKA2ENIjShZYGURpEaXCkn0t6X2kQpfeQni8NojRg0r2XzkmDKA2iNIjSIMoKJTSI0iBKQzerQZQGURpEaSCkQZQutDSI0iBKgyP9XNL7SoMovYf0fGkQpQGT7r10ThpEaRClQZQGUf4C78yHN0ToIgsAAAAASUVORK5CYII=</resource>
+    <resource name="text-resource-check" extension="txt">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+
+In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.
+
+Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
+</resource>
+    <resource name="sample-csv" extension="csv">Name,Data1,Data2,Data3
+Spaniel,“brown”,FALSE,10.4
+Retriever,“light-grey”,TRUE,22.4
+Mutt,“mottled brown and black”,FALSE,18.9
+</resource>
+  </resources>
+</model>

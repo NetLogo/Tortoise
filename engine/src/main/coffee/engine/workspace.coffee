@@ -50,7 +50,7 @@ class MiniWorkspace
   constructor: (@selfManager, @updater, @breedManager, @rng, @plotManager) ->
 
 module.exports =
-  (modelConfig) -> (breedObjs) -> (turtlesOwns, linksOwns) -> (code) -> (widgets) -> (extensionPorters) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
+  (modelConfig) -> (breedObjs) -> (turtlesOwns, linksOwns) -> (code) -> (widgets) -> (resources) -> (extensionPorters) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
@@ -164,6 +164,7 @@ module.exports =
       primChecks
       printPrims
       rng
+      resources
       selfPrims
       stringPrims
       timer

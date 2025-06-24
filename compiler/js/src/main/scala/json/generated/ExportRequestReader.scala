@@ -27,7 +27,8 @@ implicit object ExportRequestReader extends JsonReader[TortoiseJson.JsObject, or
     val v2 = JsonReader.readField[scala.collection.immutable.Seq[org.nlogo.core.Widget]](jsObject, "widgets")
     val v3 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.Shape.VectorShape]]](jsObject, "turtleShapes")
     val v4 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.Shape.LinkShape]]](jsObject, "linkShapes")
-    val v5 = JsonReader.readField[scala.Option[scala.Predef.String]](jsObject, "version")
+    val v5 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.ExternalResource]]](jsObject, "resources")
+    val v6 = JsonReader.readField[scala.Option[scala.Predef.String]](jsObject, "version")
 
     val result =
       v0.flatMap(
@@ -35,9 +36,11 @@ implicit object ExportRequestReader extends JsonReader[TortoiseJson.JsObject, or
           (c1) => v2.flatMap(
             (c2) => v3.flatMap(
               (c3) => v4.flatMap(
-                (c4) => v5.map(
-                  (c5) =>
-                    new org.nlogo.tortoise.compiler.ExportRequest(c0, c1, c2, c3, c4, c5)
+                (c4) => v5.flatMap(
+                  (c5) => v6.map(
+                    (c6) =>
+                      new org.nlogo.tortoise.compiler.ExportRequest(c0, c1, c2, c3, c4, c5, c6)
+                  )
                 )
               )
             )

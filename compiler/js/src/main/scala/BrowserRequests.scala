@@ -8,7 +8,7 @@ import ShapeToJsonConverters.{ readLinkShapes, readVectorShapes }
 import TortoiseJson.JsObject
 import WidgetToJson.{ readWidgetsJson }
 
-import org.nlogo.core.{ Model, Shape, Widget }
+import org.nlogo.core.{ ExternalResource, Model, Shape, Widget }
 import Shape.{ LinkShape, VectorShape }
 
 case class ExportRequest(
@@ -17,6 +17,7 @@ case class ExportRequest(
   widgets:      Seq[Widget],
   turtleShapes: Option[Seq[VectorShape]],
   linkShapes:   Option[Seq[LinkShape]],
+  resources:    Option[Seq[ExternalResource]],
   version:      Option[String]
 ) {
   def toModel: Model =
@@ -26,6 +27,7 @@ case class ExportRequest(
       info         = info                       getOrElse "",
       turtleShapes = turtleShapes.map(_.toList) getOrElse Model.defaultTurtleShapes,
       linkShapes   = linkShapes.map(_.toList)   getOrElse Model.defaultLinkShapes,
+      resources    = resources                  getOrElse Seq(),
       version      = version                    getOrElse ExportRequest.NlogoFileVersion)
 }
 
@@ -34,13 +36,33 @@ private[tortoise] trait RequestSharedImplicits {
     override val transform = tortoiseJs2String
   }
 
-  implicit object optionVectorShapes extends OptionalJsonReader[Seq[VectorShape]] {
+  implicit object optionalVectorShapes extends OptionalJsonReader[Seq[VectorShape]] {
     override val transform = readVectorShapes
   }
 
-  implicit object optionLinkShapes extends OptionalJsonReader[Seq[LinkShape]] {
+  implicit object optionalLinkShapes extends OptionalJsonReader[Seq[LinkShape]] {
     override val transform = readLinkShapes
   }
+
+  implicit object optionalExternalResources extends OptionalJsonReader[Seq[ExternalResource]] {
+    override val transform = tortoiseJs2ExternalResources
+  }
+
+  import JsonReader.JsonSequenceReader
+  import scalaz.ValidationNel
+  import scalaz.Scalaz.ToValidationOps
+
+  implicit val tortoiseJs2ExternalResources: JsonSequenceReader[ExternalResource] = new JsonSequenceReader[ExternalResource] {
+    def convertElem(json: TortoiseJson): ValidationNel[String, ExternalResource] =
+      json match {
+        case jso: JsObject => org.nlogo.tortoise.compiler.json.ExternalResourceReader(jso)
+        case _             => s"Expected external resource JSON object, but got $json".failureNel
+      }
+
+    def nonArrayErrorString(json: TortoiseJson): String =
+      s"Expected external resources as an array of objects, got $json"
+  }
+
 }
 
 object ExportRequest extends RequestSharedImplicits {
@@ -56,7 +78,8 @@ case class CompilationRequest(
   commands:     Option[Seq[String]],
   reporters:    Option[Seq[String]],
   turtleShapes: Option[Seq[VectorShape]],
-  linkShapes:   Option[Seq[LinkShape]]
+  linkShapes:   Option[Seq[LinkShape]],
+  resources:    Option[Seq[ExternalResource]]
 ) {
 
   val allCommands:  Seq[String] = commands. getOrElse(Seq())
@@ -68,7 +91,8 @@ case class CompilationRequest(
       widgets      = widgets.toList,
       info         = info                       getOrElse "",
       turtleShapes = turtleShapes.map(_.toList) getOrElse Model.defaultTurtleShapes,
-      linkShapes   = linkShapes.map(_.toList)   getOrElse Model.defaultLinkShapes)
+      linkShapes   = linkShapes.map(_.toList)   getOrElse Model.defaultLinkShapes,
+      resources    = resources                  getOrElse Seq())
 }
 
 object CompilationRequest extends RequestSharedImplicits {

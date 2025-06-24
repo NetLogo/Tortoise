@@ -1,0 +1,14 @@
+{
+  "name": "resource",
+  "prims": [
+    {
+      "name": "list",
+      "argTypes": [],
+      "returnType": "list"
+    }, {
+      "name": "get",
+      "argTypes": ["string"],
+      "returnType": "string"
+    }
+  ]
+}

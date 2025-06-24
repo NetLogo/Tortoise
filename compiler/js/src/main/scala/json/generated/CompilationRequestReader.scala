@@ -30,6 +30,7 @@ implicit object CompilationRequestReader extends JsonReader[TortoiseJson.JsObjec
     val v5 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[scala.Predef.String]]](jsObject, "reporters")
     val v6 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.Shape.VectorShape]]](jsObject, "turtleShapes")
     val v7 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.Shape.LinkShape]]](jsObject, "linkShapes")
+    val v8 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.ExternalResource]]](jsObject, "resources")
 
     val result =
       v0.flatMap(
@@ -39,9 +40,11 @@ implicit object CompilationRequestReader extends JsonReader[TortoiseJson.JsObjec
               (c3) => v4.flatMap(
                 (c4) => v5.flatMap(
                   (c5) => v6.flatMap(
-                    (c6) => v7.map(
-                      (c7) =>
-                        new org.nlogo.tortoise.compiler.CompilationRequest(c0, c1, c2, c3, c4, c5, c6, c7)
+                    (c6) => v7.flatMap(
+                      (c7) => v8.map(
+                        (c8) =>
+                          new org.nlogo.tortoise.compiler.CompilationRequest(c0, c1, c2, c3, c4, c5, c6, c7, c8)
+                      )
                     )
                   )
                 )

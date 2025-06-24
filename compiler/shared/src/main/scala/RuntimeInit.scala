@@ -22,6 +22,7 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
   def init: Seq[TortoiseSymbol] = Seq(
     JsDeclare("turtleShapes", shapeList(new ShapeList(AgentKind.Turtle, ShapeList.shapesToMap(model.turtleShapes)))),
     JsDeclare("linkShapes",   shapeList(new ShapeList(AgentKind.Link,   ShapeList.shapesToMap(model.linkShapes)))),
+    JsDeclare("resources",    model.resources.map( (er) => s""""${er.name}": { extension: "${er.extension}", data: "${jsReplace(er.data)}" } """ ).mkString("{ ", ", ", " }")),
 
     WorkspaceInit(
         Seq(
@@ -29,10 +30,11 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
         , genBreedsOwnArgs
         , Seq(s"'${jsReplace(model.code)}'")
         , Seq(jsArrayString(widgets.map(_.toJsonObj.toString)))
+        , Seq("resources")
         , Seq(genPorters)
         , genWorkspaceArgs
         )
-      , Seq("turtleShapes", "linkShapes")
+      , Seq("turtleShapes", "linkShapes", "resources")
     ),
 
     workspaceDeclare("BreedManager"),

@@ -4,7 +4,7 @@ package org.nlogo.tortoise.compiler
 
 import ExportRequest.NlogoFileVersion
 
-import org.nlogo.core.{ Model => CModel, Slider, Switch, View }
+import org.nlogo.core.{ ExternalResource, Model => CModel, Slider, Switch, View }
 import org.nlogo.tortoise.compiler.xml.TortoiseModelLoader
 
 import json.{ JsonLibrary, JsonLinkLine, JsonLinkShape, JsonVectorShape, TortoiseJson }
@@ -66,6 +66,13 @@ object TestUtilities {
   def compiledJs(compiledModel: JsObject): String =
     compiledModel[JsObject]("model").apply[String]("result")
 
+  def resourceToJson(resource: ExternalResource): JsObject =
+    JsObject(fields(
+      "name"      -> JsString(resource.name),
+      "extension" -> JsString(resource.extension),
+      "data"      -> JsString(resource.data)
+    ))
+
   def modelToCompilationRequest(model: CModel): NativeJson =
     modelToCompilationRequest(model, fields())
 
@@ -77,6 +84,7 @@ object TestUtilities {
         "version"      -> JsString(model.version),
         "linkShapes"   -> JsArray(model.linkShapes.map(_.toJsonObj)),
         "turtleShapes" -> JsArray(model.turtleShapes.map(_.toJsonObj)),
+        "resources"    -> JsArray(model.resources.map(resourceToJson)),
         "widgets"      -> JsArray(model.widgets.map(widget2Json(_).toJsonObj))) ++
       additionalFields)
     toNative(reqObj)
@@ -86,13 +94,16 @@ object TestUtilities {
     val vectorShape = JsonVectorShape("custom", false, 0, Seq())
     val linkLine  = JsonLinkLine(0.0, true, Seq(0.0f, 1.0f))
     val linkShape = JsonLinkShape("custom2", 1.0, Seq(linkLine, linkLine, linkLine), vectorShape)
+    val textResource = ExternalResource("text-resource-1", "txt", "How many plums per pound of pumpernickle per provided plate perchance?")
     CModel(
       code         = "to foo fd 1 end",
       widgets      = List(View()),
       info         = "some model info here",
       version      = NlogoFileVersion,
       linkShapes   = CModel.defaultLinkShapes :+ linkShape,
-      turtleShapes = CModel.defaultTurtleShapes :+ vectorShape)
+      turtleShapes = CModel.defaultTurtleShapes :+ vectorShape,
+      resources    = Seq(textResource)
+    )
   }
 
   val widgetyModel: CModel =

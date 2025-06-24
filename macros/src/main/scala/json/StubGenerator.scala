@@ -27,6 +27,7 @@ object StubGenerator {
     writeFile(readerStub("org.nlogo.core", "Switch"))
     writeFile(readerStub("org.nlogo.core", "TextBox"))
     writeFile(readerStub("org.nlogo.core", "View"))
+    writeFile(readerStub("org.nlogo.core", "ExternalResource"))
   }
 
   def readerStub(pkg: String, name: String): (String, String) = {

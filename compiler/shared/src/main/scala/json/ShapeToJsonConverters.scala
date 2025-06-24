@@ -70,12 +70,12 @@ object ShapeToJsonConverters {
   }
 
   def readVectorShapes(json: TortoiseJson): ValidationNel[String, Seq[VectorShape]] =
-    readShapes(vectorShapes2Json, json)
+    readShapes(tortoiseJs2VectorShapes, json)
 
   def readLinkShapes(json: TortoiseJson): ValidationNel[String, Seq[LinkShape]] =
-    readShapes(linkShapes2Json, json)
+    readShapes(tortoiseJs2LinkShapes, json)
 
-  implicit val vectorShapes2Json: JsonSequenceReader[VectorShape] = new JsonSequenceReader[VectorShape] {
+  implicit val tortoiseJs2VectorShapes: JsonSequenceReader[VectorShape] = new JsonSequenceReader[VectorShape] {
     def convertElem(json: TortoiseJson): ValidationNel[String, VectorShape] =
       readVectorShape(json)
 
@@ -83,7 +83,7 @@ object ShapeToJsonConverters {
       s"Expected vector shapes as array of objects, got $json"
   }
 
-  implicit val linkShapes2Json: JsonSequenceReader[LinkShape] = new JsonSequenceReader[LinkShape] {
+  implicit val tortoiseJs2LinkShapes: JsonSequenceReader[LinkShape] = new JsonSequenceReader[LinkShape] {
     def convertElem(json: TortoiseJson): ValidationNel[String, LinkShape] =
       readLinkShape(json)
 
