@@ -7,7 +7,7 @@ import
 
 import
   org.nlogo.{ core, tortoise },
-    core.{ AgentKind, AgentVariables, Model, Program, ShapeList },
+    core.{ AgentKind, AgentVariables, ExternalResource, Model, Program, ShapeList },
     tortoise.compiler.json.JsonSerializer
 
 import
@@ -18,11 +18,16 @@ import
 
 class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, importedExtensions: Set[String], onTickFunction: String = jsFunction()) {
 
+  def serializeResources(resources: Seq[ExternalResource]): String =
+    resources.map( (er) =>
+      s""""${er.name}": { extension: "${er.extension}", data: "${jsReplace(er.data)}" } """
+    ).mkString("{ ", ", ", " }")
+
   // scalastyle:off method.length
   def init: Seq[TortoiseSymbol] = Seq(
     JsDeclare("turtleShapes", shapeList(new ShapeList(AgentKind.Turtle, ShapeList.shapesToMap(model.turtleShapes)))),
     JsDeclare("linkShapes",   shapeList(new ShapeList(AgentKind.Link,   ShapeList.shapesToMap(model.linkShapes)))),
-    JsDeclare("resources",    model.resources.map( (er) => s""""${er.name}": { extension: "${er.extension}", data: "${jsReplace(er.data)}" } """ ).mkString("{ ", ", ", " }")),
+    JsDeclare("resources",    serializeResources(model.resources)),
 
     WorkspaceInit(
         Seq(

@@ -24,7 +24,7 @@ class TestEngine extends AnyFunSuite {
     jsRuntime.setupTortoise()
     jsRuntime.eval(s"""
       |${Polyfills.content}
-      |var workspace = tortoise_require('engine/workspace')({})([])([], [])('')({})([])([], [], [], -1, 1, -1, 1, 1, true, true);
+      |var workspace = tortoise_require('engine/workspace')({})([])([], [])('')({})([])([])([], [], [], -1, 1, -1, 1, 1, true, true);
       |var SelfManager = workspace.selfManager;
       |var Extensions  = {};
       |var world       = workspace.world;
