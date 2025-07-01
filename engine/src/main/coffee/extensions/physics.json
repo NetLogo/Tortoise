@@ -1,0 +1,188 @@
+{
+    "name": "phys",
+    "prims": [
+        {
+            "name": "set-physical",
+            "argTypes": [
+                "boolean"
+            ],
+            "returnType": "unit"
+        },
+        {
+            "name": "set-gravity",
+            "argTypes": [
+                "number",
+                "number"
+            ],
+            "returnType": "unit"
+        },
+        {
+            "name": "update",
+            "argTypes": [
+                "number"
+            ],
+            "returnType": "unit"
+        },
+        {
+            "name": "push",
+            "argTypes": [
+                "number"
+            ],
+            "returnType": "unit"
+        },
+        {
+            "name": "apply-force",
+            "argTypes": [
+                "number",
+                "number"
+            ],
+            "returnType": "unit"
+        },
+        {
+            "name": "get-total-corrections",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "get-total-uncorrectable",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "get-total-energy-discrepancy",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "get-num-energy-discrepancies",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "total-ke",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "total-e",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "total-newe",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "total-laste",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "get-v",
+            "argTypes": [],
+            "returnType": "wildcard"
+        },
+        {
+            "name": "set-v-magnitude",
+            "argTypes": [
+                "number"
+            ],
+            "returnType": "unit"
+        },
+        {
+            "name": "get-ke",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "get-e",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "get-vx",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "get-vy",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "get-mass",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "get-center-of-mass",
+            "argTypes": [],
+            "returnType": "wildcard"
+        },
+        {
+            "name": "get-inertia",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "set-mass",
+            "argTypes": [
+                "number"
+            ],
+            "returnType": "unit"
+        },
+        {
+            "name": "set-v",
+            "argTypes": [
+                "number",
+                "number"
+            ],
+            "returnType": "unit"
+        },
+        {
+            "name": "stop-all",
+            "argTypes": [],
+            "returnType": "unit"
+        },
+        {
+            "name": "changes",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "collision-number",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "get-turtle-collisions",
+            "argTypes": [],
+            "returnType": "agentset"
+        },
+        {
+            "name": "get-patch-collisions",
+            "argTypes": [],
+            "returnType": "agentset"
+        },
+        {
+            "name": "get-mlc",
+            "argTypes": [],
+            "returnType": "number"
+        },
+        {
+            "name": "do-conservation",
+            "argTypes": [
+                "boolean"
+            ],
+            "returnType": "unit"
+        },
+        {
+            "name": "do-collision-detection",
+            "argTypes": [
+                "boolean"
+            ],
+            "returnType": "unit"
+        }
+    ]
+}
