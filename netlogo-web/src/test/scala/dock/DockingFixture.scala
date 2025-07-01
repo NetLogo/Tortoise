@@ -22,8 +22,7 @@ import
     headless.{ lang, test => headlessTest },
       lang.Fixture,
       headlessTest.{ RuntimeError, TestMode, NormalMode, Command, Reporter, Success },
-    core.{ model, Model },
-      model.ModelReader,
+    core.Model,
     nvm.Optimizations.{ Command => OCommand, Reporter => OReporter }
 
 import
@@ -135,6 +134,8 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   override def runReporter(reporter: Reporter, mode: TestMode) =
     runReporterMunged(reporter, mode, id)
 
+  // `mode` isn't used, but it might be needed in the future, so leave it alone for now.
+  @annotation.nowarn
   def runReporterMunged(reporter: Reporter, mode: TestMode, mungeActual: (String) => String): Unit = {
     if (!opened) declare(Model())
     netLogoCode ++= s"${reporter.reporter}\n"

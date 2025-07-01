@@ -25,7 +25,7 @@ class TestRandom extends DockingSuite with ScalaCheckDrivenPropertyChecks {
       forAll(Gen.oneOf(1 to 10000)) {
         seed =>
           runCommand(Command(s"random-seed $seed"))
-          for (x <- 1 to 10)
+          for (_ <- 1 to 10)
             compare(s"$primName $args")
       }
     }

@@ -19,7 +19,7 @@ val commonSettings =
     crossPaths    := false, // we're not cross-building for different Scala versions
     scalaVersion  := "3.7.0",
     scalacOptions ++=
-      "-deprecation -unchecked -feature -encoding us-ascii -experimental -Xfatal-warnings".split(" ").toSeq,
+      "-deprecation -Wunused:all -Wconf:src=.*/generated/.*:s -Wconf:src=.*Generator.*scala:s -unchecked -feature -encoding us-ascii -experimental -Xfatal-warnings".split(" ").toSeq,
 
     resolvers     += "netlogoheadless" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/",
     libraryDependencies ++= Seq(

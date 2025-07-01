@@ -2,11 +2,10 @@
 
 package org.nlogo.tortoise.compiler
 
-import json.{ CompilationRequestReader, ExportRequestReader, JsonReader, ShapeToJsonConverters, TortoiseJson, WidgetToJson }
+import json.{ CompilationRequestReader, ExportRequestReader, JsonReader, ShapeToJsonConverters, TortoiseJson }
 import JsonReader.{ OptionalJsonReader, tortoiseJsAsStringSeq, tortoiseJs2String }
 import ShapeToJsonConverters.{ readLinkShapes, readVectorShapes }
 import TortoiseJson.JsObject
-import WidgetToJson.{ readWidgetsJson }
 
 import org.nlogo.core.{ ExternalResource, Model, Shape, Widget }
 import Shape.{ LinkShape, VectorShape }

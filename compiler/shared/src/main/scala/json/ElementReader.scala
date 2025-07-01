@@ -38,7 +38,7 @@ object ElementReader {
           Validation.fromTryCatchNonFatal(
             RgbColor(rawR.toInt, rawG.toInt, rawB.toInt, (rawA.toDouble * 255.0).toInt)
           ).leftMap(e => s"problem deserializing RGBA color value: ${e.getMessage}".wrapNel)
-        case other => s"could not convert $json to RGBA color".failureNel
+        case _ => s"could not convert $json to RGBA color".failureNel
       }
     }
   }

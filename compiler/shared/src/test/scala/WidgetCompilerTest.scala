@@ -72,10 +72,10 @@ class WidgetCompilerTest extends AnyFunSuite {
   def assertHasErrors(compiledWidget: CompiledWidget, errors: String*): Unit = {
     assert(
       compiledWidget.widgetCompilation.fold(
-        es      =>
+        es =>
           errors.forall(
             name => es.list.toList.exists(_.getMessage.contains(name))),
-        success => fail("compilation should have failed")))
+        _  => fail("compilation should have failed")))
     ()
   }
 
@@ -117,7 +117,7 @@ class WidgetCompilerTest extends AnyFunSuite {
     assertIsSuccess(compiledButton)
     assertHasWidgetData(compiledButton, turtleButtonWidget)
     compiledButton.widgetCompilation.fold(
-      e => fail(),
+      _ => fail(),
       c => c match {
         case SourceCompilation(source) =>
           assert(source == "AgentSet.ask(world.turtles, function() { foobar; })")
@@ -137,7 +137,7 @@ class WidgetCompilerTest extends AnyFunSuite {
       Seq("press this", "source", "button")),
     ("plot",
       plotWidget.copy(setupCode = "fatal-error"),
-      Seq("plot", "abc", "setup"))).foreach {
+      Seq("plot", "plot-abc", "setup"))).foreach {
         case (name, widget, errors) =>
           test(s"compileWidgets returns a $name widget with errors when compilation fails") {
             val compiledWidget = compileWidget(widget)
@@ -152,15 +152,15 @@ class WidgetCompilerTest extends AnyFunSuite {
      compileWidget(badPenPlot)
        .asInstanceOf[CompiledPlot].plotWidgetCompilation
        .fold(
-         es  => fail("expected plot compilation to succeed, pen compilation to fail"),
+         _ => fail("expected plot compilation to succeed, pen compilation to fail"),
          { pwc =>
             assert(pwc.compiledPens.forall(_.updateableCompilation.isFailure))
             assert(
               pwc.compiledPens.head.updateableCompilation.fold(
                 es =>
-                  Seq("pen", "abc", "setup").forall(
+                  Seq("pen", "pen-abc", "setup").forall(
                     name => es.list.toList.exists(_.getMessage.contains(name))),
-                success => fail("compilation should have failed")))
+                _  => fail("compilation should have failed")))
          })
    }
 

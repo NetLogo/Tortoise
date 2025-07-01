@@ -34,8 +34,8 @@ object WidgetSamples {
   val monitor        = Monitor(Some("reporter"), 1, 2, 3, 4, false, Option("abc"), 3, 10)
   val monitorNil     = Monitor(Some("reporter"), 1, 2, 3, 4, false, None, 3, 10)
   val plot           = {
-    val pen = Pen("abc", 2, 0, 15, true, "setup", "update")
-    Plot(Option("abc"), 1, 2, 3, 4, false,
+    val pen = Pen("pen-abc", 2, 0, 15, true, "setup", "update")
+    Plot(Option("plot-abc"), 1, 2, 3, 4, false,
       Option("time"), Option("height"), 0, 100, 50, 200,
       autoPlotX = true, autoPlotY = true, legendOn = false,
       setupCode = "setup", updateCode = "update", pens = List(pen))
@@ -46,7 +46,7 @@ object WidgetSamples {
 
   val penJson = JsObject(fields(
     "type"       -> JsString("pen"),
-    "display"    -> JsString("abc"),
+    "display"    -> JsString("pen-abc"),
     "interval"   -> JsDouble(2),
     "mode"       -> JsInt(0),
     "color"      -> JsInt(15),
@@ -162,7 +162,7 @@ object WidgetSamples {
     "plot" -> locatableJsObject(
       "oldSize"    -> JsBool(false),
       "type"       -> JsString("plot"),
-      "display"    -> JsString("abc"),
+      "display"    -> JsString("plot-abc"),
       "xAxis"      -> JsString("time"),
       "yAxis"      -> JsString("height"),
       "xmin"       -> JsDouble(0),

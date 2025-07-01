@@ -24,7 +24,7 @@ class SpiderMonkey {
   // There's no easy flag for extracting the version number, unfortunately
   val versionNumber = Try(Process(Seq("spidermonkey", "--help")).!!).flatMap {
     case ValidVersionRegex(x) => Try(x)
-    case x                    => Try(throw new Exception(s"`spidermonkey --help` did not return a proper version number"))
+    case _                    => Try(throw new Exception(s"`spidermonkey --help` did not return a proper version number"))
   }.transform(Try(_), {
     case ex: Throwable => Try(throw new Exception(smErrorInstructions, ex))
   }).get

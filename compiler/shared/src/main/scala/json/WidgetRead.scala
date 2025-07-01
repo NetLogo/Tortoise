@@ -6,15 +6,14 @@ import
   java.lang.{ Boolean => JBoolean, Double => JDouble, Integer => JInteger }
 
 import
-  org.nlogo.core.{ AgentKind, BoxedValue, Button, Chooseable, Chooser, Direction, Horizontal,
-                   InputBox, LogoList, Monitor, NumericInput, Output, Pen,
-                   Plot, Slider, StringInput, Switch,
-                   TextBox, UpdateMode, Vertical, View, Widget, WorldDimensions },
+  org.nlogo.core.{ AgentKind, BoxedValue, Chooseable, Direction, Horizontal,
+                   LogoList, NumericInput, Pen, StringInput, UpdateMode, Vertical,
+                   Widget, WorldDimensions },
     NumericInput.{ ColorLabel, NumberLabel },
     StringInput.{ CommandLabel, StringLabel, ReporterLabel }
 
 import
-  scalaz.{ Scalaz, Success, Validation, NonEmptyList, ValidationNel },
+  scalaz.{ Scalaz, Validation, NonEmptyList, ValidationNel },
     Validation.FlatMap.ValidationFlatMapRequested,
     Scalaz.ToValidationOps
 
@@ -179,9 +178,9 @@ object WidgetRead {
       case JsArray(els) => els.foldLeft(List[Pen]().successNel[String]) {
         case (acc, j@JsObject(_)) =>
           acc.flatMap(l => PenReader(j).map(newPen => l :+ newPen))
-        case (acc, other) => penListError
+        case (_, _) => penListError
       }
-      case other => penListError
+      case _ => penListError
     }
   }
 

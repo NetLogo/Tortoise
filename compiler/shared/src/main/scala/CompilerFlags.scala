@@ -2,7 +2,7 @@
 
 package org.nlogo.tortoise.compiler
 
-import CompilerFlags.{ PropagationStyle, NoPropagation }
+import CompilerFlags.PropagationStyle
 
 case class CompilerFlags(
   generateUnimplemented:  Boolean,

@@ -177,12 +177,12 @@ trait ReporterPrims extends PrimUtils {
       case o: Optimizer._optimizecount  => s"PrimChecks.agentset.optimizeCount(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)}, ${o.checkValue}, ${o.operator})"
 
       // agentset creators do their own, weird runtime checking with unique error messages, so we don't check their args.
-      case ls: prim.etc._linkset   => s"PrimChecks.agentset.linkSet(${sourceInfo.start}, ${sourceInfo.end}, ${if (useCompileArgs) { args.commas } else { "...arguments" }})"
-      case ps: prim.etc._patchset  => s"PrimChecks.agentset.patchSet(${sourceInfo.start}, ${sourceInfo.end}, ${if (useCompileArgs) { args.commas } else { "...arguments" }})"
-      case ts: prim.etc._turtleset => s"PrimChecks.agentset.turtleSet(${sourceInfo.start}, ${sourceInfo.end}, ${if (useCompileArgs) { args.commas } else { "...arguments" }})"
+      case _: prim.etc._linkset   => s"PrimChecks.agentset.linkSet(${sourceInfo.start}, ${sourceInfo.end}, ${if (useCompileArgs) { args.commas } else { "...arguments" }})"
+      case _: prim.etc._patchset  => s"PrimChecks.agentset.patchSet(${sourceInfo.start}, ${sourceInfo.end}, ${if (useCompileArgs) { args.commas } else { "...arguments" }})"
+      case _: prim.etc._turtleset => s"PrimChecks.agentset.turtleSet(${sourceInfo.start}, ${sourceInfo.end}, ${if (useCompileArgs) { args.commas } else { "...arguments" }})"
 
-      case ns: Optimizer._nsum => generateOptimalNSum(r, ns.varName)
-      case ns: Optimizer._nsum4 => generateOptimalNSum4(r, ns.varName)
+      case ns: Optimizer._nsum  => s"SelfManager.self()._optimalNSum(${jsString(ns.varName)})"
+      case ns: Optimizer._nsum4 => s"SelfManager.self()._optimalNSum4(${jsString(ns.varName)})"
 
       case _: Optimizer._patchhereinternal => "SelfManager.self()._optimalPatchHereInternal()"
       case _: Optimizer._patchnorth        => "SelfManager.self()._optimalPatchNorth()"
@@ -230,7 +230,7 @@ trait ReporterPrims extends PrimUtils {
         val run = s"PrimChecks.procedure.runResult(${sourceInfo.start}, ${sourceInfo.end}, $argString)"
         maybeStoreProcedureArgsForRunResult(r.args(0).reportedType(), procContext, run)
 
-      case c: prim.etc._checksyntax =>
+      case _: prim.etc._checksyntax =>
         val check = s"ProcedurePrims.checkSyntax(${args.get(0)})"
         maybeStoreProcedureArgsForRun(r.args(0).reportedType(), procContext, check)
 
@@ -250,7 +250,7 @@ trait ReporterPrims extends PrimUtils {
       case ra: prim.etc._range =>
         generateRange(sourceInfo.start, sourceInfo.end, useCompileArgs, args.checked, ra.syntax)
 
-      case mli: prim._multiassignitem =>
+      case _: prim._multiassignitem =>
         "__MULTI_SET_ARRAY.shift()"
 
       case _ if compilerFlags.generateUnimplemented =>
@@ -283,14 +283,6 @@ trait ReporterPrims extends PrimUtils {
       handlers.reporter(args(0))
     else
       s"(Prims.ifElseValueBooleanCheck(${handlers.reporter(args(0))}) ? ${handlers.reporter(args(1))} : ${generateIfElseValue(args.drop(2))})"
-  }
-
-  def generateOptimalNSum(r: ReporterApp, varName: String): String = {
-    s"SelfManager.self()._optimalNSum(${jsString(varName)})"
-  }
-
-  def generateOptimalNSum4(r: ReporterApp, varName: String): String = {
-    s"SelfManager.self()._optimalNSum4(${jsString(varName)})"
   }
 
   // The fact that there are three different functions for `range` is intentional--incredibly intentional.
@@ -365,7 +357,7 @@ trait CommandPrims extends PrimUtils {
         case VariableSetter(setValue) =>
           setValue(args.get(1))
 
-        case x =>
+        case _ =>
           failCompilation("This isn't something you can use \"set\" on.", s.instruction.token)
 
       }
@@ -566,7 +558,7 @@ trait CommandPrims extends PrimUtils {
 
       case _: prim._set                  => generateSet
       case m: prim._multiset             => generateMultiSet(m)
-      case m: prim._multiassignnest      => ""
+      case _: prim._multiassignnest      => ""
       case _: prim.etc._loop             => generateLoop
       case _: prim._repeat               => generateRepeat
       case _: prim.etc._while            => generateWhile
@@ -597,7 +589,7 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._uphill4          => s"Prims.uphill4($getReferenceName)"
       case _: prim.etc._downhill         => s"Prims.downhill($getReferenceName)"
       case _: prim.etc._downhill4        => s"Prims.downhill4($getReferenceName)"
-      case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${args.get(0)}.getSpecialName(), ${args.get(1)})"
+      case _: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${args.get(0)}.getSpecialName(), ${args.get(1)})"
       case _: prim.etc._hidelink         => "SelfManager.self().setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfManager.self().setVariable('hidden?', false)"
       case call: prim._call              => generateCall(call)

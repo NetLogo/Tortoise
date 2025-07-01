@@ -85,7 +85,7 @@ object JsonSerializer {
 
   def toJValue(v: AnyRef): TortoiseJson =
     (javaPrimsToJson orElse logoPrimsToJson orElse scalaPrimsToJson)
-      .applyOrElse(v, (x: AnyRef) => JsString("XXX IMPLEMENT ME"))
+      .applyOrElse(v, (_: AnyRef) => JsString("XXX IMPLEMENT ME"))
 
   private val javaPrimsToJson: PartialFunction[AnyRef, TortoiseJson] = {
     case d: JDouble if d.doubleValue.isValidInt => JsInt(d.intValue)

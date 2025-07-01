@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.compiler
 
 import org.nlogo.core.{ CompilerException, Model, Plot, View, Widget }
-import org.nlogo.core.model.{ ModelReader, ModelXMLLoader }
+import org.nlogo.core.model.ModelReader
 
 import org.nlogo.parse.CompilerUtilities
 

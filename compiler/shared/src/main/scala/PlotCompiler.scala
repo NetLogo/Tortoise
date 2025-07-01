@@ -118,7 +118,7 @@ object PlotCompiler {
         }}"
 
       def showPenErrors(pen: Pen)(ces: NonEmptyList[Exception]): ErrorAlert =
-        ErrorAlert(ces.map(_.getMessage).list.toList)
+        ErrorAlert(pen.display +: ces.map(_.getMessage).list.toList)
 
       compiledPen.updateableCompilation.fold(showPenErrors(compiledPen.pen), constructNewPen(compiledPen.pen))
     }

@@ -9,13 +9,11 @@ import json.JsonLibrary.{ Native => NativeJson, toTortoise }
 import json.JsonReader
 import json.JsonWritable
 import json.JsonWriter
-import json.JsonWriter.string2TortoiseJs
 import json.TortoiseJson
 import json.TortoiseJson._
 import json.WidgetToJson
 
 import org.nlogo.core.{ CompilerException, Plot }
-import org.nlogo.core.model.ModelReader
 import org.nlogo.tortoise.compiler.xml.TortoiseModelLoader
 
 import org.nlogo.parse.CompilerUtilities
@@ -313,7 +311,7 @@ class BrowserCompiler {
 
   private def transformErrorsAndUpdateModel(
     compiledModelWithExceptions: ValidationNel[Exception, CompiledModel],
-    updateCompilation:           (CompiledModel, ModelCompilation) => ModelCompilation = (a, b) => b
+    updateCompilation:           (CompiledModel, ModelCompilation) => ModelCompilation = (_, b) => b
   ): ValidationNel[TortoiseFailure, ModelCompilation] = {
 
     val compiledModelWithFailures = compiledModelWithExceptions.leftMap(_.map {

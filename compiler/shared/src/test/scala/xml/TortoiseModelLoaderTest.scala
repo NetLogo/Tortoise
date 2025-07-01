@@ -2,7 +2,7 @@
 
 package org.nlogo.tortoise.compiler.xml
 
-import org.nlogo.core.{ Model, ModelSettings, Section, View, WorldDimensions }
+import org.nlogo.core.{ Model, View, WorldDimensions }
 
 import org.nlogo.core.model.XMLElement
 

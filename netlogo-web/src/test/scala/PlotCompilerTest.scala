@@ -39,7 +39,7 @@ class PlotCompilerTest extends AnyFunSuite with OneInstancePerTest {
   }
 
   def compiledPlot(compilationV: ValidationNel[Exception, PlotWidgetCompilation]) =
-    new CompiledPlot(plotWidget, "abc", compilationV)
+    new CompiledPlot(plotWidget, "plot-abc", compilationV)
 
   def plotJs(plot: CompiledPlot): String =
     PlotCompiler.formatPlots(Seq(plot)).filter(_.provides == "modelConfig.plots").head.toJS
@@ -49,9 +49,9 @@ class PlotCompilerTest extends AnyFunSuite with OneInstancePerTest {
 
   test("returns valid javascript when plots have errors") {
     val generatedJs =
-      compilePlotWidgetV(new Exception("plot abc has problems").failureNel)
+      compilePlotWidgetV(new Exception("plot plot-abc has problems").failureNel)
     jsRuntime.eval(generatedJs)
-    assert(dialog.alertsReceived.head == "Error: plot abc has problems")
+    assert(dialog.alertsReceived.head == "Error: plot plot-abc has problems")
   }
 
   test("returns valid javascript when pens have errors") {
@@ -60,7 +60,7 @@ class PlotCompilerTest extends AnyFunSuite with OneInstancePerTest {
       PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPen)).successNel[Exception]
     val generatedJs = compilePlotWidgetV(widgetCompilation)
     jsRuntime.eval(generatedJs)
-    assert(dialog.alertsReceived.head == "Error: pen has problems")
+    assert(dialog.alertsReceived.head == "Error: pen-abc, pen has problems")
   }
 
   test("returns multiple errors when there are multiple pen errors") {
@@ -69,7 +69,7 @@ class PlotCompilerTest extends AnyFunSuite with OneInstancePerTest {
       PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPens)).successNel[Exception]
     val generatedJs = compilePlotWidgetV(widgetCompilation)
     jsRuntime.eval(generatedJs)
-    assert(dialog.alertsReceived.head == "Error: pen a has problems, pen b has problems")
+    assert(dialog.alertsReceived.head == "Error: pen-abc, pen a has problems, pen b has problems")
   }
 
   test("returns valid javascript when plots are correct") {

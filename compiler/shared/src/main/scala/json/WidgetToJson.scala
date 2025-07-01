@@ -29,7 +29,7 @@ object WidgetToJson {
       json match {
         case j@JsObject(matchType(JsString(WidgetRead(reader)))) =>
           reader(j)
-        case other =>
+        case _ =>
           "Widgets must be represented as a JSON Object with type specified".failureNel[Widget]
       }
     }
@@ -48,7 +48,6 @@ object WidgetToJson {
   // scalastyle:off cyclomatic.complexity
   implicit def widget2Json(w: Widget): JsonWritable =
     new JsonWritable {
-      import WidgetWrite._
       def toJsonObj: JsObject =
         (w match {
           case b: Button   => ButtonWriter(b)

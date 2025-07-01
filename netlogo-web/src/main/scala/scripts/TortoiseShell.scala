@@ -32,7 +32,7 @@ object TortoiseShell extends workspace.Shell {
 
   def run(js: String): Unit = {
     printingExceptions {
-      val (output, json) = jsRuntime.run(js)
+      val (output, _) = jsRuntime.run(js)
       Seq(output)
         .filter(_.nonEmpty)
         .foreach(x => println(x.trim))

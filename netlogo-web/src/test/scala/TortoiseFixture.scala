@@ -56,7 +56,7 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
       case RuntimeError(msg) =>
         expectRuntimeError(cautiously(engine.run(js)), msg)
       case r =>
-        notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
+        notImplemented(s"($name) unknown result type: ${r.getClass.getSimpleName}")
     }
   }
 
@@ -78,7 +78,7 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
   override def checkCompile(model: CModel, compile: Compile): Unit = {
     lazy val js = modelJS(model)
     compile.result match {
-      case Success(expectedResult) =>
+      case Success(_) =>
         engine.eval(js)
       case CompileError(msg) =>
         expectCompileError(js, msg)
@@ -91,7 +91,7 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
   private def expectCompileError(js: => String, msg: String): Unit = {
     try {
       cautiously(js)
-      fail("no CompilerException occurred")
+      fail(s"($name) no CompilerException occurred")
     }
     catch {
       case ex: CompilerException =>
@@ -104,7 +104,7 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
   private def expectRuntimeError(res: => Any, msg: String): Unit = {
     try {
       res
-      fail(s"no RuntimeError occurred (expected '$msg')")
+      fail(s"($name) no RuntimeError occurred (expected '$msg')")
     }
     catch {
       case ex: PolyglotException if AfterFirstColonRegex.findFirstIn(ex.getMessage).isDefined =>
@@ -123,8 +123,8 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
         ()
       case e: TestFailedException => throw e
       case e: TestPendingException => throw e
-      case e: Exception => fail(s"expected RuntimeError, but got ${e.getClass.getSimpleName}")
-      case e: Throwable => fail(s"Unknown throwable? ${e.getClass.getSimpleName}")
+      case e: Exception => fail(s"($name) expected RuntimeError, but got ${e.getClass.getSimpleName}")
+      case e: Throwable => fail(s"($name) Unknown throwable? ${e.getClass.getSimpleName}")
     }
   }
 

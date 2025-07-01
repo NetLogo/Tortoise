@@ -24,7 +24,7 @@ object Optimizer {
   object Fd1Transformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
-        case Statement(command: _fd, Seq(ReporterApp(reporter: _const, _, _)), _) if reporter.value.equals(1) =>
+        case Statement(_: _fd, Seq(ReporterApp(reporter: _const, _, _)), _) if reporter.value.equals(1) =>
           statement.copy(command = new _fdone, args = Seq())
         case _ => super.visitStatement(statement)
       }
@@ -39,7 +39,7 @@ object Optimizer {
   object FdLessThan1Transformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
-        case Statement(command: _fd, Seq(ReporterApp(_const(value: java.lang.Double), _, _)), _) if ((value > -1) && (value < 1)) =>
+        case Statement(_: _fd, Seq(ReporterApp(_const(value: java.lang.Double), _, _)), _) if ((value > -1) && (value < 1)) =>
           statement.copy(command = new _fdlessthan1)
         case _ => super.visitStatement(statement)
       }
@@ -125,7 +125,7 @@ object Optimizer {
     // scalastyle:off cyclomatic.complexity
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
       ra match {
-        case ReporterApp(reporter: _patchat,
+        case ReporterApp(_: _patchat,
           Seq(ReporterApp(_const(x: java.lang.Double), _, _),
             ReporterApp(_const(y: java.lang.Double), _, _)), _) =>
           (x, y) match {
@@ -154,7 +154,7 @@ object Optimizer {
   object AnyOtherTransformer extends AstTransformer {
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
       ra match {
-        case ReporterApp(reporter: _any, Seq(ReporterApp(other: _other, otherArgs, _)), _) =>
+        case ReporterApp(_: _any, Seq(ReporterApp(_: _other, otherArgs, _)), _) =>
           ra.copy(reporter = new _anyother, args = otherArgs)
         case _ => super.visitReporterApp(ra)
       }
@@ -169,7 +169,7 @@ object Optimizer {
   object CountOtherTransformer extends AstTransformer {
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
       ra match {
-        case ReporterApp(reporter: _count, Seq(ReporterApp(other: _other, countArgs, _)), _) =>
+        case ReporterApp(_: _count, Seq(ReporterApp(_: _other, countArgs, _)), _) =>
           ra.copy(reporter = new _countother, args = countArgs)
         case _ => super.visitReporterApp(ra)
       }
@@ -431,23 +431,23 @@ object Optimizer {
     }
     def unchangingInWith(repApp: ReporterApp): Boolean = {
       repApp match {
-        case ReporterApp(const: _const, _, _) => true
-        case ReporterApp(observerRep: _observervariable, _, _) => true
-        case ReporterApp(procedureRep: _procedurevariable, _, _) => true
+        case ReporterApp(_: _const, _, _) => true
+        case ReporterApp(_: _observervariable, _, _) => true
+        case ReporterApp(_: _procedurevariable, _, _) => true
         case _ => false
       }
     }
     object PatchVarEqualExpression {
       def unapply(repApp: ReporterApp): Option[(_patchvariable, ReporterApp)] =
         repApp match {
-          case ReporterApp(equal: _equal, Seq(ReporterApp(p: _patchvariable, patchArgs, patchSrc), newRa: ReporterApp), _) => Some((p, newRa))
-          case ReporterApp(equal: _equal, Seq(newRa: ReporterApp, ReporterApp(p: _patchvariable, patchArgs, patchSrc)), _) => Some((p, newRa))
+          case ReporterApp(_: _equal, Seq(ReporterApp(p: _patchvariable, _, _), newRa: ReporterApp), _) => Some((p, newRa))
+          case ReporterApp(_: _equal, Seq(newRa: ReporterApp, ReporterApp(p: _patchvariable, _, _)), _) => Some((p, newRa))
           case _ => None
         }
     }
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
       ra match {
-        case ReporterApp(reporter: _with, Seq(ReporterApp(patches: _patches, _, _), ReporterBlock(PatchVarEqualExpression(p, newRa), _)), _) =>
+        case ReporterApp(_: _with, Seq(ReporterApp(_: _patches, _, _), ReporterBlock(PatchVarEqualExpression(p, newRa), _)), _) =>
           patchRegion(p, newRa, ra)
         case _ => super.visitReporterApp(ra)
       }

@@ -14,9 +14,6 @@ import
 import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsNull, JsObject, JsString }
 
-import
-  org.nlogo.tortoise.compiler.utils.CompilerUtils
-
 object WidgetWrite {
 
   implicit object direction2Json extends JsonWriter[Direction] {

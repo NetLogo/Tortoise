@@ -129,11 +129,11 @@ class Compiler {
 
     extensionManager.retainExtensionsOnNextCompile()
 
-    val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
+    val (defs, _): (Seq[ProcedureDefinition], StructureResults) =
       frontEnd.frontEnd(
           logo
         , program          = program
-        , oldProcedures    = oldProcedures.filter({ case (name, procedure) => !overriding.contains(name) })
+        , oldProcedures    = oldProcedures.filter({ case (name, _) => !overriding.contains(name) })
         , extensionManager = extensionManager
         , subprogram       = false
       )

@@ -24,7 +24,7 @@ object WidgetToJsonTest extends TestSuite {
   val tests = utest.Tests {
     "test serialization, deserialization, round-tripping"-{
       (widgetJsons zip testWidgets).foreach {
-        case ((name, json), (_, widget)) =>
+        case ((_, json), (_, widget)) =>
           assert(json == widget.toJsonObj)
 
           val deserializedWidget = readWidget(json)

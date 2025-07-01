@@ -2,14 +2,9 @@
 
 package org.nlogo.tortoise.compiler
 
-import scalaz.{ Failure, NonEmptyList, ValidationNel }
-
 import scala.quoted.{ Expr, Quotes, Type }
 
-import org.nlogo.tortoise.compiler.json.{ JsonWriter, ShapeToJsonConverters, WidgetWrite }
-import ShapeToJsonConverters._
-import WidgetWrite.intOption2Json
-import org.nlogo.tortoise.compiler.CompiledWidget._
+import org.nlogo.tortoise.compiler.json.JsonWriter
 
 object Jsonify {
 
@@ -44,7 +39,7 @@ object Jsonify {
           val inferredType = res.tree.tpe
           inferredType.show
 
-        case res: ImplicitSearchFailure =>
+        case _: ImplicitSearchFailure =>
           report.errorAndAbort(s"Failed to find an implicit type to convert ${fieldType.show}.")
       }
     })
@@ -168,14 +163,11 @@ implicit object $objectName extends JsonReader[TortoiseJson.JsObject, $caseClass
     Expr((objectName, r))
   }
 
-  import java.io.File
   import java.nio.file.{ Files, Paths }
 
   inline def writeFile(inline genResult: (String, String), inline dir: String = "gen-shared"): Unit = ${ writeFileCode('genResult, 'dir) }
 
   def writeFileCode(genResultExpr: Expr[(String, String)], dirExpr: Expr[String])(using q: Quotes): Expr[Unit] = {
-    import q.reflect.*
-
     val genResult = genResultExpr.valueOrAbort
     val dir = dirExpr.valueOrAbort
     val parentDirPath = Paths.get("target", dir)

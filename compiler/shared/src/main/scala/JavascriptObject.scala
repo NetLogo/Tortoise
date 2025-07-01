@@ -44,6 +44,7 @@ object JavascriptObject {
 
   trait ElementValue {
     def renderField(k: String):   String
+    @annotation.nowarn
     def jsObjectProps(k: String): ListMap[String, TortoiseJson] =
       ListMap[String, TortoiseJson]()
   }

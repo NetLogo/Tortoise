@@ -17,7 +17,7 @@ object TortoiseModelLoader {
 
   def write(model: Model): String = {
     val writer = new SimpleXmlWriter()
-    ModelXMLLoader.writeBasics(writer, model, (w, m) => {})
+    ModelXMLLoader.writeBasics(writer, model, (_, _) => {})
     writer.toString
   }
 

@@ -163,11 +163,11 @@ object WidgetCompiler {
         new JavascriptObject().addObjectProperties(compiledWidget.toJsonObj.asInstanceOf[JsObject])
 
       compiledWidget match {
-        case CompiledWidget(monitor: Monitor, Success(comp: SourceCompilation)) =>
+        case CompiledWidget(_: Monitor, Success(comp: SourceCompilation)) =>
           comp.fold(javascriptObject)(addCompiledField(monitorRenames))
-        case CompiledWidget(slider:  Slider,  Success(comp: SliderCompilation)) =>
+        case CompiledWidget(_:  Slider,  Success(comp: SliderCompilation)) =>
           comp.fold(javascriptObject)(addCompiledField(sliderRenames))
-        case cw => javascriptObject
+        case _ => javascriptObject
       }
     }
 

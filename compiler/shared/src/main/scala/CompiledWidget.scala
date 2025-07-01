@@ -4,7 +4,6 @@ package org.nlogo.tortoise.compiler
 
 import
   json.{ JsonWritable, JsonWriter, TortoiseJson, WidgetToJson },
-    JsonWriter._,
     TortoiseJson.{ fields, JsArray, JsBool, JsInt, JsObject, JsString },
     WidgetToJson.widget2Json
 import
@@ -149,7 +148,6 @@ object WidgetCompilation {
   }
 
   implicit object widgetCompilation2Json extends JsonWriter[WidgetCompilation] {
-    import CompiledWidget.compiledPens2Json
     def apply(widgetCompilation: WidgetCompilation): TortoiseJson =
       widgetCompilation match {
         case NotCompiled              => JsObject(fields())
