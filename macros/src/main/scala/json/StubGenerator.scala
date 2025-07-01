@@ -5,6 +5,7 @@ object StubGenerator {
     generateReaders()
     generateWidgetWriters()
     generateOtherWriters()
+    generateJSFiles()
   }
 
   def generateReaders(): Unit = {
@@ -67,6 +68,12 @@ implicit object ${name}Reader extends JsonReader[TortoiseJson.JsObject, $pkg.$na
     writeFile(writerStub("org.nlogo.core", "View"))
   }
 
+  def generateJSFiles(): Unit = {
+    writeFile(readerStub("org.nlogo.tortoise.compiler", "ExportRequest"), "gen-js")
+    writeFile(readerStub("org.nlogo.tortoise.compiler", "CompilationRequest"), "gen-js")
+    writeFile(writerStub("org.nlogo.tortoise.compiler", "ModelCompilation", "org.nlogo.tortoise.compiler"), "gen-js")
+  }
+
   def writerStub(pkg: String, name: String, pkgOverride: String = "org.nlogo.tortoise.compiler.json"): (String, String) = {
     val r = s"""
 package $pkgOverride
@@ -82,8 +89,8 @@ implicit object ${name}Writer extends JsonWriter[$pkg.$name] {
     return (s"${name}Writer", r)
   }
 
-  def writeFile(data: (String, String)): Unit = {
-    val fullPath = java.nio.file.Paths.get("target", s"${data._1}.scala")
+  def writeFile(data: (String, String), folder: String = "gen-shared"): Unit = {
+    val fullPath = java.nio.file.Paths.get("target", folder, s"${data._1}.scala")
     java.nio.file.Files.write(fullPath, data._2.getBytes())
     println(s"wrote $fullPath")
   }
