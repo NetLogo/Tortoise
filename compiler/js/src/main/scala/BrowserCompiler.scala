@@ -36,9 +36,12 @@ class BrowserCompiler {
 
   import BrowserCompiler._
 
-  // scalastyle:off null
-  private var lastCompiledModel: CompiledModel = null
-  // scalastyle:on null
+  private var lastCompiledModel: Option[CompiledModel] = None
+
+  private def getLastModel(): CompiledModel = {
+    val msg = "No compiled model found to use for this method.  You must first compile a model with `fromNlogoXML` or `fromModel`."
+    lastCompiledModel.getOrElse(throw new Exception(msg))
+  }
 
   private val compiler = new Compiler()
 
@@ -54,7 +57,7 @@ class BrowserCompiler {
       for {
         tortoiseReq      <- readNative[JsObject](compilationRequest)
         parsedRequest    <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
-        optionalSections =  Option(this.lastCompiledModel).map( (m) => m.compilation.model.optionalSections ).getOrElse(Seq())
+        optionalSections =  lastCompiledModel.map( (m) => m.compilation.model.optionalSections ).getOrElse(Seq())
         model            =  parsedRequest.toModel.copy(optionalSections = optionalSections)
         compiledModel    =  CompiledModel.fromModel(model, compiler).leftMap(_.map(ex => ex: Exception))
         compilation      <- transformErrorsAndUpdateModel(
@@ -117,7 +120,7 @@ class BrowserCompiler {
       for {
         tortoiseReq      <- readNative[JsObject](exportRequest)
         parsedRequest    <- ExportRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
-        optionalSections =  Option(this.lastCompiledModel).map( (m) => m.compilation.model.optionalSections ).getOrElse(Seq())
+        optionalSections =  lastCompiledModel.map( (m) => m.compilation.model.optionalSections ).getOrElse(Seq())
         model            =  parsedRequest.toModel.copy(optionalSections = optionalSections)
       } yield TortoiseModelLoader.write(model)
 
@@ -129,8 +132,8 @@ class BrowserCompiler {
   def isReporter(code: String): Boolean =
     CompilerUtilities.isReporter(
         code
-      , this.lastCompiledModel.compilation.program
-      , this.lastCompiledModel.compilation.procedures
+      , getLastModel().compilation.program
+      , getLastModel().compilation.procedures
       , compiler.extensionManager
     )
 
@@ -152,7 +155,7 @@ class BrowserCompiler {
         tortoiseJSON <- readNative[JsArray](plotJSON)
         widgets      <- convStr(WidgetToJson.readWidgetsJson(tortoiseJSON))
         plots         = widgets.collect { case p: Plot => p }
-        plotJS       <- convComp(CompiledModel.plotsToJS(plots, lastCompiledModel))
+        plotJS       <- convComp(CompiledModel.plotsToJS(plots, getLastModel()))
       } yield plotJS
 
     val json =
@@ -171,33 +174,33 @@ class BrowserCompiler {
 
   @JSExport
   def compileCommand(command: String): NativeJson = {
-    val results: CompiledStringV = lastCompiledModel.compileCommand(command)
+    val results: CompiledStringV = getLastModel().compileCommand(command)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
 
   @JSExport
   def compileReporter(command: String): NativeJson = {
-    val results: CompiledStringV = lastCompiledModel.compileReporter(command)
+    val results: CompiledStringV = getLastModel().compileReporter(command)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
 
   @JSExport
   def compileRawCommand(command: String): NativeJson = {
-    val results: CompiledStringV = lastCompiledModel.compileRawCommand(command)
+    val results: CompiledStringV = getLastModel().compileRawCommand(command)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
 
   @JSExport
   def compileProceduresIncremental(command: String, overriding: js.Array[String]): NativeJson = {
     val overridingSeq = overriding.map(_.toUpperCase).toSeq
-    val results: CompiledStringV   = lastCompiledModel.compileProceduresIncremental(command, overridingSeq)
+    val results: CompiledStringV   = getLastModel().compileProceduresIncremental(command, overridingSeq)
     JsonLibrary.toNative(compileResult2Json.apply(results))
   }
 
   @JSExport
   def listGlobalVars(): NativeJson = {
 
-    val program     = lastCompiledModel.compilation.program
+    val program     = getLastModel().compilation.program
     val interfaceGs = program.interfaceGlobals.map((g) => (g,               "interface"))
     val      userGs = program.     userGlobals.map((g) => (g.toLowerCase,        "user"))
 
@@ -220,7 +223,7 @@ class BrowserCompiler {
   @JSExport
   def listProcedures(): NativeJson = {
 
-    val procedures = lastCompiledModel.compilation.procedures.values
+    val procedures = getLastModel().compilation.procedures.values
 
     val json =
       JsArray(
@@ -244,7 +247,7 @@ class BrowserCompiler {
   def jsonify(x: String): JsString = JsString(x.toLowerCase)
 
   def listTurtleVarsInt(): JsArray = {
-    val program    = lastCompiledModel.compilation.program
+    val program    = getLastModel().compilation.program
     val commonVars = program.turtleVars.keys
     JsArray(commonVars.map(jsonify).toSeq)
   }
@@ -256,7 +259,7 @@ class BrowserCompiler {
   }
 
   def listOwnVarsForBreedInt(breedName: String): JsArray = {
-    val program   = lastCompiledModel.compilation.program
+    val program   = getLastModel().compilation.program
     val breedVars = program.breeds.get(breedName.toUpperCase).fold(Seq[String]())(_.owns)
     JsArray(breedVars.map(jsonify).toSeq)
   }
@@ -276,14 +279,14 @@ class BrowserCompiler {
 
   @JSExport
   def listPatchVars(): NativeJson = {
-    val program    = lastCompiledModel.compilation.program
+    val program    = getLastModel().compilation.program
     val commonVars = program.patchVars.keys
     val json       = JsArray(commonVars.map(jsonify).toSeq)
     JsonLibrary.toNative(json)
   }
 
   def listLinkVarsInt(): JsArray = {
-    val program    = lastCompiledModel.compilation.program
+    val program    = getLastModel().compilation.program
     val commonVars = program.linkVars.keys
     JsArray(commonVars.map(jsonify).toSeq)
   }
@@ -295,7 +298,7 @@ class BrowserCompiler {
   }
 
   def listLinkOwnVarsForBreedInt(breedName: String): JsArray = {
-    val program   = lastCompiledModel.compilation.program
+    val program   = getLastModel().compilation.program
     val breedVars = program.linkBreeds.get(breedName.toUpperCase).fold(Seq[String]())(_.owns)
     JsArray(breedVars.map(jsonify).toSeq)
   }
@@ -324,7 +327,7 @@ class BrowserCompiler {
     })
 
     val compilation = compiledModelWithFailures.map(compiledModel => {
-      this.lastCompiledModel = compiledModel
+      lastCompiledModel = Some(compiledModel)
       updateCompilation(compiledModel, ModelCompilation.fromCompiledModel(compiledModel))
     })
     val validatedCompilation = Validation.fromTryCatchThrowable[ValidationNel[TortoiseFailure, ModelCompilation], Throwable](compilation)
