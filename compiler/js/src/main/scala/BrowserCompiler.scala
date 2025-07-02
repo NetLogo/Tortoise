@@ -52,10 +52,12 @@ class BrowserCompiler {
 
     val compilationResult =
       for {
-        tortoiseReq   <- readNative[JsObject](compilationRequest)
-        parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
-        compiledModel =  CompiledModel.fromModel(parsedRequest.toModel, compiler).leftMap(_.map(ex => ex: Exception))
-        compilation   <- transformErrorsAndUpdateModel(
+        tortoiseReq      <- readNative[JsObject](compilationRequest)
+        parsedRequest    <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
+        optionalSections =  Option(this.lastCompiledModel).map( (m) => m.compilation.model.optionalSections ).getOrElse(Seq())
+        model            =  parsedRequest.toModel.copy(optionalSections = optionalSections)
+        compiledModel    =  CompiledModel.fromModel(model, compiler).leftMap(_.map(ex => ex: Exception))
+        compilation      <- transformErrorsAndUpdateModel(
           compiledModel,
           compileExtras(parsedRequest.allCommands, parsedRequest.allReporters)
         )
@@ -113,9 +115,11 @@ class BrowserCompiler {
 
     val source =
       for {
-        tortoiseReq   <- readNative[JsObject](exportRequest)
-        parsedRequest <- ExportRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
-      } yield TortoiseModelLoader.write(parsedRequest.toModel)
+        tortoiseReq      <- readNative[JsObject](exportRequest)
+        parsedRequest    <- ExportRequest.read(tortoiseReq).leftMap(_.map(FailureString.apply))
+        optionalSections =  Option(this.lastCompiledModel).map( (m) => m.compilation.model.optionalSections ).getOrElse(Seq())
+        model            =  parsedRequest.toModel.copy(optionalSections = optionalSections)
+      } yield TortoiseModelLoader.write(model)
 
     JsonLibrary.toNative(source.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
 

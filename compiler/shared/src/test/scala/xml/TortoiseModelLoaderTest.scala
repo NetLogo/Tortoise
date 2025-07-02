@@ -205,6 +205,7 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
   <info><![CDATA[# Hello! <h1> <h2> </p>]]></info>
   <turtleShapes></turtleShapes>
   <linkShapes></linkShapes>
+  <unexpectedSection><![CDATA[Who knows what <evil> lurks in the CDATA sections of unexpected XML elements?]]></unexpectedSection>
 </model>
 """
 
@@ -228,6 +229,7 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
   <info><![CDATA[# Hello! <h1> <h2> </p>]]></info>
   <turtleShapes></turtleShapes>
   <linkShapes></linkShapes>
+  <unexpectedSection><![CDATA[Who knows what <evil> lurks in the CDATA sections of unexpected XML elements?]]></unexpectedSection>
 </model>
 """
 

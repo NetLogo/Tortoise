@@ -3,21 +3,39 @@
 package org.nlogo.tortoise.compiler.xml
 
 import org.nlogo.core.Model
-import org.nlogo.core.model.ModelXMLLoader
+import org.nlogo.core.model.{ ModelXMLLoader, XMLElement }
 
 import scala.util.Try
 
 object TortoiseModelLoader {
+  val supportedSections = Seq(
+    "code"
+  , "widgets"
+  , "info"
+  , "turtleShapes"
+  , "linkShapes"
+  , "resources"
+  , "org.nlogo.modelsection.modelsettings"
+  )
+
   def read(source: String): Try[Model] = {
     val parser      = new SimpleXMLParser(source)
     val elements    = parser.parse()
     val root        = elements.head
-    ModelXMLLoader.loadBasics(root, defaultInfo)
+    val extras      = root.children.filter( (c) => !TortoiseModelLoader.supportedSections.contains(c.name) )
+    val maybeModel  = ModelXMLLoader.loadBasics(root, defaultInfo)
+    // We cannot properly parse the optional sections, some because they're desktop only and some because we don't know
+    // what they are, so we just store the XML data to be written back in later on. -Jeremy B July 2025
+    maybeModel.map( (model) => model.withOptionalSection[Seq[XMLElement]]("tortoiseExtrasHolder", Some(extras), Seq()) )
   }
 
   def write(model: Model): String = {
-    val writer = new SimpleXmlWriter()
-    ModelXMLLoader.writeBasics(writer, model, (_, _) => {})
+    val writer  = new SimpleXmlWriter()
+    val extras  = model.optionalSectionValue[Seq[XMLElement]]("tortoiseExtrasHolder").getOrElse(Seq())
+    val keepers = model.optionalSections.filter( (s) => s.key != "tortoiseExtrasHolder" )
+    ModelXMLLoader.writeBasics(writer, model.copy(optionalSections = keepers), (w, _) => {
+      extras.foreach( (extra) => w.element(extra) )
+    })
     writer.toString
   }
 
