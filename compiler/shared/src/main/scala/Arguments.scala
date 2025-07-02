@@ -12,7 +12,7 @@ import org.nlogo.core.{
   Syntax
 }
 
-import org.nlogo.tortoise.compiler.utils.CompilerUtils
+import org.nlogo.tortoise.compiler.utils.CompilerErrors
 
 object Arguments {
   // The magic number 21 here is for `Syntax.SymbolType` the largest mask value at the moment -Jeremy B February 2021
@@ -98,7 +98,7 @@ case class Arguments(handlers: Handlers, a: Application, sourceInfo: SourceInfor
       case b: ReporterBlock => handlers.reporter(b)
       case c: CommandBlock  => handlers.commands(c)
       case _ =>
-        CompilerUtils.failCompilation("Unexpected expression in argument list.", a.start, a.end, a.filename)
+        CompilerErrors.failCompilation("Unexpected expression in argument list.", a.start, a.end, a.filename)
     }
 
   def all: Seq[String] =

@@ -17,7 +17,7 @@ import org.nlogo.core.{
 }
 import org.nlogo.core.prim.{ _commandlambda, _reporterlambda, Lambda }
 
-import org.nlogo.tortoise.compiler.utils.CompilerUtils
+import org.nlogo.tortoise.compiler.utils.CompilerErrors
 
 trait Handlers extends EveryIDProvider {
 
@@ -37,7 +37,7 @@ trait Handlers extends EveryIDProvider {
       case _: _reporterlambda => ("runresult", s"return ${reporter(node, useCompileArgs)};")
       case _: _commandlambda  => ("run",       commands(node, useCompileArgs))
       case _ =>
-        CompilerUtils.failCompilation(s"Unknown lambda type (not reporter or command): ${node.toString}", node.start, node.end, node.filename)
+        CompilerErrors.failCompilation(s"Unknown lambda type (not reporter or command): ${node.toString}", node.start, node.end, node.filename)
     }
     val fullBody = if (compileTimeArgs.length == 0) {
       body
@@ -70,7 +70,7 @@ trait Handlers extends EveryIDProvider {
           generatedJS
 
       case _ =>
-        CompilerUtils.failCompilation(s"Unknown command node: ${node.toString}", node.start, node.end, node.filename)
+        CompilerErrors.failCompilation(s"Unknown command node: ${node.toString}", node.start, node.end, node.filename)
 
       }
     }
@@ -86,7 +86,7 @@ trait Handlers extends EveryIDProvider {
           prims.reporter(app, useCompileArgs)(using compilerFlags, context, procContext)
 
       case _ =>
-        CompilerUtils.failCompilation(s"Unknown reporter node: ${node.toString}", node.start, node.end, node.filename)
+        CompilerErrors.failCompilation(s"Unknown reporter node: ${node.toString}", node.start, node.end, node.filename)
 
       }
     }

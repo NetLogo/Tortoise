@@ -21,7 +21,7 @@ import org.nlogo.core.{
 }
 import org.nlogo.core.prim.Lambda
 
-import org.nlogo.tortoise.compiler.utils.CompilerUtils.failCompilation
+import org.nlogo.tortoise.compiler.utils.CompilerErrors.failCompilation
 
 // The Prim traits are split apart as follows
 //                  JsOps

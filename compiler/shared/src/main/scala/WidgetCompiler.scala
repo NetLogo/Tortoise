@@ -14,7 +14,7 @@ import
   org.nlogo.core.{ Button, Monitor, Pen, Plot, Slider, Widget }
 
 import
-  org.nlogo.tortoise.compiler.utils.CompilerUtils
+  org.nlogo.tortoise.compiler.utils.CompilerErrors
 
 import
   scalaz.{ Apply, Scalaz, Success, ValidationNel },
@@ -65,7 +65,7 @@ class WidgetCompiler(
     if (invalidPlots.nonEmpty) {
       val message =
         s"Having multiple plots with same display name is not supported. Duplicate names detected: ${invalidPlots.keys.mkString(", ")}"
-      CompilerUtils.failCompilation(message)
+      CompilerErrors.failCompilation(message)
     }
   }
 

@@ -8,7 +8,7 @@ import
 import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsNull, JsObject, JsString }
 
-import org.nlogo.tortoise.compiler.utils.CompilerUtils
+import org.nlogo.tortoise.compiler.utils.CompilerErrors
 
 object JsonLibrary {
 
@@ -51,7 +51,7 @@ object JsonLibrary {
         JsObject(fields(mappings.toSeq*))
 
       case _ =>
-        CompilerUtils.failCompilation(s"Unknown native value type encountered: ${nativeValue.toString}")
+        CompilerErrors.failCompilation(s"Unknown native value type encountered: ${nativeValue.toString}")
     }
   // scalastyle:on cyclomatic.complexity
 

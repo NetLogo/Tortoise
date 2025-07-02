@@ -44,7 +44,7 @@ import org.nlogo.core.Syntax.{
   VoidType
 }
 
-import org.nlogo.tortoise.compiler.utils.CompilerUtils.failCompilation
+import org.nlogo.tortoise.compiler.utils.CompilerErrors.failCompilation
 
 case class ExtensionPrim(primitive: Primitive, name: String)
 

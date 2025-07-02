@@ -4,7 +4,7 @@ package org.nlogo.tortoise.compiler.utils
 
 import org.nlogo.core.{ CompilerException, Token }
 
-object CompilerUtils {
+object CompilerErrors {
   def failCompilation(msg: String): Nothing =
     failCompilation(msg, Token.Eof.start, Token.Eof.end, Token.Eof.filename)
 

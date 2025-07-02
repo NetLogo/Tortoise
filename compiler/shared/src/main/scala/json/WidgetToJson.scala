@@ -20,7 +20,7 @@ import
   TortoiseJson.{ JsField, JsObject, JsString }
 
 import
-  org.nlogo.tortoise.compiler.utils.CompilerUtils
+  org.nlogo.tortoise.compiler.utils.CompilerErrors
 
 object WidgetToJson {
   implicit object readWidgetJson extends JsonReader[TortoiseJson, Widget] {
@@ -61,7 +61,7 @@ object WidgetToJson {
           case s: Switch   => SwitchWriter(s)
           case t: TextBox  => TextBoxWriter(t)
           case v: View     => ViewWriter(v)
-          case _           => CompilerUtils.failCompilation(s"Unknown widget type encountered: ${w.toString}")
+          case _           => CompilerErrors.failCompilation(s"Unknown widget type encountered: ${w.toString}")
         }).asInstanceOf[JsObject]
     }
     // scalastyle:on cyclomatic.complexity
