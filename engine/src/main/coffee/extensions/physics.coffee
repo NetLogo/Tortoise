@@ -934,6 +934,7 @@ physicsExtension = {
         physics = new LoudPhysics(workspace)
         {
             name: extensionName,
+            clearAll: physics.clearAll.bind(physics),
             prims: {
                 "SET-PHYSICAL": physics.setPhysical.bind(physics),
                 "SET-GRAVITY": physics.setGravity.bind(physics),
