@@ -8,7 +8,7 @@ Patch  = require('../engine/core/patch')
 PatchSet = require('../engine/core/patchset')
 
 Planck = require('planck')
-const Vec2 = Vec2
+Vec2 = Planck.Vec2
 
 extensionName = "phys"
 
@@ -34,6 +34,9 @@ importPhysicsData = (data) ->
     # a specific format and return a new Physics object.
     new Physics(undefined)  # Assuming the constructor can handle undefined
 
+assert = (f, message) ->
+    if not f
+        throw exceptions.extension(message)
 
 whatAmI = (agent) ->
     if agent instanceof Turtle
@@ -45,10 +48,31 @@ whatAmI = (agent) ->
     else
         throw exceptions.extension("Unknown agent type")
 
-headingToRadians = (heading) ->
-    return Math.radians(90 - heading)
+class MathUtils
+    @radians: (degrees) ->
+        return degrees * Math.PI / 180.0
 
-class TurtleBodyMonad:
+    @degrees: (radians) ->
+        return radians * 180.0 / Math.PI
+
+class DefaultMap extends Map
+    constructor: (@defaultValue = undefined) ->
+        super()
+
+    get: (key) ->
+        if super.has(key)
+            return super.get(key)
+        else
+            return @defaultValue
+
+    set: (key, value) ->
+        super.set(key, value)
+        return this
+
+headingToRadians = (heading) ->
+    return MathUtils.radians(90 - heading)
+
+class TurtleBodyMonad
     @pipe: (physics, myself, func) ->
         if whatAmI(myself) is "turtle"
             body = physics.turtlesToBodies.get(myself)
@@ -60,9 +84,12 @@ class TurtleBodyMonad:
             throw exceptions.extension("Cannot call pipe on non-turtle agent")
 
 class MapUtils
-    @swap(map) ->
+    @swap: (map) ->
+        if not (map instanceof Map)
+            throw exceptions.extension("Input is not a Map")
+
         swapped = new Map()
-        for [key, value] of map.entries()
+        for key, value of map.entries()
             if swapped.has(value)
                 swapped.get(value).push(key)
             else
@@ -73,17 +100,17 @@ class Dyn4jPolyfill
     constructor: (@world) ->
         @_accumulatedTime = 0
 
-    update: (elapsedTime, stepElapsedTime = 1.0 / 60.0, maxSteps = 5) ->
+    update: (elapsedTime, stepElapsedTime = 1.0 / 60.0, maxSteps = 5, options) ->
         @_accumulatedTime ?= 0
         @_accumulatedTime += elapsedTime
 
         stepsPerformed = 0
         while @_accumulatedTime >= stepElapsedTime and stepsPerformed < maxSteps
-            @world.step(stepElapsedTime)
+            @world.step(stepElapsedTime, options.velocityIterations, options.positionIterations)
             @_accumulatedTime -= stepElapsedTime
             stepsPerformed += 1
 
-       stepsPerformed
+        return stepsPerformed
 
     updateVectorMagnitude: (vector, magnitude) ->
         if vector.length() > 0
@@ -102,50 +129,49 @@ class Physics
         })
 
     constructor: (workspace) ->
-        @workspace = workspace                        # Workspace
-        @world = Physics.createPlanckWorld()          # Planck.World
-        @dyn4j     = new Dyn4jPolyfill(@world)        # Dyn4jPolyfill
+        @workspace = workspace                              # Workspace
+        @world = Physics.createPlanckWorld()                # Planck.World
+        @dyn4j     = new Dyn4jPolyfill(@world)              # Dyn4jPolyfill
 
-        @turtleChanges = 10                           # Double
-        @collisions = 0                               # Double
-        @patchesCollisionList = new Map()             # Map[Turtle, List[Patch]]
-        @turtlesCollisionList = new Map()             # Map[Turtle, List[Turtle]]
-        @turtlesCollisionListPatches = new Map()      # Map[Patch, List[Turtle]]
-        @turtlesToBodies = new Map()                  # Map[Turtle, Body]
-        @patchesToBodies = new Map()                  # Map[Patch, Body]
-        @bodiesToTurtles = new Map()                  # Map[Body, Turtle]
-        @bodiesToPatches = new Map()                  # Map[Body, Patch]
-        @turtlesLastE = new Map()                     # Map[Turtle, Vector2]
-        @turtlesLastV = new Map()                     # Map[Turtle, Vector2]
-        @collisionSetList = []                        # List[Set[Body]]
-        @cTime = 0                                    # Long
-        @floor = -16.0                                # Double
-        @lastGrav = new Vec2(0.0, 0.0)             # Vector2
-        @newE = 0.0                                   # Double
-        @newEa = 0.0                                  # Double
-        @outOfOrder = 0                               # Long
-        @eDiffTolerance = 0.00000000000001            # Double
-        @numCorrections = 0                           # Long
-        @numUncorrectable = 0                         # Long
-        @numEnergyDiscrepancies = 0                   # Long
-        @totalEnergyDiscrepancy = 0                   # Double
-        @doConservation = true                        # Boolean
-        @doCollisionDetection = true                  # Boolean
+        @turtleChanges = 10                                 # Double
+        @collisions = 0                                     # Double
+        @patchesCollisionList = new Map()                   # Map[Turtle, List[Patch]]
+        @turtlesCollisionList = new Map()                   # Map[Turtle, List[Turtle]]
+        @turtlesCollisionListPatches = new Map()            # Map[Patch, List[Turtle]]
+        @turtlesToBodies = new Map()                        # Map[Turtle, Body]
+        @patchesToBodies = new Map()                        # Map[Patch, Body]
+        @bodiesToTurtles = new Map()                        # Map[Body, Turtle]
+        @bodiesToPatches = new Map()                        # Map[Body, Patch]
+        @turtlesLastE = new DefaultMap(new Vec2(0.0, 0.0))  # Map[Turtle, Vector2]
+        @turtlesLastV = new DefaultMap(new Vec2(0.0, 0.0))  # Map[Turtle, Vector2]
+        @collisionSetList = []                              # List[Set[Body]]
+        @cTime = 0                                          # Long
+        @floor = -16.0                                      # Double
+        @lastGrav = new Vec2(0.0, 0.0)                      # Vector2
+        @newE = 0.0                                         # Double
+        @newEa = 0.0                                        # Double
+        @outOfOrder = 0                                     # Long
+        @eDiffTolerance = 0.00000000000001                  # Double
+        @numCorrections = 0                                 # Long
+        @numUncorrectable = 0                               # Long
+        @numEnergyDiscrepancies = 0                         # Long
+        @totalEnergyDiscrepancy = 0                         # Double
+        @doConservation = true                              # Boolean
+        @doCollisionDetection = true                        # Boolean
 
-        # Settings
-        restitutionVelocity = 0.0
-        velocityIterations = 1
-        positionIterations = 1
-        continuousPhysics = true
+        # Settings (not impl.)
+        @restitutionVelocity = 0.0
+        @velocityIterations = 1
+        @positionIterations = 1
+        @continuousPhysics = true
 
-    setGravity: (vector) ->
-        @world.gravity.x = vector.x
-        @world.gravity.y = vector.y
+        # Clear the world
+        @clearAll()
 
     clearAll: () ->
         @world = Physics.createPlanckWorld()
         @dyn4j = new Dyn4jPolyfill(@world)
-        @setGravity(new Vec2(0.0, 0.0))
+        @world.setGravity(new Vec2(0.0, 0.0))
         @turtlesToBodies.clear()
         @patchesToBodies.clear()
         @bodiesToTurtles.clear()
@@ -172,19 +198,20 @@ class Physics
                     body = @world.createBody({
                         type: 'dynamic', # MassType.NORMAL in dyn4j
                         position: new Vec2(myself.pxcor, myself.pycor),
-                        angle: headingToRadians(myself.heading),
+                        angle: headingToRadians(myself._heading),
                         linearDamping: 0.0,
                         angularDamping: 0.0,
                         allowSleep: false,
                         awake: true,
                     })
-                    shape = new Planck.Circle(new Vec2(myself.pxcor, myself.pycor), myself.size / 2)
+                    shape = new Planck.Circle(myself._size / 2)
                     fixture = body.createFixture({
                         shape: shape,
                         density: 1.0,      # Not in Java impl.
                         friction: 0.0,
                         restitution: 1.0
                     })
+                    body.setLinearVelocity(new Vec2(myself.dx(), myself.dy()))
 
                     @turtlesToBodies.set(myself, body)
                 else
@@ -197,10 +224,11 @@ class Physics
                     body = @world.createBody({
                         type: 'static', # MassType.STATIC in dyn4j
                         position: new Vec2(myself.pxcor, myself.pycor),
+                        angle: 0,
                         awake: true
                     })
-                    fixture = @world.fixture.create({
-                        shape: new Planck.Box(1.0, 1.0), # Geometry.createSquare(1) in dyn4j
+                    fixture = body.createFixture({
+                        shape: new Planck.Box(0.5, 0.5), # Geometry.createSquare(1) in dyn4j
                         friction: 0.0,
                         restitution: 1.0
                     })
@@ -214,18 +242,19 @@ class Physics
                 throw exceptions.extension("Unknown agent type for self: #{myself}")
 
     update: (elapsedTime) ->
+        console.log(@)
         # Update the physics world based to match the current
         # state of the NetLogo world.
-        @turtlesToBodies.entries().forEach(([turtle, body]) ->
+        @turtlesToBodies.entries().forEach(([turtle, body]) =>
             if turtle.id < 0
                 @world.destroyBody(body)
                 @turtlesToBodies.delete(turtle)
             else
-                worldCenter = body.getWorldCenter()
-                if turtle.xcor != worldCenter.x or turtle.ycor != worldCenter.y
+                bodyPosition = body.getPosition()
+                if turtle.xcor != bodyPosition.x or turtle.ycor != bodyPosition.y
                     @turtleChanges += 1
                     body.setPosition(new Vec2(turtle.xcor, turtle.ycor))
-                radians = headingToRadians(turtle.heading)
+                radians = headingToRadians(turtle._heading)
                 if radians != body.getAngle()
                     @turtleChanges += 1
                     body.setAngle(radians)
@@ -245,14 +274,16 @@ class Physics
             # Do we also need begin/end-contact events?
             @world.on('pre-solve', @_onPreSolve)
             @world.on('post-solve', @_onPostSolve)
-        @dyn4j.update(elapsedTime, 1.0 / 60.0, 1)
+        # @world.step(1/60.0, @velocityIterations, @positionIterations)
+        @dyn4j.update(elapsedTime, 1.0 / 60.0, 1, @)
+        @world.clearForces()
         if @doCollisionDetection
             @world.off('pre-solve', @_onPreSolve)
             @world.off('post-solve', @_onPostSolve)
 
         # Handle energy conservation
         if Math.abs(@totalEnergyDiscrepancy) > @eDiffTolerance
-            turtlesToBodies.entries.forEach(([turtle, body]) ->
+            @turtlesToBodies.entries().forEach(([turtle, body]) =>
                 if Math.abs(@totalEnergyDiscrepancy) > @eDiffTolerance
                     ke = 0.5 * body.getMass() * body.getLinearVelocity().lengthSquared()
                     eDiff = 0.0
@@ -271,15 +302,16 @@ class Physics
 
         # Update NetLogo turtles' positions and headings
         # based on the physics bodies' positions and angles
-        turtlesToBodies.entries.forEach(([turtle, body]) ->
-            if turtle.xcor != body.getWorldCenter().x or turtle.ycor != body.getWorldCenter().y
-                @turtle.xcor = body.getWorldCenter().x
-                @turtle.ycor = body.getWorldCenter().y
+        @turtlesToBodies.entries().forEach(([turtle, body]) =>
+            bodyPosition = body.getPosition()
+            if turtle.xcor != bodyPosition.x or turtle.ycor != bodyPosition.y
+                turtle.setXY(bodyPosition.x, bodyPosition.y)
             #endif
 
-            degrees = 90 - Math.degrees(body.getAngle())
-            if turtle.heading != degrees
-                @turtle.heading = degrees
+            degrees = 90 - MathUtils.degrees(body.getAngle())
+            if turtle._heading != degrees
+                turtle.setVariable("heading", degrees)
+                turtle._heading = degrees
             #endif
         ) #end forEach
 
@@ -290,8 +322,7 @@ class Physics
         @doCollisionDetection = doCollisionDetection
 
     setGravity: (x, y) ->
-        @world.gravity.x = x
-        @world.gravity.y = y
+        @world.setGravity(new Vec2(x, y))
 
     forward: (amount) ->
         myself = @workspace.selfManager.self()
@@ -326,7 +357,7 @@ class Physics
 
     getTotalKE: () ->
         totalKE = 0.0
-        @turtlesToBodies.entries().forEach(([turtle, body]) ->
+        @turtlesToBodies.entries().forEach(([turtle, body]) =>
             if body?
                 totalKE += 0.5 * body.getMass() * Math.pow(body.getLinearVelocity().lengthSquared(), 2.0) # 1/2 * m * v^2
         )
@@ -334,7 +365,7 @@ class Physics
 
     getTotalE: () ->
         totalE = 0.0
-        @turtlesToBodies.entries().forEach(([turtle, body]) ->
+        @turtlesToBodies.entries().forEach(([turtle, body]) =>
             if body?
                 ke = 0.5 * body.getMass() * body.getLinearVelocity().lengthSquared() # 1/2 * m * v^2
                 pe = (@floor - body.getPosition().y) * @world.getGravity().y * body.getMass() # m * g * h
@@ -344,7 +375,7 @@ class Physics
 
     getTotalLastE: () ->
         totalLastE = 0.0
-        @turtlesLastE.entries().forEach(([turtle, vec]) ->
+        @turtlesLastE.entries().forEach(([turtle, vec]) =>
             if vec?
                 totalLastE += vec.x + vec.y
         )
@@ -379,44 +410,44 @@ class Physics
 
     getVelocity: () ->
         myself = @workspace.selfManager.self()
-        return TurtleBodyMonad.pipe(@, myself, (body) ->
+        return TurtleBodyMonad.pipe(@, myself, (body) =>
             return body.getLinearVelocity()
         )
 
     getMass: () ->
         myself = @workspace.selfManager.self()
-        return TurtleBodyMonad.pipe(@, myself, (body) ->
+        return TurtleBodyMonad.pipe(@, myself, (body) =>
             return body.getMass()
         )
 
     getInertia: () ->
         myself = @workspace.selfManager.self()
-        return TurtleBodyMonad.pipe(@, myself, (body) ->
+        return TurtleBodyMonad.pipe(@, myself, (body) =>
             return body.getInertia()
         )
 
     getKineticEnergy: () ->
         myself = @workspace.selfManager.self()
         cls    = @
-        return TurtleBodyMonad.pipe(@, myself, (body) ->
+        return TurtleBodyMonad.pipe(@, myself, (body) =>
             return cls._getKineticEnergy(body)
         )
 
     getVelocityX: () ->
         myself = @workspace.selfManager.self()
-        return TurtleBodyMonad.pipe(@, myself, (body) ->
+        return TurtleBodyMonad.pipe(@, myself, (body) =>
             return body.getLinearVelocity().x
         )
 
     getVelocityY: () ->
         myself = @workspace.selfManager.self()
-        return TurtleBodyMonad.pipe(@, myself, (body) ->
+        return TurtleBodyMonad.pipe(@, myself, (body) =>
            return body.getLinearVelocity().y
         )
 
     setMass: (mass) ->
         myself = @workspace.selfManager.self()
-        TurtleBodyMonad.pipe(@, myself, (body) ->
+        TurtleBodyMonad.pipe(@, myself, (body) =>
             body.setMassData({
                 center: body.getLocalCenter(),
                 I: body.getInertia(),
@@ -426,14 +457,14 @@ class Physics
 
     setVelocity: (vx, vy) ->
         myself = @workspace.selfManager.self()
-        TurtleBodyMonad.pipe(@, myself, (body) ->
+        TurtleBodyMonad.pipe(@, myself, (body) =>
             newVelocity = new Vec2(vx, vy)
             body.setLinearVelocity(newVelocity)
         )
 
     setVelocityMagnitude: (magnitude) ->
         myself = @workspace.selfManager.self()
-        TurtleBodyMonad.pipe(@, myself, (body) ->
+        TurtleBodyMonad.pipe(@, myself, (body) =>
             currentVelocity = body.getLinearVelocity()
             newVelocity = @dyn4j.updateVectorMagnitude(currentVelocity, magnitude)
             body.setLinearVelocity(newVelocity)
@@ -447,7 +478,7 @@ class Physics
 
     stopAll: () ->
         # Stop all turtles by setting their velocities to zero
-        @turtlesToBodies.forEach((body, turtle) ->
+        @turtlesToBodies.forEach((body, turtle) =>
             if body?
                 body.setLinearVelocity(new Vec2(0.0, 0.0))
         )
@@ -473,7 +504,7 @@ class Physics
             return 0.0
 
     # ContactHandler() in Java impl.
-    _onPreSolve:  (contact) ->
+    _onPreSolve:  (contact) =>
         fixtureA = contact.getFixtureA()
         fixtureB = contact.getFixtureB()
 
@@ -506,7 +537,7 @@ class Physics
             # Patch, Patch or other combinations
             return  # No turtles involved, so no need to track energy
 
-    _onPostSolve: (contact) ->
+    _onPostSolve: (contact) =>
         fixtureA = contact.getFixtureA()
         fixtureB = contact.getFixtureB()
 
@@ -555,8 +586,8 @@ class Physics
                 @totalEnergyDiscrepancy += newEf - oldE
                 @numEnergyDiscrepancies += 1
 
-        else if (@bodiesToTurtles.has(bodyA) and @bodiesToPatches.has(bodyB))
-             or (@bodiesToPatches.has(bodyA) and @bodiesToTurtles.has(bodyB))  # Turtle, Patch
+        else if (@bodiesToTurtles.has(bodyA) and @bodiesToPatches.has(bodyB)) \
+                or (@bodiesToPatches.has(bodyA) and @bodiesToTurtles.has(bodyB))  # Turtle, Patch
             turtleBody = if @bodiesToTurtles.has(bodyA) then bodyA else bodyB
             patchBody  = if @bodiesToPatches.has(bodyA) then bodyA else bodyB
 
@@ -632,11 +663,30 @@ class Physics
 
         @collisions += 1
 
+LoudPhysics = new Proxy Physics,
+  construct: (target, args, newTarget) ->
+    # 1) create the real Physics instance
+    instance = Reflect.construct target, args, newTarget
+    # 2) wrap it in a proxy that intercepts all method calls
+    new Proxy instance,
+      get: (obj, prop, receiver) ->
+        val = Reflect.get obj, prop, receiver
+        # only wrap functions
+        if typeof val is 'function'
+          return (args...) ->
+            try
+              val.apply obj, args
+            catch e
+              console.error "Error in physics extension method: #{prop}", e
+              throw exceptions.extension "Error in physics extension method: #{prop}"
+        # non‐functions pass through
+        return val
+
 physicsExtension = {
     porter: new SingleObjectExtensionPorter(extensionName, isPhysics, toBase64, exportPhysicsData, toBase64, fromBase64, importPhysicsData),
 
     init: (workspace) ->
-        physics = new Physics(workspace)
+        physics = new LoudPhysics(workspace)
         {
             name: extensionName,
             prims: {
