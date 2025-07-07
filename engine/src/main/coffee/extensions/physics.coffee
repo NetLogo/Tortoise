@@ -4,6 +4,7 @@ SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensio
 { exceptionFactory: exceptions } = require('util/exception')
 
 Turtle = require('../engine/core/turtle')
+TurtleSet = require('../engine/core/turtleset')
 Patch  = require('../engine/core/patch')
 PatchSet = require('../engine/core/patchset')
 
@@ -11,6 +12,7 @@ Planck = require('planck')
 Vec2 = Planck.Vec2
 
 extensionName = "phys"
+version       = "0.1.0"
 
 isPhysics = (x) ->
     x instanceof Physics
@@ -34,10 +36,13 @@ importPhysicsData = (data) ->
     # a specific format and return a new Physics object.
     new Physics(undefined)  # Assuming the constructor can handle undefined
 
+# Testing utility
 assert = (f, message) ->
     if not f
         throw exceptions.extension(message)
 
+# Returns the type of the agent as a string
+# if the agent is a Turtle, Patch, or PatchSet.
 whatAmI = (agent) ->
     if agent instanceof Turtle
         return "turtle"
@@ -48,6 +53,8 @@ whatAmI = (agent) ->
     else
         throw exceptions.extension("Unknown agent type")
 
+# Math utility functions
+# Mainly adds radians and degrees conversion
 class MathUtils
     @radians: (degrees) ->
         return degrees * Math.PI / 180.0
@@ -55,6 +62,9 @@ class MathUtils
     @degrees: (radians) ->
         return radians * 180.0 / Math.PI
 
+# DefaultMap is a Map that returns a default value
+# when a key is not found. DefaultMap.has() returns true
+# iff the key is explicitly assigned a value in the map.
 class DefaultMap extends Map
     constructor: (@defaultValue = undefined) ->
         super()
@@ -69,21 +79,27 @@ class DefaultMap extends Map
         super.set(key, value)
         return this
 
+# Converts a heading in degrees to radians
+# by adjusting the heading to match the
+# coordinate system used by Planck.js.
 headingToRadians = (heading) ->
     return MathUtils.radians(90 - heading)
 
-class TurtleBodyMonad
-    @pipe: (physics, myself, func) ->
-        if whatAmI(myself) is "turtle"
-            body = physics.turtlesToBodies.get(myself)
-            if body?
-                return func(body)
-            else
-                throw exceptions.extension("Turtle is not physical")
+# This function pipes the turtle body to the provided function.
+# T => Maybe Turtle[Maybe Body] -> (Body -> T) -> T
+pipeTurtleBody = (physics, myself, func) ->
+    if whatAmI(myself) is "turtle"
+        body = physics.turtlesToBodies.get(myself)
+        if body?
+            return func(body)
         else
-            throw exceptions.extension("Cannot call pipe on non-turtle agent")
+            throw exceptions.extension("Turtle is not physical")
+    else
+        throw exceptions.extension("Cannot call pipe on non-turtle agent")
 
+# Utility class for Map operations
 class MapUtils
+    # Swaps keys and values in a Map.
     @swap: (map) ->
         if not (map instanceof Map)
             throw exceptions.extension("Input is not a Map")
@@ -96,10 +112,15 @@ class MapUtils
                 swapped.set(value, [key])
         return swapped
 
+# The Java implementation of the `phys` extension uses
+# dyn4j for physics simulation. This class provides a polyfill
+# for missing features in Planck.js that dyn4j provides.
 class Dyn4jPolyfill
     constructor: (@world) ->
         @_accumulatedTime = 0
 
+    # Accumulates elapsed time and steps the world based on
+    # on a constant step time.
     update: (elapsedTime, stepElapsedTime = 1.0 / 60.0, maxSteps = 5, options) ->
         @_accumulatedTime ?= 0
         @_accumulatedTime += elapsedTime
@@ -112,6 +133,7 @@ class Dyn4jPolyfill
 
         return stepsPerformed
 
+    # returns the normalized vector scaled to the given magnitude.
     updateVectorMagnitude: (vector, magnitude) ->
         if vector.length() > 0
             vector.normalize().scale(magnitude)
@@ -119,7 +141,7 @@ class Dyn4jPolyfill
             new Vec2(0.0, 0.0)
 
 class Physics
-    @extensionName = extensionName
+    @extensionName = extensionName        # String
     @createPlanckWorld: ->
         new Planck.World({
             gravity: new Vec2(0.0, 0.0),
@@ -161,9 +183,10 @@ class Physics
 
         # Settings (not impl.)
         @restitutionVelocity = 0.0
+
+        # Settings (impl.)
         @velocityIterations = 1
         @positionIterations = 1
-        @continuousPhysics = true
 
         # Clear the world
         @clearAll()
@@ -211,7 +234,7 @@ class Physics
                         friction: 0.0,
                         restitution: 1.0
                     })
-                    body.setLinearVelocity(new Vec2(myself.dx(), myself.dy()))
+                    body.setLinearVelocity(new Vec2(0, 0)) # Reset velocity
 
                     @turtlesToBodies.set(myself, body)
                 else
@@ -242,7 +265,6 @@ class Physics
                 throw exceptions.extension("Unknown agent type for self: #{myself}")
 
     update: (elapsedTime) ->
-        console.log(@)
         # Update the physics world based to match the current
         # state of the NetLogo world.
         @turtlesToBodies.entries().forEach(([turtle, body]) =>
@@ -274,7 +296,6 @@ class Physics
             # Do we also need begin/end-contact events?
             @world.on('pre-solve', @_onPreSolve)
             @world.on('post-solve', @_onPostSolve)
-        # @world.step(1/60.0, @velocityIterations, @positionIterations)
         @dyn4j.update(elapsedTime, 1.0 / 60.0, 1, @)
         @world.clearForces()
         if @doCollisionDetection
@@ -399,55 +420,84 @@ class Physics
     getMLC: () ->
         return Planck.Settings.maximumLinearCorrection
 
-    turtleCollisions: () ->
-        throw "Not implemented yet. Need to figure out how to build an AgentSet from a Map."
+    _toAgentSetString: (set) ->
+        # [(breed-singular who), (breed-singular who), ...]
+        return "[" + set.map((el) -> "(" + el.getBreedNameSingular() + " " + el.who + ")").join(", ") + "]"
+
+    turtleCollisions: () -> # TurtCols
+        myself = @workspace.selfManager.self()
+        switch whatAmI(myself)
+            when "turtle"
+                if @turtlesCollisionList.has(myself)
+                    agents = @turtlesCollisionList.get(myself) or []
+                    return new TurtleSet(agents, @workspace, @_toAgentSetString(agents))
+                else
+                    return new TurtleSet([], @workspace, "[]")
+            when "patch"
+                agents = @turtlesCollisionListPatches.get(myself) or []
+                return new TurtleSet(agents, @workspace, @_toAgentSetString(agents))
+            else
+                return new TurtleSet([], @workspace, "[]")
 
     patchCollisions: () ->
-        throw "Not implemented yet. Need to figure out how to build an AgentSet from a Map."
+        myself = @workspace.selfManager.self()
+        switch whatAmI(myself)
+            when "turtle"
+                if @patchesCollisionList.has(myself)
+                    agents = @patchesCollisionList.get(myself) or []
+                    return new PatchSet(agents, @workspace, @_toAgentSetString(agents))
+                else
+                    return new PatchSet([], @workspace, "[]")
+            else
+                return new PatchSet([], @workspace, "[]")
 
     centerOfMass: () ->
-        throw "Not implemented yet. Need to figure out how to build a LogoList."
+        myself = @workspace.selfManager.self()
+        return pipeTurtleBody(@, myself, (body) =>
+            position = body.getPosition()
+            return [position.x, position.y]
+        )
 
     getVelocity: () ->
         myself = @workspace.selfManager.self()
-        return TurtleBodyMonad.pipe(@, myself, (body) =>
+        return pipeTurtleBody(@, myself, (body) =>
             return body.getLinearVelocity()
         )
 
     getMass: () ->
         myself = @workspace.selfManager.self()
-        return TurtleBodyMonad.pipe(@, myself, (body) =>
+        return pipeTurtleBody(@, myself, (body) =>
             return body.getMass()
         )
 
     getInertia: () ->
         myself = @workspace.selfManager.self()
-        return TurtleBodyMonad.pipe(@, myself, (body) =>
+        return pipeTurtleBody(@, myself, (body) =>
             return body.getInertia()
         )
 
     getKineticEnergy: () ->
         myself = @workspace.selfManager.self()
         cls    = @
-        return TurtleBodyMonad.pipe(@, myself, (body) =>
+        return pipeTurtleBody(@, myself, (body) =>
             return cls._getKineticEnergy(body)
         )
 
     getVelocityX: () ->
         myself = @workspace.selfManager.self()
-        return TurtleBodyMonad.pipe(@, myself, (body) =>
+        return pipeTurtleBody(@, myself, (body) =>
             return body.getLinearVelocity().x
         )
 
     getVelocityY: () ->
         myself = @workspace.selfManager.self()
-        return TurtleBodyMonad.pipe(@, myself, (body) =>
+        return pipeTurtleBody(@, myself, (body) =>
            return body.getLinearVelocity().y
         )
 
     setMass: (mass) ->
         myself = @workspace.selfManager.self()
-        TurtleBodyMonad.pipe(@, myself, (body) =>
+        pipeTurtleBody(@, myself, (body) =>
             body.setMassData({
                 center: body.getLocalCenter(),
                 I: body.getInertia(),
@@ -457,14 +507,14 @@ class Physics
 
     setVelocity: (vx, vy) ->
         myself = @workspace.selfManager.self()
-        TurtleBodyMonad.pipe(@, myself, (body) =>
+        pipeTurtleBody(@, myself, (body) =>
             newVelocity = new Vec2(vx, vy)
             body.setLinearVelocity(newVelocity)
         )
 
     setVelocityMagnitude: (magnitude) ->
         myself = @workspace.selfManager.self()
-        TurtleBodyMonad.pipe(@, myself, (body) =>
+        pipeTurtleBody(@, myself, (body) =>
             currentVelocity = body.getLinearVelocity()
             newVelocity = @dyn4j.updateVectorMagnitude(currentVelocity, magnitude)
             body.setLinearVelocity(newVelocity)
@@ -682,8 +732,203 @@ LoudPhysics = new Proxy Physics,
         # non‐functions pass through
         return val
 
+class PhysicsPorter
+    constructor: (dependencies) ->
+        # Pass in external types to keep the porter self-contained
+        { @Planck, @Vec2 } = dependencies
+
+    # Converts a planck.js Body into a plain, serializable object
+    # by converting its properties and fixtures into a JSON-compatible format.
+    _serializeBody: (body) ->
+        # Prepare the fixtures
+        fixturesData = []
+        fixture = body.getFixtureList()
+        while fixture
+            shape = fixture.getShape()
+            shapeData = type: shape.getType()
+
+            switch shapeData.type
+                when 'circle'
+                    shapeData.radius = shape.getRadius()
+                when 'box'
+                    # A 1x1 patch box has half-width/height of 0.5
+                    # We can get this from the vertices for robustness
+                    shapeData.halfWidth = Math.abs(shape.m_vertices[1].x)
+                    shapeData.halfHeight = Math.abs(shape.m_vertices[2].y)
+
+            fixturesData.push({
+                density: fixture.getDensity(),
+                friction: fixture.getFriction(),
+                restitution: fixture.getRestitution(),
+                shape: shapeData
+            })
+
+            fixture = fixture.getNext() # Move to the next fixture in the list
+
+        # Other types are already plain objects
+        {
+            type: body.getType()
+            position: body.getPosition()
+            angle: body.getAngle()
+            linearVelocity: body.getLinearVelocity()
+            angularVelocity: body.getAngularVelocity()
+            linearDamping: body.getLinearDamping()
+            angularDamping: body.getAngularDamping()
+            mass: body.getMass()
+            inertia: body.getInertia()
+            fixtures: fixturesData
+        }
+
+    # Re-creates a planck.js Body from a plain object within a given world.
+    _deserializeBody: (world, bodyData) ->
+        body = world.createBody({
+            type: bodyData.type,
+            position: new @Vec2(bodyData.position.x, bodyData.position.y),
+            angle: bodyData.angle,
+            linearDamping: bodyData.linearDamping,
+            angularDamping: bodyData.angularDamping,
+            awake: true,
+            allowSleep: false
+        })
+
+        body.setLinearVelocity(new @Vec2(bodyData.linearVelocity.x, bodyData.linearVelocity.y))
+        body.setAngularVelocity(bodyData.angularVelocity)
+        body.setMassData({
+            mass: bodyData.mass,
+            center: new @Vec2(0, 0), # Assuming center of mass is at local origin
+            I: bodyData.inertia
+        })
+
+        for fixtureData in bodyData.fixtures
+            shape = null
+            switch fixtureData.shape.type
+                when 'circle'
+                    shape = new @Planck.Circle(fixtureData.shape.radius)
+                when 'box'
+                    shape = new @Planck.Box(fixtureData.shape.halfWidth, fixtureData.shape.halfHeight)
+
+            if shape
+                body.createFixture({ shape, ...fixtureData })
+
+        return body
+
+    # The main serialization function.
+    exportData: (physics) ->
+        turtlesData = []
+        physics.turtlesToBodies.forEach((body, turtle) =>
+            if turtle? and turtle.id >= 0
+                turtlesData.push({ turtleId: turtle.id, body: @_serializeBody(body) })
+        )
+
+        patchesData = []
+        physics.patchesToBodies.forEach((body, patch) =>
+            patchesData.push({ pxcor: patch.pxcor, pycor: patch.pycor, body: @_serializeBody(body) })
+        )
+
+        turtlesLastEData = []
+        physics.turtlesLastE.forEach((vec, turtle) =>
+            if turtle? and turtle.id >= 0
+                turtlesLastEData.push({ turtleId: turtle.id, vec: vec })
+        )
+
+        {
+            version: version,
+
+            # World and simulation properties
+            gravity: physics.world.getGravity(),
+            turtleChanges: physics.turtleChanges,
+            collisions: physics.collisions,
+            floor: physics.floor,
+            eDiffTolerance: physics.eDiffTolerance,
+            numCorrections: physics.numCorrections,
+            numUncorrectable: physics.numUncorrectable,
+            numEnergyDiscrepancies: physics.numEnergyDiscrepancies,
+            totalEnergyDiscrepancy: physics.totalEnergyDiscrepancy,
+            doConservation: physics.doConservation,
+            doCollisionDetection: physics.doCollisionDetection,
+            velocityIterations: physics.velocityIterations,
+            positionIterations: physics.positionIterations,
+
+            # Serialized data structures
+            turtles: turtlesData,
+            patches: patchesData,
+            turtlesLastE: turtlesLastEData
+        }
+
+    # The main deserialization function.
+    importData: (data, reify) ->
+        physics = new Physics(reify.workspace) # Create a fresh instance
+
+        # Restore simple properties
+        physics.world.setGravity(new @Vec2(data.gravity.x, data.gravity.y))
+        Object.assign(physics, {
+            turtleChanges: data.turtleChanges,
+            collisions: data.collisions,
+            floor: data.floor,
+            eDiffTolerance: data.eDiffTolerance,
+            numCorrections: data.numCorrections,
+            numUncorrectable: data.numUncorrectable,
+            numEnergyDiscrepancies: data.numEnergyDiscrepancies,
+            totalEnergyDiscrepancy: data.totalEnergyDiscrepancy,
+            doConservation: data.doConservation,
+            doCollisionDetection: data.doCollisionDetection,
+            velocityIterations: data.velocityIterations,
+            positionIterations: data.positionIterations
+        })
+
+        # Clear default maps before repopulating
+        physics.turtlesToBodies.clear()
+        physics.patchesToBodies.clear()
+
+        # Re-link turtles to their bodies
+        for turtleData in data.turtles
+            turtle = reify.workspace.turtleManager.turtle(turtleData.turtleId)
+            if turtle
+                body = @_deserializeBody(physics.world, turtleData.body)
+                physics.turtlesToBodies.set(turtle, body)
+
+        # Re-link patches to their bodies
+        for patchData in data.patches
+            patch = reify.workspace.world.getPatch(patchData.pxcor, patchData.pycor)
+            if patch
+                body = @_deserializeBody(physics.world, patchData.body)
+                physics.patchesToBodies.set(patch, body)
+
+        # Restore other agent-linked maps
+        physics.turtlesLastE.clear()
+        for item in data.turtlesLastE
+            turtle = reify.workspace.turtleManager.turtle(item.turtleId)
+            if turtle then physics.turtlesLastE.set(turtle, new @Vec2(item.vec.x, item.vec.y))
+
+        # Rebuild inverse maps for efficiency
+        physics.bodiesToTurtles = MapUtils.swap(physics.turtlesToBodies)
+        physics.bodiesToPatches = MapUtils.swap(physics.patchesToBodies)
+
+        return physics
+
+    # Wrapper for human-readable/string-based dump
+    toBase64: (physics) ->
+        data = @exportData(physics)
+        jsonString = JSON.stringify(data)
+        return btoa(unescape(encodeURIComponent(jsonString))) # Robust btoa
+
+    # Wrapper for reading from a string
+    fromBase64: (base64String, reify) ->
+        jsonString = decodeURIComponent(escape(atob(base64String))) # Robust atob
+        data = JSON.parse(jsonString)
+        return @importData(data, reify)
+
 physicsExtension = {
-    porter: new SingleObjectExtensionPorter(extensionName, isPhysics, toBase64, exportPhysicsData, toBase64, fromBase64, importPhysicsData),
+    porterInstance: new PhysicsPorter({ Planck, Vec2 }),
+    porter: new SingleObjectExtensionPorter(
+        extensionName,
+        isPhysics,
+        (obj, dump) => @porterInstance.toBase64(obj),
+        (obj, expo) => @porterInstance.exportData(obj),
+        (obj, form) => @porterInstance.toBase64(obj),
+        (str, read) => @porterInstance.fromBase64(str, read),
+        (dat, reify) => @porterInstance.importData(dat, reify)
+    ),
 
     init: (workspace) ->
         physics = new LoudPhysics(workspace)
