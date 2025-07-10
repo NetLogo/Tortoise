@@ -19,11 +19,18 @@ object TortoiseModelLoader {
   )
 
   def read(source: String): Try[Model] = {
-    val parser      = new SimpleXMLParser(source)
-    val elements    = parser.parse()
-    val root        = elements.head
-    val extras      = root.children.filter( (c) => !TortoiseModelLoader.supportedSections.contains(c.name) )
-    val maybeModel  = ModelXMLLoader.loadBasics(root, defaultInfo)
+    val parser     = new SimpleXMLParser(source)
+    val elements   = try { parser.parse() } catch {
+      case e: RuntimeException =>
+        val message = "There was an error parsing the NetLogo XML file, the file may be invalid."
+        throw new RuntimeException(message, e)
+    }
+    if (elements.isEmpty) {
+      throw new RuntimeException("There was an error parsing the NetLogo XML file, the file appears to be empty.")
+    }
+    val root       = elements.head
+    val extras     = root.children.filter( (c) => !TortoiseModelLoader.supportedSections.contains(c.name) )
+    val maybeModel = ModelXMLLoader.loadBasics(root, defaultInfo)
     // We cannot properly parse the optional sections, some because they're desktop only and some because we don't know
     // what they are, so we just store the XML data to be written back in later on. -Jeremy B July 2025
     maybeModel.map( (model) => model.withOptionalSection[Seq[XMLElement]]("tortoiseExtrasHolder", Some(extras), Seq()) )

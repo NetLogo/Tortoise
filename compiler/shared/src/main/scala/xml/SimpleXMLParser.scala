@@ -33,7 +33,7 @@ class SimpleXMLParser(text: String) {
           elements = elements :++ newElements
 
         case _ =>
-          throw new Exception("PARSING ERROR: Malformed XML file; expected a header or root element.")
+          throw new RuntimeException("PARSING ERROR: Malformed XML file; expected a header or root element.")
       }
       reader.skipWhiteSpace()
     }
@@ -64,7 +64,7 @@ class SimpleXMLParser(text: String) {
       reader.skipWhiteSpace()
       terminator = reader.matches("/>", ">")
     }
-    (terminator.getOrElse(throw new Exception("PARSING ERROR: Was not able to find a proper terminator for an element opening.")), attributes)
+    (terminator.getOrElse(throw new RuntimeException("PARSING ERROR: Was not able to find a proper terminator for an element opening.")), attributes)
   }
 
   def parseCdata(): String = {
@@ -183,8 +183,8 @@ class TextCursor(text: String) {
     (currentIndex < text.length)
   }
 
-  def generateException(msg: String): Exception = {
-    new Exception(s"PARSING ERROR: $msg")
+  def generateException(msg: String): RuntimeException = {
+    new RuntimeException(s"PARSING ERROR: $msg")
   }
 
   def munch(c: Char): Unit = {
