@@ -2,7 +2,7 @@
 
 package org.nlogo.tortoise.compiler.xml
 
-import org.nlogo.core.model.XMLElement
+import org.nlogo.core.XMLElement
 
 import scala.{ Option, None, Some }
 

@@ -63,7 +63,7 @@ module.exports =
       else
         part1    = "this code can't be run by a #{getTypeOf(self).niceName()}"
         agentStr = @_typeSetToAgentString(typeSet)
-        part2    = if agentStr.length isnt 0 then ", only #{agentStr}" else ""
+        part2    = if agentStr.length isnt 0 then ", only by #{agentStr}" else ""
         throw exceptions.runtime(part1 + part2, primName)
 
     # (TypeSet) => String

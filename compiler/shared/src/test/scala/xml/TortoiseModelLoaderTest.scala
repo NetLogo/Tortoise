@@ -4,7 +4,7 @@ package org.nlogo.tortoise.compiler.xml
 
 import org.nlogo.core.{ Model, View, WorldDimensions }
 
-import org.nlogo.core.model.XMLElement
+import org.nlogo.core.XMLElement
 
 import
   org.scalatest.funsuite.AnyFunSuite

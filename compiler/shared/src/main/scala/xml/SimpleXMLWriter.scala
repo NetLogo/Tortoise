@@ -2,7 +2,8 @@
 
 package org.nlogo.tortoise.compiler.xml
 
-import org.nlogo.core.model.{ NLogoXMLWriter, XMLElement }
+import org.nlogo.core.XMLElement
+import org.nlogo.core.model.NLogoXMLWriter
 
 class SimpleXmlWriter extends NLogoXMLWriter {
   private val builder = new StringBuilder()
