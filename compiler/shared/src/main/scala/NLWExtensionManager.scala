@@ -195,6 +195,9 @@ class NLWExtensionManager extends ExtensionManager {
   override def finishFullCompilation(): Unit = ()
 
   override def importExtension(extName: String, errors: ErrorSource): Unit = {
+    importExtension(extName, None, errors)
+  }
+  override def importExtension(extName: String, extUrl: Option[String], errors: ErrorSource): Unit = {
     val extension    = extNameToExtMap.getOrElse(extName, failCompilation(s"No such extension: ${extName}"))
     val extPrimPairs = extension.getPrims.map(prim => (extension.getName, prim))
     val shoutedPairs = extPrimPairs.map { case (extName, ExtensionPrim(prim, name)) => (s"$extName:$name".toUpperCase, prim) }
