@@ -16,4 +16,7 @@ object NLWExtensionsLoader {
   def appendURLProtocol(@unused url: String): String = {
     throw new UnsupportedOperationException("NLWExtensionsLoader is not implemented in the JVM environment.")
   }
+  def validateURL(@unused url: String): Boolean = {
+    throw new UnsupportedOperationException("NLWExtensionsLoader is not implemented in the JVM environment.")
+  }
 }

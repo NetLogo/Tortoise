@@ -204,6 +204,9 @@ class NLWExtensionManager extends ExtensionManager {
   override def importExtension(extName: String, extURL: Option[String], errors: ErrorSource): Unit = {
     val extension = extURL match {
       case Some(url) => 
+        if (!NLWExtensionsLoader.validateURL(url)) {
+          failCompilation(s"Invalid URL for extension: ${url}")
+        }
         val extObj = NLWExtensionsLoader.getPrimitivesFromURL(url)
         extObj match {
           case Some(obj) => CreateExtension.fromJSON(obj)

@@ -15,6 +15,7 @@ import play.api.libs.json.{  JsValue, Json }
 object JSNLWExtensionsLoader extends js.Object {
   def getPrimitivesFromURL(url: String): js.UndefOr[js.Object] = js.native
   def appendURLProtocol(url: String): String = js.native
+  def validateURL(url: String): Boolean = js.native
 }
 
 object NLWExtensionsLoader {
@@ -30,5 +31,9 @@ object NLWExtensionsLoader {
 
   def appendURLProtocol(url: String): String = {
     JSNLWExtensionsLoader.appendURLProtocol(url)
+  }
+
+  def validateURL(url: String): Boolean = {
+    JSNLWExtensionsLoader.validateURL(url)
   }
 }
