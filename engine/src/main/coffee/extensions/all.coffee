@@ -5,6 +5,7 @@ extensionPaths = ['array', 'bitmap', 'codap', 'csv', 'encode', 'dialog', 'export
 module.exports = {
 
   initialize: (workspace, importedExtensions...) ->
+    console.log "Initializing extensions: #{importedExtensions.join(', ')}"
     upperNames = importedExtensions.map( (name) -> name.toUpperCase() )
     extensions = {}
     extensionPaths.forEach( (path) ->
@@ -13,6 +14,15 @@ module.exports = {
       upperName = extension.name.toUpperCase()
       if upperNames.includes(upperName)
         extensions[upperName] = extension
+    )
+    importedExtensions.filter(NLWExtensionsLoader.isURL).forEach( (url) ->
+      extensionModule = NLWExtensionsLoader.getExtensionModuleFromURL(url)
+      if extensionModule?
+        extension = extensionModule.init(workspace)
+        upperName = extension.name.toUpperCase()
+        extensions[upperName] = extension
+      else
+        console.warn "Extension at URL #{url} does not have an init function."
     )
     extensions
 
@@ -25,6 +35,14 @@ module.exports = {
         upperName = extensionModule.porter.extensionName.toUpperCase()
         if upperNames.includes(upperName)
           porters.push(extensionModule.porter)
+    )
+    importedExtensions.filter(NLWExtensionsLoader.isURL).forEach( (url) -> 
+      extensionModule = NLWExtensionsLoader.getExtensionModuleFromURL(url)
+      if extensionModule? and extensionModule.porter?
+        upperName = extensionModule.porter.extensionName.toUpperCase()
+        porters.push(extensionModule.porter)
+      else
+        console.warn "Extension at URL #{url} does not have an init function."
     )
     porters
 
