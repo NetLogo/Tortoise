@@ -12,18 +12,23 @@ import play.api.libs.json.{  JsValue, Json }
 // gauranteed to be available before 
 @js.native
 @JSGlobal("NLWExtensionsLoader")
-object NLWExtensionsLoader extends js.Object {
+object JSNLWExtensionsLoader extends js.Object {
   def getPrimitivesFromURL(url: String): js.UndefOr[js.Object] = js.native
+  def appendURLProtocol(url: String): String = js.native
 }
 
-object WrappedNLWExtensionsLoader {
+object NLWExtensionsLoader {
   def getPrimitivesFromURL(url: String): Option[JsValue] = {
-    val result = NLWExtensionsLoader.getPrimitivesFromURL(url)
+    val result = JSNLWExtensionsLoader.getPrimitivesFromURL(url)
     if (result == null || result == js.undefined) {
       None
     } else {
       val json = Json.parse(js.JSON.stringify(result))
       Some(json)
     }
+  }
+
+  def appendURLProtocol(url: String): String = {
+    JSNLWExtensionsLoader.appendURLProtocol(url)
   }
 }

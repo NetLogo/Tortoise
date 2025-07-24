@@ -9,8 +9,11 @@ import scala.annotation.unused
 import play.api.libs.json.JsValue
 
 
-object WrappedNLWExtensionsLoader {
-  def getPrimitivesFromURL(url: String): Option[JsValue] = {
-    throw new UnsupportedOperationException("WrappedNLWExtensionsLoader is not implemented in the JVM environment.")
+object NLWExtensionsLoader {
+  def getPrimitivesFromURL(@unused url: String): Option[JsValue] = {
+    throw new UnsupportedOperationException("NLWExtensionsLoader is not implemented in the JVM environment.")
+  }
+  def appendURLProtocol(@unused url: String): String = {
+    throw new UnsupportedOperationException("NLWExtensionsLoader is not implemented in the JVM environment.")
   }
 }

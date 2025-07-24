@@ -204,7 +204,7 @@ class NLWExtensionManager extends ExtensionManager {
   override def importExtension(extName: String, extURL: Option[String], errors: ErrorSource): Unit = {
     val extension = extURL match {
       case Some(url) => 
-        val extObj = WrappedNLWExtensionsLoader.getPrimitivesFromURL(url)
+        val extObj = NLWExtensionsLoader.getPrimitivesFromURL(url)
         extObj match {
           case Some(obj) => CreateExtension.fromJSON(obj)
           case None      => failCompilation(s"Could not load extension from URL: ${url}")
@@ -215,7 +215,7 @@ class NLWExtensionManager extends ExtensionManager {
     val shoutedPairs = extPrimPairs.map { case (extName, ExtensionPrim(prim, name)) => (s"$extName:$name".toUpperCase, prim) }
     primNameToPrimMap ++= shoutedPairs
     importedExtensions.add(extURL match {
-      case Some(url) => "url://" + url
+      case Some(url) => NLWExtensionsLoader.appendURLProtocol(url)
       case None      => extName
     })
     ()
