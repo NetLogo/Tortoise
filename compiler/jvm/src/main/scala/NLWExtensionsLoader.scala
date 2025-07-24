@@ -8,15 +8,6 @@ import scala.annotation.unused
 
 import play.api.libs.json.JsValue
 
-object NLWExtensionsLoader {
-  def getPrimitivesFromURL(@unused url: String): JsValue = {
-    throw new UnsupportedOperationException("NLWExtensionsLoader is not implemented in the JVM environment.")
-    // In a real implementation, this would access a preloaded cache of extensions.
-    // For example, in a JavaScript environment, it might look like:
-    // val cache = js.Dynamic.global.extensionCache
-  }
-}
-
 
 object WrappedNLWExtensionsLoader {
   def getPrimitivesFromURL(url: String): Option[JsValue] = {
