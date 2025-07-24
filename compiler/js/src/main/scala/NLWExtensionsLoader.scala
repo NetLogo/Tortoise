@@ -6,14 +6,14 @@ package org.nlogo.tortoise.compiler
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
-import play.api.libs.json.{  JsValue, Json, JsNull  }
+import play.api.libs.json.{  JsValue, Json }
 
 // window.NLWExtensionsLoader is a global object and is
 // gauranteed to be available before 
 @js.native
 @JSGlobal("NLWExtensionsLoader")
 object NLWExtensionsLoader extends js.Object {
-  def getPrimitivesFromURL(url: String): js.Object = js.native
+  def getPrimitivesFromURL(url: String): js.UndefOr[js.Object] = js.native
 }
 
 object WrappedNLWExtensionsLoader {
