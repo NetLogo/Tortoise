@@ -5,7 +5,6 @@ extensionPaths = ['array', 'bitmap', 'codap', 'csv', 'encode', 'dialog', 'export
 module.exports = {
 
   initialize: (workspace, importedExtensions...) ->
-    console.log "Initializing extensions: #{importedExtensions.join(', ')}"
     upperNames = importedExtensions.map( (name) -> name.toUpperCase() )
     extensions = {}
     extensionPaths.forEach( (path) ->
