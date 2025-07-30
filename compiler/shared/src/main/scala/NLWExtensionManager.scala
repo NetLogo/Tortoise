@@ -59,6 +59,10 @@ object CreateExtension {
 
   def apply(json: String): Extension = {
     val jsExt = Json.parse(json)
+    fromJSON(jsExt)
+  }
+
+  def fromJSON(jsExt: JsValue): Extension = {
     new Extension {
       override def getName: String = {
         jsExt("name").as[String]
@@ -195,11 +199,28 @@ class NLWExtensionManager extends ExtensionManager {
   override def finishFullCompilation(): Unit = ()
 
   override def importExtension(extName: String, errors: ErrorSource): Unit = {
-    val extension    = extNameToExtMap.getOrElse(extName, failCompilation(s"No such extension: ${extName}"))
+    importExtension(extName, None, errors)
+  }
+  override def importExtension(extName: String, extURL: Option[String], errors: ErrorSource): Unit = {
+    val extension = extURL match {
+      case Some(url) => 
+        if (!NLWExtensionsLoader.validateURL(url)) {
+          failCompilation(s"Invalid URL for extension: ${url}")
+        }
+        val extObj = NLWExtensionsLoader.getPrimitivesFromURL(url)
+        extObj match {
+          case Some(obj) => CreateExtension.fromJSON(obj)
+          case None      => failCompilation(s"Could not load extension from URL: ${url}")
+        } 
+      case None      => extNameToExtMap.getOrElse(extName, failCompilation(s"No such extension: ${extName}"))
+    }
     val extPrimPairs = extension.getPrims.map(prim => (extension.getName, prim))
     val shoutedPairs = extPrimPairs.map { case (extName, ExtensionPrim(prim, name)) => (s"$extName:$name".toUpperCase, prim) }
     primNameToPrimMap ++= shoutedPairs
-    importedExtensions.add(extName)
+    importedExtensions.add(extURL match {
+      case Some(url) => NLWExtensionsLoader.appendURLProtocol(url)
+      case None      => extName
+    })
     ()
   }
 

@@ -14,6 +14,8 @@ import json.TortoiseJson._
 import json.WidgetToJson
 
 import org.nlogo.core.{ CompilerException, Plot }
+import org.nlogo.parse.FrontEnd
+
 import org.nlogo.tortoise.compiler.xml.TortoiseModelLoader
 
 import org.nlogo.parse.CompilerUtilities
@@ -29,6 +31,7 @@ import scalaz.{ NonEmptyList, Validation, ValidationNel }
 import scalaz.std.list._
 import scalaz.Scalaz.ToValidationOps
 import scalaz.Validation.FlatMap.ValidationFlatMapRequested
+
 
 // scalastyle:off number.of.methods
 @JSExportTopLevel("BrowserCompiler")
@@ -218,6 +221,23 @@ class BrowserCompiler {
 
     JsonLibrary.toNative(json)
 
+  }
+
+  @JSExport
+  def listExtensions(source: String): NativeJson = {
+    val extensions: Seq[(String, Option[String])] = FrontEnd.findAllExtensions(source);
+    val json = JsArray(
+      extensions.map {
+        case (name, url) =>
+          JsObject(
+            ListMap("name" -> JsString(name), "url" -> (url match {
+              case Some(u) => JsString(u)
+              case None    => JsNull
+            }))
+          )
+      }
+    )
+    JsonLibrary.toNative(json)
   }
 
   @JSExport

@@ -14,6 +14,15 @@ module.exports = {
       if upperNames.includes(upperName)
         extensions[upperName] = extension
     )
+    importedExtensions.filter(NLWExtensionsLoader.isURL).forEach( (url) ->
+      extensionModule = NLWExtensionsLoader.getExtensionModuleFromURL(url)
+      if extensionModule?
+        extension = extensionModule.init(workspace)
+        upperName = extension.name.toUpperCase()
+        extensions[upperName] = extension
+      else
+        console.warn "Extension at URL #{url} does not have an init function."
+    )
     extensions
 
   porters: (importedExtensions...) ->
@@ -25,6 +34,14 @@ module.exports = {
         upperName = extensionModule.porter.extensionName.toUpperCase()
         if upperNames.includes(upperName)
           porters.push(extensionModule.porter)
+    )
+    importedExtensions.filter(NLWExtensionsLoader.isURL).forEach( (url) -> 
+      extensionModule = NLWExtensionsLoader.getExtensionModuleFromURL(url)
+      if extensionModule? and extensionModule.porter?
+        upperName = extensionModule.porter.extensionName.toUpperCase()
+        porters.push(extensionModule.porter)
+      else
+        console.warn "Extension at URL #{url} does not have an init function."
     )
     porters
 
