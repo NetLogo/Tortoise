@@ -4,6 +4,7 @@ package org.nlogo.tortoise.compiler.xml
 
 import org.nlogo.core.{ Model, XMLElement }
 import org.nlogo.core.model.ModelXMLLoader
+import org.nlogo.parse.CompilerUtilities
 
 import scala.util.Try
 
@@ -19,7 +20,7 @@ object TortoiseModelLoader {
       throw new RuntimeException("There was an error parsing the NetLogo XML file, the file appears to be empty.")
     }
     val root                 = elements.head
-    val (maybeModel, extras) = ModelXMLLoader.loadBasics(root, defaultInfo)
+    val (maybeModel, extras) = ModelXMLLoader.loadBasics(root, defaultInfo, CompilerUtilities)
 
     // We cannot properly parse the optional sections, some because they're desktop only and some because we don't know
     // what they are, so we just store the XML data to be written back in later on. -Jeremy B July 2025
