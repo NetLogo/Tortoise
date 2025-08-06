@@ -23,7 +23,7 @@ import
 import
   org.nlogo.tortoise.nlw.jsengine.JSEngineCompanion
 
-object Benchmarker extends App {
+object Benchmarker {
 
   import jsengine.JSEngine._
 
@@ -45,116 +45,6 @@ object Benchmarker extends App {
   private val engineToEvalMap = Seq(GraalJS, SpiderMonkey, V8).map(engine => engine -> engine.freshEval).toMap
 
   private val compiler = new org.nlogo.tortoise.compiler.Compiler()
-
-  val (dirStr, models, numIterations, numTicks, enginesAndEvals, comment) = processArgs(args.toIndexedSeq)
-
-  val dir       = new File(dirStr)
-  val benchFile = new File(dir, "engine-benchmarks.txt")
-  val append    = (str: String) => {
-    val writer = new PrintWriter(new FileWriter(benchFile, true))
-    writer.append(str)
-    writer.flush()
-  }
-
-  if (!benchFile.exists())
-    benchFile.createNewFile()
-  else
-    append(s"""==========
-              |
-              |""".stripMargin)
-
-  val timeStr = {
-    val date   = new Date
-    val format = new SimpleDateFormat("MM/dd/yyyy @ hh:mm:ss a zzz")
-    format.format(date)
-  }
-
-  val versionStr = {
-    val isClean  = Process("git diff --quiet --exit-code HEAD").! == 0
-    val dirtyStr = if (isClean) "" else "-dirty"
-    val sha      = Process("git rev-parse HEAD").lazyLines.head take 7
-    s"$sha$dirtyStr"
-  }
-
-  val commentStr = if (comment.nonEmpty) s"Comment:    $comment" else ""
-
-  append(s"""Time:       $timeStr
-            |Version:    $versionStr
-            |Models:     ${models.mkString(", ")}
-            |Iterations: $numIterations
-            |Ticks:      $numTicks
-            |Engines:    ${enginesAndEvals.map(_._1.getClass.getSimpleName.init).mkString(", ")}
-            |$commentStr
-            |
-            |""".stripMargin)
-
-  runBenchmarks(new File(dir, "models")) // Seq[Benchmark] currently unused.
-
-  private def runBenchmarks(modelsDir: File): Seq[Benchmark] = {
-
-    val modelNameFilePairs = models map (model => (model, pathOfModel(modelsDir, model)))
-
-    modelNameFilePairs map {
-      case (name, file) => {
-        println(s"Running $name")
-        val source = Source.fromFile(file)
-        val nlogo  = source.mkString.replaceAll("""\sdisplay\s""", "")
-        source.close()
-
-        val modelV = CompiledModel.fromNlogoXMLContents(nlogo, compiler, Seq())
-
-        val benchmarkPattern = """(?s).*\n\s*to\s+benchmark\s+(?s).*\n\s*end(?s).*"""
-        val benchmarkable = nlogo.matches(benchmarkPattern)
-        if (!benchmarkable) {
-          println(s"No `benchmark` procedure found. Running $numTicks ticks.")
-        }
-
-        val jsV = if (benchmarkable) {
-          for {
-            model       <- modelV
-            caJS        <- model.compileRawCommand("ca")
-            benchmarkJS <- model.compileRawCommand("benchmark")
-            resultJS    <- model.compileReporter("result")
-          } yield s"${model.compiledCode};$caJS;$benchmarkJS;$resultJS;"
-        } else {
-          for {
-            model       <- modelV
-            caJS        <- model.compileRawCommand("ca")
-            seedJS      <- model.compileRawCommand("random-seed 0")
-            timerJS     <- model.compileRawCommand("reset-timer")
-            setupJS     <- model.compileRawCommand("setup")
-            repeatJS    <- model.compileRawCommand(s"repeat $numTicks [ go ]")
-            resultJS    <- model.compileReporter("timer")
-          } yield s"${model.compiledCode};$caJS;$seedJS;$timerJS;$setupJS;(function() { $repeatJS; })();$resultJS;"
-        }
-
-        val js = jsV.valueOr( (e) => throw e.head )
-
-        val results = enginesAndEvals.toSeq map {
-          case (engine, f) => {
-            val times = 1 to numIterations map (_ => {
-              val time = f(js).toDouble
-              println(time)
-              time
-            })
-            val summary =
-              s"""$name (${engine.name} ${engine.version}):
-                         |--Average: ${round(times.sum / times.size, 3)} seconds
-                         |--Min:     ${times.min} seconds
-                         |--Max:     ${times.max} seconds
-                         |
-                         |""".stripMargin
-            println(summary)
-            append(summary)
-            Result(engine.name, engine.version, times, summary)
-          }
-        }
-
-        Benchmark(name, results, results.foldLeft("")(_ + _.summary)) // currently not being used.
-      }
-    }
-
-  }
 
   private def pathOfModel(dir: File, filename: String): File = {
     val queue = new Queue[File]
@@ -230,4 +120,116 @@ object Benchmarker extends App {
   private case class Result(engineName: String, engineVersion: String, times: Seq[Double], summary: String)
   private case class Benchmark(name: String, results: Seq[Result], summary: String)
 
+  def main(args: Array[String]): Unit = {
+    println(args.mkString(", "))
+    val (dirStr, models, numIterations, numTicks, enginesAndEvals, comment) = processArgs(args.toIndexedSeq)
+
+    val dir       = new File(dirStr)
+    val benchFile = new File(dir, "engine-benchmarks.txt")
+    val append    = (str: String) => {
+      val writer = new PrintWriter(new FileWriter(benchFile, true))
+      writer.append(str)
+      writer.flush()
+    }
+
+    if (!benchFile.exists())
+      benchFile.createNewFile()
+    else
+      append(s"""==========
+                |
+                |""".stripMargin)
+
+    val timeStr = {
+      val date   = new Date
+      val format = new SimpleDateFormat("MM/dd/yyyy @ hh:mm:ss a zzz")
+      format.format(date)
+    }
+
+    val versionStr = {
+      val isClean  = Process("git diff --quiet --exit-code HEAD").! == 0
+      val dirtyStr = if (isClean) "" else "-dirty"
+      val sha      = Process("git rev-parse HEAD").lazyLines.head take 7
+      s"$sha$dirtyStr"
+    }
+
+    val commentStr = if (comment.nonEmpty) s"Comment:    $comment" else ""
+
+    append(s"""Time:       $timeStr
+              |Version:    $versionStr
+              |Models:     ${models.mkString(", ")}
+              |Iterations: $numIterations
+              |Ticks:      $numTicks
+              |Engines:    ${enginesAndEvals.map(_._1.getClass.getSimpleName.init).mkString(", ")}
+              |$commentStr
+              |
+              |""".stripMargin)
+
+    val runBenchmarks = (modelsDir: File) => {
+
+      val modelNameFilePairs = models map (model => (model, pathOfModel(modelsDir, model)))
+
+      modelNameFilePairs map {
+        case (name, file) => {
+          println(s"Running $name")
+          val source = Source.fromFile(file)
+          val nlogo  = source.mkString.replaceAll("""\sdisplay\s""", "")
+          source.close()
+
+          val modelV = CompiledModel.fromNlogoXMLContents(nlogo, compiler, Seq())
+
+          val benchmarkPattern = """(?s).*\n\s*to\s+benchmark\s+(?s).*\n\s*end(?s).*"""
+          val benchmarkable = nlogo.matches(benchmarkPattern)
+          if (!benchmarkable) {
+            println(s"No `benchmark` procedure found. Running $numTicks ticks.")
+          }
+
+          val jsV = if (benchmarkable) {
+            for {
+              model       <- modelV
+              caJS        <- model.compileRawCommand("ca")
+              benchmarkJS <- model.compileRawCommand("benchmark")
+              resultJS    <- model.compileReporter("result")
+            } yield s"${model.compiledCode};$caJS;$benchmarkJS;$resultJS;"
+          } else {
+            for {
+              model       <- modelV
+              caJS        <- model.compileRawCommand("ca")
+              seedJS      <- model.compileRawCommand("random-seed 0")
+              timerJS     <- model.compileRawCommand("reset-timer")
+              setupJS     <- model.compileRawCommand("setup")
+              repeatJS    <- model.compileRawCommand(s"repeat $numTicks [ go ]")
+              resultJS    <- model.compileReporter("timer")
+            } yield s"${model.compiledCode};$caJS;$seedJS;$timerJS;$setupJS;(function() { $repeatJS; })();$resultJS;"
+          }
+
+          val js = jsV.valueOr( (e) => throw e.head )
+
+          val results = enginesAndEvals.toSeq map {
+            case (engine, f) => {
+              val times = 1 to numIterations map (_ => {
+                val time = f(js).toDouble
+                println(time)
+                time
+              })
+              val summary =
+                s"""$name (${engine.name} ${engine.version}):
+                          |--Average: ${round(times.sum / times.size, 3)} seconds
+                          |--Min:     ${times.min} seconds
+                          |--Max:     ${times.max} seconds
+                          |
+                          |""".stripMargin
+              println(summary)
+              append(summary)
+              Result(engine.name, engine.version, times, summary)
+            }
+          }
+
+          Benchmark(name, results, results.foldLeft("")(_ + _.summary)) // currently not being used.
+        }
+      }
+
+    }
+
+    runBenchmarks(new File(dir, "models")) // Seq[Benchmark] currently unused.
+  }
 }
