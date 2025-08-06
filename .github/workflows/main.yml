@@ -67,7 +67,6 @@ jobs:
           ./sbt.sh "compilerJVM / Test / compile"
           ./sbt.sh "compilerJS / Test / compile"
           ./sbt.sh "netLogoWeb / Test / compile"
-          ./sbt.sh "netLogoWeb / Test / runMain org.nlogo.tortoise.nlw.ExtensionsUpdater"
 
       - uses: actions/cache@v3
         id: restore-build
@@ -178,6 +177,7 @@ jobs:
 
       - name: NetLogo Web Fast Tests
         run: |
+          ./sbt.sh "netLogoWeb / Test / runMain org.nlogo.tortoise.nlw.ExtensionsInstaller"
           ./sbt.sh "netLogoWeb / Test / fast"
           ./sbt.sh "netLogoWeb / testOnly *TestReporters"
 

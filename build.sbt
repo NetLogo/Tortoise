@@ -2,11 +2,9 @@ import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import sbtcrossproject.CrossProject
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 
-// `bfc30c9` is a dummy commit as the publish of `b824f83` hung/failed for unknown reasons.  No code changes from
-// `b824f83` and can return to a normal commit on next update.  -Jeremy B August 2025
-val nlDependencyVersion       = "7.0.0-beta2-bfc30c9"
+val nlDependencyVersion       = "7.0.0-beta2-77a066a"
 
-val parserJsDependencyVersion = "0.4.0-b824f83"
+val parserJsDependencyVersion = "0.4.0-77a066a"
 
 val scalazVersion             = "7.2.36"
 
