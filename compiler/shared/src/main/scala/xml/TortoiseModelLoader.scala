@@ -28,7 +28,7 @@ object TortoiseModelLoader {
   }
 
   def write(model: Model): String = {
-    val writer  = new SimpleXmlWriter()
+    val writer  = new SimpleXMLWriter()
     val extras  = model.optionalSectionValue[Seq[XMLElement]]("tortoiseExtrasHolder").getOrElse(Seq())
     val keepers = model.optionalSections.filter( (s) => s.key != "tortoiseExtrasHolder" )
     ModelXMLLoader.writeBasics(writer, model.copy(optionalSections = keepers), (w, _) => {

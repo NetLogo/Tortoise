@@ -5,7 +5,7 @@ package org.nlogo.tortoise.compiler.xml
 import org.nlogo.core.XMLElement
 import org.nlogo.core.model.NLogoXMLWriter
 
-class SimpleXmlWriter extends NLogoXMLWriter {
+class SimpleXMLWriter extends NLogoXMLWriter {
   private val builder = new StringBuilder()
   private var indent = 0
   private var waitingForAttributes = false
