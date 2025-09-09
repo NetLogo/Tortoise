@@ -108,3 +108,10 @@ Flatten
   fp:flatten [1 2 3 4 5 6] => [1 2 3 4 5 6]
   fp:flatten [] => []
   fp:flatten [[] []] => []
+
+Apply
+  extensions [fp]
+  fp:apply [[a b] -> a + b] [10 5] => 15
+  map [l -> fp:apply [[a b] -> a + b] l] [[10 5] [6 8] [9 22]] => [15 14 31]
+  map [l -> fp:apply word l] [[1 2 3] [4 5] [6 7 8 9]] => ["123" "45" "6789"]
+  fp:apply [[a b] -> a + b] [10] => ERROR anonymous procedure expected 2 inputs, but only got 1

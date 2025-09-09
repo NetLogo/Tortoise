@@ -131,6 +131,9 @@ iterateForLast = (f, initialValue, repetitions) ->
 
   result
 
+apply = (f, values) ->
+  f(values...)
+
 module.exports = {
 
   porter: undefined
@@ -150,6 +153,7 @@ module.exports = {
     , flatten
     , "iterate": iterateToList
     , "iterate-last": iterateForLast
+    , apply
     }
     Object.keys(prims).forEach( (p) => prims[p.toUpperCase()] = prims[p] )
     { name: "fp", prims }

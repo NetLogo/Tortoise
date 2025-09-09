@@ -74,5 +74,10 @@
     , "argTypes": ["reporter", "wildcard", "number"]
     , "returnType": "wildcard"
     }
+    , {
+      "name": "apply"
+    , "argTypes": ["reporter", "list"]
+    , "returnType": "wildcard"
+    }
   ]
 }
