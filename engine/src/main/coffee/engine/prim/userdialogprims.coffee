@@ -18,9 +18,9 @@ module.exports.Prims =
       if not @_confirm(msg)
         throw exceptions.halt()
 
-    # (String) => String
-    input: (msg) ->
-      @_input(msg) ? throw exceptions.halt()
+    # (String, String | null) => String
+    input: (msg, defaultValue) ->
+      @_input(msg, defaultValue ? "") ? throw exceptions.halt()
 
     # (String) => Boolean
     yesOrNo: (msg) ->
