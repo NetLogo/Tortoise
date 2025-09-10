@@ -170,10 +170,10 @@ if (typeof Polyglot !== "undefined") {
     };
 
   const asyncDialog =
-    { getChoice:   function(message, choices) { return function() { return Maybe.None; }; }
-    , getText:     function(message)          { return function() { return Maybe.None; }; }
-    , getYesOrNo:  function(message)          { return function() { return Maybe.None; }; }
-    , showMessage: function(message)          { return function() { return Maybe.None; }; }
+    { getChoice:   function(message, choices)      { return function() { return Maybe.None; }; }
+    , getText:     function(message, defaultValue) { return function() { return Maybe.None; }; }
+    , getYesOrNo:  function(message)               { return function() { return Maybe.None; }; }
+    , showMessage: function(message)               { return function() { return Maybe.None; }; }
     }
 
   const dialog =

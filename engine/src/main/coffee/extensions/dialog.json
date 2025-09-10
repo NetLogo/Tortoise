@@ -2,9 +2,10 @@
   "name": "dialog",
   "prims": [
     {
-      "name":       "user-input",
-      "argTypes":   ["string", "command"],
-      "returnType": "unit"
+      "name":            "user-input",
+      "argTypes":        [{ "type": "string", "isRepeatable": true }, "command"],
+      "defaultArgCount": 2,
+      "returnType":      "unit"
     }, {
       "name":       "user-message",
       "argTypes":   ["string", "command"],

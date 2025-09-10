@@ -13,8 +13,9 @@ module.exports = {
   init: (workspace) ->
 
     # (String, (String) => Unit) => Unit
-    userInput = (message, callback) ->
-      prim((config) -> config.getText(message))(callback)
+    userInput = (message, args...) ->
+      [defaultValue, callback] = if args.length is 2 then args else ["", args[args.length - 1]]
+      prim((config) -> config.getText(message, defaultValue))(callback)
       return
 
     # (String, () => Unit) => Unit
