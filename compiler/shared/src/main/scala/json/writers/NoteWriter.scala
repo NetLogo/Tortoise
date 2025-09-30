@@ -5,7 +5,7 @@ package org.nlogo.tortoise.compiler.json
 // scalastyle:off method.length
 // scalastyle:off cyclomatic.complexity
 // scalastyle:off line.size.limit
-implicit object TextBoxWriter extends JsonWriter[org.nlogo.core.TextBox] {
+implicit object NoteWriter extends JsonWriter[org.nlogo.core.TextBox] {
   import collection.immutable.ListMap
 
   def apply(o: org.nlogo.core.TextBox): TortoiseJson.JsObject = {

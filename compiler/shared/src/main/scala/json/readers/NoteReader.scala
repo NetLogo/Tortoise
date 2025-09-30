@@ -12,7 +12,7 @@ import org.nlogo.tortoise.compiler.json.WidgetRead._
 // scalastyle:off method.length
 // scalastyle:off cyclomatic.complexity
 // scalastyle:off line.size.limit
-implicit object TextBoxReader extends JsonReader[TortoiseJson.JsObject, org.nlogo.core.TextBox] {
+implicit object NoteReader extends JsonReader[TortoiseJson.JsObject, org.nlogo.core.TextBox] {
   def apply(jsObject: TortoiseJson.JsObject): ValidationNel[String, org.nlogo.core.TextBox] = {
 
     val v0 = JsonReader.readField[scala.Option[scala.Predef.String]](jsObject, "display")

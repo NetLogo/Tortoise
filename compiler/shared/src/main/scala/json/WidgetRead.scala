@@ -194,7 +194,7 @@ object WidgetRead {
       "plot"     -> PlotReader,
       "slider"   -> SliderReader,
       "switch"   -> SwitchReader,
-      "textBox"  -> TextBoxReader,
+      "textBox"  -> NoteReader,
       "view"     -> ViewReader
     )
   }

@@ -59,7 +59,7 @@ object WidgetToJson {
           case p: Plot     => PlotWriter(p)
           case s: Slider   => SliderWriter(s)
           case s: Switch   => SwitchWriter(s)
-          case t: TextBox  => TextBoxWriter(t)
+          case t: TextBox  => NoteWriter(t)
           case v: View     => ViewWriter(v)
           case _           => CompilerErrors.failCompilation(s"Unknown widget type encountered: ${w.toString}")
         }).asInstanceOf[JsObject]
