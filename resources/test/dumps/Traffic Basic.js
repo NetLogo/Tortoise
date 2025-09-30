@@ -77,7 +77,7 @@ ProcedurePrims.defineCommand("setup", 80, 211, (function() {
   world.observer.setGlobal("speed-min", 0);
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("setup-road"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(138, 141, R); return R; }
   var R = ProcedurePrims.callCommand("setup-cars"); if (R === DeathInterrupt) { return R; }
-  world.observer.watch(world.observer.getGlobal("sample-car"));
+  world.observer.watch(PrimChecks.validator.checkArg('WATCH', 180, 185, 1792, world.observer.getGlobal("sample-car")));
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-road", 219, 300, (function() {
