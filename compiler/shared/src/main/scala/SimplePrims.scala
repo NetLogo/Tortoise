@@ -332,6 +332,12 @@ object SimplePrims {
         // Task
         case _: prim.etc._apply => "Tasks.apply"
 
+        // Perspective
+        case _: prim.etc._follow                => "world.observer.follow"
+        case _: prim.etc._ride                  => "world.observer.ride"
+        case _: prim.etc._watch                 => "world.observer.watch"
+        case _: prim.etc._resetperspective      => "world.observer.resetPerspective"
+
       }
   }
 
@@ -425,10 +431,6 @@ object SimplePrims {
         case _: prim.etc._tick                  => "world.ticker.tick"
         case _: prim.etc._tickadvance           => "world.ticker.tickAdvance"
         case _: prim.etc._resettimer            => "workspace.timer.reset"
-        case _: prim.etc._follow                => "world.observer.follow"
-        case _: prim.etc._ride                  => "world.observer.ride"
-        case _: prim.etc._watch                 => "world.observer.watch"
-        case _: prim.etc._resetperspective      => "world.observer.resetPerspective"
         case _: prim.etc._layoutspring          => "LayoutManager.layoutSpring"
         case _: prim.etc._layoutcircle          => "LayoutManager.layoutCircle"
         case _: prim.etc._layoutradial          => "LayoutManager.layoutRadial"
