@@ -93,6 +93,22 @@ class BrowserCompiler {
   def fromNlogo(contents: String): NativeJson =
     JsonLibrary.toNative(transformErrorsAndUpdateModel(CompiledModel.fromNlogoContents(contents, compiler)).toJsonObj)
 
+  // "Wait, can't we just load an old format model using `fromNlogo()`?  Why do we need this?"  We can, but applications
+  // that embed NetLogo Web often munge around with the files at various stages (HubNet Web and NetTango Web).  It's
+  // much easier for them to just target a single format instead of duplicating efforts.  This wound up being the
+  // simplest way I could think of to let them continue to support NetLogo 6 models without a ton of extra work.
+  // -Jeremy B Octover 2025
+  @JSExport
+  def convertNlogoToXML(contents: String): NativeJson = {
+    val compileResult = CompiledModel.fromNlogoContents(contents, compiler)
+    val xmlResult     = compileResult.map( (c) => { TortoiseModelLoader.write(c.model) })
+    val xmlTortoiseErrorsResult = xmlResult.leftMap(_.map {
+      case e: CompilerException => FailureCompilerException(e): TortoiseFailure
+      case e: Exception         => FailureException        (e): TortoiseFailure
+    })
+    JsonLibrary.toNative(xmlTortoiseErrorsResult.toJsonObj)
+  }
+
   @JSExport
   def fromNlogoXML(contents: String, commandJson: NativeJson
                , compilationRequest: NativeJson = DefaultCRJS): NativeJson = {

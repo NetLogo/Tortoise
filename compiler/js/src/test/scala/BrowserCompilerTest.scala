@@ -22,10 +22,12 @@ import org.nlogo.tortoise.compiler.TestUtilities.{
   isSuccess,
   makeSuccess,
   modelToCompilationRequest,
+  oldFormatModelContents,
   validModel,
   widgetyModel,
   withBrowserCompiler,
-  withWidget
+  withWidget,
+  xmlFormatContents
 }
 
 object BrowserCompilerTest extends TestSuite {
@@ -148,6 +150,13 @@ object BrowserCompilerTest extends TestSuite {
       assert(parsedModel.turtleShapes.last.name == "custom")
       assert(parsedModel.linkShapes.last.name   == "custom2")
       assert(parsedModel.resources.last.name    == "text-resource-1")
+    }
+
+    "converts old format model to XML format"-{
+      val xmlFormatResult = withBrowserCompiler( (bc) => bc.convertNlogoToXML(oldFormatModelContents) )
+      assert(xmlFormatResult[Boolean]("success"))
+      val exportedNlogoXML = xmlFormatResult[String]("result")
+      assert(exportedNlogoXML == xmlFormatContents)
     }
 
     "testCompilationWithoutCommandsOK"-{
