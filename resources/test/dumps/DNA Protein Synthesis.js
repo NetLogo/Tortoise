@@ -573,7 +573,7 @@ ProcedurePrims.defineCommand("make-protein", 19229, 19848, (function(strandHtype
   var R = PrimChecks.task.forEach(19530, 19537, PrimChecks.validator.checkArg('FOREACH', 19530, 19537, 8, orderedHaminoHacids), PrimChecks.task.checked(19558, 19559, function(theHaminoHacid) {
     PrimChecks.procedure.runArgCountCheck('run', 19558, 19668, 1, arguments.length);
     thisHproteinHvalue = StringPrims.word(thisHproteinHvalue, "-", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 19645, 19647, 1904, theHaminoHacid), function() { return PrimChecks.turtle.getVariable(19638, 19643, "value"); })); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-PROTEIN-VALUE", thisHproteinHvalue);
-  }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" [ value ] of the-amino-acid ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(19530, 19537, R); return R; }
+  }, "[ the-amino-acid -> set this-protein-value ( word this-protein-value \"-\" [ value ] of the-amino-acid ) ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(19530, 19537, R); return R; }
   if (PrimChecks.math.not(PrimChecks.agentset.anyWith(null, null, world.turtleManager.turtlesOfBreed("PROTEINS"), function() {
     return (Prims.equality(PrimChecks.turtle.getVariable(19698, 19704, "strand"), strandHtype) && Prims.equality(PrimChecks.turtle.getVariable(19723, 19728, "value"), thisHproteinHvalue));
   }))) {
