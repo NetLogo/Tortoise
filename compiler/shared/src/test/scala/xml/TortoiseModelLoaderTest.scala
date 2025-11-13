@@ -2,7 +2,7 @@
 
 package org.nlogo.tortoise.compiler.xml
 
-import org.nlogo.core.{ Model, View, WorldDimensions }
+import org.nlogo.core.{ Button, Model, View, WorldDimensions }
 
 import org.nlogo.core.XMLElement
 
@@ -56,11 +56,11 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
   <widgets>
     <view x="455" wrappingAllowedX="true" y="10" frameRate="30.0" minPycor="-25" height="564" showTickCounter="true" patchSize="10.9804" fontSize="14" wrappingAllowedY="true" width="564" tickCounterLabel="ticks" maxPycor="25" updateMode="1" maxPxcor="25" minPxcor="-25"></view>
     <slider x="5" step="1.0" y="283" max="20.0" width="220" display="sheep-reproduce" height="50" min="1.0" direction="Horizontal" default="4.0" variable="sheep-reproduce" units="%"></slider>
-    <monitor x="350" precision="0" y="498" height="60" fontSize="11" width="100" display="grass">count grass / 4</monitor>
-    <plot x="5" autoPlotX="true" yMax="100.0" autoPlotY="true" yAxis="pop." y="342" xMin="0.0" height="235" legend="true" xMax="100.0" yMin="0.0" width="340" xAxis="time" display="populations">
+    <monitor x="350" precision="0" y="498" height="60" fontSize="11" width="100" display="grass &amp; &lt;">count grass / 4</monitor>
+    <plot x="5" autoPlotX="true" yMax="100.0" autoPlotY="true" yAxis="pop." y="342" xMin="0.0" height="235" legend="true" xMax="100.0" yMin="0.0" width="340" xAxis="time" display="populations &amp; &lt;">
       <setup></setup>
       <update></update>
-      <pen interval="1.0" mode="0" display="sheep" color="-612749" legend="true">
+      <pen interval="1.0" mode="0" display="sheep &amp; &lt;" color="-612749" legend="true">
         <setup></setup>
         <update>plot count sheep</update>
       </pen>
@@ -88,11 +88,11 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
     val expectedWidgets = Seq(
       XMLElement("view", Map("x" -> "455", "wrappingAllowedX" -> "true", "y" -> "10", "frameRate" -> "30.0", "minPycor" -> "-25", "height" -> "564", "showTickCounter" -> "true", "patchSize" -> "10.9804", "fontSize" -> "14", "wrappingAllowedY" -> "true", "width" -> "564", "tickCounterLabel" -> "ticks", "maxPycor" -> "25", "updateMode" -> "1", "maxPxcor" -> "25", "minPxcor" -> "-25"), "", Seq()),
       XMLElement("slider", Map("x" -> "5", "step" -> "1.0", "y" -> "283", "max" -> "20.0", "width" -> "220", "display" -> "sheep-reproduce", "height" -> "50", "min" -> "1.0", "direction" -> "Horizontal", "default" -> "4.0", "variable" -> "sheep-reproduce", "units" -> "%"), "", Seq()),
-      XMLElement("monitor", Map("x" -> "350", "precision" -> "0", "y" -> "498", "height" -> "60", "fontSize" -> "11", "width" -> "100", "display" -> "grass"), "count grass / 4", Seq()),
-      XMLElement("plot", Map("x" -> "5", "autoPlotX" -> "true", "yMax" -> "100.0", "autoPlotY" -> "true", "yAxis" -> "pop.", "y" -> "342", "xMin" -> "0.0", "height" -> "235", "legend" -> "true", "xMax" -> "100.0", "yMin" -> "0.0", "width" -> "340", "xAxis" -> "time", "display" -> "populations"), "", Seq(
+      XMLElement("monitor", Map("x" -> "350", "precision" -> "0", "y" -> "498", "height" -> "60", "fontSize" -> "11", "width" -> "100", "display" -> "grass & <"), "count grass / 4", Seq()),
+      XMLElement("plot", Map("x" -> "5", "autoPlotX" -> "true", "yMax" -> "100.0", "autoPlotY" -> "true", "yAxis" -> "pop.", "y" -> "342", "xMin" -> "0.0", "height" -> "235", "legend" -> "true", "xMax" -> "100.0", "yMin" -> "0.0", "width" -> "340", "xAxis" -> "time", "display" -> "populations & <"), "", Seq(
         XMLElement("setup", Map(), "", Seq()),
         XMLElement("update", Map(), "", Seq()),
-        XMLElement("pen", Map("interval" -> "1.0", "mode" -> "0", "display" -> "sheep", "color" -> "-612749", "legend" -> "true"), "", Seq(XMLElement("setup", Map(), "", Seq()), XMLElement("update", Map(), "plot count sheep", Seq()))),
+        XMLElement("pen", Map("interval" -> "1.0", "mode" -> "0", "display" -> "sheep & <", "color" -> "-612749", "legend" -> "true"), "", Seq(XMLElement("setup", Map(), "", Seq()), XMLElement("update", Map(), "plot count sheep", Seq()))),
         XMLElement("pen", Map("interval" -> "1.0", "mode" -> "0", "display" -> "wolves", "color" -> "-16449023", "legend" -> "true"), "", Seq(XMLElement("setup", Map(), "", Seq()), XMLElement("update", Map(), "plot count wolves", Seq()))),
         XMLElement("pen", Map("interval" -> "1.0", "mode" -> "0", "display" -> "grass / 4", "color" -> "-10899396", "legend" -> "true"), "", Seq(XMLElement("setup", Map(), "", Seq()), XMLElement("update", Map(), "if model-version = \"sheep-wolves-grass\" [ plot count grass / 4 ]", Seq())))
       )),
@@ -200,6 +200,7 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
   <code><![CDATA[to setup end <xml-tags-don't-matter-here></xml>]]></code>
   <widgets>
     <view x="455" wrappingAllowedX="true" y="10" frameRate="30.0" minPycor="-25" height="564" showTickCounter="true" patchSize="10.9804" fontSize="14" wrappingAllowedY="true" width="564" tickCounterLabel="ticks" maxPycor="25" updateMode="1" maxPxcor="25" minPxcor="-25"></view>
+    <button x="180" y="145" height="40" disableUntilTicks="true" forever="true" kind="Observer" width="95" display="go &amp; &lt; &gt; &quot;">go</button>
   </widgets>
   <!-- comment is ignored <xml /> -->
   <info><![CDATA[# Hello! <h1> <h2> </p>]]></info>
@@ -211,7 +212,12 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
 
   test("TortoiseModelLoader reads very simple model") {
     val model = TortoiseModelLoader.read(simpleModelSource).get
-    val expected = new Model("to setup end <xml-tags-don't-matter-here></xml>", Seq(View(455, 10, 564, 564, WorldDimensions(-25, 25, -25, 25, 10.9804, true, true), 14)), "# Hello! <h1> <h2> </p>", "NetLogo 7.0.0-beta2", Seq(), Seq())
+    val expected = new Model("to setup end <xml-tags-don't-matter-here></xml>",
+      Seq(
+        View(455, 10, 564, 564, WorldDimensions(-25, 25, -25, 25, 10.9804, true, true), 14),
+        Button(Some("go"), 180, 145, 95, 40, display = Some("go & < > \""), forever = true, disableUntilTicksStart = true)
+      ),
+      "# Hello! <h1> <h2> </p>", "NetLogo 7.0.0-beta2", Seq(), Seq())
     // The `Section` class doesn't have value-equality, so we just ignore them for now
     assertResult(expected)(model.copy(optionalSections = Seq()))
   }
@@ -225,6 +231,7 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
   <code><![CDATA[to setup end <xml-tags-don't-matter-here></xml>]]></code>
   <widgets>
     <view x="455" wrappingAllowedX="true" y="10" frameRate="30.0" minPycor="-25" height="564" showTickCounter="true" patchSize="10.9804" fontSize="14" wrappingAllowedY="true" width="564" tickCounterLabel="ticks" maxPycor="25" updateMode="1" maxPxcor="25" minPxcor="-25"></view>
+    <button x="180" y="145" height="40" disableUntilTicks="true" forever="true" kind="Observer" width="95" display="go &amp; &lt; &gt; &quot;">go</button>
   </widgets>
   <info><![CDATA[# Hello! <h1> <h2> </p>]]></info>
   <turtleShapes></turtleShapes>

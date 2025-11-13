@@ -60,7 +60,13 @@ class SimpleXMLWriter extends NLogoXMLWriter {
   }
 
   def attribute(name: String, value: String): Unit = {
-    builder.append(s" $name=\"$value\"")
+    builder.append(s" $name=\"${escapeValue(value)}\"")
+  }
+
+  private val escapes = Map[Char, String]('&' -> "&amp;", '<' -> "&lt;", '>' -> "&gt;", '"' -> "&quot;")
+
+  def escapeValue(text: String): String = {
+    text.flatMap( (c) => escapes.getOrElse(c, c).toString )
   }
 
   def escapedText(text: String): Unit = {

@@ -41,6 +41,12 @@ class SimpleXMLParser(text: String) {
     elements
   }
 
+  private val unescapes = Seq[(String, String)]("&amp;" -> "&", "&lt;" -> "<", "&gt;" -> ">", "&quot;" -> "\"")
+
+  def unescapeValue(text: String): String = {
+    unescapes.foldLeft(text)((current: String, checks: (String, String)) => { current.replace(checks._1, checks._2) })
+  }
+
   def parseAttribute(): (String, String) = {
     val nameStart = reader.getCurrentIndex
     reader.skipUntil('=')
@@ -51,7 +57,9 @@ class SimpleXMLParser(text: String) {
     reader.skipUntil('"')
     val valEnd = reader.getCurrentIndex
     reader.next()
-    (reader.substring(nameStart, nameEnd), reader.substring(valStart, valEnd))
+    val attrName  = reader.substring(nameStart, nameEnd)
+    val attrValue = unescapeValue(reader.substring(valStart, valEnd))
+    (attrName, attrValue)
   }
 
   def parseAttributes(): (String, Map[String, String]) = {
