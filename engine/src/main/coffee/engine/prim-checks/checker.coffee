@@ -15,6 +15,7 @@ PatchChecks     = require('./patch-checks')
 ProcedureChecks = require('./procedure-checks')
 TaskChecks      = require('./task-checks')
 TurtleChecks    = require('./turtle-checks')
+WorldChecks     = require('./world-checks')
 Validator       = require('./validator')
 
 class Checker
@@ -36,6 +37,7 @@ class Checker
     @link      = new LinkChecks(@validator, getSelf, selfPrims)
     @task      = new TaskChecks(@validator)
     @control   = new ControlChecks(@validator)
+    @world     = new WorldChecks(@validator, world)
 
     @turtleOrLink = {
       getVariable: (sourceStart, sourceEnd, name) =>

@@ -176,6 +176,9 @@ bundle = {
 , 'Cannot find the procedure _.': (procedureName) ->
   "Cannot find the procedure #{procedureName}."
 
+, 'Patch size must be greater than zero.': () ->
+  "Patch size must be greater than zero."
+
 }
 
 module.exports = bundle

@@ -318,6 +318,9 @@ object SimplePrims {
         // Other
         case _: prim.etc._error => s"PrimChecks.errorPrim"
 
+        // World
+        case _: prim.etc._setpatchsize => "PrimChecks.world.setPatchSize"
+
       }
   }
 
@@ -426,7 +429,6 @@ object SimplePrims {
         case _: prim.etc._clearticks            => "world.ticker.clear"
         case _: prim.etc._clearlinks            => "world.clearLinks"
         case _: prim.etc._resizeworld           => "world.resize"
-        case _: prim.etc._setpatchsize          => "world.setPatchSize"
         case _: prim.etc._resetticks            => "world.ticker.reset"
         case _: prim.etc._tick                  => "world.ticker.tick"
         case _: prim.etc._tickadvance           => "world.ticker.tickAdvance"
