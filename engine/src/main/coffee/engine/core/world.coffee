@@ -335,6 +335,11 @@ module.exports =
 
     # () => Unit
     _createPatches: ->
+      @_patches.forEach( (patch) ->
+        patch._die()
+        return
+      )
+
       nested =
         for y in [@topology.maxPycor..@topology.minPycor]
           for x in [@topology.minPxcor..@topology.maxPxcor]

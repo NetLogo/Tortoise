@@ -86,14 +86,20 @@ module.exports =
 
     # (() => Any) => Unit
     ask: (f) ->
-      @world.selfManager.askAgent(f)(this)
-      if @world.selfManager.self().isDead?()
-        return DeathInterrupt
+      if not @isDead()
+        @world.selfManager.askAgent(f)(this)
+        if @world.selfManager.self().isDead?()
+          return DeathInterrupt
+      else
+        throw exceptions.runtime("That patch is dead.", "ask")
       return
 
     # [Result] @ (() => Result) => Result
     projectionBy: (f) ->
-      @world.selfManager.askAgent(f)(this)
+      if not @isDead()
+        @world.selfManager.askAgent(f)(this)
+      else
+        throw exceptions.runtime("That patch is dead.", "of")
 
     # () => PatchSet
     getNeighbors: ->
@@ -156,13 +162,23 @@ module.exports =
     compare: (x) ->
       Comparator.numericCompare(@id, x.id)
 
-    # Unit -> Unit
+    # () => Boolean
     isDead: ->
-      false
+      @id is -1
+
+    # A patch cannot really die, but on a world resize old patches can stick around in variables, so they need to have a
+    # way to get gone.  -Jeremy B November 2025
+    # () => Unit
+    _die: ->
+      @id = -1
+      return
 
     # () => String
     toString: ->
-      "(#{@getName()})"
+      if not @isDead()
+        "(#{@getName()})"
+      else
+        "nobody"
 
     # () => Unit
     reset: ->
