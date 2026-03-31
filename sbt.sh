@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SDKMAN_DIR="${SDKMAN_DIR:-$HOME/.sdkman}"
-GRAAL_VERSION="21.0.10-graal"
+GRAAL_VERSION="25.0.2-graalce"
 
 if [ -f "$SDKMAN_DIR/bin/sdkman-init.sh" ]; then
   source "$SDKMAN_DIR/bin/sdkman-init.sh"

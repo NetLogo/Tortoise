@@ -22,8 +22,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
-          distribution: 'graalvm'
+          java-version: '25'
+          distribution: 'graalvm-community'
 
       - uses: sbt/setup-sbt@v1
 
@@ -79,8 +79,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
-          distribution: 'graalvm'
+          java-version: '25'
+          distribution: 'graalvm-community'
 
       - uses: sbt/setup-sbt@v1
 
@@ -110,8 +110,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
-          distribution: 'graalvm'
+          java-version: '25'
+          distribution: 'graalvm-community'
 
       - uses: sbt/setup-sbt@v1
 
@@ -142,8 +142,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
-          distribution: 'graalvm'
+          java-version: '25'
+          distribution: 'graalvm-community'
 
       - uses: sbt/setup-sbt@v1
 
@@ -171,8 +171,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
-          distribution: 'graalvm'
+          java-version: '25'
+          distribution: 'graalvm-community'
 
       - uses: sbt/setup-sbt@v1
 
@@ -198,8 +198,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
-          distribution: 'graalvm'
+          java-version: '25'
+          distribution: 'graalvm-community'
 
       - uses: sbt/setup-sbt@v1
 
@@ -230,8 +230,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'
-          distribution: 'graalvm'
+          java-version: '25'
+          distribution: 'graalvm-community'
 
       - uses: sbt/setup-sbt@v1
 
