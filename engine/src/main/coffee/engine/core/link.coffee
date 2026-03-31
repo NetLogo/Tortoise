@@ -88,6 +88,11 @@ module.exports =
       return DeathInterrupt
 
     # () => Unit
+    watchMe: ->
+      @world.observer.watch(this)
+      return
+
+    # () => Unit
     stamp: ->
       @_drawStamp(Stamp)
       return

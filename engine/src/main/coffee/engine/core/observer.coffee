@@ -154,7 +154,7 @@ module.exports.Observer = class Observer
     # (Agent) => Unit
     watch: (agent) ->
       @_perspective = Watch
-      @_targetAgent = if checks.isTurtle(agent) or checks.isPatch(agent) then agent else Nobody
+      @_targetAgent = agent
       @_updatePerspective()
       return
 
