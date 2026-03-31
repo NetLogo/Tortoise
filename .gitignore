@@ -29,6 +29,10 @@ npm-debug.log
 .settings
 .worksheet
 
+# LLM
+.claude/
+CLAUDE.md
+
 # other
 /.ensime
 /.ensime_lucene/
