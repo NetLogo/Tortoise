@@ -23,16 +23,16 @@ val commonSettings =
 
     resolvers     += "netlogoheadless" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/",
     libraryDependencies ++= Seq(
-      "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
-      "org.graalvm.polyglot" % "polyglot" % "25.0.2",
-      "org.graalvm.polyglot" % "js-community" % "25.0.2",
-      "org.scalaz"        %% "scalaz-core"     % scalazVersion,
-      "com.typesafe.play" %% "play-json"       % playJsonVersion,
-      "com.lihaoyi"       %% "scalatags"       % "0.12.0"   % "test",
-      "org.scalatest"     %% "scalatest"       % "3.2.16"   % "test",
-      "org.scalatestplus" %% "scalacheck-1-18" % "3.2.19.0" % "test",
-      "org.skyscreamer"   %  "jsonassert"      % "1.5.1"    % "test",
-      "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"
+      "org.nlogo"            %  "netlogoheadless" % nlDependencyVersion,
+      "org.graalvm.polyglot" %  "polyglot"        % "25.0.2",
+      "org.graalvm.polyglot" %  "js-community"    % "25.0.2",
+      "org.scalaz"           %% "scalaz-core"     % scalazVersion,
+      "com.typesafe.play"    %% "play-json"       % playJsonVersion,
+      "com.lihaoyi"          %% "scalatags"       % "0.12.0"   % "test",
+      "org.scalatest"        %% "scalatest"       % "3.2.16"   % "test",
+      "org.scalatestplus"    %% "scalacheck-1-18" % "3.2.19.0" % "test",
+      "org.skyscreamer"      %  "jsonassert"      % "1.5.1"    % "test",
+      "org.nlogo"            %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"
     ),
 
     Compile / resourceDirectory := (root / baseDirectory).value / "resources" / "main",
