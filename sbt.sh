@@ -1,6 +1,13 @@
 #!/bin/bash
 
-export JAVA_HOME=$GRAAL_HOME
+SDKMAN_DIR="${SDKMAN_DIR:-$HOME/.sdkman}"
+GRAAL_VERSION="21.0.10-graal"
+
+if [ -f "$SDKMAN_DIR/bin/sdkman-init.sh" ]; then
+  source "$SDKMAN_DIR/bin/sdkman-init.sh"
+  sdk use java "$GRAAL_VERSION"
+fi
+# else: leave JAVA_HOME as-is (e.g. set by CI via graalvm/setup-graalvm)
 
 # GraalVM includes binaries for node and npm that would supercede
 # any installed on the system, which we do not want. -Jeremy B 2/2019

@@ -22,13 +22,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.2.0'
-          java-version: '17'
-
-      - name: Install Graal.js
-        run: |
-          gu install js
-          echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
+          java-version: '21'
+          distribution: 'graalvm'
 
       - uses: sbt/setup-sbt@v1
 
@@ -53,8 +48,6 @@ jobs:
           node --version
           echo "** JAVA_HOME"
           echo $JAVA_HOME
-          echo "** GRAAL_HOME"
-          echo $GRAAL_HOME
           echo "** java path and version"
           readlink -f `which java`
           java -version
@@ -86,13 +79,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.2.0'
-          java-version: '17'
-
-      - name: Install Graal.js
-        run: |
-          gu install js
-          echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
+          java-version: '21'
+          distribution: 'graalvm'
 
       - uses: sbt/setup-sbt@v1
 
@@ -122,13 +110,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.2.0'
-          java-version: '17'
-
-      - name: Install Graal.js
-        run: |
-          gu install js
-          echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
+          java-version: '21'
+          distribution: 'graalvm'
 
       - uses: sbt/setup-sbt@v1
 
@@ -159,15 +142,10 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.2.0'
-          java-version: '17'
+          java-version: '21'
+          distribution: 'graalvm'
 
       - uses: sbt/setup-sbt@v1
-
-      - name: Install Graal.js
-        run: |
-          gu install js
-          echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
 
       - uses: actions/setup-node@v3
         with:
@@ -193,13 +171,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.2.0'
-          java-version: '17'
-
-      - name: Install Graal.js
-        run: |
-          gu install js
-          echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
+          java-version: '21'
+          distribution: 'graalvm'
 
       - uses: sbt/setup-sbt@v1
 
@@ -225,13 +198,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.2.0'
-          java-version: '17'
-
-      - name: Install Graal.js
-        run: |
-          gu install js
-          echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
+          java-version: '21'
+          distribution: 'graalvm'
 
       - uses: sbt/setup-sbt@v1
 
@@ -262,13 +230,8 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.2.0'
-          java-version: '17'
-
-      - name: Install Graal.js
-        run: |
-          gu install js
-          echo "GRAAL_HOME=$GRAALVM_HOME" >> $GITHUB_ENV
+          java-version: '21'
+          distribution: 'graalvm'
 
       - uses: sbt/setup-sbt@v1
 

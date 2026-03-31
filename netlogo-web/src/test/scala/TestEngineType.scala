@@ -8,7 +8,7 @@ import org.scalatest.funsuite.AnyFunSuite
 class TestEngineType extends AnyFunSuite {
 
   test("engine name") {
-    assert((new GraalJS).jsRuntime.getEngine.getImplementationName.startsWith("Graal"))
+    assert((new GraalJS).jsRuntime.getEngine.getImplementationName.contains("Graal"))
   }
 
 }

@@ -24,6 +24,8 @@ val commonSettings =
     resolvers     += "netlogoheadless" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/",
     libraryDependencies ++= Seq(
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
+      "org.graalvm.polyglot" % "polyglot" % "23.1.10",
+      "org.graalvm.polyglot" % "js" % "23.1.10" pomOnly(),
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
       "com.typesafe.play" %% "play-json"       % playJsonVersion,
       "com.lihaoyi"       %% "scalatags"       % "0.12.0"   % "test",
