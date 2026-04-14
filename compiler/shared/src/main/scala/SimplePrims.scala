@@ -302,6 +302,8 @@ object SimplePrims {
         case _: prim.etc._importpcolorsrgb  => imperfect(c, "import-pcolors-rgb")
         case _: prim.etc._importworld       => imperfect(c, "import-world")
 
+        case _: prim.etc._stopinspectingdeadagents => "InspectionPrims.clearDead"
+
       }
   }
 
@@ -310,16 +312,15 @@ object SimplePrims {
       PartialFunction.condOpt(c) {
 
         // Turtle
-        case _: prim.etc._setxy => "PrimChecks.turtle.setXY"
-
+        case _: prim.etc._setxy        => "PrimChecks.turtle.setXY"
         // Random
-        case _: prim.etc._randomseed => "PrimChecks.math.randomSeed"
-
+        case _: prim.etc._randomseed   => "PrimChecks.math.randomSeed"
         // Other
-        case _: prim.etc._error => s"PrimChecks.errorPrim"
-
+        case _: prim.etc._error        => "PrimChecks.errorPrim"
         // World
         case _: prim.etc._setpatchsize => "PrimChecks.world.setPatchSize"
+        // Inspection
+        case _: prim.etc._inspect      => "PrimChecks.inspection.inspect"
 
       }
   }
@@ -340,6 +341,9 @@ object SimplePrims {
         case _: prim.etc._ride                  => "world.observer.ride"
         case _: prim.etc._watch                 => "world.observer.watch"
         case _: prim.etc._resetperspective      => "world.observer.resetPerspective"
+
+        // Inspection
+        case _: prim.etc._stopinspecting           => "InspectionPrims.stopInspecting"
 
       }
   }
@@ -413,11 +417,6 @@ object SimplePrims {
         case _: prim.etc._setplotyrange          => "plotManager.setYRange"
         case _: prim.etc._setupplots             => "plotManager.setupPlots"
         case _: prim.etc._updateplots            => "plotManager.updatePlots"
-
-        // Inspection
-        case _: prim.etc._inspect                  => "InspectionPrims.inspect"
-        case _: prim.etc._stopinspecting           => "InspectionPrims.stopInspecting"
-        case _: prim.etc._stopinspectingdeadagents => "InspectionPrims.clearDead"
 
         // Misc.
         case _: prim.etc._clearall              => "world.clearAll"

@@ -112,7 +112,7 @@ module.exports =
 
     i18nBundle = new I18nBundle()
     primChecks = new PrimChecks( i18nBundle, dump, prims, listPrims, randomPrims
-                               , stringPrims, procedurePrims, selfPrims, world)
+                               , stringPrims, procedurePrims, selfPrims, inspectionPrims, world)
 
     importWorldFromCSV = (csvText) ->
 

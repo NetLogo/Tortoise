@@ -5,39 +5,41 @@
 { checks }                       = require('../core/typechecker')
 { exceptionFactory: exceptions } = require('util/exception')
 
-AgentSetChecks  = require('./agentset-checks')
-ColorChecks     = require('./color-checks')
-ControlChecks   = require('./control-checks')
-LinkChecks      = require('./link-checks')
-ListChecks      = require('./list-checks')
-MathChecks      = require('./math-checks')
-PatchChecks     = require('./patch-checks')
-ProcedureChecks = require('./procedure-checks')
-TaskChecks      = require('./task-checks')
-TurtleChecks    = require('./turtle-checks')
-WorldChecks     = require('./world-checks')
-Validator       = require('./validator')
+AgentSetChecks   = require('./agentset-checks')
+ColorChecks      = require('./color-checks')
+ControlChecks    = require('./control-checks')
+LinkChecks       = require('./link-checks')
+ListChecks       = require('./list-checks')
+MathChecks       = require('./math-checks')
+PatchChecks      = require('./patch-checks')
+ProcedureChecks  = require('./procedure-checks')
+TaskChecks       = require('./task-checks')
+TurtleChecks     = require('./turtle-checks')
+InspectionChecks = require('./inspection-checks')
+WorldChecks      = require('./world-checks')
+Validator        = require('./validator')
 
 class Checker
 
   constructor: ( i18nBundle, dumper, miscPrims, listPrims, randomPrims, stringPrims
-               , procedurePrims, selfPrims, world) ->
+               , procedurePrims, selfPrims, inspectionPrims, world) ->
 
     getSelf = world.selfManager.self
 
-    @validator = new Validator(i18nBundle, dumper)
-    @agentset  = new AgentSetChecks(@validator, dumper, miscPrims, getSelf)
-    @color     = new ColorChecks(@validator)
-    @list      = new ListChecks(@validator, dumper, listPrims, stringPrims)
-    @math      = new MathChecks(@validator, randomPrims)
-    @procedure = new ProcedureChecks(@validator, procedurePrims)
-    @turtle    = new TurtleChecks( @validator, getSelf, world.turtleManager
+    @validator  = new Validator(i18nBundle, dumper)
+    @agentset   = new AgentSetChecks(@validator, dumper, miscPrims, getSelf)
+    @color      = new ColorChecks(@validator)
+    @list       = new ListChecks(@validator, dumper, listPrims, stringPrims)
+    @math       = new MathChecks(@validator, randomPrims)
+    @procedure  = new ProcedureChecks(@validator, procedurePrims)
+    @turtle     = new TurtleChecks( @validator, getSelf, world.turtleManager
                                  , world.breedManager)
-    @patch     = new PatchChecks(@validator, getSelf)
-    @link      = new LinkChecks(@validator, getSelf, selfPrims)
-    @task      = new TaskChecks(@validator)
-    @control   = new ControlChecks(@validator)
-    @world     = new WorldChecks(@validator, world)
+    @patch      = new PatchChecks(@validator, getSelf)
+    @link       = new LinkChecks(@validator, getSelf, selfPrims)
+    @task       = new TaskChecks(@validator)
+    @control    = new ControlChecks(@validator)
+    @inspection = new InspectionChecks(@validator, inspectionPrims)
+    @world      = new WorldChecks(@validator, world)
 
     @turtleOrLink = {
       getVariable: (sourceStart, sourceEnd, name) =>
