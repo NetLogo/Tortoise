@@ -86,6 +86,25 @@ module.exports =
         notImplemented('display', undefined)
       return
 
+    # () => Unit
+    beep: () ->
+      AudioCtx = (typeof AudioContext isnt 'undefined' and AudioContext) or
+                 (typeof webkitAudioContext isnt 'undefined' and webkitAudioContext)
+      if AudioCtx
+        ctx        = new AudioCtx()
+        oscillator = ctx.createOscillator()
+        gain       = ctx.createGain()
+        oscillator.connect(gain)
+        gain.connect(ctx.destination)
+        oscillator.frequency.value = 880
+        gain.gain.setValueAtTime(0.3, ctx.currentTime)
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2)
+        oscillator.start(ctx.currentTime)
+        oscillator.stop(ctx.currentTime + 0.2)
+      else
+        @_printPrims.print('BEEP')
+      return
+
     # (Any) => Boolean
     ifElseValueBooleanCheck: (b) ->
       @booleanCheck(b, "IFELSE-VALUE")

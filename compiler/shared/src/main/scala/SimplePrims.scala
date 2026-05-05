@@ -445,6 +445,7 @@ object SimplePrims {
         case _: prim.etc._exportview            => "ImportExportPrims.exportView"
         case _: prim.etc._exportworld           => "ImportExportPrims.exportWorld"
         case _: prim.etc._wait                  => "Prims.wait"
+        case _: prim.etc._beep                  => "Prims.beep"
 
         case _: prim.etc._importdrawing => "ImportExportPrims.importDrawing"
 
