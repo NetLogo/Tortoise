@@ -33,12 +33,24 @@ module.exports = (grunt) ->
           alias: []
         }
       }
+    },
+    terser: {
+      engine: {
+        src:  ['target/classes/js/tortoise-engine.js'],
+        dest: 'target/classes/js/tortoise-engine.min.js',
+        options: {
+          sourceMap: {
+            url: 'tortoise-engine.min.js.map'
+          }
+        }
+      }
     }
   })
 
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-copy')
+  grunt.loadNpmTasks('grunt-terser')
 
   grunt.task.registerTask('fix_require', 'Changes "require" varname to "tortoise_require"', ->
     filepath    = './target/classes/js/tortoise-engine.js'
@@ -58,4 +70,4 @@ module.exports = (grunt) ->
     return
   )
 
-  grunt.registerTask('default', ['coffee', 'gen_aliases', 'browserify', 'fix_require'])
+  grunt.registerTask('default', ['coffee', 'gen_aliases', 'browserify', 'fix_require', 'terser'])

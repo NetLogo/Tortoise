@@ -185,9 +185,15 @@ lazy val netLogoWeb: Project = (project in file("netlogo-web")).
       val sourceFile = (engine / Compile / classDirectory).value / "js" / "tortoise" / "shim" / "engine-scala.js"
       val destFile   = (Compile / classDirectory).value / "engine-scala.js"
       IO.copyFile(sourceFile, destFile)
-      val engineSource = (engine / Compile / classDirectory).value / "js" / "tortoise-engine.js"
-      val engineDest   = (Compile / classDirectory).value / "tortoise-engine.js"
+      val engineSource    = (engine / Compile / classDirectory).value / "js" / "tortoise-engine.js"
+      val engineDest      = (Compile / classDirectory).value / "tortoise-engine.js"
       IO.copyFile(engineSource, engineDest)
+      val engineMinSource = (engine / Compile / classDirectory).value / "js" / "tortoise-engine.min.js"
+      val engineMinDest   = (Compile / classDirectory).value / "tortoise-engine.min.js"
+      IO.copyFile(engineMinSource, engineMinDest)
+      val engineMapSource = (engine / Compile / classDirectory).value / "js" / "tortoise-engine.min.js.map"
+      val engineMapDest   = (Compile / classDirectory).value / "tortoise-engine.min.js.map"
+      IO.copyFile(engineMapSource, engineMapDest)
       Seq()
     }.taskValue,
 
