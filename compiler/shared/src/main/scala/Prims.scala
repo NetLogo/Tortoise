@@ -9,6 +9,7 @@ import
   JsOps.{ indented, jsString, jsStringEscaped }
 
 import org.nlogo.core.{
+  Application,
   AstNode,
   CommandBlock,
   Expression,
@@ -19,7 +20,7 @@ import org.nlogo.core.{
   Statement,
   Syntax
 }
-import org.nlogo.core.prim.Lambda
+import org.nlogo.core.prim.{ Lambda, _symbol }
 
 import org.nlogo.tortoise.compiler.utils.CompilerErrors.failCompilation
 
@@ -97,6 +98,44 @@ trait PrimUtils {
       ).mkString(",\n")
       s"($lets,\n$code)"
     }
+  }
+
+  // Check if a type mask allows SymbolType
+  private def allowsSymbolType(mask: Int): Boolean =
+    Arguments.isSupported(mask, Syntax.SymbolType)
+
+  // Extract symbol value from an expression if it's a symbol primitive
+  def compileExtensionArgs(app: Application, syntax: Syntax, useCompileArgs: Boolean)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
+
+    val argTypes = if (syntax.isInfix) {
+      Seq(syntax.left) ++ syntax.right
+    } else {
+      syntax.right
+    }
+
+    def compileArg(arg: Expression): String =
+      arg match {
+        case r: ReporterApp   => handlers.reporter(r, useCompileArgs)
+        case b: ReporterBlock => handlers.reporter(b, useCompileArgs)
+        case c: CommandBlock  => s"() => { ${handlers.commands(c)} }"
+        case _                => handlers.reporter(arg, useCompileArgs)
+      }
+
+    val compiledArgs = app.args.zipWithIndex.map { case (arg, i) =>
+      val allowedTypes = if (i < argTypes.length) argTypes(i) else argTypes.last
+      if (allowsSymbolType(allowedTypes)) {
+        arg match {
+          case r: ReporterApp if r.reporter.isInstanceOf[_symbol] =>
+            jsString(r.reporter.token.text.toLowerCase)
+          case _ => compileArg(arg)
+        }
+      } else {
+        compileArg(arg)
+      }
+    }
+
+    compiledArgs.mkString(", ")
   }
 
 }
@@ -244,7 +283,7 @@ trait ReporterPrims extends PrimUtils {
         val ExtensionPrimRegex = """_externreport\(([^:]+):([^)]+)\)""".r
         (x.toString: @unchecked) match {
           case ExtensionPrimRegex(extName, primName) =>
-            s"Extensions[${jsString(extName)}].prims[${jsString(primName)}](${args.commas})"
+            s"Extensions[${jsString(extName)}].prims[${jsString(primName)}](${compileExtensionArgs(r, x.syntax, useCompileArgs)})"
         }
 
       case ra: prim.etc._range =>
@@ -621,7 +660,7 @@ trait CommandPrims extends PrimUtils {
         val ExtensionPrimRegex = """_extern\(([^:]+):([^)]+)\)""".r
         (x.toString: @unchecked) match {
           case ExtensionPrimRegex(extName, primName) =>
-            s"Extensions[${jsString(extName)}].prims[${jsString(primName)}](${args.commas});"
+            s"Extensions[${jsString(extName)}].prims[${jsString(primName)}](${compileExtensionArgs(s, x.syntax, useCompileArgs)});"
         }
 
       case _ if compilerFlags.generateUnimplemented =>

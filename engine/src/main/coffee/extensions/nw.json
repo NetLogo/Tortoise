@@ -1,0 +1,58 @@
+{
+  "name": "nw",
+  "prims": [
+    { "name": "SET-CONTEXT",       "argTypes": ["turtleset", "linkset"],                      "returnType": "unit" },
+    { "name": "GET-CONTEXT",       "argTypes": [],                                             "returnType": "list" },
+    { "name": "WITH-CONTEXT",      "argTypes": ["turtleset", "linkset", { "type": "commandblock" }], "returnType": "unit" },
+
+    { "name": "TURTLES-IN-RADIUS",         "argTypes": ["number"],             "returnType": "turtleset" },
+    { "name": "TURTLES-IN-OUT-RADIUS",     "argTypes": ["number"],             "returnType": "turtleset" },
+    { "name": "TURTLES-IN-IN-RADIUS",      "argTypes": ["number"],             "returnType": "turtleset" },
+    { "name": "TURTLES-IN-REVERSE-RADIUS", "argTypes": ["number"],             "returnType": "turtleset" },
+
+    { "name": "DISTANCE-TO",               "argTypes": ["wildcard"],           "returnType": "wildcard" },
+    { "name": "PATH-TO",                   "argTypes": ["wildcard"],           "returnType": "wildcard" },
+    { "name": "TURTLES-ON-PATH-TO",        "argTypes": ["wildcard"],           "returnType": "wildcard" },
+
+    { "name": "WEIGHTED-DISTANCE-TO",        "argTypes": ["wildcard", { "types": ["string", "symbol"] }], "returnType": "wildcard" },
+    { "name": "WEIGHTED-PATH-TO",            "argTypes": ["wildcard", { "types": ["string", "symbol"] }], "returnType": "wildcard" },
+    { "name": "TURTLES-ON-WEIGHTED-PATH-TO", "argTypes": ["wildcard", { "types": ["string", "symbol"] }], "returnType": "wildcard" },
+
+    { "name": "MEAN-PATH-LENGTH",          "argTypes": [],                     "returnType": "wildcard" },
+    { "name": "MEAN-WEIGHTED-PATH-LENGTH", "argTypes": [{ "types": ["string", "symbol"] }],             "returnType": "wildcard" },
+
+    { "name": "BETWEENNESS-CENTRALITY",        "argTypes": [],                 "returnType": "number" },
+    { "name": "CLOSENESS-CENTRALITY",          "argTypes": [],                 "returnType": "number" },
+    { "name": "WEIGHTED-CLOSENESS-CENTRALITY", "argTypes": [{ "types": ["string", "symbol"] }],         "returnType": "number" },
+    { "name": "EIGENVECTOR-CENTRALITY",        "argTypes": [],                 "returnType": "number" },
+    { "name": "PAGE-RANK",                     "argTypes": [],                 "returnType": "number" },
+
+    { "name": "CLUSTERING-COEFFICIENT",    "argTypes": [],                     "returnType": "number" },
+    { "name": "WEAK-COMPONENT-CLUSTERS",   "argTypes": [],                     "returnType": "list" },
+    { "name": "LOUVAIN-COMMUNITIES",       "argTypes": [],                     "returnType": "list" },
+    { "name": "MODULARITY",                "argTypes": ["list"],               "returnType": "number" },
+    { "name": "MAXIMAL-CLIQUES",           "argTypes": [],                     "returnType": "list" },
+    { "name": "BIGGEST-MAXIMAL-CLIQUES",   "argTypes": [],                     "returnType": "list" },
+
+    { "name": "GENERATE-PREFERENTIAL-ATTACHMENT", "argTypes": ["wildcard", "wildcard", "number", "number"],           "returnType": "unit" },
+    { "name": "GENERATE-RANDOM",                  "argTypes": ["wildcard", "wildcard", "number", "number"], "returnType": "unit" },
+    { "name": "GENERATE-WATTS-STROGATZ",          "argTypes": ["wildcard", "wildcard", "number", "number", "number"], "returnType": "unit" },
+
+    { "name": "SAVE-GRAPHML",  "argTypes": ["string"], "returnType": "unit" },
+    { "name": "LOAD-GRAPHML",  "argTypes": ["string", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "SAVE-MATRIX",   "argTypes": ["string"], "returnType": "unit" },
+    { "name": "LOAD-MATRIX",   "argTypes": ["string", "turtleset", "linkset", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "SAVE-DL",       "argTypes": ["string"], "returnType": "unit" },
+    { "name": "LOAD-DL",       "argTypes": ["string", "turtleset", "linkset", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "SAVE-GDF",      "argTypes": ["string"], "returnType": "unit" },
+    { "name": "LOAD-GDF",      "argTypes": ["string", "turtleset", "linkset", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "SAVE-GEXF",     "argTypes": ["string"], "returnType": "unit" },
+    { "name": "LOAD-GEXF",     "argTypes": ["string", "turtleset", "linkset", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "SAVE-GML",      "argTypes": ["string"], "returnType": "unit" },
+    { "name": "LOAD-GML",      "argTypes": ["string", "turtleset", "linkset", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "SAVE-VNA",      "argTypes": ["string"], "returnType": "unit" },
+    { "name": "LOAD-VNA",      "argTypes": ["string", "turtleset", "linkset", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "SAVE",          "argTypes": ["string"], "returnType": "unit" },
+    { "name": "LOAD",          "argTypes": ["string", "turtleset", "linkset", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" }
+  ]
+}

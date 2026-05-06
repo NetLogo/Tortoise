@@ -7,3 +7,17 @@
 Smoke
   2 + 2 => 4
   netlogo-web? => true
+
+resize-world-resets-who-and-allows-links
+  breed [frogs frog]
+  breed [mice mouse]
+  undirected-link-breed [edges edge]
+  O> create-frogs 1
+  O> create-mice 2 [ create-edge-with frog 0 ]
+  O> resize-world -1 1 -1 1
+  O> create-frogs 1
+  O> create-mice 2 [ create-edge-with frog 0 ]
+  count frogs => 1
+  count mice => 2
+  count edges => 2
+  [who] of min-one-of frogs [who] => 0
