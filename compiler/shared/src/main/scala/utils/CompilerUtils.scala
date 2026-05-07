@@ -5,8 +5,10 @@ package org.nlogo.tortoise.compiler.utils
 import org.nlogo.core.{ CompilerException, Token }
 
 object CompilerErrors {
+  val eof = Token.eof("")
+
   def failCompilation(msg: String): Nothing =
-    failCompilation(msg, Token.Eof.start, Token.Eof.end, Token.Eof.filename)
+    failCompilation(msg, eof.start, eof.end, eof.filename)
 
   def failCompilation(msg: String, token: Token): Nothing =
     failCompilation(msg, token.start, token.end, token.filename)

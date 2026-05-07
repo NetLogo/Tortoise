@@ -89,13 +89,13 @@ module.exports =
         minPycor: minPycor,
         maxPxcor: maxPxcor,
         maxPycor: maxPycor,
-        linkBreeds: @breedManager.orderedLinkBreeds(),
+        linkBreeds: @breedManager.orderedLinkBreeds().filter((b) -> b isnt "LINKS"),
         linkShapeList: @linkShapeMap,
         patchSize: @patchSize,
         patchesAllBlack: @_patchesAllBlack,
         patchesWithLabels: @_patchesWithLabels,
         ticks: -1,
-        turtleBreeds: @breedManager.orderedTurtleBreeds(),
+        turtleBreeds: @breedManager.orderedTurtleBreeds().filter((b) -> b isnt "TURTLES"),
         turtleShapeList: @turtleShapeMap,
         unbreededLinksAreDirected: false
         wrappingAllowedInX: wrappingAllowedInX,
@@ -151,8 +151,7 @@ module.exports =
 
         @_config.resizeWorld()
 
-        # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
-        @turtleManager._clearTurtlesSuspended()
+        @turtleManager.clearTurtles()
 
         @setTopology(wrapsInX, wrapsInY, minPxcor, maxPxcor, minPycor, maxPycor)
         @_createPatches()

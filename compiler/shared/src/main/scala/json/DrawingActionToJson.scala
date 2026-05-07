@@ -134,8 +134,7 @@ class StampImageConverter(override protected val target: StampImage) extends Dra
             "size"      -> JsDouble(size),
             "x"         -> JsDouble(x),
             "y"         -> JsDouble(y),
-            "shapeName" -> JsString(shapeName),
-            "stampMode" -> JsString(stampMode)
+            "shapeName" -> JsString(shapeName)
           ))
 
         ("turtle", obj)
@@ -156,8 +155,7 @@ class StampImageConverter(override protected val target: StampImage) extends Dra
             "thickness" -> JsDouble(thickness),
             "directed?" -> JsBool(isDirected),
             "size"      -> JsDouble(size),
-            "hidden?"   -> JsBool(isHidden),
-            "stampMode" -> JsString(stampMode)
+            "hidden?"   -> JsBool(isHidden)
           ))
 
         ("link", obj)

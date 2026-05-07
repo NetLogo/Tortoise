@@ -79,13 +79,13 @@ module.exports =
       return
 
     # (Number, Number, Number, Number, RGB, String, String) => Unit
-    registerTurtleStamp: (x, y, size, heading, color, shapeName, stampMode) =>
-      @_reportDrawingEvent({ type: "stamp-image", agentType: "turtle", stamp: { x, y, size, heading, color, shapeName, stampMode } })
+    registerTurtleStamp: (x, y, size, heading, color, shapeName) =>
+      @_reportDrawingEvent({ type: "stamp-image", agentType: "turtle", stamp: { x, y, size, heading, color, shapeName } })
       return
 
     # (Number, Number, Number, Number, Number, Number, Number, RGB, String, Number, Boolean, Number, Boolean, String) => Unit
-    registerLinkStamp: (x1, y1, x2, y2, midpointX, midpointY, heading, color, shapeName, thickness, isDirected, size, isHidden, stampMode) =>
-      @_reportDrawingEvent({ type: "stamp-image", agentType: "link", stamp: { x1, y1, x2, y2, midpointX, midpointY, heading, color, shapeName, thickness, 'directed?': isDirected, size, 'hidden?': isHidden, stampMode } })
+    registerLinkStamp: (x1, y1, x2, y2, midpointX, midpointY, heading, color, shapeName, thickness, isDirected, size, isHidden) =>
+      @_reportDrawingEvent({ type: "stamp-image", agentType: "link", stamp: { x1, y1, x2, y2, midpointX, midpointY, heading, color, shapeName, thickness, 'directed?': isDirected, size, 'hidden?': isHidden } })
       return
 
     # (UpdateEntry, Number) => Unit
