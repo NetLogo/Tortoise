@@ -13,14 +13,14 @@ def runNpm(log: Logger, runDir: File, args: Seq[String], env: (String, String)*)
   ()
 }
 
-lazy val npmInstall = taskKey[Seq[File]]("Runs `npm install` from within SBT")
+lazy val npmInstall = taskKey[Seq[File]]("Runs `npm ci` from within SBT")
 npmInstall := {
   val log = streams.value.log
-  if (!npmIntegrity.value.exists || npmIntegrity.value.olderThan(packageJson.value))
+  if (!npmIntegrity.value.exists || npmIntegrity.value.olderThan(packageJson.value) || npmIntegrity.value.olderThan(packageLockJson.value))
     runNpm(
       log,
       baseDirectory.value,
-      Seq("install", "--ignore-optional")
+      Seq("ci")
     )
   nodeDeps.value
 }
@@ -52,6 +52,10 @@ watchSources ++= allJSSources.value
 
 lazy val packageJson = Def.task[File] {
   baseDirectory.value / "package.json"
+}
+
+lazy val packageLockJson = Def.task[File] {
+  baseDirectory.value / "package-lock.json"
 }
 
 lazy val npmIntegrity = Def.task[File] {
