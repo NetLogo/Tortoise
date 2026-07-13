@@ -1555,3 +1555,25 @@ save-to-string-unknown-format
 load-from-string-unknown-format
   extensions [ nw ]
   O> nw:load-from-string "bogus" "data" turtles links => ERROR Extension exception: 'bogus' is not a supported network format. Valid formats are: dl, gdf, gexf, gml, graphml, matrix, and vna.
+
+# Malformed data surfaces as a clean extension exception rather than an unhandled parser crash.
+load-from-string-malformed-graphml
+  extensions [ nw ]
+  O> nw:load-from-string "graphml" "this is not xml at all" turtles links => ERROR Extension exception: nw:load-from-string could not parse the given graphml data.
+
+load-from-string-malformed-gexf
+  extensions [ nw ]
+  O> nw:load-from-string "gexf" "<gexf><nodes><node id=\"1\"></gexf>" turtles links => ERROR Extension exception: nw:load-from-string could not parse the given gexf data.
+
+load-from-string-malformed-matrix
+  extensions [ nw ]
+  O> nw:load-from-string "matrix" "not a matrix" turtles links => ERROR Extension exception: nw:load-from-string could not parse the given matrix data.
+
+# A runtime error inside the optional command block must NOT be masked by the malformed-data wrapper.
+load-from-string-command-block-error-not-masked
+  extensions [ nw ]
+  globals [ g ]
+  O> crt 2 [ create-links-with other turtles ]
+  O> set g nw:save-to-string "gml"
+  O> clear-turtles
+  O> nw:load-from-string "gml" g turtles links [ error "boom" ] => ERROR boom

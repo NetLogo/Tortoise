@@ -1,6 +1,12 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ exceptionFactory: exceptions } = require('util/exception')
+{ exceptionFactory: exceptions, ExtensionException, HaltInterrupt, InternalException, RuntimeException } = require('util/exception')
+
+# An engine exception is one NetLogo already understands (extension errors, user halts, runtime errors from a user
+# command block, etc.).  Malformed-data handling below wraps only *foreign* errors (raw parser crashes) and lets these
+# propagate unchanged so their real messages survive.
+isEngineException = (err) ->
+  err instanceof ExtensionException or err instanceof HaltInterrupt or err instanceof InternalException or err instanceof RuntimeException
 
 # The string-based I/O primitives (nw:save-to-string / nw:load-from-string) accept an explicit format argument.  Keep
 # the supported-format list, the normalization, and the error message in one place so `save` and `load` stay in
@@ -151,6 +157,9 @@ module.exports = (deps) ->
   loadMatrix = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     cells = for line in data.split("\n") when line.trim() isnt ""
       (parseFloat(tok) for tok in line.trim().split(/\s+/))
+    for row in cells
+      for cell in row
+        throw new Error("non-numeric matrix entry") if Number.isNaN(cell)
     n = cells.length
 
     nodeIds = (String(i) for i in [0...n])
@@ -410,12 +419,19 @@ module.exports = (deps) ->
   parseXml = (text) ->
     if typeof DOMParser isnt "undefined"
       doc = new DOMParser().parseFromString(text, "application/xml")
+      # Browsers report malformed XML with a <parsererror> element rather than throwing, so check for it explicitly.
+      if doc.getElementsByTagName("parsererror").length > 0
+        throw new Error("malformed XML")
       walkDomElement(doc.documentElement)
     else
-      DBF = Java.type("javax.xml.parsers.DocumentBuilderFactory")
-      IS  = Java.type("org.xml.sax.InputSource")
-      SR  = Java.type("java.io.StringReader")
-      doc = DBF.newInstance().newDocumentBuilder().parse(new IS(new SR(text)))
+      doc =
+        try
+          DBF = Java.type("javax.xml.parsers.DocumentBuilderFactory")
+          IS  = Java.type("org.xml.sax.InputSource")
+          SR  = Java.type("java.io.StringReader")
+          DBF.newInstance().newDocumentBuilder().parse(new IS(new SR(text)))
+        catch err
+          throw new Error("malformed XML")
       walkW3cElement(doc.getDocumentElement())
 
   xmlChildren = (node, tag) ->
@@ -556,15 +572,21 @@ module.exports = (deps) ->
     turtleBreedName = getBreedName(turtleBreed)
     linkBreedName   = getBreedName(linkBreed)
     breedDirected   = workspace.world.breedManager.get(linkBreedName).isDirected()
-    switch format
-      when "matrix"  then loadMatrix(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
-      when "gml"     then loadGml(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
-      when "vna"     then loadVna(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
-      when "dl"      then loadDl(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
-      when "gdf"     then loadGdf(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
-      when "graphml" then loadGraphml(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
-      when "gexf"    then loadGexf(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
-      else throw exceptions.extension("nw:load-from-string does not yet support the '#{format}' format in NetLogo Web.")
+    try
+      switch format
+        when "matrix"  then loadMatrix(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
+        when "gml"     then loadGml(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
+        when "vna"     then loadVna(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
+        when "dl"      then loadDl(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
+        when "gdf"     then loadGdf(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
+        when "graphml" then loadGraphml(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
+        when "gexf"    then loadGexf(data, turtleBreedName, linkBreedName, breedDirected, runBlock)
+        else throw exceptions.extension("nw:load-from-string does not yet support the '#{format}' format in NetLogo Web.")
+    catch err
+      # Surface malformed data as a clean extension exception (mirroring desktop), but let engine exceptions
+      # (already-meaningful extension errors, user halts, errors from the optional command block) propagate as-is.
+      throw err if isEngineException(err)
+      throw exceptions.extension("nw:load-from-string could not parse the given #{format} data.")
 
   {
     "SAVE-TO-STRING":   saveToString
