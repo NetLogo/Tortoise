@@ -53,6 +53,9 @@
     { "name": "SAVE-VNA",      "argTypes": ["string"], "returnType": "unit" },
     { "name": "LOAD-VNA",      "argTypes": ["string", "turtleset", "linkset", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
     { "name": "SAVE",          "argTypes": ["string"], "returnType": "unit" },
-    { "name": "LOAD",          "argTypes": ["string", "turtleset", "linkset", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" }
+    { "name": "LOAD",          "argTypes": ["string", "turtleset", "linkset", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+
+    { "name": "SAVE-TO-STRING",   "argTypes": ["string"], "returnType": "string" },
+    { "name": "LOAD-FROM-STRING", "argTypes": ["string", "string", "turtleset", "linkset", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" }
   ]
 }

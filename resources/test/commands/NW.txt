@@ -1407,3 +1407,151 @@ nw-load-file-prims-with-command-block-unsupported-on-web
   extensions [ nw ]
   O> nw:load-graphml "x" [ set color red ]         => ERROR Extension exception: nw:load-graphml is not supported by NetLogo Web. Use nw:load-from-string instead.
   O> nw:load "x" turtles links [ set color red ]   => ERROR Extension exception: nw:load is not supported by NetLogo Web. Use nw:load-from-string instead.
+
+# String I/O section: nw:save-to-string / nw:load-from-string
+#
+# The file-system-free counterparts to nw:save / nw:load.  Since NetLogo Web has no file system, we round-trip the
+# current context through a global string (save-to-string -> global -> load-from-string) instead of a temp file, using
+# clear-turtles (not clear-all) so the global survives.
+
+save-to-string-and-load-from-string-gml
+  extensions [ nw ]
+  globals [ g ]
+  O> crt 2 [ create-links-with other turtles ]
+  O> set g nw:save-to-string "gml"
+  O> clear-turtles
+  O> nw:load-from-string "gml" g turtles links
+  count turtles => 2
+  [is-undirected-link? self] of link 0 1 => true
+
+save-to-string-and-load-from-string-gml-directed
+  extensions [ nw ]
+  globals [ g ]
+  directed-link-breed [ directed-edges directed-edge ]
+  O> crt 2
+  O> ask turtle 0 [ create-directed-edge-to turtle 1 ]
+  O> set g nw:save-to-string "gml"
+  O> clear-turtles
+  O> nw:load-from-string "gml" g turtles directed-edges
+  count turtles => 2
+  [is-directed-link? self] of directed-edge 0 1 => true
+
+save-to-string-and-load-from-string-matrix
+  extensions [ nw ]
+  globals [ g ]
+  O> crt 2 [ create-links-with other turtles ]
+  O> set g nw:save-to-string "matrix"
+  O> clear-turtles
+  O> nw:load-from-string "matrix" g turtles links
+  count turtles => 2
+  any? links => true
+
+save-to-string-and-load-from-string-vna
+  extensions [ nw ]
+  globals [ g ]
+  undirected-link-breed [ undirected-edges undirected-edge ]
+  O> crt 2 [ create-links-with other turtles ]
+  O> set g nw:save-to-string "vna"
+  O> clear-turtles
+  O> nw:load-from-string "vna" g turtles undirected-edges
+  count turtles => 2
+  [is-undirected-link? self] of undirected-edge 0 1 => true
+
+save-to-string-and-load-from-string-dl
+  extensions [ nw ]
+  globals [ g ]
+  undirected-link-breed [ undirected-edges undirected-edge ]
+  O> crt 2 [ create-links-with other turtles ]
+  O> set g nw:save-to-string "dl"
+  O> clear-turtles
+  O> nw:load-from-string "dl" g turtles undirected-edges
+  count turtles => 2
+  [is-undirected-link? self] of undirected-edge 0 1 => true
+
+save-to-string-and-load-from-string-gdf
+  extensions [ nw ]
+  globals [ g ]
+  O> crt 3 [ create-links-with other turtles ]
+  O> set g nw:save-to-string "gdf"
+  O> clear-turtles
+  O> nw:load-from-string "gdf" g turtles links
+  count turtles => 3
+  count links => 3
+
+save-to-string-and-load-from-string-graphml
+  extensions [ nw ]
+  globals [ g ]
+  turtles-own [ tvar ]
+  O> cro 2
+  O> ask turtle 0 [ set tvar "a" create-link-with turtle 1 ]
+  O> ask turtle 1 [ set tvar "b" ]
+  O> set g nw:save-to-string "graphml"
+  O> clear-turtles
+  O> nw:load-from-string "graphml" g turtles links
+  count turtles => 2
+  count links => 1
+  sort [ tvar ] of turtles => ["a" "b"]
+
+save-to-string-and-load-from-string-graphml-directed
+  extensions [ nw ]
+  globals [ g ]
+  directed-link-breed [ directed-edges directed-edge ]
+  O> crt 2
+  O> ask turtle 0 [ create-directed-edge-to turtle 1 ]
+  O> set g nw:save-to-string "graphml"
+  O> clear-turtles
+  O> nw:load-from-string "graphml" g turtles directed-edges
+  count turtles => 2
+  [is-directed-link? self] of directed-edge 0 1 => true
+
+save-to-string-and-load-from-string-gexf
+  extensions [ nw ]
+  globals [ g ]
+  O> crt 2 [ create-links-with other turtles ]
+  O> set g nw:save-to-string "gexf"
+  O> clear-turtles
+  O> nw:load-from-string "gexf" g turtles links
+  count turtles => 2
+  [is-undirected-link? self] of link 0 1 => true
+
+save-to-string-returns-string
+  extensions [ nw ]
+  O> crt 2 [ create-links-with other turtles ]
+  is-string? nw:save-to-string "gml" => true
+  (length nw:save-to-string "gml" > 0) => true
+
+save-to-string-format-normalization
+  extensions [ nw ]
+  globals [ g ]
+  O> crt 2 [ create-links-with other turtles ]
+  O> set g nw:save-to-string ".GML"
+  O> clear-turtles
+  O> nw:load-from-string "gml" g turtles links
+  count turtles => 2
+
+load-from-string-format-normalization
+  extensions [ nw ]
+  globals [ g ]
+  O> crt 2 [ create-links-with other turtles ]
+  O> set g nw:save-to-string "gml"
+  O> clear-turtles
+  O> nw:load-from-string " .GML " g turtles links
+  count turtles => 2
+
+load-from-string-runs-command-block
+  extensions [ nw ]
+  globals [ g ]
+  O> crt 2 [ create-links-with other turtles ]
+  O> set g nw:save-to-string "gml"
+  O> clear-turtles
+  O> nw:load-from-string "gml" g turtles links [ set color red ]
+  sort [ color ] of turtles => [15 15]
+
+save-to-string-unknown-format
+  extensions [ nw ]
+  O> crt 2 [ create-links-with other turtles ]
+  O> print nw:save-to-string "bogus" => ERROR Extension exception: 'bogus' is not a supported network format. Valid formats are: dl, gdf, gexf, gml, graphml, matrix, and vna.
+
+load-from-string-unknown-format
+  extensions [ nw ]
+  O> nw:load-from-string "bogus" "data" turtles links => ERROR Extension exception: 'bogus' is not a supported network format. Valid formats are: dl, gdf, gexf, gml, graphml, matrix, and vna.
