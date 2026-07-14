@@ -4,7 +4,8 @@
 TurtleSet = require('../engine/core/turtleset')
 { checks } = require('../engine/core/typechecker')
 
-{ isInTurtleset, getNeighbors, bfs, dijkstra, getLinkWeight, normalizeWeightVar } = require('extensions/nw-core')
+{ isInTurtleset, getNeighbors, bfs, dijkstra, getLinkWeight, normalizeWeightVar, bfsSuccessors,
+  walkSuccessors, dijkstraSuccessors, isValidLink } = require('extensions/nw-core')
 
 # ({ workspace: Workspace, getCurrentContext: () => Context }) => Object
 module.exports = (deps) ->
@@ -53,6 +54,43 @@ module.exports = (deps) ->
     dist = distances.get(targetTurtle.id)
     if dist? then dist else false
 
+  # The links incident to `source` whose other end is `target`, in desktop `outEdges(source)` order:  directed out-links
+  # (`outLinks`, link-id order) first, then undirected links incident to `source` (`undirLinks`, link-id order).  The
+  # order here must line up with desktop's to pick the same link. -Jeremy B July 2026
+  # (Turtle, Turtle, Context) => Array[Link]
+  linksBetween = (source, target, ctx) ->
+    ids   = new Set(t.id for t in ctx.turtles.toArray())
+    out   = []
+    undir = []
+    for link in ctx.links.toArray()
+      if not isValidLink(link)
+        continue
+      if not (ids.has(link.end1.id) and ids.has(link.end2.id))
+        continue
+      if link.isDirected
+        if link.end1 is source and link.end2 is target
+          out.push(link)
+      else
+        if (link.end1 is source and link.end2 is target) or (link.end2 is source and link.end1 is target)
+          undir.push(link)
+    out.concat(undir)
+
+  # Converts a turtle path (source, ..., target) into the list of links realizing each hop, drawing
+  # `rng.nextInt(links.size)` per consecutive pair -- replicating desktop `turtlesToLinks`.  Even when exactly one link
+  # connects a pair, `nextInt(1)` is still drawn (and still consumes an MT word), so this must run even for simple
+  # graphs to keep the RNG position in lockstep with desktop.  -Jeremy B July 2026
+  # (Array[Turtle], Context, RNG) => Array[Link]
+  turtlesToLinks = (turtles, ctx, rng) ->
+    path = []
+    for i in [0 ... turtles.length - 1]
+      links = linksBetween(turtles[i], turtles[i + 1], ctx)
+      path.push(links[rng.nextInt(links.length)])
+    path
+
+  # Desktop `path-to` first computes the *turtle* path via `PathFinder.path` (the successor-cache forward walk -- same
+  # RNG as `turtles-on-path-to`), then converts turtles to links with `turtlesToLinks`, which draws one extra
+  # `rng.nextInt(links.size)` per hop.  We mirror both steps so the full RNG sequence (path walk, then per-hop link
+  # selection) matches desktop.  -Jeremy B July 2026
   # (Turtle, Turtle) => Array[Link] | Boolean
   calcPathTo = (startTurtle, targetTurtle) ->
     ctx = getCurrentContext()
@@ -66,24 +104,19 @@ module.exports = (deps) ->
     if startTurtle is targetTurtle
       return []
 
-    mode = if ctx.isDirected then 'out' else 'both'
-    {parents} = bfs(startTurtle, ctx, mode)
-
-    if not parents.has(targetTurtle.id) or parents.get(targetTurtle.id).length is 0
+    rng = workspace.world.rng
+    { successors } = bfsSuccessors(targetTurtle, ctx)
+    turtles = walkSuccessors(successors, startTurtle, targetTurtle, rng)
+    if turtles is false
       return false
+    turtlesToLinks(turtles, ctx, rng)
 
-    path = []
-    current = targetTurtle
-    while current isnt startTurtle
-      parentList = parents.get(current.id)
-      if not parentList? or parentList.length is 0
-        return false
-      parentInfo = parentList[workspace.world.rng.nextInt(parentList.length)]
-      path.unshift(parentInfo.link)
-      current = parentInfo.parent
-
-    path
-
+  # Mirrors desktop's `PathFinder.path` / `cachedPath`: it builds the *successor* cache (reverse BFS from the
+  # destination, see `bfsSuccessors`) and then walks *forward* from the source, drawing
+  # `rng.nextInt(successors[current].length)` at each hop to pick the next turtle toward the target.  The
+  # predecessor-backward walk this used to do consumed the RNG in a different order and with different bounds, so it
+  # diverged from desktop on tie-broken paths.  When the source cannot reach the target, `successors[source]` is empty
+  # and we return `false` (no RNG drawn), matching desktop's `None`. -Jeremy B July 2026
   # (Turtle, Turtle) => Array[Turtle] | Boolean
   calcTurtlesOnPathTo = (startTurtle, targetTurtle) ->
     ctx = getCurrentContext()
@@ -97,24 +130,8 @@ module.exports = (deps) ->
     if startTurtle is targetTurtle
       return [startTurtle]
 
-    mode = if ctx.isDirected then 'out' else 'both'
-    {parents} = bfs(startTurtle, ctx, mode)
-
-    if not parents.has(targetTurtle.id) or parents.get(targetTurtle.id).length is 0
-      return false
-
-    turtles = []
-    current = targetTurtle
-    while current isnt startTurtle
-      parentList = parents.get(current.id)
-      if not parentList? or parentList.length is 0
-        return false
-      parentInfo = parentList[workspace.world.rng.nextInt(parentList.length)]
-      turtles.unshift(current)
-      current = parentInfo.parent
-
-    turtles.unshift(startTurtle)
-    turtles
+    { successors } = bfsSuccessors(targetTurtle, ctx)
+    walkSuccessors(successors, startTurtle, targetTurtle, workspace.world.rng)
 
   # (Number) => TurtleSet
   turtlesInRadius = (radius) ->
@@ -176,6 +193,10 @@ module.exports = (deps) ->
     dist = distances.get(targetTurtle.id)
     if dist? then dist else false
 
+  # Desktop `weighted-path-to` computes the turtle path via `PathFinder.path(..., Some(weightVariable))` (the successor
+  # cache built by a *reverse Dijkstra from the destination* + forward walk -- same RNG as
+  # `turtles-on-weighted-path-to`), then converts turtles to links with `turtlesToLinks`.  See `calcPathTo` for why both
+  # steps matter for RNG parity.  -Jeremy B July 2026
   # (Turtle, Turtle, String) => Array[Link] | Boolean
   calcWeightedPathTo = (startTurtle, targetTurtle, weightVar) ->
     ctx = getCurrentContext()
@@ -189,24 +210,17 @@ module.exports = (deps) ->
     if startTurtle is targetTurtle
       return []
 
-    mode = if ctx.isDirected then 'out' else 'both'
-    {parents} = dijkstra(startTurtle, ctx, mode, weightVar)
-
-    if not parents.has(targetTurtle.id) or parents.get(targetTurtle.id).length is 0
+    rng = workspace.world.rng
+    { successors } = dijkstraSuccessors(targetTurtle, ctx, weightVar)
+    turtles = walkSuccessors(successors, startTurtle, targetTurtle, rng)
+    if turtles is false
       return false
+    turtlesToLinks(turtles, ctx, rng)
 
-    path = []
-    current = targetTurtle
-    while current isnt startTurtle
-      parentList = parents.get(current.id)
-      if not parentList? or parentList.length is 0
-        return false
-      parentInfo = parentList[workspace.world.rng.nextInt(parentList.length)]
-      path.unshift(parentInfo.link)
-      current = parentInfo.parent
-
-    path
-
+  # Mirrors desktop `PathFinder.path(..., Some(weightVariable))`: builds the successor cache via a reverse Dijkstra from
+  # the target (see `dijkstraSuccessors`) and walks forward from the source, drawing
+  # `rng.nextInt(successors[current].length)` per hop.  The predecessor-backward walk this used to do diverged from
+  # desktop's successor-cache walk in RNG order and tie-broken intermediate nodes. -Jeremy B July 2026
   # (Turtle, Turtle, String) => Array[Turtle] | Boolean
   calcTurtlesOnWeightedPathTo = (startTurtle, targetTurtle, weightVar) ->
     ctx = getCurrentContext()
@@ -220,24 +234,8 @@ module.exports = (deps) ->
     if startTurtle is targetTurtle
       return [startTurtle]
 
-    mode = if ctx.isDirected then 'out' else 'both'
-    {parents} = dijkstra(startTurtle, ctx, mode, weightVar)
-
-    if not parents.has(targetTurtle.id) or parents.get(targetTurtle.id).length is 0
-      return false
-
-    turtles = []
-    current = targetTurtle
-    while current isnt startTurtle
-      parentList = parents.get(current.id)
-      if not parentList? or parentList.length is 0
-        return false
-      parentInfo = parentList[workspace.world.rng.nextInt(parentList.length)]
-      turtles.unshift(current)
-      current = parentInfo.parent
-
-    turtles.unshift(startTurtle)
-    turtles
+    { successors } = dijkstraSuccessors(targetTurtle, ctx, weightVar)
+    walkSuccessors(successors, startTurtle, targetTurtle, workspace.world.rng)
 
   # () => Number | Boolean
   meanPathLength = ->

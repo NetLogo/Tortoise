@@ -36,6 +36,21 @@ module.exports = (deps) ->
 
   fingerprint = graphFingerprint(isValidLink)
 
+  # Mirror of desktop's `util.TurtleSetsConverters.toTurtleSets`, which every NW cluster prim
+  # (weak/bicomponent/maximal-cliques/biggest-maximal-cliques) funnels its result through: `new
+  # scala.util.Random(context.getRNG).shuffle(sets)`.  The RNG draws land identically on both engines, so we reproduce
+  # the exact shuffle.
+  # -Jeremy B July 2026
+  # (Array[TurtleSet]) => Array[TurtleSet]
+  shuffleClusters = (clusters) ->
+    arr = clusters.slice()
+    i = arr.length
+    while i > 1
+      i -= 1
+      j = workspace.world.rng.nextInt(i + 1)
+      [arr[i], arr[j]] = [arr[j], arr[i]]
+    arr
+
   # (Turtle) => Number
   calcClosenessCentrality = (turtle) ->
     ctx = getCurrentContext()
@@ -218,9 +233,19 @@ module.exports = (deps) ->
     if turtles.length is 0
       return new Map()
 
-    compView = graphView(ctx, 'both')
-    inMode   = if ctx.isDirected then 'in' else 'both'
-    inView   = if inMode is 'both' then compView else graphView(ctx, inMode)
+    inView = if ctx.isDirected then graphView(ctx, 'in') else graphView(ctx, 'both')
+
+    # Weakly-connected components: follow every link in both directions, matching desktop's
+    # BreadthFirstSearch(followOut = true, followIn = true).  We can't use graphView('both') here because it is
+    # out-biased for directed edges (a directed u->v only lands in u's adjacency), which would split a weak component
+    # and leave a node's in-neighbor outside its own component -- propagating NaN into the power iteration below.
+    # -Jeremy B July 2026
+    weakAdj = new Map()
+    for t in turtles
+      weakAdj.set(t.id, [])
+    for link in ctx.links.toArray() when isValidLink(link) and isInTurtleset(link.end1, ctx) and isInTurtleset(link.end2, ctx)
+      weakAdj.get(link.end1.id).push(link.end2)
+      weakAdj.get(link.end2.id).push(link.end1)
 
     visited = new Set()
     components = []
@@ -233,7 +258,7 @@ module.exports = (deps) ->
         while queue.length > 0
           current = queue.shift()
           component.push(current)
-          for {turtle: neighbor} in (compView.adj.get(current.id) ? [])
+          for neighbor in weakAdj.get(current.id)
             if not visited.has(neighbor.id)
               visited.add(neighbor.id)
               queue.push(neighbor)
@@ -311,6 +336,10 @@ module.exports = (deps) ->
       throw exceptions.extension("nw:eigenvector-centrality can only be called by a turtle")
     calcEigenvectorCentrality(self)
 
+  # Mirrors desktop's JUNG PageRank(graph, alpha = 0.15): each vertex's score flows from its *predecessors* along
+  # uniform 1/out-degree edge weights, mixed with a uniform prior via alpha, and the mass sitting on dangling nodes
+  # (no out-edges) is redistributed each step so the total stays 1.  Convergence follows JUNG's AbstractIterativeScorer
+  # (sum of absolute per-vertex deltas below `tolerance`, capped at `maxIters`).  -Jeremy B July 2026
   # (Context) => Map[Number, Number]
   pageRankCalc = (ctx) ->
     turtles = ctx.turtles.toArray()
@@ -319,67 +348,54 @@ module.exports = (deps) ->
     if n is 0
       return new Map()
 
-    incoming = new Map()
-    outgoingCount = new Map()
+    alpha     = 0.15  # JUNG reset (teleport) probability; damping = 1 - alpha
+    prior     = 1 / n # uniform vertex prior
+    tolerance = 1e-9  # iterate to the fixed point; desktop's JUNG result matches full convergence at our precision
+    maxIters  = 100   # JUNG AbstractIterativeScorer iteration cap (ample for these graph sizes to converge)
 
+    # Desktop's nw:page-rank always scores over the *undirected* graph, prim.jung.PageRank uses `asUndirectedJungGraph`
+    # regardless of the context's directedness.  So treat every link as an undirected edge (weight 1 / degree(neighbor))
+    # here too.  A node's inflow comes from all its neighbors (with multiplicity), and isolated nodes (degree 0) are the
+    # "dangling" nodes whose potential JUNG redistributes each step.
+    # -Jeremy B July 2026
+    neighbors = new Map()
+    degree    = new Map()
     for t in turtles
-      incoming.set(t.id, [])
-      outgoingCount.set(t.id, 0)
+      neighbors.set(t.id, [])
+      degree.set(t.id, 0)
+    for link in ctx.links.toArray() when isValidLink(link) and isInTurtleset(link.end1, ctx) and isInTurtleset(link.end2, ctx)
+      neighbors.get(link.end1.id).push(link.end2.id)
+      neighbors.get(link.end2.id).push(link.end1.id)
+      degree.set(link.end1.id, degree.get(link.end1.id) + 1)
+      degree.set(link.end2.id, degree.get(link.end2.id) + 1)
 
-    mode = if ctx.isDirected then 'out' else 'both'
-
-    view = graphView(ctx, mode)
-
-    hasAnyEdges = false
+    scores = new Map()
     for t in turtles
-      outCount = (view.adj.get(t.id) ? []).length
-      outgoingCount.set(t.id, outCount)
-      if outCount > 0
-        hasAnyEdges = true
+      scores.set(t.id, prior)
 
-    if not hasAnyEdges
-      result = new Map()
+    for iter in [0...maxIters]
+      # Collect the potential on dangling nodes (degree 0); it would otherwise leak out of the system.
+      disappearing = 0
       for t in turtles
-        result.set(t.id, 1 / n)
-      return result
+        if degree.get(t.id) is 0
+          disappearing += scores.get(t.id)
 
-    for t in turtles
-      for {turtle: neighbor} in (view.adj.get(t.id) ? [])
-        neighborOutCount = outgoingCount.get(neighbor.id)
-        if neighborOutCount > 0
-          incoming.get(t.id).push({neighbor: neighbor, outCount: neighborOutCount})
-
-    damping = 0.85
-    teleport = (1 - damping) / n
-
-    pr = new Map()
-    for t in turtles
-      pr.set(t.id, 1 / n)
-
-    maxIterations = 100
-    tolerance = 0.0001
-
-    for iter in [0...maxIterations]
-      newPr = new Map()
+      newScores = new Map()
       for t in turtles
-        tId = t.id
-        linkContribution = 0
-        for incomingInfo in incoming.get(tId)
-          linkContribution += damping * pr.get(incomingInfo.neighbor.id) / incomingInfo.outCount
-        newPr.set(tId, teleport + linkContribution)
+        input = 0
+        for nbrId in neighbors.get(t.id)
+          input += scores.get(nbrId) / degree.get(nbrId)
+        newScores.set(t.id, input * (1 - alpha) + prior * alpha + (1 - alpha) * disappearing * prior)
 
-      maxDiff = 0
+      maxDelta = 0
       for t in turtles
-        diff = Math.abs(newPr.get(t.id) - pr.get(t.id))
-        if diff > maxDiff
-          maxDiff = diff
+        d = Math.abs(newScores.get(t.id) - scores.get(t.id))
+        maxDelta = d if d > maxDelta
+      scores = newScores
 
-      pr = newPr
+      break if maxDelta < tolerance
 
-      if maxDiff < tolerance
-        break
-
-    pr
+    scores
 
   # (Turtle) => Number
   calcPageRank = (turtle) ->
@@ -531,7 +547,7 @@ module.exports = (deps) ->
     for component in components
       result.push(new TurtleSet(component, workspace.world))
 
-    result
+    shuffleClusters(result)
 
   # (Array[TurtleSet] | TurtleSet) => Number
   modularity = (communitiesList) ->
@@ -605,8 +621,11 @@ module.exports = (deps) ->
 
     totalModularity
 
+  # Unshuffled maximal cliques (Bron-Kerbosch with pivoting).  `maximalCliques` and `biggestMaximalCliques` both build
+  # on this; each applies its own `shuffleClusters` (matching desktop's per-prim `toTurtleSets(..., rng)` shuffle) so
+  # the RNG draws line up.  -Jeremy B July 2026
   # () => Array[TurtleSet]
-  maximalCliques = ->
+  computeMaximalCliques = ->
     ctx = getCurrentContext()
 
     if ctx.isDirected
@@ -703,8 +722,12 @@ module.exports = (deps) ->
     result
 
   # () => Array[TurtleSet]
+  maximalCliques = ->
+    shuffleClusters(computeMaximalCliques())
+
+  # () => Array[TurtleSet]
   biggestMaximalCliques = ->
-    cliques = maximalCliques()
+    cliques = computeMaximalCliques()
 
     if cliques.length is 0
       return []
@@ -715,7 +738,8 @@ module.exports = (deps) ->
       if size > maxSize
         maxSize = size
 
-    cliques.filter((c) -> c.toArray().length is maxSize)
+    biggest = cliques.filter((c) -> c.toArray().length is maxSize)
+    shuffleClusters(biggest)
 
   # () => Array[TurtleSet]
   louvainCommunities = ->
@@ -952,7 +976,7 @@ module.exports = (deps) ->
       dfs(t, -1)
       components.push(new TurtleSet([t], workspace.world)) if adjacency.get(t.id).length is 0
 
-    components
+    shuffleClusters(components)
 
   {
     "BETWEENNESS-CENTRALITY":        betweennessCentrality

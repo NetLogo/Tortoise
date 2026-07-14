@@ -112,6 +112,112 @@ bfs = (startTurtle, ctx, mode, view = graphView(ctx, mode)) ->
 
   {distances, parents}
 
+# In-neighbor adjacency, matching desktop `GraphContext.inEdges(t) = inLinks(t) ++ undirLinks(t)` in link-id
+# order (directed in-edges first, then undirected, each in link-id order).  Desktop's PathFinder builds its
+# successor cache from a *reverse* BFS that follows `inNeighbors`, so the path prims need the in-neighbor
+# order to line up bit-for-bit.  -Jeremy B July 2026
+# (Context, String) => { idSet: Set, adj: Map[Number, Array[Neighbor]] }
+reverseGraphView = (ctx) ->
+  idSet = new Set()
+  adj   = new Map()
+  for t in ctx.turtles.toArray()
+    idSet.add(t.id)
+    adj.set(t.id, [])
+  links = ctx.links.toArray()
+  valid = (link) -> isValidLink(link) and idSet.has(link.end1.id) and idSet.has(link.end2.id)
+  for link in links when valid(link) and link.isDirected
+    adj.get(link.end2.id).push({ turtle: link.end1, link })
+  for link in links when valid(link) and not link.isDirected
+    adj.get(link.end1.id).push({ turtle: link.end2, link })
+    adj.get(link.end2.id).push({ turtle: link.end1, link })
+  { idSet, adj }
+
+# Reverse BFS from `dest` following in-neighbors, building `successors[node]` = the list of next-hops from
+# `node` toward `dest` on a shortest path.  This replicates desktop `PathFinder.cachingBFS(reverse = true)`
+# exactly: each frontier layer is built by *prepending* freshly discovered neighbors (`layer = neighbor ::
+# layer`) and iterated in that stored order the next round, and `successors[neighbor]` is *appended* with
+# `node` whenever `neighbor` is an in-neighbor of `node` on a shortest path.  Matching both the layer
+# prepend/iterate order and the in-neighbor (link-id) order is what makes `rng.nextInt(len)` pick the same
+# hop as desktop's `cachedPath`.  -Jeremy B July 2026
+# (Turtle, Context) => { distances: Map[Number, Number], successors: Map[Number, Array[Turtle]] }
+bfsSuccessors = (dest, ctx) ->
+  view      = reverseGraphView(ctx)
+  distances = new Map()
+  successors = new Map()
+  distances.set(dest.id, 0)
+  frontier = [dest]
+  while frontier.length > 0
+    nextLayer = []
+    for node in frontier
+      nodeDist = distances.get(node.id)
+      for { turtle: neighbor } in (view.adj.get(node.id) ? [])
+        if not distances.has(neighbor.id)
+          distances.set(neighbor.id, nodeDist + 1)
+          nextLayer.unshift(neighbor)
+        if distances.get(neighbor.id) is nodeDist + 1
+          succs = successors.get(neighbor.id)
+          if not succs?
+            succs = []
+            successors.set(neighbor.id, succs)
+          succs.push(node)
+    frontier = nextLayer
+  { distances, successors }
+
+# Forward walk from `source` toward `target` through a successor cache (`successors[node]` = the
+# next-hops from `node` toward `target` on a shortest path), drawing `rng.nextInt(len)` at each hop.
+# This is the shared reconstruction step for every path prim: it replicates desktop
+# `PathFinder.cachedPath`'s recursive `availableSuccessors(rng.nextInt(availableSuccessors.length))`
+# (which tries the successor cache first, then falls back to the predecessor cache -- but in the
+# fixed-destination usage pattern every prim is docked under, only the successor cache is ever built
+# and consulted).  An empty successor list at the source (unreachable) returns `false` with no RNG
+# drawn, matching desktop's `None`.  -Jeremy B July 2026
+# (Map[Number, Array[Turtle]], Turtle, Turtle, RNG) => Array[Turtle] | Boolean
+walkSuccessors = (successors, source, target, rng) ->
+  succList = successors.get(source.id)
+  if not succList? or succList.length is 0
+    return false
+  turtles = [source]
+  current = source
+  while current isnt target
+    list = successors.get(current.id)
+    if not list? or list.length is 0
+      return false
+    current = list[rng.nextInt(list.length)]
+    turtles.push(current)
+  turtles
+
+# Reverse Dijkstra from `dest` following in-edges, building `successors[node]` = next-hops toward `dest`
+# on a shortest *weighted* path.  Replicates desktop `PathFinder.cachingDijkstra(reverse = true)`: each
+# node is finalized once (the first time it is popped at its minimum distance, at which point its
+# in-edges are relaxed), and for *every* pop at that minimum distance the in-neighbor it was reached
+# through is appended to `successors[node]` -- so all shortest-path predecessors appear (ties).  The
+# in-neighbor order matches desktop `inEdges = inLinks ++ undirLinks` (link-id order) because we reuse
+# `reverseGraphView`.  Dijkstra itself draws no RNG; the RNG draws happen in `walkSuccessors`.
+# -Jeremy B July 2026
+# (Turtle, Context, String) => { distances: Map[Number, Number], successors: Map[Number, Array[Turtle]] }
+dijkstraSuccessors = (dest, ctx, weightVar) ->
+  view       = reverseGraphView(ctx)
+  dists      = new Map()
+  successors = new Map()
+  heap       = new BinaryHeap((e) -> e.dist)
+  heap.push({ turtle: dest, dist: 0, pred: dest })
+  while heap.size() > 0
+    { turtle, dist, pred } = heap.pop()
+    if dists.has(turtle.id) and dist > dists.get(turtle.id)
+      continue
+    if not dists.has(turtle.id)
+      dists.set(turtle.id, dist)
+      for { turtle: nb, link } in (view.adj.get(turtle.id) ? [])
+        if not dists.has(nb.id)
+          heap.push({ turtle: nb, dist: dist + getLinkWeight(link, weightVar), pred: turtle })
+    if turtle isnt pred
+      succs = successors.get(turtle.id)
+      if not succs?
+        succs = []
+        successors.set(turtle.id, succs)
+      succs.push(pred)
+  { distances: dists, successors }
+
 # (Link, String) => Number
 getLinkWeight = (link, varName) ->
   value = link.getVariable(varName)
@@ -230,5 +336,6 @@ getBreedName = (agentSet) ->
 
 module.exports = {
   isAliveTurtle, isValidLink, determineDirectedness, getNeighbors, isInTurtleset, bfs,
-  getLinkWeight, BinaryHeap, dijkstra, normalizeWeightVar, getBreedName, graphView
+  getLinkWeight, BinaryHeap, dijkstra, normalizeWeightVar, getBreedName, graphView, bfsSuccessors,
+  walkSuccessors, dijkstraSuccessors
 }

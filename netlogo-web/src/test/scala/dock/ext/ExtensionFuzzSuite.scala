@@ -100,6 +100,20 @@ trait ExtensionFuzzSuite extends DockingSuite {
     testCommand("ask turtles [ create-uedges-with n-of (random count other turtles) other turtles ]")
     testCommand("ask uedges [ set weight (1 + random-float 5) ]")
   }
+
+  // Builds a random directed network using the `dedges` breed, with random positive `weight`s on the links.  The
+  // directed analogue of `buildRandomUndirectedNetwork`; see `ExtensionFuzzSuite.directedModelCode` for declarations.
+  protected def buildRandomDirectedNetwork(run: FuzzRun)(implicit fixture: DockingFixture): Unit = {
+    import fixture._
+    val nlSeed = run.rng.nextInt()
+    val n      = run.rng.nextInt(maxTurtles) + 1
+    testCommand("clear-all")
+    testCommand(s"random-seed $nlSeed")
+    testCommand(s"create-turtles $n [ setxy random-xcor random-ycor ]")
+    // each turtle points a directed edge at a random subset of the others (out-links)
+    testCommand("ask turtles [ create-dedges-to n-of (random count other turtles) other turtles ]")
+    testCommand("ask dedges [ set weight (1 + random-float 5) ]")
+  }
 }
 
 object ExtensionFuzzSuite {
@@ -109,6 +123,20 @@ object ExtensionFuzzSuite {
     """|extensions [nw]
        |undirected-link-breed [uedges uedge]
        |uedges-own [weight]
+       |""".stripMargin
+
+  // Declarations a suite's model needs for the directed generator above.
+  val directedModelCode: String =
+    """|extensions [nw]
+       |directed-link-breed [dedges dedge]
+       |dedges-own [weight]
+       |""".stripMargin
+
+  // Declarations for the structural/random generators, which build into the built-in `links` (undirected) and the
+  // `dedges` breed (used by the directed wheel generators).
+  val generatorModelCode: String =
+    """|extensions [nw]
+       |directed-link-breed [dedges dedge]
        |""".stripMargin
 
 }

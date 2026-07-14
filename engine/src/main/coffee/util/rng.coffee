@@ -47,6 +47,14 @@ module.exports =
     nextDouble: =>
       @_currentRNG.nextDouble()
 
+    # () => Boolean
+    # Mirror of desktop's `MersenneTwisterFast.nextBoolean`: consumes one raw MT word and tests the sign
+    # bit (`y >>> 31`).  Exposed so the NW preferential-attachment generator can match desktop's
+    # `rng.nextBoolean` exactly (the `nextInt(2)` it formerly used consumes the same word but tests a
+    # different bit, so the chosen link end diverged).  -Jeremy B July 2026
+    nextBoolean: =>
+      @_currentRNG.nextBoolean()
+
     # (Number) => Unit
     setSeed: (seed) ->
       @_currentRNG.setSeed(seed)

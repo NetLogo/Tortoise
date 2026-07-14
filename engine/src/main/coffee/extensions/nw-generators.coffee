@@ -1,13 +1,66 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 { exceptionFactory: exceptions } = require('util/exception')
-{ Setters: TurtleSetters } = require('../engine/core/turtle/turtlevariables')
+TurtleSet = require('../engine/core/turtleset')
 
 { getBreedName } = require('extensions/nw-core')
 
 # ({ workspace: Workspace }) => Object
 module.exports = (deps) ->
   { workspace } = deps
+
+  # (Number, Number, String) => Number
+  requireIntMinimum = (value, minimum, things = "nodes") ->
+    if value < minimum
+      throw exceptions.extension("The number of #{things} in the generated network must be at least #{minimum}.")
+    value
+
+  # (AgentSet, AgentSet) => { turtleBreedName: String, linkBreedName: String, isDirected: Boolean }
+  generatorBreeds = (turtleBreed, linkBreed) ->
+    linkBreedName = getBreedName(linkBreed)
+    {
+      turtleBreedName: getBreedName(turtleBreed)
+      linkBreedName:   linkBreedName
+      isDirected:      workspace.world.breedManager.get(linkBreedName).isDirected()
+    }
+
+  # (Number, String) => Array[Turtle]
+  makeRandomTurtles = (n, turtleBreedName) ->
+    workspace.world.turtleManager.createTurtles(n, turtleBreedName, 0, 0).toArray()
+
+  # (String) => Turtle
+  makeRandomTurtle = (turtleBreedName) ->
+    makeRandomTurtles(1, turtleBreedName)[0]
+
+  # Watts–Strogatz is the one desktop generator that does NOT draw RNG for turtle attributes.
+  # -Jeremy B July 2026
+  # (Number, String) => Array[Turtle]
+  makeOrderedTurtles = (n, turtleBreedName) ->
+    workspace.world.turtleManager.createOrderedTurtles(n, turtleBreedName).toArray()
+
+  # (Turtle, Turtle, String, Boolean) => Link
+  link = (end1, end2, linkBreedName, isDirected) ->
+    if isDirected
+      workspace.world.linkManager.createDirectedLink(end1, end2, linkBreedName)
+    else
+      # This preserves the link ordering, whihc a normal `createUndirectedLink()` would not do.  This is just to match
+      # the behavior of desktop NW, which similarly skips the normal "sorted by who" path.  -Jeremy B July 2026
+      workspace.world.linkManager._createLink(false, end1, end2, linkBreedName, true)
+
+  # (Turtle, Turtle, String, Boolean, Set[String]) => Unit
+  linkOnce = (end1, end2, linkBreedName, isDirected, seen) ->
+    key = if isDirected then "#{end1.id}->#{end2.id}"
+    else if end1.id < end2.id then "#{end1.id}-#{end2.id}"
+    else "#{end2.id}-#{end1.id}"
+    if not seen.has(key)
+      seen.add(key)
+      link(end1, end2, linkBreedName, isDirected)
+    return
+
+  # (Array[Turtle], Command) => Unit
+  runTurtleBlock = (turtles, runBlock) ->
+    new TurtleSet(turtles, workspace.world).ask(runBlock ? (->), true)
+    return
 
   # (AgentSet, AgentSet, Number, Number, Command) => Unit
   generatePreferentialAttachment = (turtleBreed, linkBreed, numTurtles, minDegree, runBlock) ->
@@ -20,63 +73,43 @@ module.exports = (deps) ->
     if numTurtles <= minDegree
       throw exceptions.extension("The number of turtles must be larger than the minimum degree.")
 
-    turtleBreedName = getBreedName(turtleBreed)
-    linkBreedName = getBreedName(linkBreed)
-    linkBreedObj = workspace.world.breedManager.get(linkBreedName)
-    isDirected = linkBreedObj.isDirected()
+    { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
+    rng = workspace.world.rng
 
-    initialTurtles = []
-    for i in [0...minDegree + 1]
-      color = 5 + (i % 14) * 10
-      heading = (360 * i) / (minDegree + 1)
-      workspace.world.turtleManager.createTurtles(1, turtleBreedName, 0, 0)
-      allTurtles = workspace.world.turtles().toArray()
-      newTurtle = allTurtles[allTurtles.length - 1]
-      TurtleSetters.setHeading.call(newTurtle, heading)
-      TurtleSetters.setColor.call(newTurtle, color)
-      initialTurtles.push(newTurtle)
+    # Seed graph: a clique of (minDegree + 1) turtles with all mutual links, as in BarabasiAlbertGenerator.scala.
+    # Turtles get random color/heading (matches desktop's createTurtle). Desktop builds the clique with
+    # `getOrCreateLink(s, t)`, which preserves (from, to) endpoint order on create; the order matters because later
+    # turtles sample `link.end1`/`end2` to pick attachment targets, so we use the order-preserving `link` helper (not
+    # the canonicalizing one).
+    # -Jeremy B July 2026
+    turtles = makeRandomTurtles(minDegree + 1, turtleBreedName)
+    links   = []
+    for i in [0...turtles.length]
+      for j in [i + 1...turtles.length]
+        links.push(link(turtles[i], turtles[j], linkBreedName, isDirected))
 
-    links = []
-    for i in [0...initialTurtles.length]
-      for j in [i + 1...initialTurtles.length]
-        end1 = initialTurtles[i]
-        end2 = initialTurtles[j]
-        if isDirected
-          link = workspace.world.linkManager.createDirectedLink(end1, end2, linkBreedName)
-        else
-          link = workspace.world.linkManager.createUndirectedLink(end1, end2, linkBreedName)
-        links.push(link)
-
-    allTurtles = initialTurtles.slice()
-    for t in [initialTurtles.length...numTurtles]
-      color = 5 + (t % 14) * 10
-      heading = (360 * t) / numTurtles
-      workspace.world.turtleManager.createTurtles(1, turtleBreedName, 0, 0)
-      allTurtlesList = workspace.world.turtles().toArray()
-      newTurtle = allTurtlesList[allTurtlesList.length - 1]
-      TurtleSetters.setHeading.call(newTurtle, heading)
-      TurtleSetters.setColor.call(newTurtle, color)
-
-      connected = new Set()
-      attempts = 0
-      while connected.size < minDegree and attempts < minDegree * 100
-        attempts++
-        if links.length is 0
-          break
-        randomLink = links[workspace.world.rng.nextInt(links.length)]
-        target = if workspace.world.rng.nextInt(2) is 0 then randomLink.end1 else randomLink.end2
+    # Each new turtle attaches to `minDegree` distinct existing targets by sampling a random end of a random link.
+    # Desktop draws `links(rng.nextInt(links.length))` then `if rng.nextBoolean) l.end1 else l.end2` per attempt, and
+    # only appends the new links to the sampling pool AFTER the turtle is done (`links ++= ls`).  We mirror that: the
+    # pool stays fixed during the loop (so `nextInt(links.length)` ranges over the same set as desktop),
+    # `rng.nextBoolean` picks the end, and the new links are pushed only after the while-loop.  Endpoint order is
+    # preserved (`link`, not `canonicalLink`) so that `end1`/`end2` line up with desktop for the next turtle's sampling.
+    # Dedup is by target id, which for a fresh `s` is equivalent to desktop's `LinkedHashSet[Link]` dedup.
+    # -Jeremy B July 2026
+    for _ in [turtles.length...numTurtles]
+      s          = makeRandomTurtle(turtleBreedName)
+      newLinks   = []
+      connected  = new Set()
+      while connected.size < minDegree
+        randomLink = links[rng.nextInt(links.length)]
+        target     = if rng.nextBoolean() then randomLink.end1 else randomLink.end2
         if not connected.has(target.id)
-          if isDirected
-            newLink = workspace.world.linkManager.createDirectedLink(newTurtle, target, linkBreedName)
-          else
-            newLink = workspace.world.linkManager.createUndirectedLink(newTurtle, target, linkBreedName)
-          if newLink
-            links.push(newLink)
-            connected.add(target.id)
+          connected.add(target.id)
+          newLinks.push(link(s, target, linkBreedName, isDirected))
+      links.push(newLinks...)
+      turtles.push(s)
 
-      allTurtles.push(newTurtle)
-
-    runBlockPerTurtle(allTurtles, runBlock)
+    runTurtleBlock(turtles, runBlock)
     return
 
   # (AgentSet, AgentSet, Number, Number, Command) => Unit
@@ -87,32 +120,20 @@ module.exports = (deps) ->
     if connexionProbability < 0 or connexionProbability > 1.0
       throw exceptions.extension("The connexion probability must be between 0 and 1.")
 
-    turtleBreedName = getBreedName(turtleBreed)
-    linkBreedName = getBreedName(linkBreed)
-    linkBreedObj = workspace.world.breedManager.get(linkBreedName)
-    isDirected = linkBreedObj.isDirected()
+    { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
 
-    turtles = []
-    for i in [0...nbTurtles]
-      color = 5 + (i % 14) * 10
-      heading = (360 * i) / nbTurtles
-      workspace.world.turtleManager.createTurtles(1, turtleBreedName, 0, 0)
-      allTurtles = workspace.world.turtles().toArray()
-      newTurtle = allTurtles[allTurtles.length - 1]
-      TurtleSetters.setHeading.call(newTurtle, heading)
-      TurtleSetters.setColor.call(newTurtle, color)
-      turtles.push(newTurtle)
+    turtles = makeRandomTurtles(nbTurtles, turtleBreedName)
 
+    # One `nextDouble` per candidate pair (drawn whether or not the link is created), in the same (i, j) order as
+    # algorithms/ErdosRenyiGenerator: undirected walks j > i, directed walks all j ≠ i in ascending order.
+    # -Jeremy B July 2026
     for i in [0...nbTurtles]
       jRange = if isDirected then [0...nbTurtles].filter((j) -> j isnt i) else [i + 1...nbTurtles]
       for j in jRange
         if workspace.world.rng.nextDouble() < connexionProbability
-          if isDirected
-            workspace.world.linkManager.createDirectedLink(turtles[i], turtles[j], linkBreedName)
-          else
-            workspace.world.linkManager.createUndirectedLink(turtles[i], turtles[j], linkBreedName)
+          link(turtles[i], turtles[j], linkBreedName, isDirected)
 
-    runBlockPerTurtle(turtles, runBlock)
+    runTurtleBlock(turtles, runBlock)
     return
 
   # (AgentSet, AgentSet, Number, Number, Number, Command) => Unit
@@ -126,20 +147,10 @@ module.exports = (deps) ->
     if rewireProbability < 0 or rewireProbability > 1.0
       throw exceptions.extension("The rewire probability must be between 0 and 1.")
 
-    turtleBreedName = getBreedName(turtleBreed)
-    linkBreedName   = getBreedName(linkBreed)
-    linkBreedObj    = workspace.world.breedManager.get(linkBreedName)
-    isDirected      = linkBreedObj.isDirected()
-    rng             = workspace.world.rng
+    { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
+    rng = workspace.world.rng
 
-    turtles = []
-    for i in [0...nbTurtles]
-      workspace.world.turtleManager.createTurtles(1, turtleBreedName, 0, 0)
-      allTurtles = workspace.world.turtles().toArray()
-      newTurtle  = allTurtles[allTurtles.length - 1]
-      TurtleSetters.setColor.call(newTurtle, 5 + (i % 14) * 10)
-      TurtleSetters.setHeading.call(newTurtle, (360 * i) / nbTurtles)
-      turtles.push(newTurtle)
+    turtles = makeOrderedTurtles(nbTurtles, turtleBreedName)
 
     # Seed the adjacency map with the full forward ring lattice: turtle i is connected to turtles i+1 .. i+k (mod n).
     # This mirrors the desktop generator (NW-Extension WattsStrogatzGenerator.scala) so link structure and RNG usage
@@ -175,98 +186,52 @@ module.exports = (deps) ->
           adjacency.get(source.id).add(candidate.id)
           realTarget = candidate
 
-        if isDirected
-          workspace.world.linkManager.createDirectedLink(source, realTarget, linkBreedName)
-        else
-          workspace.world.linkManager.createUndirectedLink(source, realTarget, linkBreedName)
+        link(source, realTarget, linkBreedName, isDirected)
 
-    runBlockPerTurtle(turtles, runBlock)
-    return
-
-  # (Number, Number, String) => Number
-  requireIntMinimum = (value, minimum, things = "nodes") ->
-    if value < minimum
-      throw exceptions.extension("The number of #{things} in the generated network must be at least #{minimum}.")
-    value
-
-  # (AgentSet, AgentSet) => { turtleBreedName: String, linkBreedName: String, isDirected: Boolean }
-  generatorBreeds = (turtleBreed, linkBreed) ->
-    linkBreedName = getBreedName(linkBreed)
-    {
-      turtleBreedName: getBreedName(turtleBreed)
-      linkBreedName:   linkBreedName
-      isDirected:      workspace.world.breedManager.get(linkBreedName).isDirected()
-    }
-
-  # (Number, String) => Array[Turtle]
-  makeGeneratorTurtles = (n, turtleBreedName) ->
-    turtles = []
-    for i in [0...n]
-      workspace.world.turtleManager.createTurtles(1, turtleBreedName, 0, 0)
-      all = workspace.world.turtles().toArray()
-      t   = all[all.length - 1]
-      TurtleSetters.setColor.call(t, 5 + (i % 14) * 10)
-      TurtleSetters.setHeading.call(t, (360 * i) / n)
-      turtles.push(t)
-    turtles
-
-  # (Turtle, Turtle, String, Boolean) => Link
-  link = (end1, end2, linkBreedName, isDirected) ->
-    if isDirected
-      workspace.world.linkManager.createDirectedLink(end1, end2, linkBreedName)
-    else
-      workspace.world.linkManager.createUndirectedLink(end1, end2, linkBreedName)
-
-  # (Turtle, Turtle, String, Boolean, Set[String]) => Unit
-  linkOnce = (end1, end2, linkBreedName, isDirected, seen) ->
-    key = if isDirected then "#{end1.id}->#{end2.id}"
-    else if end1.id < end2.id then "#{end1.id}-#{end2.id}"
-    else "#{end2.id}-#{end1.id}"
-    if not seen.has(key)
-      seen.add(key)
-      link(end1, end2, linkBreedName, isDirected)
-    return
-
-  # (Array[Turtle], Command) => Unit
-  runBlockPerTurtle = (turtles, runBlock) ->
-    if runBlock?
-      for t in turtles
-        workspace.world.selfManager.askAgent(runBlock)(t)
+    runTurtleBlock(turtles, runBlock)
     return
 
   # (AgentSet, AgentSet, Number, Command) => Unit
   generateRing = (turtleBreed, linkBreed, nodeCount, runBlock) ->
     n = requireIntMinimum(nodeCount, 3)
     { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
-    turtles = makeGeneratorTurtles(n, turtleBreedName)
+    turtles = makeRandomTurtles(n, turtleBreedName)
     link(turtles[i], turtles[(i + 1) % n], linkBreedName, isDirected) for i in [0...n]
-    runBlockPerTurtle(turtles, runBlock)
+    runTurtleBlock(turtles, runBlock)
     return
 
   # (AgentSet, AgentSet, Number, Command) => Unit
   generateStar = (turtleBreed, linkBreed, nodeCount, runBlock) ->
     n = requireIntMinimum(nodeCount, 1)
     { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
-    turtles = makeGeneratorTurtles(n, turtleBreedName)
-    link(turtles[0], turtles[i], linkBreedName, isDirected) for i in [1...n]
-    runBlockPerTurtle(turtles, runBlock)
+    turtles = makeRandomTurtles(n, turtleBreedName)
+    # Desktop StarGraphGenerator makes the first turtle the center and adds edges (leaf, center) for each
+    # leaf in ascending order, so end1=leaf, end2=center.  -Jeremy B July 2026
+    hub = turtles[0]
+    link(turtles[i], hub, linkBreedName, isDirected) for i in [1...n]
+    runTurtleBlock(turtles, runBlock)
     return
 
   # (AgentSet, AgentSet, Number, Boolean, Command) => Unit
   buildWheel = (turtleBreed, linkBreed, nodeCount, spokesFromHub, runBlock) ->
     n = requireIntMinimum(nodeCount, 4)
     { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
-    turtles = makeGeneratorTurtles(n, turtleBreedName)
-    hub = turtles[0]
-    rim = turtles[1...n]
-    for r, k in rim
-      link(r, rim[(k + 1) % rim.length], linkBreedName, isDirected)
+    turtles = makeRandomTurtles(n, turtleBreedName)
+    # Desktop WheelGraphGenerator creates the (n-1) rim turtles first and the hub last, then adds the rim
+    # cycle followed by the spokes.  So the hub is the last turtle; inward spokes run (rim, hub), outward
+    # spokes run (hub, rim).  `spokesFromHub` true => outward (hub -> rim), false => inward (rim -> hub).
+    # -Jeremy B July 2026
+    hub = turtles[n - 1]
+    rim = turtles[0...n - 1]
+    for i in [0...rim.length]
+      link(rim[i], rim[(i + 1) % rim.length], linkBreedName, isDirected)
+    for r in rim
       if spokesFromHub then link(hub, r, linkBreedName, isDirected) else link(r, hub, linkBreedName, isDirected)
-    runBlockPerTurtle(turtles, runBlock)
+    runTurtleBlock(turtles, runBlock)
     return
 
   # (AgentSet, AgentSet, Number, Command) => Unit
-  generateWheel        = (turtleBreed, linkBreed, nodeCount, runBlock) -> buildWheel(turtleBreed, linkBreed, nodeCount, true,  runBlock)
+  generateWheel        = (turtleBreed, linkBreed, nodeCount, runBlock) -> buildWheel(turtleBreed, linkBreed, nodeCount, false, runBlock)
   # (AgentSet, AgentSet, Number, Command) => Unit
   generateWheelInward  = (turtleBreed, linkBreed, nodeCount, runBlock) -> buildWheel(turtleBreed, linkBreed, nodeCount, false, runBlock)
   # (AgentSet, AgentSet, Number, Command) => Unit
@@ -283,22 +248,28 @@ module.exports = (deps) ->
         else if isToroidal and rows > 2 then linkOnce(at(r, c), at(0, c), linkBreedName, isDirected, seen)
     return
 
+  # This code is written to be structurally equivalent with desktop NW, but not bit-identical.  That means things like
+  # RNG state might not be 100% consistent between implementations.  This is to avoid re-implement the Jung-library's
+  # algorithm here.  -Jeremy B July 2026
   # (AgentSet, AgentSet, Number, Number, Boolean, Command) => Unit
   generateLattice2d = (turtleBreed, linkBreed, rowCount, colCount, isToroidal, runBlock) ->
     rows = requireIntMinimum(rowCount, 2, "rows")
     cols = requireIntMinimum(colCount, 2, "columns")
     { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
-    turtles = makeGeneratorTurtles(rows * cols, turtleBreedName)
+    turtles = makeRandomTurtles(rows * cols, turtleBreedName)
     buildLattice(turtles, rows, cols, isToroidal, linkBreedName, isDirected, new Set())
-    runBlockPerTurtle(turtles, runBlock)
+    runTurtleBlock(turtles, runBlock)
     return
 
+  # This code is written to be structurally equivalent with desktop NW, but not bit-identical.  That means things like
+  # RNG state might not be 100% consistent between implementations.  This is to avoid re-implement the Jung-library's
+  # algorithm here.  -Jeremy B July 2026
   # (AgentSet, AgentSet, Number, Number, Number, Boolean, Command) => Unit
   generateSmallWorld = (turtleBreed, linkBreed, rowCount, colCount, clusteringExponent, isToroidal, runBlock) ->
     rows = requireIntMinimum(rowCount, 2, "rows")
     cols = requireIntMinimum(colCount, 2, "columns")
     { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
-    turtles = makeGeneratorTurtles(rows * cols, turtleBreedName)
+    turtles = makeRandomTurtles(rows * cols, turtleBreedName)
     seen    = new Set()
     buildLattice(turtles, rows, cols, isToroidal, linkBreedName, isDirected, seen)
 
@@ -328,7 +299,7 @@ module.exports = (deps) ->
             chosen = cand.turtle
             break
           linkOnce(source, chosen, linkBreedName, isDirected, seen)
-    runBlockPerTurtle(turtles, runBlock)
+    runTurtleBlock(turtles, runBlock)
     return
 
   {

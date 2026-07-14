@@ -129,11 +129,11 @@ module.exports =
 
       return
 
-    # (Boolean, Turtle, Turtle, String) => Link
-    _createLink: (isDirected, from, to, breedName) ->
+    # (Boolean, Turtle, Turtle, String, Boolean) => Link
+    _createLink: (isDirected, from, to, breedName, preserveOrder = false) ->
 
       [end1, end2] =
-        if from.id < to.id or isDirected
+        if isDirected or preserveOrder or from.id < to.id
           [from, to]
         else
           [to, from]
