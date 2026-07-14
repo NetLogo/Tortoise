@@ -1,16 +1,16 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 { exceptionFactory: exceptions } = require('util/exception')
-TurtleSet = require('../engine/core/turtleset')
+TurtleSet  = require('../engine/core/turtleset')
 { checks } = require('../engine/core/typechecker')
 
-# Centrality and community/clustering metrics for the nw extension.  Extracted from nw.coffee.
 { isInTurtleset, bfs, dijkstra, getLinkWeight, normalizeWeightVar, isValidLink, isAliveTurtle, graphView } = require('extensions/nw-core')
 
 # A cheap O(V+E) structural fingerprint of the graph context, used to memoize whole-graph metrics (betweenness,
 # eigenvector, page-rank).  Captures turtle membership and link structure (endpoints, directedness, and the weight
 # variable when relevant) in iteration order, which is stable for an unchanged graph, so it never yields a false cache
 # hit; a changed graph produces a different fingerprint and forces recomputation.
+# -Jeremy B July 2026
 graphFingerprint = (isValidLinkFn) -> (ctx, weightVar) ->
   parts = (t.id for t in ctx.turtles.toArray())
   parts.push("|")
@@ -18,8 +18,6 @@ graphFingerprint = (isValidLinkFn) -> (ctx, weightVar) ->
     parts.push(if weightVar? then "#{l.end1.id},#{l.end2.id},#{l.isDirected},#{l.getVariable(weightVar)}" else "#{l.end1.id},#{l.end2.id},#{l.isDirected}")
   parts.join(";")
 
-# Wrap a whole-graph metric so repeated per-turtle calls over an unchanged graph reuse the single computed result.
-# `ask turtles [ nw:betweenness-centrality ]` therefore runs the O(V*E) algorithm once instead of once per turtle.
 makeGraphMemo = (fingerprint, compute) ->
   cache = { key: null, value: null }
   (ctx, weightVar) ->
@@ -207,10 +205,6 @@ module.exports = (deps) ->
     if turtles.length is 0
       return new Map()
 
-    # Build adjacency once (O(V+E)) and traverse it directly instead of re-scanning every link and doing a linear
-    # turtleset membership test per neighbor.  Component-finding walks the undirected ('both') view; compIncoming
-    # walks the in-edge view (incoming for directed, both for undirected).  For an undirected graph the two views are
-    # identical, so we share one.
     compView = graphView(ctx, 'both')
     inMode   = if ctx.isDirected then 'in' else 'both'
     inView   = if inMode is 'both' then compView else graphView(ctx, inMode)
@@ -255,10 +249,10 @@ module.exports = (deps) ->
 
       x = new Map()
       for t in component
-        # Initialize with in-degrees (as per NW extension)
+        # Initialize with in-degrees (as per desktop NW extension)
         x.set(t.id, compIncoming.get(t.id).length)
 
-      # Run exactly 100 iterations (as per NW extension)
+      # Run exactly 100 iterations (as per desktop NW extension)
       for iter in [0...100]
         y = new Map()
         for t in component
@@ -318,8 +312,6 @@ module.exports = (deps) ->
 
     mode = if ctx.isDirected then 'out' else 'both'
 
-    # Build adjacency once (O(V+E)) and read neighbors from it, instead of re-scanning every link with a per-neighbor
-    # linear turtleset membership test.  The view is already restricted to in-context valid links.
     view = graphView(ctx, mode)
 
     hasAnyEdges = false
@@ -747,9 +739,6 @@ module.exports = (deps) ->
 
     rng = workspace.world.rng
 
-    # nodeIds: Array<id> where id is a turtle ID (original level) or community index (meta level)
-    # nodeOut/nodeIn: Map<id, Map<neighborId, weight>>
-    # Returns Map<id, communityIndex>
     runPhase1 = (nodeIds, nodeOut, nodeIn) ->
       communityOf = new Map()
       for id, i in nodeIds
@@ -837,8 +826,6 @@ module.exports = (deps) ->
             changed = true
       communityOf
 
-    # Build compressed meta-graph where each community becomes a meta-node.
-    # Returns {metaComs, metaOut, metaIn}
     buildMeta = (nodeIds, nodeOut, communityOf) ->
       metaComs = Array.from(new Set(communityOf.values())).sort((a, b) -> a - b)
       metaOut = new Map(); metaIn = new Map()
@@ -852,8 +839,6 @@ module.exports = (deps) ->
           metaIn.get(dst).set(src, (metaIn.get(dst).get(src) ? 0) + w)
       {metaComs, metaOut, metaIn}
 
-    # Phase 1 local moves, then recursively cluster the meta-graph until convergence.
-    # Returns Map<id, communityIndex>
     cluster = (nodeIds, nodeOut, nodeIn) ->
       communityOf = runPhase1(nodeIds, nodeOut, nodeIn)
       {metaComs, metaOut, metaIn} = buildMeta(nodeIds, nodeOut, communityOf)
@@ -878,15 +863,10 @@ module.exports = (deps) ->
       result.push(new TurtleSet(members, workspace.world))
     result
 
-  # Memoized whole-graph metrics: computed once per graph state, then reused across per-turtle calls until the graph
-  # changes.  eigenvector/page-rank ignore the (absent) weight argument; betweenness keys on it.
   memoBetweenness = makeGraphMemo(fingerprint, betweennessCentralityCalc)
   memoEigenvector = makeGraphMemo(fingerprint, eigenvectorCentralityCalc)
   memoPageRank    = makeGraphMemo(fingerprint, pageRankCalc)
 
-  # Biconnected components (blocks): maximal subgraphs with no cut vertex, via the Hopcroft-Tarjan edge-stack DFS.
-  # A cut vertex appears in more than one block; isolated turtles form singleton blocks.  The graph is treated as
-  # undirected, matching desktop (which runs on the undirected graph).
   bicomponentClusters = ->
     ctx     = getCurrentContext()
     turtles = ctx.turtles.toArray()

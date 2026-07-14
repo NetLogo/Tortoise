@@ -8,9 +8,6 @@
 notImplemented = (name) ->
   -> throw exceptions.extension("nw:#{name} is not yet implemented")
 
-# The file-based import/export primitives cannot work in NetLogo Web, which has no user-visible file system.  Point
-# users at the string-based counterparts (nw:save-to-string / nw:load-from-string) that move the same data through an
-# in-memory string instead of a file.  -Jeremy B
 notSupportedOnWeb = (name, replacement) ->
   -> throw exceptions.extension("nw:#{name} is not supported by NetLogo Web. Use nw:#{replacement} instead.")
 
@@ -22,8 +19,8 @@ module.exports = {
     LinkSet   = require('../engine/core/linkset')
 
     # type Context = {
-    #   turtles: TurtleSet
-    #   links: LinkSet
+    #   turtles:    TurtleSet
+    #   links:      LinkSet
     #   isDirected: Boolean
     # }
     contextStack = []
@@ -76,8 +73,6 @@ module.exports = {
 
       result
 
-    # Feature groups live in their own modules.  Static helpers they require directly from nw-core; only the runtime
-    # bits (the workspace and the stateful current-context accessor) are passed in.
     runtime      = { workspace, getCurrentContext }
     genPrims     = require('extensions/nw-generators')({ workspace })
     ioPrims      = require('extensions/nw-io')(runtime)

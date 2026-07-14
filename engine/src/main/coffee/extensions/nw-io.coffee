@@ -2,39 +2,21 @@
 
 { exceptionFactory: exceptions, ExtensionException, HaltInterrupt, InternalException, RuntimeException } = require('util/exception')
 
-# An engine exception is one NetLogo already understands (extension errors, user halts, runtime errors from a user
-# command block, etc.).  Malformed-data handling below wraps only *foreign* errors (raw parser crashes) and lets these
-# propagate unchanged so their real messages survive.
 isEngineException = (err) ->
   err instanceof ExtensionException or err instanceof HaltInterrupt or err instanceof InternalException or err instanceof RuntimeException
 
-# The string-based I/O primitives (nw:save-to-string / nw:load-from-string) accept an explicit format argument.  Keep
-# the supported-format list, the normalization, and the error message in one place so `save` and `load` stay in
-# lock-step, mirroring the desktop extension's NetworkExtensionUtil.  -Jeremy B
 SUPPORTED_NETWORK_FORMATS = ["dl", "gdf", "gexf", "gml", "graphml", "matrix", "vna"]
 
-# Normalize like desktop: trim, lower-case, and strip a single leading dot.  So "gml", "GML", ".gml", and " .GML "
-# all normalize to "gml".
 normalizeNetworkFormat = (rawFormat) ->
   rawFormat.trim().toLowerCase().replace(/^\./, "")
 
-# Echoes the raw (un-normalized) format back, matching the desktop message exactly.
 unsupportedNetworkFormatError = (rawFormat) ->
   exceptions.extension("'#{rawFormat}' is not a supported network format. Valid formats are: dl, gdf, gexf, gml, graphml, matrix, and vna.")
 
-# String-based network I/O for the nw extension (nw:save-to-string / nw:load-from-string).  Extracted from
-# nw.coffee; receives the shared foundation helpers it needs from its caller.  See string-io-for-netlogo-web.md.
 { isValidLink, getBreedName } = require('extensions/nw-core')
 
 module.exports = (deps) ->
   { workspace, getCurrentContext } = deps
-
-  # ----- String-based network I/O ---------------------------------------------------------------------------------
-  #
-  # nw:save-to-string / nw:load-from-string are the file-system-free counterparts to nw:save / nw:load: they move
-  # network data through an in-memory string instead of a file.  Each format has a serializer (context -> string) and
-  # a parser (string -> a list of node ids + a list of edges).  Round-tripping (web save -> web load) is the
-  # correctness bar; see string-io-for-netlogo-web.md.
 
   # (Turtle) => Turtle -- append a fresh turtle of the given breed and return it.
   createTurtleOfBreed = (turtleBreedName) ->
@@ -42,10 +24,6 @@ module.exports = (deps) ->
     allTurtles = workspace.world.turtles().toArray()
     allTurtles[allTurtles.length - 1]
 
-  # Shared graph builder used by every load-* parser.  `nodeIds` is a list of id strings (creation order); `edges` is
-  # a list of { from, to, directed } where from/to are node-id strings and `directed` is true/false to force the
-  # link's directedness or null to fall back to `breedDirected`.  Runs the optional -T-- command block once per
-  # created turtle, in that turtle's context.
   buildLoadedGraph = (nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, onNode) ->
     idToTurtle     = new Map()
     createdTurtles = []
@@ -75,7 +53,7 @@ module.exports = (deps) ->
     return
 
   # Split a line into whitespace-separated tokens, keeping "..." / '...' quoted spans together (quotes stripped, so an
-  # empty quoted field becomes "").  Used by the vna and dl parsers.
+  # empty quoted field becomes "").  Used by the vna and dl parsers.  -Jeremy B July 2026
   tokenizeWhitespaceQuoted = (line) ->
     tokens = []
     i      = 0
@@ -103,7 +81,7 @@ module.exports = (deps) ->
     tokens
 
   # Split a comma-separated line into (trimmed, unquoted) fields, honoring "..." / '...' quoting and keeping empty
-  # fields positional.  Used by the gdf parser.
+  # fields positional.  Used by the gdf parser.  -Jeremy B July 2026
   splitCommaQuoted = (line) ->
     fields = []
     cur    = ""
@@ -124,7 +102,6 @@ module.exports = (deps) ->
     fields.push(cur.trim())
     fields
 
-  # Iterate the current context's links whose endpoints are both in the context, yielding [end1, end2, isDirected].
   contextEdges = ->
     ctx     = getCurrentContext()
     turtles = ctx.turtles.toArray()
@@ -133,8 +110,6 @@ module.exports = (deps) ->
     for link in ctx.links.toArray() when isValidLink(link) and ids.has(link.end1.id) and ids.has(link.end2.id)
       edges.push(link)
     { turtles, edges, isDirected: ctx.isDirected }
-
-  # --- matrix (plain adjacency matrix) ---
 
   saveMatrix = ->
     { turtles, edges } = contextEdges()
@@ -188,7 +163,6 @@ module.exports = (deps) ->
     lines.push("]")
     lines.join("\n") + "\n"
 
-  # Tokenize a GML string into '[', ']', bare tokens, and { str } for quoted strings.
   tokenizeGml = (text) ->
     tokens = []
     i      = 0
@@ -218,7 +192,6 @@ module.exports = (deps) ->
         i = j
     tokens
 
-  # Parse GML tokens into a list of { key, value } pairs; value is a nested pair-list or a scalar string.
   parseGml = (text) ->
     tokens = tokenizeGml(text)
     pos    = 0
@@ -247,7 +220,6 @@ module.exports = (deps) ->
 
   loadGml = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     top  = parseGml(data)
-    # The graph body is the value of the top-level `graph` key; fall back to the top level if absent.
     body = gmlValue(top, "graph") ? top
 
     nodeIds = []
@@ -265,8 +237,6 @@ module.exports = (deps) ->
             directed: if directedVal? then String(directedVal) is "1" else null
           })
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
-
-  # --- vna (Netdraw VNA) --- section-based; VNA does not record directedness, so links follow the load breed.
 
   saveVna = ->
     { turtles, edges } = contextEdges()
@@ -309,8 +279,6 @@ module.exports = (deps) ->
         edges.push({ from: toks[fromIdx], to: toks[toIdx] }) if toks.length > Math.max(fromIdx, toIdx)
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
 
-  # --- dl (UCINET DL, edgelist form) --- DL does not record directedness, so links follow the load breed.
-
   saveDl = ->
     { turtles, edges } = contextEdges()
     index = new Map()
@@ -337,8 +305,6 @@ module.exports = (deps) ->
     nodeIds = (String(i + 1) for i in [0...n])
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
 
-  # --- gdf (GUESS GDF) --- GDF defaults to undirected on import, so links follow the load breed.
-
   saveGdf = ->
     { turtles, edges } = contextEdges()
     lines = ["nodedef>name VARCHAR"]
@@ -347,7 +313,6 @@ module.exports = (deps) ->
     lines.push("#{link.end1.id},#{link.end2.id}") for link in edges
     lines.join("\n") + "\n"
 
-  # Column names from a `nodedef>`/`edgedef>` header line (each column's name is its first whitespace token).
   gdfHeaderColumns = (line) ->
     rest = line.substring(line.indexOf(">") + 1)
     (col.trim().split(/\s+/)[0].toLowerCase() for col in rest.split(","))
@@ -383,11 +348,10 @@ module.exports = (deps) ->
           edges.push({ from: fields[n1Idx], to: fields[n2Idx] }) if fields.length > Math.max(n1Idx, n2Idx)
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
 
-  # --- XML support (graphml, gexf) ---
-  #
   # We parse XML with the host's XML facilities rather than a hand-rolled parser: the browser's native DOMParser in
   # production, and a javax.xml-backed parser in the GraalJS test runtime (which has full Java interop but no
   # DOMParser).  Both are normalized into a lightweight tree { tag, attrs: Map, children: [tree], text }.
+  # -Jeremy B July 2026
 
   xmlEscape = (s) ->
     String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
@@ -419,7 +383,7 @@ module.exports = (deps) ->
   parseXml = (text) ->
     if typeof DOMParser isnt "undefined"
       doc = new DOMParser().parseFromString(text, "application/xml")
-      # Browsers report malformed XML with a <parsererror> element rather than throwing, so check for it explicitly.
+      # Browsers report malformed XML with a <parsererror> element rather than throwing, so check for it explicitly.  -Jeremy B 2026
       if doc.getElementsByTagName("parsererror").length > 0
         throw new Error("malformed XML")
       walkDomElement(doc.documentElement)
@@ -447,8 +411,6 @@ module.exports = (deps) ->
     visit(node)
     results
 
-  # --- turtle/link own-variable helpers (for attribute round-tripping) ---
-
   turtleOwnVarNames = -> workspace.world.breedManager.turtles().varNames
 
   serializeVarValue = (value) ->
@@ -462,12 +424,9 @@ module.exports = (deps) ->
       when "boolean", "bool"                            then text is "true"
       else text
 
-  # --- graphml (GraphML XML) --- round-trips node attributes against turtle-own variables (case-insensitive).
-
   saveGraphml = ->
     { turtles, edges, isDirected } = contextEdges()
     varNames = turtleOwnVarNames()
-    # GraphML <key>s are graph-wide, so sample each variable's type from the first turtle.
     keyType = (name) ->
       if turtles.length > 0 then serializeVarValue(turtles[0].getVariable(name)).type else "string"
 
@@ -525,8 +484,6 @@ module.exports = (deps) ->
       return
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, onNode)
 
-  # --- gexf (Gephi GEXF XML) --- structural (ids/edges/directedness).
-
   saveGexf = ->
     { turtles, edges, isDirected } = contextEdges()
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<gexf version="1.2">']
@@ -548,8 +505,6 @@ module.exports = (deps) ->
       directed = if t? then (t is "directed") else (if defaultType? then defaultType is "directed" else null)
       edges.push({ from: String(ed.attrs.get("source")), to: String(ed.attrs.get("target")), directed })
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
-
-  # --- dispatch ---
 
   saveToString = (rawFormat) ->
     format = normalizeNetworkFormat(rawFormat)

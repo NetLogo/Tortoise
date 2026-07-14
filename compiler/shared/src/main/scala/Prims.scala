@@ -100,11 +100,9 @@ trait PrimUtils {
     }
   }
 
-  // Check if a type mask allows SymbolType
   private def allowsSymbolType(mask: Int): Boolean =
     Arguments.isSupported(mask, Syntax.SymbolType)
 
-  // Extract symbol value from an expression if it's a symbol primitive
   def compileExtensionArgs(app: Application, syntax: Syntax, useCompileArgs: Boolean)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
 

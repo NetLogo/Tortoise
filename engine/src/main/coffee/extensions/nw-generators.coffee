@@ -3,8 +3,6 @@
 { exceptionFactory: exceptions } = require('util/exception')
 { Setters: TurtleSetters } = require('../engine/core/turtle/turtlevariables')
 
-# Random-network generators for the nw extension.  Extracted from nw.coffee; receives shared foundation
-# helpers from its caller.
 { getBreedName } = require('extensions/nw-core')
 
 module.exports = (deps) ->
@@ -142,6 +140,7 @@ module.exports = (deps) ->
     # Seed the adjacency map with the full forward ring lattice: turtle i is connected to turtles i+1 .. i+k (mod n).
     # This mirrors the desktop generator (NW-Extension WattsStrogatzGenerator.scala) so link structure and RNG usage
     # stay in lock-step with NetLogo desktop.  Sets are forward-only; dedup checks both directions.
+    # -Jeremy B July 2026
     adjacency = new Map()
     for source, i in turtles
       targets = new Set()
@@ -149,7 +148,6 @@ module.exports = (deps) ->
         targets.add(turtles[(i + neighbor) % nbTurtles].id)
       adjacency.set(source.id, targets)
 
-    # availBuffer is shuffled in place across the whole run; each rewire runs a partial Fisher-Yates from the front.
     availBuffer = turtles.slice()
 
     for source, i in turtles
@@ -158,11 +156,8 @@ module.exports = (deps) ->
         realTarget = target
 
         if rng.nextDouble() < rewireProbability
-          # Removing `target` first guarantees at least `target` itself stays a valid fallback candidate below.
           adjacency.get(source.id).delete(target.id)
 
-          # Draw candidates via a running Fisher-Yates until one is neither self nor already adjacent (either
-          # direction).  This matches the desktop selection loop, including its RNG draw per candidate.
           c = 0
           loop
             j              = rng.nextInt(availBuffer.length - c) + c
@@ -183,12 +178,6 @@ module.exports = (deps) ->
 
     runBlockPerTurtle(turtles, runBlock)
     return
-
-  # ----- Structural generators (ring, star, wheel, lattice) and Kleinberg small-world ---------------------------------
-  #
-  # These mirror the desktop nw generators (JGraphT/Jung).  The ring/star/wheel families are deterministic named-graph
-  # topologies; lattice-2d and small-world build a grid (small-world then adds RNG-chosen long-range links).  Turtle
-  # who-order and color/heading are not asserted by the tests (desktop assigns them differently), only structure.
 
   requireIntMinimum = (value, minimum, things = "nodes") ->
     if value < minimum
@@ -220,7 +209,6 @@ module.exports = (deps) ->
     else
       workspace.world.linkManager.createUndirectedLink(end1, end2, linkBreedName)
 
-  # Like `link`, but skips a pair already linked (needed where wrap-around/long-range edges can coincide).
   linkOnce = (end1, end2, linkBreedName, isDirected, seen) ->
     key = if isDirected then "#{end1.id}->#{end2.id}"
     else if end1.id < end2.id then "#{end1.id}-#{end2.id}"
@@ -252,8 +240,6 @@ module.exports = (deps) ->
     runBlockPerTurtle(turtles, runBlock)
     return
 
-  # Wheel: a cycle of (n-1) rim turtles plus a hub (turtle 0) linked to every rim turtle.  `spokesFromHub` controls
-  # spoke direction for directed breeds (undirected ignores it).
   buildWheel = (turtleBreed, linkBreed, nodeCount, spokesFromHub, runBlock) ->
     n = requireIntMinimum(nodeCount, 4)
     { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
@@ -270,15 +256,13 @@ module.exports = (deps) ->
   generateWheelInward  = (turtleBreed, linkBreed, nodeCount, runBlock) -> buildWheel(turtleBreed, linkBreed, nodeCount, false, runBlock)
   generateWheelOutward = (turtleBreed, linkBreed, nodeCount, runBlock) -> buildWheel(turtleBreed, linkBreed, nodeCount, true,  runBlock)
 
-  # A rows x cols grid.  Non-toroidal links each cell to its right/down neighbor; toroidal adds wrap links (skipped
-  # when a dimension is 2, where the wrap would coincide with the direct edge).
   buildLattice = (turtles, rows, cols, isToroidal, linkBreedName, isDirected, seen) ->
     at = (r, c) -> turtles[r * cols + c]
     for r in [0...rows]
       for c in [0...cols]
-        if c + 1 < cols            then linkOnce(at(r, c), at(r, c + 1), linkBreedName, isDirected, seen)
+        if c + 1 < cols                 then linkOnce(at(r, c), at(r, c + 1), linkBreedName, isDirected, seen)
         else if isToroidal and cols > 2 then linkOnce(at(r, c), at(r, 0), linkBreedName, isDirected, seen)
-        if r + 1 < rows            then linkOnce(at(r, c), at(r + 1, c), linkBreedName, isDirected, seen)
+        if r + 1 < rows                 then linkOnce(at(r, c), at(r + 1, c), linkBreedName, isDirected, seen)
         else if isToroidal and rows > 2 then linkOnce(at(r, c), at(0, c), linkBreedName, isDirected, seen)
     return
 
@@ -291,9 +275,6 @@ module.exports = (deps) ->
     runBlockPerTurtle(turtles, runBlock)
     return
 
-  # Kleinberg small-world: a toroidal-capable lattice plus one long-range link per node, chosen with probability
-  # proportional to (lattice distance) ^ -clusteringExponent.  RNG/edge parity with desktop's Jung impl is not
-  # guaranteed; tests assert only node count and that edges exceed the lattice base.
   generateSmallWorld = (turtleBreed, linkBreed, rowCount, colCount, clusteringExponent, isToroidal, runBlock) ->
     rows = requireIntMinimum(rowCount, 2, "rows")
     cols = requireIntMinimum(colCount, 2, "columns")

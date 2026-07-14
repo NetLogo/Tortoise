@@ -4,7 +4,6 @@
 TurtleSet = require('../engine/core/turtleset')
 { checks } = require('../engine/core/typechecker')
 
-# Radius, distance, and (weighted) path primitives for the nw extension.  Extracted from nw.coffee.
 { isInTurtleset, getNeighbors, bfs, dijkstra, getLinkWeight, normalizeWeightVar } = require('extensions/nw-core')
 
 module.exports = (deps) ->

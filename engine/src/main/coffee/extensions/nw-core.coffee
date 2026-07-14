@@ -2,10 +2,6 @@
 
 { exceptionFactory: exceptions } = require('util/exception')
 
-# Pure, workspace-independent graph helpers shared across the nw extension's modules.  They take the graph
-# context (turtles/links) and agents as arguments, hold no mutable state, and so are required directly by each
-# module rather than threaded through as parameters.
-
 # (Turtle) => Boolean
 isAliveTurtle = (turtle) ->
   turtle? and not turtle.isDead()
@@ -14,6 +10,7 @@ isAliveTurtle = (turtle) ->
 isValidLink = (link) ->
   link? and not link.isDead() and isAliveTurtle(link.end1) and isAliveTurtle(link.end2)
 
+# (LinkSet | null) => Boolean
 determineDirectedness = (linkset) ->
   if not linkset?
     return false
@@ -27,9 +24,10 @@ determineDirectedness = (linkset) ->
       return true
   false
 
-# Build a reusable view of the graph context for a given traversal mode: an id-membership Set plus adjacency lists
-# (id -> [{turtle, link}]).  Traversals (bfs/dijkstra) build this once instead of re-scanning every link and doing a
-# linear turtleset membership test on every neighbor, which turns a single traversal from O(V*E) into O(V+E).
+# Build a reusable view of the graph context for a given traversal mode: an id-membership Set plus adjacency lists (id
+# -> [{turtle, link}]).  Traversals (bfs/dijkstra) build this once instead of re-scanning every link and doing a linear
+# turtleset membership test on every neighbor, which turns a single traversal from O(V*E) into O(V+E).
+# -Jeremy B July 2026
 graphView = (ctx, mode) ->
   idSet = new Set()
   adj   = new Map()
@@ -81,9 +79,6 @@ isInTurtleset = (turtle, ctx) ->
   turtles = ctx.turtles.toArray()
   turtle in turtles
 
-# The optional `view` lets a caller that runs many traversals over the same graph (e.g. Brandes betweenness) build the
-# adjacency once and share it.  When omitted, one is built for this traversal.  The view's adjacency is already
-# restricted to in-context, valid links, so no per-neighbor membership test is needed.
 bfs = (startTurtle, ctx, mode, view = graphView(ctx, mode)) ->
   distances = new Map()
   parents = new Map()
