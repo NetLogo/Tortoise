@@ -842,6 +842,19 @@ eigenvector-centrality-changes
   O> ask turtles with [ who < count turtles - 1 ] [ create-link-with turtle (who + 1) ]
   map [ [t] -> [ precision nw:eigenvector-centrality 3 ] of t ] sort turtles => [0.445 0.802 1 1 0.802 0.445]
 
+# Same turtle set, only a link rewires: guards the eigenvector memoization cache.  Turtle membership is unchanged
+# from the 3-line above; only a link is added, so the cache fingerprint must change on link structure alone for the
+# second call to recompute (the line closes into triangle K3, whose principal eigenvector is uniform [1 1 1]).
+# A stale cache would return the line's [0.707 1 0.707].
+eigenvector-centrality-cache-invalidation
+  extensions [ nw ]
+  O> crt 3
+  O> ask turtles with [ who < count turtles - 1 ] [ create-link-with turtle (who + 1) ]
+  O> nw:set-context turtles links
+  map [ [t] -> [ precision nw:eigenvector-centrality 3 ] of t ] sort turtles => [0.707 1 0.707]
+  O> ask turtle 0 [ create-link-with turtle 2 ]
+  map [ [t] -> [ precision nw:eigenvector-centrality 3 ] of t ] sort turtles => [1 1 1]
+
 # This is the one test where we disagree with Gephi. Gephi refuses to compute centrality on mixed networks.
 eigenvector-centrality-mixed
   extensions [ nw ]

@@ -5,10 +5,35 @@ TurtleSet = require('../engine/core/turtleset')
 { checks } = require('../engine/core/typechecker')
 
 # Centrality and community/clustering metrics for the nw extension.  Extracted from nw.coffee.
-{ isInTurtleset, getNeighbors, bfs, dijkstra, getLinkWeight, normalizeWeightVar, isValidLink, isAliveTurtle } = require('extensions/nw-core')
+{ isInTurtleset, bfs, dijkstra, getLinkWeight, normalizeWeightVar, isValidLink, isAliveTurtle, graphView } = require('extensions/nw-core')
+
+# A cheap O(V+E) structural fingerprint of the graph context, used to memoize whole-graph metrics (betweenness,
+# eigenvector, page-rank).  Captures turtle membership and link structure (endpoints, directedness, and the weight
+# variable when relevant) in iteration order, which is stable for an unchanged graph, so it never yields a false cache
+# hit; a changed graph produces a different fingerprint and forces recomputation.
+graphFingerprint = (isValidLinkFn) -> (ctx, weightVar) ->
+  parts = (t.id for t in ctx.turtles.toArray())
+  parts.push("|")
+  for l in ctx.links.toArray() when isValidLinkFn(l)
+    parts.push(if weightVar? then "#{l.end1.id},#{l.end2.id},#{l.isDirected},#{l.getVariable(weightVar)}" else "#{l.end1.id},#{l.end2.id},#{l.isDirected}")
+  parts.join(";")
+
+# Wrap a whole-graph metric so repeated per-turtle calls over an unchanged graph reuse the single computed result.
+# `ask turtles [ nw:betweenness-centrality ]` therefore runs the O(V*E) algorithm once instead of once per turtle.
+makeGraphMemo = (fingerprint, compute) ->
+  cache = { key: null, value: null }
+  (ctx, weightVar) ->
+    tag = if weightVar? then "w:#{weightVar}" else "u"
+    key = "#{tag}|#{fingerprint(ctx, weightVar)}"
+    if cache.key isnt key
+      cache.key   = key
+      cache.value = compute(ctx, weightVar)
+    cache.value
 
 module.exports = (deps) ->
   { workspace, getCurrentContext } = deps
+
+  fingerprint = graphFingerprint(isValidLink)
 
   calcClosenessCentrality = (turtle) ->
     ctx = getCurrentContext()
@@ -91,9 +116,10 @@ module.exports = (deps) ->
       centrality.set(t.id, 0)
 
     mode = if ctx.isDirected then 'out' else 'both'
+    view = graphView(ctx, mode)
 
     for s in turtles
-      result = if weightVar then dijkstra(s, ctx, mode, weightVar) else bfs(s, ctx, mode)
+      result = if weightVar then dijkstra(s, ctx, mode, weightVar, view) else bfs(s, ctx, mode, view)
       {distances, parents} = result
 
       reached = []
@@ -151,7 +177,7 @@ module.exports = (deps) ->
     if not isInTurtleset(turtle, ctx)
       throw exceptions.extension("#{turtle.toString().replace(/[()]/g, '')} is not a member of the current graph context.")
 
-    centrality = betweennessCentralityCalc(ctx)
+    centrality = memoBetweenness(ctx)
     centrality.get(turtle.id) ? 0
 
   calcWeightedBetweennessCentrality = (turtle, weightVar) ->
@@ -160,7 +186,7 @@ module.exports = (deps) ->
     if not isInTurtleset(turtle, ctx)
       throw exceptions.extension("#{turtle.toString().replace(/[()]/g, '')} is not a member of the current graph context.")
 
-    centrality = betweennessCentralityCalc(ctx, normalizeWeightVar(weightVar))
+    centrality = memoBetweenness(ctx, normalizeWeightVar(weightVar))
     centrality.get(turtle.id) ? 0
 
   betweennessCentrality = ->
@@ -181,7 +207,13 @@ module.exports = (deps) ->
     if turtles.length is 0
       return new Map()
 
-    undirectedMode = 'both'
+    # Build adjacency once (O(V+E)) and traverse it directly instead of re-scanning every link and doing a linear
+    # turtleset membership test per neighbor.  Component-finding walks the undirected ('both') view; compIncoming
+    # walks the in-edge view (incoming for directed, both for undirected).  For an undirected graph the two views are
+    # identical, so we share one.
+    compView = graphView(ctx, 'both')
+    inMode   = if ctx.isDirected then 'in' else 'both'
+    inView   = if inMode is 'both' then compView else graphView(ctx, inMode)
 
     visited = new Set()
     components = []
@@ -194,8 +226,8 @@ module.exports = (deps) ->
         while queue.length > 0
           current = queue.shift()
           component.push(current)
-          for {turtle: neighbor} in getNeighbors(current, ctx, undirectedMode)
-            if isInTurtleset(neighbor, ctx) and not visited.has(neighbor.id)
+          for {turtle: neighbor} in (compView.adj.get(current.id) ? [])
+            if not visited.has(neighbor.id)
               visited.add(neighbor.id)
               queue.push(neighbor)
         components.push(component)
@@ -206,17 +238,15 @@ module.exports = (deps) ->
       if component.length is 0
         continue
 
-      mode = if ctx.isDirected then 'in' else 'both'
       compIncoming = new Map()
       for t in component
         compIncoming.set(t.id, [])
 
       hasEdges = false
       for t in component
-        for {turtle: neighbor} in getNeighbors(t, ctx, mode)
-          if isInTurtleset(neighbor, ctx)
-            compIncoming.get(t.id).push(neighbor)
-            hasEdges = true
+        for {turtle: neighbor} in (inView.adj.get(t.id) ? [])
+          compIncoming.get(t.id).push(neighbor)
+          hasEdges = true
 
       if not hasEdges
         for t in component
@@ -263,7 +293,7 @@ module.exports = (deps) ->
     if not isInTurtleset(turtle, ctx)
       throw exceptions.extension("#{turtle.toString().replace(/[()]/g, '')} is not a member of the current graph context.")
 
-    centrality = eigenvectorCentralityCalc(ctx)
+    centrality = memoEigenvector(ctx)
     centrality.get(turtle.id) ? 0
 
   eigenvectorCentrality = ->
@@ -288,14 +318,16 @@ module.exports = (deps) ->
 
     mode = if ctx.isDirected then 'out' else 'both'
 
+    # Build adjacency once (O(V+E)) and read neighbors from it, instead of re-scanning every link with a per-neighbor
+    # linear turtleset membership test.  The view is already restricted to in-context valid links.
+    view = graphView(ctx, mode)
+
     hasAnyEdges = false
     for t in turtles
-      outCount = 0
-      for {turtle: neighbor} in getNeighbors(t, ctx, mode)
-        if isInTurtleset(neighbor, ctx)
-          outCount++
-          hasAnyEdges = true
+      outCount = (view.adj.get(t.id) ? []).length
       outgoingCount.set(t.id, outCount)
+      if outCount > 0
+        hasAnyEdges = true
 
     if not hasAnyEdges
       result = new Map()
@@ -304,11 +336,10 @@ module.exports = (deps) ->
       return result
 
     for t in turtles
-      for {turtle: neighbor} in getNeighbors(t, ctx, mode)
-        if isInTurtleset(neighbor, ctx)
-          neighborOutCount = outgoingCount.get(neighbor.id)
-          if neighborOutCount > 0
-            incoming.get(t.id).push({neighbor: neighbor, outCount: neighborOutCount})
+      for {turtle: neighbor} in (view.adj.get(t.id) ? [])
+        neighborOutCount = outgoingCount.get(neighbor.id)
+        if neighborOutCount > 0
+          incoming.get(t.id).push({neighbor: neighbor, outCount: neighborOutCount})
 
     damping = 0.85
     teleport = (1 - damping) / n
@@ -348,7 +379,7 @@ module.exports = (deps) ->
     if not isInTurtleset(turtle, ctx)
       throw exceptions.extension("#{turtle.toString().replace(/[()]/g, '')} is not a member of the current graph context.")
 
-    pr = pageRankCalc(ctx)
+    pr = memoPageRank(ctx)
     pr.get(turtle.id) ? 0
 
   pageRank = ->
@@ -846,6 +877,12 @@ module.exports = (deps) ->
     for [c, members] from groups
       result.push(new TurtleSet(members, workspace.world))
     result
+
+  # Memoized whole-graph metrics: computed once per graph state, then reused across per-turtle calls until the graph
+  # changes.  eigenvector/page-rank ignore the (absent) weight argument; betweenness keys on it.
+  memoBetweenness = makeGraphMemo(fingerprint, betweennessCentralityCalc)
+  memoEigenvector = makeGraphMemo(fingerprint, eigenvectorCentralityCalc)
+  memoPageRank    = makeGraphMemo(fingerprint, pageRankCalc)
 
   # Biconnected components (blocks): maximal subgraphs with no cut vertex, via the Hopcroft-Tarjan edge-stack DFS.
   # A cut vertex appears in more than one block; isolated turtles form singleton blocks.  The graph is treated as

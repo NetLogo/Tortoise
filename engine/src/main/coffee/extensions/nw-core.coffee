@@ -27,6 +27,28 @@ determineDirectedness = (linkset) ->
       return true
   false
 
+# Build a reusable view of the graph context for a given traversal mode: an id-membership Set plus adjacency lists
+# (id -> [{turtle, link}]).  Traversals (bfs/dijkstra) build this once instead of re-scanning every link and doing a
+# linear turtleset membership test on every neighbor, which turns a single traversal from O(V*E) into O(V+E).
+graphView = (ctx, mode) ->
+  idSet = new Set()
+  adj   = new Map()
+  for t in ctx.turtles.toArray()
+    idSet.add(t.id)
+    adj.set(t.id, [])
+  wantIn = (mode is 'in')
+  for link in ctx.links.toArray() when isValidLink(link) and idSet.has(link.end1.id) and idSet.has(link.end2.id)
+    end1 = link.end1
+    end2 = link.end2
+    if not link.isDirected
+      adj.get(end1.id).push({ turtle: end2, link })
+      adj.get(end2.id).push({ turtle: end1, link })
+    else if wantIn
+      adj.get(end2.id).push({ turtle: end1, link })
+    else
+      adj.get(end1.id).push({ turtle: end2, link })
+  { idSet, adj }
+
 getNeighbors = (turtle, ctx, mode) ->
   neighbors = []
   links = ctx.links.toArray()
@@ -59,7 +81,10 @@ isInTurtleset = (turtle, ctx) ->
   turtles = ctx.turtles.toArray()
   turtle in turtles
 
-bfs = (startTurtle, ctx, mode) ->
+# The optional `view` lets a caller that runs many traversals over the same graph (e.g. Brandes betweenness) build the
+# adjacency once and share it.  When omitted, one is built for this traversal.  The view's adjacency is already
+# restricted to in-context, valid links, so no per-neighbor membership test is needed.
+bfs = (startTurtle, ctx, mode, view = graphView(ctx, mode)) ->
   distances = new Map()
   parents = new Map()
   queue = []
@@ -72,10 +97,7 @@ bfs = (startTurtle, ctx, mode) ->
     current = queue.shift()
     currentDist = distances.get(current.id)
 
-    for {turtle: neighbor, link} in getNeighbors(current, ctx, mode)
-      if not isInTurtleset(neighbor, ctx)
-        continue
-
+    for {turtle: neighbor, link} in (view.adj.get(current.id) ? [])
       if not distances.has(neighbor.id)
         distances.set(neighbor.id, currentDist + 1)
         parents.set(neighbor.id, [{parent: current, link: link}])
@@ -147,7 +169,7 @@ class BinaryHeap
       else
         break
 
-dijkstra = (startTurtle, ctx, mode, weightVar) ->
+dijkstra = (startTurtle, ctx, mode, weightVar, view = graphView(ctx, mode)) ->
   distances = new Map()
   parents = new Map()
   heap = new BinaryHeap((node) -> node.dist)
@@ -164,10 +186,7 @@ dijkstra = (startTurtle, ctx, mode, weightVar) ->
     if currentDist > distances.get(current.id)
       continue
 
-    for {turtle: neighbor, link} in getNeighbors(current, ctx, mode)
-      if not isInTurtleset(neighbor, ctx)
-        continue
-
+    for {turtle: neighbor, link} in (view.adj.get(current.id) ? [])
       weight = getLinkWeight(link, weightVar)
       newDist = currentDist + weight
 
@@ -198,5 +217,5 @@ getBreedName = (agentSet) ->
 
 module.exports = {
   isAliveTurtle, isValidLink, determineDirectedness, getNeighbors, isInTurtleset, bfs,
-  getLinkWeight, BinaryHeap, dijkstra, normalizeWeightVar, getBreedName
+  getLinkWeight, BinaryHeap, dijkstra, normalizeWeightVar, getBreedName, graphView
 }
