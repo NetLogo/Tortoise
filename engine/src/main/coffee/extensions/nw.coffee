@@ -5,14 +5,17 @@
 { Setters: TurtleSetters } = require('../engine/core/turtle/turtlevariables')
 { determineDirectedness } = require('extensions/nw-core')
 
+# (String) => (() => Unit)
 notImplemented = (name) ->
   -> throw exceptions.extension("nw:#{name} is not yet implemented")
 
+# (String, String) => (() => Unit)
 notSupportedOnWeb = (name, replacement) ->
   -> throw exceptions.extension("nw:#{name} is not supported by NetLogo Web. Use nw:#{replacement} instead.")
 
 module.exports = {
 
+  # (Workspace) => Extension
   init: (workspace) ->
 
     TurtleSet = require('../engine/core/turtleset')
@@ -26,6 +29,7 @@ module.exports = {
     contextStack = []
     currentContext = null
 
+    # () => Context
     getCurrentContext = ->
       if currentContext?
         currentContext
@@ -37,11 +41,13 @@ module.exports = {
           isDirected: determineDirectedness(allLinks)
         }
 
+    # () => Unit
     clearContext = ->
       currentContext = null
       contextStack = []
       return
 
+    # (TurtleSet, LinkSet) => Unit
     setContext = (turtleset, linkset) ->
       if not checks.isTurtleSet(turtleset)
         throw exceptions.extension("First argument to nw:set-context must be a turtle agentset")
@@ -56,10 +62,12 @@ module.exports = {
       }
       return
 
+    # () => [TurtleSet, LinkSet]
     getContext = ->
       ctx = getCurrentContext()
       [ctx.turtles, ctx.links]
 
+    # (TurtleSet, LinkSet, () => T) => T
     withContext = (turtleset, linkset, commandThunk) ->
       previousContext = currentContext
       setContext(turtleset, linkset)

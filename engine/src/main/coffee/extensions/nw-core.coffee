@@ -2,6 +2,12 @@
 
 { exceptionFactory: exceptions } = require('util/exception')
 
+# Shared shapes used throughout the nw extension modules:
+# type Context   = { turtles: TurtleSet, links: LinkSet, isDirected: Boolean }
+# type Neighbor  = { turtle: Turtle, link: Link }
+# type GraphView = { idSet: Set[Number], adj: Map[Number, Array[Neighbor]] }
+# type Traversal = { distances: Map[Number, Number], parents: Map[Number, Array[{ parent: Turtle, link: Link }]] }
+
 # (Turtle) => Boolean
 isAliveTurtle = (turtle) ->
   turtle? and not turtle.isDead()
@@ -28,6 +34,7 @@ determineDirectedness = (linkset) ->
 # -> [{turtle, link}]).  Traversals (bfs/dijkstra) build this once instead of re-scanning every link and doing a linear
 # turtleset membership test on every neighbor, which turns a single traversal from O(V*E) into O(V+E).
 # -Jeremy B July 2026
+# (Context, String) => GraphView
 graphView = (ctx, mode) ->
   idSet = new Set()
   adj   = new Map()
@@ -47,6 +54,7 @@ graphView = (ctx, mode) ->
       adj.get(end1.id).push({ turtle: end2, link })
   { idSet, adj }
 
+# (Turtle, Context, String) => Array[Neighbor]
 getNeighbors = (turtle, ctx, mode) ->
   neighbors = []
   links = ctx.links.toArray()
@@ -73,12 +81,14 @@ getNeighbors = (turtle, ctx, mode) ->
 
   neighbors
 
+# (Turtle, Context) => Boolean
 isInTurtleset = (turtle, ctx) ->
   if not (turtle? and isAliveTurtle(turtle))
     return false
   turtles = ctx.turtles.toArray()
   turtle in turtles
 
+# (Turtle, Context, String, GraphView) => Traversal
 bfs = (startTurtle, ctx, mode, view = graphView(ctx, mode)) ->
   distances = new Map()
   parents = new Map()
@@ -102,6 +112,7 @@ bfs = (startTurtle, ctx, mode, view = graphView(ctx, mode)) ->
 
   {distances, parents}
 
+# (Link, String) => Number
 getLinkWeight = (link, varName) ->
   value = link.getVariable(varName)
   if typeof value isnt 'number'
@@ -109,13 +120,16 @@ getLinkWeight = (link, varName) ->
   value
 
 class BinaryHeap
+  # ((T) => Number) => BinaryHeap[T]
   constructor: (@scoreFn) ->
     @content = []
 
+  # (T) => Unit
   push: (element) ->
     @content.push(element)
     @_siftUp(@content.length - 1)
 
+  # () => T
   pop: ->
     result = @content[0]
     end = @content.pop()
@@ -124,6 +138,7 @@ class BinaryHeap
       @_siftDown(0)
     result
 
+  # () => Number
   size: ->
     @content.length
 
@@ -164,6 +179,7 @@ class BinaryHeap
       else
         break
 
+# (Turtle, Context, String, String, GraphView) => Traversal
 dijkstra = (startTurtle, ctx, mode, weightVar, view = graphView(ctx, mode)) ->
   distances = new Map()
   parents = new Map()
@@ -198,12 +214,14 @@ dijkstra = (startTurtle, ctx, mode, weightVar, view = graphView(ctx, mode)) ->
 
   {distances, parents}
 
+# (Any) => String
 normalizeWeightVar = (weightVar) ->
   if typeof weightVar is 'string'
     weightVar.toLowerCase()
   else
     String(weightVar).toLowerCase()
 
+# (AgentSet) => String
 getBreedName = (agentSet) ->
   if agentSet.getSpecialName?
     agentSet.getSpecialName() ? "LINKS"

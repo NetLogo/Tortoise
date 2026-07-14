@@ -5,9 +5,11 @@
 
 { getBreedName } = require('extensions/nw-core')
 
+# ({ workspace: Workspace }) => Object
 module.exports = (deps) ->
   { workspace } = deps
 
+  # (AgentSet, AgentSet, Number, Number, Command) => Unit
   generatePreferentialAttachment = (turtleBreed, linkBreed, numTurtles, minDegree, runBlock) ->
     if numTurtles < 1
       throw exceptions.extension("The number of nodes in the generated network must be at least 1.")
@@ -77,6 +79,7 @@ module.exports = (deps) ->
     runBlockPerTurtle(allTurtles, runBlock)
     return
 
+  # (AgentSet, AgentSet, Number, Number, Command) => Unit
   generateRandom = (turtleBreed, linkBreed, nbTurtles, connexionProbability, runBlock) ->
     if nbTurtles < 1
       throw exceptions.extension("A positive number of turtles must be specified.")
@@ -112,6 +115,7 @@ module.exports = (deps) ->
     runBlockPerTurtle(turtles, runBlock)
     return
 
+  # (AgentSet, AgentSet, Number, Number, Number, Command) => Unit
   generateWattsStrogatz = (turtleBreed, linkBreed, nbTurtles, neighborhoodSize, rewireProbability, runBlock) ->
     if nbTurtles < 1
       throw exceptions.extension("A positive number of turtles must be specified.")
@@ -179,11 +183,13 @@ module.exports = (deps) ->
     runBlockPerTurtle(turtles, runBlock)
     return
 
+  # (Number, Number, String) => Number
   requireIntMinimum = (value, minimum, things = "nodes") ->
     if value < minimum
       throw exceptions.extension("The number of #{things} in the generated network must be at least #{minimum}.")
     value
 
+  # (AgentSet, AgentSet) => { turtleBreedName: String, linkBreedName: String, isDirected: Boolean }
   generatorBreeds = (turtleBreed, linkBreed) ->
     linkBreedName = getBreedName(linkBreed)
     {
@@ -192,6 +198,7 @@ module.exports = (deps) ->
       isDirected:      workspace.world.breedManager.get(linkBreedName).isDirected()
     }
 
+  # (Number, String) => Array[Turtle]
   makeGeneratorTurtles = (n, turtleBreedName) ->
     turtles = []
     for i in [0...n]
@@ -203,12 +210,14 @@ module.exports = (deps) ->
       turtles.push(t)
     turtles
 
+  # (Turtle, Turtle, String, Boolean) => Link
   link = (end1, end2, linkBreedName, isDirected) ->
     if isDirected
       workspace.world.linkManager.createDirectedLink(end1, end2, linkBreedName)
     else
       workspace.world.linkManager.createUndirectedLink(end1, end2, linkBreedName)
 
+  # (Turtle, Turtle, String, Boolean, Set[String]) => Unit
   linkOnce = (end1, end2, linkBreedName, isDirected, seen) ->
     key = if isDirected then "#{end1.id}->#{end2.id}"
     else if end1.id < end2.id then "#{end1.id}-#{end2.id}"
@@ -218,12 +227,14 @@ module.exports = (deps) ->
       link(end1, end2, linkBreedName, isDirected)
     return
 
+  # (Array[Turtle], Command) => Unit
   runBlockPerTurtle = (turtles, runBlock) ->
     if runBlock?
       for t in turtles
         workspace.world.selfManager.askAgent(runBlock)(t)
     return
 
+  # (AgentSet, AgentSet, Number, Command) => Unit
   generateRing = (turtleBreed, linkBreed, nodeCount, runBlock) ->
     n = requireIntMinimum(nodeCount, 3)
     { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
@@ -232,6 +243,7 @@ module.exports = (deps) ->
     runBlockPerTurtle(turtles, runBlock)
     return
 
+  # (AgentSet, AgentSet, Number, Command) => Unit
   generateStar = (turtleBreed, linkBreed, nodeCount, runBlock) ->
     n = requireIntMinimum(nodeCount, 1)
     { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
@@ -240,6 +252,7 @@ module.exports = (deps) ->
     runBlockPerTurtle(turtles, runBlock)
     return
 
+  # (AgentSet, AgentSet, Number, Boolean, Command) => Unit
   buildWheel = (turtleBreed, linkBreed, nodeCount, spokesFromHub, runBlock) ->
     n = requireIntMinimum(nodeCount, 4)
     { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
@@ -252,10 +265,14 @@ module.exports = (deps) ->
     runBlockPerTurtle(turtles, runBlock)
     return
 
+  # (AgentSet, AgentSet, Number, Command) => Unit
   generateWheel        = (turtleBreed, linkBreed, nodeCount, runBlock) -> buildWheel(turtleBreed, linkBreed, nodeCount, true,  runBlock)
+  # (AgentSet, AgentSet, Number, Command) => Unit
   generateWheelInward  = (turtleBreed, linkBreed, nodeCount, runBlock) -> buildWheel(turtleBreed, linkBreed, nodeCount, false, runBlock)
+  # (AgentSet, AgentSet, Number, Command) => Unit
   generateWheelOutward = (turtleBreed, linkBreed, nodeCount, runBlock) -> buildWheel(turtleBreed, linkBreed, nodeCount, true,  runBlock)
 
+  # (Array[Turtle], Number, Number, Boolean, String, Boolean, Set[String]) => Unit
   buildLattice = (turtles, rows, cols, isToroidal, linkBreedName, isDirected, seen) ->
     at = (r, c) -> turtles[r * cols + c]
     for r in [0...rows]
@@ -266,6 +283,7 @@ module.exports = (deps) ->
         else if isToroidal and rows > 2 then linkOnce(at(r, c), at(0, c), linkBreedName, isDirected, seen)
     return
 
+  # (AgentSet, AgentSet, Number, Number, Boolean, Command) => Unit
   generateLattice2d = (turtleBreed, linkBreed, rowCount, colCount, isToroidal, runBlock) ->
     rows = requireIntMinimum(rowCount, 2, "rows")
     cols = requireIntMinimum(colCount, 2, "columns")
@@ -275,6 +293,7 @@ module.exports = (deps) ->
     runBlockPerTurtle(turtles, runBlock)
     return
 
+  # (AgentSet, AgentSet, Number, Number, Number, Boolean, Command) => Unit
   generateSmallWorld = (turtleBreed, linkBreed, rowCount, colCount, clusteringExponent, isToroidal, runBlock) ->
     rows = requireIntMinimum(rowCount, 2, "rows")
     cols = requireIntMinimum(colCount, 2, "columns")

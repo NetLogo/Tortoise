@@ -2,28 +2,37 @@
 
 { exceptionFactory: exceptions, ExtensionException, HaltInterrupt, InternalException, RuntimeException } = require('util/exception')
 
+# (Any) => Boolean
 isEngineException = (err) ->
   err instanceof ExtensionException or err instanceof HaltInterrupt or err instanceof InternalException or err instanceof RuntimeException
 
 SUPPORTED_NETWORK_FORMATS = ["dl", "gdf", "gexf", "gml", "graphml", "matrix", "vna"]
 
+# (String) => String
 normalizeNetworkFormat = (rawFormat) ->
   rawFormat.trim().toLowerCase().replace(/^\./, "")
 
+# (String) => ExtensionException
 unsupportedNetworkFormatError = (rawFormat) ->
   exceptions.extension("'#{rawFormat}' is not a supported network format. Valid formats are: dl, gdf, gexf, gml, graphml, matrix, and vna.")
 
 { isValidLink, getBreedName } = require('extensions/nw-core')
 
+# Shapes used by the loaders/parsers below:
+# type Edge    = { from: Any, to: Any, directed: Boolean | null }
+# type XmlNode = { tag: String, attrs: Map[String, String], children: Array[XmlNode], text: String }
+
+# ({ workspace: Workspace, getCurrentContext: () => Context }) => Object
 module.exports = (deps) ->
   { workspace, getCurrentContext } = deps
 
-  # (Turtle) => Turtle -- append a fresh turtle of the given breed and return it.
+  # (String) => Turtle -- append a fresh turtle of the given breed and return it.
   createTurtleOfBreed = (turtleBreedName) ->
     workspace.world.turtleManager.createTurtles(1, turtleBreedName, 0, 0)
     allTurtles = workspace.world.turtles().toArray()
     allTurtles[allTurtles.length - 1]
 
+  # (Array[Any], Array[Edge], String, String, Boolean, Command, (String, Turtle) => Unit) => Unit
   buildLoadedGraph = (nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, onNode) ->
     idToTurtle     = new Map()
     createdTurtles = []
@@ -54,6 +63,7 @@ module.exports = (deps) ->
 
   # Split a line into whitespace-separated tokens, keeping "..." / '...' quoted spans together (quotes stripped, so an
   # empty quoted field becomes "").  Used by the vna and dl parsers.  -Jeremy B July 2026
+  # (String) => Array[String]
   tokenizeWhitespaceQuoted = (line) ->
     tokens = []
     i      = 0
@@ -82,6 +92,7 @@ module.exports = (deps) ->
 
   # Split a comma-separated line into (trimmed, unquoted) fields, honoring "..." / '...' quoting and keeping empty
   # fields positional.  Used by the gdf parser.  -Jeremy B July 2026
+  # (String) => Array[String]
   splitCommaQuoted = (line) ->
     fields = []
     cur    = ""
@@ -102,6 +113,7 @@ module.exports = (deps) ->
     fields.push(cur.trim())
     fields
 
+  # () => { turtles: Array[Turtle], edges: Array[Link], isDirected: Boolean }
   contextEdges = ->
     ctx     = getCurrentContext()
     turtles = ctx.turtles.toArray()
@@ -111,6 +123,7 @@ module.exports = (deps) ->
       edges.push(link)
     { turtles, edges, isDirected: ctx.isDirected }
 
+  # () => String
   saveMatrix = ->
     { turtles, edges } = contextEdges()
     n     = turtles.length
@@ -129,6 +142,7 @@ module.exports = (deps) ->
       (cell.toFixed(2) for cell in row).join(" ")
     if rows.length is 0 then "" else rows.join("\n") + "\n"
 
+  # (String, String, String, Boolean, Command) => Unit
   loadMatrix = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     cells = for line in data.split("\n") when line.trim() isnt ""
       (parseFloat(tok) for tok in line.trim().split(/\s+/))
@@ -146,6 +160,7 @@ module.exports = (deps) ->
 
   # --- gml (Graph Modelling Language) ---
 
+  # () => String
   saveGml = ->
     { turtles, edges, isDirected } = contextEdges()
 
@@ -163,6 +178,7 @@ module.exports = (deps) ->
     lines.push("]")
     lines.join("\n") + "\n"
 
+  # (String) => Array[String | { str: String }]
   tokenizeGml = (text) ->
     tokens = []
     i      = 0
@@ -192,6 +208,7 @@ module.exports = (deps) ->
         i = j
     tokens
 
+  # (String) => Array[{ key: String, value: Any }]
   parseGml = (text) ->
     tokens = tokenizeGml(text)
     pos    = 0
@@ -213,11 +230,13 @@ module.exports = (deps) ->
       pairs
     parseList()
 
+  # (Array[{ key: String, value: Any }], String) => Any
   gmlValue = (pairs, key) ->
     for p in pairs when typeof p.key is "string" and p.key.toLowerCase() is key
       return p.value
     null
 
+  # (String, String, String, Boolean, Command) => Unit
   loadGml = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     top  = parseGml(data)
     body = gmlValue(top, "graph") ? top
@@ -238,6 +257,7 @@ module.exports = (deps) ->
           })
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
 
+  # () => String
   saveVna = ->
     { turtles, edges } = contextEdges()
     lines = ["*Node data", "ID"]
@@ -246,6 +266,7 @@ module.exports = (deps) ->
     lines.push("#{link.end1.id} #{link.end2.id}") for link in edges
     lines.join("\n") + "\n"
 
+  # (String, String, String, Boolean, Command) => Unit
   loadVna = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     section    = null
     headerSeen = false
@@ -279,6 +300,7 @@ module.exports = (deps) ->
         edges.push({ from: toks[fromIdx], to: toks[toIdx] }) if toks.length > Math.max(fromIdx, toIdx)
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
 
+  # () => String
   saveDl = ->
     { turtles, edges } = contextEdges()
     index = new Map()
@@ -288,6 +310,7 @@ module.exports = (deps) ->
     lines.push("#{index.get(link.end1.id)} #{index.get(link.end2.id)}") for link in edges
     lines.join("\n") + "\n"
 
+  # (String, String, String, Boolean, Command) => Unit
   loadDl = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     n      = 0
     inData = false
@@ -305,6 +328,7 @@ module.exports = (deps) ->
     nodeIds = (String(i + 1) for i in [0...n])
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
 
+  # () => String
   saveGdf = ->
     { turtles, edges } = contextEdges()
     lines = ["nodedef>name VARCHAR"]
@@ -313,10 +337,12 @@ module.exports = (deps) ->
     lines.push("#{link.end1.id},#{link.end2.id}") for link in edges
     lines.join("\n") + "\n"
 
+  # (String) => Array[String]
   gdfHeaderColumns = (line) ->
     rest = line.substring(line.indexOf(">") + 1)
     (col.trim().split(/\s+/)[0].toLowerCase() for col in rest.split(","))
 
+  # (String, String, String, Boolean, Command) => Unit
   loadGdf = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     mode    = null
     nameIdx = 0
@@ -353,9 +379,11 @@ module.exports = (deps) ->
   # DOMParser).  Both are normalized into a lightweight tree { tag, attrs: Map, children: [tree], text }.
   # -Jeremy B July 2026
 
+  # (Any) => String
   xmlEscape = (s) ->
     String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
 
+  # (Element) => XmlNode -- normalize a browser DOM element into our lightweight tree.
   walkDomElement = (el) ->
     attrs = new Map()
     i     = 0
@@ -366,6 +394,7 @@ module.exports = (deps) ->
     children = (walkDomElement(c) for c in el.children)
     { tag: el.tagName, attrs, children, text: el.textContent }
 
+  # (Element) => XmlNode -- normalize a javax.xml (W3C) element into our lightweight tree.
   walkW3cElement = (el) ->
     attrs    = new Map()
     namedMap = el.getAttributes()
@@ -380,6 +409,7 @@ module.exports = (deps) ->
       children.push(walkW3cElement(child)) if child.getNodeType() is 1 # ELEMENT_NODE
     { tag: el.getTagName(), attrs, children, text: el.getTextContent() }
 
+  # (String) => XmlNode
   parseXml = (text) ->
     if typeof DOMParser isnt "undefined"
       doc = new DOMParser().parseFromString(text, "application/xml")
@@ -398,9 +428,11 @@ module.exports = (deps) ->
           throw new Error("malformed XML")
       walkW3cElement(doc.getDocumentElement())
 
+  # (XmlNode, String) => Array[XmlNode]
   xmlChildren = (node, tag) ->
     (c for c in node.children when c.tag.toLowerCase() is tag.toLowerCase())
 
+  # (XmlNode, String) => Array[XmlNode]
   xmlDescendants = (node, tag) ->
     results = []
     visit = (n) ->
@@ -411,19 +443,23 @@ module.exports = (deps) ->
     visit(node)
     results
 
+  # () => Array[String]
   turtleOwnVarNames = -> workspace.world.breedManager.turtles().varNames
 
+  # (Any) => { type: String, text: String }
   serializeVarValue = (value) ->
     if typeof value is "number"       then { type: "double",  text: "#{value}" }
     else if typeof value is "boolean" then { type: "boolean", text: (if value then "true" else "false") }
     else                                   { type: "string",  text: "#{value}" }
 
+  # (String, String) => Number | Boolean | String
   deserializeVarValue = (type, text) ->
     switch type
       when "double", "float", "int", "integer", "long" then parseFloat(text)
       when "boolean", "bool"                            then text is "true"
       else text
 
+  # () => String
   saveGraphml = ->
     { turtles, edges, isDirected } = contextEdges()
     varNames = turtleOwnVarNames()
@@ -447,6 +483,7 @@ module.exports = (deps) ->
     lines.push("  </graph>", "</graphml>")
     lines.join("\n") + "\n"
 
+  # (String, String, String, Boolean, Command) => Unit
   loadGraphml = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     root = parseXml(data)
 
@@ -484,6 +521,7 @@ module.exports = (deps) ->
       return
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, onNode)
 
+  # () => String
   saveGexf = ->
     { turtles, edges, isDirected } = contextEdges()
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<gexf version="1.2">']
@@ -495,6 +533,7 @@ module.exports = (deps) ->
     lines.push("    </edges>", "  </graph>", "</gexf>")
     lines.join("\n") + "\n"
 
+  # (String, String, String, Boolean, Command) => Unit
   loadGexf = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     root        = parseXml(data)
     defaultType = xmlDescendants(root, "graph")[0]?.attrs.get("defaultedgetype")
@@ -506,6 +545,7 @@ module.exports = (deps) ->
       edges.push({ from: String(ed.attrs.get("source")), to: String(ed.attrs.get("target")), directed })
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
 
+  # (String) => String
   saveToString = (rawFormat) ->
     format = normalizeNetworkFormat(rawFormat)
     if SUPPORTED_NETWORK_FORMATS.indexOf(format) is -1
@@ -520,6 +560,7 @@ module.exports = (deps) ->
       when "gexf"    then saveGexf()
       else throw exceptions.extension("nw:save-to-string does not yet support the '#{format}' format in NetLogo Web.")
 
+  # (String, String, AgentSet, AgentSet, Command) => Unit
   loadFromString = (rawFormat, data, turtleBreed, linkBreed, runBlock) ->
     format = normalizeNetworkFormat(rawFormat)
     if SUPPORTED_NETWORK_FORMATS.indexOf(format) is -1

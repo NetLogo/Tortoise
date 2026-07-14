@@ -11,6 +11,7 @@ TurtleSet  = require('../engine/core/turtleset')
 # variable when relevant) in iteration order, which is stable for an unchanged graph, so it never yields a false cache
 # hit; a changed graph produces a different fingerprint and forces recomputation.
 # -Jeremy B July 2026
+# ((Link) => Boolean) => ((Context, Any) => String)
 graphFingerprint = (isValidLinkFn) -> (ctx, weightVar) ->
   parts = (t.id for t in ctx.turtles.toArray())
   parts.push("|")
@@ -18,6 +19,7 @@ graphFingerprint = (isValidLinkFn) -> (ctx, weightVar) ->
     parts.push(if weightVar? then "#{l.end1.id},#{l.end2.id},#{l.isDirected},#{l.getVariable(weightVar)}" else "#{l.end1.id},#{l.end2.id},#{l.isDirected}")
   parts.join(";")
 
+# ((Context, Any) => String, (Context, Any) => Map[Number, Number]) => ((Context, Any) => Map[Number, Number])
 makeGraphMemo = (fingerprint, compute) ->
   cache = { key: null, value: null }
   (ctx, weightVar) ->
@@ -28,11 +30,13 @@ makeGraphMemo = (fingerprint, compute) ->
       cache.value = compute(ctx, weightVar)
     cache.value
 
+# ({ workspace: Workspace, getCurrentContext: () => Context }) => Object
 module.exports = (deps) ->
   { workspace, getCurrentContext } = deps
 
   fingerprint = graphFingerprint(isValidLink)
 
+  # (Turtle) => Number
   calcClosenessCentrality = (turtle) ->
     ctx = getCurrentContext()
 
@@ -62,6 +66,7 @@ module.exports = (deps) ->
 
     reachableCount / sumDistances
 
+  # (Turtle, String) => Number
   calcWeightedClosenessCentrality = (turtle, weightVar) ->
     ctx = getCurrentContext()
 
@@ -91,18 +96,21 @@ module.exports = (deps) ->
 
     reachableCount / sumDistances
 
+  # () => Number
   closenessCentrality = ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
       throw exceptions.extension("nw:closeness-centrality can only be called by a turtle")
     calcClosenessCentrality(self)
 
+  # (Any) => Number
   weightedClosenessCentrality = (weightVar) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
       throw exceptions.extension("nw:weighted-closeness-centrality can only be called by a turtle")
     calcWeightedClosenessCentrality(self, normalizeWeightVar(weightVar))
 
+  # (Context, String) => Map[Number, Number]
   betweennessCentralityCalc = (ctx, weightVar = null) ->
     turtles = ctx.turtles.toArray()
 
@@ -169,6 +177,7 @@ module.exports = (deps) ->
 
     centrality
 
+  # (Turtle) => Number
   calcBetweennessCentrality = (turtle) ->
     ctx = getCurrentContext()
 
@@ -178,6 +187,7 @@ module.exports = (deps) ->
     centrality = memoBetweenness(ctx)
     centrality.get(turtle.id) ? 0
 
+  # (Turtle, String) => Number
   calcWeightedBetweennessCentrality = (turtle, weightVar) ->
     ctx = getCurrentContext()
 
@@ -187,18 +197,21 @@ module.exports = (deps) ->
     centrality = memoBetweenness(ctx, normalizeWeightVar(weightVar))
     centrality.get(turtle.id) ? 0
 
+  # () => Number
   betweennessCentrality = ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
       throw exceptions.extension("nw:betweenness-centrality can only be called by a turtle")
     calcBetweennessCentrality(self)
 
+  # (Any) => Number
   weightedBetweennessCentrality = (weightVar) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
       throw exceptions.extension("nw:weighted-betweenness-centrality can only be called by a turtle")
     calcWeightedBetweennessCentrality(self, normalizeWeightVar(weightVar))
 
+  # (Context) => Map[Number, Number]
   eigenvectorCentralityCalc = (ctx) ->
     turtles = ctx.turtles.toArray()
 
@@ -281,6 +294,7 @@ module.exports = (deps) ->
 
     result
 
+  # (Turtle) => Number
   calcEigenvectorCentrality = (turtle) ->
     ctx = getCurrentContext()
 
@@ -290,12 +304,14 @@ module.exports = (deps) ->
     centrality = memoEigenvector(ctx)
     centrality.get(turtle.id) ? 0
 
+  # () => Number
   eigenvectorCentrality = ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
       throw exceptions.extension("nw:eigenvector-centrality can only be called by a turtle")
     calcEigenvectorCentrality(self)
 
+  # (Context) => Map[Number, Number]
   pageRankCalc = (ctx) ->
     turtles = ctx.turtles.toArray()
     n = turtles.length
@@ -365,6 +381,7 @@ module.exports = (deps) ->
 
     pr
 
+  # (Turtle) => Number
   calcPageRank = (turtle) ->
     ctx = getCurrentContext()
 
@@ -374,12 +391,14 @@ module.exports = (deps) ->
     pr = memoPageRank(ctx)
     pr.get(turtle.id) ? 0
 
+  # () => Number
   pageRank = ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
       throw exceptions.extension("nw:page-rank can only be called by a turtle")
     calcPageRank(self)
 
+  # (Turtle) => Number
   calcClusteringCoefficient = (turtle) ->
     ctx = getCurrentContext()
 
@@ -461,12 +480,14 @@ module.exports = (deps) ->
 
       triangles / possible
 
+  # () => Number
   clusteringCoefficient = ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
       throw exceptions.extension("nw:clustering-coefficient can only be called by a turtle")
     calcClusteringCoefficient(self)
 
+  # () => Array[TurtleSet]
   weakComponentClusters = ->
     ctx = getCurrentContext()
     turtles = ctx.turtles.toArray()
@@ -512,6 +533,7 @@ module.exports = (deps) ->
 
     result
 
+  # (Array[TurtleSet] | TurtleSet) => Number
   modularity = (communitiesList) ->
     ctx = getCurrentContext()
     turtles = ctx.turtles.toArray()
@@ -583,6 +605,7 @@ module.exports = (deps) ->
 
     totalModularity
 
+  # () => Array[TurtleSet]
   maximalCliques = ->
     ctx = getCurrentContext()
 
@@ -679,6 +702,7 @@ module.exports = (deps) ->
       result.push(new TurtleSet(clique, workspace.world))
     result
 
+  # () => Array[TurtleSet]
   biggestMaximalCliques = ->
     cliques = maximalCliques()
 
@@ -693,6 +717,7 @@ module.exports = (deps) ->
 
     cliques.filter((c) -> c.toArray().length is maxSize)
 
+  # () => Array[TurtleSet]
   louvainCommunities = ->
     ctx = getCurrentContext()
     turtles = ctx.turtles.toArray()
@@ -863,10 +888,14 @@ module.exports = (deps) ->
       result.push(new TurtleSet(members, workspace.world))
     result
 
+  # (Context, Any) => Map[Number, Number]
   memoBetweenness = makeGraphMemo(fingerprint, betweennessCentralityCalc)
+  # (Context) => Map[Number, Number]
   memoEigenvector = makeGraphMemo(fingerprint, eigenvectorCentralityCalc)
+  # (Context) => Map[Number, Number]
   memoPageRank    = makeGraphMemo(fingerprint, pageRankCalc)
 
+  # () => Array[TurtleSet]
   bicomponentClusters = ->
     ctx     = getCurrentContext()
     turtles = ctx.turtles.toArray()

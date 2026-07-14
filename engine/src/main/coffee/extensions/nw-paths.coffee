@@ -6,9 +6,11 @@ TurtleSet = require('../engine/core/turtleset')
 
 { isInTurtleset, getNeighbors, bfs, dijkstra, getLinkWeight, normalizeWeightVar } = require('extensions/nw-core')
 
+# ({ workspace: Workspace, getCurrentContext: () => Context }) => Object
 module.exports = (deps) ->
   { workspace, getCurrentContext } = deps
 
+  # (Turtle, Number, String) => Array[Turtle]
   turtlesInRadiusFrom = (startTurtle, radius, mode) ->
     if radius < 0
       throw exceptions.extension("radius cannot be negative")
@@ -32,6 +34,7 @@ module.exports = (deps) ->
 
     result
 
+  # (Turtle, Turtle) => Number | Boolean
   calcDistanceTo = (startTurtle, targetTurtle) ->
     ctx = getCurrentContext()
 
@@ -50,6 +53,7 @@ module.exports = (deps) ->
     dist = distances.get(targetTurtle.id)
     if dist? then dist else false
 
+  # (Turtle, Turtle) => Array[Link] | Boolean
   calcPathTo = (startTurtle, targetTurtle) ->
     ctx = getCurrentContext()
 
@@ -80,6 +84,7 @@ module.exports = (deps) ->
 
     path
 
+  # (Turtle, Turtle) => Array[Turtle] | Boolean
   calcTurtlesOnPathTo = (startTurtle, targetTurtle) ->
     ctx = getCurrentContext()
 
@@ -111,18 +116,21 @@ module.exports = (deps) ->
     turtles.unshift(startTurtle)
     turtles
 
+  # (Number) => TurtleSet
   turtlesInRadius = (radius) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
       throw exceptions.extension("nw:turtles-in-radius can only be called by a turtle")
     new TurtleSet(turtlesInRadiusFrom(self, radius, 'both'), workspace.world)
 
+  # (Number) => TurtleSet
   turtlesInReverseRadius = (radius) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
       throw exceptions.extension("nw:turtles-in-reverse-radius can only be called by a turtle")
     new TurtleSet(turtlesInRadiusFrom(self, radius, 'in'), workspace.world)
 
+  # (Turtle) => Number | Boolean
   distanceTo = (target) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
@@ -131,6 +139,7 @@ module.exports = (deps) ->
       throw exceptions.extension("nw:distance-to requires a turtle as argument")
     calcDistanceTo(self, target)
 
+  # (Turtle) => Array[Link] | Boolean
   pathTo = (target) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
@@ -139,6 +148,7 @@ module.exports = (deps) ->
       throw exceptions.extension("nw:path-to requires a turtle as argument")
     calcPathTo(self, target)
 
+  # (Turtle) => Array[Turtle] | Boolean
   turtlesOnPathTo = (target) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
@@ -147,6 +157,7 @@ module.exports = (deps) ->
       throw exceptions.extension("nw:turtles-on-path-to requires a turtle as argument")
     calcTurtlesOnPathTo(self, target)
 
+  # (Turtle, Turtle, String) => Number | Boolean
   calcWeightedDistanceTo = (startTurtle, targetTurtle, weightVar) ->
     ctx = getCurrentContext()
 
@@ -165,6 +176,7 @@ module.exports = (deps) ->
     dist = distances.get(targetTurtle.id)
     if dist? then dist else false
 
+  # (Turtle, Turtle, String) => Array[Link] | Boolean
   calcWeightedPathTo = (startTurtle, targetTurtle, weightVar) ->
     ctx = getCurrentContext()
 
@@ -195,6 +207,7 @@ module.exports = (deps) ->
 
     path
 
+  # (Turtle, Turtle, String) => Array[Turtle] | Boolean
   calcTurtlesOnWeightedPathTo = (startTurtle, targetTurtle, weightVar) ->
     ctx = getCurrentContext()
 
@@ -226,6 +239,7 @@ module.exports = (deps) ->
     turtles.unshift(startTurtle)
     turtles
 
+  # () => Number | Boolean
   meanPathLength = ->
     ctx = getCurrentContext()
     turtles = ctx.turtles.toArray()
@@ -252,6 +266,7 @@ module.exports = (deps) ->
 
     totalDistance / pairCount
 
+  # (Any) => Number | Boolean
   meanWeightedPathLength = (weightVar) ->
     ctx = getCurrentContext()
     turtles = ctx.turtles.toArray()
@@ -279,6 +294,7 @@ module.exports = (deps) ->
 
     totalDistance / pairCount
 
+  # (Turtle, Any) => Number | Boolean
   weightedDistanceTo = (target, weightVar) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
@@ -287,6 +303,7 @@ module.exports = (deps) ->
       throw exceptions.extension("nw:weighted-distance-to requires a turtle as argument")
     calcWeightedDistanceTo(self, target, normalizeWeightVar(weightVar))
 
+  # (Turtle, Any) => Array[Link] | Boolean
   weightedPathTo = (target, weightVar) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
@@ -295,6 +312,7 @@ module.exports = (deps) ->
       throw exceptions.extension("nw:weighted-path-to requires a turtle as argument")
     calcWeightedPathTo(self, target, normalizeWeightVar(weightVar))
 
+  # (Turtle, Any) => Array[Turtle] | Boolean
   turtlesOnWeightedPathTo = (target, weightVar) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
