@@ -6,8 +6,6 @@
     { "name": "WITH-CONTEXT",      "argTypes": ["turtleset", "linkset", { "type": "commandblock" }], "returnType": "unit" },
 
     { "name": "TURTLES-IN-RADIUS",         "argTypes": ["number"],             "returnType": "turtleset" },
-    { "name": "TURTLES-IN-OUT-RADIUS",     "argTypes": ["number"],             "returnType": "turtleset" },
-    { "name": "TURTLES-IN-IN-RADIUS",      "argTypes": ["number"],             "returnType": "turtleset" },
     { "name": "TURTLES-IN-REVERSE-RADIUS", "argTypes": ["number"],             "returnType": "turtleset" },
 
     { "name": "DISTANCE-TO",               "argTypes": ["wildcard"],           "returnType": "wildcard" },
@@ -29,14 +27,22 @@
 
     { "name": "CLUSTERING-COEFFICIENT",    "argTypes": [],                     "returnType": "number" },
     { "name": "WEAK-COMPONENT-CLUSTERS",   "argTypes": [],                     "returnType": "list" },
+    { "name": "BICOMPONENT-CLUSTERS",      "argTypes": [],                     "returnType": "list" },
     { "name": "LOUVAIN-COMMUNITIES",       "argTypes": [],                     "returnType": "list" },
     { "name": "MODULARITY",                "argTypes": ["list"],               "returnType": "number" },
     { "name": "MAXIMAL-CLIQUES",           "argTypes": [],                     "returnType": "list" },
     { "name": "BIGGEST-MAXIMAL-CLIQUES",   "argTypes": [],                     "returnType": "list" },
 
-    { "name": "GENERATE-PREFERENTIAL-ATTACHMENT", "argTypes": ["wildcard", "wildcard", "number", "number"],           "returnType": "unit" },
-    { "name": "GENERATE-RANDOM",                  "argTypes": ["wildcard", "wildcard", "number", "number"], "returnType": "unit" },
-    { "name": "GENERATE-WATTS-STROGATZ",          "argTypes": ["wildcard", "wildcard", "number", "number", "number"], "returnType": "unit" },
+    { "name": "GENERATE-PREFERENTIAL-ATTACHMENT", "argTypes": ["turtleset", "linkset", "number", "number", { "type": "commandblock", "isOptional": true }],           "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "GENERATE-RANDOM",                  "argTypes": ["turtleset", "linkset", "number", "number", { "type": "commandblock", "isOptional": true }],           "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "GENERATE-WATTS-STROGATZ",          "argTypes": ["turtleset", "linkset", "number", "number", "number", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "GENERATE-RING",           "argTypes": ["turtleset", "linkset", "number", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "GENERATE-STAR",           "argTypes": ["turtleset", "linkset", "number", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "GENERATE-WHEEL",          "argTypes": ["turtleset", "linkset", "number", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "GENERATE-WHEEL-INWARD",   "argTypes": ["turtleset", "linkset", "number", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "GENERATE-WHEEL-OUTWARD",  "argTypes": ["turtleset", "linkset", "number", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "GENERATE-LATTICE-2D",     "argTypes": ["turtleset", "linkset", "number", "number", "boolean", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
+    { "name": "GENERATE-SMALL-WORLD",    "argTypes": ["turtleset", "linkset", "number", "number", "number", "boolean", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },
 
     { "name": "SAVE-GRAPHML",  "argTypes": ["string"], "returnType": "unit" },
     { "name": "LOAD-GRAPHML",  "argTypes": ["string", { "type": "commandblock", "isOptional": true }], "returnType": "unit", "blockAgentClassString": "-T--" },

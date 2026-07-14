@@ -92,8 +92,6 @@ module.exports = {
       , "GET-CONTEXT":                      getContext
       , "WITH-CONTEXT":                     withContext
       , "TURTLES-IN-RADIUS":                pathsPrims["TURTLES-IN-RADIUS"]
-      , "TURTLES-IN-OUT-RADIUS":            pathsPrims["TURTLES-IN-OUT-RADIUS"]
-      , "TURTLES-IN-IN-RADIUS":             pathsPrims["TURTLES-IN-IN-RADIUS"]
       , "TURTLES-IN-REVERSE-RADIUS":        pathsPrims["TURTLES-IN-REVERSE-RADIUS"]
       , "DISTANCE-TO":                      pathsPrims["DISTANCE-TO"]
       , "PATH-TO":                          pathsPrims["PATH-TO"]
@@ -110,6 +108,7 @@ module.exports = {
       , "PAGE-RANK":                        metricsPrims["PAGE-RANK"]
       , "CLUSTERING-COEFFICIENT":           metricsPrims["CLUSTERING-COEFFICIENT"]
       , "WEAK-COMPONENT-CLUSTERS":          metricsPrims["WEAK-COMPONENT-CLUSTERS"]
+      , "BICOMPONENT-CLUSTERS":             metricsPrims["BICOMPONENT-CLUSTERS"]
       , "LOUVAIN-COMMUNITIES":              metricsPrims["LOUVAIN-COMMUNITIES"]
       , "MODULARITY":                       metricsPrims["MODULARITY"]
       , "MAXIMAL-CLIQUES":                  metricsPrims["MAXIMAL-CLIQUES"]
@@ -117,6 +116,13 @@ module.exports = {
       , "GENERATE-PREFERENTIAL-ATTACHMENT": genPrims["GENERATE-PREFERENTIAL-ATTACHMENT"]
       , "GENERATE-RANDOM":                  genPrims["GENERATE-RANDOM"]
       , "GENERATE-WATTS-STROGATZ":          genPrims["GENERATE-WATTS-STROGATZ"]
+      , "GENERATE-RING":                    genPrims["GENERATE-RING"]
+      , "GENERATE-STAR":                    genPrims["GENERATE-STAR"]
+      , "GENERATE-WHEEL":                   genPrims["GENERATE-WHEEL"]
+      , "GENERATE-WHEEL-INWARD":            genPrims["GENERATE-WHEEL-INWARD"]
+      , "GENERATE-WHEEL-OUTWARD":           genPrims["GENERATE-WHEEL-OUTWARD"]
+      , "GENERATE-LATTICE-2D":              genPrims["GENERATE-LATTICE-2D"]
+      , "GENERATE-SMALL-WORLD":             genPrims["GENERATE-SMALL-WORLD"]
       , "SAVE-GRAPHML":                     notSupportedOnWeb("save-graphml", "save-to-string")
       , "LOAD-GRAPHML":                     notSupportedOnWeb("load-graphml", "load-from-string")
       , "SAVE-MATRIX":                      notSupportedOnWeb("save-matrix",  "save-to-string")

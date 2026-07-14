@@ -305,16 +305,16 @@ mixed-turtles-in-radius
   sort [who] of [nw:turtles-in-reverse-radius 1] of turtle 0 => [0 3]
   sort [who] of [nw:turtles-in-reverse-radius 2] of turtle 0 => [0 3 12]
 
-### turtles-in-out-radius, turtles-in-in-radius
+### turtles-in-radius / turtles-in-reverse-radius on directed links
 
-turtles-in-out-radius
+turtles-in-radius-directed
   extensions [nw]
   O> crt 2
   O> ask turtle 0 [ create-link-to turtle 1 ]
   sort [ who ] of [ nw:turtles-in-radius 1 ] of turtle 0 => [0 1]
   sort [ who ] of [ nw:turtles-in-radius 1 ] of turtle 1 => [1]
 
-turtles-in-in-radius
+turtles-in-reverse-radius-directed
   extensions [nw]
   O> crt 2
   O> ask turtle 0 [ create-link-to turtle 1 ]
@@ -1235,6 +1235,135 @@ generate-preferential-attachment
   O> ca nw:generate-preferential-attachment turtles links 100 1
   length remove-duplicates [ count my-links ] of turtles > 3 => true
 
+# Structural generators.  Assertions are on counts/degrees/directedness (not turtle who-order), so they hold on both
+# NLW and desktop and are safe to back-port to the desktop test suite.
+
+generate-ring
+  extensions [ nw ]
+  O> nw:generate-ring turtles links 5
+  count turtles => 5
+  count links => 5
+  sort remove-duplicates [ count my-links ] of turtles => [2]
+  O> ca
+  O> nw:generate-ring turtles links 3
+  count turtles => 3
+  count links => 3
+  O> nw:generate-ring turtles links 2 => ERROR Extension exception: The number of nodes in the generated network must be at least 3.
+
+generate-star
+  extensions [ nw ]
+  O> nw:generate-star turtles links 5
+  count turtles => 5
+  count links => 4
+  sort [ count my-links ] of turtles => [1 1 1 1 4]
+  O> ca
+  O> nw:generate-star turtles links 1
+  count turtles => 1
+  count links => 0
+  O> nw:generate-star turtles links 0 => ERROR Extension exception: The number of nodes in the generated network must be at least 1.
+
+generate-wheel
+  extensions [ nw ]
+  O> nw:generate-wheel turtles links 5
+  count turtles => 5
+  count links => 8
+  sort [ count my-links ] of turtles => [3 3 3 3 4]
+  O> nw:generate-wheel turtles links 3 => ERROR Extension exception: The number of nodes in the generated network must be at least 4.
+
+generate-wheel-inward
+  extensions [ nw ]
+  directed-link-breed [ dedges dedge ]
+  O> nw:generate-wheel-inward turtles dedges 5
+  count turtles => 5
+  count dedges => 8
+  sort [ count my-in-dedges ] of turtles => [1 1 1 1 4]
+  sort [ count my-out-dedges ] of turtles => [0 2 2 2 2]
+
+generate-wheel-outward
+  extensions [ nw ]
+  directed-link-breed [ dedges dedge ]
+  O> nw:generate-wheel-outward turtles dedges 5
+  count turtles => 5
+  count dedges => 8
+  sort [ count my-out-dedges ] of turtles => [1 1 1 1 4]
+  sort [ count my-in-dedges ] of turtles => [0 2 2 2 2]
+
+generate-lattice-2d
+  extensions [ nw ]
+  O> nw:generate-lattice-2d turtles links 3 4 false
+  count turtles => 12
+  all? turtles [ count my-links <= 4 ] => true
+  length nw:weak-component-clusters => 1
+  O> ca
+  O> nw:generate-lattice-2d turtles links 3 4 true
+  count turtles => 12
+  sort remove-duplicates [ count my-links ] of turtles => [4]
+  O> ca nw:generate-lattice-2d turtles links 1 4 false => ERROR Extension exception: The number of rows in the generated network must be at least 2.
+  O> ca nw:generate-lattice-2d turtles links 4 1 false => ERROR Extension exception: The number of columns in the generated network must be at least 2.
+
+# small-world adds RNG-chosen long-range links atop a lattice; exact edge parity with desktop is unverified, so we
+# assert only node count and that links exceed the toroidal-lattice base (4-regular => 2 * nodes).
+generate-small-world
+  extensions [ nw ]
+  O> nw:generate-small-world turtles links 5 5 2 true
+  count turtles => 25
+  (count links >= 50) => true
+  O> ca nw:generate-small-world turtles links 1 5 2 true => ERROR Extension exception: The number of rows in the generated network must be at least 2.
+
+# Every generator accepts an optional command block run once per created turtle, in that turtle's context.
+
+generate-preferential-attachment-command-block
+  extensions [ nw ]
+  O> nw:generate-preferential-attachment turtles links 6 2 [ set color red ]
+  sort remove-duplicates [ color ] of turtles => [15]
+
+generate-random-command-block
+  extensions [ nw ]
+  O> nw:generate-random turtles links 6 0.5 [ set color red ]
+  sort remove-duplicates [ color ] of turtles => [15]
+
+generate-watts-strogatz-command-block
+  extensions [ nw ]
+  O> nw:generate-watts-strogatz turtles links 6 2 0.1 [ set color red ]
+  sort remove-duplicates [ color ] of turtles => [15]
+
+generate-ring-command-block
+  extensions [ nw ]
+  O> nw:generate-ring turtles links 5 [ set color red ]
+  sort remove-duplicates [ color ] of turtles => [15]
+
+generate-star-command-block
+  extensions [ nw ]
+  O> nw:generate-star turtles links 5 [ set color red ]
+  sort remove-duplicates [ color ] of turtles => [15]
+
+generate-wheel-command-block
+  extensions [ nw ]
+  O> nw:generate-wheel turtles links 5 [ set color red ]
+  sort remove-duplicates [ color ] of turtles => [15]
+
+generate-wheel-inward-command-block
+  extensions [ nw ]
+  directed-link-breed [ dedges dedge ]
+  O> nw:generate-wheel-inward turtles dedges 5 [ set color red ]
+  sort remove-duplicates [ color ] of turtles => [15]
+
+generate-wheel-outward-command-block
+  extensions [ nw ]
+  directed-link-breed [ dedges dedge ]
+  O> nw:generate-wheel-outward turtles dedges 5 [ set color red ]
+  sort remove-duplicates [ color ] of turtles => [15]
+
+generate-lattice-2d-command-block
+  extensions [ nw ]
+  O> nw:generate-lattice-2d turtles links 3 4 false [ set color red ]
+  sort remove-duplicates [ color ] of turtles => [15]
+
+generate-small-world-command-block
+  extensions [ nw ]
+  O> nw:generate-small-world turtles links 4 4 2 true [ set color red ]
+  sort remove-duplicates [ color ] of turtles => [15]
+
 ## weak-component-clusterer
 
 weak-components-empty-graph
@@ -1330,6 +1459,34 @@ weak-components-three-turtles-directed-links
   O> crt 3
   O> ask turtle 0 [ create-link-from turtle 1 create-link-from turtle 2 ]
   length nw:weak-component-clusters => 1
+
+## bicomponent-clusterer
+# Biconnected components (blocks) are well-defined, so these assert exact block sizes and are back-portable to desktop.
+
+bicomponent-clusters-single-triangle
+  extensions [ nw ]
+  O> crt 3 [ create-links-with other turtles ]
+  length nw:bicomponent-clusters => 1
+  sort map [ [c] -> count c ] nw:bicomponent-clusters => [3]
+
+bicomponent-clusters-path-two-bridges
+  extensions [ nw ]
+  O> crt 3
+  O> ask turtle 0 [ create-link-with turtle 1 ]
+  O> ask turtle 1 [ create-link-with turtle 2 ]
+  length nw:bicomponent-clusters => 2
+  sort map [ [c] -> count c ] nw:bicomponent-clusters => [2 2]
+
+bicomponent-clusters-bowtie-shared-cut-vertex
+  extensions [ nw ]
+  O> crt 5
+  O> ask turtle 0 [ create-link-with turtle 1 create-link-with turtle 2 ]
+  O> ask turtle 1 [ create-link-with turtle 2 ]
+  O> ask turtle 2 [ create-link-with turtle 3 create-link-with turtle 4 ]
+  O> ask turtle 3 [ create-link-with turtle 4 ]
+  length nw:bicomponent-clusters => 2
+  sort map [ [c] -> count c ] nw:bicomponent-clusters => [3 3]
+  member? turtle 2 first nw:bicomponent-clusters => true
 
 # clique tests
 

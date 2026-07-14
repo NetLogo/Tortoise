@@ -847,6 +847,67 @@ module.exports = (deps) ->
       result.push(new TurtleSet(members, workspace.world))
     result
 
+  # Biconnected components (blocks): maximal subgraphs with no cut vertex, via the Hopcroft-Tarjan edge-stack DFS.
+  # A cut vertex appears in more than one block; isolated turtles form singleton blocks.  The graph is treated as
+  # undirected, matching desktop (which runs on the undirected graph).
+  bicomponentClusters = ->
+    ctx     = getCurrentContext()
+    turtles = ctx.turtles.toArray()
+    return [] if turtles.length is 0
+
+    turtleById = new Map()
+    adjacency  = new Map()
+    for t in turtles
+      turtleById.set(t.id, t)
+      adjacency.set(t.id, [])
+    edgeId = 0
+    for l in ctx.links.toArray() when isValidLink(l) and isInTurtleset(l.end1, ctx) and isInTurtleset(l.end2, ctx)
+      id = edgeId
+      edgeId += 1
+      adjacency.get(l.end1.id).push({ other: l.end2, edge: id })
+      adjacency.get(l.end2.id).push({ other: l.end1, edge: id })
+
+    disc       = new Map()
+    low        = new Map()
+    counter    = 0
+    edgeStack  = []
+    components = []
+
+    addComponent = (edges) ->
+      verts = new Set()
+      for e in edges
+        verts.add(e.u)
+        verts.add(e.v)
+      components.push(new TurtleSet((turtleById.get(id) for id from verts), workspace.world))
+      return
+
+    dfs = (u, parentEdge) ->
+      disc.set(u.id, counter)
+      low.set(u.id, counter)
+      counter += 1
+      for { other: v, edge: eid } in adjacency.get(u.id) when eid isnt parentEdge
+        if not disc.has(v.id)
+          edgeStack.push({ u: u.id, v: v.id, eid })
+          dfs(v, eid)
+          low.set(u.id, Math.min(low.get(u.id), low.get(v.id)))
+          if low.get(v.id) >= disc.get(u.id)
+            block = []
+            loop
+              e = edgeStack.pop()
+              block.push(e)
+              break if e.eid is eid
+            addComponent(block)
+        else if disc.get(v.id) < disc.get(u.id)
+          edgeStack.push({ u: u.id, v: v.id, eid })
+          low.set(u.id, Math.min(low.get(u.id), disc.get(v.id)))
+      return
+
+    for t in turtles when not disc.has(t.id)
+      dfs(t, -1)
+      components.push(new TurtleSet([t], workspace.world)) if adjacency.get(t.id).length is 0
+
+    components
+
   {
     "BETWEENNESS-CENTRALITY":        betweennessCentrality
   , "CLOSENESS-CENTRALITY":          closenessCentrality
@@ -855,6 +916,7 @@ module.exports = (deps) ->
   , "PAGE-RANK":                     pageRank
   , "CLUSTERING-COEFFICIENT":        clusteringCoefficient
   , "WEAK-COMPONENT-CLUSTERS":       weakComponentClusters
+  , "BICOMPONENT-CLUSTERS":          bicomponentClusters
   , "LOUVAIN-COMMUNITIES":           louvainCommunities
   , "MODULARITY":                    modularity
   , "MAXIMAL-CLIQUES":               maximalCliques

@@ -118,18 +118,6 @@ module.exports = (deps) ->
       throw exceptions.extension("nw:turtles-in-radius can only be called by a turtle")
     new TurtleSet(turtlesInRadiusFrom(self, radius, 'both'), workspace.world)
 
-  turtlesInOutRadius = (radius) ->
-    self = workspace.world.selfManager.self()
-    if not checks.isTurtle(self)
-      throw exceptions.extension("nw:turtles-in-out-radius can only be called by a turtle")
-    new TurtleSet(turtlesInRadiusFrom(self, radius, 'out'), workspace.world)
-
-  turtlesInInRadius = (radius) ->
-    self = workspace.world.selfManager.self()
-    if not checks.isTurtle(self)
-      throw exceptions.extension("nw:turtles-in-in-radius can only be called by a turtle")
-    new TurtleSet(turtlesInRadiusFrom(self, radius, 'in'), workspace.world)
-
   turtlesInReverseRadius = (radius) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
@@ -318,8 +306,6 @@ module.exports = (deps) ->
 
   {
     "TURTLES-IN-RADIUS":           turtlesInRadius
-  , "TURTLES-IN-OUT-RADIUS":       turtlesInOutRadius
-  , "TURTLES-IN-IN-RADIUS":        turtlesInInRadius
   , "TURTLES-IN-REVERSE-RADIUS":   turtlesInReverseRadius
   , "DISTANCE-TO":                 distanceTo
   , "PATH-TO":                     pathTo

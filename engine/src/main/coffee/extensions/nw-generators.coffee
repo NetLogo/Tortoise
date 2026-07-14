@@ -10,7 +10,7 @@
 module.exports = (deps) ->
   { workspace } = deps
 
-  generatePreferentialAttachment = (turtleBreed, linkBreed, numTurtles, minDegree) ->
+  generatePreferentialAttachment = (turtleBreed, linkBreed, numTurtles, minDegree, runBlock) ->
     if numTurtles < 1
       throw exceptions.extension("The number of nodes in the generated network must be at least 1.")
 
@@ -76,9 +76,10 @@ module.exports = (deps) ->
 
       allTurtles.push(newTurtle)
 
+    runBlockPerTurtle(allTurtles, runBlock)
     return
 
-  generateRandom = (turtleBreed, linkBreed, nbTurtles, connexionProbability) ->
+  generateRandom = (turtleBreed, linkBreed, nbTurtles, connexionProbability, runBlock) ->
     if nbTurtles < 1
       throw exceptions.extension("A positive number of turtles must be specified.")
 
@@ -110,9 +111,10 @@ module.exports = (deps) ->
           else
             workspace.world.linkManager.createUndirectedLink(turtles[i], turtles[j], linkBreedName)
 
+    runBlockPerTurtle(turtles, runBlock)
     return
 
-  generateWattsStrogatz = (turtleBreed, linkBreed, nbTurtles, neighborhoodSize, rewireProbability) ->
+  generateWattsStrogatz = (turtleBreed, linkBreed, nbTurtles, neighborhoodSize, rewireProbability, runBlock) ->
     if nbTurtles < 1
       throw exceptions.extension("A positive number of turtles must be specified.")
 
@@ -179,10 +181,165 @@ module.exports = (deps) ->
         else
           workspace.world.linkManager.createUndirectedLink(source, realTarget, linkBreedName)
 
+    runBlockPerTurtle(turtles, runBlock)
+    return
+
+  # ----- Structural generators (ring, star, wheel, lattice) and Kleinberg small-world ---------------------------------
+  #
+  # These mirror the desktop nw generators (JGraphT/Jung).  The ring/star/wheel families are deterministic named-graph
+  # topologies; lattice-2d and small-world build a grid (small-world then adds RNG-chosen long-range links).  Turtle
+  # who-order and color/heading are not asserted by the tests (desktop assigns them differently), only structure.
+
+  requireIntMinimum = (value, minimum, things = "nodes") ->
+    if value < minimum
+      throw exceptions.extension("The number of #{things} in the generated network must be at least #{minimum}.")
+    value
+
+  generatorBreeds = (turtleBreed, linkBreed) ->
+    linkBreedName = getBreedName(linkBreed)
+    {
+      turtleBreedName: getBreedName(turtleBreed)
+      linkBreedName:   linkBreedName
+      isDirected:      workspace.world.breedManager.get(linkBreedName).isDirected()
+    }
+
+  makeGeneratorTurtles = (n, turtleBreedName) ->
+    turtles = []
+    for i in [0...n]
+      workspace.world.turtleManager.createTurtles(1, turtleBreedName, 0, 0)
+      all = workspace.world.turtles().toArray()
+      t   = all[all.length - 1]
+      TurtleSetters.setColor.call(t, 5 + (i % 14) * 10)
+      TurtleSetters.setHeading.call(t, (360 * i) / n)
+      turtles.push(t)
+    turtles
+
+  link = (end1, end2, linkBreedName, isDirected) ->
+    if isDirected
+      workspace.world.linkManager.createDirectedLink(end1, end2, linkBreedName)
+    else
+      workspace.world.linkManager.createUndirectedLink(end1, end2, linkBreedName)
+
+  # Like `link`, but skips a pair already linked (needed where wrap-around/long-range edges can coincide).
+  linkOnce = (end1, end2, linkBreedName, isDirected, seen) ->
+    key = if isDirected then "#{end1.id}->#{end2.id}"
+    else if end1.id < end2.id then "#{end1.id}-#{end2.id}"
+    else "#{end2.id}-#{end1.id}"
+    if not seen.has(key)
+      seen.add(key)
+      link(end1, end2, linkBreedName, isDirected)
+    return
+
+  runBlockPerTurtle = (turtles, runBlock) ->
+    if runBlock?
+      for t in turtles
+        workspace.world.selfManager.askAgent(runBlock)(t)
+    return
+
+  generateRing = (turtleBreed, linkBreed, nodeCount, runBlock) ->
+    n = requireIntMinimum(nodeCount, 3)
+    { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
+    turtles = makeGeneratorTurtles(n, turtleBreedName)
+    link(turtles[i], turtles[(i + 1) % n], linkBreedName, isDirected) for i in [0...n]
+    runBlockPerTurtle(turtles, runBlock)
+    return
+
+  generateStar = (turtleBreed, linkBreed, nodeCount, runBlock) ->
+    n = requireIntMinimum(nodeCount, 1)
+    { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
+    turtles = makeGeneratorTurtles(n, turtleBreedName)
+    link(turtles[0], turtles[i], linkBreedName, isDirected) for i in [1...n]
+    runBlockPerTurtle(turtles, runBlock)
+    return
+
+  # Wheel: a cycle of (n-1) rim turtles plus a hub (turtle 0) linked to every rim turtle.  `spokesFromHub` controls
+  # spoke direction for directed breeds (undirected ignores it).
+  buildWheel = (turtleBreed, linkBreed, nodeCount, spokesFromHub, runBlock) ->
+    n = requireIntMinimum(nodeCount, 4)
+    { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
+    turtles = makeGeneratorTurtles(n, turtleBreedName)
+    hub = turtles[0]
+    rim = turtles[1...n]
+    for r, k in rim
+      link(r, rim[(k + 1) % rim.length], linkBreedName, isDirected)
+      if spokesFromHub then link(hub, r, linkBreedName, isDirected) else link(r, hub, linkBreedName, isDirected)
+    runBlockPerTurtle(turtles, runBlock)
+    return
+
+  generateWheel        = (turtleBreed, linkBreed, nodeCount, runBlock) -> buildWheel(turtleBreed, linkBreed, nodeCount, true,  runBlock)
+  generateWheelInward  = (turtleBreed, linkBreed, nodeCount, runBlock) -> buildWheel(turtleBreed, linkBreed, nodeCount, false, runBlock)
+  generateWheelOutward = (turtleBreed, linkBreed, nodeCount, runBlock) -> buildWheel(turtleBreed, linkBreed, nodeCount, true,  runBlock)
+
+  # A rows x cols grid.  Non-toroidal links each cell to its right/down neighbor; toroidal adds wrap links (skipped
+  # when a dimension is 2, where the wrap would coincide with the direct edge).
+  buildLattice = (turtles, rows, cols, isToroidal, linkBreedName, isDirected, seen) ->
+    at = (r, c) -> turtles[r * cols + c]
+    for r in [0...rows]
+      for c in [0...cols]
+        if c + 1 < cols            then linkOnce(at(r, c), at(r, c + 1), linkBreedName, isDirected, seen)
+        else if isToroidal and cols > 2 then linkOnce(at(r, c), at(r, 0), linkBreedName, isDirected, seen)
+        if r + 1 < rows            then linkOnce(at(r, c), at(r + 1, c), linkBreedName, isDirected, seen)
+        else if isToroidal and rows > 2 then linkOnce(at(r, c), at(0, c), linkBreedName, isDirected, seen)
+    return
+
+  generateLattice2d = (turtleBreed, linkBreed, rowCount, colCount, isToroidal, runBlock) ->
+    rows = requireIntMinimum(rowCount, 2, "rows")
+    cols = requireIntMinimum(colCount, 2, "columns")
+    { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
+    turtles = makeGeneratorTurtles(rows * cols, turtleBreedName)
+    buildLattice(turtles, rows, cols, isToroidal, linkBreedName, isDirected, new Set())
+    runBlockPerTurtle(turtles, runBlock)
+    return
+
+  # Kleinberg small-world: a toroidal-capable lattice plus one long-range link per node, chosen with probability
+  # proportional to (lattice distance) ^ -clusteringExponent.  RNG/edge parity with desktop's Jung impl is not
+  # guaranteed; tests assert only node count and that edges exceed the lattice base.
+  generateSmallWorld = (turtleBreed, linkBreed, rowCount, colCount, clusteringExponent, isToroidal, runBlock) ->
+    rows = requireIntMinimum(rowCount, 2, "rows")
+    cols = requireIntMinimum(colCount, 2, "columns")
+    { turtleBreedName, linkBreedName, isDirected } = generatorBreeds(turtleBreed, linkBreed)
+    turtles = makeGeneratorTurtles(rows * cols, turtleBreedName)
+    seen    = new Set()
+    buildLattice(turtles, rows, cols, isToroidal, linkBreedName, isDirected, seen)
+
+    idx  = (r, c) -> r * cols + c
+    dist = (r1, c1, r2, c2) ->
+      dr = Math.abs(r1 - r2)
+      dc = Math.abs(c1 - c2)
+      if isToroidal
+        dr = Math.min(dr, rows - dr)
+        dc = Math.min(dc, cols - dc)
+      dr + dc
+
+    rng = workspace.world.rng
+    for r in [0...rows]
+      for c in [0...cols]
+        source     = turtles[idx(r, c)]
+        candidates = []
+        total      = 0
+        for r2 in [0...rows]
+          for c2 in [0...cols] when not (r2 is r and c2 is c)
+            total += Math.pow(dist(r, c, r2, c2), -clusteringExponent)
+            candidates.push({ turtle: turtles[idx(r2, c2)], cum: total })
+        if total > 0
+          pick   = rng.nextDouble() * total
+          chosen = candidates[candidates.length - 1].turtle
+          for cand in candidates when pick <= cand.cum
+            chosen = cand.turtle
+            break
+          linkOnce(source, chosen, linkBreedName, isDirected, seen)
+    runBlockPerTurtle(turtles, runBlock)
     return
 
   {
     "GENERATE-PREFERENTIAL-ATTACHMENT": generatePreferentialAttachment
   , "GENERATE-RANDOM":                  generateRandom
   , "GENERATE-WATTS-STROGATZ":          generateWattsStrogatz
+  , "GENERATE-RING":                    generateRing
+  , "GENERATE-STAR":                    generateStar
+  , "GENERATE-WHEEL":                   generateWheel
+  , "GENERATE-WHEEL-INWARD":            generateWheelInward
+  , "GENERATE-WHEEL-OUTWARD":           generateWheelOutward
+  , "GENERATE-LATTICE-2D":              generateLattice2d
+  , "GENERATE-SMALL-WORLD":             generateSmallWorld
   }
