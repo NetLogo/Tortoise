@@ -1,13 +1,19 @@
 #!/bin/bash
 
 SDKMAN_DIR="${SDKMAN_DIR:-$HOME/.sdkman}"
-GRAAL_VERSION="25.0.2-graalce"
+
+# Note: the GraalVM version lives in `.sdkmanrc`, we use `sdk env` to pick it up.
+
+cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 
 if [ -f "$SDKMAN_DIR/bin/sdkman-init.sh" ]; then
   source "$SDKMAN_DIR/bin/sdkman-init.sh"
-  sdk use java "$GRAAL_VERSION"
+  if ! sdk env; then
+    echo "sbt.sh: could not activate the JDK pinned in .sdkmanrc." >&2
+    echo "sbt.sh: run 'sdk env install' to install it, then try again." >&2
+    exit 1
+  fi
 fi
-# else: leave JAVA_HOME as-is (e.g. set by CI via graalvm/setup-graalvm)
 
 # GraalVM includes binaries for node and npm that would supercede
 # any installed on the system, which we do not want. -Jeremy B 2/2019
