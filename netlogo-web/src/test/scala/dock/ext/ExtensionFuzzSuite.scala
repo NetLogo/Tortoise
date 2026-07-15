@@ -36,14 +36,8 @@ trait ExtensionFuzzSuite extends DockingSuite {
   private val randomDisabled: Boolean =
     sys.env.get("TORTOISE_FUZZ_NO_RANDOM").exists(_.trim.nonEmpty)
 
-  // Carries the per-run seed and a seeded RNG used to *generate* the NetLogo setup (turtle counts, wiring, etc.).
-  // Note this RNG is separate from NetLogo's own RNG: the generated model additionally calls `random-seed`, so the two
-  // engines build identical graphs and the docking RNG-parity check stays meaningful.
   final case class FuzzRun(seed: Long, rng: Random, isRandom: Boolean)
 
-  // Runs `body` once per fixed seed, then (unless disabled) once per random seed.  A failure on a random seed is
-  // re-thrown with guidance: how to reproduce it, and a reminder that it is likely a *separate* issue from whatever the
-  // developer is currently working on and should be triaged on its own rather than treated as "my change broke this".
   protected def fuzz(label: String)(body: FuzzRun => Unit): Unit = {
     val randomSeeds =
       if (randomDisabled) Seq.empty[Long]
@@ -75,15 +69,7 @@ trait ExtensionFuzzSuite extends DockingSuite {
         |Original failure:
         |$original""".stripMargin
 
-  // ----- Graph generators ---------------------------------------------------------------------------------------
-  //
-  // These emit runtime NetLogo commands (via the docking fixture's `testCommand`) that build a random network.  They
-  // assume the model already declares `extensions [nw]`, the relevant link breeds, and a `weight` link variable; see
-  // `ExtensionFuzzSuite.undirectedModelCode` / `directedModelCode` for the expected declarations.
-  //
-  // Every build starts with `clear-all` + `random-seed`, so successive fuzz iterations within one test are independent
-  // and both engines stay in lock-step.
-
+  // The default maximum number of turtles to add to the model.
   protected val maxTurtles: Int = 12
 
   // The default link weight: continuous, so exact shortest-path distance ties are effectively impossible.  Pass
@@ -94,10 +80,9 @@ trait ExtensionFuzzSuite extends DockingSuite {
   // shortest-path successor list holds more than one entry, which is in turn the only case where the traversal's heap
   // pop order among equal-distance entries is observable (the path prims draw `rng.nextInt(successors.length)` over
   // that list).  Continuous weights make that measure-zero, so this is the only way to dock tie behavior against
-  // desktop.  -Jeremy B July 2026
+  // desktop.
   protected val discreteWeights: String = "1 + random 3"
 
-  // Builds a random undirected network using the `uedges` breed, with random positive `weight`s on the links.
   protected def buildRandomUndirectedNetwork(run: FuzzRun, weightExpr: String = continuousWeights)
                                             (implicit fixture: DockingFixture): Unit = {
     import fixture._
@@ -108,13 +93,10 @@ trait ExtensionFuzzSuite extends DockingSuite {
     testCommand("clear-all")
     testCommand(s"random-seed $nlSeed")
     testCommand(s"create-turtles $n [ setxy random-xcor random-ycor ]")
-    // each turtle links to a random subset of the others; overlapping requests are harmless (link already exists)
     testCommand("ask turtles [ create-uedges-with n-of (random count other turtles) other turtles ]")
     testCommand(s"ask uedges [ set weight ($weightExpr) ]")
   }
 
-  // Builds a random directed network using the `dedges` breed, with random positive `weight`s on the links.  The
-  // directed analogue of `buildRandomUndirectedNetwork`; see `ExtensionFuzzSuite.directedModelCode` for declarations.
   protected def buildRandomDirectedNetwork(run: FuzzRun, weightExpr: String = continuousWeights)
                                           (implicit fixture: DockingFixture): Unit = {
     import fixture._
@@ -131,22 +113,18 @@ trait ExtensionFuzzSuite extends DockingSuite {
 
 object ExtensionFuzzSuite {
 
-  // Declarations a suite's model needs for the undirected generator above.
   val undirectedModelCode: String =
     """|extensions [nw]
        |undirected-link-breed [uedges uedge]
        |uedges-own [weight]
        |""".stripMargin
 
-  // Declarations a suite's model needs for the directed generator above.
   val directedModelCode: String =
     """|extensions [nw]
        |directed-link-breed [dedges dedge]
        |dedges-own [weight]
        |""".stripMargin
 
-  // Declarations for the structural/random generators, which build into the built-in `links` (undirected) and the
-  // `dedges` breed (used by the directed wheel generators).
   val generatorModelCode: String =
     """|extensions [nw]
        |directed-link-breed [dedges dedge]

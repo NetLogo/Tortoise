@@ -40,8 +40,7 @@ determineDirectedness = (linkset) ->
 #   'out' -> desktop `outNeighbors`: directed links followed end1 -> end2, plus every undirected link, both ways.
 #   'in'  -> desktop `inNeighbors`:  directed links followed end2 -> end1, plus every undirected link, both ways.
 # There is deliberately no "follow every link in both directions" mode (desktop `allEdges` / BFS followOut+followIn);
-# the one caller that needs it (weak components in `nw-metrics.coffee`) builds its own adjacency.  A mode named 'both'
-# used to exist here, but it was just an alias for 'out' -- an invitation to assume it meant `allEdges`.
+# the one caller that needs it (weak components in `nw-metrics.coffee`) builds its own adjacency.
 # -Jeremy B July 2026
 # (Context, String) => GraphView
 graphView = (ctx, mode) ->
@@ -293,12 +292,13 @@ dijkstra = (startTurtle, ctx, mode, weightVar, view = graphView(ctx, mode)) ->
       # cross it back and forth and the distance falls without bound -- and the loop would never end, which in the
       # browser is an unrecoverable frozen tab.  We reject it here, in the only traversal that can spin, rather than in
       # `getLinkWeight`: `dijkstraSuccessors` finalizes each node on first pop (like desktop), so the weighted *path*
-      # prims cannot hang and stay desktop-compatible.  A zero weight is fine -- it can never improve a distance, so it
+      # prims cannot hang and stay desktop-compatible.  A zero weight is fine, it can never improve a distance, so it
       # never re-pushes.
       #
       # Desktop does not check at all; `cachingDijkstra` finalizes once and so reports a meaningless finite value
       # instead of hanging.  We are deliberately stricter, matching what `nw:weighted-distance-to`'s own docs already
-      # require.  A language test proposing desktop do the same is filed in the NW-Extension repo's `tests.txt`.
+      # require.
+      #
       # -Jeremy B July 2026
       if weight < 0
         throw exceptions.extension("Weights must be non-negative.")

@@ -17,14 +17,9 @@ import
 // graphs (or, for generators, random-but-valid parameters) at a primitive.
 class TestNWFuzz extends ExtensionFuzzSuite {
 
-  // Curated seeds that always run in CI and locally.  Promote any random seed that surfaces a real bug into this list.
-  // A spread of fixed seeds is baked in (rather than relying on the volatile random runs) so failures reproduce
-  // deterministically and can be triaged reliably.
   override def fixedSeeds =
     Seq(1L, 2L, 42L, 1337L, 8675309L, 20260714L, 271828L, 161803L, 999983L, 4294967311L)
 
-  // A few extra random graphs per prim on top of the fixed seeds for local probing.  CI disables random runs entirely
-  // (TORTOISE_FUZZ_NO_RANDOM), so it only ever sees the reproducible `fixedSeeds`.
   override def randomRunCount: Int = 10
 
   val undirectedModel = Model(code = ExtensionFuzzSuite.undirectedModelCode, widgets = List(View.square(5)))
