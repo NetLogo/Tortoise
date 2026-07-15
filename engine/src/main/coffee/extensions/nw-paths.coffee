@@ -4,7 +4,7 @@
 TurtleSet = require('../engine/core/turtleset')
 { checks } = require('../engine/core/typechecker')
 
-{ isInTurtleset, getNeighbors, bfs, dijkstra, getLinkWeight, normalizeWeightVar, bfsSuccessors,
+{ isInTurtleset, bfs, dijkstra, getLinkWeight, normalizeWeightVar, bfsSuccessors,
   walkSuccessors, dijkstraSuccessors, isValidLink } = require('extensions/nw-core')
 
 # ({ workspace: Workspace, getCurrentContext: () => Context }) => Object
@@ -48,8 +48,7 @@ module.exports = (deps) ->
     if startTurtle is targetTurtle
       return 0
 
-    mode = if ctx.isDirected then 'out' else 'both'
-    {distances} = bfs(startTurtle, ctx, mode)
+    {distances} = bfs(startTurtle, ctx, 'out')
 
     dist = distances.get(targetTurtle.id)
     if dist? then dist else false
@@ -138,7 +137,7 @@ module.exports = (deps) ->
     self = workspace.world.selfManager.self()
     if not checks.isTurtle(self)
       throw exceptions.extension("nw:turtles-in-radius can only be called by a turtle")
-    new TurtleSet(turtlesInRadiusFrom(self, radius, 'both'), workspace.world)
+    new TurtleSet(turtlesInRadiusFrom(self, radius, 'out'), workspace.world)
 
   # (Number) => TurtleSet
   turtlesInReverseRadius = (radius) ->
@@ -187,8 +186,7 @@ module.exports = (deps) ->
     if startTurtle is targetTurtle
       return 0
 
-    mode = if ctx.isDirected then 'out' else 'both'
-    {distances} = dijkstra(startTurtle, ctx, mode, weightVar)
+    {distances} = dijkstra(startTurtle, ctx, 'out', weightVar)
 
     dist = distances.get(targetTurtle.id)
     if dist? then dist else false
@@ -245,12 +243,11 @@ module.exports = (deps) ->
     if turtles.length < 2
       return false
 
-    mode = if ctx.isDirected then 'out' else 'both'
     totalDistance = 0
     pairCount = 0
 
     for startTurtle in turtles
-      {distances} = bfs(startTurtle, ctx, mode)
+      {distances} = bfs(startTurtle, ctx, 'out')
       for targetTurtle in turtles
         if startTurtle isnt targetTurtle
           dist = distances.get(targetTurtle.id)
@@ -273,12 +270,11 @@ module.exports = (deps) ->
       return false
 
     normalizedVar = normalizeWeightVar(weightVar)
-    mode = if ctx.isDirected then 'out' else 'both'
     totalDistance = 0
     pairCount = 0
 
     for startTurtle in turtles
-      {distances} = dijkstra(startTurtle, ctx, mode, normalizedVar)
+      {distances} = dijkstra(startTurtle, ctx, 'out', normalizedVar)
       for targetTurtle in turtles
         if startTurtle isnt targetTurtle
           dist = distances.get(targetTurtle.id)

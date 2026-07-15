@@ -86,8 +86,20 @@ trait ExtensionFuzzSuite extends DockingSuite {
 
   protected val maxTurtles: Int = 12
 
+  // The default link weight: continuous, so exact shortest-path distance ties are effectively impossible.  Pass
+  // `discreteWeights` instead to make ties common -- see that value for why it is worth fuzzing separately.
+  protected val continuousWeights: String = "1 + random-float 5"
+
+  // Small integer weights, so distinct paths routinely tie on total distance.  A tie is the only case where a node's
+  // shortest-path successor list holds more than one entry, which is in turn the only case where the traversal's heap
+  // pop order among equal-distance entries is observable (the path prims draw `rng.nextInt(successors.length)` over
+  // that list).  Continuous weights make that measure-zero, so this is the only way to dock tie behavior against
+  // desktop.  -Jeremy B July 2026
+  protected val discreteWeights: String = "1 + random 3"
+
   // Builds a random undirected network using the `uedges` breed, with random positive `weight`s on the links.
-  protected def buildRandomUndirectedNetwork(run: FuzzRun)(implicit fixture: DockingFixture): Unit = {
+  protected def buildRandomUndirectedNetwork(run: FuzzRun, weightExpr: String = continuousWeights)
+                                            (implicit fixture: DockingFixture): Unit = {
     import fixture._
     // NetLogo's `random-seed` literal must fit in its integer range, so derive an int-sized seed for the model rather
     // than reusing the (possibly huge) generator seed.  It stays reproducible because it comes from the seeded RNG.
@@ -98,12 +110,13 @@ trait ExtensionFuzzSuite extends DockingSuite {
     testCommand(s"create-turtles $n [ setxy random-xcor random-ycor ]")
     // each turtle links to a random subset of the others; overlapping requests are harmless (link already exists)
     testCommand("ask turtles [ create-uedges-with n-of (random count other turtles) other turtles ]")
-    testCommand("ask uedges [ set weight (1 + random-float 5) ]")
+    testCommand(s"ask uedges [ set weight ($weightExpr) ]")
   }
 
   // Builds a random directed network using the `dedges` breed, with random positive `weight`s on the links.  The
   // directed analogue of `buildRandomUndirectedNetwork`; see `ExtensionFuzzSuite.directedModelCode` for declarations.
-  protected def buildRandomDirectedNetwork(run: FuzzRun)(implicit fixture: DockingFixture): Unit = {
+  protected def buildRandomDirectedNetwork(run: FuzzRun, weightExpr: String = continuousWeights)
+                                          (implicit fixture: DockingFixture): Unit = {
     import fixture._
     val nlSeed = run.rng.nextInt()
     val n      = run.rng.nextInt(maxTurtles) + 1
@@ -112,7 +125,7 @@ trait ExtensionFuzzSuite extends DockingSuite {
     testCommand(s"create-turtles $n [ setxy random-xcor random-ycor ]")
     // each turtle points a directed edge at a random subset of the others (out-links)
     testCommand("ask turtles [ create-dedges-to n-of (random count other turtles) other turtles ]")
-    testCommand("ask dedges [ set weight (1 + random-float 5) ]")
+    testCommand(s"ask dedges [ set weight ($weightExpr) ]")
   }
 }
 

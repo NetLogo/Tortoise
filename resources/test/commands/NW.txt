@@ -1051,6 +1051,34 @@ weighted-distance-two-turtles-no-links
   [ nw:weighted-distance-to turtle 0 weight ] of turtle 1 => false
   [ nw:weighted-distance-to turtle 1 weight ] of turtle 0 => false
 
+# Dijkstra requires non-negative weights, which `nw:weighted-distance-to`'s own documentation states.  A negative
+# weight on an undirected link is a negative cycle, and the decrease-key relaxation in `dijkstra` would chase it down
+# forever and hang the browser, so it rejects the weight instead.  This is deliberately stricter than desktop, which
+# reports a meaningless finite value (-1 here) rather than erroring, because desktop's Dijkstra finalizes each node on
+# first pop and so cannot spin; see the proposed `weighted-distance-to-negative-weight-should-error` in the
+# NW-Extension repo's `tests.txt`.  Note the *path* prims are NOT restricted: they run `dijkstraSuccessors`, which
+# finalizes once like desktop, so they cannot hang and stay desktop-compatible.  A zero weight is always fine -- it
+# can never improve a distance, so it never re-pushes.  -Jeremy B July 2026
+weighted-distance-to-negative-weight-errors
+  extensions [nw]
+  undirected-link-breed [undirected-edges undirected-edge]
+  undirected-edges-own [weight]
+  O> crt 2
+  O> ask turtle 0 [ create-undirected-edge-with turtle 1 [ set weight -1 ] ]
+  O> nw:set-context turtles undirected-edges
+  [ nw:weighted-distance-to turtle 1 weight ] of turtle 0 => ERROR Extension exception: Weights must be non-negative.
+
+weighted-distance-to-zero-weight-cycle-terminates
+  extensions [nw]
+  undirected-link-breed [undirected-edges undirected-edge]
+  undirected-edges-own [weight]
+  O> crt 3
+  O> ask turtle 0 [ create-undirected-edge-with turtle 1 [ set weight 0 ] ]
+  O> ask turtle 1 [ create-undirected-edge-with turtle 2 [ set weight 0 ] ]
+  O> ask turtle 2 [ create-undirected-edge-with turtle 0 [ set weight 0 ] ]
+  O> nw:set-context turtles undirected-edges
+  [ nw:weighted-distance-to turtle 2 weight ] of turtle 0 => 0
+
 weighted-distance-one-unbreeded-undirected-link-using-thickness
   extensions [nw]
   O> crt 2 [ create-links-with other turtles [ set thickness 0.5 ]]

@@ -33,6 +33,15 @@ determineDirectedness = (linkset) ->
 # Build a reusable view of the graph context for a given traversal mode: an id-membership Set plus adjacency lists (id
 # -> [{turtle, link}]).  Traversals (bfs/dijkstra) build this once instead of re-scanning every link and doing a linear
 # turtleset membership test on every neighbor, which turns a single traversal from O(V*E) into O(V+E).
+#
+# `mode` mirrors desktop's two neighbor functions, and an UNDIRECTED link is included by both of them (desktop
+# `Graph.scala`: `outEdges = outLinks ++ undirLinks`, `inEdges = inLinks ++ undirLinks`) -- so mode only decides which
+# way *directed* links are followed:
+#   'out' -> desktop `outNeighbors`: directed links followed end1 -> end2, plus every undirected link, both ways.
+#   'in'  -> desktop `inNeighbors`:  directed links followed end2 -> end1, plus every undirected link, both ways.
+# There is deliberately no "follow every link in both directions" mode (desktop `allEdges` / BFS followOut+followIn);
+# the one caller that needs it (weak components in `nw-metrics.coffee`) builds its own adjacency.  A mode named 'both'
+# used to exist here, but it was just an alias for 'out' -- an invitation to assume it meant `allEdges`.
 # -Jeremy B July 2026
 # (Context, String) => GraphView
 graphView = (ctx, mode) ->
@@ -53,33 +62,6 @@ graphView = (ctx, mode) ->
     else
       adj.get(end1.id).push({ turtle: end2, link })
   { idSet, adj }
-
-# (Turtle, Context, String) => Array[Neighbor]
-getNeighbors = (turtle, ctx, mode) ->
-  neighbors = []
-  links = ctx.links.toArray()
-
-  for link in links
-    if not isValidLink(link)
-      continue
-
-    isDirected = link.isDirected
-    end1       = link.end1
-    end2       = link.end2
-
-    if not isDirected
-      if end1 is turtle and isAliveTurtle(end2)
-        neighbors.push({turtle: end2, link: link})
-      else if end2 is turtle and isAliveTurtle(end1)
-        neighbors.push({turtle: end1, link: link})
-    else if mode is 'out' or mode is 'both'
-      if end1 is turtle and isAliveTurtle(end2)
-        neighbors.push({turtle: end2, link: link})
-    else if mode is 'in'
-      if end2 is turtle and isAliveTurtle(end1)
-        neighbors.push({turtle: end1, link: link})
-
-  neighbors
 
 # (Turtle, Context) => Boolean
 isInTurtleset = (turtle, ctx) ->
@@ -305,6 +287,22 @@ dijkstra = (startTurtle, ctx, mode, weightVar, view = graphView(ctx, mode)) ->
 
     for {turtle: neighbor, link} in (view.adj.get(current.id) ? [])
       weight = getLinkWeight(link, weightVar)
+
+      # Dijkstra assumes non-negative weights, and the relaxation below is decrease-key: it re-pushes a neighbor every
+      # time it finds a shorter distance.  A negative weight on an *undirected* link is therefore a negative cycle --
+      # cross it back and forth and the distance falls without bound -- and the loop would never end, which in the
+      # browser is an unrecoverable frozen tab.  We reject it here, in the only traversal that can spin, rather than in
+      # `getLinkWeight`: `dijkstraSuccessors` finalizes each node on first pop (like desktop), so the weighted *path*
+      # prims cannot hang and stay desktop-compatible.  A zero weight is fine -- it can never improve a distance, so it
+      # never re-pushes.
+      #
+      # Desktop does not check at all; `cachingDijkstra` finalizes once and so reports a meaningless finite value
+      # instead of hanging.  We are deliberately stricter, matching what `nw:weighted-distance-to`'s own docs already
+      # require.  A language test proposing desktop do the same is filed in the NW-Extension repo's `tests.txt`.
+      # -Jeremy B July 2026
+      if weight < 0
+        throw exceptions.extension("Weights must be non-negative.")
+
       newDist = currentDist + weight
 
       if not distances.has(neighbor.id)
@@ -335,7 +333,7 @@ getBreedName = (agentSet) ->
     "LINKS"
 
 module.exports = {
-  isAliveTurtle, isValidLink, determineDirectedness, getNeighbors, isInTurtleset, bfs,
+  isAliveTurtle, isValidLink, determineDirectedness, isInTurtleset, bfs,
   getLinkWeight, BinaryHeap, dijkstra, normalizeWeightVar, getBreedName, graphView, bfsSuccessors,
   walkSuccessors, dijkstraSuccessors
 }

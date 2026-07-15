@@ -63,8 +63,7 @@ module.exports = (deps) ->
     if turtles.length <= 1
       return 0
 
-    mode = if ctx.isDirected then 'out' else 'both'
-    {distances} = bfs(turtle, ctx, mode)
+    {distances} = bfs(turtle, ctx, 'out')
 
     sumDistances = 0
     reachableCount = 0
@@ -93,8 +92,7 @@ module.exports = (deps) ->
     if turtles.length <= 1
       return 0
 
-    mode = if ctx.isDirected then 'out' else 'both'
-    {distances} = dijkstra(turtle, ctx, mode, normalizeWeightVar(weightVar))
+    {distances} = dijkstra(turtle, ctx, 'out', normalizeWeightVar(weightVar))
 
     sumDistances = 0
     reachableCount = 0
@@ -136,7 +134,7 @@ module.exports = (deps) ->
     for t in turtles
       centrality.set(t.id, 0)
 
-    mode = if ctx.isDirected then 'out' else 'both'
+    mode = 'out'
     view = graphView(ctx, mode)
 
     for s in turtles
@@ -233,13 +231,15 @@ module.exports = (deps) ->
     if turtles.length is 0
       return new Map()
 
-    inView = if ctx.isDirected then graphView(ctx, 'in') else graphView(ctx, 'both')
+    # Inflow neighbors for the power iteration below: desktop `inNeighbors`, which is `inLinks ++ undirLinks` -- so on
+    # an undirected graph this is simply every neighbor.  -Jeremy B July 2026
+    inView = graphView(ctx, 'in')
 
     # Weakly-connected components: follow every link in both directions, matching desktop's
-    # BreadthFirstSearch(followOut = true, followIn = true).  We can't use graphView('both') here because it is
-    # out-biased for directed edges (a directed u->v only lands in u's adjacency), which would split a weak component
-    # and leave a node's in-neighbor outside its own component -- propagating NaN into the power iteration below.
-    # -Jeremy B July 2026
+    # BreadthFirstSearch(followOut = true, followIn = true).  `graphView` has no mode for this on purpose (see its
+    # comment): 'out' and 'in' each follow directed links one way only, which would split a weak component and leave a
+    # node's in-neighbor outside its own component -- propagating NaN into the power iteration below.  So this builds
+    # its own both-directions adjacency, the equivalent of desktop's `allEdges`.  -Jeremy B July 2026
     weakAdj = new Map()
     for t in turtles
       weakAdj.set(t.id, [])

@@ -228,6 +228,93 @@ class TestNWFuzz extends ExtensionFuzzSuite {
     }
   }
 
+  // ----- discrete weights: shortest-path ties ------------------------------------------------------------------------
+  //
+  // Everything above uses continuous weights, where exact distance ties never happen, so a successor list always holds
+  // exactly one entry and the traversal heap's order among equal-distance entries is unobservable.  These fuzz the
+  // opposite regime (`discreteWeights`, small integers): ties are common, successor lists hold several entries, and the
+  // per-hop `rng.nextInt(successors.length)` draw makes the *order* of that list part of the observable result.  Both
+  // engines' heaps (desktop `mutable.PriorityQueue`, NLW `BinaryHeap`) are unstable for equal scores, so this is where
+  // any tie-order divergence would surface.  Directed variants are included: they are the configuration the path prims
+  // had no coverage for at all.  -Jeremy B July 2026
+
+  test("weighted-distance-to: discrete weights, random undirected graphs") { implicit fixture => import fixture._
+    openModel(undirectedModel, shouldAutoInstallLibs = true)
+    fuzz("weighted-distance-to-discrete") { run =>
+      buildRandomUndirectedNetwork(run, discreteWeights)
+      compareNums(perTurtle("nw:weighted-distance-to turtle 0 weight"))
+    }
+  }
+
+  test("weighted-distance-to: discrete weights, random directed graphs") { implicit fixture => import fixture._
+    openModel(directedModel, shouldAutoInstallLibs = true)
+    fuzz("weighted-distance-to-discrete-directed") { run =>
+      buildRandomDirectedNetwork(run, discreteWeights)
+      compareNums(perTurtle("nw:weighted-distance-to turtle 0 weight"))
+    }
+  }
+
+  // IGNORED -- these three fail against desktop, and the divergence is REAL but currently unfixable at reasonable cost.
+  // They are kept (rather than deleted) to document the known limitation and to be un-ignored if it is ever addressed.
+  //
+  // What happens: with tied distances, a node's successor list holds several equally-good next hops and the prim draws
+  // `rng.nextInt(list.length)` over it.  Both engines build the *same* successor set -- `dijkstraSuccessors` is a
+  // faithful port of desktop `PathFinder.cachingDijkstra`, with the same push guard (`if not dists.has`), the same
+  // finalize-once rule, and the same `turtle != predecessor` append -- but they append in *heap pop order*, and both
+  // heaps are unstable for equal scores.  Desktop uses `scala.collection.mutable.PriorityQueue` (1-based binary heap,
+  // and it re-enqueues the start node once per distance layer, perturbing the array layout); NLW uses its own
+  // 0-based `BinaryHeap`.  So the tied lists come out in different orders, the same `nextInt` index selects a
+  // different hop, and the reported path differs.  Both answers are still *a* correct shortest path, and the weighted
+  // *distance* prims agree (see the passing discrete-weight distance tests above).
+  //
+  // Matching desktop exactly would mean reimplementing scala-library's PriorityQueue internals plus the layered
+  // traversal's re-enqueue in CoffeeScript -- i.e. depending on undocumented implementation details of a dependency,
+  // which would silently break if Scala's heap ever changes.  Not worth it for a tie-break among equally-correct
+  // paths.  Note the unweighted path prims are unaffected and ARE docked (ties are ubiquitous there): `bfsSuccessors`
+  // is queue/layer-based, so its append order is deterministic and already matches desktop.  -Jeremy B July 2026
+  ignore("turtles-on-weighted-path-to: discrete weights, random undirected graphs (RNG-parity)") { implicit fixture =>
+    import fixture._
+    openModel(undirectedModel, shouldAutoInstallLibs = true)
+    fuzz("turtles-on-weighted-path-to-discrete") { run =>
+      buildRandomUndirectedNetwork(run, discreteWeights)
+      compare("map [ t -> [ (word nw:turtles-on-weighted-path-to turtle 0 weight) ] of t ] sort turtles")
+    }
+  }
+
+  ignore("turtles-on-weighted-path-to: discrete weights, random directed graphs (RNG-parity)") { implicit fixture =>
+    import fixture._
+    openModel(directedModel, shouldAutoInstallLibs = true)
+    fuzz("turtles-on-weighted-path-to-discrete-directed") { run =>
+      buildRandomDirectedNetwork(run, discreteWeights)
+      compare("map [ t -> [ (word nw:turtles-on-weighted-path-to turtle 0 weight) ] of t ] sort turtles")
+    }
+  }
+
+  ignore("weighted-path-to: discrete weights, random undirected graphs (RNG-parity)") { implicit fixture =>
+    import fixture._
+    openModel(undirectedModel, shouldAutoInstallLibs = true)
+    fuzz("weighted-path-to-discrete") { run =>
+      buildRandomUndirectedNetwork(run, discreteWeights)
+      compare("map [ t -> [ (word nw:weighted-path-to turtle 0 weight) ] of t ] sort turtles")
+    }
+  }
+
+  test("path-to: random directed graphs (RNG-parity)") { implicit fixture => import fixture._
+    openModel(directedModel, shouldAutoInstallLibs = true)
+    fuzz("path-to-directed") { run =>
+      buildRandomDirectedNetwork(run)
+      compare("map [ t -> [ (word nw:path-to turtle 0) ] of t ] sort turtles")
+    }
+  }
+
+  test("turtles-on-path-to: random directed graphs (RNG-parity)") { implicit fixture => import fixture._
+    openModel(directedModel, shouldAutoInstallLibs = true)
+    fuzz("turtles-on-path-to-directed") { run =>
+      buildRandomDirectedNetwork(run)
+      compare("map [ t -> [ (word nw:turtles-on-path-to turtle 0) ] of t ] sort turtles")
+    }
+  }
+
   // ===== whole-graph metrics =========================================================================================
 
   test("mean-path-length: random undirected graphs") { implicit fixture => import fixture._

@@ -1,8 +1,4 @@
 # SDKMAN! environment config for Tortoise.  `./sbt.sh` applies this automatically; run `sdk env` to apply it to your
 # own shell, or `sdk env install` to install anything listed here that you are missing.  See the wiki's
 # "Building and Running" page.
-#
-# Tortoise runs its generated Javascript through GraalVM's Javascript engine to test it.  On a non-GraalVM JDK that
-# engine silently falls back to an interpreter (no JVMCI, so no JIT), which does not fail -- it just makes the tests
-# roughly 18x slower, which reads as a hang rather than a misconfiguration.
 java=25.0.2-graalce
