@@ -155,18 +155,22 @@ module.exports = (deps) ->
     # Seed the adjacency map with the full forward ring lattice: turtle i is connected to turtles i+1 .. i+k (mod n).
     # This mirrors the desktop generator (NW-Extension WattsStrogatzGenerator.scala) so link structure and RNG usage
     # stay in lock-step with NetLogo desktop.  Sets are forward-only; dedup checks both directions.
-    # -Jeremy B July 2026
+    #
+    # The `by 1` on the neighbor ranges is load-bearing: a bare CoffeeScript `[1..k]` is *bidirectional*, so `[1..0]`
+    # counts down to `[1, 0]` rather than being empty.  `neighborhoodSize` of 0 is legal (it is the only legal value
+    # when nbTurtles is 2), and desktop's Scala `(1 to 0)` is empty, so without `by 1` we would add a self-loop plus a
+    # spurious forward edge and burn rewiring RNG draws desktop never makes.  -Jeremy B July 2026
     adjacency = new Map()
     for source, i in turtles
       targets = new Set()
-      for neighbor in [1..neighborhoodSize]
+      for neighbor in [1..neighborhoodSize] by 1
         targets.add(turtles[(i + neighbor) % nbTurtles].id)
       adjacency.set(source.id, targets)
 
     availBuffer = turtles.slice()
 
     for source, i in turtles
-      for neighbor in [1..neighborhoodSize]
+      for neighbor in [1..neighborhoodSize] by 1
         target     = turtles[(i + neighbor) % nbTurtles]
         realTarget = target
 

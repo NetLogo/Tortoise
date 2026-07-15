@@ -261,6 +261,34 @@ class TestNWFuzz extends ExtensionFuzzSuite {
     }
   }
 
+  // The weak-component partition above can never have a link crossing a community boundary, so it leaves the
+  // `totalIn`/`totalOut` bookkeeping for boundary links unchecked -- that gap hid a real bug.  Partitioning on
+  // `who mod 2` is an arbitrary split that puts links across the boundary for essentially any random graph, which is
+  // also what real usage (hand-built partitions, louvain output) looks like.  Both parities are docked because
+  // desktop counts an undirected boundary link once via `outEdges` and once via `inEdges`, while a directed one is
+  // counted only from the end that owns it.  -Jeremy B July 2026
+  private def modularityOfParity(edgeBreed: String): String =
+    s"ifelse-value (count $edgeBreed > 0) " +
+    "[ precision (nw:modularity (list turtles with [ who mod 2 = 0 ] turtles with [ who mod 2 = 1 ])) 6 ] [ 0 ]"
+
+  test("modularity: arbitrary partition with crossing links, random undirected graphs") { implicit fixture =>
+    import fixture._
+    openModel(undirectedModel, shouldAutoInstallLibs = true)
+    fuzz("modularity-crossing") { run =>
+      buildRandomUndirectedNetwork(run)
+      compareNums(modularityOfParity("uedges"))
+    }
+  }
+
+  test("modularity: arbitrary partition with crossing links, random directed graphs") { implicit fixture =>
+    import fixture._
+    openModel(directedModel, shouldAutoInstallLibs = true)
+    fuzz("modularity-crossing-directed") { run =>
+      buildRandomDirectedNetwork(run)
+      compareNums(modularityOfParity("dedges"))
+    }
+  }
+
   // ===== components / cliques / communities ==========================================================================
 
   test("weak-component-clusters: random undirected graphs") { implicit fixture => import fixture._
@@ -378,6 +406,22 @@ class TestNWFuzz extends ExtensionFuzzSuite {
       testCommand("clear-all")
       testCommand(s"random-seed $nlSeed")
       testCommand(f"nw:generate-watts-strogatz turtles links $n%d $nbr%d $rewire%.4f [ ]")
+    }
+  }
+
+  // A neighborhood size of 0 is legal for any node count (and is the *only* legal value when n is 2), but the fuzz
+  // above always picks at least 1, which left the empty-ring case untested.  Desktop's `(1 to 0)` is empty, so this
+  // must produce turtles with no links and no RNG draws at all -- the rewire probability is still varied to prove no
+  // draws are consumed, since the docking fixture compares RNG state.  -Jeremy B July 2026
+  test("generate-watts-strogatz: zero neighborhood size") { implicit fixture => import fixture._
+    openModel(generatorModel, shouldAutoInstallLibs = true)
+    fuzz("generate-watts-strogatz-zero-neighborhood") { run =>
+      val nlSeed = run.rng.nextInt()
+      val n      = run.rng.nextInt(6) + 2 // n of 2 admits only a neighborhood size of 0
+      val rewire = run.rng.nextDouble()
+      testCommand("clear-all")
+      testCommand(s"random-seed $nlSeed")
+      testCommand(f"nw:generate-watts-strogatz turtles links $n%d 0 $rewire%.4f [ ]")
     }
   }
 

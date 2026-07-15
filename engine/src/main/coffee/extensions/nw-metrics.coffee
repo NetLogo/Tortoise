@@ -601,21 +601,35 @@ module.exports = (deps) ->
       totalIn = 0
       totalOut = 0
 
+      # Mirrors desktop `ClusteringMetrics.communityModularity`, which walks `outEdges(node)` (adding to `totalOut`, and
+      # to `internal` when the far end is also a member) and `inEdges(node)` (adding to `totalIn`).  Desktop's graph
+      # views put an undirected link in *both* `outEdges` and `inEdges` of *each* endpoint (`Graph.scala:67-68`), so an
+      # undirected link incident to a member counts 1 toward `totalOut` and 1 toward `totalIn` -- for a boundary link
+      # too, where only the one member endpoint contributes.  A directed link counts only from the end that owns it.
+      # -Jeremy B July 2026
       for t in members
         for link in links
           if not isValidLink(link)
             continue
-          if link.end1 is t
-            end2 = link.end2
-            if isInTurtleset(end2, ctx)
-              weight = if link.isDirected then 1 else 2
-              totalOut += weight
-              if memberSet.has(end2.id)
-                internal += weight
-          if link.end2 is t
-            end1 = link.end1
-            if isInTurtleset(end1, ctx)
-              totalIn += if link.isDirected then 1 else 2
+          isEnd1 = link.end1 is t
+          isEnd2 = link.end2 is t
+          if not (isEnd1 or isEnd2)
+            continue
+          other = if isEnd1 then link.end2 else link.end1
+          if not isInTurtleset(other, ctx)
+            continue
+          if link.isDirected
+            if isEnd1
+              totalOut += 1
+              if memberSet.has(other.id)
+                internal += 1
+            if isEnd2
+              totalIn += 1
+          else
+            totalOut += 1
+            totalIn  += 1
+            if memberSet.has(other.id)
+              internal += 1
 
       totalModularity += (internal - totalIn * totalOut / totalArcWeight) / totalArcWeight
 
