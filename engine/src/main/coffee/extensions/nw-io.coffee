@@ -18,6 +18,20 @@ unsupportedNetworkFormatError = (rawFormat) ->
 
 { isValidLink, getBreedName } = require('extensions/nw-core')
 
+{ VariableSpecs: TurtleVariableSpecs } = require('../engine/core/turtle/turtlevariables')
+{ VariableSpecs: LinkVariableSpecs   } = require('../engine/core/link/linkvariables')
+
+# Built-ins we never carry as agent variables.  `who` excludes itself by being immutable (no setter), but these are
+# settable and still have to go: `breed` gets its own column, and a link's endpoints are the graph's structure rather
+# than agent state.  -Jeremy B July 2026
+NON_VARIABLE_BUILTINS = ["breed", "end1", "end2"]
+
+# Desktop's `program.turtlesOwn` is built-ins followed by the model's own variables, and its exporters write the lot;
+# ours only had the model's own.  A spec without a `set` (i.e. `who`) can't be assigned, so it's not worth writing.
+# (Array[VariableSpec]) => Array[String]
+settableBuiltinNames = (specs) ->
+  (spec.name for spec in specs when spec.set? and spec.name not in NON_VARIABLE_BUILTINS)
+
 # Shapes used by the loaders/parsers below:
 # type Edge    = { from: Any, to: Any, directed: Boolean | null }
 # type XmlNode = { tag: String, attrs: Map[String, String], children: Array[XmlNode], text: String }
@@ -87,11 +101,13 @@ module.exports = (deps) ->
   isDefaultBreedName = (name) ->
     name is "TURTLES" or name is "LINKS"
 
-  # (Boolean) => Array[String] -- the union of the default breed's vars and each breed's own vars, in breed order.
+  # (Boolean) => Array[String] -- settable built-ins, then the default breed's vars, then each breed's own vars, in
+  # breed order.  Built-ins lead, as they do in desktop's `turtlesOwn`.
   agentVarNames = (isLinky) ->
     manager   = workspace.world.breedManager
     breedName = if isLinky then "LINKS" else "TURTLES"
-    names     = manager.get(breedName).varNames.slice()
+    builtins  = settableBuiltinNames(if isLinky then LinkVariableSpecs else TurtleVariableSpecs)
+    names     = builtins.concat(manager.get(breedName).varNames)
     ordered   = if isLinky then manager.orderedLinkBreeds() else manager.orderedTurtleBreeds()
     for name in ordered when name isnt breedName
       for varName in manager.get(name).varNames when varName not in names
@@ -133,6 +149,12 @@ module.exports = (deps) ->
 
   # Names are stored in the case the model declared, but formats may carry any case, so match case-insensitively.
   # Entries naming no variable of this agent's breed are skipped.
+  #
+  # A variable the agent has but can't accept is skipped rather than fatal, matching desktop -- `GephiImport`'s
+  # `setAttribute` swallows `AgentException` for exactly this.  Without it a single bad column aborts the whole load:
+  # a `who` column (which desktop writes, since its `turtlesOwn` includes it) is immutable here, and threw an
+  # "nw:load-from-string could not parse the given gdf data" for the entire file.  A list-valued colour read back as a
+  # string lands here too.  -Jeremy B July 2026
   # (Agent, Array[{ varName: String, value: Any }]) => Unit
   setAgentAttributes = (agent, attrs) ->
     ownedByLower = new Map()
@@ -140,14 +162,25 @@ module.exports = (deps) ->
       ownedByLower.set(name.toLowerCase(), name)
     for attr in attrs
       owned = ownedByLower.get(attr.varName.toLowerCase())
-      agent.setVariable(owned, attr.value) if owned?
+      continue if not owned?
+      try
+        agent.setVariable(owned, attr.value)
+      catch err
+        throw err if err instanceof HaltInterrupt
     return
+
+  # Lists are written in NetLogo's own syntax (`[10 20 30]`), as desktop's `Dump.logoObject` does.  Neither side can
+  # read them back -- no format we support records that a value was a list, and desktop's importer coerces the text
+  # and gives up the same way -- so a list-valued variable (an rgb `color`, say) survives the save but not the load.
+  # (Any) => String
+  varValueToText = (value) ->
+    if Array.isArray(value) then workspace.dump(value) else "#{value}"
 
   # (Any) => { type: String, text: String }
   serializeVarValue = (value) ->
     if typeof value is "number"       then { type: "double",  text: "#{value}" }
     else if typeof value is "boolean" then { type: "boolean", text: (if value then "true" else "false") }
-    else                                   { type: "string",  text: "#{value}" }
+    else                                   { type: "string",  text: varValueToText(value) }
 
   # (String, String) => Number | Boolean | String
   deserializeVarValue = (type, text) ->
@@ -273,7 +306,7 @@ module.exports = (deps) ->
     else if typeof value is "boolean"
       if value then "true" else "false"
     else
-      "\"#{String(value).replace(/\\/g, "\\\\").replace(/"/g, "\\\"")}\""
+      "\"#{varValueToText(value).replace(/\\/g, "\\\\").replace(/"/g, "\\\"")}\""
 
   # (Agent, Array[String]) => Array[String]
   gmlVarLines = (agent, varNames) ->
@@ -440,7 +473,7 @@ module.exports = (deps) ->
     else if typeof value is "boolean"
       if value then "true" else "false"
     else
-      "\"#{String(value).replace(/[\r\n]+/g, " ").replace(/"/g, " ")}\""
+      "\"#{varValueToText(value).replace(/[\r\n]+/g, " ").replace(/"/g, " ")}\""
 
   # An agent omits the columns it doesn't own, and Gephi requires every row to have as many fields as its header, so
   # the gap is filled with `""` -- the same marker Gephi's exporter uses for an empty attribute.
@@ -590,7 +623,7 @@ module.exports = (deps) ->
 
   # (Any) => String -- quote a field if it would otherwise break the comma-separated framing.
   gdfField = (value) ->
-    text = if typeof value is "boolean" then (if value then "true" else "false") else String(value)
+    text = if typeof value is "boolean" then (if value then "true" else "false") else varValueToText(value)
     if /[,'"\\]/.test(text)
       "'#{text.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'"
     else

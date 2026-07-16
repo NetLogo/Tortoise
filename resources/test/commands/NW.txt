@@ -2039,3 +2039,53 @@ load-from-string-vna-gephi-format
   count links => 1
   sort [value] of turtles => [10 11]
   [strength] of one-of links => 1
+
+load-from-string-gdf-unsettable-column-is-skipped
+  extensions [ nw ]
+  to-report d report (word "nodedef> name VARCHAR,who DOUBLE,color DOUBLE\n" "1,5,15\n" "2,6,25\n" "edgedef> node1,node2\n" "1,2\n") end
+  O> nw:load-from-string "gdf" d turtles links
+  count turtles => 2
+  count links => 1
+  sort [who] of turtles => [0 1]
+  sort [color] of turtles => [15 25]
+
+save-to-string-and-load-from-string-gdf-builtins
+  extensions [ nw ]
+  globals [ g ]
+  O> crt 1 [ setxy 3 4 set heading 90 set color 15 set size 2 set shape "circle" set label "hi" ]
+  O> set g nw:save-to-string "gdf"
+  O> clear-turtles
+  O> nw:load-from-string "gdf" g turtles links
+  [xcor] of one-of turtles => 3
+  [ycor] of one-of turtles => 4
+  [heading] of one-of turtles => 90
+  [color] of one-of turtles => 15
+  [size] of one-of turtles => 2
+  [shape] of one-of turtles => "circle"
+  [label] of one-of turtles => "hi"
+
+save-to-string-and-load-from-string-graphml-builtins
+  extensions [ nw ]
+  globals [ g ]
+  O> crt 2 [ setxy 3 4 set color 15 ]
+  O> ask turtle 0 [ create-link-with turtle 1 [ set color 25 set thickness 0.5 ] ]
+  O> set g nw:save-to-string "graphml"
+  O> clear-turtles
+  O> nw:load-from-string "graphml" g turtles links
+  [xcor] of one-of turtles => 3
+  [color] of one-of turtles => 15
+  [color] of one-of links => 25
+  [thickness] of one-of links => 0.5
+
+save-to-string-and-load-from-string-gdf-list-values-do-not-round-trip
+  extensions [ nw ]
+  globals [ g ]
+  turtles-own [ lvar ]
+  O> crt 1 [ set color [10 20 30] set lvar [1 2 3] set size 2 ]
+  O> set g nw:save-to-string "gdf"
+  member? "[10 20 30]" g => true
+  O> clear-turtles
+  O> nw:load-from-string "gdf" g turtles links
+  count turtles => 1
+  [size] of one-of turtles => 2
+  [lvar] of one-of turtles => "[1 2 3]"
