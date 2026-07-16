@@ -20,14 +20,37 @@ validateColor = (color) ->
     maybe("Invalid RGB format")
   else if checks.isList(color) and (color.some(isBadCompNumber))
     maybe("Invalid RGB number")
+  else if not checks.isList(color) and not checks.isNumber(color)
+    # See the matching note in `turtlevariables.coffee`: a non-number became `NaN` here and crashed the view.
+    maybe("Invalid color type")
   else
     None
 
-# (String) => Unit
+# See the matching note in `turtlevariables.coffee`.  -Jeremy B July 2026
+
+# (Any) => Maybe[String]
+validateNumber = (value) ->
+  if checks.isNumber(value) then None else maybe("Invalid number type")
+
+# (Any) => Maybe[String]
+validateString = (value) ->
+  if checks.isString(value) then None else maybe("Invalid string type")
+
+# (Any) => Maybe[String]
+validateBoolean = (value) ->
+  if checks.isBoolean(value) then None else maybe("Invalid boolean type")
+
+# Only the type is checked; see the matching note in `turtlevariables.coffee` about the shape list living in the view.
+# (String) => Maybe[String]
 setShape = (shape) ->
-  @_shape = shape.toLowerCase()
-  @_genVarUpdate("shape")
-  return
+
+  errorMaybe = validateString(shape)
+
+  if not isSomething(errorMaybe)
+    @_shape = shape.toLowerCase()
+    @_genVarUpdate("shape")
+
+  errorMaybe
 
 # (AbstractAgentSet|Breed|String) => Unit
 setBreed = (breed) ->
@@ -43,6 +66,10 @@ setBreed = (breed) ->
         throw exceptions.runtime("You can't set BREED to a non-link-breed agentset.", "set")
     else
       breed
+
+  # See the matching guard in `turtlevariables.coffee`: without it a non-breed reached `trueBreed.add(this)` below.
+  if not trueBreed?.add?
+    throw exceptions.runtime("You can't set BREED to a non-link-breed agentset.", "set")
 
   @world.linkManager.trackBreedChange(this, trueBreed, @_breed?.name ? "")
 
@@ -77,23 +104,28 @@ setColor = (color) ->
 
   errorMaybe
 
-# (Turtle) => Unit
+# A link's endpoints are fixed once it's created, as they are on desktop ("you can't change a link's endpoints" --
+# `Link.java`).  Assigning them left the link pointing at whatever it was given: a turtle from a file's `end1` column
+# would be a string, and the view then looked the turtle up by it and drew `undefined`.  Nothing in the engine sets
+# these -- a link's ends are assigned directly at construction.  -Jeremy B July 2026
+# (Turtle) => Maybe[String]
 setEnd1 = (turtle) ->
-  @end1 = turtle
-  @_genVarUpdate("end1")
-  return
+  maybe("Cannot change endpoints")
 
-# (Turtle) => Unit
+# (Turtle) => Maybe[String]
 setEnd2 = (turtle) ->
-  @end2 = turtle
-  @_genVarUpdate("end2")
-  return
+  maybe("Cannot change endpoints")
 
-# (Boolean) => Unit
+# (Boolean) => Maybe[String]
 setIsHidden = (isHidden) ->
-  @_isHidden = isHidden
-  @_genVarUpdate("hidden?")
-  return
+
+  errorMaybe = validateBoolean(isHidden)
+
+  if not isSomething(errorMaybe)
+    @_isHidden = isHidden
+    @_genVarUpdate("hidden?")
+
+  errorMaybe
 
 # (String) => Unit
 setLabel = (label) ->
@@ -112,17 +144,27 @@ setLabelColor = (color) ->
 
   errorMaybe
 
-# (Number) => Unit
+# (Number) => Maybe[String]
 setThickness = (thickness) ->
-  @_thickness = thickness
-  @_genVarUpdate("thickness")
-  return
 
-# (String) => Unit
+  errorMaybe = validateNumber(thickness)
+
+  if not isSomething(errorMaybe)
+    @_thickness = thickness
+    @_genVarUpdate("thickness")
+
+  errorMaybe
+
+# (String) => Maybe[String]
 setTieMode = (mode) ->
-  @tiemode = mode
-  @_genVarUpdate("tie-mode")
-  return
+
+  errorMaybe = validateString(mode)
+
+  if not isSomething(errorMaybe)
+    @tiemode = mode
+    @_genVarUpdate("tie-mode")
+
+  errorMaybe
 
 Setters = {
   setBreed

@@ -154,6 +154,18 @@ bundle = {
 , "can't set _ variable _ to non-number _": (e) ->
   "can't set #{e.myType} variable #{e.varName.toUpperCase()} to non-number #{e.target}"
 
+# One key per expected type rather than one key composing "non-#{type}": the type name is part of the sentence, and
+# languages that don't build it by concatenation (zh_cn's "非数字") can't translate a spliced-in English word.
+# -Jeremy B July 2026
+, "can't set _ variable _ to non-string _": (e) ->
+  "can't set #{e.myType} variable #{e.varName.toUpperCase()} to non-string #{e.target}"
+
+, "can't set _ variable _ to non-boolean _": (e) ->
+  "can't set #{e.myType} variable #{e.varName.toUpperCase()} to non-boolean #{e.target}"
+
+, "you can't change a link's endpoints": () ->
+  "you can't change a link's endpoints"
+
 , '_ breed does not own variable _': (breedName, varName) ->
   "#{breedName} breed does not own variable #{varName}"
 

@@ -10,12 +10,25 @@ genSetter = (getSelf, validator) -> (name, mappings) ->
     turtle = getSelf()
     fold(->)(
       (error) =>
-        msg        = mappings.get(error)
-        defaultMsg = "An unknown error occurred when setting the '#{name}' of \
+        msg         = mappings.get(error)
+        # Messages that name the offending value need these; the rgb ones ignore them.
+        environment = { myType: "turtle", varName: name, target: value }
+        defaultMsg  = "An unknown error occurred when setting the '#{name}' of \
 '#{turtle}': #{error}"
-        validator.error('set', null, null, msg ? defaultMsg)
+        validator.error('set', null, null, msg ? defaultMsg, environment)
     )(turtle.setIfValid(name, value))
     return
+
+# Every error a setter can hand back, and the message it becomes.  One table serves every variable: a setter only
+# ever produces the errors it validates, so `size` can't emit an rgb error any more than `color` can.
+# -Jeremy B July 2026
+typeErrorMappings = [ ["Invalid number type" , "can't set _ variable _ to non-number _"]
+                    , ["Invalid string type" , "can't set _ variable _ to non-string _"]
+                    , ["Invalid boolean type", "can't set _ variable _ to non-boolean _"]
+                    , ["Invalid color type"  , "can't set _ variable _ to non-number _"]
+                    , ["Invalid RGB format"  , "An rgb list must contain 3 or 4 numbers 0-255"]
+                    , ["Invalid RGB number"  , "RGB values must be 0-255"]
+                    ]
 
 class TurtleChecks
 
@@ -27,23 +40,26 @@ class TurtleChecks
 
     @_getterChecks = new Map()
 
-    cannotMoveMsg       = "Cannot move turtle beyond the world_s edge."
-    invalidRGBMsg       = "An rgb list must contain 3 or 4 numbers 0-255"
-    invalidRGBNumberMsg = "RGB values must be 0-255"
+    cannotMoveMsg = "Cannot move turtle beyond the world_s edge."
 
-    corSetterMappings   = new Map([ [TopologyInterrupt   , cannotMoveMsg]])
-    colorSetterMappings = new Map([ ["Invalid RGB format", invalidRGBMsg]
-                                  , ["Invalid RGB number", invalidRGBNumberMsg]])
+    setterMappings    = new Map(typeErrorMappings)
+    corSetterMappings = new Map(typeErrorMappings.concat([[TopologyInterrupt, cannotMoveMsg]]))
 
     asSetter     = genSetter(@getSelf, @validator)
     toSetterPair = ([varName, mappings]) -> [varName, asSetter(varName, mappings)]
 
     @_setterChecks =
       new Map(
-        [ ["xcor"       ,   corSetterMappings]
-        , ["ycor"       ,   corSetterMappings]
-        , ["color"      , colorSetterMappings]
-        , ["label-color", colorSetterMappings]
+        [ ["xcor"       , corSetterMappings]
+        , ["ycor"       , corSetterMappings]
+        , ["color"      ,    setterMappings]
+        , ["label-color",    setterMappings]
+        , ["heading"    ,    setterMappings]
+        , ["hidden?"    ,    setterMappings]
+        , ["pen-mode"   ,    setterMappings]
+        , ["pen-size"   ,    setterMappings]
+        , ["shape"      ,    setterMappings]
+        , ["size"       ,    setterMappings]
         ].map(toSetterPair)
       )
 

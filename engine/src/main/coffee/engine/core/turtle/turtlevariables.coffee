@@ -24,11 +24,35 @@ validateColor = (color) ->
     maybe("Invalid RGB format")
   else if checks.isList(color) and (color.some(isBadCompNumber))
     maybe("Invalid RGB number")
+  else if not checks.isList(color) and not checks.isNumber(color)
+    # Without this, a non-number reached `wrapColor` and came back `NaN` (`"0,255,0" % 140`), which stored fine and
+    # then broke the view: `netlogoColorToRGB` indexes its cache by the number, and `cache[NaN]` is `undefined`.
+    # Patches have always checked this; turtles and links did not.  -Jeremy B July 2026
+    maybe("Invalid color type")
   else
     None
 
+# Built-in variables are typed in NetLogo even though user variables aren't, and desktop rejects the wrong type
+# (`Agent.wrongTypeForVariable`).  Without these a bad value was simply stored -- `set size "x"` left a NaN size, and
+# `set shape 5` leaked a raw "shape.toLowerCase is not a function" at the user.  -Jeremy B July 2026
+
+# (Any) => Maybe[String]
+validateNumber = (value) ->
+  if checks.isNumber(value) then None else maybe("Invalid number type")
+
+# (Any) => Maybe[String]
+validateString = (value) ->
+  if checks.isString(value) then None else maybe("Invalid string type")
+
+# (Any) => Maybe[String]
+validateBoolean = (value) ->
+  if checks.isBoolean(value) then None else maybe("Invalid boolean type")
+
 # (Number, IDSet) => Maybe[TopologyInterrupt]
 setXcor = (newX, seenTurtlesSet = {}) ->
+
+  numberMaybe = validateNumber(newX)
+  return numberMaybe if isSomething(numberMaybe)
 
   originPatch = @getPatchHere()
   oldX        = @xcor
@@ -56,6 +80,9 @@ setXcor = (newX, seenTurtlesSet = {}) ->
 
 # (Number, IDSet) => Maybe[TopologyInterrupt]
 setYcor = (newY, seenTurtlesSet = {}) ->
+
+  numberMaybe = validateNumber(newY)
+  return numberMaybe if isSomething(numberMaybe)
 
   originPatch = @getPatchHere()
   oldY        = @ycor
@@ -102,6 +129,12 @@ setBreed = (breed) ->
     else
       breed
 
+  # A name that isn't a breed resolves to `undefined`, and a value that isn't a breed at all (a number, say) has no
+  # `add` -- both used to reach `trueBreed.add(this)` below and leak a raw "trueBreed.add is not a function" at the
+  # user.  -Jeremy B July 2026
+  if not trueBreed?.add?
+    throw exceptions.runtime("You can't set BREED to a non-breed agentset.", "set")
+
   if @_breed? and @_breed isnt trueBreed
     @_givenShape = undefined
 
@@ -136,8 +169,11 @@ setColor = (color) ->
 
   errorMaybe
 
-# (Number, IDSet) => Unit
+# (Number, IDSet) => Maybe[String]
 setHeading = (heading, seenTurtlesSet = {}) ->
+
+  errorMaybe = validateNumber(heading)
+  return errorMaybe if isSomething(errorMaybe)
 
   oldHeading = @_heading
   @_heading  = NLMath.normalizeHeading(heading)
@@ -146,13 +182,18 @@ setHeading = (heading, seenTurtlesSet = {}) ->
   dh = NLMath.subtractHeadings(@_heading, oldHeading)
   _handleTiesForHeadingChange.call(this, seenTurtlesSet, dh)
 
-  return
+  None
 
-# (Boolean) => Unit
+# (Boolean) => Maybe[String]
 setIsHidden = (isHidden) ->
-  @_hidden = isHidden
-  @_genVarUpdate("hidden?")
-  return
+
+  errorMaybe = validateBoolean(isHidden)
+
+  if not isSomething(errorMaybe)
+    @_hidden = isHidden
+    @_genVarUpdate("hidden?")
+
+  errorMaybe
 
 # (String) => Unit
 setLabel = (label) ->
@@ -171,17 +212,49 @@ setLabelColor = (color) ->
 
   errorMaybe
 
-# (String) => Unit
+# Only the type is checked: desktop also rejects a name that isn't a currently defined shape, but the shape list
+# lives in the view rather than the engine, so there's nothing here to check it against.  -Jeremy B July 2026
+# (String) => Maybe[String]
 setShape = (shape) ->
-  @_givenShape = shape.toLowerCase()
-  @_genVarUpdate("shape")
-  return
 
-# (Number) => Unit
+  errorMaybe = validateString(shape)
+
+  if not isSomething(errorMaybe)
+    @_givenShape = shape.toLowerCase()
+    @_genVarUpdate("shape")
+
+  errorMaybe
+
+# (Number) => Maybe[String]
 setSize = (size) ->
-  @_size = size
-  @_genVarUpdate("size")
-  return
+
+  errorMaybe = validateNumber(size)
+
+  if not isSomething(errorMaybe)
+    @_size = size
+    @_genVarUpdate("size")
+
+  errorMaybe
+
+# (String) => Maybe[String]
+setPenMode = (mode) ->
+
+  errorMaybe = validateString(mode)
+
+  if not isSomething(errorMaybe)
+    @penManager.setPenMode(mode)
+
+  errorMaybe
+
+# (Number) => Maybe[String]
+setPenSize = (size) ->
+
+  errorMaybe = validateNumber(size)
+
+  if not isSomething(errorMaybe)
+    @penManager.setSize(size)
+
+  errorMaybe
 
 # I have so many apologies for this code, but, hey,
 # it wasn't my idea to embed ties into NetLogo. --JAB (10/26/15)
@@ -245,8 +318,8 @@ VariableSpecs = [
 , new MutableVariableSpec('hidden?',     (-> @_hidden),                         setIsHidden)
 , new MutableVariableSpec('label',       (-> @_label),                          setLabel)
 , new MutableVariableSpec('label-color', (-> @_labelcolor),                     setLabelColor)
-, new MutableVariableSpec('pen-mode',    (-> @penManager.getMode().toString()), ((x) -> @penManager.setPenMode(x)))
-, new MutableVariableSpec('pen-size',    (-> @penManager.getSize()),            ((x) -> @penManager.setSize(x)))
+, new MutableVariableSpec('pen-mode',    (-> @penManager.getMode().toString()), setPenMode)
+, new MutableVariableSpec('pen-size',    (-> @penManager.getSize()),            setPenSize)
 , new MutableVariableSpec('shape',       (-> @_getShape()),                     setShape)
 , new MutableVariableSpec('size',        (-> @_size),                           setSize)
 , new MutableVariableSpec('xcor',        (-> @xcor),                            setXcor)
