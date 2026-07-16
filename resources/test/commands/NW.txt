@@ -1869,3 +1869,131 @@ save-to-string-and-load-from-string-gdf-quoted-values
   O> clear-turtles
   O> nw:load-from-string "gdf" g turtles links
   [tvar] of one-of turtles => "a,b'c"
+
+save-to-string-and-load-from-string-graphml-breeds-own
+  extensions [ nw ]
+  globals [ g ]
+  breed [mice mouse]
+  mice-own [ fur ]
+  turtles-own [ tvar ]
+  links-own [ lvar ]
+  O> create-mice 1 [ set fur "white" set tvar 7 ]
+  O> crt 1
+  O> ask turtle 0 [ create-link-with turtle 1 [ set lvar 9 ] ]
+  O> set g nw:save-to-string "graphml"
+  O> clear-turtles
+  O> nw:load-from-string "graphml" g turtles links
+  count turtles => 2
+  count mice => 1
+  [fur] of one-of mice => "white"
+  [tvar] of one-of mice => 7
+  [lvar] of one-of links => 9
+
+save-to-string-and-load-from-string-graphml-link-breeds
+  extensions [ nw ]
+  globals [ g ]
+  directed-link-breed [ directed-edges directed-edge ]
+  directed-edges-own [ dvar ]
+  O> crt 2
+  O> ask turtle 0 [ create-directed-edge-to turtle 1 [ set dvar 5 ] ]
+  O> set g nw:save-to-string "graphml"
+  O> clear-turtles
+  O> nw:load-from-string "graphml" g turtles links
+  count directed-edges => 1
+  [dvar] of one-of directed-edges => 5
+
+save-to-string-and-load-from-string-gml-breeds-own
+  extensions [ nw ]
+  globals [ g ]
+  breed [mice mouse]
+  mice-own [ fur ]
+  turtles-own [ tvar ]
+  links-own [ lvar ]
+  O> create-mice 1 [ set fur "white" set tvar 7 ]
+  O> crt 1
+  O> ask turtle 0 [ create-link-with turtle 1 [ set lvar 9 ] ]
+  O> set g nw:save-to-string "gml"
+  O> clear-turtles
+  O> nw:load-from-string "gml" g turtles links
+  count turtles => 2
+  count mice => 1
+  [fur] of one-of mice => "white"
+  [tvar] of one-of mice => 7
+  [lvar] of one-of links => 9
+
+save-to-string-and-load-from-string-gml-value-types
+  extensions [ nw ]
+  globals [ g ]
+  turtles-own [ nvar svar bvar ]
+  O> crt 1 [ set nvar 7 set svar "hi \"there\"" set bvar true ]
+  O> set g nw:save-to-string "gml"
+  O> clear-turtles
+  O> nw:load-from-string "gml" g turtles links
+  [nvar] of one-of turtles => 7
+  [svar] of one-of turtles => "hi \"there\""
+  [bvar] of one-of turtles => true
+
+save-to-string-and-load-from-string-gexf-breeds-own
+  extensions [ nw ]
+  globals [ g ]
+  breed [mice mouse]
+  mice-own [ fur ]
+  turtles-own [ tvar ]
+  links-own [ lvar ]
+  O> create-mice 1 [ set fur "white" set tvar 7 ]
+  O> crt 1
+  O> ask turtle 0 [ create-link-with turtle 1 [ set lvar 9 ] ]
+  O> set g nw:save-to-string "gexf"
+  O> clear-turtles
+  O> nw:load-from-string "gexf" g turtles links
+  count turtles => 2
+  count mice => 1
+  [fur] of one-of mice => "white"
+  [tvar] of one-of mice => 7
+  [lvar] of one-of links => 9
+
+save-to-string-and-load-from-string-gexf-link-breeds
+  extensions [ nw ]
+  globals [ g ]
+  directed-link-breed [ directed-edges directed-edge ]
+  directed-edges-own [ dvar ]
+  O> crt 2
+  O> ask turtle 0 [ create-directed-edge-to turtle 1 [ set dvar 5 ] ]
+  O> set g nw:save-to-string "gexf"
+  O> clear-turtles
+  O> nw:load-from-string "gexf" g turtles links
+  count directed-edges => 1
+  [dvar] of one-of directed-edges => 5
+
+save-to-string-and-load-from-string-vna-breeds-own
+  extensions [ nw ]
+  globals [ g ]
+  breed [mice mouse]
+  mice-own [ fur ]
+  turtles-own [ tvar ]
+  O> create-mice 1 [ set fur "white" set tvar 7 ]
+  O> crt 1
+  O> ask turtle 0 [ create-link-with turtle 1 ]
+  O> set g nw:save-to-string "vna"
+  O> clear-turtles
+  O> nw:load-from-string "vna" g turtles links
+  count turtles => 2
+  count mice => 1
+  [fur] of one-of mice => "white"
+  [tvar] of one-of mice => 7
+
+load-from-string-gexf-foreign-attribute-ids
+  extensions [ nw ]
+  turtles-own [ tvar ]
+  links-own [ lvar ]
+  to-report gexf-data report (word "<gexf version=\"1.2\"><graph defaultedgetype=\"undirected\">" "<attributes class=\"node\"><attribute id=\"0\" title=\"tvar\" type=\"double\"/></attributes>" "<attributes class=\"edge\"><attribute id=\"0\" title=\"lvar\" type=\"double\"/></attributes>" "<nodes><node id=\"1\" label=\"1\"><attvalues><attvalue for=\"0\" value=\"7\"/></attvalues></node>" "<node id=\"2\" label=\"2\"><attvalues><attvalue for=\"0\" value=\"8\"/></attvalues></node></nodes>" "<edges><edge id=\"0\" source=\"1\" target=\"2\"><attvalues><attvalue for=\"0\" value=\"9\"/></attvalues></edge></edges>" "</graph></gexf>") end
+  O> nw:load-from-string "gexf" gexf-data turtles links
+  sort [tvar] of turtles => [7 8]
+  [lvar] of one-of links => 9
+
+load-from-string-vna-node-properties-are-not-ties
+  extensions [ nw ]
+  to-report vna-data report (word "*Node data\n" "ID\n" "1\n" "2\n" "3\n" "*Node properties\n" "ID x y\n" "1 3 0.0\n" "*Tie data\n" "from to\n" "1 2\n") end
+  O> nw:load-from-string "vna" vna-data turtles links
+  count turtles => 3
+  count links => 1

@@ -191,6 +191,10 @@ private[tortoise] object Freebies {
   private val awaitingFixCommandNames =
     Seq(
       "Timer::Timer1"
+    // gdf, graphml, gml, and gexf carry breeds and agent variables; vna does not yet.  Desktop reads vna through
+    // Gephi's importer, so the column layout we'd have to write is Gephi's to define -- pending a look at how it
+    // actually reads them back, rather than a guess we can't verify from here.  -Jeremy B July 2026
+    , "NW::save-to-string-and-load-from-string-vna-breeds-own"
     )
 
 }

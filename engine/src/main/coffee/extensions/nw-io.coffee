@@ -75,6 +75,87 @@ module.exports = (deps) ->
         workspace.world.selfManager.askAgent(runBlock)(t)
     return
 
+  # --- agent variables and breeds, shared by the formats that can carry them (gdf, graphml, gml, gexf) ---
+  #
+  # Every such format stores the same two things per agent: a `breed` naming its breed, and one entry per agent
+  # variable.  The variable set is the union of the default breed's variables and every breed's own variables, since
+  # one file holds agents of many breeds; an agent simply omits the ones it doesn't own.  -Jeremy B July 2026
+
+  BREED_KEY = "breed"
+
+  # (String) => Boolean
+  isDefaultBreedName = (name) ->
+    name is "TURTLES" or name is "LINKS"
+
+  # (Boolean) => Array[String] -- the union of the default breed's vars and each breed's own vars, in breed order.
+  agentVarNames = (isLinky) ->
+    manager   = workspace.world.breedManager
+    breedName = if isLinky then "LINKS" else "TURTLES"
+    names     = manager.get(breedName).varNames.slice()
+    ordered   = if isLinky then manager.orderedLinkBreeds() else manager.orderedTurtleBreeds()
+    for name in ordered when name isnt breedName
+      for varName in manager.get(name).varNames when varName not in names
+        names.push(varName)
+    names
+
+  # NetLogo variables are untyped, so a variable's type is whatever its values happen to be, taken across the agents
+  # that own it -- mirroring desktop's `getBestType`.  Mixed or absent values fall back to a string.
+  # (Array[Agent], String) => String
+  bestVarType = (agents, varName) ->
+    values = (a.getVariable(varName) for a in agents when varName in a.varNames())
+    if values.length is 0                              then "string"
+    else if values.every((v) -> typeof v is "number")  then "double"
+    else if values.every((v) -> typeof v is "boolean") then "boolean"
+    else "string"
+
+  # (Agent, String) => Boolean
+  ownsVar = (agent, varName) ->
+    varName in agent.varNames()
+
+  # Only user-defined breeds are matched, never the default TURTLES/LINKS.  Desktop's `world.breeds` holds just the
+  # user's breeds, so a breed of "turtles" falls through to the caller's breed there, and must here too -- otherwise
+  # loading an unbreeded save into a specific breed would silently ignore the caller.  -Jeremy B July 2026
+  # (String, Boolean, String) => String
+  resolveBreedName = (rawName, isLinky, defaultBreedName) ->
+    return defaultBreedName if not rawName? or String(rawName).trim() is ""
+    breed = workspace.world.breedManager.get(String(rawName).trim())
+    if breed? and not isDefaultBreedName(breed.name) and breed.isLinky() is isLinky
+      breed.name
+    else
+      defaultBreedName
+
+  # The default breeds are written as blank rather than "turtles"/"links", so loading the result into a caller-chosen
+  # breed still honors that choice.  See `resolveBreedName`.
+  # (Agent) => String
+  breedNameToWrite = (agent) ->
+    name = agent.getBreedName()
+    if isDefaultBreedName(name) then "" else name.toLowerCase()
+
+  # Names are stored in the case the model declared, but formats may carry any case, so match case-insensitively.
+  # Entries naming no variable of this agent's breed are skipped.
+  # (Agent, Array[{ varName: String, value: Any }]) => Unit
+  setAgentAttributes = (agent, attrs) ->
+    ownedByLower = new Map()
+    for name in agent.varNames()
+      ownedByLower.set(name.toLowerCase(), name)
+    for attr in attrs
+      owned = ownedByLower.get(attr.varName.toLowerCase())
+      agent.setVariable(owned, attr.value) if owned?
+    return
+
+  # (Any) => { type: String, text: String }
+  serializeVarValue = (value) ->
+    if typeof value is "number"       then { type: "double",  text: "#{value}" }
+    else if typeof value is "boolean" then { type: "boolean", text: (if value then "true" else "false") }
+    else                                   { type: "string",  text: "#{value}" }
+
+  # (String, String) => Number | Boolean | String
+  deserializeVarValue = (type, text) ->
+    switch type
+      when "double", "float", "int", "integer", "long" then parseFloat(text)
+      when "boolean", "bool"                            then text is "true"
+      else text
+
   # Split a line into whitespace-separated tokens, keeping "..." / '...' quoted spans together (quotes stripped, so an
   # empty quoted field becomes "").  Used by the vna and dl parsers.  -Jeremy B July 2026
   # (String) => Array[String]
@@ -178,19 +259,40 @@ module.exports = (deps) ->
 
   # --- gml (Graph Modelling Language) ---
 
+  # (Any) => String -- numbers and booleans are bare tokens; everything else is a quoted string.  See `gmlPairValue`.
+  gmlValueText = (value) ->
+    if typeof value is "number"
+      "#{value}"
+    else if typeof value is "boolean"
+      if value then "true" else "false"
+    else
+      "\"#{String(value).replace(/\\/g, "\\\\").replace(/"/g, "\\\"")}\""
+
+  # (Agent, Array[String]) => Array[String]
+  gmlVarLines = (agent, varNames) ->
+    lines     = []
+    breedName = breedNameToWrite(agent)
+    lines.push("    #{BREED_KEY} #{gmlValueText(breedName)}") if breedName isnt ""
+    for name in varNames when ownsVar(agent, name)
+      lines.push("    #{name} #{gmlValueText(agent.getVariable(name))}")
+    lines
+
   # () => String
   saveGml = ->
     { turtles, edges, isDirected } = contextEdges()
+    nodeVars = agentVarNames(false)
+    edgeVars = agentVarNames(true)
 
     lines = ["graph", "[", "  directed #{if isDirected then 1 else 0}"]
     for t in turtles
-      lines.push("  node", "  [", "    id #{t.id}", "  ]")
+      lines.push("  node", "  [", "    id #{t.id}", gmlVarLines(t, nodeVars)..., "  ]")
     for link in edges
       lines.push(
         "  edge", "  ["
       , "    source #{link.end1.id}"
       , "    target #{link.end2.id}"
       , "    directed #{if link.isDirected then 1 else 0}"
+      , gmlVarLines(link, edgeVars)...
       , "  ]"
       )
     lines.push("]")
@@ -210,8 +312,12 @@ module.exports = (deps) ->
         j = i + 1
         s = ""
         while j < n and text[j] isnt "\""
-          s += text[j]
-          j += 1
+          if text[j] is "\\" and j + 1 < n and (text[j + 1] is "\"" or text[j + 1] is "\\")
+            s += text[j + 1]
+            j += 2
+          else
+            s += text[j]
+            j += 1
         tokens.push({ str: s })
         i = j + 1
       else if /\s/.test(c)
@@ -244,7 +350,9 @@ module.exports = (deps) ->
           pairs.push({ key, value: val })
         else
           pos += 1
-          pairs.push({ key, value: (if typeof v is "object" then v.str else v) })
+          # gml has no schema, so a value's type is carried only by its syntax: a quoted token is a string, a bare one
+          # is a number or boolean.  `quoted` preserves that distinction, which `gmlPairValue` reads back.
+          pairs.push({ key, value: (if typeof v is "object" then v.str else v), quoted: (typeof v is "object") })
       pairs
     parseList()
 
@@ -254,26 +362,61 @@ module.exports = (deps) ->
       return p.value
     null
 
+  # A quoted token is always a string; a bare one is a number if it looks like one, a boolean if it reads as one, and
+  # otherwise a string.  This is the read side of `gmlValueText`.
+  # ({ value: Any, quoted: Boolean }) => Number | Boolean | String
+  gmlPairValue = (pair) ->
+    return pair.value if pair.quoted
+    text = String(pair.value)
+    if text is "true" or text is "false"        then text is "true"
+    else if text isnt "" and not Number.isNaN(Number(text)) then Number(text)
+    else text
+
+  # Structural keys describe the graph rather than the agent, so they're never treated as variables.
+  GML_NODE_KEYS = ["id", BREED_KEY]
+  GML_EDGE_KEYS = ["source", "target", "directed", BREED_KEY]
+
+  # (Array[{ key, value, quoted }], Array[String]) => Array[{ varName: String, value: Any }]
+  gmlAttributes = (pairs, structuralKeys) ->
+    attrs = []
+    for p in pairs when typeof p.key is "string" and not Array.isArray(p.value)
+      attrs.push({ varName: p.key, value: gmlPairValue(p) }) if p.key.toLowerCase() not in structuralKeys
+    attrs
+
   # (String, String, String, Boolean, Command) => Unit
   loadGml = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     top  = parseGml(data)
     body = gmlValue(top, "graph") ? top
 
-    nodeIds = []
-    edges   = []
+    nodeIds    = []
+    nodeBreeds = []
+    nodeAttrs  = new Map()
+    edges      = []
     for p in body when typeof p.key is "string" and Array.isArray(p.value)
       switch p.key.toLowerCase()
         when "node"
           nodeId = gmlValue(p.value, "id")
-          nodeIds.push(nodeId) if nodeId?
+          if nodeId?
+            nodeIds.push(nodeId)
+            nodeBreeds.push(resolveBreedName(gmlValue(p.value, BREED_KEY), false, turtleBreedName))
+            nodeAttrs.set(String(nodeId), gmlAttributes(p.value, GML_NODE_KEYS))
         when "edge"
           directedVal = gmlValue(p.value, "directed")
           edges.push({
-            from:     gmlValue(p.value, "source")
-            to:       gmlValue(p.value, "target")
-            directed: if directedVal? then String(directedVal) is "1" else null
+            from:      gmlValue(p.value, "source")
+            to:        gmlValue(p.value, "target")
+            directed:  if directedVal? then String(directedVal) is "1" else null
+            breedName: resolveBreedName(gmlValue(p.value, BREED_KEY), true, linkBreedName)
+            attrs:     gmlAttributes(p.value, GML_EDGE_KEYS)
           })
-    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
+
+    onNode = (nodeId, turtle) ->
+      setAgentAttributes(turtle, nodeAttrs.get(nodeId) ? [])
+      return
+    onEdge = (edge, link) ->
+      setAgentAttributes(link, edge.attrs ? [])
+      return
+    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, { onNode, onEdge, nodeBreeds })
 
   # () => String
   saveVna = ->
@@ -296,8 +439,11 @@ module.exports = (deps) ->
       line = raw.trim()
       continue if line is ""
       if line[0] is "*"
-        lower      = line.toLowerCase()
-        section    = if lower.indexOf("tie") isnt -1 then "tie" else if lower.indexOf("node data") isnt -1 then "node" else "other"
+        # Anchored at the start of the section name, not searched for anywhere in it: "*Node properties" -- which Gephi
+        # writes into every vna file it exports -- contains "tie" inside "properties", and a loose search read its
+        # rows as ties.  Anything we don't recognize (properties included) is skipped.  -Jeremy B July 2026
+        lower      = line.toLowerCase().replace(/^\*+\s*/, "")
+        section    = if lower.indexOf("tie") is 0 then "tie" else if lower.indexOf("node data") is 0 then "node" else "other"
         headerSeen = false
         continue
       toks = tokenizeWhitespaceQuoted(line)
@@ -346,29 +492,6 @@ module.exports = (deps) ->
     nodeIds = (String(i + 1) for i in [0...n])
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
 
-  # gdf carries agent variables as typed columns, and a `breed` column naming the agent's breed, so the node/edge
-  # columns are the union of the default breed's variables and every relevant breed's own variables.  An agent leaves
-  # columns it doesn't own empty.  -Jeremy B July 2026
-
-  # (Boolean) => Array[String] -- the union of the default breed's vars and each breed's own vars, in breed order.
-  gdfVarNames = (isLinky) ->
-    manager   = workspace.world.breedManager
-    breedName = if isLinky then "LINKS" else "TURTLES"
-    names     = manager.get(breedName).varNames.slice()
-    ordered   = if isLinky then manager.orderedLinkBreeds() else manager.orderedTurtleBreeds()
-    for name in ordered when name isnt breedName
-      for varName in manager.get(name).varNames when varName not in names
-        names.push(varName)
-    names
-
-  # (Array[Agent], String) => String -- gdf's column type, from the values of the agents that own the variable.
-  gdfColumnType = (agents, varName) ->
-    values = (a.getVariable(varName) for a in agents when varName in a.varNames())
-    if values.length is 0 then "VARCHAR"
-    else if values.every((v) -> typeof v is "number")  then "DOUBLE"
-    else if values.every((v) -> typeof v is "boolean") then "BOOLEAN"
-    else "VARCHAR"
-
   # (Any) => String -- quote a field if it would otherwise break the comma-separated framing.
   gdfField = (value) ->
     text = if typeof value is "boolean" then (if value then "true" else "false") else String(value)
@@ -377,30 +500,34 @@ module.exports = (deps) ->
     else
       text
 
-  # The default breeds are left blank rather than written as "turtles"/"links", so that loading the result into a
-  # caller-chosen breed still honors that choice.  See `gdfBreedName`.
   # (Agent) => String
   gdfBreedField = (agent) ->
-    name = agent.getBreedName()
-    if name is "TURTLES" or name is "LINKS" then "" else gdfField(name.toLowerCase())
+    gdfField(breedNameToWrite(agent))
 
   # (Agent, Array[String]) => Array[String]
   gdfVarFields = (agent, varNames) ->
-    owned = agent.varNames()
     for varName in varNames
-      if varName in owned then gdfField(agent.getVariable(varName)) else ""
+      if ownsVar(agent, varName) then gdfField(agent.getVariable(varName)) else ""
+
+  # gdf spells its types VARCHAR/DOUBLE/BOOLEAN; `deserializeVarValue` already reads them back case-insensitively.
+  # (Array[Agent], String) => String
+  gdfColumnType = (agents, varName) ->
+    switch bestVarType(agents, varName)
+      when "double"  then "DOUBLE"
+      when "boolean" then "BOOLEAN"
+      else "VARCHAR"
 
   # () => String
   saveGdf = ->
     { turtles, edges } = contextEdges()
 
-    nodeVars = gdfVarNames(false)
+    nodeVars = agentVarNames(false)
     nodeCols = ("#{v} #{gdfColumnType(turtles, v)}" for v in nodeVars)
     lines    = ["nodedef>name VARCHAR,breed VARCHAR#{("," + c for c in nodeCols).join("")}"]
     for t in turtles
       lines.push([String(t.id), gdfBreedField(t)].concat(gdfVarFields(t, nodeVars)).join(","))
 
-    edgeVars = gdfVarNames(true)
+    edgeVars = agentVarNames(true)
     edgeCols = ("#{v} #{gdfColumnType(edges, v)}" for v in edgeVars)
     lines.push("edgedef>node1 VARCHAR,node2 VARCHAR,breed VARCHAR,directed BOOLEAN#{("," + c for c in edgeCols).join("")}")
     for link in edges
@@ -422,18 +549,8 @@ module.exports = (deps) ->
       return i
     -1
 
-  # Only user-defined breeds are matched, never the default TURTLES/LINKS.  Desktop's `world.breeds` holds just the
-  # user's breeds, so a `breed` column of "turtles" falls through to the caller's breed there, and must here too --
-  # otherwise loading an unbreeded save into a specific breed would silently ignore the caller.  -Jeremy B July 2026
-  # (String, Boolean, String) => String
-  gdfBreedName = (rawName, isLinky, defaultBreedName) ->
-    return defaultBreedName if not rawName? or rawName.trim() is ""
-    breed = workspace.world.breedManager.get(rawName.trim())
-    isDefaultBreed = breed?.name is "TURTLES" or breed?.name is "LINKS"
-    if breed? and not isDefaultBreed and breed.isLinky() is isLinky then breed.name else defaultBreedName
-
   # `name`/`node1`/`node2`/`breed` carry structure rather than agent state, so they're never set as variables.
-  STRUCTURAL_GDF_COLUMNS = ["name", "node1", "node2", "breed"]
+  STRUCTURAL_GDF_COLUMNS = ["name", "node1", "node2", BREED_KEY]
 
   # (Array[{ name: String, type: String }], Array[String]) => Array[{ varName: String, value: Any }]
   gdfAttributes = (cols, fields) ->
@@ -442,18 +559,6 @@ module.exports = (deps) ->
       value = fields[i]
       attrs.push({ varName: col.name, value: deserializeVarValue(col.type, value) }) if value? and value isnt ""
     attrs
-
-  # Column names are lowercased when parsed, but variables are stored in the case the model declared, so match the
-  # agent's own names case-insensitively.  Columns that name no variable of this agent's breed are skipped.
-  # (Agent, Array[{ varName: String, value: Any }]) => Unit
-  setGdfAttributes = (agent, attrs) ->
-    ownedByLower = new Map()
-    for name in agent.varNames()
-      ownedByLower.set(name.toLowerCase(), name)
-    for attr in attrs
-      owned = ownedByLower.get(attr.varName.toLowerCase())
-      agent.setVariable(owned, attr.value) if owned?
-    return
 
   # (String, String, String, Boolean, Command) => Unit
   loadGdf = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
@@ -491,7 +596,7 @@ module.exports = (deps) ->
             breedIdx  = gdfColumnIndex(nodeCols, "breed")
             rawBreed  = if breedIdx isnt -1 then fields[breedIdx] else null
             nodeIds.push(nodeId)
-            nodeBreeds.push(gdfBreedName(rawBreed, false, turtleBreedName))
+            nodeBreeds.push(resolveBreedName(rawBreed, false, turtleBreedName))
             nodeAttrs.set(String(nodeId), gdfAttributes(nodeCols, fields))
         else if mode is "edge"
           if fields.length > Math.max(n1Idx, n2Idx)
@@ -503,15 +608,15 @@ module.exports = (deps) ->
               from:      fields[n1Idx]
             , to:        fields[n2Idx]
             , directed
-            , breedName: gdfBreedName(rawBreed, true, linkBreedName)
+            , breedName: resolveBreedName(rawBreed, true, linkBreedName)
             , attrs:     gdfAttributes(edgeCols, fields)
             })
 
     onNode = (nodeId, turtle) ->
-      setGdfAttributes(turtle, nodeAttrs.get(nodeId) ? [])
+      setAgentAttributes(turtle, nodeAttrs.get(nodeId) ? [])
       return
     onEdge = (edge, link) ->
-      setGdfAttributes(link, edge.attrs ? [])
+      setAgentAttributes(link, edge.attrs ? [])
       return
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, { onNode, onEdge, nodeBreeds })
 
@@ -584,45 +689,73 @@ module.exports = (deps) ->
     visit(node)
     results
 
-  # () => Array[String]
-  turtleOwnVarNames = -> workspace.world.breedManager.turtles().varNames
+  # graphml key ids must be unique across the whole file, but a turtle variable and a link variable may share a name,
+  # so ids are namespaced by what they're `for=`.  The name a variable loads back under comes from `attr.name`, so
+  # files written before the namespacing (bare `id="tvar"`) still read correctly.  -Jeremy B July 2026
+  # (String, String) => String
+  graphmlKeyId = (forWhat, name) ->
+    "#{forWhat}-#{name}"
 
-  # (Any) => { type: String, text: String }
-  serializeVarValue = (value) ->
-    if typeof value is "number"       then { type: "double",  text: "#{value}" }
-    else if typeof value is "boolean" then { type: "boolean", text: (if value then "true" else "false") }
-    else                                   { type: "string",  text: "#{value}" }
+  # (String, Array[String], Array[Agent]) => Array[String]
+  graphmlKeys = (forWhat, varNames, agents) ->
+    keys = ["  <key id=\"#{graphmlKeyId(forWhat, BREED_KEY)}\" for=\"#{forWhat}\" attr.name=\"#{BREED_KEY}\" attr.type=\"string\"/>"]
+    for name in varNames
+      id = xmlEscape(graphmlKeyId(forWhat, name))
+      keys.push("  <key id=\"#{id}\" for=\"#{forWhat}\" attr.name=\"#{xmlEscape(name)}\" attr.type=\"#{bestVarType(agents, name)}\"/>")
+    keys
 
-  # (String, String) => Number | Boolean | String
-  deserializeVarValue = (type, text) ->
-    switch type
-      when "double", "float", "int", "integer", "long" then parseFloat(text)
-      when "boolean", "bool"                            then text is "true"
-      else text
+  # (Agent, String, Array[String]) => Array[String]
+  graphmlData = (agent, forWhat, varNames) ->
+    data      = []
+    breedName = breedNameToWrite(agent)
+    if breedName isnt ""
+      data.push("      <data key=\"#{graphmlKeyId(forWhat, BREED_KEY)}\">#{xmlEscape(breedName)}</data>")
+    for name in varNames when ownsVar(agent, name)
+      id = xmlEscape(graphmlKeyId(forWhat, name))
+      data.push("      <data key=\"#{id}\">#{xmlEscape(serializeVarValue(agent.getVariable(name)).text)}</data>")
+    data
 
   # () => String
   saveGraphml = ->
     { turtles, edges, isDirected } = contextEdges()
-    varNames = turtleOwnVarNames()
-    keyType = (name) ->
-      if turtles.length > 0 then serializeVarValue(turtles[0].getVariable(name)).type else "string"
+    nodeVars = agentVarNames(false)
+    edgeVars = agentVarNames(true)
 
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', "<graphml>"]
-    for name in varNames
-      lines.push("  <key id=\"#{xmlEscape(name)}\" for=\"node\" attr.name=\"#{xmlEscape(name)}\" attr.type=\"#{keyType(name)}\"/>")
+    lines.push(graphmlKeys("node", nodeVars, turtles)...)
+    lines.push(graphmlKeys("edge", edgeVars, edges)...)
     lines.push("  <graph edgedefault=\"#{if isDirected then "directed" else "undirected"}\">")
+
     for t in turtles
-      if varNames.length is 0
+      data = graphmlData(t, "node", nodeVars)
+      if data.length is 0
         lines.push("    <node id=\"#{t.id}\"/>")
       else
-        lines.push("    <node id=\"#{t.id}\">")
-        for name in varNames
-          lines.push("      <data key=\"#{xmlEscape(name)}\">#{xmlEscape(serializeVarValue(t.getVariable(name)).text)}</data>")
-        lines.push("    </node>")
+        lines.push("    <node id=\"#{t.id}\">", data..., "    </node>")
+
     for link in edges
-      lines.push("    <edge source=\"#{link.end1.id}\" target=\"#{link.end2.id}\" directed=\"#{if link.isDirected then "true" else "false"}\"/>")
+      open = "    <edge source=\"#{link.end1.id}\" target=\"#{link.end2.id}\" directed=\"#{if link.isDirected then "true" else "false"}\""
+      data = graphmlData(link, "edge", edgeVars)
+      if data.length is 0
+        lines.push("#{open}/>")
+      else
+        lines.push("#{open}>", data..., "    </edge>")
+
     lines.push("  </graph>", "</graphml>")
     lines.join("\n") + "\n"
+
+  # (XmlNode, Map[String, { name: String, type: String }]) => { breed: String | null, attrs: Array[{ varName, value }] }
+  graphmlElementData = (element, keys) ->
+    breed = null
+    attrs = []
+    for d in xmlChildren(element, "data")
+      key = keys.get(d.attrs.get("key"))
+      continue if not key?
+      if String(key.name).toLowerCase() is BREED_KEY
+        breed = d.text
+      else
+        attrs.push({ varName: String(key.name), value: deserializeVarValue(key.type, d.text) })
+    { breed, attrs }
 
   # (String, String, String, Boolean, Command) => Unit
   loadGraphml = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
@@ -634,57 +767,155 @@ module.exports = (deps) ->
 
     edgedefault = xmlDescendants(root, "graph")[0]?.attrs.get("edgedefault")
 
-    varNameByLower = new Map()
-    for name in turtleOwnVarNames()
-      varNameByLower.set(name.toLowerCase(), name)
-
-    nodeIds   = []
-    nodeAttrs = new Map()
+    nodeIds    = []
+    nodeBreeds = []
+    nodeAttrs  = new Map()
     for nd in xmlDescendants(root, "node")
       id = String(nd.attrs.get("id"))
+      { breed, attrs } = graphmlElementData(nd, keys)
       nodeIds.push(id)
-      attrs = []
-      for d in xmlChildren(nd, "data")
-        key = keys.get(d.attrs.get("key"))
-        if key?
-          varName = varNameByLower.get(String(key.name).toLowerCase())
-          attrs.push({ varName, value: deserializeVarValue(key.type, d.text) }) if varName?
+      nodeBreeds.push(resolveBreedName(breed, false, turtleBreedName))
       nodeAttrs.set(id, attrs)
 
     edges = []
     for ed in xmlDescendants(root, "edge")
       dir      = ed.attrs.get("directed")
       directed = if dir? then (dir is "true") else (if edgedefault? then edgedefault is "directed" else null)
-      edges.push({ from: String(ed.attrs.get("source")), to: String(ed.attrs.get("target")), directed })
+      { breed, attrs } = graphmlElementData(ed, keys)
+      edges.push({
+        from:      String(ed.attrs.get("source"))
+      , to:        String(ed.attrs.get("target"))
+      , directed
+      , breedName: resolveBreedName(breed, true, linkBreedName)
+      , attrs
+      })
 
     onNode = (nodeId, turtle) ->
-      turtle.setVariable(a.varName, a.value) for a in (nodeAttrs.get(nodeId) ? [])
+      setAgentAttributes(turtle, nodeAttrs.get(nodeId) ? [])
       return
-    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, { onNode })
+    onEdge = (edge, link) ->
+      setAgentAttributes(link, edge.attrs ? [])
+      return
+    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, { onNode, onEdge, nodeBreeds })
+
+  # As in graphml, attribute ids are namespaced by class so a turtle and a link variable of the same name don't
+  # collide; the name a variable loads back under is the `title`.  -Jeremy B July 2026
+  # (String, String) => String
+  gexfAttrId = (klass, name) ->
+    "#{klass}-#{name}"
+
+  # (String, Array[String], Array[Agent]) => Array[String]
+  gexfAttributeDecls = (klass, varNames, agents) ->
+    lines = ["    <attributes class=\"#{klass}\">"]
+    lines.push("      <attribute id=\"#{gexfAttrId(klass, BREED_KEY)}\" title=\"#{BREED_KEY}\" type=\"string\"/>")
+    for name in varNames
+      id = xmlEscape(gexfAttrId(klass, name))
+      lines.push("      <attribute id=\"#{id}\" title=\"#{xmlEscape(name)}\" type=\"#{bestVarType(agents, name)}\"/>")
+    lines.push("    </attributes>")
+    lines
+
+  # (Agent, String, Array[String], String) => Array[String]
+  gexfAttValues = (agent, klass, varNames, indent) ->
+    values    = []
+    breedName = breedNameToWrite(agent)
+    if breedName isnt ""
+      values.push("#{indent}  <attvalue for=\"#{gexfAttrId(klass, BREED_KEY)}\" value=\"#{xmlEscape(breedName)}\"/>")
+    for name in varNames when ownsVar(agent, name)
+      id = xmlEscape(gexfAttrId(klass, name))
+      values.push("#{indent}  <attvalue for=\"#{id}\" value=\"#{xmlEscape(serializeVarValue(agent.getVariable(name)).text)}\"/>")
+    if values.length is 0 then [] else ["#{indent}<attvalues>", values..., "#{indent}</attvalues>"]
 
   # () => String
   saveGexf = ->
     { turtles, edges, isDirected } = contextEdges()
+    nodeVars = agentVarNames(false)
+    edgeVars = agentVarNames(true)
+
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<gexf version="1.2">']
     lines.push("  <graph defaultedgetype=\"#{if isDirected then "directed" else "undirected"}\">")
+    lines.push(gexfAttributeDecls("node", nodeVars, turtles)...)
+    lines.push(gexfAttributeDecls("edge", edgeVars, edges)...)
+
     lines.push("    <nodes>")
-    lines.push("      <node id=\"#{t.id}\" label=\"#{t.id}\"/>") for t in turtles
-    lines.push("    </nodes>", "    <edges>")
-    lines.push("      <edge id=\"#{i}\" source=\"#{link.end1.id}\" target=\"#{link.end2.id}\" type=\"#{if link.isDirected then "directed" else "undirected"}\"/>") for link, i in edges
-    lines.push("    </edges>", "  </graph>", "</gexf>")
+    for t in turtles
+      open   = "      <node id=\"#{t.id}\" label=\"#{t.id}\""
+      values = gexfAttValues(t, "node", nodeVars, "        ")
+      if values.length is 0 then lines.push("#{open}/>") else lines.push("#{open}>", values..., "      </node>")
+    lines.push("    </nodes>")
+
+    lines.push("    <edges>")
+    for link, i in edges
+      open   = "      <edge id=\"#{i}\" source=\"#{link.end1.id}\" target=\"#{link.end2.id}\" type=\"#{if link.isDirected then "directed" else "undirected"}\""
+      values = gexfAttValues(link, "edge", edgeVars, "        ")
+      if values.length is 0 then lines.push("#{open}/>") else lines.push("#{open}>", values..., "      </edge>")
+    lines.push("    </edges>")
+
+    lines.push("  </graph>", "</gexf>")
     lines.join("\n") + "\n"
+
+  # gexf attribute ids are unique only within their `class`, so a foreign file may well use id "0" for both a node and
+  # an edge attribute.  Declarations are keyed by class as well as id to keep those apart.  -Jeremy B July 2026
+  # (String, String) => String
+  gexfDeclKey = (klass, id) ->
+    "#{klass}|#{id}"
+
+  # (XmlNode, String, Map[String, { name: String, type: String }]) => { breed: String | null, attrs: Array[...] }
+  gexfElementData = (element, klass, decls) ->
+    breed = null
+    attrs = []
+    for av in xmlDescendants(element, "attvalue")
+      decl = decls.get(gexfDeclKey(klass, av.attrs.get("for")))
+      continue if not decl?
+      value = av.attrs.get("value")
+      continue if not value?
+      if String(decl.name).toLowerCase() is BREED_KEY
+        breed = value
+      else
+        attrs.push({ varName: String(decl.name), value: deserializeVarValue(decl.type, value) })
+    { breed, attrs }
 
   # (String, String, String, Boolean, Command) => Unit
   loadGexf = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     root        = parseXml(data)
     defaultType = xmlDescendants(root, "graph")[0]?.attrs.get("defaultedgetype")
-    nodeIds     = (String(nd.attrs.get("id")) for nd in xmlDescendants(root, "node"))
-    edges       = []
+
+    decls = new Map()
+    for decl in xmlDescendants(root, "attributes")
+      klass = decl.attrs.get("class") ? "node"
+      for a in xmlChildren(decl, "attribute")
+        id = a.attrs.get("id")
+        decls.set(gexfDeclKey(klass, id), { name: (a.attrs.get("title") ? id), type: (a.attrs.get("type") ? "string") }) if id?
+
+    nodeIds    = []
+    nodeBreeds = []
+    nodeAttrs  = new Map()
+    for nd in xmlDescendants(root, "node")
+      id = String(nd.attrs.get("id"))
+      { breed, attrs } = gexfElementData(nd, "node", decls)
+      nodeIds.push(id)
+      nodeBreeds.push(resolveBreedName(breed, false, turtleBreedName))
+      nodeAttrs.set(id, attrs)
+
+    edges = []
     for ed in xmlDescendants(root, "edge")
       t        = ed.attrs.get("type")
       directed = if t? then (t is "directed") else (if defaultType? then defaultType is "directed" else null)
-      edges.push({ from: String(ed.attrs.get("source")), to: String(ed.attrs.get("target")), directed })
-    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
+      { breed, attrs } = gexfElementData(ed, "edge", decls)
+      edges.push({
+        from:      String(ed.attrs.get("source"))
+      , to:        String(ed.attrs.get("target"))
+      , directed
+      , breedName: resolveBreedName(breed, true, linkBreedName)
+      , attrs
+      })
+
+    onNode = (nodeId, turtle) ->
+      setAgentAttributes(turtle, nodeAttrs.get(nodeId) ? [])
+      return
+    onEdge = (edge, link) ->
+      setAgentAttributes(link, edge.attrs ? [])
+      return
+    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, { onNode, onEdge, nodeBreeds })
 
   # (String) => String
   saveToString = (rawFormat) ->
