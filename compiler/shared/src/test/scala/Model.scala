@@ -272,7 +272,7 @@ object Model {
       path = "models/Sample Models/Chemistry & Physics/Ising.nlogox",
       dimensions = Some((-10, 10, -10, 10)),
       setup = "setup",
-      repetitions = 150
+      repetitions = 10
     ),
     Model(
       path = "models/Sample Models/Biology/Evolution/Genetic Drift/GenDrift P global.nlogox",
@@ -505,6 +505,10 @@ object Model {
     Model(
       path = "test/models/ColorsAndTransparency.nlogox",
       repetitions = 8
-    )
+    ),
+    Model(
+      path = "test/models/NWEmbeddedFilesTest.nlogox",
+      repetitions = 15
+    ),
   )
 }

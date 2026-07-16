@@ -53,9 +53,9 @@ module.exports =
       if (breedName.toUpperCase() is "LINKS") then @_notifyIsDirected()
       @_createLinksBy((turtle) => @_createLink(true, turtle, source, breedName))(others)
 
-    # (Turtle, Turtle, String) => Link
-    createUndirectedLink: (source, other, breedName) ->
-      @_createLink(false, source, other, breedName)
+    # (Turtle, Turtle, String, Boolean) => Link
+    createUndirectedLink: (source, other, breedName, preserveOrder = false) ->
+      @_createLink(false, source, other, breedName, preserveOrder)
 
     # (Turtle, TurtleSet, String) => LinkSet
     createUndirectedLinks: (source, others, breedName) ->
@@ -78,7 +78,9 @@ module.exports =
     importState: (linkState) ->
       linkState.forEach(
         ({ breed, end1, end2, color, isHidden, labelColor, shape, thickness, tieMode }) =>
-          newLink = @_createLink(breed.isDirected(), end1, end2, breed.name)
+          # Preserve the saved end1/end2 order rather than canonicalizing to lower-who-first: an undirected link
+          # imported from a network file can legitimately have end1 > end2, and a recompile must not silently reorder it.
+          newLink = @_createLink(breed.isDirected(), end1, end2, breed.name, true)
           newLink.setVariable(      'color', color)
           newLink.setVariable(    'hidden?', isHidden)
           newLink.setVariable('label-color', labelColor)

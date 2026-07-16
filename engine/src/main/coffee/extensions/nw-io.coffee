@@ -18,6 +18,8 @@ unsupportedNetworkFormatError = (rawFormat) ->
 
 { isValidLink, getBreedName } = require('extensions/nw-core')
 
+TurtleSet = require('../engine/core/turtleset')
+
 { VariableSpecs: TurtleVariableSpecs } = require('../engine/core/turtle/turtlevariables')
 { VariableSpecs: LinkVariableSpecs   } = require('../engine/core/link/linkvariables')
 
@@ -50,7 +52,7 @@ module.exports = (deps) ->
   # breed names parallel to `nodeIds` (breeds must be known at creation time, so they can't go through `onNode`).
   # (Array[Any], Array[Edge], String, String, Boolean, Command, { onNode, onEdge, nodeBreeds }) => Unit
   buildLoadedGraph = (nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, opts = {}) ->
-    { onNode, onEdge, nodeBreeds } = opts
+    { onNode, onEdge, nodeBreeds, unsetIsBidirectional } = opts
     idToTurtle     = new Map()
     createdTurtles = []
     for nodeId, i in nodeIds
@@ -77,16 +79,27 @@ module.exports = (deps) ->
       if directed
         link = workspace.world.linkManager.createDirectedLink(src, tgt, breedName)
         onEdge(edge, link) if onEdge? and link?
+        # Desktop turns a direction-less tie on a directed breed into a link in BOTH directions (GephiImport's
+        # `if (breed.isDirected && gephiUnset) createLink(target, source)`).  Only vna ties are truly direction-less --
+        # gdf/graphml/gml/gexf either state a direction or default to undirected -- so only the vna loader opts in.
+        if unsetIsBidirectional and not edge.directed?
+          reverse = workspace.world.linkManager.createDirectedLink(tgt, src, breedName)
+          onEdge(edge, reverse) if onEdge? and reverse?
       else
         key = if src.id < tgt.id then "#{src.id}-#{tgt.id}-#{breedName}" else "#{tgt.id}-#{src.id}-#{breedName}"
         if not seen.has(key)
           seen.add(key)
-          link = workspace.world.linkManager.createUndirectedLink(src, tgt, breedName)
+          # Desktop's importers create links straight through `world.linkManager.createLink(source, target, ...)`,
+          # which keeps end1 = source even for undirected breeds rather than canonicalizing to lower-who-first.  We
+          # preserve the file's source->target order to match (endpoint order sets the link's heading).
+          link = workspace.world.linkManager.createUndirectedLink(src, tgt, breedName, true)
           onEdge(edge, link) if onEdge? and link?
 
-    if runBlock?
-      for t in createdTurtles
-        workspace.world.selfManager.askAgent(runBlock)(t)
+    # Desktop's loaders finish by asking the freshly created turtles (NW's `askTurtles`), and they do so even
+    # when the caller gave no command block.  That ask shuffles the agentset, consuming one RNG draw per turtle
+    # past the first, so we mirror it unconditionally -- otherwise the post-load RNG state diverges by that many
+    # draws.  Any command block runs in the shuffled order, as it does on desktop.
+    new TurtleSet(createdTurtles, workspace.world).ask((runBlock ? (->)), true)
     return
 
   # --- agent variables and breeds, shared by the formats that can carry them (gdf, graphml, gml, gexf) ---
@@ -147,6 +160,23 @@ module.exports = (deps) ->
     name = agent.getBreedName()
     if isDefaultBreedName(name) then "" else name.toLowerCase()
 
+  # Desktop's `GephiImport.convertAttribute` coerces a handful of built-in variables to their real type no matter what
+  # type the file declared, because Gephi's strongly-typed importer would otherwise hand NetLogo a string.  Untyped
+  # formats (and graphml keys with no `attr.type`) reach us as strings, so we mirror that coercion here or a value like
+  # a `color` of "5" fails to set and the built-in keeps its random default.  Numbers and rgb lists are passed through,
+  # so correctly-typed values are unaffected.  -Jeremy B July 2026
+  GEPHI_DOUBLE_BUILTINS = ["xcor", "ycor", "heading", "pen-size", "thickness", "size"]
+  GEPHI_COLOR_BUILTINS  = ["color", "label-color"]
+
+  # (String, Any) => Any
+  coerceBuiltinValue = (lowerName, value) ->
+    if lowerName in GEPHI_DOUBLE_BUILTINS
+      if typeof value is "number" then value else (n = Number(value); if Number.isNaN(n) then 0 else n)
+    else if lowerName in GEPHI_COLOR_BUILTINS
+      if typeof value is "number" or Array.isArray(value) then value else (n = Number(value); if Number.isNaN(n) then value else n)
+    else
+      value
+
   # Names are stored in the case the model declared, but formats may carry any case, so match case-insensitively.
   # Entries naming no variable of this agent's breed are skipped.
   #
@@ -169,7 +199,7 @@ module.exports = (deps) ->
       owned = ownedByLower.get(attr.varName.toLowerCase())
       continue if not owned?
       try
-        agent.setVariable(owned, attr.value)
+        agent.setVariable(owned, coerceBuiltinValue(attr.varName.toLowerCase(), attr.value))
       catch err
         throw err if err instanceof HaltInterrupt
     return
@@ -195,10 +225,10 @@ module.exports = (deps) ->
       else text
 
   # Split a line into whitespace-separated tokens, keeping "..." / '...' quoted spans together (quotes stripped, so an
-  # empty quoted field becomes "").  Each token records whether it was quoted, which is the only type signal vna has;
-  # see `vnaTokenValue`.  There is deliberately no escape handling: Gephi's vna reader splits on
-  # `[^\s"]+|"([^"]*)"`, so a quote simply cannot appear inside a value.  Used by the vna and dl parsers.
-  # -Jeremy B July 2026
+  # empty quoted field becomes "").  Each token records whether it was quoted; the vna reader ignores that flag (Gephi
+  # types every data column as a string), but the gml reader uses it.  There is deliberately no escape handling: Gephi's
+  # vna reader splits on `[^\s"]+|"([^"]*)"`, so a quote simply cannot appear inside a value.  Used by the vna and dl
+  # parsers.  -Jeremy B July 2026
   # (String) => Array[{ text: String, quoted: Boolean }]
   tokenizeWhitespaceQuotedDetailed = (line) ->
     tokens = []
@@ -417,9 +447,38 @@ module.exports = (deps) ->
     else if text isnt "" and not Number.isNaN(Number(text)) then Number(text)
     else text
 
-  # Structural keys describe the graph rather than the agent, so they're never treated as variables.
-  GML_NODE_KEYS = ["id", BREED_KEY]
-  GML_EDGE_KEYS = ["source", "target", "directed", BREED_KEY]
+  # Structural keys describe the graph rather than the agent, so they're never treated as variables.  `graphics` is
+  # structural too: it's a nested block, and the only part of it we read is the colour (see `gmlGraphicsColor`).  An
+  # edge's `value` is gml's weight -- Gephi reads it as `getWeight`, not as an attribute -- so we map it to `weight`
+  # below rather than carrying a stray `value` variable.
+  GML_NODE_KEYS = ["id", BREED_KEY, "graphics"]
+  GML_EDGE_KEYS = ["source", "target", "directed", BREED_KEY, "graphics", "value"]
+
+  # ("#rrggbb") => Array[Number] | null
+  hexToRgb = (hex) ->
+    m = /^#?([0-9a-fA-F]{6})$/.exec(String(hex).trim())
+    return null if not m
+    n = parseInt(m[1], 16)
+    [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+
+  # Gephi stores an agent's colour in a `graphics [ fill "#rrggbb" ]` block rather than a plain attribute, and its
+  # importer feeds that fill straight to `getColor`, so desktop sets COLOR from it.  We read the same when present.
+  # A gml we wrote ourselves has no graphics block (we save COLOR as a plain `color` line), so this only fires for
+  # foreign, Gephi-style files.  -Jeremy B July 2026
+  # (Array[{ key, value }]) => Array[Number] | null
+  gmlGraphicsColor = (pairs) ->
+    graphics = gmlValue(pairs, "graphics")
+    return null if not Array.isArray(graphics)
+    fill = gmlValue(graphics, "fill")
+    if fill? then hexToRgb(fill) else null
+
+  # (Array[{ varName, value }], Array[{ key, value }]) => Array[{ varName, value }] -- append a COLOR attribute from
+  # the element's graphics fill, if it has one.  Ordered last so an explicit `color` attribute would lose to it, as
+  # it does on desktop (where `getColor` wins).
+  withGmlGraphicsColor = (attrs, pairs) ->
+    color = gmlGraphicsColor(pairs)
+    attrs.push({ varName: "color", value: color }) if color?
+    attrs
 
   # (Array[{ key, value, quoted }], Array[String]) => Array[{ varName: String, value: Any }]
   gmlAttributes = (pairs, structuralKeys) ->
@@ -444,15 +503,21 @@ module.exports = (deps) ->
           if nodeId?
             nodeIds.push(nodeId)
             nodeBreeds.push(resolveBreedName(gmlValue(p.value, BREED_KEY), false, turtleBreedName))
-            nodeAttrs.set(String(nodeId), gmlAttributes(p.value, GML_NODE_KEYS))
+            nodeAttrs.set(String(nodeId), withGmlGraphicsColor(gmlAttributes(p.value, GML_NODE_KEYS), p.value))
         when "edge"
           directedVal = gmlValue(p.value, "directed")
+          attrs       = withGmlGraphicsColor(gmlAttributes(p.value, GML_EDGE_KEYS), p.value)
+          # gml's edge `value` is the tie weight; desktop feeds it to `getWeight` -> the WEIGHT variable.  We only map
+          # it when present -- a gml we wrote ourselves carries `weight` as a plain attribute instead, and defaulting a
+          # missing `value` to Gephi's 1.0 here would clobber that on reload.
+          weightText  = gmlValue(p.value, "value")
+          attrs.push({ varName: "weight", value: Number(weightText) }) if weightText? and not Number.isNaN(Number(weightText))
           edges.push({
             from:      gmlValue(p.value, "source")
             to:        gmlValue(p.value, "target")
             directed:  if directedVal? then String(directedVal) is "1" else null
             breedName: resolveBreedName(gmlValue(p.value, BREED_KEY), true, linkBreedName)
-            attrs:     gmlAttributes(p.value, GML_EDGE_KEYS)
+            attrs
           })
 
     onNode = (nodeId, turtle) ->
@@ -509,34 +574,38 @@ module.exports = (deps) ->
 
     lines.join("\n") + "\n"
 
-  # The read side of `vnaField`: a quoted token is always a string, a bare one is a number or boolean if it reads as
-  # one.  Same rule as the gml loader, and for the same reason -- neither format records a type.
-  # ({ text: String, quoted: Boolean }) => Number | Boolean | String
-  vnaTokenValue = (token) ->
-    return token.text if token.quoted
-    text = token.text
-    if text is "true" or text is "false"                    then text is "true"
-    else if text isnt "" and not Number.isNaN(Number(text)) then Number(text)
-    else text
-
-  # Structural columns describe the graph rather than the agent, so they're never treated as variables.
+  # Structural columns describe the graph rather than the agent, so they're never treated as variables.  `strength` is
+  # structural too: Gephi's vna reader consumes it as the edge weight (`EDGE_STRENGTH` -> `setWeight`) rather than as a
+  # column, and we map it to the `weight` variable below.
   VNA_NODE_COLUMNS = ["id", BREED_KEY]
-  VNA_TIE_COLUMNS  = ["from", "to", BREED_KEY]
+  VNA_TIE_COLUMNS  = ["from", "to", BREED_KEY, "strength"]
 
-  # (Array[String], Array[{ text, quoted }], Array[String]) => Array[{ varName: String, value: Any }]
+  # Gephi's vna importer creates every node- and tie-data column as `String.class` and stores the raw token text, so a
+  # bare `5.0` or `true` reaches NetLogo as the string "5.0" / "true" -- never coerced to a number or boolean.  (Built-in
+  # variables are still coerced, by `coerceBuiltinValue` inside `setAgentAttributes`, mirroring desktop's
+  # `convertAttribute`.)  An empty field is Gephi's marker for an absent attribute, so it's left unset rather than
+  # written as "".  -Jeremy B July 2026
+  # (Array[String], Array[{ text, quoted }], Array[String]) => Array[{ varName: String, value: String }]
   vnaAttributes = (header, toks, structuralColumns) ->
     attrs = []
     for name, i in header when name not in structuralColumns
       token = toks[i]
-      # An empty field is Gephi's marker for an absent attribute, so it's left unset rather than written as "".
-      attrs.push({ varName: name, value: vnaTokenValue(token) }) if token? and token.text isnt ""
+      attrs.push({ varName: name, value: token.text }) if token? and token.text isnt ""
     attrs
+
+  # vna stores an agent's colour in the `*Node properties` section as one integer -- Gephi reads it with `new
+  # Color(int)`, i.e. the low 24 bits are r,g,b -- so "153" is 0x000099 = blue, not NetLogo colour 153.  -Jeremy B 2026
+  # (String) => Array[Number] | null
+  vnaColorValue = (text) ->
+    n = Number(text)
+    if Number.isNaN(n) then null else [(n >> 16) & 255, (n >> 8) & 255, n & 255]
 
   # (String, String, String, Boolean, Command) => Unit
   loadVna = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     section    = null
     headerSeen = false
     nodeHeader = []
+    propHeader = []
     tieHeader  = []
     fromIdx    = 0
     toIdx      = 1
@@ -553,7 +622,11 @@ module.exports = (deps) ->
         # writes into every vna file it exports -- contains "tie" inside "properties", and a loose search read its
         # rows as ties.  Anything we don't recognize (properties included) is skipped.  -Jeremy B July 2026
         lower      = line.toLowerCase().replace(/^\*+\s*/, "")
-        section    = if lower.indexOf("tie") is 0 then "tie" else if lower.indexOf("node data") is 0 then "node" else "other"
+        section    =
+          if lower.indexOf("tie") is 0                  then "tie"
+          else if lower.indexOf("node data") is 0       then "node"
+          else if lower.indexOf("node properties") is 0 then "nodeprops"
+          else                                               "other"
         headerSeen = false
         continue
       toks = tokenizeWhitespaceQuotedDetailed(line)
@@ -571,6 +644,28 @@ module.exports = (deps) ->
           nodeIds.push(nodeId)
           nodeBreeds.push(resolveBreedName(rawBreed, false, turtleBreedName))
           nodeAttrs.set(String(nodeId), vnaAttributes(nodeHeader, toks, VNA_NODE_COLUMNS))
+      else if section is "nodeprops"
+        # Gephi's vna reader recognizes x/y/size/color/shortlabel/shape here.  Desktop only carries `color` (as a
+        # packed int) and `shortlabel` (the node's label) onto the turtle -- position and size are read but discarded
+        # (`GephiImport` deliberately ignores `getSize`, and never reads node coordinates) -- so we do the same.
+        if not headerSeen
+          headerSeen = true
+          propHeader = (t.text.toLowerCase() for t in toks)
+          continue
+        propIdIdx = if propHeader.indexOf("id") isnt -1 then propHeader.indexOf("id") else 0
+        if toks.length > propIdIdx
+          nodeId   = String(toks[propIdIdx].text)
+          existing = nodeAttrs.get(nodeId) ? []
+          colorIdx = propHeader.indexOf("color")
+          if colorIdx isnt -1 and toks[colorIdx]? and toks[colorIdx].text isnt ""
+            color = vnaColorValue(toks[colorIdx].text)
+            existing.push({ varName: "color", value: color }) if color?
+          # The label is kept as written -- desktop's `getLabel` hands back the raw shortlabel string, so "1" must stay
+          # the string "1" rather than being read as a number the way a data-section value would.
+          labelIdx = propHeader.indexOf("shortlabel")
+          if labelIdx isnt -1 and toks[labelIdx]? and toks[labelIdx].text isnt ""
+            existing.push({ varName: "label", value: toks[labelIdx].text })
+          nodeAttrs.set(nodeId, existing)
       else if section is "tie"
         if not headerSeen
           headerSeen = true
@@ -583,11 +678,24 @@ module.exports = (deps) ->
         if toks.length > Math.max(fromIdx, toIdx)
           breedIdx = tieHeader.indexOf(BREED_KEY)
           rawBreed = if breedIdx isnt -1 then toks[breedIdx]?.text else null
+          attrs    = vnaAttributes(tieHeader, toks, VNA_TIE_COLUMNS)
+          # Gephi consumes the `strength` column as the edge weight (`EDGE_STRENGTH` -> `setWeight`), and desktop always
+          # pairs `WEIGHT` from `edge.getWeight` -- which is the strength when present, or Gephi's default 1.0 when it
+          # isn't.  We push the same here; `setAgentAttributes` only sets it on breeds that own a `weight` variable, so
+          # breeds without one are unaffected.  -Jeremy B July 2026
+          strengthIdx = tieHeader.indexOf("strength")
+          strengthText = if strengthIdx isnt -1 then toks[strengthIdx]?.text else null
+          weightVal =
+            if strengthText? and strengthText isnt "" and not Number.isNaN(Number(strengthText))
+              Number(strengthText)
+            else
+              1
+          attrs.push({ varName: "weight", value: weightVal })
           edges.push({
             from:      toks[fromIdx].text
           , to:        toks[toIdx].text
           , breedName: resolveBreedName(rawBreed, true, linkBreedName)
-          , attrs:     vnaAttributes(tieHeader, toks, VNA_TIE_COLUMNS)
+          , attrs
           })
 
     onNode = (nodeId, turtle) ->
@@ -596,7 +704,7 @@ module.exports = (deps) ->
     onEdge = (edge, link) ->
       setAgentAttributes(link, edge.attrs ? [])
       return
-    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, { onNode, onEdge, nodeBreeds })
+    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, { onNode, onEdge, nodeBreeds, unsetIsBidirectional: true })
 
   # () => String
   saveDl = ->
@@ -992,7 +1100,7 @@ module.exports = (deps) ->
 
     lines.push("    <nodes>")
     for t in turtles
-      open   = "      <node id=\"#{t.id}\" label=\"#{t.id}\""
+      open   = "      <node id=\"#{t.id}\" label=\"#{xmlEscape(varValueToText(t.getVariable("label")))}\""
       values = gexfAttValues(t, "node", nodeVars, "        ")
       if values.length is 0 then lines.push("#{open}/>") else lines.push("#{open}>", values..., "      </node>")
     lines.push("    </nodes>")
@@ -1013,6 +1121,22 @@ module.exports = (deps) ->
   gexfDeclKey = (klass, id) ->
     "#{klass}|#{id}"
 
+  # gexf carries an agent's colour in a `<viz:color r g b [a]>` child rather than a declared attribute, and its `label`
+  # in an attribute on the element itself -- desktop reads both through Gephi's `getColor`/`getLabel`.  The rgb parts
+  # are 0-255; the optional alpha is 0-1 and only appended (scaled to 0-255) when it isn't fully opaque, matching
+  # desktop's `convertColor`.  -Jeremy B July 2026
+  # (XmlNode) => Array[Number] | null
+  gexfVizColor = (element) ->
+    for c in element.children when /(^|:)color$/.test(c.tag.toLowerCase())
+      r = c.attrs.get("r"); g = c.attrs.get("g"); b = c.attrs.get("b")
+      continue if not (r? and g? and b?)
+      rgb = [Number(r), Number(g), Number(b)]
+      continue if rgb.some((n) -> Number.isNaN(n))
+      a = c.attrs.get("a")
+      rgb.push(Math.round(Number(a) * 255)) if a? and not Number.isNaN(Number(a)) and Number(a) < 1
+      return rgb
+    null
+
   # (XmlNode, String, Map[String, { name: String, type: String }]) => { breed: String | null, attrs: Array[...] }
   gexfElementData = (element, klass, decls) ->
     breed = null
@@ -1026,6 +1150,10 @@ module.exports = (deps) ->
         breed = value
       else
         attrs.push({ varName: String(decl.name), value: deserializeVarValue(decl.type, value) })
+    label = element.attrs.get("label")
+    attrs.push({ varName: "label", value: label }) if label?
+    color = gexfVizColor(element)
+    attrs.push({ varName: "color", value: color }) if color?
     { breed, attrs }
 
   # (String, String, String, Boolean, Command) => Unit
@@ -1055,6 +1183,11 @@ module.exports = (deps) ->
       t        = ed.attrs.get("type")
       directed = if t? then (t is "directed") else (if defaultType? then defaultType is "directed" else null)
       { breed, attrs } = gexfElementData(ed, "edge", decls)
+      # gexf's edge `weight` attribute is the tie weight (Gephi's `getWeight` -> the WEIGHT variable), separate from any
+      # declared attribute.  Mapped only when present, for the same reason as gml's `value` (a gexf we wrote ourselves
+      # carries weight as a declared attvalue instead).
+      weightText = ed.attrs.get("weight")
+      attrs.push({ varName: "weight", value: Number(weightText) }) if weightText? and not Number.isNaN(Number(weightText))
       edges.push({
         from:      String(ed.attrs.get("source"))
       , to:        String(ed.attrs.get("target"))

@@ -1980,7 +1980,8 @@ save-to-string-and-load-from-string-vna-breeds-own
   count turtles => 2
   count mice => 1
   [fur] of one-of mice => "white"
-  [tvar] of one-of mice => 7
+  # Gephi's vna importer types every data column as a string, so a numeric `tvar` round-trips as the string "7".
+  [tvar] of one-of mice => "7"
 
 load-from-string-gexf-foreign-attribute-ids
   extensions [ nw ]
@@ -2011,10 +2012,13 @@ save-to-string-and-load-from-string-vna-link-breeds
   O> set g nw:save-to-string "vna"
   O> clear-turtles
   O> nw:load-from-string "vna" g turtles links
-  count directed-edges => 1
+  # vna has no direction concept, so a tie on a directed breed is direction-less; desktop (and we) materialize it as
+  # a link in both directions (see VNA-UNDIRECTED-LINK-DUP-ISSUE.md, behavior 2).
+  count directed-edges => 2
   count undirected-edges => 1
-  [dvar] of one-of directed-edges => 5
-  [uvar] of one-of undirected-edges => 10
+  # ...and vna data columns are read as strings, so `dvar`/`uvar` round-trip as "5"/"10".
+  [dvar] of one-of directed-edges => "5"
+  [uvar] of one-of undirected-edges => "10"
 
 save-to-string-and-load-from-string-vna-value-types
   extensions [ nw ]
@@ -2024,9 +2028,11 @@ save-to-string-and-load-from-string-vna-value-types
   O> set g nw:save-to-string "vna"
   O> clear-turtles
   O> nw:load-from-string "vna" g turtles links
-  [nvar] of one-of turtles => 7
+  # vna data columns are read as strings (Gephi types them all as String), so the number 7 and boolean true round-trip
+  # as the strings "7" and "true".
+  [nvar] of one-of turtles => "7"
   [svar] of one-of turtles => "7"
-  [bvar] of one-of turtles => true
+  [bvar] of one-of turtles => "true"
   [spacey] of one-of turtles => "a b c"
 
 load-from-string-vna-gephi-format
@@ -2037,8 +2043,11 @@ load-from-string-vna-gephi-format
   O> nw:load-from-string "vna" vna-data turtles links
   count turtles => 2
   count links => 1
-  sort [value] of turtles => [10 11]
-  [strength] of one-of links => 1
+  # vna data columns are read as strings, so `value` round-trips as the literal "10.0"/"11.0" text.
+  sort [value] of turtles => ["10.0" "11.0"]
+  # The `strength` column is consumed as the edge weight (Gephi's EDGE_STRENGTH), not as a `strength` attribute, so a
+  # `links-own [strength]` variable is never set from it and keeps its default of 0 -- matching desktop.
+  [strength] of one-of links => 0
 
 load-from-string-gdf-unsettable-column-is-skipped
   extensions [ nw ]

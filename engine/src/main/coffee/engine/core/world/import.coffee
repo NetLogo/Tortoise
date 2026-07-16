@@ -180,7 +180,9 @@ module.exports.importWorld = (
           realEnd2  = @turtleManager.getTurtleOfBreed(end2.breed.plural, end2.id)
           realBreed = @breedManager.get(breedName) ? @breedManager.links()
 
-          newLink = @linkManager._createLink(realBreed.isDirected(), realEnd1, realEnd2, realBreed.name)
+          # Preserve the exported end1/end2 order rather than canonicalizing to lower-who-first: desktop's importWorld
+          # keeps them as written, and an undirected link imported from a network file can legitimately have end1 > end2.
+          newLink = @linkManager._createLink(realBreed.isDirected(), realEnd1, realEnd2, realBreed.name, true)
           newLink.setVariable(      'color', extractColor(color))
           newLink.setVariable(    'hidden?', isHidden)
           newLink.setVariable('label-color', extractColor(labelColor))

@@ -5,7 +5,8 @@ package org.nlogo.tortoise.nlw
 import
   java.{ io => jio, util => jutil},
     jio.FileWriter,
-    jutil.{ Map => JMap }
+    jutil.{ Map => JMap, regex => jregex },
+      jregex.Matcher
 
 import
   org.nlogo.tortoise.compiler.Model
@@ -118,14 +119,15 @@ class ModelDumpTests extends AnyFunSuite {
       new Regex("""(\d)+E(-?)(\d+)""", "coefficient", "sign", "exponent")
     val trailingZerosRemoved = trailingZeroNumbers.replaceAllIn(unRawJs, {
       m =>
-        s"${m.group("digitBefore")}${m.group("nonDigitAfter")}"
+        Matcher.quoteReplacement(s"${m.group("digitBefore")}${m.group("nonDigitAfter")}")
     })
     scientificNotation.replaceAllIn(trailingZerosRemoved, {
       m =>
-        m.group("sign") match {
+        val replacement = m.group("sign") match {
           case "-" => s"0.${"0" * (m.group("exponent").toInt - 1)}${m.group("coefficient")}"
           case ""  => s"${m.group("coefficient")}${"0" * m.group("exponent").toInt}"
         }
+        Matcher.quoteReplacement(replacement)
     })
   }
 
