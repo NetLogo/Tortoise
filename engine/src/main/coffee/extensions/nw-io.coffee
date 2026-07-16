@@ -157,9 +157,12 @@ module.exports = (deps) ->
       else text
 
   # Split a line into whitespace-separated tokens, keeping "..." / '...' quoted spans together (quotes stripped, so an
-  # empty quoted field becomes "").  Used by the vna and dl parsers.  -Jeremy B July 2026
-  # (String) => Array[String]
-  tokenizeWhitespaceQuoted = (line) ->
+  # empty quoted field becomes "").  Each token records whether it was quoted, which is the only type signal vna has;
+  # see `vnaTokenValue`.  There is deliberately no escape handling: Gephi's vna reader splits on
+  # `[^\s"]+|"([^"]*)"`, so a quote simply cannot appear inside a value.  Used by the vna and dl parsers.
+  # -Jeremy B July 2026
+  # (String) => Array[{ text: String, quoted: Boolean }]
+  tokenizeWhitespaceQuotedDetailed = (line) ->
     tokens = []
     i      = 0
     n      = line.length
@@ -173,7 +176,7 @@ module.exports = (deps) ->
         while j < n and line[j] isnt c
           s += line[j]
           j += 1
-        tokens.push(s)
+        tokens.push({ text: s, quoted: true })
         i = j + 1
       else
         j   = i
@@ -181,9 +184,13 @@ module.exports = (deps) ->
         while j < n and not /\s/.test(line[j])
           tok += line[j]
           j += 1
-        tokens.push(tok)
+        tokens.push({ text: tok, quoted: false })
         i = j
     tokens
+
+  # (String) => Array[String]
+  tokenizeWhitespaceQuoted = (line) ->
+    (t.text for t in tokenizeWhitespaceQuotedDetailed(line))
 
   # Split a comma-separated line into (trimmed, unquoted) fields, honoring "..." / '...' quoting and keeping empty
   # fields positional.  Used by the gdf parser.  -Jeremy B July 2026
@@ -418,22 +425,87 @@ module.exports = (deps) ->
       return
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, { onNode, onEdge, nodeBreeds })
 
+  # vna carries no types at all -- Gephi's importer adds every node and edge column as `String.class` (ImporterVNA
+  # `addNodeColumn`/`addEdgeColumn`), so a file alone can't say whether `7` was a number or a string.  We write every
+  # string quoted and every number and boolean bare, which costs nothing on Gephi's side (it reads both as strings)
+  # and lets our own reader recover the type.  A file from elsewhere quotes only values containing spaces, so its bare
+  # numeric-looking strings do load as numbers -- the format has no way to tell us otherwise.  -Jeremy B July 2026
+  #
+  # A quote cannot appear in a vna value at all: Gephi's reader splits on `[^\s"]+|"([^"]*)"` and its writer replaces
+  # `"` with a space rather than escaping.  We do the same, so quotes in a string are lost by design.
+  # (Any) => String
+  vnaField = (value) ->
+    if typeof value is "number"
+      "#{value}"
+    else if typeof value is "boolean"
+      if value then "true" else "false"
+    else
+      "\"#{String(value).replace(/[\r\n]+/g, " ").replace(/"/g, " ")}\""
+
+  # An agent omits the columns it doesn't own, and Gephi requires every row to have as many fields as its header, so
+  # the gap is filled with `""` -- the same marker Gephi's exporter uses for an empty attribute.
+  # (Agent, Array[String]) => Array[String]
+  vnaVarFields = (agent, varNames) ->
+    for varName in varNames
+      if ownsVar(agent, varName) then vnaField(agent.getVariable(varName)) else "\"\""
+
+  # (Agent) => String
+  vnaBreedField = (agent) ->
+    vnaField(breedNameToWrite(agent))
+
   # () => String
   saveVna = ->
     { turtles, edges } = contextEdges()
-    lines = ["*Node data", "ID"]
-    lines.push(String(t.id)) for t in turtles
-    lines.push("*Tie data", "from to")
-    lines.push("#{link.end1.id} #{link.end2.id}") for link in edges
+    nodeVars = agentVarNames(false)
+    edgeVars = agentVarNames(true)
+
+    # `*Node properties` is deliberately not written: Gephi's reader accepts only x/y/color/size/shortlabel/shape
+    # there and throws on anything else, so agent variables belong in `*Node data`.
+    lines = ["*Node data", ["ID", BREED_KEY].concat(nodeVars).join(" ")]
+    for t in turtles
+      lines.push([String(t.id), vnaBreedField(t)].concat(vnaVarFields(t, nodeVars)).join(" "))
+
+    lines.push("*Tie data", ["from", "to", BREED_KEY].concat(edgeVars).join(" "))
+    for link in edges
+      lines.push([String(link.end1.id), String(link.end2.id), vnaBreedField(link)].concat(vnaVarFields(link, edgeVars)).join(" "))
+
     lines.join("\n") + "\n"
+
+  # The read side of `vnaField`: a quoted token is always a string, a bare one is a number or boolean if it reads as
+  # one.  Same rule as the gml loader, and for the same reason -- neither format records a type.
+  # ({ text: String, quoted: Boolean }) => Number | Boolean | String
+  vnaTokenValue = (token) ->
+    return token.text if token.quoted
+    text = token.text
+    if text is "true" or text is "false"                    then text is "true"
+    else if text isnt "" and not Number.isNaN(Number(text)) then Number(text)
+    else text
+
+  # Structural columns describe the graph rather than the agent, so they're never treated as variables.
+  VNA_NODE_COLUMNS = ["id", BREED_KEY]
+  VNA_TIE_COLUMNS  = ["from", "to", BREED_KEY]
+
+  # (Array[String], Array[{ text, quoted }], Array[String]) => Array[{ varName: String, value: Any }]
+  vnaAttributes = (header, toks, structuralColumns) ->
+    attrs = []
+    for name, i in header when name not in structuralColumns
+      token = toks[i]
+      # An empty field is Gephi's marker for an absent attribute, so it's left unset rather than written as "".
+      attrs.push({ varName: name, value: vnaTokenValue(token) }) if token? and token.text isnt ""
+    attrs
 
   # (String, String, String, Boolean, Command) => Unit
   loadVna = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
     section    = null
     headerSeen = false
+    nodeHeader = []
+    tieHeader  = []
     fromIdx    = 0
     toIdx      = 1
+    idIdx      = 0
     nodeIds    = []
+    nodeBreeds = []
+    nodeAttrs  = new Map()
     edges      = []
     for raw in data.split("\n")
       line = raw.trim()
@@ -446,23 +518,47 @@ module.exports = (deps) ->
         section    = if lower.indexOf("tie") is 0 then "tie" else if lower.indexOf("node data") is 0 then "node" else "other"
         headerSeen = false
         continue
-      toks = tokenizeWhitespaceQuoted(line)
+      toks = tokenizeWhitespaceQuotedDetailed(line)
       if section is "node"
         if not headerSeen
           headerSeen = true
-        else
-          nodeIds.push(toks[0]) if toks.length > 0
+          nodeHeader = (t.text.toLowerCase() for t in toks)
+          idi        = nodeHeader.indexOf("id")
+          idIdx      = if idi isnt -1 then idi else 0
+          continue
+        if toks.length > idIdx
+          nodeId   = toks[idIdx].text
+          breedIdx = nodeHeader.indexOf(BREED_KEY)
+          rawBreed = if breedIdx isnt -1 then toks[breedIdx]?.text else null
+          nodeIds.push(nodeId)
+          nodeBreeds.push(resolveBreedName(rawBreed, false, turtleBreedName))
+          nodeAttrs.set(String(nodeId), vnaAttributes(nodeHeader, toks, VNA_NODE_COLUMNS))
       else if section is "tie"
         if not headerSeen
           headerSeen = true
-          header     = (h.toLowerCase() for h in toks)
-          fi = header.indexOf("from")
-          ti = header.indexOf("to")
-          fromIdx = if fi isnt -1 then fi else 0
-          toIdx   = if ti isnt -1 then ti else 1
+          tieHeader  = (t.text.toLowerCase() for t in toks)
+          fi         = tieHeader.indexOf("from")
+          ti         = tieHeader.indexOf("to")
+          fromIdx    = if fi isnt -1 then fi else 0
+          toIdx      = if ti isnt -1 then ti else 1
           continue
-        edges.push({ from: toks[fromIdx], to: toks[toIdx] }) if toks.length > Math.max(fromIdx, toIdx)
-    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
+        if toks.length > Math.max(fromIdx, toIdx)
+          breedIdx = tieHeader.indexOf(BREED_KEY)
+          rawBreed = if breedIdx isnt -1 then toks[breedIdx]?.text else null
+          edges.push({
+            from:      toks[fromIdx].text
+          , to:        toks[toIdx].text
+          , breedName: resolveBreedName(rawBreed, true, linkBreedName)
+          , attrs:     vnaAttributes(tieHeader, toks, VNA_TIE_COLUMNS)
+          })
+
+    onNode = (nodeId, turtle) ->
+      setAgentAttributes(turtle, nodeAttrs.get(nodeId) ? [])
+      return
+    onEdge = (edge, link) ->
+      setAgentAttributes(link, edge.attrs ? [])
+      return
+    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, { onNode, onEdge, nodeBreeds })
 
   # () => String
   saveDl = ->

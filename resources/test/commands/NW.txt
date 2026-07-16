@@ -1997,3 +1997,45 @@ load-from-string-vna-node-properties-are-not-ties
   O> nw:load-from-string "vna" vna-data turtles links
   count turtles => 3
   count links => 1
+
+save-to-string-and-load-from-string-vna-link-breeds
+  extensions [ nw ]
+  globals [ g ]
+  directed-link-breed [ directed-edges directed-edge ]
+  directed-edges-own [ dvar ]
+  undirected-link-breed [ undirected-edges undirected-edge ]
+  undirected-edges-own [ uvar ]
+  O> crt 3
+  O> ask turtle 0 [ create-directed-edge-to turtle 1 [ set dvar 5 ] ]
+  O> ask turtle 1 [ create-undirected-edge-with turtle 2 [ set uvar 10 ] ]
+  O> set g nw:save-to-string "vna"
+  O> clear-turtles
+  O> nw:load-from-string "vna" g turtles links
+  count directed-edges => 1
+  count undirected-edges => 1
+  [dvar] of one-of directed-edges => 5
+  [uvar] of one-of undirected-edges => 10
+
+save-to-string-and-load-from-string-vna-value-types
+  extensions [ nw ]
+  globals [ g ]
+  turtles-own [ nvar svar bvar spacey ]
+  O> crt 1 [ set nvar 7 set svar "7" set bvar true set spacey "a b c" ]
+  O> set g nw:save-to-string "vna"
+  O> clear-turtles
+  O> nw:load-from-string "vna" g turtles links
+  [nvar] of one-of turtles => 7
+  [svar] of one-of turtles => "7"
+  [bvar] of one-of turtles => true
+  [spacey] of one-of turtles => "a b c"
+
+load-from-string-vna-gephi-format
+  extensions [ nw ]
+  turtles-own [ value ]
+  links-own [ strength ]
+  to-report vna-data report (word "*Node data\n" "ID value\n" "1 10.0\n" "2 11.0\n" "*Node properties\n" "ID x y size color shortlabel\n" "1 0.0 0.0 0.0 0 1\n" "2 0.0 0.0 0.0 0 2\n" "*Tie data\n" "from to strength\n" "1 2 1.0\n") end
+  O> nw:load-from-string "vna" vna-data turtles links
+  count turtles => 2
+  count links => 1
+  sort [value] of turtles => [10 11]
+  [strength] of one-of links => 1
