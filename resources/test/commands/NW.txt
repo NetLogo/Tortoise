@@ -1775,3 +1775,97 @@ load-from-string-command-block-error-not-masked
   O> set g nw:save-to-string "gml"
   O> clear-turtles
   O> nw:load-from-string "gml" g turtles links [ error "boom" ] => ERROR boom
+
+load-from-string-gdf-breeds-own
+  extensions [ nw ]
+  breed [mice mouse]
+  breed [frogs frog]
+  mice-own [age fur]
+  frogs-own [age spots]
+  to-report gdf-data report (word "nodedef> name VARCHAR,breed VARCHAR,fur VARCHAR, spots VARCHAR\n" "1,mice,white,\n" "2,frogs,,yellow\n" "edgedef> node1,node2\n" "1,2\n") end
+  O> nw:load-from-string "gdf" gdf-data turtles links
+  count mice => 1
+  count frogs => 1
+  [fur] of mouse 0 => "white"
+  [spots] of frog 1 => "yellow"
+
+load-from-string-gdf-link-breeds
+  extensions [ nw ]
+  directed-link-breed [directed-edges directed-edge]
+  directed-edges-own [lvar]
+  undirected-link-breed [undirected-edges undirected-edge]
+  undirected-edges-own [weight]
+  to-report gdf-data report (word "nodedef> name VARCHAR,tvar BOOLEAN\n" "1,true\n" "2,false\n" "edgedef> node1,node2,color,breed,lvar DOUBLE,weight DOUBLE\n" "1,2,'0,255,0',directed-edges,5,\n" "2,1,'0,0,255',undirected-edges,,10\n") end
+  O> nw:load-from-string "gdf" gdf-data turtles links
+  count directed-edges => 1
+  count undirected-edges => 1
+  [lvar] of one-of directed-edges => 5
+  [weight] of one-of undirected-edges => 10
+
+save-to-string-and-load-from-string-gdf-breeds-own
+  extensions [ nw ]
+  globals [ g ]
+  breed [mice mouse]
+  breed [frogs frog]
+  mice-own [fur]
+  frogs-own [spots]
+  O> create-mice 1 [ set fur "white" ]
+  O> create-frogs 1 [ set spots "yellow" ]
+  O> ask turtle 0 [ create-link-with turtle 1 ]
+  O> set g nw:save-to-string "gdf"
+  O> clear-turtles
+  O> nw:load-from-string "gdf" g turtles links
+  count mice => 1
+  count frogs => 1
+  count links => 1
+  [fur] of one-of mice => "white"
+  [spots] of one-of frogs => "yellow"
+
+save-to-string-and-load-from-string-gdf-link-breeds
+  extensions [ nw ]
+  globals [ g ]
+  directed-link-breed [ directed-edges directed-edge ]
+  directed-edges-own [ lvar ]
+  undirected-link-breed [ undirected-edges undirected-edge ]
+  undirected-edges-own [ weight ]
+  O> crt 3
+  O> ask turtle 0 [ create-directed-edge-to turtle 1 [ set lvar 5 ] ]
+  O> ask turtle 1 [ create-undirected-edge-with turtle 2 [ set weight 10 ] ]
+  O> set g nw:save-to-string "gdf"
+  O> clear-turtles
+  O> nw:load-from-string "gdf" g turtles links
+  count directed-edges => 1
+  count undirected-edges => 1
+  [lvar] of one-of directed-edges => 5
+  [weight] of one-of undirected-edges => 10
+
+save-to-string-and-load-from-string-gdf-unbreeded-into-breed
+  extensions [ nw ]
+  globals [ g ]
+  breed [mice mouse]
+  turtles-own [ tvar ]
+  O> crt 2 [ set tvar 7 ]
+  O> ask turtle 0 [ create-link-with turtle 1 ]
+  O> set g nw:save-to-string "gdf"
+  O> clear-turtles
+  O> nw:load-from-string "gdf" g mice links
+  count mice => 2
+  count links => 1
+  [tvar] of one-of mice => 7
+
+load-from-string-gdf-directed-column-unbreeded
+  extensions [ nw ]
+  to-report gdf-data report (word "nodedef> name VARCHAR\n" "1\n" "2\n" "edgedef> node1,node2,directed BOOLEAN\n" "1,2,true\n") end
+  O> nw:load-from-string "gdf" gdf-data turtles links
+  count links => 1
+  [is-directed-link? self] of one-of links => true
+
+save-to-string-and-load-from-string-gdf-quoted-values
+  extensions [ nw ]
+  globals [ g ]
+  turtles-own [ tvar ]
+  O> crt 1 [ set tvar "a,b'c" ]
+  O> set g nw:save-to-string "gdf"
+  O> clear-turtles
+  O> nw:load-from-string "gdf" g turtles links
+  [tvar] of one-of turtles => "a,b'c"

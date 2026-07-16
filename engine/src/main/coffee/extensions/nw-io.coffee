@@ -32,12 +32,16 @@ module.exports = (deps) ->
     allTurtles = workspace.world.turtles().toArray()
     allTurtles[allTurtles.length - 1]
 
-  # (Array[Any], Array[Edge], String, String, Boolean, Command, (String, Turtle) => Unit) => Unit
-  buildLoadedGraph = (nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, onNode) ->
+  # The optional `opts` are: `onNode`/`onEdge` hooks, called with each created agent, and `nodeBreeds`, an array of
+  # breed names parallel to `nodeIds` (breeds must be known at creation time, so they can't go through `onNode`).
+  # (Array[Any], Array[Edge], String, String, Boolean, Command, { onNode, onEdge, nodeBreeds }) => Unit
+  buildLoadedGraph = (nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, opts = {}) ->
+    { onNode, onEdge, nodeBreeds } = opts
     idToTurtle     = new Map()
     createdTurtles = []
-    for nodeId in nodeIds
-      t = createTurtleOfBreed(turtleBreedName)
+    for nodeId, i in nodeIds
+      breedName = nodeBreeds?[i] ? turtleBreedName
+      t = createTurtleOfBreed(breedName)
       createdTurtles.push(t)
       idToTurtle.set(String(nodeId), t)
       onNode(String(nodeId), t) if onNode?
@@ -47,14 +51,24 @@ module.exports = (deps) ->
       src = idToTurtle.get(String(edge.from))
       tgt = idToTurtle.get(String(edge.to))
       continue if not (src? and tgt?)
-      directed = if edge.directed? then edge.directed else breedDirected
+      breedName = edge.breedName ? linkBreedName
+      # A user-defined breed's own directedness wins, so one file can mix directed and undirected link breeds.  The
+      # default LINKS breed has no intrinsic directedness -- it just tracks the links made so far -- so there the
+      # file's own per-edge value still decides.
+      breed    = workspace.world.breedManager.get(breedName)
+      directed =
+        if breed? and breed.isLinky() and breed.name isnt "LINKS" then breed.isDirected()
+        else if edge.directed?                                    then edge.directed
+        else                                                           breedDirected
       if directed
-        workspace.world.linkManager.createDirectedLink(src, tgt, linkBreedName)
+        link = workspace.world.linkManager.createDirectedLink(src, tgt, breedName)
+        onEdge(edge, link) if onEdge? and link?
       else
-        key = if src.id < tgt.id then "#{src.id}-#{tgt.id}" else "#{tgt.id}-#{src.id}"
+        key = if src.id < tgt.id then "#{src.id}-#{tgt.id}-#{breedName}" else "#{tgt.id}-#{src.id}-#{breedName}"
         if not seen.has(key)
           seen.add(key)
-          workspace.world.linkManager.createUndirectedLink(src, tgt, linkBreedName)
+          link = workspace.world.linkManager.createUndirectedLink(src, tgt, breedName)
+          onEdge(edge, link) if onEdge? and link?
 
     if runBlock?
       for t in createdTurtles
@@ -101,7 +115,11 @@ module.exports = (deps) ->
     while i < line.length
       c = line[i]
       if quote?
-        if c is quote then quote = null else cur += c
+        if c is "\\" and i + 1 < line.length and (line[i + 1] is quote or line[i + 1] is "\\")
+          cur += line[i + 1]
+          i   += 1
+        else if c is quote then quote = null
+        else cur += c
       else if c is "\"" or c is "'"
         quote = c
       else if c is ","
@@ -328,51 +346,174 @@ module.exports = (deps) ->
     nodeIds = (String(i + 1) for i in [0...n])
     buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
 
+  # gdf carries agent variables as typed columns, and a `breed` column naming the agent's breed, so the node/edge
+  # columns are the union of the default breed's variables and every relevant breed's own variables.  An agent leaves
+  # columns it doesn't own empty.  -Jeremy B July 2026
+
+  # (Boolean) => Array[String] -- the union of the default breed's vars and each breed's own vars, in breed order.
+  gdfVarNames = (isLinky) ->
+    manager   = workspace.world.breedManager
+    breedName = if isLinky then "LINKS" else "TURTLES"
+    names     = manager.get(breedName).varNames.slice()
+    ordered   = if isLinky then manager.orderedLinkBreeds() else manager.orderedTurtleBreeds()
+    for name in ordered when name isnt breedName
+      for varName in manager.get(name).varNames when varName not in names
+        names.push(varName)
+    names
+
+  # (Array[Agent], String) => String -- gdf's column type, from the values of the agents that own the variable.
+  gdfColumnType = (agents, varName) ->
+    values = (a.getVariable(varName) for a in agents when varName in a.varNames())
+    if values.length is 0 then "VARCHAR"
+    else if values.every((v) -> typeof v is "number")  then "DOUBLE"
+    else if values.every((v) -> typeof v is "boolean") then "BOOLEAN"
+    else "VARCHAR"
+
+  # (Any) => String -- quote a field if it would otherwise break the comma-separated framing.
+  gdfField = (value) ->
+    text = if typeof value is "boolean" then (if value then "true" else "false") else String(value)
+    if /[,'"\\]/.test(text)
+      "'#{text.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'"
+    else
+      text
+
+  # The default breeds are left blank rather than written as "turtles"/"links", so that loading the result into a
+  # caller-chosen breed still honors that choice.  See `gdfBreedName`.
+  # (Agent) => String
+  gdfBreedField = (agent) ->
+    name = agent.getBreedName()
+    if name is "TURTLES" or name is "LINKS" then "" else gdfField(name.toLowerCase())
+
+  # (Agent, Array[String]) => Array[String]
+  gdfVarFields = (agent, varNames) ->
+    owned = agent.varNames()
+    for varName in varNames
+      if varName in owned then gdfField(agent.getVariable(varName)) else ""
+
   # () => String
   saveGdf = ->
     { turtles, edges } = contextEdges()
-    lines = ["nodedef>name VARCHAR"]
-    lines.push(String(t.id)) for t in turtles
-    lines.push("edgedef>node1 VARCHAR,node2 VARCHAR")
-    lines.push("#{link.end1.id},#{link.end2.id}") for link in edges
+
+    nodeVars = gdfVarNames(false)
+    nodeCols = ("#{v} #{gdfColumnType(turtles, v)}" for v in nodeVars)
+    lines    = ["nodedef>name VARCHAR,breed VARCHAR#{("," + c for c in nodeCols).join("")}"]
+    for t in turtles
+      lines.push([String(t.id), gdfBreedField(t)].concat(gdfVarFields(t, nodeVars)).join(","))
+
+    edgeVars = gdfVarNames(true)
+    edgeCols = ("#{v} #{gdfColumnType(edges, v)}" for v in edgeVars)
+    lines.push("edgedef>node1 VARCHAR,node2 VARCHAR,breed VARCHAR,directed BOOLEAN#{("," + c for c in edgeCols).join("")}")
+    for link in edges
+      fields = [String(link.end1.id), String(link.end2.id), gdfBreedField(link), gdfField(link.isDirected)]
+      lines.push(fields.concat(gdfVarFields(link, edgeVars)).join(","))
+
     lines.join("\n") + "\n"
 
-  # (String) => Array[String]
+  # (String) => Array[{ name: String, type: String }]
   gdfHeaderColumns = (line) ->
     rest = line.substring(line.indexOf(">") + 1)
-    (col.trim().split(/\s+/)[0].toLowerCase() for col in rest.split(","))
+    for col in rest.split(",")
+      parts = col.trim().split(/\s+/)
+      { name: parts[0].toLowerCase(), type: (parts[1] ? "varchar").toLowerCase() }
+
+  # (Array[{ name: String, type: String }], String) => Number
+  gdfColumnIndex = (cols, name) ->
+    for col, i in cols when col.name is name
+      return i
+    -1
+
+  # Only user-defined breeds are matched, never the default TURTLES/LINKS.  Desktop's `world.breeds` holds just the
+  # user's breeds, so a `breed` column of "turtles" falls through to the caller's breed there, and must here too --
+  # otherwise loading an unbreeded save into a specific breed would silently ignore the caller.  -Jeremy B July 2026
+  # (String, Boolean, String) => String
+  gdfBreedName = (rawName, isLinky, defaultBreedName) ->
+    return defaultBreedName if not rawName? or rawName.trim() is ""
+    breed = workspace.world.breedManager.get(rawName.trim())
+    isDefaultBreed = breed?.name is "TURTLES" or breed?.name is "LINKS"
+    if breed? and not isDefaultBreed and breed.isLinky() is isLinky then breed.name else defaultBreedName
+
+  # `name`/`node1`/`node2`/`breed` carry structure rather than agent state, so they're never set as variables.
+  STRUCTURAL_GDF_COLUMNS = ["name", "node1", "node2", "breed"]
+
+  # (Array[{ name: String, type: String }], Array[String]) => Array[{ varName: String, value: Any }]
+  gdfAttributes = (cols, fields) ->
+    attrs = []
+    for col, i in cols when col.name not in STRUCTURAL_GDF_COLUMNS
+      value = fields[i]
+      attrs.push({ varName: col.name, value: deserializeVarValue(col.type, value) }) if value? and value isnt ""
+    attrs
+
+  # Column names are lowercased when parsed, but variables are stored in the case the model declared, so match the
+  # agent's own names case-insensitively.  Columns that name no variable of this agent's breed are skipped.
+  # (Agent, Array[{ varName: String, value: Any }]) => Unit
+  setGdfAttributes = (agent, attrs) ->
+    ownedByLower = new Map()
+    for name in agent.varNames()
+      ownedByLower.set(name.toLowerCase(), name)
+    for attr in attrs
+      owned = ownedByLower.get(attr.varName.toLowerCase())
+      agent.setVariable(owned, attr.value) if owned?
+    return
 
   # (String, String, String, Boolean, Command) => Unit
   loadGdf = (data, turtleBreedName, linkBreedName, breedDirected, runBlock) ->
-    mode    = null
-    nameIdx = 0
-    n1Idx   = 0
-    n2Idx   = 1
-    nodeIds = []
-    edges   = []
+    mode       = null
+    nodeCols   = []
+    edgeCols   = []
+    nameIdx    = 0
+    n1Idx      = 0
+    n2Idx      = 1
+    nodeIds    = []
+    nodeBreeds = []
+    nodeAttrs  = new Map()
+    edges      = []
     for raw in data.split("\n")
       line = raw.trim()
       continue if line is ""
       lower = line.toLowerCase()
       if lower.indexOf("nodedef>") is 0
-        cols    = gdfHeaderColumns(line)
-        idx     = cols.indexOf("name")
-        nameIdx = if idx isnt -1 then idx else 0
-        mode    = "node"
+        nodeCols = gdfHeaderColumns(line)
+        idx      = gdfColumnIndex(nodeCols, "name")
+        nameIdx  = if idx isnt -1 then idx else 0
+        mode     = "node"
       else if lower.indexOf("edgedef>") is 0
-        cols  = gdfHeaderColumns(line)
-        i1    = cols.indexOf("node1")
-        i2    = cols.indexOf("node2")
-        n1Idx = if i1 isnt -1 then i1 else 0
-        n2Idx = if i2 isnt -1 then i2 else 1
-        mode  = "edge"
+        edgeCols = gdfHeaderColumns(line)
+        i1       = gdfColumnIndex(edgeCols, "node1")
+        i2       = gdfColumnIndex(edgeCols, "node2")
+        n1Idx    = if i1 isnt -1 then i1 else 0
+        n2Idx    = if i2 isnt -1 then i2 else 1
+        mode     = "edge"
       else
         fields = splitCommaQuoted(line)
         if mode is "node"
-          nodeIds.push(fields[nameIdx]) if fields.length > nameIdx
+          if fields.length > nameIdx
+            nodeId    = fields[nameIdx]
+            breedIdx  = gdfColumnIndex(nodeCols, "breed")
+            rawBreed  = if breedIdx isnt -1 then fields[breedIdx] else null
+            nodeIds.push(nodeId)
+            nodeBreeds.push(gdfBreedName(rawBreed, false, turtleBreedName))
+            nodeAttrs.set(String(nodeId), gdfAttributes(nodeCols, fields))
         else if mode is "edge"
-          edges.push({ from: fields[n1Idx], to: fields[n2Idx] }) if fields.length > Math.max(n1Idx, n2Idx)
-    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock)
+          if fields.length > Math.max(n1Idx, n2Idx)
+            breedIdx = gdfColumnIndex(edgeCols, "breed")
+            rawBreed = if breedIdx isnt -1 then fields[breedIdx] else null
+            dirIdx   = gdfColumnIndex(edgeCols, "directed")
+            directed = if dirIdx isnt -1 and fields[dirIdx] isnt "" then fields[dirIdx] is "true" else null
+            edges.push({
+              from:      fields[n1Idx]
+            , to:        fields[n2Idx]
+            , directed
+            , breedName: gdfBreedName(rawBreed, true, linkBreedName)
+            , attrs:     gdfAttributes(edgeCols, fields)
+            })
+
+    onNode = (nodeId, turtle) ->
+      setGdfAttributes(turtle, nodeAttrs.get(nodeId) ? [])
+      return
+    onEdge = (edge, link) ->
+      setGdfAttributes(link, edge.attrs ? [])
+      return
+    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, { onNode, onEdge, nodeBreeds })
 
   # We parse XML with the host's XML facilities rather than a hand-rolled parser: the browser's native DOMParser in
   # production, and a javax.xml-backed parser in the GraalJS test runtime (which has full Java interop but no
@@ -519,7 +660,7 @@ module.exports = (deps) ->
     onNode = (nodeId, turtle) ->
       turtle.setVariable(a.varName, a.value) for a in (nodeAttrs.get(nodeId) ? [])
       return
-    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, onNode)
+    buildLoadedGraph(nodeIds, edges, turtleBreedName, linkBreedName, breedDirected, runBlock, { onNode })
 
   # () => String
   saveGexf = ->
