@@ -161,6 +161,11 @@ module.exports = (deps) ->
     for name in agent.varNames()
       ownedByLower.set(name.toLowerCase(), name)
     for attr in attrs
+      # Never loaded, for the same reasons they're never saved: a file must not rewire a link's endpoints or reassign
+      # a breed through the back door.  Desktop is protected from this only by its blanket `AgentException` catch --
+      # a gdf written there carries `end1`/`end2` columns (its `linksOwn` includes them), and applying one leaves a
+      # link pointing at a turtle that doesn't exist.  -Jeremy B July 2026
+      continue if attr.varName.toLowerCase() in NON_VARIABLE_BUILTINS
       owned = ownedByLower.get(attr.varName.toLowerCase())
       continue if not owned?
       try
@@ -681,12 +686,32 @@ module.exports = (deps) ->
   # `name`/`node1`/`node2`/`breed` carry structure rather than agent state, so they're never set as variables.
   STRUCTURAL_GDF_COLUMNS = ["name", "node1", "node2", BREED_KEY]
 
+  # gdf writes a colour as its own `r,g,b` triple rather than a NetLogo colour number, and doesn't type the column.
+  # Desktop gets these for free -- Gephi's gdf reader parses the field into a `Color`, which `GephiImport` turns into
+  # an rgb list -- so a colour column is coerced here rather than read by its declared type: a triple becomes an rgb
+  # list, a plain number stays a number (that's what our own saves write), and anything else falls through to be
+  # skipped by `setAgentAttributes`.  -Jeremy B July 2026
+  GDF_COLOR_COLUMNS = ["color", "label-color"]
+
+  # (String) => Array[Number] | Number | null
+  gdfColorValue = (text) ->
+    parts = String(text).split(",")
+    if parts.length is 3 or parts.length is 4
+      rgb = (Number(p.trim()) for p in parts)
+      return rgb if not rgb.some((n) -> Number.isNaN(n) or n < 0 or n > 255)
+    number = Number(text)
+    if not Number.isNaN(number) then number else null
+
   # (Array[{ name: String, type: String }], Array[String]) => Array[{ varName: String, value: Any }]
   gdfAttributes = (cols, fields) ->
     attrs = []
     for col, i in cols when col.name not in STRUCTURAL_GDF_COLUMNS
       value = fields[i]
-      attrs.push({ varName: col.name, value: deserializeVarValue(col.type, value) }) if value? and value isnt ""
+      continue if not value? or value is ""
+      converted =
+        if col.name in GDF_COLOR_COLUMNS then (gdfColorValue(value) ? deserializeVarValue(col.type, value))
+        else deserializeVarValue(col.type, value)
+      attrs.push({ varName: col.name, value: converted })
     attrs
 
   # (String, String, String, Boolean, Command) => Unit

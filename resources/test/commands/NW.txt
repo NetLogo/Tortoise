@@ -2089,3 +2089,32 @@ save-to-string-and-load-from-string-gdf-list-values-do-not-round-trip
   count turtles => 1
   [size] of one-of turtles => 2
   [lvar] of one-of turtles => "[1 2 3]"
+
+load-from-string-gdf-native-color-column
+  extensions [ nw ]
+  directed-link-breed [directed-edges directed-edge]
+  to-report gdf-data report (word "nodedef> name VARCHAR,color VARCHAR\n" "1,'0,255,0'\n" "2,'0,0,255'\n" "edgedef> node1,node2,color,breed\n" "1,2,'255,0,0',directed-edges\n") end
+  O> nw:load-from-string "gdf" gdf-data turtles links
+  sort-by [ [a b] -> first a < first b ] [color] of turtles => [[0 0 255] [0 255 0]]
+  [color] of one-of directed-edges => [255 0 0]
+
+load-from-string-gdf-numeric-color-column
+  extensions [ nw ]
+  to-report gdf-data report (word "nodedef> name VARCHAR,color DOUBLE\n" "1,15\n" "2,25\n" "edgedef> node1,node2\n" "1,2\n") end
+  O> nw:load-from-string "gdf" gdf-data turtles links
+  sort [color] of turtles => [15 25]
+
+load-from-string-gdf-unusable-color-is-skipped
+  extensions [ nw ]
+  to-report gdf-data report (word "nodedef> name VARCHAR,color VARCHAR\n" "1,chartreuse\n" "edgedef> node1,node2\n") end
+  O> nw:load-from-string "gdf" gdf-data turtles links
+  count turtles => 1
+  is-number? [color] of turtle 0 => true
+
+load-from-string-gdf-endpoint-columns-are-ignored
+  extensions [ nw ]
+  to-report gdf-data report (word "nodedef> name VARCHAR\n" "1\n" "2\n" "edgedef> node1,node2,end1 VARCHAR,end2 VARCHAR\n" "1,2,'(turtle 42)','(turtle 43)'\n") end
+  O> nw:load-from-string "gdf" gdf-data turtles links
+  count links => 1
+  sort [[who] of end1] of links => [0]
+  sort [[who] of end2] of links => [1]
