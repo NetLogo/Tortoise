@@ -115,11 +115,14 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
     suites.toSeq.sorted
   }
 
-  protected def getLanguageTestResources(path: String) = {
-    val headlessSuites = getLanguageTestByClass(path, classOf[org.nlogo.headless.test.LanguageTest])
-    val webSuites = getLanguageTestByClass(path, getClass())
-    headlessSuites ++ webSuites
-  }
+  protected def getDesktopLanguageTests(path: String) =
+    getLanguageTestByClass(path, classOf[org.nlogo.headless.test.LanguageTest])
+
+  protected def getWebLanguageTests(path: String) =
+    getLanguageTestByClass(path, getClass())
+
+  protected def getLanguageTestResources(path: String) =
+    getDesktopLanguageTests(path) ++ getWebLanguageTests(path)
 
 }
 
@@ -131,14 +134,22 @@ class TestReporters extends Finder with TortoiseFinder {
   )
 }
 
-class TestCommands extends Finder with TortoiseFinder {
-  override def files = getLanguageTestResources("commands")
-
+private[tortoise] trait CommandTests extends TortoiseFinder {
   import Freebies._
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
   ) ++ incErrorDetectCommands ++ preferExtensionsCommands ++ headlessCommands ++ awaitingFixCommands
+}
+
+// Split by test-file source so CI can run the two sets as separate jobs.  Both names end in `TestCommands` so
+// `testOnly *TestCommands` still picks up everything.  -Jeremy B July 2026
+class DesktopTestCommands extends Finder with CommandTests {
+  override def files = getDesktopLanguageTests("commands")
+}
+
+class WebTestCommands extends Finder with CommandTests {
+  override def files = getWebLanguageTests("commands")
 }
 
 private[tortoise] object Freebies {
