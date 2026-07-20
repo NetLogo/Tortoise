@@ -61,10 +61,17 @@ jobs:
           ./sbt.sh "compilerJS / Test / compile"
           ./sbt.sh "netLogoWeb / Test / compile"
 
+      # Installs to `~/.netlogo` so we cache that below
+      - name: Install Extensions
+        run: |
+          ./sbt.sh "netLogoWeb / Test / runMain org.nlogo.tortoise.nlw.ExtensionsInstaller"
+
       - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         id: restore-build
         with:
-          path: ./*
+          path: |
+            ./*
+            ~/.netlogo
           key: ${{ github.sha }}
 
   lint:
@@ -74,7 +81,9 @@ jobs:
       - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         id: restore-build
         with:
-          path: ./*
+          path: |
+            ./*
+            ~/.netlogo
           key: ${{ github.sha }}
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
@@ -105,7 +114,9 @@ jobs:
       - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         id: restore-build
         with:
-          path: ./*
+          path: |
+            ./*
+            ~/.netlogo
           key: ${{ github.sha }}
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
@@ -137,7 +148,9 @@ jobs:
       - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         id: restore-build
         with:
-          path: ./*
+          path: |
+            ./*
+            ~/.netlogo
           key: ${{ github.sha }}
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
@@ -155,7 +168,6 @@ jobs:
 
       - name: NetLogo Web Fast Tests
         run: |
-          ./sbt.sh "netLogoWeb / Test / runMain org.nlogo.tortoise.nlw.ExtensionsInstaller"
           ./sbt.sh "netLogoWeb / Test / fast"
           ./sbt.sh "netLogoWeb / testOnly *TestReporters"
 
@@ -166,7 +178,9 @@ jobs:
       - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         id: restore-build
         with:
-          path: ./*
+          path: |
+            ./*
+            ~/.netlogo
           key: ${{ github.sha }}
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
@@ -193,7 +207,9 @@ jobs:
       - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         id: restore-build
         with:
-          path: ./*
+          path: |
+            ./*
+            ~/.netlogo
           key: ${{ github.sha }}
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
@@ -225,7 +241,9 @@ jobs:
       - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         id: restore-build
         with:
-          path: ./*
+          path: |
+            ./*
+            ~/.netlogo
           key: ${{ github.sha }}
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
