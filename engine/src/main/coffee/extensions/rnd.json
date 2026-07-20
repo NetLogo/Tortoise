@@ -1,0 +1,12 @@
+{
+  "name": "rnd",
+  "prims": [
+    { "name": "WEIGHTED-ONE-OF",                  "argTypes": ["agentset", "reporter"],           "returnType": "agent",    "blockAgentClassString": "-TPL" },
+    { "name": "WEIGHTED-N-OF",                    "argTypes": ["number", "agentset", "reporter"], "returnType": "agentset", "blockAgentClassString": "-TPL" },
+    { "name": "WEIGHTED-N-OF-WITH-REPEATS",       "argTypes": ["number", "agentset", "reporter"], "returnType": "list",     "blockAgentClassString": "-TPL" },
+
+    { "name": "WEIGHTED-ONE-OF-LIST",             "argTypes": ["list", "reporter"],           "returnType": "wildcard" },
+    { "name": "WEIGHTED-N-OF-LIST",               "argTypes": ["number", "list", "reporter"], "returnType": "list" },
+    { "name": "WEIGHTED-N-OF-LIST-WITH-REPEATS",  "argTypes": ["number", "list", "reporter"], "returnType": "list" }
+  ]
+}
