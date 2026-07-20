@@ -937,7 +937,8 @@ module.exports = (deps) ->
   bicomponentClusters = ->
     ctx     = getCurrentContext()
     turtles = ctx.turtles.toArray()
-    return [] if turtles.length is 0
+    if turtles.length is 0
+      return []
 
     turtleById = new Map()
     adjacency  = new Map()

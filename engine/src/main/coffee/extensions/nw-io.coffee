@@ -146,7 +146,8 @@ module.exports = (deps) ->
   # loading an unbreeded save into a specific breed would silently ignore the caller.  -Jeremy B July 2026
   # (String, Boolean, String) => String
   resolveBreedName = (rawName, isLinky, defaultBreedName) ->
-    return defaultBreedName if not rawName? or String(rawName).trim() is ""
+    if not rawName? or String(rawName).trim() is ""
+      return defaultBreedName
     breed = workspace.world.breedManager.get(String(rawName).trim())
     if breed? and not isDefaultBreedName(breed.name) and breed.isLinky() is isLinky
       breed.name
@@ -441,7 +442,8 @@ module.exports = (deps) ->
   # otherwise a string.  This is the read side of `gmlValueText`.
   # ({ value: Any, quoted: Boolean }) => Number | Boolean | String
   gmlPairValue = (pair) ->
-    return pair.value if pair.quoted
+    if pair.quoted
+      return pair.value
     text = String(pair.value)
     if text is "true" or text is "false"        then text is "true"
     else if text isnt "" and not Number.isNaN(Number(text)) then Number(text)
@@ -457,7 +459,8 @@ module.exports = (deps) ->
   # ("#rrggbb") => Array[Number] | null
   hexToRgb = (hex) ->
     m = /^#?([0-9a-fA-F]{6})$/.exec(String(hex).trim())
-    return null if not m
+    if not m
+      return null
     n = parseInt(m[1], 16)
     [(n >> 16) & 255, (n >> 8) & 255, n & 255]
 
@@ -468,7 +471,8 @@ module.exports = (deps) ->
   # (Array[{ key, value }]) => Array[Number] | null
   gmlGraphicsColor = (pairs) ->
     graphics = gmlValue(pairs, "graphics")
-    return null if not Array.isArray(graphics)
+    if not Array.isArray(graphics)
+      return null
     fill = gmlValue(graphics, "fill")
     if fill? then hexToRgb(fill) else null
 
@@ -806,7 +810,8 @@ module.exports = (deps) ->
     parts = String(text).split(",")
     if parts.length is 3 or parts.length is 4
       rgb = (Number(p.trim()) for p in parts)
-      return rgb if not rgb.some((n) -> Number.isNaN(n) or n < 0 or n > 255)
+      if not rgb.some((n) -> Number.isNaN(n) or n < 0 or n > 255)
+        return rgb
     number = Number(text)
     if not Number.isNaN(number) then number else null
 
