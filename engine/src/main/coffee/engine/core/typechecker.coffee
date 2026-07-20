@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ maybe, None } = require('brazierjs/maybe')
+
 # There are three basic entry points here:
 
 # 1. The `nlTypes.checks.*` functions, that check if a value is of a given type.  These are appropriate to use
@@ -42,14 +44,15 @@ getTypeOf = (x) ->
 # `turtlevariables.coffee` so when it calls `require()` for us again, it gets an empty object back.
 # So we have to "back-fill" our export to get around that. -Jeremy B December 2020
 
-types  = {}
-checks = {}
+types    = {}
+checks   = {}
+validate = {}
 
 class NLType
   isOfType: unimplemented
   niceName: unimplemented
 
-module.exports = { types, checks, getTypeOf, NLType }
+module.exports = { types, checks, getTypeOf, NLType, validate }
 
 AbstractAgentSet = require('./abstractagentset')
 Link             = require('./link')
@@ -231,4 +234,34 @@ Object.assign(types, {
   LinkSet:   new LinkSetType()
 
   Wildcard: new WildcardType()
+})
+
+Object.assign(validate, {
+  # (Any) => Maybe[String]
+  number: (value) ->
+    if checks.isNumber(value) then None else maybe("Invalid number type")
+
+  # (Any) => Maybe[String]
+  string: (value) ->
+    if checks.isString(value) then None else maybe("Invalid string type")
+
+  # (Any) => Maybe[String]
+  boolean: (value) ->
+    if checks.isBoolean(value) then None else maybe("Invalid boolean type")
+
+  # (Number|RGB|RGBA) => Maybe[String]
+  color: (c) ->
+
+    hasBadLength    = (xs) -> xs.length isnt 3 and xs.length isnt 4
+    isBadCompNumber = (x) -> not (0 <= x <= 255)
+    isBadCompType   = (x) -> not checks.isNumber(x)
+
+    if checks.isList(c) and (hasBadLength(c) or c.some(isBadCompType))
+      maybe("Invalid RGB format")
+    else if checks.isList(c) and (c.some(isBadCompNumber))
+      maybe("Invalid RGB number")
+    else if not checks.isList(c) and not checks.isNumber(c)
+      maybe("Invalid color type")
+    else
+      None
 })

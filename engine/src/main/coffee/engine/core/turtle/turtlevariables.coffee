@@ -1,9 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-ColorModel = require('engine/core/colormodel')
-{ checks } = require('engine/core/typechecker')
-StrictMath = require('shim/strictmath')
-NLMath     = require('util/nlmath')
+ColorModel           = require('engine/core/colormodel')
+{ checks, validate } = require('engine/core/typechecker')
+StrictMath           = require('shim/strictmath')
+NLMath               = require('util/nlmath')
 
 { exceptionFactory: exceptions } = require('util/exception')
 
@@ -13,46 +13,12 @@ NLMath     = require('util/nlmath')
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
 { TopologyInterrupt }                          = require('util/interrupts')
 
-# (Number|RGB|RGBA) => Maybe[String]
-validateColor = (color) ->
-
-  hasBadLength    = (xs) -> xs.length isnt 3 and xs.length isnt 4
-  isBadCompNumber = (x) -> not (0 <= x <= 255)
-  isBadCompType   = (x) -> not checks.isNumber(x)
-
-  if checks.isList(color) and (hasBadLength(color) or color.some(isBadCompType))
-    maybe("Invalid RGB format")
-  else if checks.isList(color) and (color.some(isBadCompNumber))
-    maybe("Invalid RGB number")
-  else if not checks.isList(color) and not checks.isNumber(color)
-    # Without this, a non-number reached `wrapColor` and came back `NaN` (`"0,255,0" % 140`), which stored fine and
-    # then broke the view: `netlogoColorToRGB` indexes its cache by the number, and `cache[NaN]` is `undefined`.
-    # Patches have always checked this; turtles and links did not.  -Jeremy B July 2026
-    maybe("Invalid color type")
-  else
-    None
-
-# Built-in variables are typed in NetLogo even though user variables aren't, and desktop rejects the wrong type
-# (`Agent.wrongTypeForVariable`).  Without these a bad value was simply stored -- `set size "x"` left a NaN size, and
-# `set shape 5` leaked a raw "shape.toLowerCase is not a function" at the user.  -Jeremy B July 2026
-
-# (Any) => Maybe[String]
-validateNumber = (value) ->
-  if checks.isNumber(value) then None else maybe("Invalid number type")
-
-# (Any) => Maybe[String]
-validateString = (value) ->
-  if checks.isString(value) then None else maybe("Invalid string type")
-
-# (Any) => Maybe[String]
-validateBoolean = (value) ->
-  if checks.isBoolean(value) then None else maybe("Invalid boolean type")
-
 # (Number, IDSet) => Maybe[TopologyInterrupt]
 setXcor = (newX, seenTurtlesSet = {}) ->
 
-  numberMaybe = validateNumber(newX)
-  return numberMaybe if isSomething(numberMaybe)
+  numberMaybe = validate.number(newX)
+  if isSomething(numberMaybe)
+    return numberMaybe
 
   originPatch = @getPatchHere()
   oldX        = @xcor
@@ -81,8 +47,9 @@ setXcor = (newX, seenTurtlesSet = {}) ->
 # (Number, IDSet) => Maybe[TopologyInterrupt]
 setYcor = (newY, seenTurtlesSet = {}) ->
 
-  numberMaybe = validateNumber(newY)
-  return numberMaybe if isSomething(numberMaybe)
+  numberMaybe = validate.number(newY)
+  if isSomething(numberMaybe)
+    return numberMaybe
 
   originPatch = @getPatchHere()
   oldY        = @ycor
@@ -129,9 +96,6 @@ setBreed = (breed) ->
     else
       breed
 
-  # A name that isn't a breed resolves to `undefined`, and a value that isn't a breed at all (a number, say) has no
-  # `add` -- both used to reach `trueBreed.add(this)` below and leak a raw "trueBreed.add is not a function" at the
-  # user.  -Jeremy B July 2026
   if not trueBreed?.add?
     throw exceptions.runtime("You can't set BREED to a non-breed agentset.", "set")
 
@@ -161,7 +125,7 @@ setBreed = (breed) ->
 # (Number|RGB|RGBA) => Maybe[String]
 setColor = (color) ->
 
-  errorMaybe = validateColor(color)
+  errorMaybe = validate.color(color)
 
   if not isSomething(errorMaybe)
     @_color = ColorModel.wrapColor(color)
@@ -172,8 +136,9 @@ setColor = (color) ->
 # (Number, IDSet) => Maybe[String]
 setHeading = (heading, seenTurtlesSet = {}) ->
 
-  errorMaybe = validateNumber(heading)
-  return errorMaybe if isSomething(errorMaybe)
+  errorMaybe = validate.number(heading)
+  if isSomething(errorMaybe)
+    return errorMaybe
 
   oldHeading = @_heading
   @_heading  = NLMath.normalizeHeading(heading)
@@ -187,7 +152,7 @@ setHeading = (heading, seenTurtlesSet = {}) ->
 # (Boolean) => Maybe[String]
 setIsHidden = (isHidden) ->
 
-  errorMaybe = validateBoolean(isHidden)
+  errorMaybe = validate.boolean(isHidden)
 
   if not isSomething(errorMaybe)
     @_hidden = isHidden
@@ -204,7 +169,7 @@ setLabel = (label) ->
 # (Number|RGB|RGBA) => Maybe[String]
 setLabelColor = (color) ->
 
-  errorMaybe = validateColor(color)
+  errorMaybe = validate.color(color)
 
   if not isSomething(errorMaybe)
     @_labelcolor = ColorModel.wrapColor(color)
@@ -212,12 +177,10 @@ setLabelColor = (color) ->
 
   errorMaybe
 
-# Only the type is checked: desktop also rejects a name that isn't a currently defined shape, but the shape list
-# lives in the view rather than the engine, so there's nothing here to check it against.  -Jeremy B July 2026
 # (String) => Maybe[String]
 setShape = (shape) ->
 
-  errorMaybe = validateString(shape)
+  errorMaybe = validate.string(shape)
 
   if not isSomething(errorMaybe)
     @_givenShape = shape.toLowerCase()
@@ -228,7 +191,7 @@ setShape = (shape) ->
 # (Number) => Maybe[String]
 setSize = (size) ->
 
-  errorMaybe = validateNumber(size)
+  errorMaybe = validate.number(size)
 
   if not isSomething(errorMaybe)
     @_size = size
@@ -239,7 +202,7 @@ setSize = (size) ->
 # (String) => Maybe[String]
 setPenMode = (mode) ->
 
-  errorMaybe = validateString(mode)
+  errorMaybe = validate.string(mode)
 
   if not isSomething(errorMaybe)
     @penManager.setPenMode(mode)
@@ -249,7 +212,7 @@ setPenMode = (mode) ->
 # (Number) => Maybe[String]
 setPenSize = (size) ->
 
-  errorMaybe = validateNumber(size)
+  errorMaybe = validate.number(size)
 
   if not isSomething(errorMaybe)
     @penManager.setSize(size)

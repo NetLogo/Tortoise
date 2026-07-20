@@ -19,16 +19,14 @@ genSetter = (getSelf, validator) -> (name, mappings) ->
     )(turtle.setIfValid(name, value))
     return
 
-# Every error a setter can hand back, and the message it becomes.  One table serves every variable: a setter only
-# ever produces the errors it validates, so `size` can't emit an rgb error any more than `color` can.
-# -Jeremy B July 2026
-typeErrorMappings = [ ["Invalid number type" , "can't set _ variable _ to non-number _"]
-                    , ["Invalid string type" , "can't set _ variable _ to non-string _"]
-                    , ["Invalid boolean type", "can't set _ variable _ to non-boolean _"]
-                    , ["Invalid color type"  , "can't set _ variable _ to non-number _"]
-                    , ["Invalid RGB format"  , "An rgb list must contain 3 or 4 numbers 0-255"]
-                    , ["Invalid RGB number"  , "RGB values must be 0-255"]
-                    ]
+typeErrorMappings = [
+  ["Invalid number type" , "can't set _ variable _ to non-number _"]
+, ["Invalid string type" , "can't set _ variable _ to non-string _"]
+, ["Invalid boolean type", "can't set _ variable _ to non-boolean _"]
+, ["Invalid color type"  , "can't set _ variable _ to non-number _"]
+, ["Invalid RGB format"  , "An rgb list must contain 3 or 4 numbers 0-255"]
+, ["Invalid RGB number"  , "RGB values must be 0-255"]
+]
 
 class TurtleChecks
 

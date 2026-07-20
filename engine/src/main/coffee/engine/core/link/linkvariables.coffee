@@ -2,49 +2,17 @@
 
 { maybe, None, isSomething } = require('brazierjs/maybe')
 
-ColorModel = require('engine/core/colormodel')
-{ checks } = require('engine/core/typechecker')
+ColorModel           = require('engine/core/colormodel')
+{ checks, validate } = require('engine/core/typechecker')
 
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
 
 { exceptionFactory: exceptions } = require('util/exception')
 
-# (Number|RGB|RGBA) => Maybe[String]
-validateColor = (color) ->
-
-  hasBadLength    = (xs) -> xs.length isnt 3 and xs.length isnt 4
-  isBadCompNumber = (x) -> not (0 <= x <= 255)
-  isBadCompType   = (x) -> not checks.isNumber(x)
-
-  if checks.isList(color) and (hasBadLength(color) or color.some(isBadCompType))
-    maybe("Invalid RGB format")
-  else if checks.isList(color) and (color.some(isBadCompNumber))
-    maybe("Invalid RGB number")
-  else if not checks.isList(color) and not checks.isNumber(color)
-    # See the matching note in `turtlevariables.coffee`: a non-number became `NaN` here and crashed the view.
-    maybe("Invalid color type")
-  else
-    None
-
-# See the matching note in `turtlevariables.coffee`.  -Jeremy B July 2026
-
-# (Any) => Maybe[String]
-validateNumber = (value) ->
-  if checks.isNumber(value) then None else maybe("Invalid number type")
-
-# (Any) => Maybe[String]
-validateString = (value) ->
-  if checks.isString(value) then None else maybe("Invalid string type")
-
-# (Any) => Maybe[String]
-validateBoolean = (value) ->
-  if checks.isBoolean(value) then None else maybe("Invalid boolean type")
-
-# Only the type is checked; see the matching note in `turtlevariables.coffee` about the shape list living in the view.
 # (String) => Maybe[String]
 setShape = (shape) ->
 
-  errorMaybe = validateString(shape)
+  errorMaybe = validate.string(shape)
 
   if not isSomething(errorMaybe)
     @_shape = shape.toLowerCase()
@@ -67,7 +35,6 @@ setBreed = (breed) ->
     else
       breed
 
-  # See the matching guard in `turtlevariables.coffee`: without it a non-breed reached `trueBreed.add(this)` below.
   if not trueBreed?.add?
     throw exceptions.runtime("You can't set BREED to a non-link-breed agentset.", "set")
 
@@ -96,7 +63,7 @@ setBreed = (breed) ->
 # (Number|RGB|RGBA) => Maybe[String]
 setColor = (color) ->
 
-  errorMaybe = validateColor(color)
+  errorMaybe = validate.color(color)
 
   if not isSomething(errorMaybe)
     @_color = ColorModel.wrapColor(color)
@@ -104,10 +71,6 @@ setColor = (color) ->
 
   errorMaybe
 
-# A link's endpoints are fixed once it's created, as they are on desktop ("you can't change a link's endpoints" --
-# `Link.java`).  Assigning them left the link pointing at whatever it was given: a turtle from a file's `end1` column
-# would be a string, and the view then looked the turtle up by it and drew `undefined`.  Nothing in the engine sets
-# these -- a link's ends are assigned directly at construction.  -Jeremy B July 2026
 # (Turtle) => Maybe[String]
 setEnd1 = (turtle) ->
   maybe("Cannot change endpoints")
@@ -119,7 +82,7 @@ setEnd2 = (turtle) ->
 # (Boolean) => Maybe[String]
 setIsHidden = (isHidden) ->
 
-  errorMaybe = validateBoolean(isHidden)
+  errorMaybe = validate.boolean(isHidden)
 
   if not isSomething(errorMaybe)
     @_isHidden = isHidden
@@ -136,7 +99,7 @@ setLabel = (label) ->
 # (Number|RGB|RGBA) => Maybe[String]
 setLabelColor = (color) ->
 
-  errorMaybe = validateColor(color)
+  errorMaybe = validate.color(color)
 
   if not isSomething(errorMaybe)
     @_labelcolor = ColorModel.wrapColor(color)
@@ -147,7 +110,7 @@ setLabelColor = (color) ->
 # (Number) => Maybe[String]
 setThickness = (thickness) ->
 
-  errorMaybe = validateNumber(thickness)
+  errorMaybe = validate.number(thickness)
 
   if not isSomething(errorMaybe)
     @_thickness = thickness
@@ -158,7 +121,7 @@ setThickness = (thickness) ->
 # (String) => Maybe[String]
 setTieMode = (mode) ->
 
-  errorMaybe = validateString(mode)
+  errorMaybe = validate.string(mode)
 
   if not isSomething(errorMaybe)
     @tiemode = mode

@@ -11,7 +11,6 @@ genSetter = (getSelf, validator) -> (name, mappings) ->
     fold(->)(
       (error) =>
         msg         = mappings.get(error)
-        # Messages that name the offending value need these; the rgb ones ignore them.
         environment = { myType: "link", varName: name, target: value }
         defaultMsg  = "An unknown error occurred when setting the '#{name}' of \
 '#{link}': #{error}"
@@ -28,7 +27,6 @@ class LinkChecks
 
     @_setterChecks = new Map()
 
-    # See the matching table in `turtle-checks`; links add their endpoints, which can't be reassigned at all.
     setterMappings = new Map(
       [ ["Invalid number type" , "can't set _ variable _ to non-number _"]
       , ["Invalid string type" , "can't set _ variable _ to non-string _"]
