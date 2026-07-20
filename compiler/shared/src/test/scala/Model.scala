@@ -272,7 +272,7 @@ object Model {
       path = "models/Sample Models/Chemistry & Physics/Ising.nlogox",
       dimensions = Some((-10, 10, -10, 10)),
       setup = "setup",
-      repetitions = 10
+      repetitions = 150
     ),
     Model(
       path = "models/Sample Models/Biology/Evolution/Genetic Drift/GenDrift P global.nlogox",
