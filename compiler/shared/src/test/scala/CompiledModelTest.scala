@@ -115,7 +115,7 @@ class CompiledModelTest extends AnyFunSuite {
     val genJS         = (codeToModel                                                  andThen
                         ((m: CModel) => compiler.compileProcedures(m)(using compilerFlags)) andThen
                         compiler.toJS)(_)
-    val genValidation = (code: String) => CompiledModel.fromCode(code, compiler)(using compilerFlags) map (_.compiledCode)
+    val genValidation = (code: String) => CompiledModel.fromCode(None, code, compiler)(using compilerFlags) map (_.compiledCode)
 
     runTest(modelCode, genJS, genValidation)
 
@@ -155,10 +155,10 @@ class CompiledModelTest extends AnyFunSuite {
   }
 
   private def unsafeGenModelFromCode(code: String): CompiledModel =
-    CompiledModel.fromCode(code, compiler).valueOr( (e) => throw e.head )
+    CompiledModel.fromCode(None, code, compiler).valueOr( (e) => throw e.head )
 
   private val codeToModel = (code: String) =>
-    CModel(code, List(View.square(16)))
+    CModel(None, code, List(View.square(16)))
 
   private val badCodeCompiled = (code: String, expected: String) =>
     s"""Bad test: This code should not have compiled

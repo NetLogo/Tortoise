@@ -96,6 +96,7 @@ object TestUtilities {
     val linkShape = JsonLinkShape("custom2", 1.0, Seq(linkLine, linkLine, linkLine), vectorShape)
     val textResource = ExternalResource("text-resource-1", "txt", "How many plums per pound of pumpernickle per provided plate perchance?")
     CModel(
+      title        = Some("validModel"),
       code         = "to foo fd 1 end",
       widgets      = List(View()),
       info         = "some model info here",
@@ -276,8 +277,9 @@ Line -7500403 true 150 150 210 180
 """
 
   val xmlFormatContents = """<?xml version="1.0" encoding="utf-8" ?>
-<model version="NetLogo 6.4.0">
-  <code>to setup
+<model version="NetLogo 7.1.0-internal1">
+  <code><![CDATA[
+to setup
   clear-all
   set-default-shape turtles "circle"
   draw-walls
@@ -331,18 +333,21 @@ end
 
 ; Public Domain:
 ; To the extent possible under law, Uri Wilensky has waived all
-; copyright and related or neighboring rights to this model.</code>
+; copyright and related or neighboring rights to this model.
+]]></code>
   <widgets>
     <view x="175" wrappingAllowedX="false" y="10" frameRate="30" minPycor="-20" height="337" showTickCounter="true" patchSize="8" fontSize="10" wrappingAllowedY="false" width="336" tickCounterLabel="ticks" maxPycor="20" updateMode="1" maxPxcor="20" minPxcor="-20"></view>
     <button x="17" y="51" height="33" disableUntilTicks="false" forever="false" kind="Observer" width="58" sizeVersion="0">setup</button>
     <button x="88" y="51" height="33" disableUntilTicks="true" forever="true" kind="Observer" display="go" width="55" sizeVersion="0">go</button>
     <switch x="18" y="105" height="33" on="false" variable="leave-trace?" display="leave-trace?" width="129" sizeVersion="0"></switch>
   </widgets>
-  <info><![CDATA[## WHAT IS IT?
+  <info><![CDATA[
+## WHAT IS IT?
 
 This demo shows how to make turtles bounce off the walls.
 
-<!-- 2004 -->]]></info>
+<!-- 2004 -->
+]]></info>
   <turtleShapes>
     <shape name="default" rotatable="true" editableColorIndex="0">
       <polygon color="-1920102913" filled="true" marked="true">

@@ -133,7 +133,7 @@ class Compiler {
       frontEnd.frontEnd(
           logo
         , program          = program
-        , oldProcedures    = oldProcedures.filter({ case (name, _) => !overriding.contains(name) })
+        , oldProcedures    = oldProcedures.filter({ case ((name, _), _) => !overriding.contains(name) })
         , extensionManager = extensionManager
         , subprogram       = false
       )

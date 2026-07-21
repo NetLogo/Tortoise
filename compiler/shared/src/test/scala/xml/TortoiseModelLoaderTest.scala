@@ -196,7 +196,7 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
   }
 
   val simpleModelSource = """<?xml version="1.0" encoding="utf-8"?>
-<model version="NetLogo 7.0.0-beta2">
+<model version="NetLogo 7.0.0-beta2" title="hello-model">
   <code><![CDATA[to setup end <xml-tags-don't-matter-here></xml>]]></code>
   <widgets>
     <view x="455" wrappingAllowedX="true" y="10" frameRate="30.0" minPycor="-25" height="564" showTickCounter="true" patchSize="10.9804" fontSize="14" wrappingAllowedY="true" width="564" tickCounterLabel="ticks" maxPycor="25" updateMode="1" maxPxcor="25" minPxcor="-25"></view>
@@ -212,7 +212,7 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
 
   test("TortoiseModelLoader reads very simple model") {
     val model = TortoiseModelLoader.read(simpleModelSource).get
-    val expected = new Model("to setup end <xml-tags-don't-matter-here></xml>",
+    val expected = new Model(Some("hello-model"), "to setup end <xml-tags-don't-matter-here></xml>",
       Seq(
         View(455, 10, 564, 564, WorldDimensions(-25, 25, -25, 25, 10.9804, true, true), 14),
         Button(Some("go"), 180, 145, 95, 40, display = Some("go & < > \""), forever = true, disableUntilTicksStart = true)
@@ -227,13 +227,17 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
     val writtenSource = TortoiseModelLoader.write(model)
 
     val expected = """<?xml version="1.0" encoding="utf-8" ?>
-<model version="NetLogo 7.0.0-beta2" snapToGrid="false">
-  <code><![CDATA[to setup end <xml-tags-don't-matter-here></xml>]]></code>
+<model version="NetLogo 7.0.0-beta2" title="hello-model" snapToGrid="false">
+  <code><![CDATA[
+to setup end <xml-tags-don't-matter-here></xml>
+]]></code>
   <widgets>
     <view x="455" wrappingAllowedX="true" y="10" frameRate="30.0" minPycor="-25" height="564" showTickCounter="true" patchSize="10.9804" fontSize="14" wrappingAllowedY="true" width="564" tickCounterLabel="ticks" maxPycor="25" updateMode="1" maxPxcor="25" minPxcor="-25"></view>
     <button x="180" y="145" height="40" disableUntilTicks="true" forever="true" kind="Observer" width="95" display="go &amp; &lt; &gt; &quot;">go</button>
   </widgets>
-  <info><![CDATA[# Hello! <h1> <h2> </p>]]></info>
+  <info><![CDATA[
+# Hello! <h1> <h2> </p>
+]]></info>
   <turtleShapes></turtleShapes>
   <linkShapes></linkShapes>
   <unexpectedSection><![CDATA[Who knows what <evil> lurks in the CDATA sections of unexpected XML elements?]]></unexpectedSection>
