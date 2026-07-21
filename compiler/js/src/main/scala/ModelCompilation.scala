@@ -9,6 +9,7 @@ import scalaz.{ ValidationNel, Scalaz },
 
 case class ModelCompilation(
   model:     ValidationNel[TortoiseFailure, CompiledModel],
+  title:     Option[String],
   code:      String,
   info:      String,
   widgets:   Seq[CompiledWidget],
@@ -20,6 +21,7 @@ object ModelCompilation {
   def fromCompiledModel(compiledModel: CompiledModel): ModelCompilation =
     ModelCompilation(
       compiledModel.successNel,
+      compiledModel.model.title,
       compiledModel.model.code,
       compiledModel.model.info,
       compiledModel.widgets

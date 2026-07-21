@@ -77,7 +77,9 @@ object TestUtilities {
     modelToCompilationRequest(model, fields())
 
   def modelToCompilationRequest(model: CModel, additionalFields: ListMap[String, TortoiseJson]): NativeJson = {
+    val titleField = model.title.map( (t) => fields("title" -> JsString(t)) ).getOrElse(fields())
     val reqObj = JsObject(
+      titleField ++
       fields(
         "code"         -> JsString(model.code),
         "info"         -> JsString(model.info),

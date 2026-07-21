@@ -72,6 +72,7 @@ object ExportRequest extends RequestSharedImplicits {
 }
 
 case class CompilationRequest(
+  title:        Option[String],
   code:         String,
   info:         Option[String],
   version:      Option[String],
@@ -88,6 +89,7 @@ case class CompilationRequest(
 
   def toModel: Model =
     Model(
+      title        = title,
       code         = code,
       widgets      = widgets.toList,
       info         = info                       getOrElse "",

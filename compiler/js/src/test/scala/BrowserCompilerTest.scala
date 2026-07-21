@@ -56,6 +56,16 @@ object BrowserCompilerTest extends TestSuite {
       assert(compileModel(validModel)[String]("code") == "to foo fd 1 end")
     }
 
+    "testModelHasTitle"-{
+      assert(compileModel(validModel)[String]("title") == "validModel")
+    }
+
+    "testModelOmitsAbsentTitle"-{
+      val compiled = compileModel(validModel.copy(title = None))
+      assert(isSuccess(compiled))
+      assert(!compiled.props.contains("title"))
+    }
+
     "testModelHasResult"-{
       assert(compiledJs(compileModel(validModel)).contains("foo"))
     }
