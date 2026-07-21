@@ -16,13 +16,14 @@ import org.nlogo.tortoise.compiler.ExportRequest._
 implicit object ExportRequestReader extends JsonReader[TortoiseJson.JsObject, org.nlogo.tortoise.compiler.ExportRequest] {
   def apply(jsObject: TortoiseJson.JsObject): ValidationNel[String, org.nlogo.tortoise.compiler.ExportRequest] = {
 
-    val v0 = JsonReader.readField[scala.Predef.String](jsObject, "code")
-    val v1 = JsonReader.readField[scala.Option[scala.Predef.String]](jsObject, "info")
-    val v2 = JsonReader.readField[scala.collection.immutable.Seq[org.nlogo.core.Widget]](jsObject, "widgets")
-    val v3 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.Shape.VectorShape]]](jsObject, "turtleShapes")
-    val v4 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.Shape.LinkShape]]](jsObject, "linkShapes")
-    val v5 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.ExternalResource]]](jsObject, "resources")
-    val v6 = JsonReader.readField[scala.Option[scala.Predef.String]](jsObject, "version")
+    val v0 = JsonReader.readField[scala.Option[scala.Predef.String]](jsObject, "title")
+    val v1 = JsonReader.readField[scala.Predef.String](jsObject, "code")
+    val v2 = JsonReader.readField[scala.Option[scala.Predef.String]](jsObject, "info")
+    val v3 = JsonReader.readField[scala.collection.immutable.Seq[org.nlogo.core.Widget]](jsObject, "widgets")
+    val v4 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.Shape.VectorShape]]](jsObject, "turtleShapes")
+    val v5 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.Shape.LinkShape]]](jsObject, "linkShapes")
+    val v6 = JsonReader.readField[scala.Option[scala.collection.immutable.Seq[org.nlogo.core.ExternalResource]]](jsObject, "resources")
+    val v7 = JsonReader.readField[scala.Option[scala.Predef.String]](jsObject, "version")
 
     val result =
       v0.flatMap(
@@ -31,9 +32,11 @@ implicit object ExportRequestReader extends JsonReader[TortoiseJson.JsObject, or
             (c2) => v3.flatMap(
               (c3) => v4.flatMap(
                 (c4) => v5.flatMap(
-                  (c5) => v6.map(
-                    (c6) =>
-                      new org.nlogo.tortoise.compiler.ExportRequest(c0, c1, c2, c3, c4, c5, c6)
+                  (c5) => v6.flatMap(
+                    (c6) => v7.map(
+                      (c7) =>
+                        new org.nlogo.tortoise.compiler.ExportRequest(c0, c1, c2, c3, c4, c5, c6, c7)
+                    )
                   )
                 )
               )

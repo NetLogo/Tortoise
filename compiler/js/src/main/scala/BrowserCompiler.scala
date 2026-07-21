@@ -101,7 +101,9 @@ class BrowserCompiler {
   @JSExport
   def convertNlogoToXML(contents: String): NativeJson = {
     val compileResult = CompiledModel.fromNlogoContents(contents, compiler)
-    val xmlResult     = compileResult.map( (c) => { TortoiseModelLoader.write(c.model) })
+    val xmlResult     = compileResult.map( (c) => {
+      TortoiseModelLoader.write(c.model.copy(version = ExportRequest.NlogoFileVersion))
+    })
     val xmlTortoiseErrorsResult = xmlResult.leftMap(_.map {
       case e: CompilerException => FailureCompilerException(e): TortoiseFailure
       case e: Exception         => FailureException        (e): TortoiseFailure

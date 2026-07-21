@@ -69,9 +69,9 @@ class SimpleXMLWriter extends NLogoXMLWriter {
     text.flatMap( (c) => escapes.getOrElse(c, c).toString )
   }
 
-  def escapedText(text: String): Unit = {
+  def escapedText(text: String, force: Boolean = false): Unit = {
     maybeCloseAttributes()
-    if (text.contains('<') || text.contains('>') || text.contains('&'))
+    if (force || text.contains('<') || text.contains('>') || text.contains('&'))
       val cdataText = "]]>".r.replaceAllIn(text, s"]]${XMLElement.CDataEscape}>")
       builder.append(s"<![CDATA[$cdataText]]>")
     else

@@ -2,9 +2,9 @@ import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import sbtcrossproject.CrossProject
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 
-val nlDependencyVersion       = "7.0.4-dd5baf4"
+val nlDependencyVersion       = "7.1.0-internal1-7fd3f1b"
 
-val parserJsDependencyVersion = "0.4.0-dd5baf4"
+val parserJsDependencyVersion = "0.4.0-7fd3f1b"
 
 val scalazVersion             = "7.2.36"
 

@@ -86,9 +86,9 @@ object CompiledModel {
     validation.leftMap(_.map(ex => ex: Exception))
   }
 
-  def fromCode(netlogoCode: String, compiler: Compiler)
+  def fromCode(title: Option[String], netlogoCode: String, compiler: Compiler)
     (implicit compilerFlags: CompilerFlags): CompiledModelV =
-    fromModel(Model(netlogoCode, List(View.square(DefaultViewSize))), compiler)
+    fromModel(Model(title, netlogoCode, List(View.square(DefaultViewSize))), compiler)
 
   def fromCompiledModel(netlogoCode: String, oldModel: CompiledModel)
     (implicit compilerFlags: CompilerFlags): CompiledModelV = {

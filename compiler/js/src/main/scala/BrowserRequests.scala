@@ -11,6 +11,7 @@ import org.nlogo.core.{ ExternalResource, Model, Shape, Widget }
 import Shape.{ LinkShape, VectorShape }
 
 case class ExportRequest(
+  title:        Option[String],
   code:         String,
   info:         Option[String],
   widgets:      Seq[Widget],
@@ -21,6 +22,7 @@ case class ExportRequest(
 ) {
   def toModel: Model =
     Model(
+      title        = title,
       code         = code,
       widgets      = widgets.toList,
       info         = info                       getOrElse "",
@@ -66,7 +68,7 @@ private[tortoise] trait RequestSharedImplicits {
 
 object ExportRequest extends RequestSharedImplicits {
   val read = ExportRequestReader
-  final val NlogoFileVersion = "NetLogo 7.0.4"
+  final val NlogoFileVersion = "NetLogo 7.1.0-internal1"
 }
 
 case class CompilationRequest(
