@@ -451,7 +451,7 @@ object BrowserCompiler {
     // the CompiledModel result so we can avoid looking at 5 different success keys
     JsonWriter.convert(
       modelCompilationV.fold(
-      errors => ModelCompilation(model = errors.failure, "", "", Seq()),
+      errors => ModelCompilation(model = errors.failure, None, "", "", Seq()),
       success => success))
 
   implicit def exportResult2Json(exportResult: ValidationNel[TortoiseFailure, String]): JsonWritable =
