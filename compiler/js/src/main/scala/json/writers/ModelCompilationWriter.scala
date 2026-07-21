@@ -13,6 +13,7 @@ implicit object ModelCompilationWriter extends JsonWriter[org.nlogo.tortoise.com
   def apply(o: org.nlogo.tortoise.compiler.ModelCompilation): TortoiseJson.JsObject = {
     val map = ListMap(
       ("model" -> org.nlogo.tortoise.compiler.BrowserCompiler.modelCompilationNel2Json.write(o.model)),
+      ("title" -> org.nlogo.tortoise.compiler.json.WidgetWrite.stringOption2Json.write(o.title)),
       ("code" -> org.nlogo.tortoise.compiler.json.JsonWriter.string2TortoiseJs.write(o.code)),
       ("info" -> org.nlogo.tortoise.compiler.json.JsonWriter.string2TortoiseJs.write(o.info)),
       ("widgets" -> org.nlogo.tortoise.compiler.BrowserCompiler.compiledWidgets2JsonString.write(o.widgets)),
