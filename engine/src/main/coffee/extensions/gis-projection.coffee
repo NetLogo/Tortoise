@@ -13,9 +13,14 @@ JSTS = require('jsts/dist/jsts.min.js')
 
 TWO_PI             = Math.PI * 2.0
 HALF_PI            = Math.PI / 2.0
+QUARTER_PI         = Math.PI / 4.0
 THREE_QUARTERS_PI  = (3.0 * Math.PI) / 4.0
 EPSILON            = 1.567855942887398e-7
 DEGREES_TO_RADIANS = Math.PI / 180.0
+
+# (Number) => Number — GeometryUtils.sinh/asinh
+sinh  = (z) -> (Math.exp(z) - Math.exp(-z)) / 2.0
+asinh = (z) -> Math.log(z + Math.sqrt(1.0 + (z * z)))
 
 # (Number) => Number
 wrapLongitude = (lon) ->
@@ -324,6 +329,518 @@ class LambertConformalConic extends Conic
         wrapLongitude(@lambda0 + thetaOverN)
     new Coordinate(lon, lat)
 
+class AlbersEqualAreaConic extends Conic
+  # (Ellipsoid, ProjectionParameters)
+  constructor: (ellipsoid, params) ->
+    super(ellipsoid, params)
+    e2 = @e2
+    @e = Math.sqrt(e2)
+    m1 = Math.cos(@phi1) / Math.sqrt(1.0 - e2 * Math.sin(@phi1) * Math.sin(@phi1))
+    m2 = Math.cos(@phi2) / Math.sqrt(1.0 - e2 * Math.sin(@phi2) * Math.sin(@phi2))
+    q0 = @getQ(@phi0)
+    q1 = @getQ(@phi1)
+    q2 = @getQ(@phi2)
+    @n = (m1 * m1 - m2 * m2) / (q2 - q1)
+    @C = m1 * m1 + @n * q1
+    @rho0 = @a * Math.sqrt(@C - (@n * q0)) / @n
+    @subBeta = 1.0 - (((1.0 - e2) / (2.0 * @e)) * Math.log((1.0 - @e) / (1.0 + @e)))
+    @subPhi = [
+      (e2 / 3.0) + (31.0 * e2 * e2 / 180.0) + (517.0 * e2 * e2 * e2 / 5040.0)
+      (23.0 * e2 * e2 / 360.0) + (251.0 * e2 * e2 * e2 / 3780.0)
+      761.0 * e2 * e2 * e2 / 45360.0
+    ]
+
+  # (Number) => Number — equation 3-12 on p. 101 of Snyder
+  getQ: (phi) ->
+    sinPhi = Math.sin(phi)
+    (1 - @e2) * ((sinPhi / (1.0 - @e2 * sinPhi * sinPhi)) - ((1.0 / (2.0 * @e)) * Math.log((1.0 - @e * sinPhi) / (1.0 + @e * sinPhi))))
+
+  forwardPointRaw: (lon, lat) ->
+    q = @getQ(lat)
+    theta = @n * wrapLongitude(lon - @lambda0)
+    rho = @a * Math.sqrt(@C - (@n * q)) / @n
+    new Coordinate(rho * Math.sin(theta), @rho0 - (rho * Math.cos(theta)))
+
+  inversePointRaw: (x, y) ->
+    rho0minusY = @rho0 - y
+    rho = Math.sqrt(x * x + rho0minusY * rho0minusY)
+    theta = if @n < 0.0 then Math.atan2(-x, -rho0minusY) else Math.atan2(x, rho0minusY)
+    q = (@C - ((rho * rho) * (@n * @n)) / (@a * @a)) / @n
+    beta = Math.asin(q / @subBeta)
+    lat = beta +
+          @subPhi[0] * Math.sin(2.0 * beta) +
+          @subPhi[1] * Math.sin(4.0 * beta) +
+          @subPhi[2] * Math.sin(6.0 * beta)
+    thetaOverN = theta / @n
+    lon = if Math.abs(thetaOverN) > Math.PI then NaN else wrapLongitude(@lambda0 + thetaOverN)
+    new Coordinate(lon, lat)
+
+class EquidistantConic extends Conic
+  # (Ellipsoid, ProjectionParameters)
+  constructor: (ellipsoid, params) ->
+    super(ellipsoid, params)
+    e2 = @e2
+    @subM = [
+      1.0 - (e2 / 4.0) - (3.0 * e2 * e2 / 64.0) - (5.0 * e2 * e2 * e2 / 256.0)
+      (3.0 * e2 / 8.0) + (3.0 * e2 * e2 / 32.0) + (45.0 * e2 * e2 * e2 / 1024.0)
+      (15.0 * e2 * e2 / 256.0) + (45.0 * e2 * e2 * e2 / 1024.0)
+      35.0 * e2 * e2 * e2 / 3072.0
+    ]
+    M0 = @getM(@phi0)
+    m1 = @getm(@phi1)
+    M1 = @getM(@phi1)
+    m2 = @getm(@phi2)
+    @n = @a * ((m1 - m2) / (@getM(@phi2) - M1))
+    @aG = @a * ((m1 / @n) + (M1 / @a))
+    @rho0 = @aG - M0
+    e1 = (1.0 - Math.sqrt(1.0 - e2)) / (1.0 + Math.sqrt(1.0 - e2))
+    @subPhi = [
+      (3.0 * e1 / 2.0) - (27.0 * e1 * e1 * e1 / 32.0)
+      (21.0 * e1 * e1 / 16.0) - (55.0 * e1 * e1 * e1 * e1 / 32.0)
+      151.0 * e1 * e1 * e1 / 96.0
+      1097.0 * e1 * e1 * e1 * e1 / 512.0
+    ]
+
+  # (Number) => Number
+  getm: (phi) ->
+    sinPhi = Math.sin(phi)
+    Math.cos(phi) / Math.sqrt(1.0 - (@e2 * sinPhi * sinPhi))
+
+  # (Number) => Number
+  getM: (phi) ->
+    @a * ((@subM[0] * phi) + (@subM[1] * Math.sin(2.0 * phi)) + (@subM[2] * Math.sin(4.0 * phi)) + (@subM[3] * Math.sin(6.0 * phi)))
+
+  forwardPointRaw: (lon, lat) ->
+    rho = @aG - @getM(lat)
+    theta = @n * wrapLongitude(lon - @lambda0)
+    new Coordinate(rho * Math.sin(theta), @rho0 - (rho * Math.cos(theta)))
+
+  inversePointRaw: (x, y) ->
+    rho0minusY = @rho0 - y
+    rho = Math.sqrt((x * x) + (rho0minusY * rho0minusY)) * sign(@n)
+    M = @aG - rho
+    mu = M / (@a * @subM[0])
+    theta = if @n < 0.0 then Math.atan2(-x, -rho0minusY) else Math.atan2(x, rho0minusY)
+    lat = mu +
+          (@subPhi[0] * Math.sin(2.0 * mu)) +
+          (@subPhi[1] * Math.sin(4.0 * mu)) +
+          (@subPhi[2] * Math.sin(6.0 * mu)) +
+          (@subPhi[3] * Math.sin(8.0 * mu))
+    thetaOverN = theta / @n
+    lon = if Math.abs(thetaOverN) > Math.PI then NaN else wrapLongitude(@lambda0 + thetaOverN)
+    new Coordinate(lon, lat)
+
+# Base of all azimuthal projections; the clipping hemisphere is centered on the
+# projection center
+class Azimuthal extends HemisphericalProjection
+  # (Ellipsoid, ProjectionParameters)
+  constructor: (ellipsoid, params) ->
+    super(ellipsoid, params)
+    @sinPhi0 = Math.sin(@phi0)
+    @cosPhi0 = Math.cos(@phi0)
+    @hemisphereCenter = new Coordinate(@lambda0, @phi0)
+
+  getHemisphereCenter: -> @hemisphereCenter
+
+class AzimuthalEqualArea extends Azimuthal
+  # (Ellipsoid, ProjectionParameters)
+  constructor: (ellipsoid, params) ->
+    super(ellipsoid, params)
+    e2 = @e2
+    @e = Math.sqrt(e2)
+    @qp = (1.0 - e2) * ((1.0 / (1.0 - e2)) - ((1 / (2.0 * @e)) * Math.log((1.0 - @e) / (1.0 + @e))))
+    @Rq = @a * Math.sqrt(@qp / 2.0)
+    sinPhi1 = Math.sin(@phi0)
+    cosPhi1 = Math.cos(@phi0)
+    q1 = (1.0 - e2) * ((sinPhi1 / (1.0 - (e2 * sinPhi1 * sinPhi1))) - ((1 / (2.0 * @e)) * Math.log((1.0 - @e * sinPhi1) / (1.0 + (@e * sinPhi1)))))
+    beta1 = Math.asin(q1 / @qp)
+    @sinBeta1 = Math.sin(beta1)
+    @cosBeta1 = Math.cos(beta1)
+    m1 = cosPhi1 / Math.sqrt(1.0 - (e2 * sinPhi1 * sinPhi1))
+    @D = @a * m1 / (@Rq * @cosBeta1)
+    @subPhi = [
+      (e2 / 3.0) + (31.0 * e2 * e2 / 180.0) + (517.0 * e2 * e2 * e2 / 5040.0)
+      (23.0 * e2 * e2 / 360.0) + (251 * e2 * e2 * e2 / 3780.0)
+      761 * e2 * e2 * e2 / 45360.0
+    ]
+
+  getMaxC: -> HALF_PI
+
+  forwardPointRaw: (lambda, phi) ->
+    sinPhi = Math.sin(phi)
+    q = (1.0 - @e2) * ((sinPhi / (1.0 - (@e2 * sinPhi * sinPhi))) - ((1 / (2.0 * @e)) * Math.log((1.0 - @e * sinPhi) / (1.0 + (@e * sinPhi)))))
+    beta = Math.asin(q / @qp)
+    dLon = wrapLongitude(lambda - @lambda0)
+    B = @Rq * Math.sqrt(2.0 / (1.0 + (@sinBeta1 * Math.sin(beta)) + (@cosBeta1 * Math.cos(beta) * Math.cos(dLon))))
+    x = B * @D * Math.cos(beta) * Math.sin(dLon)
+    y = (B / @D) * ((@cosBeta1 * Math.sin(beta)) - (@sinBeta1 * Math.cos(beta) * Math.cos(dLon)))
+    new Coordinate(x, y)
+
+  inversePointRaw: (x, y) ->
+    rho = Math.sqrt((x / @D) * (x / @D) + (@D * y * @D * y))
+    if rho is 0.0
+      new Coordinate(@lambda0, @phi0)
+    else
+      ce = 2.0 * Math.asin(rho / (2.0 * @Rq))
+      beta = Math.asin(Math.cos(ce) * @sinBeta1 + (@D * y * Math.sin(ce) * @cosBeta1 / rho))
+      lat = beta + (@subPhi[0] * Math.sin(2.0 * beta)) + (@subPhi[1] * Math.sin(4.0 * beta)) + (@subPhi[2] * Math.sin(6.0 * beta))
+      lon = @lambda0 + Math.atan2(x * Math.sin(ce), @D * rho * @cosBeta1 * Math.cos(ce) - @D * @D * y * @sinBeta1 * Math.sin(ce))
+      new Coordinate(lon, lat)
+
+class AzimuthalEquidistant extends Azimuthal
+  getMaxC: -> Math.PI - QUARTER_PI
+
+  forwardPointRaw: (lon, lat) ->
+    dLon = wrapLongitude(lon - @lambda0)
+    cosC = @sinPhi0 * Math.sin(lat) + @cosPhi0 * Math.cos(lat) * Math.cos(dLon)
+    if cosC is 1.0
+      new Coordinate(0.0, 0.0)
+    else
+      c = Math.acos(cosC)
+      kPrime = c / Math.sin(c)
+      x = @a * kPrime * Math.cos(lat) * Math.sin(dLon)
+      y = @a * kPrime * (@cosPhi0 * Math.sin(lat) - @sinPhi0 * Math.cos(lat) * Math.cos(dLon))
+      new Coordinate(x, y)
+
+  inversePointRaw: (x, y) ->
+    rho = Math.sqrt(x * x + y * y)
+    if rho is 0.0
+      new Coordinate(@lambda0, @phi0)
+    else
+      c = rho / @a
+      lat = Math.asin(Math.cos(c) * @sinPhi0 + (y * Math.sin(c) * @cosPhi0 / rho))
+      lon = @lambda0 + Math.atan2(x * Math.sin(c), ((rho * @cosPhi0 * Math.cos(c)) - (y * @sinPhi0 * Math.sin(c))))
+      new Coordinate(lon, lat)
+
+class Gnomonic extends Azimuthal
+  getMaxC: -> 1.396 # 80 degrees, expressed in radians
+
+  forwardPointRaw: (lon, lat) ->
+    sinPhi = Math.sin(lat)
+    cosPhi = Math.cos(lat)
+    kPrime = 1 / (@sinPhi0 * sinPhi + @cosPhi0 * cosPhi * Math.cos(lon - @lambda0))
+    x = @a * kPrime * cosPhi * Math.sin(lon - @lambda0)
+    y = @a * kPrime * (@cosPhi0 * sinPhi - @sinPhi0 * cosPhi * Math.cos(lon - @lambda0))
+    new Coordinate(x, y)
+
+  inversePointRaw: (x, y) ->
+    rho = Math.sqrt(x * x + y * y)
+    if rho is 0.0
+      new Coordinate(@lambda0, @phi0)
+    else
+      c = Math.atan(rho / @a)
+      sinC = Math.sin(c)
+      cosC = Math.cos(c)
+      lon =
+        if @phi0 is HALF_PI
+          @lambda0 + Math.atan(x / -y)
+        else if @phi0 is -HALF_PI
+          @lambda0 + Math.atan(x / y)
+        else
+          @lambda0 + Math.atan(x * sinC / (rho * @cosPhi0 * cosC - y * @sinPhi0 * sinC))
+      lat = Math.asin(cosC * @sinPhi0 + (y * sinC * @cosPhi0 / rho))
+      new Coordinate(lon, lat)
+
+class Orthographic extends Azimuthal
+  getMaxC: -> HALF_PI
+
+  forwardPointRaw: (lon, lat) ->
+    x = @a * Math.cos(lat) * Math.sin(lon - @lambda0)
+    y = @a * (@cosPhi0 * Math.sin(lat) - @sinPhi0 * Math.cos(lat) * Math.cos(lon - @lambda0))
+    new Coordinate(x, y)
+
+  inversePointRaw: (x, y) ->
+    rho = Math.sqrt(x * x + y * y)
+    if rho is 0.0
+      new Coordinate(@lambda0, @phi0)
+    else
+      c = Math.asin(rho / @a)
+      sinC = Math.sin(c)
+      cosC = Math.cos(c)
+      lon =
+        if @phi0 is HALF_PI
+          @lambda0 + Math.atan2(x, -y)
+        else if @phi0 is -HALF_PI
+          @lambda0 + Math.atan2(x, y)
+        else
+          wrapLongitude(@lambda0 + Math.atan2(x * sinC, rho * @cosPhi0 * cosC - y * @sinPhi0 * sinC))
+      lat = Math.asin(cosC * @sinPhi0 + (y * sinC * @cosPhi0 / rho))
+      new Coordinate(lon, lat)
+
+class Stereographic extends Azimuthal
+  # (Ellipsoid, ProjectionParameters)
+  constructor: (ellipsoid, params) ->
+    super(ellipsoid, params)
+    @k0 = params.getDimensionless("scale_factor")
+
+  getMaxC: -> HALF_PI
+
+  forwardPointRaw: (lon, lat) ->
+    sinPhi = Math.sin(lat)
+    cosPhi = Math.cos(lat)
+    cosLonMinusLambda0 = Math.cos(lon - @lambda0)
+    k = 2.0 * @k0 / (1.0 + @sinPhi0 * sinPhi + @cosPhi0 * cosPhi * cosLonMinusLambda0)
+    x = @a * k * cosPhi * Math.sin(lon - @lambda0)
+    y = @a * k * (@cosPhi0 * sinPhi - @sinPhi0 * cosPhi * cosLonMinusLambda0)
+    new Coordinate(x, y)
+
+  inversePointRaw: (x, y) ->
+    rho = Math.sqrt(x * x + y * y)
+    if rho is 0.0
+      new Coordinate(@lambda0, @phi0)
+    else
+      c = 2.0 * Math.atan(rho / (2.0 * @a * @k0))
+      sinC = Math.sin(c)
+      cosC = Math.cos(c)
+      lon =
+        if @phi0 is HALF_PI
+          @lambda0 + Math.atan2(x, -y)
+        else if @phi0 is -HALF_PI
+          @lambda0 + Math.atan2(x, y)
+        else
+          @lambda0 + Math.atan2(x * sinC, (rho * @cosPhi0 * cosC - y * @sinPhi0 * sinC))
+      lat = Math.asin(cosC * @sinPhi0 + (y * sinC * @cosPhi0 / rho))
+      new Coordinate(lon, lat)
+
+class CylindricalEqualArea extends ProjectedProjection
+  # (Ellipsoid, ProjectionParameters)
+  constructor: (ellipsoid, params) ->
+    super(ellipsoid, params)
+    e2 = @e2
+    @e = Math.sqrt(e2)
+    sinPhi0 = Math.sin(@phi0)
+    @k0 = Math.cos(@phi0) / Math.sqrt(1.0 - (e2 * sinPhi0 * sinPhi0))
+    @qp = (1.0 - e2) * ((1.0 / (1.0 - e2)) - (1.0 / (2.0 * @e)) * Math.log((1.0 - @e) / (1.0 + @e)))
+    @subLat = [
+      e2 / 3.0 + 31.0 * e2 * e2 / 180.0 + 517.0 * e2 * e2 * e2 / 5040.0
+      23.0 * e2 * e2 / 360.0 + 251.0 * e2 * e2 * e2 / 3780.0
+      761.0 * e2 * e2 * e2 / 45360.0
+    ]
+
+  forwardPointRaw: (lon, lat) ->
+    x = @a * @k0 * wrapLongitude(lon - @lambda0)
+    sinPhi = Math.sin(lat)
+    q = (1.0 - @e2) * (sinPhi / (1.0 - (@e2 * sinPhi * sinPhi)) - (1.0 / (2.0 * @e)) * Math.log((1.0 - @e * sinPhi) / (1.0 + @e * sinPhi)))
+    y = (@a * q) / (2.0 * @k0)
+    new Coordinate(x, y)
+
+  inversePointRaw: (x, y) ->
+    lon = @lambda0 + (x / (@a * @k0))
+    beta = Math.asin((2.0 * y * @k0) / (@a * @qp))
+    lat = beta +
+          @subLat[0] * Math.sin(2.0 * beta) +
+          @subLat[1] * Math.sin(4.0 * beta) +
+          @subLat[2] * Math.sin(6.0 * beta)
+    new Coordinate(lon, lat)
+
+class Miller extends ProjectedProjection
+  forwardPointRaw: (lon, lat) ->
+    x = @a * wrapLongitude(lon - @lambda0)
+    y = @a * asinh(Math.tan(0.8 * lat)) / 0.8
+    new Coordinate(x, y)
+
+  inversePointRaw: (x, y) ->
+    lon = (x / @a) + @lambda0
+    lat = Math.atan(sinh(0.8 * y / @a)) / 0.8
+    new Coordinate(lon, lat)
+
+# Robinson's lookup table (xlr scaled by 0.9858, per desktop's static initializer)
+ROBINSON_PR = [
+  0.0, -0.062, 0.0, 0.062, 0.124, 0.186, 0.248, 0.31, 0.372, 0.434
+  0.4958, 0.5571, 0.6176, 0.6769, 0.7346, 0.7903, 0.8435, 0.8936, 0.9394, 0.9761, 1.0
+]
+ROBINSON_XLR = [
+  0.0, 0.9986, 1.0, 0.9986, 0.9954, 0.99, 0.9822, 0.973, 0.96, 0.9427
+  0.9216, 0.8962, 0.8679, 0.835, 0.7986, 0.7597, 0.7186, 0.6732, 0.6213, 0.5722, 0.5322
+].map((v) -> v * 0.9858)
+ROBINSON_EPSLN = 0.000001
+
+class Robinson extends ProjectedProjection
+  # (Ellipsoid, ProjectionParameters)
+  constructor: (ellipsoid, params) ->
+    # desktop's Robinson injects latitude_of_center=0 because its data has only a
+    # center longitude, and AbstractProjectedProjection requires a center latitude
+    params.add("latitude_of_center", 0.0)
+    super(ellipsoid, params)
+
+  forwardPointRaw: (lon, lat) ->
+    dlon = wrapLongitude(lon - @lambda0)
+    p2 = Math.abs(lat / 5.0 / 0.01745329252)
+    ip1 = Math.min(Math.floor(p2 - ROBINSON_EPSLN), 17)
+    p2 -= ip1
+    x = @a * (ROBINSON_XLR[ip1 + 2] + p2 * (ROBINSON_XLR[ip1 + 3] - ROBINSON_XLR[ip1 + 1]) / 2.0 + p2 * p2 * (ROBINSON_XLR[ip1 + 3] - 2.0 * ROBINSON_XLR[ip1 + 2] + ROBINSON_XLR[ip1 + 1]) / 2.0) * dlon
+    y = sign(lat) * @a * (ROBINSON_PR[ip1 + 2] + p2 * (ROBINSON_PR[ip1 + 3] - ROBINSON_PR[ip1 + 1]) / 2.0 + p2 * p2 * (ROBINSON_PR[ip1 + 3] - 2.0 * ROBINSON_PR[ip1 + 2] + ROBINSON_PR[ip1 + 1]) / 2.0) * HALF_PI
+    new Coordinate(x, y)
+
+  inversePointRaw: (x, y) ->
+    yy = 2.0 * y / Math.PI / @a
+    phid = yy * 90.0
+    p2 = Math.abs(phid / 5.0)
+    ip1 = Math.floor(p2 - ROBINSON_EPSLN)
+    if ip1 >= 18
+      return new Coordinate(NaN, NaN)
+    ip1 = 1 if ip1 is 0
+    i = 0
+    loop
+      u = ROBINSON_PR[ip1 + 3] - ROBINSON_PR[ip1 + 1]
+      v = ROBINSON_PR[ip1 + 3] - 2.0 * ROBINSON_PR[ip1 + 2] + ROBINSON_PR[ip1 + 1]
+      t = 2.0 * (Math.abs(yy) - ROBINSON_PR[ip1 + 2]) / u
+      c = v / u
+      p2 = t * (1.0 - c * t * (1.0 - 2.0 * c * t))
+      if (p2 >= 0.0) or (ip1 is 1)
+        phid = sign(y) * (p2 + ip1) * 5.0
+        loop
+          p2 = Math.abs(phid / 5.0)
+          ip1 = Math.trunc(p2 - ROBINSON_EPSLN)
+          if ip1 >= 18
+            return new Coordinate(NaN, NaN)
+          p2 -= ip1
+          y1 = sign(y) * @a * (ROBINSON_PR[ip1 + 2] + p2 * (ROBINSON_PR[ip1 + 3] - ROBINSON_PR[ip1 + 1]) / 2.0 + p2 * p2 * (ROBINSON_PR[ip1 + 3] - 2.0 * ROBINSON_PR[ip1 + 2] + ROBINSON_PR[ip1 + 1]) / 2.0) * HALF_PI
+          phid += -180.0 * (y1 - y) / Math.PI / @a
+          i += 1
+          if i > 75
+            throw exceptions.extension("too many iterations in inverse")
+          break unless Math.abs(y1 - y) > 0.00001
+        break
+      else
+        ip1 -= 1
+        if ip1 < 0
+          throw exceptions.extension("too many iterations in inverse")
+    lat = phid * 0.01745329252
+    lon = wrapLongitude(@lambda0 + x / @a / (ROBINSON_XLR[ip1 + 2] + p2 * (ROBINSON_XLR[ip1 + 3] - ROBINSON_XLR[ip1 + 1]) / 2.0 + p2 * p2 * (ROBINSON_XLR[ip1 + 3] - 2.0 * ROBINSON_XLR[ip1 + 2] + ROBINSON_XLR[ip1 + 1]) / 2.0))
+    new Coordinate(lon, lat)
+
+POLYCONIC_EPSILON        = 0.000001
+POLYCONIC_MAX_ITERATIONS = 75
+
+class Polyconic extends HemisphericalProjection
+  # (Ellipsoid, ProjectionParameters)
+  constructor: (ellipsoid, params) ->
+    super(ellipsoid, params)
+    e2 = @e2
+    @subM = [
+      1.0 - (e2 / 4.0) - (3.0 * e2 * e2 / 64.0) - (5.0 * e2 * e2 * e2 / 256.0)
+      (3.0 * e2 / 8.0) + (3.0 * e2 * e2 / 32.0) + (45.0 * e2 * e2 * e2 / 1024.0)
+      (15.0 * e2 * e2 / 256.0) + (45.0 * e2 * e2 * e2 / 1024.0)
+      35.0 * e2 * e2 * e2 / 3072.0
+    ]
+    @M0 = @a * ((@subM[0] * @phi0) - (@subM[1] * Math.sin(2.0 * @phi0)) + (@subM[2] * Math.sin(4.0 * @phi0)) - (@subM[3] * Math.sin(6.0 * @phi0)))
+    # desktop constructs this with swapped x/y (sic); it only feeds hemisphere clipping
+    @hemisphereCenter = new Coordinate(0.0, @lambda0)
+
+  getMaxC: -> HALF_PI
+
+  getHemisphereCenter: -> @hemisphereCenter
+
+  forwardPointRaw: (lambda, phi) ->
+    if phi is 0.0
+      new Coordinate(@a * wrapLongitude(lambda - @lambda0), -@M0)
+    else
+      sinPhi = Math.sin(phi)
+      cotPhi = 1.0 / Math.tan(phi)
+      E = wrapLongitude(lambda - @lambda0) * sinPhi
+      N = @a / Math.sqrt(1.0 - @e2 * sinPhi * sinPhi)
+      M = @a * ((@subM[0] * phi) - (@subM[1] * Math.sin(2.0 * phi)) + (@subM[2] * Math.sin(4.0 * phi)) - (@subM[3] * Math.sin(6.0 * phi)))
+      x = N * cotPhi * Math.sin(E)
+      y = M - @M0 + N * cotPhi * (1.0 - Math.cos(E))
+      new Coordinate(x, y)
+
+  inversePointRaw: (x, y) ->
+    A = (@M0 + y) / @a
+    B = ((x * x) / (@a * @a)) + A * A
+    phiN1 = A
+    phiN = A
+    i = 0
+    loop
+      phiN = phiN1
+      C = Math.sqrt(1.0 - @e2 * Math.sin(phiN) * Math.sin(phiN)) * Math.tan(phiN)
+      Ma = (@subM[0] * phiN) - (@subM[1] * Math.sin(2.0 * phiN)) + (@subM[2] * Math.sin(4.0 * phiN)) - (@subM[3] * Math.sin(6.0 * phiN))
+      MnPrime = @subM[0] - (2.0 * @subM[1] * Math.cos(2.0 * phiN)) + (4.0 * @subM[2] * Math.cos(4.0 * phiN)) - (6.0 * @subM[3] * Math.cos(6.0 * phiN))
+      phiN1 = phiN - (A * (C * Ma + 1.0) - Ma - 0.5 * (Ma * Ma + B) * C) / (@e2 * Math.sin(2.0 * phiN) * (Ma * Ma + B - 2.0 * A * Ma) / (4.0 * C) + (A - Ma) * (C * MnPrime - 2.0 / Math.sin(2.0 * phiN)) - MnPrime)
+      break unless (Math.abs(phiN - phiN1) > POLYCONIC_EPSILON) and (i++ < POLYCONIC_MAX_ITERATIONS)
+    lat = if i > POLYCONIC_MAX_ITERATIONS then NaN else phiN1
+    C = Math.sqrt(1.0 - @e2 * Math.sin(lat) * Math.sin(lat)) * Math.tan(lat)
+    lon = @lambda0 + Math.asin((x * C) / @a) / Math.sin(lat)
+    new Coordinate(lon, lat)
+
+class ObliqueMercator extends HemisphericalProjection
+  # (Ellipsoid, ProjectionParameters)
+  constructor: (ellipsoid, params) ->
+    super(ellipsoid, params)
+    @k0 = params.getDimensionless("scale_factor")
+    @alpha = params.getAngular("azimuth")
+    e2 = @e2
+    @e = Math.sqrt(e2)
+    sinPhi0 = Math.sin(@phi0)
+    cosPhi0 = Math.cos(@phi0)
+    @B = Math.sqrt(1.0 + (e2 * cosPhi0 * cosPhi0 * cosPhi0 * cosPhi0) / (1.0 - e2))
+    @A = (@a * @B * @k0 * Math.sqrt(1.0 - e2)) / (1.0 - e2 * sinPhi0 * sinPhi0)
+    t0 = @getT(@phi0)
+    D = (@B * Math.sqrt(1.0 - e2)) / (cosPhi0 * Math.sqrt(1.0 - e2 * sinPhi0 * sinPhi0))
+    Dsq = D * D
+    Dsq = 1.0 if Dsq < 1.0
+    F = D + (Math.sqrt(Dsq - 1.0) * sign(@phi0))
+    @E = F * Math.pow(t0, @B)
+    G = (F - (1.0 / F)) / 2.0
+    @sinAlpha = Math.sin(@alpha)
+    @cosAlpha = Math.cos(@alpha)
+    gamma0 = Math.asin(@sinAlpha / D)
+    @sinGamma0 = Math.sin(gamma0)
+    @cosGamma0 = Math.cos(gamma0)
+    @lambdaZ = wrapLongitude(@lambda0 - (Math.asin(G * Math.tan(gamma0)) / @B))
+    @subPhi = [
+      (e2 / 2.0) + (5.0 * e2 * e2 / 24.0) + (e2 * e2 * e2 / 12.0) + (13.0 * e2 * e2 * e2 * e2 / 360.0)
+      (7.0 * e2 * e2 / 48.0) + (29.0 * e2 * e2 * e2 / 240.0) + (811.0 * e2 * e2 * e2 * e2 / 11520.0)
+      (7.0 * e2 * e2 * e2 / 120.0) + (81.0 * e2 * e2 * e2 * e2 / 1120)
+      4279.0 * e2 * e2 * e2 * e2 / 161280.0
+    ]
+    # desktop constructs this with swapped x/y (sic); it only feeds hemisphere clipping
+    @hemisphereCenter = new Coordinate(@phi0, @lambda0)
+
+  getMaxC: -> HALF_PI
+
+  getHemisphereCenter: -> @hemisphereCenter
+
+  # (Number) => Number
+  getT: (phi) ->
+    eSinPhi = @e * Math.sin(phi)
+    Math.tan(QUARTER_PI - (phi / 2.0)) / Math.pow((1.0 - eSinPhi) / (1.0 + eSinPhi), @e / 2.0)
+
+  forwardPointRaw: (lambda, phi) ->
+    t = @getT(phi)
+    Q = @E / Math.pow(t, @B)
+    S = (Q - (1.0 / Q)) / 2.0
+    T = (Q + (1.0 / Q)) / 2.0
+    V = Math.sin(@B * wrapLongitude(lambda - @lambdaZ))
+    U = (-V * @cosGamma0 + S * @sinGamma0) / T
+    v = @A * Math.log((1.0 - U) / (1.0 + U)) / (2.0 * @B)
+    u = (@A / @B) * Math.atan2((S * @cosGamma0) + (V * @sinGamma0), Math.cos(@B * wrapLongitude(lambda - @lambdaZ)))
+    x = v * @cosAlpha + u * @sinAlpha
+    y = u * @cosAlpha - v * @sinAlpha
+    new Coordinate(x, y)
+
+  inversePointRaw: (x, y) ->
+    vp = (x * @cosAlpha) - (y * @sinAlpha)
+    up = (y * @cosAlpha) + (x * @sinAlpha)
+    Qp = Math.pow(Math.E, -((@B * vp) / @A))
+    Sp = (Qp - (1.0 / Qp)) / 2.0
+    Tp = (Qp + (1.0 / Qp)) / 2.0
+    Vp = Math.sin((@B * up) / @A)
+    Up = ((Vp * @cosGamma0) + (Sp * @sinGamma0)) / Tp
+    lat =
+      if Math.abs(Up) is 1.0
+        HALF_PI * sign(Up)
+      else
+        t = Math.pow(@E / Math.sqrt((1.0 + Up) / (1.0 - Up)), (1.0 / @B))
+        chi = HALF_PI - 2.0 * Math.atan(t)
+        chi +
+          (@subPhi[0] * Math.sin(2.0 * chi)) +
+          (@subPhi[1] * Math.sin(4.0 * chi)) +
+          (@subPhi[2] * Math.sin(6.0 * chi)) +
+          (@subPhi[3] * Math.sin(8.0 * chi))
+    lon = @lambdaZ - (Math.atan2((Sp * @cosGamma0) - (Vp * @sinGamma0), Math.cos((@B * up) / @A)) / @B)
+    new Coordinate(lon, lat)
+
 # --- WKT parsing (ports of wkt/WKTElement.java, wkt/WKTFormat.java) ---
 
 class WKTElement
@@ -420,18 +937,23 @@ parseWKT = (text, pos = { index: 0 }) ->
 # --- projection construction from WKT (port of projection/ProjectionFormat.java) ---
 
 PROJECTION_CONSTRUCTORS = {
-  "Mercator_1SP":                Mercator
-  "Transverse_Mercator":         TransverseMercator
-  "Lambert_Conformal_Conic_2SP": LambertConformalConic
+  "Albers_Conic_Equal_Area":      AlbersEqualAreaConic
+  "Lambert_Azimuthal_Equal_Area": AzimuthalEqualArea
+  "Azimuthal_Equidistant":        AzimuthalEquidistant
+  "Cylindrical_Equal_Area":       CylindricalEqualArea
+  "Equidistant_Conic":            EquidistantConic
+  "Gnomonic":                     Gnomonic
+  "Lambert_Conformal_Conic_2SP":  LambertConformalConic
+  "Mercator_1SP":                 Mercator
+  "Miller_Cylindrical":           Miller
+  "Oblique_Mercator":             ObliqueMercator
+  "hotine_oblique_mercator":      ObliqueMercator
+  "Orthographic":                 Orthographic
+  "Polyconic":                    Polyconic
+  "Robinson":                     Robinson
+  "Stereographic":                Stereographic
+  "Transverse_Mercator":          TransverseMercator
 }
-
-# supported by desktop but not yet ported here
-DESKTOP_ONLY_PROJECTIONS = [
-  "Albers_Conic_Equal_Area", "Lambert_Azimuthal_Equal_Area", "Azimuthal_Equidistant"
-  "Cylindrical_Equal_Area", "Equidistant_Conic", "Gnomonic", "Miller_Cylindrical"
-  "Oblique_Mercator", "hotine_oblique_mercator", "Orthographic", "Polyconic"
-  "Robinson", "Stereographic"
-]
 
 # (WKTElement) => Ellipsoid
 parseEllipsoidElement = (parent) ->
@@ -464,8 +986,6 @@ parseProjected = (element) ->
   ProjectionClass = PROJECTION_CONSTRUCTORS[projectionName]
   if ProjectionClass?
     new ProjectionClass(ellipsoid, parameters)
-  else if projectionName in DESKTOP_ONLY_PROJECTIONS
-    throw exceptions.extension("the projection '#{projectionName}' is not yet implemented in the NetLogo Web GIS extension")
   else
     throw exceptions.extension("unsupported projection '#{projectionName}'")
 

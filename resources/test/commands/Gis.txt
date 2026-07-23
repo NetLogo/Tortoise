@@ -696,4 +696,11 @@ set-coordinate-system-errors
   extensions [ gis ]
   O> gis:set-coordinate-system "LOCAL_CS[\"whatever\"]" => ERROR Extension exception: only GEOGCS and PROJCS are supported. Try using a tool like QGIS or ArcMap to convert your data to a different projection like WGS84
   O> gis:set-coordinate-system "PROJCS[\"x\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Fake_Projection\"],PARAMETER[\"False_Easting\",0],PARAMETER[\"False_Northing\",0],PARAMETER[\"Central_Meridian\",0],PARAMETER[\"Latitude_Of_Origin\",0],UNIT[\"Meter\",1]]" => ERROR Extension exception: unsupported projection 'Fake_Projection'
-  O> gis:set-coordinate-system "PROJCS[\"x\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Robinson\"],PARAMETER[\"False_Easting\",0],PARAMETER[\"False_Northing\",0],PARAMETER[\"Central_Meridian\",0],UNIT[\"Meter\",1]]" => ERROR Extension exception: the projection 'Robinson' is not yet implemented in the NetLogo Web GIS extension
+
+set-coordinate-system-robinson
+  extensions [ gis ]
+  globals [ result ]
+  O> gis:set-coordinate-system "PROJCS[\"x\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Robinson\"],PARAMETER[\"False_Easting\",0],PARAMETER[\"False_Northing\",0],PARAMETER[\"Central_Meridian\",0],UNIT[\"Meter\",1]]"
+  O> gis:set-transformation-ds [-20000000 20000000 -20000000 20000000] [-5 5 -5 5]
+  O> set result gis:project-lat-lon 40 20
+  length result => 2

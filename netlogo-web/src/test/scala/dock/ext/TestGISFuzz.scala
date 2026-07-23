@@ -355,4 +355,46 @@ class TestGISFuzz extends ExtensionFuzzSuite {
       }
     }
   }
+
+  // Each of the projections ported from desktop's org.myworldgis.projection package,
+  // centered near (0, 0) so sampled points mostly land inside the valid hemisphere.
+  // A GRS80 GEOGCS and meter units are shared; only the PROJECTION and its PARAMETERs
+  // vary.  Points outside a projection's clipping hemisphere report [] on both engines.
+  private val projGeogcs =
+    """GEOGCS[\"GCS_GRS_1980\",DATUM[\"D_GRS_1980\",SPHEROID[\"GRS_1980\",6378137,298.257222101]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]"""
+
+  private def projcs(projection: String, params: String): String =
+    s"""PROJCS[\\"test\\",$projGeogcs,PROJECTION[\\"$projection\\"],PARAMETER[\\"False_Easting\\",0],PARAMETER[\\"False_Northing\\",0],$params,UNIT[\\"Meter\\",1]]"""
+
+  test("project-lat-lon under every ported projection") { implicit fixture => import fixture._
+    openModel(gisModel, shouldAutoInstallLibs = true)
+    val conicParams = """PARAMETER[\"Standard_Parallel_1\",20],PARAMETER[\"Standard_Parallel_2\",40],PARAMETER[\"Longitude_Of_Center\",0],PARAMETER[\"Latitude_Of_Center\",0]"""
+    val projections = Seq(
+      projcs("Albers_Conic_Equal_Area",      conicParams),
+      projcs("Equidistant_Conic",            conicParams),
+      projcs("Lambert_Azimuthal_Equal_Area", """PARAMETER[\"Longitude_Of_Center\",0],PARAMETER[\"Latitude_Of_Center\",0]"""),
+      projcs("Azimuthal_Equidistant",        """PARAMETER[\"Longitude_Of_Center\",0],PARAMETER[\"Latitude_Of_Center\",0]"""),
+      projcs("Gnomonic",                     """PARAMETER[\"Central_Meridian\",0],PARAMETER[\"Latitude_Of_Origin\",0]"""),
+      projcs("Orthographic",                 """PARAMETER[\"Central_Meridian\",0],PARAMETER[\"Latitude_Of_Origin\",0]"""),
+      projcs("Stereographic",                """PARAMETER[\"Central_Meridian\",0],PARAMETER[\"Latitude_Of_Origin\",0],PARAMETER[\"Scale_Factor\",1]"""),
+      projcs("Polyconic",                    """PARAMETER[\"Central_Meridian\",0],PARAMETER[\"Latitude_Of_Origin\",0]"""),
+      projcs("Cylindrical_Equal_Area",       """PARAMETER[\"Central_Meridian\",0],PARAMETER[\"Standard_Parallel_1\",0]"""),
+      projcs("Miller_Cylindrical",           """PARAMETER[\"Longitude_Of_Center\",0],PARAMETER[\"Latitude_Of_Center\",0]"""),
+      projcs("Robinson",                     """PARAMETER[\"Longitude_Of_Center\",0]"""),
+      projcs("Oblique_Mercator",             """PARAMETER[\"Longitude_Of_Center\",0],PARAMETER[\"Latitude_Of_Center\",0],PARAMETER[\"Scale_Factor\",1],PARAMETER[\"Azimuth\",45]""")
+    )
+    fuzz("project-lat-lon-all") { run =>
+      import run.rng
+      testCommand("clear-all")
+      for (wkt <- projections) {
+        testCommand(s"""gis:set-coordinate-system "$wkt"""")
+        testCommand("gis:set-transformation-ds [-20000000 20000000 -20000000 20000000] [-5 5 -5 5]")
+        for (_ <- 1 to 8) {
+          val lat = num(rng, -55, 55)
+          val lon = num(rng, -55, 55)
+          compareNums(s"map [ x -> precision x $digits ] gis:project-lat-lon $lat $lon")
+        }
+      }
+    }
+  }
 }
