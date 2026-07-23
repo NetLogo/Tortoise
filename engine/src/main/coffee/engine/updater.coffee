@@ -78,6 +78,16 @@ module.exports =
       @_reportDrawingEvent({ type: "line", fromX, fromY, toX, toY, rgb, size, penMode })
       return
 
+    # (Array[Array[[Number, Number]]], RGB) => Unit
+    registerFillPolygon: (rings, rgb) =>
+      @_reportDrawingEvent({ type: "fill-polygon", rings, rgb })
+      return
+
+    # ({ width, height, xMin, yMin, xMax, yMax, base64 }) => Unit
+    registerDrawRaster: (raster) =>
+      @_reportDrawingEvent({ type: "draw-raster", raster })
+      return
+
     # (Number, Number, Number, Number, RGB, String, String) => Unit
     registerTurtleStamp: (x, y, size, heading, color, shapeName) =>
       @_reportDrawingEvent({ type: "stamp-image", agentType: "turtle", stamp: { x, y, size, heading, color, shapeName } })
