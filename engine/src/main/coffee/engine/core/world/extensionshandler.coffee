@@ -1,23 +1,78 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-# type ExtensionPorter[T] = {
-#   canHandle: (Any) => Boolean,
-
-#   dump: (T, (Any) => String) => String,
-
-#   exportObject: (T, (Any) => Any) => ExportedExtensionObject,
-#   export:       (Array[ExportedExtensionObject]) => ExportedExtension
-
-#   format:       (ExportedExtension, (Any) => String) => String
-#   formatObject: (ExportedExtensionObject, (Any) => String) => String
-
-#   readObject: (String, String, (String) => Any) => ExportedExtensionObject
-#   read:       (String, (String) => Any) => ExportedExtension
-
-#   import:       (ExportedExtension, (Any) => Any) => Unit
-#   importObject: (ExportedExtension, ExtensionPlaceholder, (Any) => Any)) => T
-
-# }
+# An extension "porter" teaches the world how to dump (for `print`/`show`), export (world
+# save), and import (world load and recompile) the custom objects an extension creates --
+# tables, matrices, gis datasets, and so on.  Each loaded extension that has such objects
+# registers one porter (via its `porter` export); the `make*` functions below fan a single
+# operation out across every registered porter.
+#
+# An extension object moves through three lifecycles, each a per-object hook paired with a
+# once-per-porter collection hook:
+#
+#   print / show / word        dump
+#   export-world               exportObject (per object)  ->  export + format (per porter)
+#   import-world / recompile    read (per porter)  ->  importObject (per object) + import
+#
+# Two rules are easy to get wrong (both have caused crashes):
+#
+#   1. The COLLECTION hooks -- export, format, read, import -- run for EVERY registered
+#      porter on every world export/import/recompile, even when that extension currently
+#      has no live objects.  They must handle the empty case without throwing (e.g.
+#      `export([])` returns an empty ExportedExtension, `format` of it returns "").  Only
+#      the PER-OBJECT hooks (exportObject, dump, importObject) are handed an actual object,
+#      so those may assume one exists (and may throw if the object cannot be serialized).
+#
+#   2. `importObject` must return a valid NetLogo value -- number, string, boolean, list,
+#      agent, agentset, Nobody, or a live extension object -- because it becomes the value
+#      of the agent variable / global that referenced it.  Returning null/undefined is not
+#      a valid NetLogo value and will break the importer's later handling of reified
+#      objects.  If an object cannot be reconstructed, return Nobody.
+#
+# The porter interface consumed by this module (SingleObjectExtensionPorter implements all
+# of it for the common "one object sub-type" extension -- extend it and override only the
+# parts that differ, e.g. `dump` when the printed form is not the default `{{name: data}}`):
+#
+#   extensionName: String
+#     Lower-case name, matching the `extensions [ ... ]` declaration.
+#
+#   canHandle: (Any) => Boolean
+#     True iff `x` is one of THIS extension's live objects; false for everything else
+#     (other extensions' objects, placeholders, ordinary Logo values).  Exactly one porter
+#     may claim any given value.
+#
+#   dump: (T, dumper: (Any) => String) => String
+#     The object's printed form (`print`/`show`/`word`).  `dumper` recursively dumps nested
+#     values.
+#
+#   exportObject: (T, exportValue: (Any) => Any) => ExportedExtensionObject
+#     Serialize one live object for a world save.  `exportValue` recursively exports nested
+#     values (agents -> references, nested extension objects -> placeholders).  The result's
+#     `subType` names the object kind within the extension ("" when there is only one kind).
+#
+#   export: (Array[ExportedExtensionObject]) => ExportedExtension
+#     Bundle this porter's exported objects into the extension's world-save section; called
+#     once per porter, with [] when the extension has no objects.
+#
+#   format: (ExportedExtension, formatAny: (Any) => String) => String
+#     Render the section to the text that lands in the world-export file; return "" for an
+#     empty section (it is then omitted).  `formatAny` formats nested values.
+#
+#   read: (section, parseAny: (String) => Any) => ExportedExtension
+#     Inverse of `format`: parse a world-save section back into an ExportedExtension.
+#     `parseAny` parses nested value strings.
+#
+#   importObject: (ExportedExtension, ExtensionPlaceholder, reify: (Any) => Any) => T
+#     Reconstruct one live object from its placeholder during import.  `reify` turns nested
+#     references/placeholders back into live values.  See rule 2 about the return value.
+#
+#   import: (ExportedExtension, Array[T]) => Unit
+#     Final per-porter hook, run after all objects are reified, for any extension-wide
+#     fix-up; usually a no-op.  Called with [] when there are no objects.
+#
+# ExportedExtension and ExportedExtensionObject are defined in serialize/exportstructures;
+# a placeholder is the object `{{extensionName:subType index}}` (see `formatPlaceholder`).
+# canHandle and the per-object hooks are dispatched through `makeTraverse`, which also
+# rejects circular references between extension objects.
 
 { exceptionFactory: exceptions } = require('util/exception')
 
@@ -112,6 +167,9 @@ makeExporter = (extensionPorters) ->
     createPlaceholder(porter.extensionName, porterObject.subType, porterObjects.length - 1)
 
   # () => Map[ExtensionPorter, ExportedExtension]
+  # `exportObject` populates `extensionObjects` only for porters whose objects were
+  # actually reached during the traversal; this still calls `export` on EVERY porter (with
+  # [] for the rest), so every porter's `export` must tolerate an empty list -- see rule 1.
   exportExt = () ->
     extensionStates = new Map()
     extensionPorters.forEach( (porter) ->
@@ -164,6 +222,9 @@ makeImporter = (extensionPorters, extensionExports) ->
       importedObjects.set(placeholder, importedObject)
       importedObject
 
+  # Runs after every placeholder has been reified.  Calls `import` on EVERY porter (see
+  # rule 1); `objects` is that porter's reified objects, so each must be a real object with
+  # an `extensionName` -- a null reified value (rule 2) would blow up this filter.
   importExt = () ->
     extensionPorters.forEach( (porter) ->
       state   = extensionExports.get(porter)

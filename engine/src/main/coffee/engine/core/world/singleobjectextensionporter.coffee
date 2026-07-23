@@ -9,6 +9,28 @@
 
 porterStringRegEx = /{{(.+)\:(.*) (\d+)\:  ?(.+)}}/
 
+# Reference implementation of the ExtensionPorter interface (documented in full in
+# extensionshandler.coffee) for the common case of an extension with a single kind of
+# object -- table, matrix, and array all use it directly.  It provides every method the
+# world handler calls (dump/exportObject/export/format/read/importObject/import) by
+# composing seven small per-object callbacks you supply, so an extension author only
+# writes the object-level logic and never the collection-level plumbing (which, notably,
+# already tolerates the empty-porter case -- `export([])` returns an empty extension,
+# `format` of it returns "").
+#
+# To use: `new SingleObjectExtensionPorter(name, canHandle, dumpData, exportData,
+# formatData, readData, importData)`.  To customize (e.g. a different printed form),
+# extend it and override the composed method -- gis overrides `dump`.
+#
+# The seven constructor callbacks:
+#   extensionName    String -- lower-case, matches the `extensions [ ... ]` entry
+#   canHandle        (Any) => Boolean -- is this value one of our live objects?
+#   dumpObjectData   (T, dumper) => String -- printed guts, wrapped as `{{name: <guts>}}`
+#   exportObjectData (T, exportValue) => Any -- serializable data for one object
+#   formatObjectData (ExportedData, formatAny) => String -- that data as export text
+#   readObjectData   (String, parseAny) => Any -- parse export text back to that data
+#   importObjectData (ExportedData, reify) => T -- reconstruct the live object (a valid
+#                    NetLogo value -- see rule 2 in extensionshandler.coffee)
 class SingleObjectExtensionPorter
   constructor: (
     @extensionName
