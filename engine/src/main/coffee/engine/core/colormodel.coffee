@@ -47,7 +47,7 @@ BaseColors = map((n) -> (n * 10) + 5)(rangeUntil(0)(ColorMax / 10))
 NamesToIndicesMap =
   (->
     temp = {}
-    for color, i in ['gray', 'red', 'orange', 'brown', 'yellow', 'green', 'lime', 'turqoise', 'cyan', 'sky', 'blue', 'violet', 'magenta', 'pink', 'black', 'white']
+    for color, i in ['gray', 'red', 'orange', 'brown', 'yellow', 'green', 'lime', 'turquoise', 'cyan', 'sky', 'blue', 'violet', 'magenta', 'pink', 'black', 'white']
       temp[color] = i
     temp
   )()
@@ -111,6 +111,15 @@ module.exports = {
   # (ColorNumber, ColorNumber) => Boolean
   areRelatedByShade: (color1, color2) ->
     @_colorIntegral(color1) is @_colorIntegral(color2)
+
+  # (ColorName) => ColorNumber|undefined — matches api.Color.getColorNumberByName
+  colorNameToNumber: (name) ->
+    index = NamesToIndicesMap[name]
+    switch index
+      when undefined then undefined
+      when 14        then 0    # black
+      when 15        then 9.9  # white
+      else                BaseColors[index]
 
   # [T <: ColorNumber|RGB|RGBA|ColorName] @ (T) => RGB|RGBA
   colorToList: (color) ->
