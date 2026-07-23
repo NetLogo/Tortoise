@@ -306,12 +306,12 @@ module.exports = ({ core, vector, raster, workspace }) ->
       for py in [t.minPycor..t.maxPycor]
         patch = world.getPatchAt(px, py)
         patchGeometry = core.agentGeometry(patch)
-        features = dataset.features.filter((f) -> patchGeometry.intersects(f.geometry))
+        features = dataset.intersectingFeatures(patchGeometry)
         if features.length > 1
           values = aggregatePropertyValues(patchGeometry, propertyNames, features)
           for name, i in propertyNames
             patch.setPatchVariable(varNames[i], values[i])
-        else if features.length is 1 and fastSharedAreaRatio(patchGeometry, features[0].geometry) > singleCellThreshold
+        else if features.length is 1 and fastSharedAreaRatio(patchGeometry, features[0]) > singleCellThreshold
           for name, i in propertyNames
             patch.setPatchVariable(varNames[i], features[0].getProperty(name))
         else
@@ -319,11 +319,12 @@ module.exports = ({ core, vector, raster, workspace }) ->
             patch.setPatchVariable(varNames[i], NaN)
     return
 
-  # (Geometry, Geometry) => Number
-  # port of JTSUtils.fastGetSharedAreaRatio: 10x10 interior-point sampling
-  fastSharedAreaRatio = (rectGeom, geom) ->
+  # (Geometry, VectorFeature) => Number
+  # port of JTSUtils.fastGetSharedAreaRatio: 10x10 interior-point sampling (via the
+  # feature's indexed point locator, so each sample is O(log n) not O(edges))
+  fastSharedAreaRatio = (rectGeom, feature) ->
     env = rectGeom.getEnvelopeInternal()
-    interior = (x, y) -> geom.contains(core.factory.createPoint(new Coordinate(x, y)))
+    interior = (x, y) -> feature.containsPoint(new Coordinate(x, y))
     if interior(env.getMinX(), env.getMinY()) and interior(env.getMaxX(), env.getMaxY()) and
        interior(env.getMaxX(), env.getMinY()) and interior(env.getMinX(), env.getMaxY())
       return 1.0
@@ -339,10 +340,10 @@ module.exports = ({ core, vector, raster, workspace }) ->
       x += xInc
     count / 100.0
 
-  # (Geometry, Geometry) => Number
+  # (Geometry, VectorFeature) => Number
   # port of JTSUtils.getSharedAreaRatio (without the desktop's TopologyException fallback)
-  sharedAreaRatio = (geom1, geom2) ->
-    geom1.intersection(geom2).getArea() / geom1.getArea()
+  sharedAreaRatio = (rectGeom, feature) ->
+    rectGeom.intersection(feature.geometry).getArea() / rectGeom.getArea()
 
   # (Geometry, List, Array[VectorFeature]) => Array[String | Number]
   aggregatePropertyValues = (patchGeometry, propertyNames, features) ->
@@ -352,7 +353,7 @@ module.exports = ({ core, vector, raster, workspace }) ->
     categorical = propertyNames.map(-> false)
     fillRecords = (ratioOf) ->
       for feature, i in features
-        areaRatio = ratioOf(patchGeometry, feature.geometry)
+        areaRatio = ratioOf(patchGeometry, feature)
         if areaRatio > maxAreaRatio
           maxAreaIndex = i
           maxAreaRatio = areaRatio

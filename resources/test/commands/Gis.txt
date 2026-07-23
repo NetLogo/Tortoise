@@ -720,3 +720,16 @@ set-coordinate-system-robinson
   O> gis:set-transformation-ds [-20000000 20000000 -20000000 20000000] [-5 5 -5 5]
   O> set result gis:project-lat-lon 40 20
   length result => 2
+
+reproject-clips-out-of-range-geometry
+  extensions [ gis ]
+  globals [ ds ]
+  O> resize-world -10 10 -10 10
+  # loading WGS84 geojson while a projected system is set reprojects each geometry; points
+  # outside the projection's valid hemisphere are clipped to empty points (must not crash)
+  O> gis:set-coordinate-system "PROJCS[\"o\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Orthographic\"],PARAMETER[\"False_Easting\",0],PARAMETER[\"False_Northing\",0],PARAMETER[\"Central_Meridian\",0],PARAMETER[\"Latitude_Of_Origin\",0],UNIT[\"Meter\",1]]"
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [179, 0]}, \"properties\": {\"n\": 1}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [5, 5]}, \"properties\": {\"n\": 2}}]}"
+  gis:shape-type-of ds => "POINT"
+  length gis:feature-list-of ds => 2
+  # the out-of-range point (feature 0) clipped to an empty geometry, so it has no location
+  gis:location-of item 0 item 0 gis:vertex-lists-of item 0 gis:feature-list-of ds => []

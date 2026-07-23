@@ -10,8 +10,10 @@ earcut = require('earcut')
 PatchSet   = require('../engine/core/patchset')
 # `Nobody` is a runtime global, as elsewhere in the engine
 
-{ Envelope } = JSTS.geom
-{ Centroid } = JSTS.algorithm
+{ Envelope, Coordinate, Location } = JSTS.geom
+{ Centroid }                       = JSTS.algorithm
+{ IndexedPointInAreaLocator }      = JSTS.algorithm.locate
+{ STRtree }                        = JSTS.index.strtree
 
 # (Any) => String — mimics Java's `String.valueOf` on property values (Double 5 -> "5.0"), which desktop
 # uses for both wildcard matching and feature dumps
@@ -81,6 +83,16 @@ class VectorFeature
 
   # () => Geometry
   getGeometry: -> @geometry
+
+  # (Coordinate) => Boolean — equivalent to geometry.contains(point) but backed by an
+  # IndexedPointInAreaLocator, so repeated point-in-polygon tests (coverage samples
+  # thousands against complex polygons) are O(log n) instead of O(edges).  Only polygonal
+  # geometries have an interior to contain a point; others report false.
+  containsPoint: (coord) ->
+    if @_pointLocator is undefined
+      type = @geometry.getGeometryType()
+      @_pointLocator = if type is "Polygon" or type is "MultiPolygon" then new IndexedPointInAreaLocator(@geometry) else null
+    @_pointLocator? and @_pointLocator.locate(coord) is Location.INTERIOR
 
   # (String) => Boolean
   hasProperty: (name) -> @properties.has(name)
@@ -155,17 +167,33 @@ class VectorDataset
 
   # (String, Array[String], Array[String], GisCore) — types are "STRING" | "NUMBER"
   constructor: (@shapeType, propertyNames, propertyTypes, core) ->
-    @properties = propertyNames.map((name, i) -> { name: name.toUpperCase(), type: propertyTypes[i] })
-    @features   = []
-    @envelope   = new Envelope()
+    @properties    = propertyNames.map((name, i) -> { name: name.toUpperCase(), type: propertyTypes[i] })
+    @features      = []
+    @envelope      = new Envelope()
+    @spatialIndex  = new STRtree()
     core.state.datasetCount += 1
 
   # (Geometry, Array[Any]) => Unit
   add: (geometry, propertyValues) ->
     feature = new VectorFeature(@shapeType, geometry, @properties, propertyValues)
+    feature.datasetIndex = @features.length
     @envelope.expandToInclude(feature.getEnvelope())
     @features.push(feature)
+    @spatialIndex.insert(feature.getEnvelope(), feature)
     return
+
+  # (Geometry) => Array[VectorFeature] — port of desktop's spatial-index lookup: the
+  # STRtree prunes to features whose envelope overlaps, avoiding an intersects test
+  # against every feature (which makes patch-by-patch coverage O(patches x features)).
+  # For the common case of a patch sitting inside a feature, a cheap point-in-polygon on
+  # the patch center short-circuits the expensive full intersects.  Results are returned
+  # in dataset (insertion) order, since coverage aggregation is order-sensitive on ties,
+  # whereas the index yields them in an arbitrary order.
+  intersectingFeatures: (geom) ->
+    env    = geom.getEnvelopeInternal()
+    center = new Coordinate((env.getMinX() + env.getMaxX()) / 2.0, (env.getMinY() + env.getMaxY()) / 2.0)
+    matches = (feature for feature in @spatialIndex.query(env).toArray() when feature.containsPoint(center) or geom.intersects(feature.geometry))
+    matches.sort((a, b) -> a.datasetIndex - b.datasetIndex)
 
   # () => Envelope
   getEnvelope: -> new Envelope(@envelope)

@@ -14,6 +14,11 @@ shapefile   = require('extensions/gis-shapefile')
 
 { Coordinate } = JSTS.geom
 
+# Desktop draws a point as an ellipse of radius `thickness`px stroked at `thickness`px
+# wide, so its visible diameter is ~3x the line thickness.  A zero-length round-capped
+# line renders a dot of diameter equal to its width, so scale the width up to match.
+POINT_DIAMETER_FACTOR = 3
+
 # (GisCore, GisRaster, Workspace) => GisDraw
 module.exports = ({ core, raster, workspace }) ->
 
@@ -58,7 +63,7 @@ module.exports = ({ core, raster, workspace }) ->
       for path in collectPaths(feature.geometry, [])
         if path.length is 1
           [x, y] = path[0]
-          updater.registerPenTrail(x, y, x, y, rgb, thickness, "down")
+          updater.registerPenTrail(x, y, x, y, rgb, thickness * POINT_DIAMETER_FACTOR, "down")
         else
           for i in [1...path.length]
             [x1, y1] = path[i - 1]

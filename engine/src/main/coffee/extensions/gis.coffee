@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 { exceptionFactory: exceptions } = require('util/exception')
+SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensionporter')
 
 # (String) => (() => Unit)
 notImplemented = (name) ->
@@ -10,23 +11,19 @@ notImplemented = (name) ->
 notSupportedOnWeb = (name, replacement) ->
   -> throw exceptions.extension("gis:#{name} is not supported by NetLogo Web. Use gis:#{replacement} instead.")
 
-# Dumps match desktop's `{{gis:TypeName <contents>}}` format, which the generic
-# SingleObjectExtensionPorter cannot produce; export-world support is not implemented.
-class GISPorter
-  extensionName: "gis"
-
-  # (Any) => Boolean
-  canHandle: (x) -> x?.gisType?
+# gis objects cannot be meaningfully serialized to a world export, but — matching desktop,
+# whose VectorDataset/RasterDataset `dump(exporting)` returns "" and `readExtensionObject`
+# returns null — export/import degrade gracefully rather than erroring, so a model with gis
+# objects can still be exported.  A gis object reifies back to `Nobody` (a valid Logo value,
+# unlike a bare null, which would be an invalid global and break the importer's reified-
+# object handling).  `dump` is overridden because desktop's `{{gis:TypeName <contents>}}`
+# format differs from the base `{{gis: <data>}}`.
+class GISPorter extends SingleObjectExtensionPorter
+  constructor: ->
+    super("gis", ((x) -> x?.gisType?), (-> ""), (-> ""), (-> ""), (-> ""), (-> Nobody))
 
   # (Any) => String
   dump: (x) -> "{{gis:#{x.gisType} #{x.dumpContents()}}}"
-
-  exportObject: -> throw exceptions.extension("Exporting gis objects is not supported by NetLogo Web")
-  export:       -> throw exceptions.extension("Exporting gis objects is not supported by NetLogo Web")
-  formatObject: -> throw exceptions.extension("Exporting gis objects is not supported by NetLogo Web")
-  format:       -> throw exceptions.extension("Exporting gis objects is not supported by NetLogo Web")
-  readObject:   -> throw exceptions.extension("Importing gis objects is not supported by NetLogo Web")
-  readObjects:  -> throw exceptions.extension("Importing gis objects is not supported by NetLogo Web")
 
 module.exports = {
 

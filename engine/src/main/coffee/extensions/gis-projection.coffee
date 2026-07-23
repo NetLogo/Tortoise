@@ -1069,10 +1069,10 @@ reprojectGeometry = (factory, geom, srcGeo, dstProj) ->
         return geom
       inv = srcGeo.inversePoint(geom.getX(), geom.getY())
       if not keepInverse(inv)
-        return factory.createPoint(null)
+        return factory.createPoint() # empty point (JSTS createPoint rejects a null arg)
       clipped = dstProj.processPoint(inv)
       if not clipped?
-        return factory.createPoint(null)
+        return factory.createPoint() # empty point (JSTS createPoint rejects a null arg)
       factory.createPoint(dstProj.forwardPoint(clipped.x, clipped.y))
     when "LineString"
       factory.createLineString(mapCoords(geom.getCoordinates()))
