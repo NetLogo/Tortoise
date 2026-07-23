@@ -1,0 +1,699 @@
+load-dataset-not-supported
+  extensions [ gis ]
+  gis:load-dataset "extensions/gis/examples/shared-datasets/cities.geojson" => ERROR Extension exception: gis:load-dataset is not supported by NetLogo Web. Use gis:load-dataset-from-string instead.
+
+store-dataset-not-supported
+  extensions [ gis ]
+  O> gis:store-dataset 0 "output.geojson" => ERROR Extension exception: gis:store-dataset is not supported by NetLogo Web. Use gis:store-dataset-to-string instead.
+
+load-coordinate-system-not-supported
+  extensions [ gis ]
+  O> gis:load-coordinate-system "extensions/gis/examples/shared-datasets/cities.prj" => ERROR Extension exception: gis:load-coordinate-system is not supported by NetLogo Web. Use gis:set-coordinate-system instead.
+
+drawing-prims-not-implemented
+  extensions [ gis ]
+  O> gis:draw 0 1 => ERROR Extension exception: gis:draw is not yet implemented
+  O> gis:fill 0 1 => ERROR Extension exception: gis:fill is not yet implemented
+  O> gis:paint 0 50 => ERROR Extension exception: gis:paint is not yet implemented
+  O> gis:import-wms-drawing "http://example.com" "EPSG:4326" "layer" 50 => ERROR Extension exception: gis:import-wms-drawing is not yet implemented
+
+convolve
+  extensions [ gis ]
+  globals [ ds cv ]
+  O> resize-world -10 10 -10 10
+  O> set ds gis:load-dataset-from-string "asc" "ncols 4\nnrows 4\nxllcorner 0\nyllcorner 0\ncellsize 10\n1 2 3 4\n5 6 7 8\n9 10 11 12\n13 14 15 16\n"
+  O> set cv gis:convolve ds 3 3 [1 1 1 1 1 1 1 1 1] 1 1
+  gis:width-of cv => 4
+  gis:height-of cv => 4
+  gis:envelope-of cv => [0 40 0 40]
+  # border cells are NaN (the kernel reaches outside the raster), so only assert the
+  # interior; the extra 0.5 on every value is a JAI quirk desktop has (see gis-raster)
+  map [ p -> gis:raster-value cv (item 0 p) (item 1 p) ] [[1 1] [2 1] [1 2] [2 2]] => [54.5 63.5 90.5 99.5]
+  O> set cv gis:convolve ds 3 1 [1 0 0] 1 0
+  map [ c -> gis:raster-value cv c 1 ] [0 1 2 3] => [1.5 2.5 3.5 4.5]
+  map [ c -> gis:raster-value cv c 2 ] [0 1 2 3] => [5.5 6.5 7.5 8.5]
+  O> set cv gis:convolve ds 1 3 [1 0 0] 0 1
+  map [ r -> gis:raster-value cv 1 r ] [0 1 2 3] => [3.5 7.5 11.5 15.5]
+  map [ r -> gis:raster-value cv 2 r ] [0 1 2 3] => [4.5 8.5 12.5 16.5]
+  gis:minimum-of gis:convolve ds 3 3 [0 0 0 0 1 0 0 0 0] 1 1 => 6.5
+  gis:maximum-of gis:convolve ds 3 3 [0 0 0 0 1 0 0 0 0] 1 1 => 11.5
+  gis:convolve ds 2 2 [1 1 1] 0 0 => ERROR Extension exception: Convolution matrix is 2 by 2, so it must have exactly 4 elements (currently has 3)
+
+apply-raster-parses-patch-variable-symbol
+  extensions [ gis ]
+  patches-own [ elev ]
+  O> gis:apply-raster 0 elev => ERROR Extension exception: not a RasterDataset: 0
+  O> gis:apply-raster 0 pcolor => ERROR Extension exception: not a RasterDataset: 0
+
+patch-dataset-parses-patch-variable-symbol
+  extensions [ gis ]
+  patches-own [ elev ]
+  gis:patch-dataset elev => ERROR Extension exception: you must define a coordinate transformation before using any other GIS features. You can use gis:set-transformation directly, or use `gis:set-world-envelope gis:envelope-of dataset` to automatically frame up a given dataset.
+
+intersecting-parses-as-infix
+  extensions [ gis ]
+  count (patches gis:intersecting 0) => ERROR Extension exception: not a VectorFeature, Agent, AgentSet, or List: 0
+
+world-envelope-requires-transformation
+  extensions [ gis ]
+  gis:world-envelope => ERROR Extension exception: you must define a coordinate transformation before using any other GIS features. You can use gis:set-transformation directly, or use `gis:set-world-envelope gis:envelope-of dataset` to automatically frame up a given dataset.
+
+envelope-of-requires-transformation
+  extensions [ gis ]
+  O> crt 1
+  gis:envelope-of turtle 0 => ERROR Extension exception: you must define a coordinate transformation before using any other GIS features. You can use gis:set-transformation directly, or use `gis:set-world-envelope gis:envelope-of dataset` to automatically frame up a given dataset.
+
+set-world-envelope-and-world-envelope
+  extensions [ gis ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-world-envelope [0 100 0 50]
+  gis:world-envelope => [0 100 -25 75]
+  O> gis:set-world-envelope-ds [0 100 0 50]
+  gis:world-envelope => [0 100 0 50]
+
+set-transformation-and-world-envelope
+  extensions [ gis ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation [0 21 0 21] [-10 10 -10 10]
+  gis:world-envelope => [0 21 0 21]
+  O> gis:set-transformation-ds [0 100 0 50] [-10 10 -10 10]
+  gis:world-envelope => [0 100 0 50]
+
+set-transformation-envelope-errors
+  extensions [ gis ]
+  O> gis:set-transformation [1 2 3] [0 1 0 1] => ERROR Extension exception: expected a four-element list: [1 2 3]
+  O> gis:set-world-envelope [0 1 0 "abc"] => ERROR Extension exception: not a number: abc
+
+envelope-of-agents
+  extensions [ gis ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-world-envelope-ds [0 21 0 21]
+  O> crt 1 [ setxy 2 3 ]
+  O> crt 1 [ setxy -4 5 ]
+  gis:envelope-of turtle 0 => [12.5 12.5 13.5 13.5]
+  gis:envelope-of patch 2 3 => [12 13 13 14]
+  O> ask turtle 0 [ create-link-with turtle 1 ]
+  gis:envelope-of link 0 1 => [6.5 12.5 13.5 15.5]
+  gis:envelope-of turtles => [6.5 12.5 13.5 15.5]
+  gis:envelope-of 5 => ERROR Extension exception: not a RasterDataset, VectorDataset, VectorFeature, Agent, or Agentset: 5
+
+envelope-union-of
+  extensions [ gis ]
+  gis:envelope-union-of [0 10 0 10] [5 20 -5 8] => [0 20 -5 10]
+  (gis:envelope-union-of [0 10 0 10] [5 20 -5 8] [-1 2 3 30]) => [-1 20 -5 30]
+
+drawing-color-state
+  extensions [ gis ]
+  gis:drawing-color => 0
+  O> gis:set-drawing-color 15
+  gis:drawing-color => 15
+  O> gis:set-drawing-color [255 0 0]
+  gis:drawing-color => [255 0 0]
+
+coverage-threshold-state
+  extensions [ gis ]
+  gis:coverage-minimum-threshold => 0.1
+  gis:coverage-maximum-threshold => 0.33
+  O> gis:set-coverage-minimum-threshold 0.25
+  O> gis:set-coverage-maximum-threshold 0.75
+  gis:coverage-minimum-threshold => 0.25
+  gis:coverage-maximum-threshold => 0.75
+
+project-lat-lon-requires-coordinate-system
+  extensions [ gis ]
+  gis:project-lat-lon 45 90 => ERROR Extension exception: You must use gis:load-coordinate-system or gis:set-coordinate-system before you can project lat/lon pairs.
+
+project-lat-lon-requires-transformation
+  extensions [ gis ]
+  O> gis:set-coordinate-system "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"primem\",0.0],UNIT[\"Degree\",0.017453292519943295]]"
+  gis:project-lat-lon 45 90 => ERROR Extension exception: you must define a coordinate transformation before using any other GIS features. You can use gis:set-transformation directly, or use `gis:set-world-envelope gis:envelope-of dataset` to automatically frame up a given dataset.
+
+project-lat-lon-wgs84-geographic
+  extensions [ gis ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-coordinate-system "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"primem\",0.0],UNIT[\"Degree\",0.017453292519943295]]"
+  O> gis:set-transformation-ds [-180 180 -90 90] [-10 10 -10 10]
+  gis:project-lat-lon 0 0 => [0 0]
+  map [ x -> precision x 6 ] gis:project-lat-lon 45 90 => [5.25 5.25]
+  gis:project-lat-lon 91 0 => []
+  gis:project-lat-lon -91 0 => []
+  gis:project-lat-lon 0 181 => []
+  gis:project-lat-lon 0 -181 => []
+
+project-lat-lon-nad83-source-ellipsoid
+  extensions [ gis ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-coordinate-system "GEOGCS[\"GCS_North_American_1983\",DATUM[\"D_North_American_1983\",SPHEROID[\"GRS_1980\",6378137,298.257222101]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]"
+  O> gis:set-transformation-ds [-180 180 -90 90] [-10 10 -10 10]
+  map [ x -> precision x 6 ] gis:project-lat-lon 45 90 => [5.25 5.25]
+  map [ x -> precision x 6 ] (gis:project-lat-lon-from-ellipsoid 45 90 6378137 298.257222101) => [5.25 5.25]
+
+project-lat-lon-lambert-conformal-conic
+  extensions [ gis ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-coordinate-system "PROJCS[\"Europe_Lambert_Conformal_Conic\",GEOGCS[\"ED50\",DATUM[\"European_Datum_1950\",SPHEROID[\"International 1924\",6378388,297,AUTHORITY[\"EPSG\",\"7022\"]],TOWGS84[-87,-98,-121,0,0,0,0],AUTHORITY[\"EPSG\",\"6230\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4230\"]],PROJECTION[\"Lambert_Conformal_Conic_2SP\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",10.0],PARAMETER[\"Standard_Parallel_1\",43.0],PARAMETER[\"Standard_Parallel_2\",62.0],PARAMETER[\"Latitude_Of_Origin\",30.0],UNIT[\"Meter\",1.0],AUTHORITY[\"Esri\",\"102014\"]]"
+  O> gis:set-transformation-ds [-1000000 1000000 -1000000 1000000] [-10 10 -10 10]
+  map [ x -> precision x 6 ] gis:project-lat-lon 30 10 => [0 0]
+
+project-lat-lon-transverse-mercator
+  extensions [ gis ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-coordinate-system "PROJCS[\"NAD_1983_UTM_Zone_18N\",GEOGCS[\"GCS_North_American_1983\",DATUM[\"D_North_American_1983\",SPHEROID[\"GRS_1980\",6378137,298.257222101]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",500000],PARAMETER[\"False_Northing\",0],PARAMETER[\"Central_Meridian\",-75],PARAMETER[\"Scale_Factor\",0.9996],PARAMETER[\"Latitude_Of_Origin\",0],UNIT[\"Meter\",1]]"
+  O> gis:set-transformation-ds [0 1000000 -1000000 1000000] [-10 10 -10 10]
+  map [ x -> precision x 6 ] gis:project-lat-lon 0 -75 => [0 0]
+
+set-coordinate-system-list-form
+  extensions [ gis ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-coordinate-system (list "GEOGCS" "GCS_WGS_1984" (list "DATUM" "D_WGS_1984" (list "SPHEROID" "WGS_1984" 6378137 298.257223563)) (list "PRIMEM" "primem" 0) (list "UNIT" "Degree" 0.017453292519943295))
+  O> gis:set-transformation-ds [-180 180 -90 90] [-10 10 -10 10]
+  gis:project-lat-lon 0 0 => [0 0]
+
+geojson-point-and-vertices
+  extensions [ gis ]
+  globals [ ds f ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-world-envelope-ds [0 21 0 21]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"Point\", \"coordinates\": [3, 4]}"
+  gis:type-of ds => "VECTOR"
+  gis:shape-type-of ds => "POINT"
+  gis:property-names ds => []
+  length gis:feature-list-of ds => 1
+  gis:envelope-of ds => [3 3 4 4]
+  O> set f item 0 gis:feature-list-of ds
+  gis:shape-type-of f => "POINT"
+  gis:envelope-of f => [3 3 4 4]
+  length gis:vertex-lists-of f => 1
+  gis:location-of item 0 (item 0 gis:vertex-lists-of f) => [-7.5 -6.5]
+  word ds => "{{gis:VectorDataset }}"
+  word f => "{{gis:VectorFeature }}"
+  word gis:centroid-of f => "{{gis:Vertex }}"
+
+geojson-geometry-types
+  extensions [ gis ]
+  globals [ ds f ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-world-envelope-ds [0 21 0 21]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"MultiPoint\", \"coordinates\": [[1, 2], [5, 6]]}"
+  gis:shape-type-of ds => "POINT"
+  length gis:vertex-lists-of item 0 gis:feature-list-of ds => 2
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"LineString\", \"coordinates\": [[0, 0], [10, 10]]}"
+  gis:shape-type-of ds => "LINE"
+  gis:envelope-of ds => [0 10 0 10]
+  map [ vl -> length vl ] gis:vertex-lists-of item 0 gis:feature-list-of ds => [2]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"MultiLineString\", \"coordinates\": [[[0, 0], [5, 5]], [[6, 6], [10, 10], [10, 0]]]}"
+  map [ vl -> length vl ] gis:vertex-lists-of item 0 gis:feature-list-of ds => [2 3]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]}"
+  gis:shape-type-of ds => "POLYGON"
+  gis:envelope-of ds => [0 10 0 10]
+  O> set f item 0 gis:feature-list-of ds
+  map [ vl -> length vl ] gis:vertex-lists-of f => [5]
+  gis:location-of gis:centroid-of f => [-5.5 -5.5]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]], [[2, 2], [4, 2], [4, 4], [2, 4], [2, 2]]]}"
+  map [ vl -> length vl ] gis:vertex-lists-of item 0 gis:feature-list-of ds => [5 5]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"MultiPolygon\", \"coordinates\": [[[[0, 0], [4, 0], [4, 4], [0, 4], [0, 0]]], [[[6, 6], [10, 6], [10, 10], [6, 10], [6, 6]]]]}"
+  gis:shape-type-of ds => "POLYGON"
+  map [ vl -> length vl ] gis:vertex-lists-of item 0 gis:feature-list-of ds => [5 5]
+
+geojson-feature-properties
+  extensions [ gis ]
+  globals [ ds f ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-world-envelope-ds [0 21 0 21]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [1, 1]}, \"properties\": {\"string\": \"stringVal\", \"number\": 3.14, \"arr\": [1,2,3], \"obj\": {\"key\": \"value\"}}}"
+  gis:property-names ds => ["STRING" "NUMBER" "ARR" "OBJ"]
+  O> set f item 0 gis:feature-list-of ds
+  gis:property-value f "string" => "stringVal"
+  gis:property-value f "number" => 3.14
+  gis:property-value f "arr" => "[1,2,3]"
+  gis:property-value f "obj" => "{\"key\":\"value\"}"
+  gis:property-value f "missing" => ERROR Extension exception: feature does not have property 'MISSING'
+  word f => "{{gis:VectorFeature [\"STRING\":\"stringVal\"][\"NUMBER\":\"3.14\"][\"ARR\":\"[1,2,3]\"][\"OBJ\":\"{\"key\":\"value\"}\"]}}"
+  O> gis:set-property-value f "string" "newVal"
+  gis:property-value f "string" => "newVal"
+  O> gis:set-property-value f "number" 2.71
+  gis:property-value f "number" => 2.71
+  O> gis:set-property-value f "string" 5 => ERROR Extension exception: Tried to set a numeric property to a string value
+  O> gis:set-property-value f "number" "abc" => ERROR Extension exception: Tried to set a string property to a number value
+
+geojson-feature-collections
+  extensions [ gis ]
+  globals [ ds f ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-world-envelope-ds [0 21 0 21]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [0, 0]}, \"properties\": {\"key\": \"0\", \"number\": 0}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [1, 1]}, \"properties\": {\"key\": \"1\", \"number\": 1, \"string\": \"present\"}}]}"
+  gis:property-names ds => ["KEY" "NUMBER" "STRING"]
+  gis:property-value gis:find-one-feature ds "key" "0" "number" => 0
+  gis:property-value gis:find-one-feature ds "key" "0" "string" => ""
+  gis:property-value gis:find-one-feature ds "key" "1" "string" => "present"
+  gis:find-one-feature ds "key" "7" => nobody
+  gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [0, 0]}, \"properties\": {\"num\": 0}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [1, 1]}, \"properties\": {\"num\": \"x\"}}]}" => ERROR Extension exception: All features properties of the same name must be of the same datatype. The property numhas one value of type of NUMBERand one property type of STRING
+  gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": []}" => ERROR Extension exception: Each FeatureCollection must have at least one feature.
+  gis:load-dataset-from-string "geojson" "{\"type\": \"GeometryCollection\", \"geometries\": []}" => ERROR Extension exception: GeometryCollection is not a supported GeoJSON type
+  gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [0, 0]}, \"properties\": {}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"LineString\", \"coordinates\": [[0, 0], [1, 1]]}, \"properties\": {}}]}" => ERROR Extension exception: Only homogenous FeatureCollections are supported
+
+find-features-wildcards
+  extensions [ gis ]
+  globals [ ds ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-world-envelope-ds [0 21 0 21]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [0, 0]}, \"properties\": {\"NAME\": \"San Juan\", \"NUM\": 1}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [1, 0]}, \"properties\": {\"NAME\": \"San Diego\", \"NUM\": 2}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [2, 0]}, \"properties\": {\"NAME\": \"Santiago\", \"NUM\": 3}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [3, 0]}, \"properties\": {\"NAME\": \"Busan\", \"NUM\": 4}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [4, 0]}, \"properties\": {\"NAME\": \"Paris\", \"NUM\": 5}}]}"
+  length (gis:find-features ds "NAME" "San") => 0
+  length (gis:find-features ds "NAME" "San*") => 3
+  length (gis:find-features ds "NAME" "*San") => 0
+  length (gis:find-features ds "NAME" "*San*") => 3
+  length (gis:find-features ds "NAME" "*san*") => 1
+  length (gis:find-features ds "NAME" "San Juan") => 1
+  length (gis:find-features ds "NAME" "*Juan") => 1
+  length (gis:find-features ds "NUM" 2) => 1
+  length (gis:find-features ds "NUM" 7) => 0
+  gis:find-features ds "NOPE" "x" => ERROR Extension exception: dataset does not have property: 'NOPE'
+  length gis:find-less-than ds "NUM" 3 => 2
+  length gis:find-greater-than ds "NUM" 3 => 2
+  length (gis:find-range ds "NUM" 1 5) => 3
+  gis:property-minimum ds "NUM" => 1
+  gis:property-maximum ds "NUM" => 5
+  gis:property-minimum ds "NAME" => "Busan"
+  gis:property-maximum ds "NAME" => "Santiago"
+  length gis:find-less-than ds "NAME" "San" => 2
+  gis:find-one-feature ds "NAME" "Sa*go" => nobody
+  gis:property-value gis:find-one-feature ds "NAME" "Santi*" "NUM" => 3
+
+spatial-relations
+  extensions [ gis ]
+  globals [ poly pt far ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-world-envelope-ds [0 21 0 21]
+  O> set poly item 0 gis:feature-list-of gis:load-dataset-from-string "geojson" "{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]}"
+  O> set pt item 0 gis:feature-list-of gis:load-dataset-from-string "geojson" "{\"type\": \"Point\", \"coordinates\": [5, 5]}"
+  O> set far item 0 gis:feature-list-of gis:load-dataset-from-string "geojson" "{\"type\": \"Point\", \"coordinates\": [20, 20]}"
+  gis:intersects? poly pt => true
+  gis:intersects? poly far => false
+  gis:contains? poly pt => true
+  gis:contains? pt poly => false
+  gis:contained-by? pt poly => true
+  gis:relationship-of poly pt => "0F2FF1FF2"
+  gis:have-relationship? poly pt "T*****FF*" => true
+  gis:have-relationship? poly far "T*****FF*" => false
+  gis:intersects? poly 5 => ERROR Extension exception: not a VectorFeature, Agent, AgentSet, or List: 5
+  count (patches gis:intersecting poly) => 121
+
+random-point-inside
+  extensions [ gis ]
+  globals [ poly pt ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-world-envelope-ds [0 21 0 21]
+  O> random-seed 0
+  O> set poly item 0 gis:feature-list-of gis:load-dataset-from-string "geojson" "{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]}"
+  length gis:location-of gis:random-point-inside poly => 2
+  O> set pt item 0 gis:feature-list-of gis:load-dataset-from-string "geojson" "{\"type\": \"Point\", \"coordinates\": [5, 5]}"
+  gis:random-point-inside pt => ERROR Extension exception: Tried to get a point inside of a non-polygon vector feature
+
+load-dataset-from-string-errors
+  extensions [ gis ]
+  gis:load-dataset-from-string "xyz" "data" => ERROR Extension exception: unsupported data format xyz
+  gis:load-dataset-from-string "geojson" "not json" => ERROR Extension exception: Error parsing GeoJSON data string
+
+first-load-sets-default-transformation
+  extensions [ gis ]
+  globals [ ds ]
+  O> resize-world -10 10 -10 10
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]}"
+  gis:world-envelope => [0 10 0 10]
+
+asc-load-and-raster-values
+  extensions [ gis ]
+  globals [ ds ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 40 0 30] [-10 10 -10 10]
+  O> set ds gis:load-dataset-from-string "asc" "ncols 4\nnrows 3\nxllcorner 0\nyllcorner 0\ncellsize 10\nNODATA_VALUE -9999\n1 2 3 4\n5 6 7 8\n9 10 11 -9999\n"
+  gis:type-of ds => "RASTER"
+  gis:envelope-of ds => [0 40 0 30]
+  gis:width-of ds => 4
+  gis:height-of ds => 3
+  gis:raster-value ds 0 0 => 1
+  gis:raster-value ds 3 1 => 8
+  gis:raster-value ds 2 2 => 11
+  gis:raster-value ds 4 0 => ERROR Extension exception: Coordinate out of bounds!
+  gis:minimum-of ds => 1
+  gis:maximum-of ds => 11
+  O> gis:set-raster-value ds 0 0 42
+  gis:raster-value ds 0 0 => 42
+  gis:maximum-of ds => 42
+
+raster-sampling
+  extensions [ gis ]
+  globals [ ds ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 40 0 30] [-10 10 -10 10]
+  O> set ds gis:load-dataset-from-string "asc" "ncols 4\nnrows 3\nxllcorner 0\nyllcorner 0\ncellsize 10\nNODATA_VALUE -9999\n1 2 3 4\n5 6 7 8\n9 10 11 -9999\n"
+  gis:sampling-method-of ds => "NEAREST_NEIGHBOR"
+  gis:raster-sample ds [0 0] => 7
+  gis:raster-sample ds [0 30 0 30] => 6
+  O> crt 1
+  gis:raster-sample ds turtle 0 => 7
+  gis:raster-sample ds [1 2 3] => ERROR Extension exception: list argument must have 2 elements (for a point), or 4 elements (for an envelope)
+  gis:raster-sample ds "x" => ERROR Extension exception: not a list, patch, turtle, or Vertex: x
+  O> gis:set-sampling-method ds "bilinear"
+  gis:sampling-method-of ds => "BILINEAR"
+  gis:raster-sample ds [0 0] => 5
+  O> gis:set-sampling-method ds "FOO" => ERROR Extension exception: Unknown interpolation type: "FOO"
+
+create-raster-and-resample
+  extensions [ gis ]
+  globals [ ds ds2 ]
+  O> resize-world -1 1 -1 1
+  O> gis:set-transformation-ds [0 40 0 30] [-1 1 -1 1]
+  O> set ds gis:load-dataset-from-string "asc" "ncols 4\nnrows 3\nxllcorner 0\nyllcorner 0\ncellsize 10\nNODATA_VALUE -9999\n1 2 3 4\n5 6 7 8\n9 10 11 -9999\n"
+  gis:raster-world-envelope ds 1 1 => [10 40 -10 20]
+  O> set ds2 gis:create-raster 2 2 [0 10 0 10]
+  gis:width-of ds2 => 2
+  gis:height-of ds2 => 2
+  gis:raster-value ds2 1 1 => 0
+  O> gis:set-raster-value ds2 1 1 7.5
+  gis:raster-value ds2 1 1 => 7.5
+  O> set ds2 gis:resample ds [0 40 0 30] 2 3
+  gis:width-of ds2 => 2
+  gis:raster-value ds2 0 0 => 2
+  gis:raster-value ds2 1 1 => 8
+  gis:minimum-of ds2 => 2
+  gis:maximum-of ds2 => 10
+
+asc-header-errors
+  extensions [ gis ]
+  gis:load-dataset-from-string "asc" "ncolz 4\nnrows 3\nxllcorner 0\nyllcorner 0\ncellsize 10\n1 2 3 4\n" => ERROR Extension exception: invalid column count marker on line 1
+  gis:load-dataset-from-string "asc" "ncols 4\nnrowz 3\nxllcorner 0\nyllcorner 0\ncellsize 10\n1 2 3 4\n" => ERROR Extension exception: invalid row count marker on line 2
+
+patch-dataset-and-apply-raster
+  extensions [ gis ]
+  globals [ ds ]
+  patches-own [ elev elev2 ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 21 0 21] [-10 10 -10 10]
+  O> ask patches [ set elev pxcor + pycor * 100 ]
+  O> set ds gis:patch-dataset elev
+  gis:type-of ds => "RASTER"
+  gis:width-of ds => 21
+  gis:height-of ds => 21
+  gis:envelope-of ds => [0 21 0 21]
+  gis:raster-value ds 0 0 => 990
+  gis:raster-value ds 20 20 => -990
+  gis:raster-value ds 10 10 => 0
+  O> gis:apply-raster ds elev2
+  [elev2] of patch 3 4 => 403
+  [elev2] of patch -7 -2 => -207
+  count patches with [ elev = elev2 ] => 441
+
+turtle-and-link-datasets
+  extensions [ gis ]
+  globals [ ds f ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 21 0 21] [-10 10 -10 10]
+  O> crt 1 [ setxy 2 3 set label "hi" ]
+  O> set ds gis:turtle-dataset turtles
+  gis:shape-type-of ds => "POINT"
+  length gis:feature-list-of ds => 1
+  gis:envelope-of ds => [12.5 12.5 13.5 13.5]
+  O> set f item 0 gis:feature-list-of ds
+  gis:property-value f "WHO" => 0
+  gis:property-value f "BREED" => "turtles"
+  gis:property-value f "LABEL" => "hi"
+  gis:property-value f "HIDDEN?" => "false"
+  O> crt 1 [ setxy -4 5 ]
+  O> ask turtle 0 [ create-link-with turtle 1 ]
+  O> set ds gis:link-dataset links
+  gis:shape-type-of ds => "LINE"
+  O> set f item 0 gis:feature-list-of ds
+  gis:property-value f "END1" => "turtle 0"
+  gis:property-value f "END2" => "turtle 1"
+  gis:envelope-of ds => [6.5 12.5 13.5 15.5]
+
+create-turtles-from-points
+  extensions [ gis ]
+  globals [ ds ]
+  turtles-own [ name ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 21 0 21] [-10 10 -10 10]
+  O> random-seed 0
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [0, 0]}, \"properties\": {\"name\": \"a\", \"color\": \"red\", \"size\": 3}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [10, 10]}, \"properties\": {\"name\": \"b\", \"color\": \"blue\", \"size\": 4}}]}"
+  O> gis:create-turtles-from-points ds turtles [ set heading 90 ]
+  count turtles => 2
+  [name] of turtle 0 => "a"
+  [color] of turtle 0 => 15
+  [size] of turtle 0 => 3
+  [xcor] of turtle 0 => -10.5
+  [ycor] of turtle 0 => -10.5
+  [name] of turtle 1 => "b"
+  [color] of turtle 1 => 105
+  [xcor] of turtle 1 => -0.5
+  count turtles with [ heading = 90 ] => 2
+  O> gis:create-turtles-from-points gis:load-dataset-from-string "geojson" "{\"type\": \"LineString\", \"coordinates\": [[0, 0], [1, 1]]}" turtles => ERROR Extension exception: Not a point dataset
+
+create-turtles-from-points-manual
+  extensions [ gis ]
+  globals [ ds ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 21 0 21] [-10 10 -10 10]
+  O> random-seed 0
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [5, 5]}, \"properties\": {\"tag\": \"hello\"}}"
+  O> (gis:create-turtles-from-points-manual ds turtles [["tag" "label"]])
+  count turtles => 1
+  [label] of turtle 0 => "hello"
+  O> (gis:create-turtles-from-points-manual ds turtles [["tag" "nope"]]) => ERROR Extension exception: There is no variable NOPE defined. use turtles-own or <breeds>-own to define one.
+  O> (gis:create-turtles-from-points-manual ds turtles [["tag"]]) => ERROR Extension exception: The variable mapping must be of the form: [["property-name" "turtle-variable-name"] ["property-name" "turtle-variable-name"] (etc.)]
+
+create-turtles-inside-polygon
+  extensions [ gis ]
+  globals [ poly ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 21 0 21] [-10 10 -10 10]
+  O> random-seed 0
+  O> set poly item 0 gis:feature-list-of gis:load-dataset-from-string "geojson" "{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]}"
+  O> crt 1 [ setxy 5 5 set size 9 ]
+  O> gis:create-turtles-inside-polygon poly turtles 5 [ set size 2 ]
+  count turtles => 6
+  [size] of turtle 0 => 9
+  count turtles with [ size = 2 ] => 5
+  count turtles with [ xcor >= -10.5 and xcor <= -0.5 and ycor >= -10.5 and ycor <= -0.5 ] => 5
+  O> gis:create-turtles-inside-polygon poly turtles 2.9
+  count turtles => 8
+
+apply-coverage
+  extensions [ gis ]
+  globals [ ds ]
+  patches-own [ v ]
+  O> resize-world -2 2 -2 2
+  O> gis:set-transformation-ds [0 5 0 5] [-2 2 -2 2]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [2.5, 0], [2.5, 5], [0, 5], [0, 0]]]}, \"properties\": {\"val\": 1}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[2.5, 0], [5, 0], [5, 5], [2.5, 5], [2.5, 0]]]}, \"properties\": {\"val\": 2}}]}"
+  O> gis:apply-coverage ds "VAL" v
+  [v] of patch -2 0 => 1
+  [v] of patch 2 0 => 2
+  [v] of patch 0 0 => 1
+  O> gis:set-coverage-maximum-threshold 0.51
+  O> gis:apply-coverage ds "VAL" v
+  precision ([v] of patch 0 0) 6 => 1.5
+  O> gis:apply-coverage ds "NOPE" v => ERROR Extension exception: NOPE is not a valid property name
+
+store-dataset-to-string-round-trips
+  extensions [ gis ]
+  globals [ ds ds2 ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 21 0 21] [-10 10 -10 10]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]], [[2, 2], [4, 2], [4, 4], [2, 4], [2, 2]]]}, \"properties\": {\"name\": \"sq\", \"num\": 3.5}}]}"
+  O> set ds2 gis:load-dataset-from-string "geojson" gis:store-dataset-to-string ds "geojson"
+  gis:shape-type-of ds2 => "POLYGON"
+  gis:property-names ds2 => ["NAME" "NUM"]
+  gis:property-value item 0 gis:feature-list-of ds2 "name" => "sq"
+  gis:property-value item 0 gis:feature-list-of ds2 "num" => 3.5
+  gis:envelope-of ds2 => [0 10 0 10]
+  map [ vl -> length vl ] gis:vertex-lists-of item 0 gis:feature-list-of ds2 => [5 5]
+  O> set ds gis:load-dataset-from-string "asc" "ncols 4\nnrows 3\nxllcorner 0\nyllcorner 0\ncellsize 10\nNODATA_VALUE -9999\n1 2 3 4\n5 6 7 8\n9 10 11 -9999\n"
+  O> set ds2 gis:load-dataset-from-string "asc" gis:store-dataset-to-string ds "asc"
+  gis:width-of ds2 => 4
+  gis:height-of ds2 => 3
+  gis:envelope-of ds2 => [0 40 0 30]
+  gis:raster-value ds2 0 0 => 1
+  gis:raster-value ds2 2 2 => 11
+  gis:minimum-of ds2 => 1
+  gis:maximum-of ds2 => 11
+
+store-dataset-to-string-errors
+  extensions [ gis ]
+  globals [ ds raster ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 21 0 21] [-10 10 -10 10]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"Point\", \"coordinates\": [1, 1]}"
+  O> set raster gis:load-dataset-from-string "asc" "ncols 2\nnrows 2\nxllcorner 0\nyllcorner 0\ncellsize 10\n1 2 3 4\n"
+  gis:store-dataset-to-string raster "shp" => ERROR Extension exception: expected a VectorDataset to store as shp
+  gis:store-dataset-to-string ds "asc" => ERROR Extension exception: expected a RasterDataset to store as asc
+  gis:store-dataset-to-string ds "xyz" => ERROR Extension exception: unsupported data format xyz
+  gis:store-dataset-to-strings ds "geojson" => ERROR Extension exception: geojson produces a single string; use gis:store-dataset-to-string
+  gis:store-dataset-to-strings ds "xyz" => ERROR Extension exception: unsupported data format xyz
+
+shapefile-round-trips
+  extensions [ gis ]
+  globals [ ds ds2 parts ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 21 0 21] [-10 10 -10 10]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 10], [10, 10], [10, 0], [0, 0]], [[2, 2], [4, 2], [4, 4], [2, 4], [2, 2]]]}, \"properties\": {\"name\": \"sq\", \"num\": 3.5}}]}"
+  O> set parts gis:store-dataset-to-strings ds "shp"
+  map [ p -> item 0 p ] parts => ["shp" "shx" "dbf"]
+  O> set ds2 gis:load-dataset-from-string "shp" parts
+  gis:shape-type-of ds2 => "POLYGON"
+  gis:property-names ds2 => ["NAME" "NUM"]
+  gis:property-value item 0 gis:feature-list-of ds2 "name" => "sq"
+  gis:property-value item 0 gis:feature-list-of ds2 "num" => 3.5
+  gis:envelope-of ds2 => [0 10 0 10]
+  map [ vl -> length vl ] gis:vertex-lists-of item 0 gis:feature-list-of ds2 => [5 5]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [3, 4]}, \"properties\": {\"tag\": \"a\"}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [7, 8]}, \"properties\": {\"tag\": \"b\"}}]}"
+  O> set ds2 gis:load-dataset-from-string "shp" gis:store-dataset-to-strings ds "shp"
+  gis:shape-type-of ds2 => "POINT"
+  length gis:feature-list-of ds2 => 2
+  gis:envelope-of ds2 => [3 7 4 8]
+  gis:property-value item 1 gis:feature-list-of ds2 "tag" => "b"
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"Feature\", \"geometry\": {\"type\": \"MultiLineString\", \"coordinates\": [[[0, 0], [5, 5]], [[6, 6], [10, 10], [10, 0]]]}, \"properties\": {\"n\": 1}}"
+  O> set ds2 gis:load-dataset-from-string "shp" gis:store-dataset-to-strings ds "shp"
+  gis:shape-type-of ds2 => "LINE"
+  map [ vl -> length vl ] gis:vertex-lists-of item 0 gis:feature-list-of ds2 => [2 3]
+
+shapefile-zip-round-trips
+  extensions [ gis ]
+  globals [ ds ds2 ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 21 0 21] [-10 10 -10 10]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 10], [10, 10], [10, 0], [0, 0]], [[2, 2], [4, 2], [4, 4], [2, 4], [2, 2]]]}, \"properties\": {\"name\": \"sq\", \"num\": 3.5}}]}"
+  O> set ds2 gis:load-dataset-from-string "shp" gis:store-dataset-to-string ds "shp"
+  gis:shape-type-of ds2 => "POLYGON"
+  gis:property-names ds2 => ["NAME" "NUM"]
+  gis:property-value item 0 gis:feature-list-of ds2 "name" => "sq"
+  gis:property-value item 0 gis:feature-list-of ds2 "num" => 3.5
+  gis:envelope-of ds2 => [0 10 0 10]
+  map [ vl -> length vl ] gis:vertex-lists-of item 0 gis:feature-list-of ds2 => [5 5]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [3, 4]}, \"properties\": {\"tag\": \"a\"}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [7, 8]}, \"properties\": {\"tag\": \"b\"}}]}"
+  O> set ds2 gis:load-dataset-from-string "shp" gis:store-dataset-to-string ds "shp"
+  gis:shape-type-of ds2 => "POINT"
+  length gis:feature-list-of ds2 => 2
+  gis:envelope-of ds2 => [3 7 4 8]
+  gis:property-value item 1 gis:feature-list-of ds2 "tag" => "b"
+
+shapefile-round-trip-with-prj
+  extensions [ gis ]
+  globals [ ds ds2 ds3 parts ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-coordinate-system "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"primem\",0.0],UNIT[\"Degree\",0.017453292519943295]]"
+  O> gis:set-transformation-ds [0 21 0 21] [-10 10 -10 10]
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [3, 4]}, \"properties\": {\"tag\": \"a\"}}"
+  O> set parts gis:store-dataset-to-strings ds "shp"
+  map [ p -> item 0 p ] parts => ["shp" "shx" "dbf" "prj"]
+  O> set ds2 gis:load-dataset-from-string "shp" parts
+  length gis:feature-list-of ds2 => 1
+  gis:envelope-of ds2 => [3 3 4 4]
+  gis:property-value item 0 gis:feature-list-of ds2 "tag" => "a"
+  O> set ds3 gis:load-dataset-from-string "shp" gis:store-dataset-to-string ds "shp"
+  length gis:feature-list-of ds3 => 1
+  gis:envelope-of ds3 => [3 3 4 4]
+  gis:property-value item 0 gis:feature-list-of ds3 "tag" => "a"
+
+shapefile-errors
+  extensions [ gis ]
+  gis:load-dataset-from-string "shp" [["dbf" "QQ=="]] => ERROR Extension exception: missing "shp" entry in shapefile data list
+  gis:load-dataset-from-string "shp" [["shp" "QQ=="]] => ERROR Extension exception: missing "dbf" entry in shapefile data list
+  gis:load-dataset-from-string "shp" [["shp" "!!bad!!"] ["dbf" "QQ=="]] => ERROR Extension exception: invalid base64 content for "shp" entry
+  gis:load-dataset-from-string "shp" "not@base64!" => ERROR Extension exception: invalid base64 content for shapefile zip data
+  gis:load-dataset-from-string "shp" "aGVsbG8=" => ERROR Extension exception: shapefile data is not a zip archive or the zip is empty
+  gis:load-dataset-from-string "shp" "UEsDBBQAAAAIAE6C91yg746eKwAAAH4AAAAFAAAAYS5kYmZjrmQRZmVgYHBk4AGSmMDN0wXG9AMR3GjyvAoIYIDENkRiGyGxjZHYJlIAUEsBAhQAFAAAAAgAToL3XKDvjp4rAAAAfgAAAAUAAAAAAAAAAAAAAAAAAAAAAGEuZGJmUEsFBgAAAAABAAEAMwAAAE4AAAAAAA==" => ERROR Extension exception: no ".shp" file found in the shapefile zip data
+  gis:load-dataset-from-string "shp" "UEsDBBQAAAAIAE6C91xNQvA6lAAAABgBAAAFAAAAYS5zaHBjYFDnYsAOel4wMzBwAxl/VVbq+DbGHLhWIe4aKOjskDjDos/8WcgBr9TMrpQCNweI8kgI7VAP5aMARiDmQzZrbozfoQhtFL1MMDWSx2TvNfRHoJlfCaKBLoKoufg0K3vp0cgDOluDVsdvdYGoOVAEollgaua3eX1Y3B8NdzfEnEwQzQpTA/OLANu2K9PLoGqAfgAAUEsDBBQAAAAIAE6C91xNQvA6lAAAABgBAAAFAAAAYi5zaHBjYFDnYsAOel4wMzBwAxl/VVbq+DbGHLhWIe4aKOjskDjDos/8WcgBr9TMrpQCNweI8kgI7VAP5aMARiDmQzZrbozfoQhtFL1MMDWSx2TvNfRHoJlfCaKBLoKoufg0K3vp0cgDOluDVsdvdYGoOVAEollgaua3eX1Y3B8NdzfEnEwQzQpTA/OLANu2K9PLoGqAfgAAUEsBAhQAFAAAAAgAToL3XE1C8DqUAAAAGAEAAAUAAAAAAAAAAAAAAAAAAAAAAGEuc2hwUEsBAhQAFAAAAAgAToL3XE1C8DqUAAAAGAEAAAUAAAAAAAAAAAAAAAAAtwAAAGIuc2hwUEsFBgAAAAACAAIAZgAAAG4BAAAAAA==" => ERROR Extension exception: found more than one ".shp" file in the shapefile zip data
+  gis:load-dataset-from-string "shp" "UEsDBBQAAAAIAE6C91xNQvA6lAAAABgBAAAFAAAAYS5zaHBjYFDnYsAOel4wMzBwAxl/VVbq+DbGHLhWIe4aKOjskDjDos/8WcgBr9TMrpQCNweI8kgI7VAP5aMARiDmQzZrbozfoQhtFL1MMDWSx2TvNfRHoJlfCaKBLoKoufg0K3vp0cgDOluDVsdvdYGoOVAEollgaua3eX1Y3B8NdzfEnEwQzQpTA/OLANu2K9PLoGqAfgAAUEsBAhQAFAAAAAgAToL3XE1C8DqUAAAAGAEAAAUAAAAAAAAAAAAAAAAAAAAAAGEuc2hwUEsFBgAAAAABAAEAMwAAALcAAAAAAA==" => ERROR Extension exception: no ".dbf" file matching "a.shp" found in the shapefile zip data
+
+shapefile-load-from-folder-zip
+  extensions [ gis ]
+  globals [ ds ]
+  O> resize-world -10 10 -10 10
+  # the fixture zip has the pointz-shapefile-import parts nested inside a folder, plus
+  # the metadata junk macOS's Finder adds, mimicking a zip made with the OS UI tools
+  O> set ds gis:load-dataset-from-string "shp" "UEsDBBQAAAAIAE6C91xNQvA6lAAAABgBAAARAAAAQ2l0aWVzL0NJVElFUy5zaHBjYFDnYsAOel4wMzBwAxl/VVbq+DbGHLhWIe4aKOjskDjDos/8WcgBr9TMrpQCNweI8kgI7VAP5aMARiDmQzZrbozfoQhtFL1MMDWSx2TvNfRHoJlfCaKBLoKoufg0K3vp0cgDOluDVsdvdYGoOVAEollgaua3eX1Y3B8NdzfEnEwQzQpTA/OLANu2K9PLoGqAfgAAUEsDBBQAAAAIAE6C91yg746eKwAAAH4AAAARAAAAQ2l0aWVzL2NpdGllcy5kYmZjrmQRZmVgYHBk4AGSmMDN0wXG9AMR3GjyvAoIYIDENkRiGyGxjZHYJlIAUEsDBBQAAAAIAE6C91zjwVFqeQAAAI8AAAARAAAAQ2l0aWVzL2NpdGllcy5wcmpzd/V3dw6OVgIS8eHuwfGGlhYmSjoujiGhvtFKLkhCwQEerkH+ni7RSggxM2NzC0Njcx0jSws9I1NzIyNjUzPj2FidgCBPX1egfvei1NS88szkDCUdg1idUD/PEKCZqelAUaCAnoGhuYmpsZGlkamhpaUJkGEaGwsAUEsDBBQAAAAIAE6C91w5nPsGBgAAAAQAAAAQAAAAQ2l0aWVzLy5EU19TdG9yZcsqzcsGAFBLAwQUAAAACABOgvdcOZz7BgYAAAAEAAAAHAAAAF9fTUFDT1NYL0NpdGllcy8uX0NJVElFUy5zaHDLKs3LBgBQSwECFAAUAAAACABOgvdcTULwOpQAAAAYAQAAEQAAAAAAAAAAAAAAAAAAAAAAQ2l0aWVzL0NJVElFUy5zaHBQSwECFAAUAAAACABOgvdcoO+OnisAAAB+AAAAEQAAAAAAAAAAAAAAAADDAAAAQ2l0aWVzL2NpdGllcy5kYmZQSwECFAAUAAAACABOgvdc48FRankAAACPAAAAEQAAAAAAAAAAAAAAAAAdAQAAQ2l0aWVzL2NpdGllcy5wcmpQSwECFAAUAAAACABOgvdcOZz7BgYAAAAEAAAAEAAAAAAAAAAAAAAAAADFAQAAQ2l0aWVzLy5EU19TdG9yZVBLAQIUABQAAAAIAE6C91w5nPsGBgAAAAQAAAAcAAAAAAAAAAAAAAAAAPkBAABfX01BQ09TWC9DaXRpZXMvLl9DSVRJRVMuc2hwUEsFBgAAAAAFAAUARQEAADkCAAAAAA=="
+  gis:shape-type-of ds => "POINT"
+  gis:property-names ds => ["FID" "_Z"]
+  length gis:feature-list-of ds => 5
+  map [ f -> gis:property-value f "_Z" ] gis:feature-list-of ds => [100 400 300 200 500]
+  map [ f -> gis:property-value f "FID" ] gis:feature-list-of ds => [0 1 2 3 4]
+
+pointz-shapefile-import
+  extensions [ gis ]
+  globals [ ds ]
+  O> resize-world -10 10 -10 10
+  O> set ds gis:load-dataset-from-string "shp" (list (list "shp" "AAAnCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAjOgDAAALAAAA/SSpLE2BXMDWeBdFURFDQGGYOI435lTASmVpimRwRkAAAAAAAABZQAAAAAAAQH9AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAOCwAAAP0kqSxNgVzAnVxOwlgrRkAAAAAAAABZQAAAAAIAAAAOCwAAABnGHd6Aj1jASmVpimRwRkAAAAAAAAB5QAAAAAMAAAAOCwAAANHlamulxVnALLVSq1+1REAAAAAAAMByQAAAAAQAAAAOCwAAAJ+GSvCjj1vA1ngXRVERQ0AAAAAAAABpQAAAAAUAAAAOCwAAAGGYOI435lTAEAa21Jd2Q0AAAAAAAEB/QA==") (list "dbf" "A3kEEwUAAABBAAwAAAAAAAAAAAAAAAAAAAAAAAAAAABGSUQAAAAAAAAAAE4AAAAACwAAAAAAAAAAAAAAAAAAAA0gICAgICAgICAgIDAgICAgICAgICAgIDEgICAgICAgICAgIDIgICAgICAgICAgIDMgICAgICAgICAgIDQa") (list "prj" "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]"))
+  gis:shape-type-of ds => "POINT"
+  gis:property-names ds => ["FID" "_Z"]
+  length gis:feature-list-of ds => 5
+  map [ f -> gis:property-value f "_Z" ] gis:feature-list-of ds => [100 400 300 200 500]
+  map [ f -> gis:property-value f "FID" ] gis:feature-list-of ds => [0 1 2 3 4]
+
+pointz-geojson-import
+  extensions [ gis ]
+  globals [ ds ]
+  O> resize-world -10 10 -10 10
+  O> set ds gis:load-dataset-from-string "geojson" "{\"type\": \"FeatureCollection\", \"name\": \"pointZ\", \"crs\": {\"type\": \"name\", \"properties\": {\"name\": \"urn:ogc:def:crs:OGC:1.3:CRS84\"}}, \"features\": [{\"type\": \"Feature\", \"properties\": {\"FID\": 0}, \"geometry\": {\"type\": \"Point\", \"coordinates\": [-114.02033535497681, 44.338646209967216, 100.0]}}, {\"type\": \"Feature\", \"properties\": {\"FID\": 1}, \"geometry\": {\"type\": \"Point\", \"coordinates\": [-98.24224045665359, 44.87806825777314, 400.0]}}, {\"type\": \"Feature\", \"properties\": {\"FID\": 2}, \"geometry\": {\"type\": \"Point\", \"coordinates\": [-103.08822141112547, 41.41698209322416, 300.0]}}, {\"type\": \"Feature\", \"properties\": {\"FID\": 3}, \"geometry\": {\"type\": \"Point\", \"coordinates\": [-110.24438102033535, 38.13529266019911, 200.0]}}, {\"type\": \"Feature\", \"properties\": {\"FID\": 4}, \"geometry\": {\"type\": \"Point\", \"coordinates\": [-83.5971408417404, 38.92650851142764, 500.0]}}]}"
+  gis:property-names ds => ["FID" "_Z"]
+  map [ f -> gis:property-value f "_Z" ] gis:feature-list-of ds => [100 400 300 200 500]
+
+ignored-z-imports
+  extensions [ gis ]
+  globals [ ds ]
+  O> resize-world -10 10 -10 10
+  O> set ds gis:load-dataset-from-string "shp" (list (list "shp" "AAAnCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAABcugDAAASAAAApHDCnCvQW8CZcORo5B9FQH4B00NZMlnAchkqxNLVRkAAAAAAAAAAAAAAAAAAgHZAAAAAAAAAAAAAAAAAAABpQAAAAAEAAABEEgAAADw17/loz1vAffu6wwUHRkBz/6D99K1bwIhN+x+gDkZAAgAAAHP/oP30rVvAiE37H6AORkA8Ne/5aM9bwH37usMFB0ZAAAAAAAAAWUAAAAAAAABZQAAAAAAAAFlAAAAAAAAAWUAAAAAAAAAAAAAAAAAAAFlAAAAAAAAAWUAAAAAAAAAAAAAAAAIAAABUEgAAAAAaFr10q1rAyQkNE7aDRkCJexqrjntawHIZKsTS1UZAAwAAANr6NHrYkFrAchkqxNLVRkCJexqrjntawJiAs1g7hUZAABoWvXSrWsDJCQ0TtoNGQAAAAAAAAGlAAAAAAADAbEAAAAAAAABpQAAAAAAAQGpAAAAAAADAbEAAAAAAAAAAAAAAAAAAAGlAAAAAAAAAaUAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAADQSAAAAQgaY5hLZWsCZcORo5B9FQEIGmOYS2VrAmXDkaOQfRUABAAAAQgaY5hLZWsCZcORo5B9FQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAABkEgAAAODjFYLGdlnAaLcaeOFoRUB+AdNDWTJZwKNiRFhutkVABAAAAODjFYLGdlnAk/8b6UqHRUCUjRvhSWVZwKNiRFhutkVABjNn++pJWcBotxp44WhFQH4B00NZMlnAUuMpiSShRUAAAAAAAMByQAAAAAAAgHZAAAAAAADAckAAAAAAAAB0QAAAAAAAQHVAAAAAAACAdkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=") (list "dbf" "A3kEGAQAAABBAAsAAAAAAAAAAAAAAAAAAAAAAAAAAABpZAAAAAAAAAAAAE4AAAAACgAAAAAAAAAAAAAAAAAAAA0gKioqKioqKioqKiAqKioqKioqKioqICoqKioqKioqKiogKioqKioqKioqKho="))
+  gis:shape-type-of ds => "POINT"
+  length gis:feature-list-of ds => 4
+  map [ f -> length gis:vertex-lists-of f ] gis:feature-list-of ds => [2 3 1 4]
+  gis:property-value item 0 gis:feature-list-of ds "id" => nobody
+  O> set ds gis:load-dataset-from-string "shp" (list (list "shp" "AAAnCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAABjugDAAANAAAAQqa3eQJoW8Bd5VvPiCVDQKSom/6g/1nA6o8eyx3ERUAAAAAAAAAAAAAAAAAAgGlAAAAAAAAAAAAAAAAAAABaQAAAAAEAAABoDQAAAIPa4fRsKlvAXeVbz4glQ0CkqJv+oP9ZwKmTzbEoMURAAQAAAAQAAAAAAAAAg9rh9GwqW8CZYBV5jbpDQHgAuiAncFrAXeVbz4glQ0CkqJv+oP9ZwKmTzbEoMURA8LbtTVF8WsDPyuYPCShEQAAAAAAAIGlAAAAAAACAaUAAAAAAACBpQAAAAAAAQGlAAAAAAABgaUAAAAAAAIBpQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAADsDQAAAEKmt3kCaFvARyE60CLDRECDgmqzSTBawOqPHssdxEVAAwAAAAwAAAAAAAAABAAAAAgAAABCprd5AmhbwELg4YYR40RAr4LD0ua5WsDqjx7LHcRFQIOCarNJMFrAbSjj93oBRUARra5iIJNawEchOtAiw0RA6/18fOtOW8AsPGHO3NNEQEIe0AFXtVrAz9q1/1+NRUB+QRJqOFBawIPMY7CvEEVAuuw7SsWdWsBC4OGGEeNEQOXslGliJ1vAIeogckLMRECkMIN2TLJawEfBWWMSUkVA9t8NfB6AWsC/p/3GxBZFQPbH1WDao1rAqQN9DpAHRUAAAAAAAABZQAAAAAAAwFtAAAAAAAAAWUAAAAAAAEBZQAAAAAAAgFlAAAAAAADAWUAAAAAAAABaQAAAAAAAQFpAAAAAAACAWkAAAAAAAMBaQAAAAAAAAFtAAAAAAABAW0AAAAAAAIBbQAAAAAAAwFtAAAAAAAAAAAAAAAAAAABaQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==") (list "dbf" "A3kEGAIAAABBAAsAAAAAAAAAAAAAAAAAAAAAAAAAAABpZAAAAAAAAAAAAE4AAAAACgAAAAAAAAAAAAAAAAAAAA0gKioqKioqKioqKiAqKioqKioqKioqGg=="))
+  gis:shape-type-of ds => "LINE"
+  length gis:feature-list-of ds => 2
+  map [ f -> map [ vl -> length vl ] gis:vertex-lists-of f ] gis:feature-list-of ds => [[4] [4 4 4]]
+  O> set ds gis:load-dataset-from-string "shp" (list (list "shp" "AAAnCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAACnOgDAAAPAAAA4SoF8h4lXMBNgjNgZfZCQDkHEjfuMVnAfQWQ5NM5R0AAAAAAAAAAAAAAAAAAQH9AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAEMDwAAAL8Ss0jWTFrASioJl9+FRUDF5ticxG9ZwH0FkOTTOUdAAwAAAA4AAAAAAAAABQAAAAoAAAD8Qb2GURFawPeuyRnbcEZAuBZaIdWsWcDyuxPxHlhGQET2IIer6lnASioJl9+FRUC/ErNI1kxawHo+b6Ba2UVA/EG9hlERWsD3rskZ23BGQAGAmGge2FnAmk0eS14qR0DF5ticxG9ZwMv3zsb62UZAiLfOXkmrWcCRstey9qZGQHlIYnLzBFrAfQWQ5NM5R0ABgJhoHthZwJpNHkteKkdAcBfRZ2olWsBhCCc3WvdGQOvJrZu241nAg46Qf7GuRkAicLc+VDNawHRqSUxstkZAcBfRZ2olWsBhCCc3WvdGQAAAAAAAAPA/AAAAAAAAFEAAAAAAAAAUQAAAAAAAAABAAAAAAAAACEAAAAAAAAAQQAAAAAAAABRAAAAAAAAAFEAAAAAAAAAAQAAAAAAAAAhAAAAAAAAAEEAAAAAAAAAUQAAAAAAAAPA/AAAAAAAAAEAAAAAAAAAIQAAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAiA8AAADhKgXyHiVcwEt1LlDwM0VAqHtYUDxOW8CcebMvoeJFQAEAAAAGAAAAAAAAADFxDIyb+lvAS8gHPZuNRUCoe1hQPE5bwJx5sy+h4kVAAajLOzFVW8DSYT+NCllFQOEqBfIeJVzAS3UuUPAzRUDy7TmWygBcwNv8hSVy3EVAMXEMjJv6W8BLyAc9m41FQAAAAAAAAFlAAAAAAABAf0AAAAAAAABZQAAAAAAAAGlAAAAAAADAckAAAAAAAAB5QAAAAAAAQH9AAAAAAAAAWUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAMoPAAAAj/5MP1v5WcBNgjNgZfZCQDkHEjfuMVnA1+o/KOjNREACAAAACgAAAAAAAAAFAAAAmS/eSeTYWcCsyY9HKZNEQDkHEjfuMVnA1+o/KOjNREC0bsmxKUJZwE2CM2Bl9kJAj/5MP1v5WcCkD7na8xlDQJkv3knk2FnArMmPRymTRED1+j6mP8NZwMArslw7UkRAR5UO+BHOWcBNNw6nVEhDQEp/ISKJX1nA2WH6xTs0Q0BgNQzv8FNZwGhTBymcgERA9fo+pj/DWcDAK7JcO1JEQAAAAAAAAPA/AAAAAAAAFEAAAAAAAAAUQAAAAAAAAABAAAAAAAAACEAAAAAAAAAQQAAAAAAAABRAAAAAAAAA8D8AAAAAAAAAQAAAAAAAAAhAAAAAAAAAEEAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==") (list "dbf" "A3kEGAMAAABBAAsAAAAAAAAAAAAAAAAAAAAAAAAAAABpZAAAAAAAAAAAAE4AAAAACgAAAAAAAAAAAAAAAAAAAA0gKioqKioqKioqKiAqKioqKioqKioqICoqKioqKioqKioa"))
+  gis:shape-type-of ds => "POLYGON"
+  length gis:feature-list-of ds => 3
+  map [ f -> sort map [ vl -> length vl ] gis:vertex-lists-of f ] gis:feature-list-of ds => [[4 5 5] [6] [5 5]]
+
+create-turtles-built-in-variable-mappings
+  extensions [ gis ]
+  globals [ ds ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [-160 -140 -18 0] [-10 10 -10 10]
+  O> set ds gis:load-dataset-from-string "shp" (list (list "shp" "AAAnCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQOgDAAABAAAAHX/5ejDOYsCgIfe+I0ogwB1/+XowzmLAoCH3viNKIMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAKAQAAAB1/+XowzmLAoCH3viNKIMA=") (list "dbf" "A3kDHwEAAAAhAawAAAAAAAAAAAAAAAAAAAAAAAAAAABpZAAAAAAAAAAAAE4AAAAACgAAAAAAAAAAAAAAAAAAAHRleHRmaWVsZAAAQwAAAABQAAAAAAAAAAAAAAAAAAAAbnVtZmllbGQAAABOAAAAABUGAAAAAAAAAAAAAAAAAABjb2xvcnN0cgAAAEMAAAAAFAAAAAAAAAAAAAAAAAAAAGNvbG9ybnVtAAAATgAAAAAKAAAAAAAAAAAAAAAAAAAAc2hhcGVzdHIAAABDAAAAAAoAAAAAAAAAAAAAAAAAAABib29sc3RyAAAAAEMAAAAACgAAAAAAAAAAAAAAAAAAAGJvb2xudW0AAAAATgAAAAAKAAAAAAAAAAAAAAAAAAAADSAqKioqKioqKioqZG93biAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAxNS4wMDAwMDBibHVlICAgICAgICAgICAgICAgICAgICAgICAgNTVjaXJjbGUgICAgdHJ1ZSAgICAgICAgICAgICAgIDEa"))
+  length gis:feature-list-of ds => 1
+  gis:property-value item 0 gis:feature-list-of ds "id" => nobody
+  gis:property-value item 0 gis:feature-list-of ds "numfield" => 15
+  O> (gis:create-turtles-from-points-manual ds turtles [["colornum" "color"]])
+  [color] of turtle 0 => 55
+  O> ct
+  O> (gis:create-turtles-from-points-manual ds turtles [["colorstr" "color"]])
+  [color] of turtle 0 => 105
+  O> ct
+  O> (gis:create-turtles-from-points-manual ds turtles [["numfield" "heading"]])
+  [heading] of turtle 0 => 15
+  O> ct
+  O> (gis:create-turtles-from-points-manual ds turtles [["shapestr" "shape"]])
+  [shape] of turtle 0 => "circle"
+  O> ct
+  O> (gis:create-turtles-from-points-manual ds turtles [["boolstr" "hidden?"]])
+  [hidden?] of turtle 0 => true
+  O> ct
+  O> (gis:create-turtles-from-points-manual ds turtles [["boolnum" "hidden?"]])
+  [hidden?] of turtle 0 => true
+  O> ct
+  O> (gis:create-turtles-from-points-manual ds turtles [["numfield" "size"]])
+  [size] of turtle 0 => 15
+  O> ct
+  O> (gis:create-turtles-from-points-manual ds turtles [["colorstr" "label-color"]] [ set label "foo" ])
+  [label-color] of turtle 0 => 105
+  [label] of turtle 0 => "foo"
+  O> ct
+  O> (gis:create-turtles-from-points-manual ds turtles [["textfield" "pen-mode"]])
+  [pen-mode] of turtle 0 => "down"
+
+set-coordinate-system-errors
+  extensions [ gis ]
+  O> gis:set-coordinate-system "LOCAL_CS[\"whatever\"]" => ERROR Extension exception: only GEOGCS and PROJCS are supported. Try using a tool like QGIS or ArcMap to convert your data to a different projection like WGS84
+  O> gis:set-coordinate-system "PROJCS[\"x\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Fake_Projection\"],PARAMETER[\"False_Easting\",0],PARAMETER[\"False_Northing\",0],PARAMETER[\"Central_Meridian\",0],PARAMETER[\"Latitude_Of_Origin\",0],UNIT[\"Meter\",1]]" => ERROR Extension exception: unsupported projection 'Fake_Projection'
+  O> gis:set-coordinate-system "PROJCS[\"x\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Robinson\"],PARAMETER[\"False_Easting\",0],PARAMETER[\"False_Northing\",0],PARAMETER[\"Central_Meridian\",0],UNIT[\"Meter\",1]]" => ERROR Extension exception: the projection 'Robinson' is not yet implemented in the NetLogo Web GIS extension
