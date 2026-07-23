@@ -10,11 +10,27 @@ load-coordinate-system-not-supported
   extensions [ gis ]
   O> gis:load-coordinate-system "extensions/gis/examples/shared-datasets/cities.prj" => ERROR Extension exception: gis:load-coordinate-system is not supported by NetLogo Web. Use gis:set-coordinate-system instead.
 
-drawing-prims-not-implemented
+drawing-prims
   extensions [ gis ]
-  O> gis:draw 0 1 => ERROR Extension exception: gis:draw is not yet implemented
-  O> gis:fill 0 1 => ERROR Extension exception: gis:fill is not yet implemented
-  O> gis:paint 0 50 => ERROR Extension exception: gis:paint is not yet implemented
+  globals [ poly ras ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 20 0 20] [-10 10 -10 10]
+  O> set poly gis:load-dataset-from-string "geojson" "{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 10], [10, 10], [10, 0], [0, 0]], [[2, 2], [4, 2], [4, 4], [2, 4], [2, 2]]]}"
+  O> gis:set-drawing-color [200 30 30]
+  O> gis:draw poly 2
+  O> gis:fill poly 1
+  O> set ras gis:load-dataset-from-string "asc" "ncols 4\nnrows 3\nxllcorner 0\nyllcorner 0\ncellsize 5\n1 2 3 4\n5 6 7 8\n9 10 11 12\n"
+  O> gis:paint ras 100
+  gis:type-of ras => "RASTER"
+
+drawing-prims-errors
+  extensions [ gis ]
+  globals [ ras ]
+  O> resize-world -10 10 -10 10
+  O> gis:set-transformation-ds [0 20 0 20] [-10 10 -10 10]
+  O> set ras gis:load-dataset-from-string "asc" "ncols 2\nnrows 2\nxllcorner 0\nyllcorner 0\ncellsize 5\n1 2 3 4\n"
+  O> gis:paint ras 300 => ERROR Extension exception: transparency must be between 0 and 255
+  O> gis:paint ras -1 => ERROR Extension exception: transparency must be between 0 and 255
   O> gis:import-wms-drawing "http://example.com" "EPSG:4326" "layer" 50 => ERROR Extension exception: gis:import-wms-drawing is not yet implemented
 
 convolve

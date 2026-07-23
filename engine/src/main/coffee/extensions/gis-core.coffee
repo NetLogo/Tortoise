@@ -44,12 +44,17 @@ class CoordinateTransformation
 
   # (Coordinate) => Coordinate | null
   gisToNetLogo: (pt) ->
-    result = new Coordinate(((pt.x - @gisSpaceCenter.x) * @scaleX) + @netLogoSpaceCenter.x,
-                            ((pt.y - @gisSpaceCenter.y) * @scaleY) + @netLogoSpaceCenter.y)
+    result = @gisToNetLogoRaw(pt)
     if @netLogoEnvelope.contains(result)
       result
     else
       null
+
+  # (Coordinate) => Coordinate — same transform without the world-envelope clip, for
+  # drawing (which is bounded by the drawing layer, not the world envelope)
+  gisToNetLogoRaw: (pt) ->
+    new Coordinate(((pt.x - @gisSpaceCenter.x) * @scaleX) + @netLogoSpaceCenter.x,
+                   ((pt.y - @gisSpaceCenter.y) * @scaleY) + @netLogoSpaceCenter.y)
 
   # (World) => Envelope
   getEnvelope: (world) ->
@@ -86,6 +91,10 @@ module.exports = (workspace) ->
   # (Coordinate) => Coordinate | null
   gisToNetLogo = (pt) ->
     getTransformation().gisToNetLogo(pt)
+
+  # (Coordinate) => Coordinate — unclipped, for drawing
+  gisToNetLogoRaw = (pt) ->
+    getTransformation().gisToNetLogoRaw(pt)
 
   # (List) => Envelope
   parseEnvelope = (list) ->
@@ -187,6 +196,7 @@ module.exports = (workspace) ->
   , getTransformation
   , netLogoToGIS
   , gisToNetLogo
+  , gisToNetLogoRaw
   , agentGeometry
   , parseEnvelope
   , formatEnvelope

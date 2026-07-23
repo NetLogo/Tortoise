@@ -41,6 +41,7 @@ module.exports = {
     raster     = require('extensions/gis-raster')({ core, workspace })
     io         = require('extensions/gis-io')({ core, projection, vector, raster, workspace })
     agents     = require('extensions/gis-agents')({ core, vector, raster, workspace })
+    draw       = require('extensions/gis-draw')({ core, raster, workspace })
 
     {
       name: "gis"
@@ -113,9 +114,9 @@ module.exports = {
       , "APPLY-RASTER":                         agents.prims["APPLY-RASTER"]
       , "DRAWING-COLOR":                        core.prims["DRAWING-COLOR"]
       , "SET-DRAWING-COLOR":                    core.prims["SET-DRAWING-COLOR"]
-      , "DRAW":                                 notImplemented("draw")
-      , "FILL":                                 notImplemented("fill")
-      , "PAINT":                                notImplemented("paint")
+      , "DRAW":                                 draw.prims["DRAW"]
+      , "FILL":                                 draw.prims["FILL"]
+      , "PAINT":                                draw.prims["PAINT"]
       , "IMPORT-WMS-DRAWING":                   notImplemented("import-wms-drawing")
       }
     }
