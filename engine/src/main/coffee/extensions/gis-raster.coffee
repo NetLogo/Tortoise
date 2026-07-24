@@ -107,6 +107,59 @@ interpolate = (samples, xfrac, yfrac, method) ->
         result += yWeights[iy] * rowValue
       result
 
+# Port of KernelJAI.checkSeparable.  JAI's `convolve` dispatches on this: a separable
+# (rank-1) kernel with width and height both > 1 goes through SeparableConvolveOpImage
+# (two float-factored 1-D passes, no rounding offset), everything else through
+# ConvolveOpImage (a direct sum that seeds its accumulator with 0.5).  Returns the
+# rotated separable factors ({ dataH, dataV }) when separable, or null otherwise.  All
+# arithmetic mirrors JAI's single-precision float ops (hence the `Math.fround`s), so the
+# factors -- and thus the convolution -- match desktop bit-for-bit.
+# ({ width: Number, height: Number, data: Float32Array }) => { dataH: Float32Array, dataV: Float32Array } | null
+FLOAT_ZERO_TOL = Math.fround(1.0e-5)
+kernelSeparation = ({ width, height, data }) ->
+  fr = Math.fround
+  return null if width <= 1 or height <= 1
+  maxData = 0.0
+  imax    = 0
+  for k in [0...data.length]
+    tmp = Math.abs(data[k])
+    if tmp > maxData
+      imax    = k
+      maxData = tmp
+  return null if maxData < fr(FLOAT_ZERO_TOL / data.length)
+  fac    = fr(1.0 / data[imax])
+  jmax   = imax % width
+  maxRow = Math.trunc(imax / width)
+  dataH  = new Float32Array(width)
+  dataH[j] = fr(data[(maxRow * width) + j] * fac) for j in [0...width]
+  # every row must be a multiple of the max row for the kernel to be rank 1
+  for i in [0...height]
+    i0 = i * width
+    for j in [0...width]
+      return null if Math.abs(fr(fr(data[i0 + jmax] * dataH[j]) - data[i0 + j])) > FLOAT_ZERO_TOL
+  dataV = new Float32Array(height)
+  dataV[i] = data[jmax + (i * width)] for i in [0...height]
+  # normalize so the larger-summing factor vector sums to 1 (JAI does this so its
+  # byte/short lookup tables stay in range; harmless but must be replicated for parity)
+  sumH = 0.0
+  sumH = fr(sumH + dataH[j]) for j in [0...width]
+  sumV = 0.0
+  sumV = fr(sumV + dataV[i]) for i in [0...height]
+  if Math.abs(sumH) >= Math.abs(sumV) and Math.abs(sumH) > FLOAT_ZERO_TOL
+    fac = fr(1.0 / sumH)
+    dataH[j] = fr(dataH[j] * fac)  for j in [0...width]
+    dataV[i] = fr(dataV[i] * sumH) for i in [0...height]
+  else if Math.abs(sumH) < Math.abs(sumV) and Math.abs(sumV) > FLOAT_ZERO_TOL
+    fac = fr(1.0 / sumV)
+    dataH[j] = fr(dataH[j] * sumV) for j in [0...width]
+    dataV[i] = fr(dataV[i] * fac)  for i in [0...height]
+  # JAI convolves with the 180-degree-rotated kernel, which reverses each factor vector
+  rotH = new Float32Array(width)
+  rotV = new Float32Array(height)
+  rotH[i] = dataH[width - 1 - i]  for i in [0...width]
+  rotV[i] = dataV[height - 1 - i] for i in [0...height]
+  { dataH: rotH, dataV: rotV }
+
 class RasterDataset
   gisType: "RasterDataset"
 
@@ -189,27 +242,40 @@ class RasterDataset
 
   # port of RasterDataset.convolve: JAI's `convolve` op is true convolution (the kernel
   # is rotated 180 degrees), and its NaN border extender makes any output cell whose
-  # kernel reaches outside the raster NaN.  The + 0.5 is JAI's (pure-Java, non-mediaLib)
-  # ConvolveOpImage applying its integer-rounding offset to floating-point samples
-  # without ever truncating — a JAI quirk kept for desktop parity.
+  # kernel reaches outside the raster NaN.  JAI splits into two code paths that DIFFER in
+  # results (see kernelSeparation): the general ConvolveOpImage seeds its accumulator with
+  # 0.5 (an integer-rounding offset it applies to doubles regardless), while
+  # SeparableConvolveOpImage adds no offset and computes two float-factored 1-D passes.
+  # Both are reproduced here for desktop parity.
   # ({ width: Number, height: Number, xOrigin: Number, yOrigin: Number, data: Float32Array }, GisCore) => RasterDataset
   convolve: (kernel, core) ->
     { gridWidth: width, gridHeight: height } = @dimensions
+    { width: kw, height: kh } = kernel
     out = new Float64Array(width * height)
+    # rotated-kernel origins become the left/top padding JAI positions the footprint by
+    rxo = kw - 1 - kernel.xOrigin
+    ryo = kh - 1 - kernel.yOrigin
+    sample = (sx, sy) =>
+      if sx >= 0 and sx < width and sy >= 0 and sy < height then @data[(sy * width) + sx] else NaN
+    separation = kernelSeparation(kernel)
     for y in [0...height]
       for x in [0...width]
-        sum = 0
-        for j in [0...kernel.height]
-          sy = y + kernel.yOrigin - j
-          for i in [0...kernel.width]
-            sx = x + kernel.xOrigin - i
-            value =
-              if sx >= 0 and sx < width and sy >= 0 and sy < height
-                @data[(sy * width) + sx]
-              else
-                NaN
-            sum += kernel.data[(j * kernel.width) + i] * value
-        out[(y * width) + x] = sum + 0.5
+        out[(y * width) + x] =
+          if separation?
+            { dataH, dataV } = separation
+            result = 0
+            for u in [0...kh]
+              sy = (y - ryo) + u
+              rowSum = 0
+              rowSum += sample((x - rxo) + v, sy) * dataH[v] for v in [0...kw]
+              result += rowSum * dataV[u]
+            result
+          else
+            sum = 0.5
+            for u in [0...kh]
+              sy = (y - ryo) + u
+              sum += sample((x - rxo) + v, sy) * kernel.data[(kw * kh) - 1 - ((u * kw) + v)] for v in [0...kw]
+            sum
     new RasterDataset(@dimensions, out, core)
 
   # samples this raster (with its interpolation) at each new cell's center.  Desktop scales via JAI's `scale` op
