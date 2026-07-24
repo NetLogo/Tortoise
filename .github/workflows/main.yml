@@ -7,6 +7,9 @@ on:
 
 env:
   SBT_OPTS: -Dsbt.log.noformat=true
+  # Fuzz suites (e.g. TestGISFuzz) run extra randomly-seeded cases locally for coverage; CI
+  # must stay deterministic and only run each suite's `fixedSeeds`, so disable the random runs.
+  TORTOISE_FUZZ_NO_RANDOM: "1"
 
 jobs:
   build:
