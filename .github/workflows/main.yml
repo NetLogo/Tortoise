@@ -69,13 +69,23 @@ jobs:
         run: |
           ./sbt.sh "netLogoWeb / Test / runMain org.nlogo.tortoise.nlw.ExtensionsInstaller"
 
+      # The cache below is keyed and restored identically in every job. Keying on the SHA alone
+      # would make it immutable per-commit: a re-run restores the first run's `~/.netlogo` and never
+      # re-saves it, so an extension that was stale/missing in that first run (e.g. a NetLogo-Libraries
+      # update landing after the fact) would stay stale forever on re-runs. Adding run_id+run_attempt
+      # gives each fresh run/attempt its own cache while all jobs within one attempt still share it,
+      # and the `restore-keys` prefix lets "Re-run failed jobs" (which does not re-run `build`) fall
+      # back to an earlier attempt of the same run for transient failures. Only a full "Re-run all
+      # jobs" bumps the exact key, re-runs `build`, and forces a fresh extension install.
       - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         id: restore-build
         with:
           path: |
             ./*
             ~/.netlogo
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ github.sha }}-${{ github.run_id }}-
 
   lint:
     runs-on: ubuntu-latest
@@ -87,7 +97,9 @@ jobs:
           path: |
             ./*
             ~/.netlogo
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ github.sha }}-${{ github.run_id }}-
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
         with:
@@ -120,7 +132,9 @@ jobs:
           path: |
             ./*
             ~/.netlogo
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ github.sha }}-${{ github.run_id }}-
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
         with:
@@ -154,7 +168,9 @@ jobs:
           path: |
             ./*
             ~/.netlogo
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ github.sha }}-${{ github.run_id }}-
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
         with:
@@ -189,7 +205,9 @@ jobs:
           path: |
             ./*
             ~/.netlogo
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ github.sha }}-${{ github.run_id }}-
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
         with:
@@ -218,7 +236,9 @@ jobs:
           path: |
             ./*
             ~/.netlogo
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ github.sha }}-${{ github.run_id }}-
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
         with:
@@ -252,7 +272,9 @@ jobs:
           path: |
             ./*
             ~/.netlogo
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ github.sha }}-${{ github.run_id }}-
 
       - uses: graalvm/setup-graalvm@bef4b0e916c7dd079bf60fb95d49139f67e32c5f # v1
         with:
