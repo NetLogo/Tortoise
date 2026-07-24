@@ -15,15 +15,17 @@ PatchSet   = require('../engine/core/patchset')
 { IndexedPointInAreaLocator }      = JSTS.algorithm.locate
 { STRtree }                        = JSTS.index.strtree
 
-# (Any) => String — mimics Java's `String.valueOf` on property values (Double 5 -> "5.0"), which desktop
-# uses for both wildcard matching and feature dumps
+# mimics Java's `String.valueOf` on property values (Double 5 -> "5.0"), which desktop uses for both wildcard matching
+# and feature dumps
+# (Any) => String
 javaToString = (value) ->
   if checks.isNumber(value) and Number.isInteger(value) and Math.abs(value) < 1e7
     "#{value}.0"
   else
     String(value)
 
-# (Array[Number], Number) => Number — Java's Arrays.binarySearch: index of match, or -(insertion point) - 1
+# Java's Arrays.binarySearch: index of match, or -(insertion point) - 1
+# (Array[Number], Number) => Number
 javaBinarySearch = (arr, key) ->
   low  = 0
   high = arr.length - 1
@@ -37,7 +39,8 @@ javaBinarySearch = (arr, key) ->
       return mid
   -(low + 1)
 
-# (String|Number, String|Number) => Number — Java's Double.compare / String.compareTo
+# Java's Double.compare / String.compareTo
+# (String|Number, String|Number) => Number
 compareValues = (a, b) ->
   if checks.isNumber(a) and checks.isNumber(b)
     if a < b then -1
@@ -48,10 +51,11 @@ compareValues = (a, b) ->
   else
     if a < b then -1 else if a > b then 1 else 0
 
-# (String) => (String) => Boolean
 # port of StringUtils.WildcardMatcher: only `*` runs that produce empty splits become
 # wildcards, exactly as desktop does
+# (String) => (String) => Boolean
 makeWildcardMatcher = (pattern) ->
+  # (String) => String
   escapeRegExp = (s) -> s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   body = pattern.split("*").map((s) -> if s is "" then ".*" else escapeRegExp(s)).join("")
   regex = new RegExp("^(?:#{body})$")
@@ -84,10 +88,10 @@ class VectorFeature
   # () => Geometry
   getGeometry: -> @geometry
 
-  # (Coordinate) => Boolean — equivalent to geometry.contains(point) but backed by an
-  # IndexedPointInAreaLocator, so repeated point-in-polygon tests (coverage samples
-  # thousands against complex polygons) are O(log n) instead of O(edges).  Only polygonal
+  # equivalent to geometry.contains(point) but backed by an IndexedPointInAreaLocator, so repeated point-in-polygon
+  # tests (coverage samples thousands against complex polygons) are O(log n) instead of O(edges).  Only polygonal
   # geometries have an interior to contain a point; others report false.
+  # (Coordinate) => Boolean
   containsPoint: (coord) ->
     if @_pointLocator is undefined
       type = @geometry.getGeometryType()
@@ -108,6 +112,7 @@ class VectorFeature
     )
     result
 
+  # () => Unit
   _setupTriangulation: ->
     @_triangles     = []
     @_cumativeAreas = []
@@ -141,10 +146,10 @@ class VectorFeature
       throw exceptions.extension("There was an error trying to generate a point inside the following polygon. Points can only be generated inside polygons with non-zero area *after* being projected into the current coordinate system. Did all of your data import and project how you expected it to?#{@dumpContents()}\n")
     return
 
-  # (RNG) => Coordinate
   # matches desktop's RNG draw pattern exactly (one draw for the triangle, two for the
   # point) so the world RNG stays in sync with desktop even though the triangulations
   # differ (desktop uses Tinfour; we use earcut)
+  # (RNG) => Coordinate
   getRandomPointInsidePolygon: (rng) ->
     if @shapeType isnt "POLYGON"
       throw exceptions.extension("Tried to get a point inside of a non-polygon vector feature")
@@ -165,7 +170,8 @@ class VectorFeature
 class VectorDataset
   gisType: "VectorDataset"
 
-  # (String, Array[String], Array[String], GisCore) — types are "STRING" | "NUMBER"
+  # types are "STRING" | "NUMBER"
+  # (String, Array[String], Array[String], GisCore)
   constructor: (@shapeType, propertyNames, propertyTypes, core) ->
     @properties    = propertyNames.map((name, i) -> { name: name.toUpperCase(), type: propertyTypes[i] })
     @features      = []
@@ -182,13 +188,12 @@ class VectorDataset
     @spatialIndex.insert(feature.getEnvelope(), feature)
     return
 
-  # (Geometry) => Array[VectorFeature] — port of desktop's spatial-index lookup: the
-  # STRtree prunes to features whose envelope overlaps, avoiding an intersects test
-  # against every feature (which makes patch-by-patch coverage O(patches x features)).
-  # For the common case of a patch sitting inside a feature, a cheap point-in-polygon on
-  # the patch center short-circuits the expensive full intersects.  Results are returned
-  # in dataset (insertion) order, since coverage aggregation is order-sensitive on ties,
-  # whereas the index yields them in an arbitrary order.
+  # port of desktop's spatial-index lookup: the STRtree prunes to features whose envelope overlaps, avoiding an
+  # intersects test against every feature (which makes patch-by-patch coverage O(patches x features)). For the common
+  # case of a patch sitting inside a feature, a cheap point-in-polygon on the patch center short-circuits the expensive
+  # full intersects.  Results are returned in dataset (insertion) order, since coverage aggregation is order-sensitive
+  # on ties, whereas the index yields them in an arbitrary order.
+  # (Geometry) => Array[VectorFeature]
   intersectingFeatures: (geom) ->
     env    = geom.getEnvelopeInternal()
     center = new Coordinate((env.getMinX() + env.getMaxX()) / 2.0, (env.getMinY() + env.getMaxY()) / 2.0)
@@ -238,13 +243,14 @@ module.exports = ({ core, workspace }) ->
     else
       throw exceptions.extension("dataset does not have property: '#{propertyName}'")
 
-  # (Array[Geometry]) => Geometry
   # port of JTSUtils.flatten: collects atomic geometries, preferring polygons over
   # lines over points, exactly as desktop does
+  # (Array[Geometry]) => Geometry
   flatten = (geoms) ->
     points   = []
     lines    = []
     polygons = []
+    # (Geometry) => Unit
     walk = (geom) ->
       type = geom.getGeometryType()
       switch type
@@ -262,7 +268,8 @@ module.exports = ({ core, workspace }) ->
     else
       factory.createMultiPoint(points)
 
-  # (Any) => Geometry — port of SpatialRelationship.getGeometry
+  # port of SpatialRelationship.getGeometry
+  # (Any) => Geometry
   getGeometry = (arg) ->
     if arg?.gisType is "VectorDataset"
       flatten(arg.features.map((f) -> f.geometry))

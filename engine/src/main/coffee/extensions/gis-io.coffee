@@ -26,7 +26,7 @@ normalizeFormat = (format) ->
   result = format.trim().toLowerCase()
   if result.startsWith(".") then result.substring(1) else result
 
-# (Any) => String — "NUMBER" | "STRING"
+# (Any) => "NUMBER" | "STRING"
 propertyTypeForValue = (value) ->
   if checks.isNumber(value) then "NUMBER" else "STRING"
 
@@ -54,6 +54,7 @@ class GeoJsonReader
     else
       throw exceptions.extension("#{topLevelType} is not a supported GeoJSON type")
 
+  # (Object) => Unit
   extractShapeInfo: (geometry) ->
     geometryTypeString = String(geometry.type)
     if not GEOJSON_SHAPE_TYPES[geometryTypeString]?
@@ -62,6 +63,7 @@ class GeoJsonReader
     @geojsonShapeType = geometryTypeString
     return
 
+  # (Object) => Unit
   parseSchemaOfSingleFeature: (feature) ->
     for name, value of feature.properties
       newType = propertyTypeForValue(value)
@@ -73,6 +75,7 @@ class GeoJsonReader
         @propertyNamesToDatatypes.set(name, newType)
     return
 
+  # () => Unit
   finalizeSchema: ->
     @propertyNames = []
     @propertyTypes = []
@@ -82,12 +85,14 @@ class GeoJsonReader
     )
     return
 
+  # (Object, Number) => Unit
   parseGeometryObject: (geometry, featureIndex) ->
     if String(geometry.type) isnt @geojsonShapeType
       throw exceptions.extension("Only homogenous FeatureCollections are supported")
     @geometries[featureIndex] = @parseCoordinates(geometry.coordinates, @geojsonShapeType)
     return
 
+  # (Object, Number) => Unit
   parseFeatureObject: (feature, featureIndex) ->
     @parseGeometryObject(feature.geometry, featureIndex)
     values = []
@@ -106,6 +111,7 @@ class GeoJsonReader
     @propertyValues[featureIndex] = values
     return
 
+  # () => Unit
   parseFeatureCollection: ->
     features = @geojson.features
     if not checks.isList(features) or features.length < 1
@@ -119,6 +125,7 @@ class GeoJsonReader
     @parseFeatureObject(feature, i) for feature, i in features
     return
 
+  # () => Unit
   parseSingleFeatureDataset: ->
     @size           = 1
     @geometries     = []
@@ -129,6 +136,7 @@ class GeoJsonReader
     @parseFeatureObject(@geojson, 0)
     return
 
+  # () => Unit
   parseSingleGeometryDataset: ->
     @size           = 1
     @geometries     = []
@@ -138,14 +146,17 @@ class GeoJsonReader
     @parseGeometryObject(@geojson, 0)
     return
 
+  # (Array[Number]) => Coordinate
   pairToCoordinate: (arr) ->
     if arr.length > 2
       @shouldWarnUnusedZ = true
     new Coordinate(arr[0], arr[1])
 
+  # (Array[Array[Number]]) => LineString
   parseSingleLineString: (coordinates) ->
     @factory.createLineString(coordinates.map((pair) => @pairToCoordinate(pair)))
 
+  # (Array[Array[Array[Number]]]) => Polygon
   parseSingleComplexPolygon: (coordinates) ->
     if coordinates.length < 1
       throw exceptions.extension("Empty polygon in geojson file")
@@ -153,6 +164,7 @@ class GeoJsonReader
     holes = coordinates[1..].map((ring) => @factory.createLinearRing(ring.map((pair) => @pairToCoordinate(pair))))
     @factory.createPolygon(shell, holes)
 
+  # (Any, String) => Geometry | PointZWrapper
   parseCoordinates: (coordinates, geojsonShapeType) ->
     switch geojsonShapeType
       when "Point"
@@ -177,13 +189,15 @@ class GeoJsonReader
       else
         throw exceptions.extension("#{geojsonShapeType} is not a supported geojson shape type")
 
-# (String) => { columnCount: Number, rowCount: Number, originX: Number, originY: Number, cellSize: Number, data: Float64Array }
 # port of io/asciigrid/AsciiGridFileReader.java
+# (String) => { columnCount: Number, rowCount: Number, originX: Number, originY: Number, cellSize: Number, data: Float64Array }
 parseAsciiGrid = (text) ->
   lines     = text.split(/\r?\n/)
   lineIndex = 0
+  # () => String | null
   readLine  = -> if lineIndex < lines.length then lines[lineIndex++] else null
 
+  # (String, String, String) => Number
   parseHeader = (keyword, kind, errorMessage) ->
     tokens = (readLine() ? "").trim().split(/\s+/)
     if not (tokens[0] ? "").toUpperCase().startsWith(keyword)
@@ -248,8 +262,8 @@ module.exports = ({ core, projection, vector, raster, workspace }) ->
 
   { VectorDataset } = vector
 
-  # (List) => VectorDataset
   # port of LoadDatasetFromString.loadShapefileFromParts + LoadDataset.loadShapefile
+  # (List) => VectorDataset
   loadShapefileFromParts = (parts) ->
     shpBytes = null
     dbfBytes = null
@@ -259,6 +273,7 @@ module.exports = ({ core, projection, vector, raster, workspace }) ->
          not checks.isString(entry[0]) or not checks.isString(entry[1])
         throw exceptions.extension("expected a two-element [extension content] list of strings, but got #{workspace.dump(entry, true)}")
       extension = normalizeFormat(entry[0])
+      # (String) => Uint8Array
       decoded = (content) ->
         try
           shapefile.base64ToBytes(content)
@@ -275,15 +290,15 @@ module.exports = ({ core, projection, vector, raster, workspace }) ->
       throw exceptions.extension("missing \"dbf\" entry in shapefile data list")
     loadShapefileData(shpBytes, dbfBytes, prjText)
 
-  # (String) => Boolean
   # metadata entries that macOS's built-in zip tool adds and that should never be
   # treated as shapefile contents
+  # (String) => Boolean
   isMetadataEntry = (name) ->
     baseName = name.substring(name.lastIndexOf("/") + 1)
     name.startsWith("__MACOSX/") or baseName.startsWith(".")
 
-  # (String) => VectorDataset
   # port of LoadDatasetFromString.loadShapefileFromZip
+  # (String) => VectorDataset
   loadShapefileFromZip = (base64) ->
     zipBytes =
       try
@@ -351,9 +366,9 @@ module.exports = ({ core, projection, vector, raster, workspace }) ->
       dataset.add(geometry, values)
     dataset
 
-  # (String, String) => VectorDataset
   # port of LoadDataset.loadGeoJson.  The desktop's schema/default-value warnings go to
   # a GUI dialog or stderr, not model output, so they are not surfaced here.
+  # (String, String) => VectorDataset
   loadGeoJson = (text, sourceName) ->
     json =
       try
@@ -386,34 +401,39 @@ module.exports = ({ core, projection, vector, raster, workspace }) ->
       dataset.add(geometry, values)
     dataset
 
-  # (VectorDataset | RasterDataset) => Unit
   # port of LoadDataset.setDefaultTransformationIfUnset
+  # (VectorDataset | RasterDataset) => Unit
   setDefaultTransformationIfUnset = (dataset) ->
     if not core.state.transformation?
       core.state.transformation =
         new core.CoordinateTransformation(dataset.getEnvelope(), core.worldNetLogoEnvelope(), true)
     return
 
-  # (Number, Number) => String
   # Java DecimalFormat-style: up to maxDigits fraction digits, trailing zeros dropped.
   # (Rounding is JS default rather than Java's HALF_EVEN; differs only on exact ties.)
+  # (Number, Number) => String
   decimalFormat = (value, maxDigits) ->
     s = value.toFixed(maxDigits)
     if s.indexOf(".") >= 0
       s = s.replace(/0+$/, "").replace(/\.$/, "")
     s
 
-  # (VectorDataset) => String
   # port of io/geojson/GeoJsonWriter.java
+  # (VectorDataset) => String
   writeGeoJson = (dataset) ->
+    # (Coordinate) => Array[Number]
     coordArray = (c) -> [c.x, c.y]
+    # (LineString) => Array[Array[Number]]
     lineStringArray = (line) ->
       (coordArray(line.getCoordinateN(i)) for i in [0...line.getNumPoints()])
+    # (Polygon) => Array[Array[Array[Number]]]
     polygonArray = (polygon) ->
       rings = [lineStringArray(polygon.getExteriorRing())]
       rings.push(lineStringArray(polygon.getInteriorRingN(i))) for i in [0...polygon.getNumInteriorRing()]
       rings
+    # (Geometry) => Array[Geometry]
     childrenOf = (geom) -> (geom.getGeometryN(i) for i in [0...geom.getNumGeometries()])
+    # (Geometry) => Object
     geometryObject = (geom) ->
       switch geom.getGeometryType()
         when "Point"           then { type: "Point",           coordinates: coordArray(geom.getCoordinate()) }
@@ -431,8 +451,8 @@ module.exports = ({ core, projection, vector, raster, workspace }) ->
     )
     JSON.stringify({ type: "FeatureCollection", features })
 
-  # (RasterDataset) => String
   # port of io/asciigrid/AsciiGridFileWriter.java (with NaN nodata, per StoreDataset)
+  # (RasterDataset) => String
   writeAsciiGrid = (dataset) ->
     { dimensions, data } = dataset
     lines = [

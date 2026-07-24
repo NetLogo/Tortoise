@@ -12,7 +12,8 @@ ColorModel   = require('../engine/core/colormodel')
 
 { Envelope, Coordinate } = JSTS.geom
 
-# (Number) => Number — Java's Math.nextDown for positive doubles
+# Java's Math.nextDown for positive doubles
+# (Number) => Number
 nextDown = (x) ->
   floats = new Float64Array([x])
   ints   = new Uint32Array(floats.buffer)
@@ -40,7 +41,7 @@ module.exports = ({ core, vector, raster, workspace }) ->
     else
       { name, turtleSet: world.turtleManager.turtlesOfBreed(name) }
 
-  # (String) => Array[String] — uppercase names of built-in + turtles-own + breed vars
+  # (String) => Array[String]
   variableNamesForBreed = (breedName) ->
     breed = world.breedManager.get(breedName)
     builtins = ["WHO", "COLOR", "HEADING", "XCOR", "YCOR", "SHAPE", "LABEL", "LABEL-COLOR",
@@ -49,9 +50,8 @@ module.exports = ({ core, vector, raster, workspace }) ->
     breedsOwn  = if breedName.toUpperCase() is "TURTLES" then [] else breed.varNames.map((name) -> name.toUpperCase())
     builtins.concat(turtlesOwn).concat(breedsOwn)
 
+  # port of getAutomaticPropertyNameToTurtleVarIndexMappings — maps property name to turtle variable name
   # (Array[String], Array[String]) => Map[String, String]
-  # port of getAutomaticPropertyNameToTurtleVarIndexMappings — maps property name to
-  # turtle variable name
   automaticPropertyMappings = (variableNames, propertyNames) ->
     mappings = new Map()
     for propertyName in propertyNames
@@ -76,11 +76,11 @@ module.exports = ({ core, vector, raster, workspace }) ->
         throw exceptions.extension("There is no variable #{variableName} defined. use turtles-own or <breeds>-own to define one.")
     mappings
 
-  # (String, Coordinate) => Turtle | null
   # port of CreateTurtleAtGISCoordinate; draws one color from the RNG per turtle and
   # leaves heading at 0, exactly like desktop.  Note desktop creates the turtle BEFORE
   # the envelope check, so a point outside the GIS envelope still leaves a turtle
   # sitting at the origin.
+  # (String, Coordinate) => Turtle | null
   createTurtleAtGISCoordinate = (breedName, coordinate) ->
     color = ColorModel.randomColor(workspace.rng.nextInt)
     breed = world.breedManager.get(breedName)
@@ -175,9 +175,9 @@ module.exports = ({ core, vector, raster, workspace }) ->
       new TurtleSet(created, world).ask(cmd, true)
     return
 
-  # (Any) => String | Number
   # value conversion shared by turtle-dataset and link-dataset; desktop uses Java
   # toString(), which has no parentheses around agent names
+  # (Any) => String | Number
   agentValueToProperty = (value) ->
     if checks.isTurtleSet(value) or checks.isLinkSet(value) or checks.isPatchSet(value)
       (value.getSpecialName?() ? "").toLowerCase()
@@ -293,8 +293,8 @@ module.exports = ({ core, vector, raster, workspace }) ->
       applyCoverages(dataset, propertyNames, varNames)
   }
 
-  # (VectorDataset, List, Array[String]) => Unit
   # port of ApplyCoverage.applyCoverages and its aggregation helpers
+  # (VectorDataset, List, Array[String]) => Unit
   applyCoverages = (dataset, propertyNames, varNames) ->
     if dataset?.gisType isnt "VectorDataset"
       throw exceptions.extension("not a VectorDataset: #{workspace.dump(dataset)}")
@@ -319,11 +319,12 @@ module.exports = ({ core, vector, raster, workspace }) ->
             patch.setPatchVariable(varNames[i], NaN)
     return
 
-  # (Geometry, VectorFeature) => Number
   # port of JTSUtils.fastGetSharedAreaRatio: 10x10 interior-point sampling (via the
   # feature's indexed point locator, so each sample is O(log n) not O(edges))
+  # (Geometry, VectorFeature) => Number
   fastSharedAreaRatio = (rectGeom, feature) ->
     env = rectGeom.getEnvelopeInternal()
+    # (Number, Number) => Boolean
     interior = (x, y) -> feature.containsPoint(new Coordinate(x, y))
     if interior(env.getMinX(), env.getMinY()) and interior(env.getMaxX(), env.getMaxY()) and
        interior(env.getMaxX(), env.getMinY()) and interior(env.getMinX(), env.getMaxY())
@@ -340,8 +341,8 @@ module.exports = ({ core, vector, raster, workspace }) ->
       x += xInc
     count / 100.0
 
-  # (Geometry, VectorFeature) => Number
   # port of JTSUtils.getSharedAreaRatio (without the desktop's TopologyException fallback)
+  # (Geometry, VectorFeature) => Number
   sharedAreaRatio = (rectGeom, feature) ->
     rectGeom.intersection(feature.geometry).getArea() / rectGeom.getArea()
 
@@ -351,6 +352,7 @@ module.exports = ({ core, vector, raster, workspace }) ->
     maxAreaRatio = 0.0
     records = propertyNames.map(-> [])
     categorical = propertyNames.map(-> false)
+    # ((Geometry, VectorFeature) => Number) => Unit
     fillRecords = (ratioOf) ->
       for feature, i in features
         areaRatio = ratioOf(patchGeometry, feature)

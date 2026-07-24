@@ -18,8 +18,10 @@ THREE_QUARTERS_PI  = (3.0 * Math.PI) / 4.0
 EPSILON            = 1.567855942887398e-7
 DEGREES_TO_RADIANS = Math.PI / 180.0
 
-# (Number) => Number — GeometryUtils.sinh/asinh
+# GeometryUtils.sinh/asinh
+# (Number) => Number
 sinh  = (z) -> (Math.exp(z) - Math.exp(-z)) / 2.0
+# (Number) => Number
 asinh = (z) -> Math.log(z + Math.sqrt(1.0 + (z * z)))
 
 # (Number) => Number
@@ -33,8 +35,8 @@ wrapLongitude = (lon) ->
 # (Number) => Number
 sign = (x) -> if x < 0 then -1 else 1
 
-# (Number, Number, Number, Number) => Number
 # Haversine angular distance; all inputs/outputs in radians
+# (Number, Number, Number, Number) => Number
 greatCircleDistance = (lon1, lat1, lon2, lat2) ->
   dlat = Math.sin((lat2 - lat1) / 2.0)
   dlon = Math.sin((lon2 - lon1) / 2.0)
@@ -43,7 +45,8 @@ greatCircleDistance = (lon1, lat1, lon2, lat2) ->
 
 class Ellipsoid
 
-  # (String, Number, Number) — radius in meters; eccsq is eccentricity squared
+  # radius in meters; eccsq is eccentricity squared
+  # (String, Number, Number)
   constructor: (@name, @radius, @eccsq) ->
 
   # (Any) => Boolean
@@ -64,24 +67,31 @@ class ProjectionParameters
   constructor: (@angularFactor, @linearFactor) ->
     @params = new Map()
 
+  # (String, Number) => Unit
   add: (name, value) ->
     @params.set(name.toLowerCase(), value)
     return
 
+  # (String) => Number
   _required: (name) ->
     if not @params.has(name.toLowerCase())
       throw exceptions.extension("missing required parameter '#{name}'")
     @params.get(name.toLowerCase())
 
+  # (String) => Number
   getAngular:       (name) -> @_required(name) * @angularFactor
+  # (String) => Number
   getLinear:        (name) -> @_required(name) * @linearFactor
+  # (String) => Number
   getDimensionless: (name) -> @_required(name)
 
+  # () => Number
   getCenterLongitude: ->
     for name in ["longitude_of_center", "central_meridian"] when @params.has(name)
       return @params.get(name) * @angularFactor
     throw exceptions.extension("unable to find parameter for center longitude")
 
+  # () => Number
   getCenterLatitude: ->
     for name in ["latitude_of_center", "latitude_of_origin", "standard_parallel_1"] when @params.has(name)
       return @params.get(name) * @angularFactor
@@ -90,7 +100,8 @@ class ProjectionParameters
 class AbstractProjection
   isGeographic: false
 
-  # (Ellipsoid, Number, Number) — lambda0/phi0 in radians
+  # lambda0/phi0 in radians
+  # (Ellipsoid, Number, Number)
   constructor: (ellipsoid, lambda0, phi0) ->
     @ellipsoid = ellipsoid
     @a         = ellipsoid.radius
@@ -105,7 +116,8 @@ class AbstractProjection
 class Geographic extends AbstractProjection
   isGeographic: true
 
-  # (Ellipsoid, Coordinate, Number) — angularFactor converts this projection's units to radians
+  # angularFactor converts this projection's units to radians
+  # (Ellipsoid, Coordinate, Number)
   constructor: (ellipsoid, center, angularFactor) ->
     super(ellipsoid, center.x, center.y)
     @angularFactor = angularFactor
@@ -139,6 +151,7 @@ class ProjectedProjection extends AbstractProjection
     @inversePointRaw((x - @falseEasting) * @toMeters, (y - @falseNorthing) * @toMeters)
 
 class HemisphericalProjection extends ProjectedProjection
+  # (Coordinate) => Coordinate | null
   processPoint: (c) ->
     center = @getHemisphereCenter()
     if greatCircleDistance(center.x, center.y, c.x, c.y) > @getMaxC()
@@ -146,6 +159,7 @@ class HemisphericalProjection extends ProjectedProjection
     else
       c
 
+  # (Number, Number) => Coordinate
   inversePoint: (x, y) ->
     c = super(x, y)
     center = @getHemisphereCenter()
@@ -155,6 +169,7 @@ class HemisphericalProjection extends ProjectedProjection
       c
 
 class Mercator extends ProjectedProjection
+  # (Ellipsoid, ProjectionParameters)
   constructor: (ellipsoid, params) ->
     super(ellipsoid, params)
     @k0 = params.getDimensionless("scale_factor")
@@ -173,6 +188,7 @@ class Mercator extends ProjectedProjection
       sinPhi0 = Math.sin(@phi0)
       @spq = Math.cos(@phi0) / Math.sqrt(1.0 - (e2 * sinPhi0 * sinPhi0))
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lon, lat) ->
     x = @k0 * @a * wrapLongitude(lon - @lambda0) * @spq
     sinPhi = Math.sin(lat)
@@ -183,6 +199,7 @@ class Mercator extends ProjectedProjection
         @k0 * ((@a / 2.0) * Math.log(((1 + sinPhi) / (1 - sinPhi)) * Math.pow((1 - (@e * sinPhi)) / (1 + (@e * sinPhi)), @e))) * @spq
     new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     lon = ((x / @spq) / (@k0 * @a)) + @lambda0
     t = Math.pow(Math.E, -((y / @spq) / (@k0 * @a)))
@@ -195,6 +212,7 @@ class Mercator extends ProjectedProjection
     new Coordinate(lon, lat)
 
 class TransverseMercator extends HemisphericalProjection
+  # (Ellipsoid, ProjectionParameters)
   constructor: (ellipsoid, params) ->
     super(ellipsoid, params)
     @k0 = params.getDimensionless("scale_factor")
@@ -217,10 +235,13 @@ class TransverseMercator extends HemisphericalProjection
     ]
     @hemisphereCenter = new Coordinate(@lambda0, 0.0)
 
+  # () => Number
   getMaxC: -> 1.4137167 # 81 degrees expressed in radians
 
+  # () => Coordinate
   getHemisphereCenter: -> @hemisphereCenter
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lambda, phi) ->
     if Math.abs(Math.abs(phi) - HALF_PI) < EPSILON
       M = @a * (@subM[0] * phi - @subM[1] * Math.sin(2.0 * phi) + @subM[2] * Math.sin(4.0 * phi) - @subM[3] * Math.sin(6.0 * phi))
@@ -238,6 +259,7 @@ class TransverseMercator extends HemisphericalProjection
       y = @k0 * (M - @M0 + N * tanPhi * (A * A / 2.0 + (5 - T + 9.0 * C + 4.0 * C * C) * A * A * A * A / 24.0 + (61.0 - 58.0 * T + T * T + 600.0 * C - 330.0 * @ePrimeSq) * A * A * A * A * A * A / 720.0))
       new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     M = @M0 + (y / @k0)
     mu = M / @subMU
@@ -258,6 +280,7 @@ NORTH_POLE = new Coordinate(0.0, HALF_PI)
 SOUTH_POLE = new Coordinate(0.0, -HALF_PI)
 
 class Conic extends HemisphericalProjection
+  # (Ellipsoid, ProjectionParameters)
   constructor: (ellipsoid, params) ->
     super(ellipsoid, params)
     @phi1 = params.getAngular("standard_parallel_1")
@@ -266,11 +289,14 @@ class Conic extends HemisphericalProjection
       # all kinds of mathematical problems result when abs(phi1) == abs(phi2)
       @phi2 += (@phi2 * 0.01)
 
+  # () => Coordinate
   getHemisphereCenter: -> if @phi0 >= 0.0 then NORTH_POLE else SOUTH_POLE
 
+  # () => Number
   getMaxC: -> THREE_QUARTERS_PI
 
 class LambertConformalConic extends Conic
+  # (Ellipsoid, ProjectionParameters)
   constructor: (ellipsoid, params) ->
     super(ellipsoid, params)
     e2 = @e2
@@ -297,15 +323,18 @@ class LambertConformalConic extends Conic
     ]
 
   # equation 15-9a on p. 108 of Snyder
+  # (Number) => Number
   getT: (phi) ->
     sinPhi = Math.sin(phi)
     Math.sqrt(((1.0 - sinPhi) / (1.0 + sinPhi)) * Math.pow((1.0 + @e * sinPhi) / (1.0 - @e * sinPhi), @e))
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lon, lat) ->
     rho = @a * @F * Math.pow(@getT(lat), @n)
     theta = @n * wrapLongitude(lon - @lambda0)
     new Coordinate(rho * Math.sin(theta), @rho0 - (rho * Math.cos(theta)))
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     rho0minusY = @rho0 - y
     rho = Math.sqrt(x * x + rho0minusY * rho0minusY) * sign(@n)
@@ -350,17 +379,20 @@ class AlbersEqualAreaConic extends Conic
       761.0 * e2 * e2 * e2 / 45360.0
     ]
 
-  # (Number) => Number — equation 3-12 on p. 101 of Snyder
+  # equation 3-12 on p. 101 of Snyder
+  # (Number) => Number
   getQ: (phi) ->
     sinPhi = Math.sin(phi)
     (1 - @e2) * ((sinPhi / (1.0 - @e2 * sinPhi * sinPhi)) - ((1.0 / (2.0 * @e)) * Math.log((1.0 - @e * sinPhi) / (1.0 + @e * sinPhi))))
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lon, lat) ->
     q = @getQ(lat)
     theta = @n * wrapLongitude(lon - @lambda0)
     rho = @a * Math.sqrt(@C - (@n * q)) / @n
     new Coordinate(rho * Math.sin(theta), @rho0 - (rho * Math.cos(theta)))
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     rho0minusY = @rho0 - y
     rho = Math.sqrt(x * x + rho0minusY * rho0minusY)
@@ -410,11 +442,13 @@ class EquidistantConic extends Conic
   getM: (phi) ->
     @a * ((@subM[0] * phi) + (@subM[1] * Math.sin(2.0 * phi)) + (@subM[2] * Math.sin(4.0 * phi)) + (@subM[3] * Math.sin(6.0 * phi)))
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lon, lat) ->
     rho = @aG - @getM(lat)
     theta = @n * wrapLongitude(lon - @lambda0)
     new Coordinate(rho * Math.sin(theta), @rho0 - (rho * Math.cos(theta)))
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     rho0minusY = @rho0 - y
     rho = Math.sqrt((x * x) + (rho0minusY * rho0minusY)) * sign(@n)
@@ -440,6 +474,7 @@ class Azimuthal extends HemisphericalProjection
     @cosPhi0 = Math.cos(@phi0)
     @hemisphereCenter = new Coordinate(@lambda0, @phi0)
 
+  # () => Coordinate
   getHemisphereCenter: -> @hemisphereCenter
 
 class AzimuthalEqualArea extends Azimuthal
@@ -464,8 +499,10 @@ class AzimuthalEqualArea extends Azimuthal
       761 * e2 * e2 * e2 / 45360.0
     ]
 
+  # () => Number
   getMaxC: -> HALF_PI
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lambda, phi) ->
     sinPhi = Math.sin(phi)
     q = (1.0 - @e2) * ((sinPhi / (1.0 - (@e2 * sinPhi * sinPhi))) - ((1 / (2.0 * @e)) * Math.log((1.0 - @e * sinPhi) / (1.0 + (@e * sinPhi)))))
@@ -476,6 +513,7 @@ class AzimuthalEqualArea extends Azimuthal
     y = (B / @D) * ((@cosBeta1 * Math.sin(beta)) - (@sinBeta1 * Math.cos(beta) * Math.cos(dLon)))
     new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     rho = Math.sqrt((x / @D) * (x / @D) + (@D * y * @D * y))
     if rho is 0.0
@@ -488,8 +526,10 @@ class AzimuthalEqualArea extends Azimuthal
       new Coordinate(lon, lat)
 
 class AzimuthalEquidistant extends Azimuthal
+  # () => Number
   getMaxC: -> Math.PI - QUARTER_PI
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lon, lat) ->
     dLon = wrapLongitude(lon - @lambda0)
     cosC = @sinPhi0 * Math.sin(lat) + @cosPhi0 * Math.cos(lat) * Math.cos(dLon)
@@ -502,6 +542,7 @@ class AzimuthalEquidistant extends Azimuthal
       y = @a * kPrime * (@cosPhi0 * Math.sin(lat) - @sinPhi0 * Math.cos(lat) * Math.cos(dLon))
       new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     rho = Math.sqrt(x * x + y * y)
     if rho is 0.0
@@ -513,8 +554,10 @@ class AzimuthalEquidistant extends Azimuthal
       new Coordinate(lon, lat)
 
 class Gnomonic extends Azimuthal
+  # () => Number
   getMaxC: -> 1.396 # 80 degrees, expressed in radians
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lon, lat) ->
     sinPhi = Math.sin(lat)
     cosPhi = Math.cos(lat)
@@ -523,6 +566,7 @@ class Gnomonic extends Azimuthal
     y = @a * kPrime * (@cosPhi0 * sinPhi - @sinPhi0 * cosPhi * Math.cos(lon - @lambda0))
     new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     rho = Math.sqrt(x * x + y * y)
     if rho is 0.0
@@ -542,13 +586,16 @@ class Gnomonic extends Azimuthal
       new Coordinate(lon, lat)
 
 class Orthographic extends Azimuthal
+  # () => Number
   getMaxC: -> HALF_PI
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lon, lat) ->
     x = @a * Math.cos(lat) * Math.sin(lon - @lambda0)
     y = @a * (@cosPhi0 * Math.sin(lat) - @sinPhi0 * Math.cos(lat) * Math.cos(lon - @lambda0))
     new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     rho = Math.sqrt(x * x + y * y)
     if rho is 0.0
@@ -573,8 +620,10 @@ class Stereographic extends Azimuthal
     super(ellipsoid, params)
     @k0 = params.getDimensionless("scale_factor")
 
+  # () => Number
   getMaxC: -> HALF_PI
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lon, lat) ->
     sinPhi = Math.sin(lat)
     cosPhi = Math.cos(lat)
@@ -584,6 +633,7 @@ class Stereographic extends Azimuthal
     y = @a * k * (@cosPhi0 * sinPhi - @sinPhi0 * cosPhi * cosLonMinusLambda0)
     new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     rho = Math.sqrt(x * x + y * y)
     if rho is 0.0
@@ -617,6 +667,7 @@ class CylindricalEqualArea extends ProjectedProjection
       761.0 * e2 * e2 * e2 / 45360.0
     ]
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lon, lat) ->
     x = @a * @k0 * wrapLongitude(lon - @lambda0)
     sinPhi = Math.sin(lat)
@@ -624,6 +675,7 @@ class CylindricalEqualArea extends ProjectedProjection
     y = (@a * q) / (2.0 * @k0)
     new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     lon = @lambda0 + (x / (@a * @k0))
     beta = Math.asin((2.0 * y * @k0) / (@a * @qp))
@@ -634,11 +686,13 @@ class CylindricalEqualArea extends ProjectedProjection
     new Coordinate(lon, lat)
 
 class Miller extends ProjectedProjection
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lon, lat) ->
     x = @a * wrapLongitude(lon - @lambda0)
     y = @a * asinh(Math.tan(0.8 * lat)) / 0.8
     new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     lon = (x / @a) + @lambda0
     lat = Math.atan(sinh(0.8 * y / @a)) / 0.8
@@ -663,6 +717,7 @@ class Robinson extends ProjectedProjection
     params.add("latitude_of_center", 0.0)
     super(ellipsoid, params)
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lon, lat) ->
     dlon = wrapLongitude(lon - @lambda0)
     p2 = Math.abs(lat / 5.0 / 0.01745329252)
@@ -672,6 +727,7 @@ class Robinson extends ProjectedProjection
     y = sign(lat) * @a * (ROBINSON_PR[ip1 + 2] + p2 * (ROBINSON_PR[ip1 + 3] - ROBINSON_PR[ip1 + 1]) / 2.0 + p2 * p2 * (ROBINSON_PR[ip1 + 3] - 2.0 * ROBINSON_PR[ip1 + 2] + ROBINSON_PR[ip1 + 1]) / 2.0) * HALF_PI
     new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     yy = 2.0 * y / Math.PI / @a
     phid = yy * 90.0
@@ -728,10 +784,13 @@ class Polyconic extends HemisphericalProjection
     # desktop constructs this with swapped x/y (sic); it only feeds hemisphere clipping
     @hemisphereCenter = new Coordinate(0.0, @lambda0)
 
+  # () => Number
   getMaxC: -> HALF_PI
 
+  # () => Coordinate
   getHemisphereCenter: -> @hemisphereCenter
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lambda, phi) ->
     if phi is 0.0
       new Coordinate(@a * wrapLongitude(lambda - @lambda0), -@M0)
@@ -745,6 +804,7 @@ class Polyconic extends HemisphericalProjection
       y = M - @M0 + N * cotPhi * (1.0 - Math.cos(E))
       new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     A = (@M0 + y) / @a
     B = ((x * x) / (@a * @a)) + A * A
@@ -797,8 +857,10 @@ class ObliqueMercator extends HemisphericalProjection
     # desktop constructs this with swapped x/y (sic); it only feeds hemisphere clipping
     @hemisphereCenter = new Coordinate(@phi0, @lambda0)
 
+  # () => Number
   getMaxC: -> HALF_PI
 
+  # () => Coordinate
   getHemisphereCenter: -> @hemisphereCenter
 
   # (Number) => Number
@@ -806,6 +868,7 @@ class ObliqueMercator extends HemisphericalProjection
     eSinPhi = @e * Math.sin(phi)
     Math.tan(QUARTER_PI - (phi / 2.0)) / Math.pow((1.0 - eSinPhi) / (1.0 + eSinPhi), @e / 2.0)
 
+  # (Number, Number) => Coordinate
   forwardPointRaw: (lambda, phi) ->
     t = @getT(phi)
     Q = @E / Math.pow(t, @B)
@@ -819,6 +882,7 @@ class ObliqueMercator extends HemisphericalProjection
     y = u * @cosAlpha - v * @sinAlpha
     new Coordinate(x, y)
 
+  # (Number, Number) => Coordinate
   inversePointRaw: (x, y) ->
     vp = (x * @cosAlpha) - (y * @sinAlpha)
     up = (y * @cosAlpha) + (x * @sinAlpha)
@@ -844,10 +908,12 @@ class ObliqueMercator extends HemisphericalProjection
 # --- WKT parsing (ports of wkt/WKTElement.java, wkt/WKTFormat.java) ---
 
 class WKTElement
+  # (String, Array)
   constructor: (keyword, contents = []) ->
     @keyword  = keyword.toUpperCase()
     @contents = contents
 
+  # (Boolean) => Number | null
   nextNumber: (required) ->
     for value, i in @contents when checks.isNumber(value)
       @contents.splice(i, 1)
@@ -856,6 +922,7 @@ class WKTElement
       throw exceptions.extension("missing required number parameter")
     null
 
+  # (Boolean) => String | null
   nextString: (required) ->
     for value, i in @contents when checks.isString(value)
       @contents.splice(i, 1)
@@ -864,6 +931,7 @@ class WKTElement
       throw exceptions.extension("missing required string parameter")
     null
 
+  # (String, Boolean) => WKTElement | null
   nextElement: (key, required) ->
     for value, i in @contents when value instanceof WKTElement and value.keyword is key
       @contents.splice(i, 1)
@@ -886,6 +954,7 @@ SEPARATORS     = ",;"
 # (String, { index: Number }, String) => Number
 # Advances past whitespace; if the next char is in `separators`, consumes it and
 # returns its index therein, else returns -1
+# (String, { index: Number }, String) => Number
 parseOptionalSeparator = (text, pos, separators) ->
   index = pos.index
   index += 1 while index < text.length and /\s/.test(text[index])
@@ -998,9 +1067,10 @@ parseProjectionElement = (wkt) ->
   else
     throw exceptions.extension("only GEOGCS and PROJCS are supported. Try using a tool like QGIS or ArcMap to convert your data to a different projection like WGS84")
 
-# (WKTElement) => String
 # port of WKTFormat.formatWKT (numbers: min 1, max 12 fraction digits)
+# (WKTElement) => String
 formatWKTElement = (element) ->
+  # (Number) => String
   formatNumber = (n) ->
     s = n.toFixed(12).replace(/0+$/, "")
     if s.endsWith(".") then s + "0" else s
@@ -1017,15 +1087,16 @@ formatWKTElement = (element) ->
     )
     "#{element.keyword}[#{contents.join(",")}]"
 
-# (String) => Projection — retains the source WKT so datasets can be stored back out
+# retains the source WKT so datasets can be stored back out
+# (String) => Projection
 parseProjection = (text) ->
   result = parseProjectionElement(parseWKT(text))
   result.wktSource = text
   result
 
-# (Projection, Projection) => Boolean
 # src is always Geographic in practice (datasets load as WGS84/degrees), so only
 # Geographic-vs-Geographic equality needs real field comparison
+# (Projection, Projection) => Boolean
 projectionsEqual = (a, b) ->
   if a.isGeographic and b.isGeographic
     a.ellipsoid.equals(b.ellipsoid) and
@@ -1035,18 +1106,20 @@ projectionsEqual = (a, b) ->
   else
     false
 
-# (GeometryFactory, Geometry, Geographic, Projection) => Geometry
 # Coordinate-level port of the desktop Forward/InverseTransformer pair.  The desktop
 # forward pass also wraps/clips lines and polygons at the dateline or hemisphere edge
 # (ProjectionUtils.wrap/clip) and repairs invalid polygons; that is not yet ported, so
 # geometries crossing those boundaries reproject approximately.
+# (GeometryFactory, Geometry, Geographic, Projection) => Geometry
 reprojectGeometry = (factory, geom, srcGeo, dstProj) ->
   { Coordinate } = JSTS.geom
 
   # inverse filter from desktop's InverseTransformer (odd grouping matches Java)
+  # (Coordinate) => Boolean
   keepInverse = (c) ->
     ((not isNaN(c.x)) and (not isNaN(c.y)) and (Math.abs(c.x) <= Math.PI)) or (Math.abs(c.y) <= HALF_PI)
 
+  # (Array[Coordinate]) => Array[Coordinate]
   mapCoords = (coords) ->
     result = []
     for c in coords
@@ -1055,6 +1128,7 @@ reprojectGeometry = (factory, geom, srcGeo, dstProj) ->
         result.push(dstProj.forwardPoint(inv.x, inv.y))
     result
 
+  # (LinearRing) => LinearRing
   mapRing = (ring) ->
     coords = mapCoords(ring.getCoordinates())
     if coords.length > 2 and not coords[0].equals2D(coords[coords.length - 1])
@@ -1093,8 +1167,8 @@ reprojectGeometry = (factory, geom, srcGeo, dstProj) ->
       children = (reprojectGeometry(factory, geom.getGeometryN(i), srcGeo, dstProj) for i in [0...geom.getNumGeometries()])
       factory.createGeometryCollection(children)
 
-# (List) => WKTElement
 # nested-list WKT representation (port of netlogo/WKLogoListFormat.java)
+# (List) => WKTElement
 logoListToWKT = (list) ->
   element = new WKTElement(list[0])
   for item in list[1..]

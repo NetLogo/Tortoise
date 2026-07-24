@@ -37,8 +37,8 @@ bytesToBase64 = (bytes) ->
     i += 3
   out
 
-# (String) => Uint8Array — tolerates line breaks and other whitespace, like Java's
-# MIME decoder
+# tolerates line breaks and other whitespace, like Java's MIME decoder
+# (String) => Uint8Array
 base64ToBytes = (text) ->
   cleaned = text.replace(/[\s\r\n]/g, "").replace(/=+$/, "")
   if /[^A-Za-z0-9+\/]/.test(cleaned)
@@ -58,15 +58,18 @@ base64ToBytes = (text) ->
 # byte-array-backed buffer mirroring util/Buffer.java; strings are latin-1
 class BinaryBuffer
 
+  # (Number)
   constructor: (size) ->
     @bytes = new Uint8Array(size)
     @view = new DataView(@bytes.buffer)
     @little = true
 
+  # (Boolean) => Unit
   setLittleEndian: (little) ->
     @little = little
     return
 
+  # (Number) => Unit
   ensureCapacity: (size) ->
     if size > @bytes.length
       newBytes = new Uint8Array(Math.max(size, @bytes.length * 2))
@@ -75,30 +78,40 @@ class BinaryBuffer
       @view = new DataView(@bytes.buffer)
     return
 
+  # (Number) => Number
   getByte:  (offset) -> @view.getInt8(offset)
+  # (Number) => Number
   getUByte: (offset) -> @view.getUint8(offset)
+  # (Number) => Number
   getShort: (offset) -> @view.getInt16(offset, @little)
+  # (Number) => Number
   getInt:   (offset) -> @view.getInt32(offset, @little)
+  # (Number) => Number
   getDouble: (offset) -> @view.getFloat64(offset, @little)
 
+  # (Number, Number) => Number
   putByte: (offset, value) ->
     @ensureCapacity(offset + 1)
     @view.setInt8(offset, value)
     1
+  # (Number, Number) => Number
   putShort: (offset, value) ->
     @ensureCapacity(offset + 2)
     @view.setInt16(offset, value, @little)
     2
+  # (Number, Number) => Number
   putInt: (offset, value) ->
     @ensureCapacity(offset + 4)
     @view.setInt32(offset, value, @little)
     4
+  # (Number, Number) => Number
   putDouble: (offset, value) ->
     @ensureCapacity(offset + 8)
     @view.setFloat64(offset, value, @little)
     8
 
   # trims leading/trailing chars <= ' ' like desktop's getTrimmedString
+  # (Number, Number) => String
   getTrimmedString: (offset, length) ->
     begin = offset
     end = offset + length - 1
@@ -106,18 +119,21 @@ class BinaryBuffer
     end -= 1 while end >= begin and @bytes[end] <= 0x20
     String.fromCharCode(@bytes.subarray(begin, end + 1)...)
 
+  # (Number, Number) => String
   getCString: (offset, maxLength) ->
     length = maxLength
     for i in [0...length]
       length = i if @bytes[offset + i] is 0
     @getTrimmedString(offset, length)
 
+  # (Number, Number, String) => Number
   putCString: (offset, length, str) ->
     @ensureCapacity(offset + length)
     for i in [0...length]
       @bytes[offset + i] = if i < str.length then str.charCodeAt(i) & 0xFF else 0
     length
 
+  # (Number, Number, String, Boolean) => Number
   putJustifiedString: (offset, length, str, rightJustify) ->
     @ensureCapacity(offset + length)
     pad = Math.max(0, length - str.length)
@@ -130,8 +146,8 @@ class BinaryBuffer
           str.charCodeAt(i - leftPad) & 0xFF
     length
 
-# (Array[Coordinate]) => Boolean
 # ring orientation via signed area; CCW when positive, matching JTS Orientation.isCCW
+# (Array[Coordinate]) => Boolean
 isCCW = (coords) ->
   area = 0
   for c, i in coords[...-1]
@@ -139,8 +155,8 @@ isCCW = (coords) ->
     area += (c.x * next.y) - (next.x * c.y)
   area > 0
 
-# (Array[LinearRing], GeometryFactory) => MultiPolygon
 # port of JTSUtils.buildPolygonGeometry
+# (Array[LinearRing], GeometryFactory) => MultiPolygon
 buildPolygonGeometry = (rings, factory) ->
   if rings.length is 0
     factory.createMultiPolygon([])
@@ -320,18 +336,18 @@ readDbf = (bytes) ->
 
 # --- writing ---
 
-# (Number, Number) => String
 # Java DecimalFormat "###...0.###..." (up to maxDigits fraction digits, trailing zeros
 # dropped)
+# (Number, Number) => String
 decimalFormat = (value, maxDigits) ->
   s = value.toFixed(maxDigits)
   if s.indexOf(".") >= 0
     s = s.replace(/0+$/, "").replace(/\.$/, "")
   s
 
-# (String) => String
 # port of DBaseFieldDescriptor.makeLegalFieldNames (without the common-prefix-stripping
 # pass, which only matters for names over 10 characters sharing prefixes)
+# (String) => String
 makeLegalFieldName = (name) ->
   stripped = name.replace(/[^A-Za-z0-9_]/g, "").toUpperCase()
   stripped = "F" + stripped if not /^[A-Za-z]/.test(stripped)
@@ -367,8 +383,8 @@ putShpHeader = (buffer, fileSizeBytes, shapeType, envelope) ->
   putBoundingBox(buffer, 36, envelope)
   return
 
-# (BinaryBuffer, Number, Geometry, Number, Number) => Number
 # port of ESRIShapeBuffer.putESRIRecord and friends; returns bytes written
+# (BinaryBuffer, Number, Geometry, Number, Number) => Number
 putShpRecord = (buffer, offset, geometry, shapeType, index) ->
   written = 0
   buffer.setLittleEndian(false)

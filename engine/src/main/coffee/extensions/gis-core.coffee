@@ -50,8 +50,9 @@ class CoordinateTransformation
     else
       null
 
-  # (Coordinate) => Coordinate — same transform without the world-envelope clip, for
-  # drawing (which is bounded by the drawing layer, not the world envelope)
+  # same transform without the world-envelope clip, for drawing (which is bounded by the drawing layer, not the world
+  # envelope)
+  # (Coordinate) => Coordinate
   gisToNetLogoRaw: (pt) ->
     new Coordinate(((pt.x - @gisSpaceCenter.x) * @scaleX) + @netLogoSpaceCenter.x,
                    ((pt.y - @gisSpaceCenter.y) * @scaleY) + @netLogoSpaceCenter.y)
@@ -92,7 +93,8 @@ module.exports = (workspace) ->
   gisToNetLogo = (pt) ->
     getTransformation().gisToNetLogo(pt)
 
-  # (Coordinate) => Coordinate — unclipped, for drawing
+  # unclipped, for drawing
+  # (Coordinate) => Coordinate
   gisToNetLogoRaw = (pt) ->
     getTransformation().gisToNetLogoRaw(pt)
 

@@ -23,24 +23,33 @@ class GridDimensions
   # () => Number
   getCellHeight: -> @envelope.getHeight() / @gridHeight
 
-  # each () => Number
+  # () => Number
   getLeft:   -> @envelope.getMinX()
+  # () => Number
   getRight:  -> @envelope.getMaxX()
+  # () => Number
   getBottom: -> @envelope.getMinY()
+  # () => Number
   getTop:    -> @envelope.getMaxY()
 
-  # each (Number) => Number
+  # (Number) => Number
   getColumnLeft:   (column) -> @envelope.getMinX() + (@getCellWidth() * column)
+  # (Number) => Number
   getColumnCenter: (column) -> @envelope.getMinX() + (@getCellWidth() * column) + (@getCellWidth() * 0.5)
+  # (Number) => Number
   getColumnRight:  (column) -> @envelope.getMinX() + (@getCellWidth() * (column + 1))
+  # (Number) => Number
   getRowBottom:    (row)    -> @envelope.getMinY() + (@getCellHeight() * row)
+  # (Number) => Number
   getRowCenter:    (row)    -> @envelope.getMinY() + (@getCellHeight() * row) + (@getCellHeight() * 0.5)
+  # (Number) => Number
   getRowTop:       (row)    -> @envelope.getMinY() + (@getCellHeight() * (row + 1))
 
   # () => Envelope
   getEnvelope: -> new Envelope(@envelope)
 
-  # (Coordinate) => Coordinate — components are NaN when out of range
+  # components are NaN when out of range
+  # (Coordinate) => Coordinate
   gisToGrid: (coord) ->
     gridX = (coord.x - @envelope.getMinX()) / @getCellWidth()
     gridY = (coord.y - @envelope.getMinY()) / @getCellHeight()
@@ -63,13 +72,13 @@ INTERPOLATIONS = {
   "BICUBIC_2":        { width: 4, height: 4, left: 1, top: 1, a: -1.0 }
 }
 
-# (Number) => Number
 # JAI's InterpolationTable quantizes fractions to 256 subsamples
+# (Number) => Number
 quantizeFrac = (frac) ->
   Math.round(frac * 256) / 256
 
-# (Number, Number) => Number
 # Keys cubic kernel weight for offset t in [0, 2]
+# (Number, Number) => Number
 cubicWeight = (a, t) ->
   if t <= 1
     ((a + 2) * t * t * t) - ((a + 3) * t * t) + 1
@@ -101,7 +110,8 @@ interpolate = (samples, xfrac, yfrac, method) ->
 class RasterDataset
   gisType: "RasterDataset"
 
-  # (GridDimensions, Float64Array, GisCore) — data is row-major, row 0 at top
+  # data is row-major, row 0 at top
+  # (GridDimensions, Float64Array, GisCore)
   constructor: (@dimensions, @data, core) ->
     @interpolation = "NEAREST_NEIGHBOR"
     core.state.datasetCount += 1
@@ -118,7 +128,8 @@ class RasterDataset
       throw exceptions.extension("Coordinate out of bounds!")
     return
 
-  # (Number, Number) => Number — row in raster space (0 = top)
+  # row in raster space (0 = top)
+  # (Number, Number) => Number
   getSample: (col, row) ->
     @checkBounds(col, row)
     @data[(row * @dimensions.gridWidth) + col]
@@ -129,7 +140,8 @@ class RasterDataset
     @data[(row * @dimensions.gridWidth) + col] = value
     return
 
-  # (Coordinate) => Number — port of RasterDataset.getValue(Coordinate)
+  # port of RasterDataset.getValue(Coordinate)
+  # (Coordinate) => Number
   getValueAtPoint: (gisLocation) ->
     gridLocation = @dimensions.gisToGrid(gisLocation)
     if isNaN(gridLocation.x) or isNaN(gridLocation.y)
@@ -154,7 +166,8 @@ class RasterDataset
       samples.push(row)
     interpolate(samples, xfrac, yfrac, @interpolation)
 
-  # (Envelope) => Number — port of RasterDataset.getValue(Envelope): cell average
+  # port of RasterDataset.getValue(Envelope): cell average
+  # (Envelope) => Number
   getValueForEnvelope: (gisEnvelope) ->
     gridBL = @dimensions.gisToGrid(new Coordinate(gisEnvelope.getMinX(), gisEnvelope.getMinY()))
     gridTR = @dimensions.gisToGrid(new Coordinate(gisEnvelope.getMaxX(), gisEnvelope.getMaxY()))
@@ -174,12 +187,12 @@ class RasterDataset
         count += 1
     if count > 0 then sum / count else NaN
 
-  # ({ width: Number, height: Number, xOrigin: Number, yOrigin: Number, data: Float32Array }, GisCore) => RasterDataset
   # port of RasterDataset.convolve: JAI's `convolve` op is true convolution (the kernel
   # is rotated 180 degrees), and its NaN border extender makes any output cell whose
   # kernel reaches outside the raster NaN.  The + 0.5 is JAI's (pure-Java, non-mediaLib)
   # ConvolveOpImage applying its integer-rounding offset to floating-point samples
   # without ever truncating — a JAI quirk kept for desktop parity.
+  # ({ width: Number, height: Number, xOrigin: Number, yOrigin: Number, data: Float32Array }, GisCore) => RasterDataset
   convolve: (kernel, core) ->
     { gridWidth: width, gridHeight: height } = @dimensions
     out = new Float64Array(width * height)
@@ -199,9 +212,9 @@ class RasterDataset
         out[(y * width) + x] = sum + 0.5
     new RasterDataset(@dimensions, out, core)
 
-  # (GridDimensions, GisCore) => RasterDataset — samples this raster (with its interpolation) at
-  # each new cell's center.  Desktop scales via JAI's `scale` op instead; results match
-  # for aligned grids but can differ at cell boundaries or off-alignment scalings.
+  # samples this raster (with its interpolation) at each new cell's center.  Desktop scales via JAI's `scale` op
+  # instead; results match for aligned grids but can differ at cell boundaries or off-alignment scalings.
+  # (GridDimensions, GisCore) => RasterDataset
   resample: (toDimensions, core) ->
     if toDimensions.equals(@dimensions)
       return this

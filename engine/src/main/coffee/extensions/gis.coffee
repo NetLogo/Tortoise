@@ -19,6 +19,7 @@ notSupportedOnWeb = (name, replacement) ->
 # object handling).  `dump` is overridden because desktop's `{{gis:TypeName <contents>}}`
 # format differs from the base `{{gis: <data>}}`.
 class GISPorter extends SingleObjectExtensionPorter
+  # ()
   constructor: ->
     super("gis", ((x) -> x?.gisType?), (-> ""), (-> ""), (-> ""), (-> ""), (-> Nobody))
 

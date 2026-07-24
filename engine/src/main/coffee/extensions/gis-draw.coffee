@@ -24,13 +24,13 @@ module.exports = ({ core, raster, workspace }) ->
 
   { updater } = workspace
 
-  # (Coordinate) => [Number, Number] — GIS coordinate to a NetLogo [x, y] pair
+  # (Coordinate) => [Number, Number]
   toNetLogo = (c) ->
     nl = core.gisToNetLogoRaw(new Coordinate(c.x, c.y))
     [nl.x, nl.y]
 
-  # (Geometry) => Array[Array[[Number, Number]]] — one NetLogo-coordinate path per ring
-  # or line; points become single-element paths.  Used by both draw and fill.
+  # one NetLogo-coordinate path per ring or line; points become single-element paths.  Used by both draw and fill.
+  # (Geometry) => Array[Array[[Number, Number]]]
   collectPaths = (geom, paths) ->
     switch geom.getGeometryType()
       when "Point"
@@ -53,9 +53,9 @@ module.exports = ({ core, raster, workspace }) ->
     else
       throw exceptions.extension("not a VectorDataset or VectorFeature: #{workspace.dump(arg)}")
 
-  # (Any, Number) => Unit — port of Painting.DrawVector: stroke every geometry outline.
-  # A one-point path is emitted as a zero-length round-capped line, which renders as a
-  # dot of diameter `thickness` (matching desktop's point-drawn-as-circle).
+  # port of Painting.DrawVector: stroke every geometry outline. A one-point path is emitted as a zero-length
+  # round-capped line, which renders as a dot of diameter `thickness` (matching desktop's point-drawn-as-circle).
+  # (Any, Number) => Unit
   draw = (arg, thickness) ->
     core.getTransformation()
     rgb = ColorModel.colorToList(core.state.nlColor)
@@ -71,9 +71,10 @@ module.exports = ({ core, raster, workspace }) ->
             updater.registerPenTrail(x1, y1, x2, y2, rgb, thickness, "down")
     return
 
-  # (Any, Number) => Unit — port of Painting.FillVector.  Polygons fill with their holes
-  # (even-odd); non-polygon geometries have no interior, so they fall back to a stroke,
-  # as desktop's g.fill of an open path effectively does.
+  # port of Painting.FillVector.  Polygons fill with their holes (even-odd); non-polygon geometries have no interior, so
+  # they fall back to a stroke, as desktop's g.fill of an open path effectively does.
+
+  # (Any, Number) => Unit
   fill = (arg, thickness) ->
     rgb = ColorModel.colorToList(core.state.nlColor)
     for feature in featuresOf(arg)
@@ -85,9 +86,9 @@ module.exports = ({ core, raster, workspace }) ->
         draw(feature, thickness)
     return
 
-  # (RasterDataset, Number) => Unit — port of Painting.PaintRaster.  Renders the raster
-  # as a grayscale image (min=black, max=white; RangeColorModel) with NaN cells fully
-  # transparent, and `transparency` (0-255) reducing every real cell's alpha.
+  # Port of Painting.PaintRaster.  Renders the raster as a grayscale image (min=black, max=white; RangeColorModel) with
+  # NaN cells fully transparent, and `transparency` (0-255) reducing every real cell's alpha.
+  # (RasterDataset, Number) => Unit
   paint = (dataset, transparency) ->
     if transparency < 0 or transparency > 255
       throw exceptions.extension("transparency must be between 0 and 255")
