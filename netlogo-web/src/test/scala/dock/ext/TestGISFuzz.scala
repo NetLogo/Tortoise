@@ -26,7 +26,7 @@ import
 class TestGISFuzz extends ExtensionFuzzSuite {
 
   override def fixedSeeds =
-    Seq(1L, 2L, 42L, 1337L, 8675309L, 20260714L, 271828L, 161803L, 999983L, 4294967311L)
+    Seq(1L, 2L, 42L, 1337L, 8675309L, 20260714L, 271828L, 161803L, 999983L, 4294967311L, 5086697704243387067L, -4263209541705078767L)
 
   override def randomRunCount: Int = 10
 
@@ -75,9 +75,9 @@ class TestGISFuzz extends ExtensionFuzzSuite {
     }
   }
 
-  private def jsonGeometry(rng: Random, geomType: String): String = geomType match {
+  private def jsonGeometry(rng: Random, geomType: String, multiPointMinPts: Int): String = geomType match {
     case "Point"           => s"""{"type": "Point", "coordinates": ${jsonPoint(rng)}}"""
-    case "MultiPoint"      => s"""{"type": "MultiPoint", "coordinates": ${jsonPointList(rng, 1, 4)}}"""
+    case "MultiPoint"      => s"""{"type": "MultiPoint", "coordinates": ${jsonPointList(rng, multiPointMinPts, 4)}}"""
     case "LineString"      => s"""{"type": "LineString", "coordinates": ${jsonPointList(rng, 2, 5)}}"""
     case "MultiLineString" =>
       val lines = Seq.fill(1 + rng.nextInt(3))(jsonPointList(rng, 2, 4)).mkString("[", ", ", "]")
@@ -90,12 +90,14 @@ class TestGISFuzz extends ExtensionFuzzSuite {
 
   private val geometryTypes = Seq("Point", "MultiPoint", "LineString", "MultiLineString", "Polygon", "MultiPolygon")
 
-  // a homogeneous FeatureCollection with a fixed two-property schema, as an escaped NetLogo string literal
-  private def randomGeoJson(rng: Random, geomTypeOpt: Option[String] = None): String = {
+  // a homogeneous FeatureCollection with a fixed two-property schema, as an escaped NetLogo string literal.
+  // `multiPointMinPts` guards the shapefile writer: a single-point MultiPoint is typed as POINT by desktop's
+  // esriShapeType and then class-cast-crashes (MultiPoint cannot be cast to Point), so that path forces >= 2.
+  private def randomGeoJson(rng: Random, geomTypeOpt: Option[String] = None, multiPointMinPts: Int = 1): String = {
     val geomType = geomTypeOpt.getOrElse(geometryTypes(rng.nextInt(geometryTypes.length)))
     val features = Seq.fill(1 + rng.nextInt(5)) {
       val name = nameStrings(rng.nextInt(nameStrings.length))
-      s"""{"type": "Feature", "geometry": ${jsonGeometry(rng, geomType)}, "properties": {"NAME": "$name", "NUM": ${num(rng, -100, 100)}}}"""
+      s"""{"type": "Feature", "geometry": ${jsonGeometry(rng, geomType, multiPointMinPts)}, "properties": {"NAME": "$name", "NUM": ${num(rng, -100, 100)}}}"""
     }
     val json = s"""{"type": "FeatureCollection", "features": ${features.mkString("[", ", ", "]")}}"""
     json.replace("\"", "\\\"")
@@ -203,9 +205,10 @@ class TestGISFuzz extends ExtensionFuzzSuite {
       // Multi- types only: desktop's shp writer class-cast-crashes on the bare
       // LineString/Polygon geometries that GeoJSON loading produces (NLW is more
       // tolerant, so that divergence is untestable).  Rectangles only for polygons:
-      // shapefile shells must be clockwise.
+      // shapefile shells must be clockwise.  MultiPoint needs >= 2 points (see
+      // randomGeoJson) or the single-point case crashes the writer the same way.
       val geomType = Seq("Point", "MultiPoint", "MultiLineString", "MultiPolygon")(rng.nextInt(4))
-      testCommand(s"""set ds gis:load-dataset-from-string "geojson" "${randomGeoJson(rng, Some(geomType))}"""")
+      testCommand(s"""set ds gis:load-dataset-from-string "geojson" "${randomGeoJson(rng, Some(geomType), multiPointMinPts = 2)}"""")
       testCommand("""set ds2 gis:load-dataset-from-string "shp" gis:store-dataset-to-strings ds "shp"""")
       compare("gis:shape-type-of ds2")
       compare("length gis:feature-list-of ds2")
