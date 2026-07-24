@@ -185,6 +185,39 @@ end
     assert("(link 1 0)" == evalModel("(word one-of links)", compiledModel.compileReporter))
   }
 
+  test("gis datasets and session state survive a recompile state round trip") { fixture =>
+    val gisCode = """
+extensions [gis]
+globals [ds]
+to setup
+  gis:set-transformation-ds [0 10 0 10] [-5 5 -5 5]
+  set ds gis:load-dataset-from-string "asc" "ncols 2\nnrows 2\nxllcorner 0\nyllcorner 0\ncellsize 1\n1 2\n3 4\n"
+end
+"""
+    val gisModel      = Model(code = gisCode, widgets = List(View.square(5)))
+    val compiledModel = CompiledModel.fromModel(gisModel, compiler) valueOr
+      ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
+    fixture.eval(compiledModel.compiledCode)
+    evalModel("setup", compiledModel.compileRawCommand)
+
+    val widthBefore = evalModel("(word gis:width-of ds)", compiledModel.compileReporter)
+    val envBefore   = evalModel("(word gis:world-envelope)", compiledModel.compileReporter)
+    assert("2" == widthBefore)
+
+    // Simulate a Galapagos recompile: `exportState`/`importState` round trip in memory, and
+    // between them the gis core is rebuilt fresh -- stand in for that by nulling the porter
+    // core's transformation, which a fresh `init` would reset.  The dataset must reify back
+    // (not to `nobody`) and the transformation must be restored from the session snapshot.
+    fixture.eval("var state = workspace.world.exportState()")
+    fixture.eval("workspace.world.clearAll()")
+    fixture.eval("var gisPorter = workspace.world.extensionPorters.find(function(p) { return p.extensionName === 'gis' })")
+    fixture.eval("gisPorter.core.state.transformation = null")
+    fixture.eval("workspace.world.importState(state)")
+
+    assert(widthBefore == evalModel("(word gis:width-of ds)", compiledModel.compileReporter))
+    assert(envBefore   == evalModel("(word gis:world-envelope)", compiledModel.compileReporter))
+  }
+
   private def evalCommand(netlogo: String): AnyRef =
     evalModel(netlogo, model.compileRawCommand)
 

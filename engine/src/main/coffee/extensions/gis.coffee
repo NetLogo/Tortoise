@@ -11,35 +11,71 @@ notImplemented = (name) ->
 notSupportedOnWeb = (name, replacement) ->
   -> throw exceptions.extension("gis:#{name} is not supported by NetLogo Web. Use gis:#{replacement} instead.")
 
-# gis objects cannot be meaningfully serialized to a world export, but — matching desktop,
-# whose VectorDataset/RasterDataset `dump(exporting)` returns "" and `readExtensionObject`
-# returns null — export/import degrade gracefully rather than erroring, so a model with gis
-# objects can still be exported.  A gis object reifies back to `Nobody` (a valid Logo value,
-# unlike a bare null, which would be an invalid global and break the importer's reified-
-# object handling).  `dump` is overridden because desktop's `{{gis:TypeName <contents>}}`
-# format differs from the base `{{gis: <data>}}`.
+# GIS objects cannot be meaningfully serialized to a FILE world export, but — matching
+# desktop, whose VectorDataset/RasterDataset `dump(exporting)` returns "" and
+# `readExtensionObject` returns null — the string export/import (`formatObjectData` /
+# `readObjectData`) degrade gracefully: a GIS object writes nothing and reads back as
+# `Nobody` (a valid Logo value, unlike a bare null, which would break the importer's
+# reified-object handling).
+#
+# A Galapagos recompile, though, does an IN-MEMORY `exportState`/`importState` round trip
+# and never goes through the string form, so we can preserve state there without ever
+# writing it to a file.  Two hooks exploit that seam:
+#   - `exportObjectData` returns the live dataset, which `importObjectData` hands right
+#     back (see `read`/`Nobody` above for the file path, which never sees a live object).
+#   - `export`/`import` carry a snapshot of the session `core.state` (transformation,
+#     coordinate system, drawing color, coverage thresholds), which recompile rebuilds
+#     from scratch.  It rides on the in-memory ExportedExtension only; `format` ignores it.
+# `dump` is overridden because desktop's `{{gis:TypeName <contents>}}` format differs from
+# the base `{{gis: <data>}}`.
 class GISPorter extends SingleObjectExtensionPorter
   # ()
   constructor: ->
-    super("gis", ((x) -> x?.gisType?), (-> ""), (-> ""), (-> ""), (-> ""), (-> Nobody))
+    super(
+      "gis"
+      ((x) -> x?.gisType?)
+      (-> "")                                                                    # dumpObjectData (unused; dump overridden)
+      ((x) -> x)                                                                 # exportObjectData: carry the live object in memory
+      (-> "")                                                                    # formatObjectData: a real file export writes nothing
+      (-> "")                                                                    # readObjectData: a file import has no live object
+      ((exported) -> if exported?.data?.gisType? then exported.data else Nobody) # importObjectData: reify the live object, else Nobody
+    )
+    @core = null # the current session's gis core, set by `init` on (re)compile
 
   # (Any) => String
   dump: (x) -> "{{gis:#{x.gisType} #{x.dumpContents()}}}"
 
+  # (Array[ExportedExtensionObject]) => ExportedSimpleExtension
+  export: (objects) ->
+    exported = super(objects)
+    exported.sessionState = if @core? then Object.assign({}, @core.state) else null
+    exported
+
+  # `sessionState` is only present on the in-memory recompile round trip; a file import's
+  # ExportedSimpleExtension (from `read`) has none, so file loads keep the fresh defaults.
+  # (ExportedSimpleExtension, Array[Any]) => Unit
+  import: (exported, _objects) ->
+    if @core? and exported?.sessionState?
+      Object.assign(@core.state, exported.sessionState)
+    return
+
+porter = new GISPorter()
+
 module.exports = {
 
-  porter: new GISPorter()
+  porter
 
   # (Workspace) => Extension
   init: (workspace) ->
 
-    core       = require('extensions/gis-core')(workspace)
-    projection = require('extensions/gis-projection')({ core, workspace })
-    vector     = require('extensions/gis-vector')({ core, workspace })
-    raster     = require('extensions/gis-raster')({ core, workspace })
-    io         = require('extensions/gis-io')({ core, projection, vector, raster, workspace })
-    agents     = require('extensions/gis-agents')({ core, vector, raster, workspace })
-    draw       = require('extensions/gis-draw')({ core, raster, workspace })
+    core        = require('extensions/gis-core')(workspace)
+    projection  = require('extensions/gis-projection')({ core, workspace })
+    vector      = require('extensions/gis-vector')({ core, workspace })
+    raster      = require('extensions/gis-raster')({ core, workspace })
+    io          = require('extensions/gis-io')({ core, projection, vector, raster, workspace })
+    agents      = require('extensions/gis-agents')({ core, vector, raster, workspace })
+    draw        = require('extensions/gis-draw')({ core, raster, workspace })
+    porter.core = core # point the singleton porter at this session's core
 
     {
       name: "gis"
