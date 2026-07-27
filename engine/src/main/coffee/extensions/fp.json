@@ -79,5 +79,12 @@
     , "argTypes": ["reporter", "list"]
     , "returnType": "wildcard"
     }
+    , {
+      "name": "outer"
+    , "argTypes": ["reporter", "list", { "type": "list", "isRepeatable": true }]
+    , "returnType": "list"
+    , "defaultArgCount": 3
+    , "minimumArgCount": 3
+    }
   ]
 }

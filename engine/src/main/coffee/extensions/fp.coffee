@@ -134,6 +134,21 @@ iterateForLast = (f, initialValue, repetitions) ->
 apply = (f, values) ->
   f(values...)
 
+# (Reporter, Array[Array[Any]]) => Array[Any]
+outer = (f, ls...) ->
+  if f.minArgCount > ls.length
+    argText  = "#{f.minArgCount} argument#{if f.minArgCount is 1 then '' else 's'}"
+    listText = "#{ls.length} list#{if ls.length is 1 then ' was' else 's were'} given"
+    throw exceptions.extension("The reporter given to `fp:outer` requires at least #{argText} but only #{listText}.")
+
+  build = (args, remaining) ->
+    if remaining.length is 0
+      f(args...)
+    else
+      remaining[0].map( (v) -> build(args.concat([v]), remaining.slice(1)) )
+
+  build([], ls)
+
 module.exports = {
 
   porter: undefined
@@ -154,6 +169,7 @@ module.exports = {
     , "iterate": iterateToList
     , "iterate-last": iterateForLast
     , apply
+    , outer
     }
     Object.keys(prims).forEach( (p) => prims[p.toUpperCase()] = prims[p] )
     { name: "fp", prims }
