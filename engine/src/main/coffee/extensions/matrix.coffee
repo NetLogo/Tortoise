@@ -16,8 +16,7 @@ vec             = require('vectorious')
 
 SingleObjectExtensionPorter = require('../engine/core/world/singleobjectextensionporter')
 
-notImplementedException = (prim) ->
-  throw exceptions.extension("#{prim} has not been implemented.")
+eigen = require('./matrix-eigen')
 
 # Check nestedList input for possible problems, used by fromRowList & fromColumnList
 # If input nestedList includes items, not numbers, replace them by zeros.
@@ -364,19 +363,32 @@ module.exports = {
       validate(m2)
       m1.solve(m2)
 
-    # Following three eigen-related APIs are dummy implementations.
-    # We throw an error to explain we have not implemented them yet. -- XZ (Summer, 2020)
+    # (Matrix) => Object
+    eigenDecompose = (matrix) ->
+      validate(matrix)
+      [numRows, numCols] = matrix.shape
+      if numRows isnt numCols
+        throw exceptions.extension(
+          "eigenvalues and eigenvectors are only defined for square matrices," +
+          " but the given matrix has dimensions #{numRows}x#{numCols}"
+        )
+      eigen.decompose(matrix.toArray())
+
     # (Matrix) => List
     realEigenvalues = (matrix) ->
-      notImplementedException("matrix:real-eigenvalues")
+      eigenDecompose(matrix).realEigenvalues
 
     # (Matrix) => List
     imaginaryEigenvalues = (matrix) ->
-      notImplementedException("matrix:imaginary-eigenvalues")
+      eigenDecompose(matrix).imagEigenvalues
 
+    # Built on a `Float64Array` rather than through `vec.array`, which would force the nested list down to
+    # `float32` and cost us the low-order digits desktop reports. -Jeremy B August 2026
     # (Matrix) => Matrix
     eigenvectors = (matrix) ->
-      notImplementedException("matrix:eigenvectors")
+      v    = eigenDecompose(matrix).v
+      size = v.length
+      vec.array(Float64Array.from([].concat(v...)), { shape: [size, size] })
 
     # List[Number] => (Number, Number, Number, Number)
     forecastGrowthHelper = (data) ->
