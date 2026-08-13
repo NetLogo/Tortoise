@@ -40,6 +40,11 @@ class GraalJS {
     for (lib <- jsLibs)
       evalRaw(Resource.asString(lib))
 
+    // Java's `StrictMath` matches what NetLogo headless computes so this lets the docking tests compare bit-for-bit.
+    // But that also means these tests won't show browser-only divergences: V8's `Math.sin`/`cos` are off by 1 ulp from
+    // `StrictMath` on ~24% of inputs, and a chaotic model amplifies that into a wholly different world state within a
+    // few hundred ticks.  A model that docks without errors here can still diverge from desktop in the browser.
+    //-Jeremy B August 2026
     put("StrictMath", Strict)
     evalRaw("var strictmath = tortoise_require('shim/strictmath')")
     evalRaw("Object.getOwnPropertyNames(StrictMath).forEach( (prop) => strictmath[ prop ] = StrictMath[ prop ] )")

@@ -2,7 +2,9 @@
 
 Cloner = require('./cloner')
 
-# We use this outside of GraalJS --JAB (4/10/15) / JMB (11/18)
+# We use this outside of GraalJS --JAB (4/10/15) / JMB (11/18) Under GraalJS (the docking tests),
+# `jsengine/GraalJS.scala` overwrites these with Java's `StrictMath`, which is what desktop NetLogo computes with.  See
+# the comment there for more info. -Jeremy B AUgust 2026.
 genEnhancedMath = ->
   obj = Cloner(Math)
   # For functions that are not "close enough," or that don't exist in the browser, manually define them here!
