@@ -53,13 +53,23 @@ var world = workspace.world;
 ProcedurePrims.defineCommand("go", 53, 439, (function() {
   world.observer.setGlobal("hsb-as-rgb", ColorModel.hsbToRGB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
   world.observer.setGlobal("hsb-color", ColorModel.nearestColorNumberOfHSB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 163, 166, 1904, PrimChecks.procedure.callReporter(167, 175, "quadrant", -1, 1)), function() { PrimChecks.patch.setVariable(188, 194, "pcolor", world.observer.getGlobal("hsb-as-rgb")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(163, 166, R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 210, 213, 1904, PrimChecks.procedure.callReporter(214, 222, "quadrant", 1, 1)), function() { PrimChecks.patch.setVariable(235, 241, "pcolor", world.observer.getGlobal("hsb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(210, 213, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 163, 166, 1904, PrimChecks.procedure.callReporter(167, 175, "quadrant", -1, 1)), 163, 166), function() {
+    PrimChecks.context.assertKind(6, 'set', 184, 205);
+    PrimChecks.patch.setVariable(188, 194, "pcolor", world.observer.getGlobal("hsb-as-rgb"));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(163, 166, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 210, 213, 1904, PrimChecks.procedure.callReporter(214, 222, "quadrant", 1, 1)), 210, 213), function() {
+    PrimChecks.context.assertKind(6, 'set', 231, 251);
+    PrimChecks.patch.setVariable(235, 241, "pcolor", world.observer.getGlobal("hsb-color"));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(210, 213, R); return R; }
   world.observer.setGlobal("rgb-color", ColorModel.nearestColorNumberOfRGB(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 315, 318, 1904, PrimChecks.procedure.callReporter(319, 327, "quadrant", -1, -1)), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 315, 318, 1904, PrimChecks.procedure.callReporter(319, 327, "quadrant", -1, -1)), 315, 318), function() {
+    PrimChecks.context.assertKind(6, 'set', 336, 380);
     PrimChecks.patch.setVariable(340, 346, "pcolor", ListPrims.list(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(315, 318, R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 385, 388, 1904, PrimChecks.procedure.callReporter(389, 397, "quadrant", 1, -1)), function() { PrimChecks.patch.setVariable(410, 416, "pcolor", world.observer.getGlobal("rgb-color")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(385, 388, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 385, 388, 1904, PrimChecks.procedure.callReporter(389, 397, "quadrant", 1, -1)), 385, 388), function() {
+    PrimChecks.context.assertKind(6, 'set', 406, 426);
+    PrimChecks.patch.setVariable(410, 416, "pcolor", world.observer.getGlobal("rgb-color"));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(385, 388, R); return R; }
   Prims.display();
 }))
 ProcedurePrims.defineReporter("quadrant", 454, 542, (function(x, y) {

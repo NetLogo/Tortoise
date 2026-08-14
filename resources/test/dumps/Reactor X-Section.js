@@ -139,7 +139,7 @@ ProcedurePrims.defineCommand("setup-control-rods", 1028, 2107, (function() {
     var R = ProcedurePrims.ask(PrimChecks.agentset.with(1967, 1971, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(1974, 1979, "pxcor"), rodHx); }), function() { PrimChecks.patch.setVariable(2000, 2004, "rod?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1955, 1958, R); return R; }
     rodHx = PrimChecks.math.plus(2046, 2047, PrimChecks.math.plus(2032, 2033, PrimChecks.validator.checkArg('+', 2032, 2033, 1, rodHx), PrimChecks.validator.checkArg('+', 2032, 2033, 1, world.observer.getGlobal("rod-spacing"))), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("ROD-X", rodHx);
   }
-  var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("build-reactor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2056, 2059, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 2056, 2059), function() { var R = ProcedurePrims.callCommand("build-reactor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2056, 2059, R); return R; }
   var R = ProcedurePrims.callCommand("place-control-rods"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("auto-react", 2217, 2565, (function() {

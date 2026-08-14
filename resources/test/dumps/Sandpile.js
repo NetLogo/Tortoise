@@ -145,7 +145,9 @@ ProcedurePrims.defineCommand("go", 2054, 2822, (function() {
   let drop = PrimChecks.procedure.callReporter(2068, 2078, "drop-patch"); ProcedurePrims.stack().currentContext().registerStringRunVar("DROP", drop);
   if (!Prims.equality(drop, Nobody)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2105, 2108, 1904, drop), function() {
+      PrimChecks.context.assertKind(6, 'update-n', 2122, 2132);
       var R = ProcedurePrims.callCommand("update-n", 1); if (R === DeathInterrupt) { return R; }
+      PrimChecks.context.assertKind(6, 'recolor', 2139, 2146);
       var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2105, 2108, R); return R; }
     let results = PrimChecks.procedure.callReporter(2169, 2178, "stabilize", world.observer.getGlobal("animate-avalanches?")); ProcedurePrims.stack().currentContext().registerStringRunVar("RESULTS", results);
@@ -156,12 +158,16 @@ ProcedurePrims.defineCommand("go", 2054, 2822, (function() {
       world.observer.setGlobal("lifetimes", PrimChecks.list.lput(lifetime, PrimChecks.validator.checkArg('LPUT', 2458, 2462, 8, world.observer.getGlobal("lifetimes"))));
     }
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2579, 2582, 1904, avalancheHpatches), function() {
+      PrimChecks.context.assertKind(6, 'recolor', 2603, 2610);
       var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
+      PrimChecks.context.assertKind(6, 'ask', 2611, 2637);
       var R = ProcedurePrims.ask(SelfManager.self().getNeighbors4(), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2611, 2614, R); return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2579, 2582, R); return R; }
     Prims.display();
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2683, 2686, 1904, avalancheHpatches), function() {
+      PrimChecks.context.assertKind(6, 'set', 2707, 2735);
       PrimChecks.patch.setVariable(2711, 2721, "base-color", world.observer.getGlobal("default-color"));
+      PrimChecks.context.assertKind(6, 'recolor', 2736, 2743);
       var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2683, 2686, R); return R; }
     world.observer.setGlobal("total-on-tick", world.observer.getGlobal("total"));
@@ -172,17 +178,22 @@ ProcedurePrims.defineCommand("explore", 2830, 3367, (function() {
   if (MousePrims.isInside()) {
     let p = world.getPatchAt(MousePrims.getX(), MousePrims.getY()); ProcedurePrims.stack().currentContext().registerStringRunVar("P", p);
     world.observer.setGlobal("selected-patch", p);
-    var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("push-n"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2930, 2933, R); return R; }
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2957, 2960, 1904, world.observer.getGlobal("selected-patch")), function() { var R = ProcedurePrims.callCommand("update-n", 1); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2957, 2960, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 2930, 2933), function() { var R = ProcedurePrims.callCommand("push-n"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2930, 2933, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2957, 2960, 1904, world.observer.getGlobal("selected-patch")), 2957, 2960), function() {
+      PrimChecks.context.assertKind(6, 'update-n', 2978, 2988);
+      var R = ProcedurePrims.callCommand("update-n", 1); if (R === DeathInterrupt) { return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2957, 2960, R); return R; }
     let results = PrimChecks.procedure.callReporter(3007, 3016, "stabilize", false); ProcedurePrims.stack().currentContext().registerStringRunVar("RESULTS", results);
-    var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("pop-n"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3027, 3030, R); return R; }
-    var R = ProcedurePrims.ask(world.patches(), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 3027, 3030), function() { var R = ProcedurePrims.callCommand("pop-n"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3027, 3030, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 3053, 3056), function() {
       PrimChecks.patch.setVariable(3071, 3081, "base-color", world.observer.getGlobal("default-color"));
       var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3053, 3056, R); return R; }
     let avalancheHpatches = PrimChecks.list.first(3132, 3137, PrimChecks.validator.checkArg('FIRST', 3132, 3137, 12, results)); ProcedurePrims.stack().currentContext().registerStringRunVar("AVALANCHE-PATCHES", avalancheHpatches);
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3150, 3153, 1904, avalancheHpatches), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 3150, 3153, 1904, avalancheHpatches), 3150, 3153), function() {
+      PrimChecks.context.assertKind(6, 'set', 3174, 3203);
       PrimChecks.patch.setVariable(3178, 3188, "base-color", world.observer.getGlobal("selected-color"));
+      PrimChecks.context.assertKind(6, 'recolor', 3204, 3211);
       var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3150, 3153, R); return R; }
     Prims.display();
@@ -190,7 +201,7 @@ ProcedurePrims.defineCommand("explore", 2830, 3367, (function() {
   else {
     if (!Prims.equality(world.observer.getGlobal("selected-patch"), Nobody)) {
       world.observer.setGlobal("selected-patch", Nobody);
-      var R = ProcedurePrims.ask(world.patches(), function() {
+      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 3304, 3307), function() {
         PrimChecks.patch.setVariable(3322, 3332, "base-color", world.observer.getGlobal("default-color"));
         var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3304, 3307, R); return R; }
@@ -202,16 +213,21 @@ ProcedurePrims.defineReporter("stabilize", 3485, 4862, (function(animate_Q) {
   let iters = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("ITERS", iters);
   let avalancheHpatches = new PatchSet([], world); ProcedurePrims.stack().currentContext().registerStringRunVar("AVALANCHE-PATCHES", avalancheHpatches);
   while (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 3904, 3908, 112, activeHpatches))) {
-    let overloadedHpatches = PrimChecks.agentset.with(3970, 3974, PrimChecks.validator.checkArg('WITH', 3970, 3974, 112, activeHpatches), function() { return Prims.gt(PrimChecks.patch.getVariable(3977, 3978, "n"), 3); }); ProcedurePrims.stack().currentContext().registerStringRunVar("OVERLOADED-PATCHES", overloadedHpatches);
+    let overloadedHpatches = PrimChecks.agentset.with(3970, 3974, PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('WITH', 3970, 3974, 112, activeHpatches), 'with', 3955, 3984), function() { return Prims.gt(PrimChecks.patch.getVariable(3977, 3978, "n"), 3); }); ProcedurePrims.stack().currentContext().registerStringRunVar("OVERLOADED-PATCHES", overloadedHpatches);
     if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 3992, 3996, 112, overloadedHpatches))) {
       iters = PrimChecks.math.plus(4040, 4041, PrimChecks.validator.checkArg('+', 4040, 4041, 1, iters), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("ITERS", iters);
     }
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4054, 4057, 1904, overloadedHpatches), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 4054, 4057, 1904, overloadedHpatches), 4054, 4057), function() {
+      PrimChecks.context.assertKind(6, 'set', 4085, 4111);
       PrimChecks.patch.setVariable(4089, 4099, "base-color", world.observer.getGlobal("fired-color"));
+      PrimChecks.context.assertKind(6, 'update-n', 4154, 4165);
       var R = ProcedurePrims.callCommand("update-n", -4); if (R === DeathInterrupt) { return R; }
+      PrimChecks.context.assertKind(6, 'if', 4172, 4195);
       if (animate_Q) {
+        PrimChecks.context.assertKind(6, 'recolor', 4186, 4193);
         var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
       }
+      PrimChecks.context.assertKind(6, 'ask', 4290, 4365);
       var R = ProcedurePrims.ask(SelfManager.self().getNeighbors4(), function() {
         var R = ProcedurePrims.callCommand("update-n", 1); if (R === DeathInterrupt) { return R; }
         if (animate_Q) {
@@ -223,7 +239,7 @@ ProcedurePrims.defineReporter("stabilize", 3485, 4862, (function(animate_Q) {
       Prims.display();
     }
     avalancheHpatches = PrimChecks.agentset.patchSet(4580, 4589, avalancheHpatches, overloadedHpatches); ProcedurePrims.stack().currentContext().updateStringRunVar("AVALANCHE-PATCHES", avalancheHpatches);
-    activeHpatches = PrimChecks.agentset.patchSet(4771, 4780, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4796, 4798, 1904, overloadedHpatches), function() { return SelfManager.self().getNeighbors4(); })); ProcedurePrims.stack().currentContext().updateStringRunVar("ACTIVE-PATCHES", activeHpatches);
+    activeHpatches = PrimChecks.agentset.patchSet(4771, 4780, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('OF', 4796, 4798, 1904, overloadedHpatches), 'of', 4781, 4817), function() { return SelfManager.self().getNeighbors4(); })); ProcedurePrims.stack().currentContext().updateStringRunVar("ACTIVE-PATCHES", activeHpatches);
   }
   return PrimChecks.procedure.report(4824, 4830, ListPrims.list(avalancheHpatches, iters));
 }))

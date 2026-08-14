@@ -85,14 +85,21 @@ ProcedurePrims.defineCommand("go", 158, 1941, (function() {
   var R = PrimChecks.task.forEach(1684, 1691, PrimChecks.validator.checkArg('FOREACH', 1684, 1691, 8, events), PrimChecks.task.checked(1699, 1700, function(_EVENT_) {
     PrimChecks.procedure.runArgCountCheck('run', 1699, 1933, 1, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1714, 1717, 1904, PrimChecks.list.oneOf(1718, 1724, world.patches())), function() {
+      PrimChecks.context.assertKind(6, 'let', 1741, 1769);
       let target = PrimChecks.list.oneOf(1752, 1758, SelfManager.self().getNeighbors4()); ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET", target);
+      PrimChecks.context.assertKind(6, 'if', 1776, 1818);
       if (Prims.equality(_EVENT_, swapHevent)) {
+        PrimChecks.context.assertKind(6, 'swap', 1805, 1816);
         var R = ProcedurePrims.callCommand("swap", target); if (R === DeathInterrupt) { return R; }
       }
+      PrimChecks.context.assertKind(6, 'if', 1825, 1872);
       if (Prims.equality(_EVENT_, reproduceHevent)) {
+        PrimChecks.context.assertKind(6, 'reproduce', 1854, 1870);
         var R = ProcedurePrims.callCommand("reproduce", target); if (R === DeathInterrupt) { return R; }
       }
+      PrimChecks.context.assertKind(6, 'if', 1879, 1923);
       if (Prims.equality(_EVENT_, selectHevent)) {
+        PrimChecks.context.assertKind(6, 'select', 1908, 1921);
         var R = ProcedurePrims.callCommand("select", target); if (R === DeathInterrupt) { return R; }
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1714, 1717, R); return R; }
@@ -102,21 +109,28 @@ ProcedurePrims.defineCommand("go", 158, 1941, (function() {
 ProcedurePrims.defineCommand("swap", 1996, 2107, (function(target) {
   let oldHcolor = PrimChecks.patch.getVariable(2028, 2034, "pcolor"); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-COLOR", oldHcolor);
   PrimChecks.patch.setVariable(2041, 2047, "pcolor", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2059, 2061, 1904, target), function() { return PrimChecks.patch.getVariable(2050, 2056, "pcolor"); }));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2071, 2074, 1904, target), function() { PrimChecks.patch.setVariable(2088, 2094, "pcolor", oldHcolor); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2071, 2074, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2071, 2074, 1904, target), 2071, 2074), function() {
+    PrimChecks.context.assertKind(6, 'set', 2084, 2104);
+    PrimChecks.patch.setVariable(2088, 2094, "pcolor", oldHcolor);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2071, 2074, R); return R; }
 }))
 ProcedurePrims.defineCommand("select", 2163, 2316, (function(target) {
   if (PrimChecks.procedure.callReporter(2190, 2195, "beat?", target)) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2209, 2212, 1904, target), function() { PrimChecks.patch.setVariable(2226, 2232, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2209, 2212, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2209, 2212, 1904, target), 2209, 2212), function() {
+      PrimChecks.context.assertKind(6, 'set', 2222, 2238);
+      PrimChecks.patch.setVariable(2226, 2232, "pcolor", 0);
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2209, 2212, R); return R; }
   }
   else {
-    if (PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2271, 2273, 1904, target), function() { return PrimChecks.procedure.callReporter(2256, 2261, "beat?", SelfManager.myself()); })) {
+    if (PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('OF', 2271, 2273, 1904, target), 'of', 2254, 2280), function() { return PrimChecks.procedure.callReporter(2256, 2261, "beat?", SelfManager.myself()); })) {
       PrimChecks.patch.setVariable(2293, 2299, "pcolor", 0);
     }
   }
 }))
 ProcedurePrims.defineCommand("reproduce", 2416, 2616, (function(target) {
   if (Prims.equality(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2457, 2459, 1904, target), function() { return PrimChecks.patch.getVariable(2448, 2454, "pcolor"); }), 0)) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2481, 2484, 1904, target), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2481, 2484, 1904, target), 2481, 2484), function() {
+      PrimChecks.context.assertKind(6, 'set', 2500, 2531);
       PrimChecks.patch.setVariable(2504, 2510, "pcolor", PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(2513, 2519, "pcolor"); }));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2481, 2484, R); return R; }
   }

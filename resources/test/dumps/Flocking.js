@@ -85,7 +85,7 @@ ProcedurePrims.defineCommand("find-flockmates", 891, 976, (function() {
   PrimChecks.turtle.setVariable(934, 944, "flockmates", SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("vision"))));
 }))
 ProcedurePrims.defineCommand("find-nearest-neighbor", 984, 1089, (function() {
-  PrimChecks.turtle.setVariable(1032, 1048, "nearest-neighbor", PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 1049, 1059, 112, PrimChecks.turtle.getVariable(1060, 1070, "flockmates")), function() { return SelfManager.self().distance(SelfManager.myself()); }));
+  PrimChecks.turtle.setVariable(1032, 1048, "nearest-neighbor", PrimChecks.agentset.minOneOf(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('MIN-ONE-OF', 1049, 1059, 112, PrimChecks.turtle.getVariable(1060, 1070, "flockmates")), 'min-one-of', 1049, 1088), function() { return SelfManager.self().distance(SelfManager.myself()); }));
 }))
 ProcedurePrims.defineCommand("separate", 1111, 1203, (function() {
   var R = ProcedurePrims.callCommand("turn-away", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1164, 1166, 1904, PrimChecks.turtle.getVariable(1167, 1183, "nearest-neighbor")), function() { return PrimChecks.turtle.getVariable(1155, 1162, "heading"); }), world.observer.getGlobal("max-separate-turn")); if (R === DeathInterrupt) { return R; }
@@ -94,8 +94,8 @@ ProcedurePrims.defineCommand("align", 1222, 1305, (function() {
   var R = ProcedurePrims.callCommand("turn-towards", PrimChecks.procedure.callReporter(1264, 1289, "average-flockmate-heading"), world.observer.getGlobal("max-align-turn")); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineReporter("average-flockmate-heading", 1320, 1719, (function() {
-  let xHcomponent = PrimChecks.list.sum(1543, 1546, PrimChecks.validator.checkArg('SUM', 1543, 1546, 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1552, 1554, 1904, PrimChecks.turtle.getVariable(1555, 1565, "flockmates")), function() { return SelfManager.self().dx(); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("X-COMPONENT", xHcomponent);
-  let yHcomponent = PrimChecks.list.sum(1584, 1587, PrimChecks.validator.checkArg('SUM', 1584, 1587, 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1593, 1595, 1904, PrimChecks.turtle.getVariable(1596, 1606, "flockmates")), function() { return SelfManager.self().dy(); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("Y-COMPONENT", yHcomponent);
+  let xHcomponent = PrimChecks.list.sum(1543, 1546, PrimChecks.validator.checkArg('SUM', 1543, 1546, 8, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(2, PrimChecks.validator.checkArg('OF', 1552, 1554, 1904, PrimChecks.turtle.getVariable(1555, 1565, "flockmates")), 'of', 1547, 1565), function() { return SelfManager.self().dx(); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("X-COMPONENT", xHcomponent);
+  let yHcomponent = PrimChecks.list.sum(1584, 1587, PrimChecks.validator.checkArg('SUM', 1584, 1587, 8, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(2, PrimChecks.validator.checkArg('OF', 1593, 1595, 1904, PrimChecks.turtle.getVariable(1596, 1606, "flockmates")), 'of', 1588, 1606), function() { return SelfManager.self().dy(); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("Y-COMPONENT", yHcomponent);
   if ((Prims.equality(xHcomponent, 0) && Prims.equality(yHcomponent, 0))) {
     return PrimChecks.procedure.report(1658, 1664, PrimChecks.turtle.getVariable(1665, 1672, "heading"));
   }
@@ -107,10 +107,10 @@ ProcedurePrims.defineCommand("cohere", 1739, 1833, (function() {
   var R = ProcedurePrims.callCommand("turn-towards", PrimChecks.procedure.callReporter(1782, 1816, "average-heading-towards-flockmates"), world.observer.getGlobal("max-cohere-turn")); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineReporter("average-heading-towards-flockmates", 1848, 2297, (function() {
-  let xHcomponent = PrimChecks.list.mean(2071, 2075, PrimChecks.validator.checkArg('MEAN', 2071, 2075, 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2105, 2107, 1904, PrimChecks.turtle.getVariable(2108, 2118, "flockmates")), function() {
+  let xHcomponent = PrimChecks.list.mean(2071, 2075, PrimChecks.validator.checkArg('MEAN', 2071, 2075, 8, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('OF', 2105, 2107, 1904, PrimChecks.turtle.getVariable(2108, 2118, "flockmates")), 'of', 2076, 2118), function() {
     return PrimChecks.math.sin(PrimChecks.math.plus(2097, 2098, PrimChecks.turtle.towards(2082, 2089, PrimChecks.validator.checkArg('TOWARDS', 2082, 2089, 768, SelfManager.myself())), 180));
   }))); ProcedurePrims.stack().currentContext().registerStringRunVar("X-COMPONENT", xHcomponent);
-  let yHcomponent = PrimChecks.list.mean(2137, 2141, PrimChecks.validator.checkArg('MEAN', 2137, 2141, 8, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2171, 2173, 1904, PrimChecks.turtle.getVariable(2174, 2184, "flockmates")), function() {
+  let yHcomponent = PrimChecks.list.mean(2137, 2141, PrimChecks.validator.checkArg('MEAN', 2137, 2141, 8, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('OF', 2171, 2173, 1904, PrimChecks.turtle.getVariable(2174, 2184, "flockmates")), 'of', 2142, 2184), function() {
     return PrimChecks.math.cos(PrimChecks.math.plus(2163, 2164, PrimChecks.turtle.towards(2148, 2155, PrimChecks.validator.checkArg('TOWARDS', 2148, 2155, 768, SelfManager.myself())), 180));
   }))); ProcedurePrims.stack().currentContext().registerStringRunVar("Y-COMPONENT", yHcomponent);
   if ((Prims.equality(xHcomponent, 0) && Prims.equality(yHcomponent, 0))) {

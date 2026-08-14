@@ -150,6 +150,7 @@ ProcedurePrims.defineCommand("test-world-url", 194573, 194760, (function() {
   world.turtleManager.clearTurtles();
   let x = world.ticker.tickCount(); ProcedurePrims.stack().currentContext().registerStringRunVar("X", x);
   Extensions["FETCH"].prims["URL-ASYNC"](PrimChecks.procedure.callReporter(194652, 194661, "world-url"), PrimChecks.task.checked(194662, 194663, function(worldHtext) {
+    PrimChecks.context.assertKind(1, 'run', 194662, 194759);
     PrimChecks.procedure.runArgCountCheck('run', 194662, 194759, 1, arguments.length);
     Extensions["IMPORT-A"].prims["WORLD"](worldHtext);
     world.ticker.reset();
@@ -187,6 +188,7 @@ ProcedurePrims.defineCommand("test-world-file", 195103, 195297, (function() {
   world.turtleManager.clearTurtles();
   let x = world.ticker.tickCount(); ProcedurePrims.stack().currentContext().registerStringRunVar("X", x);
   Extensions["FETCH"].prims["FILE-ASYNC"](PrimChecks.procedure.callReporter(195184, 195198, "world-filename"), PrimChecks.task.checked(195199, 195200, function(worldHtext) {
+    PrimChecks.context.assertKind(1, 'run', 195199, 195296);
     PrimChecks.procedure.runArgCountCheck('run', 195199, 195296, 1, arguments.length);
     Extensions["IMPORT-A"].prims["WORLD"](worldHtext);
     world.ticker.reset();

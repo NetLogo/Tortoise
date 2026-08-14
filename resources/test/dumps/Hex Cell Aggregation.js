@@ -61,18 +61,25 @@ ProcedurePrims.defineCommand("go", 1466, 1547, (function() {
   if (PrimChecks.list.empty(PrimChecks.validator.checkArg('EMPTY?', 1474, 1480, 12, world.observer.getGlobal("eligibles")))) {
     return PrimChecks.procedure.stop(1493, 1497);
   }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1502, 1505, 1904, PrimChecks.list.oneOf(1506, 1512, PrimChecks.validator.checkArg('ONE-OF', 1506, 1512, 120, world.observer.getGlobal("eligibles")))), function() { var R = ProcedurePrims.callCommand("become-alive"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1502, 1505, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1502, 1505, 1904, PrimChecks.list.oneOf(1506, 1512, PrimChecks.validator.checkArg('ONE-OF', 1506, 1512, 120, world.observer.getGlobal("eligibles")))), function() {
+    PrimChecks.context.assertKind(2, 'become-alive', 1525, 1537);
+    var R = ProcedurePrims.callCommand("become-alive"); if (R === DeathInterrupt) { return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1502, 1505, R); return R; }
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("become-alive", 1555, 1811, (function() {
   SelfManager.self().hideTurtle(false);
   PrimChecks.turtle.setVariable(1607, 1616, "eligible?", false);
   world.observer.setGlobal("eligibles", PrimChecks.list.remove(1639, 1645, SelfManager.self(), PrimChecks.validator.checkArg('REMOVE', 1639, 1645, 12, world.observer.getGlobal("eligibles"))));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1663, 1666, 1904, PrimChecks.turtle.getVariable(1667, 1680, "hex-neighbors")), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 1663, 1666, 1904, PrimChecks.turtle.getVariable(1667, 1680, "hex-neighbors")), 1663, 1666), function() {
+    PrimChecks.context.assertKind(2, 'set', 1687, 1734);
     PrimChecks.turtle.setVariable(1691, 1710, "live-neighbor-count", PrimChecks.math.plus(1731, 1732, PrimChecks.validator.checkArg('+', 1731, 1732, 1, PrimChecks.turtle.getVariable(1711, 1730, "live-neighbor-count")), 1));
+    PrimChecks.context.assertKind(2, 'if', 1739, 1783);
     if (Prims.equality(PrimChecks.turtle.getVariable(1742, 1761, "live-neighbor-count"), 6)) {
+      PrimChecks.context.assertKind(2, 'set', 1768, 1781);
       PrimChecks.turtleOrLink.setVariable(1772, 1777, "color", 15);
     }
+    PrimChecks.context.assertKind(2, 'update-eligibility', 1788, 1806);
     var R = ProcedurePrims.callCommand("update-eligibility"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1663, 1666, R); return R; }
 }))

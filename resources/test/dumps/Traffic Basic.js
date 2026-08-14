@@ -99,7 +99,10 @@ ProcedurePrims.defineCommand("setup-cars", 308, 910, (function() {
     var R = ProcedurePrims.callCommand("separate-cars"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(638, 652, R); return R; }
   world.observer.setGlobal("sample-car", PrimChecks.list.oneOf(860, 866, world.turtles()));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 877, 880, 1904, world.observer.getGlobal("sample-car")), function() { PrimChecks.turtleOrLink.setVariable(898, 903, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(877, 880, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 877, 880, 1904, world.observer.getGlobal("sample-car")), function() {
+    PrimChecks.context.assertKind(10, 'set', 894, 907);
+    PrimChecks.turtleOrLink.setVariable(898, 903, "color", 15);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(877, 880, R); return R; }
 }))
 ProcedurePrims.defineCommand("separate-cars", 1024, 1120, (function() {
   if (SelfPrims._optimalAnyOther(SelfManager.self().turtlesHere())) {

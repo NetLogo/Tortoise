@@ -77,7 +77,10 @@ ProcedurePrims.defineCommand("setup", 220, 399, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-nodes"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-spatially-clustered-network"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 290, 293, 1904, PrimChecks.list.nOf(294, 298, PrimChecks.validator.checkArg('N-OF', 294, 298, 1, world.observer.getGlobal("initial-outbreak-size")), world.turtles())), function() { var R = ProcedurePrims.callCommand("become-infected"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(290, 293, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 290, 293, 1904, PrimChecks.list.nOf(294, 298, PrimChecks.validator.checkArg('N-OF', 294, 298, 1, world.observer.getGlobal("initial-outbreak-size")), world.turtles())), function() {
+    PrimChecks.context.assertKind(2, 'become-infected', 335, 350);
+    var R = ProcedurePrims.callCommand("become-infected"); if (R === DeathInterrupt) { return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(290, 293, R); return R; }
   var R = ProcedurePrims.ask(world.links(), function() { PrimChecks.turtleOrLink.setVariable(371, 376, "color", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(355, 358, R); return R; }
   world.ticker.reset();
 }))
@@ -94,7 +97,9 @@ ProcedurePrims.defineCommand("setup-spatially-clustered-network", 709, 1192, (fu
   while (Prims.lt(PrimChecks.agentset.count(world.links()), numHlinks)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 846, 849, 1904, PrimChecks.list.oneOf(850, 856, world.turtles())), function() {
       let choice = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 889, 899, 112, PrimChecks.agentset.otherWith(null, null, world.turtles(), function() { return PrimChecks.math.not(LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself())); })), function() { return SelfManager.self().distance(SelfManager.myself()); }); ProcedurePrims.stack().currentContext().registerStringRunVar("CHOICE", choice);
+      PrimChecks.context.assertKind(2, 'if', 993, 1040);
       if (!Prims.equality(choice, Nobody)) {
+        PrimChecks.context.assertKind(2, 'create-link-with', 1015, 1038);
         var R = ProcedurePrims.ask(LinkPrims.createLinkWith(choice, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1015, 1031, R); return R; }
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(846, 849, R); return R; }
@@ -133,14 +138,16 @@ ProcedurePrims.defineCommand("become-resistant", 1670, 1807, (function() {
   PrimChecks.turtle.setVariable(1714, 1723, "infected?", false);
   PrimChecks.turtle.setVariable(1736, 1746, "resistant?", true);
   PrimChecks.turtleOrLink.setVariable(1758, 1763, "color", 5);
-  var R = ProcedurePrims.ask(LinkPrims.myLinks("LINKS"), function() { PrimChecks.turtleOrLink.setVariable(1790, 1795, "color", PrimChecks.math.minus(1801, 1802, 5, 2)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1771, 1774, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.myLinks("LINKS"), 1771, 1774), function() { PrimChecks.turtleOrLink.setVariable(1790, 1795, "color", PrimChecks.math.minus(1801, 1802, 5, 2)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1771, 1774, R); return R; }
 }))
 ProcedurePrims.defineCommand("spread-virus", 1815, 1994, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(1842, 1846, world.turtles(), function() { return PrimChecks.turtle.getVariable(1848, 1857, "infected?"); }), function() {
-    var R = ProcedurePrims.ask(PrimChecks.agentset.with(1884, 1888, LinkPrims.linkNeighbors("LINKS"), function() {
+    var R = ProcedurePrims.ask(PrimChecks.agentset.with(1884, 1888, PrimChecks.context.assertAgentSetKind(2, LinkPrims.linkNeighbors("LINKS"), 'with', 1869, 1905), function() {
       return PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 1890, 1893, 2, PrimChecks.turtle.getVariable(1894, 1904, "resistant?")));
     }), function() {
+      PrimChecks.context.assertKind(2, 'if', 1916, 1989);
       if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("virus-spread-chance"))) {
+        PrimChecks.context.assertKind(2, 'become-infected', 1972, 1987);
         var R = ProcedurePrims.callCommand("become-infected"); if (R === DeathInterrupt) { return R; }
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1865, 1868, R); return R; }

@@ -81,7 +81,10 @@ ProcedurePrims.defineCommand("setup", 255, 740, (function() {
 }))
 ProcedurePrims.defineCommand("go", 748, 1047, (function() {
   for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 850, 853, 1904, PrimChecks.list.oneOf(854, 860, world.turtles())), function() { var R = ProcedurePrims.callCommand("attempt-move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(850, 853, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 850, 853, 1904, PrimChecks.list.oneOf(854, 860, world.turtles())), function() {
+      PrimChecks.context.assertKind(2, 'attempt-move', 877, 889);
+      var R = ProcedurePrims.callCommand("attempt-move"); if (R === DeathInterrupt) { return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(850, 853, R); return R; }
   }
   if (Prims.equality(PrimChecks.math.mod(990, 993, world.ticker.tickCount(), PrimChecks.validator.checkArg('MOD', 990, 993, 1, world.observer.getGlobal("num-atoms"))), 1)) {
     var R = ProcedurePrims.callCommand("tune-acceptance-rate"); if (R === DeathInterrupt) { return R; }
@@ -107,16 +110,22 @@ ProcedurePrims.defineCommand("attempt-move", 1055, 2038, (function() {
   }
 }))
 ProcedurePrims.defineReporter("calc-v-total", 2053, 2165, (function() {
-  return PrimChecks.procedure.report(2068, 2074, PrimChecks.math.div(2101, 2102, PrimChecks.list.sum(2075, 2078, PrimChecks.validator.checkArg('SUM', 2075, 2078, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.procedure.callReporter(2081, 2087, "calc-v"); }))), 2));
+  return PrimChecks.procedure.report(2068, 2074, PrimChecks.math.div(2101, 2102, PrimChecks.list.sum(2075, 2078, PrimChecks.validator.checkArg('SUM', 2075, 2078, 8, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, world.turtles(), 'of', 2079, 2100), function() { return PrimChecks.procedure.callReporter(2081, 2087, "calc-v"); }))), 2));
 }))
 ProcedurePrims.defineReporter("calc-v", 2180, 2580, (function() {
   let v = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("V", v);
   var R = ProcedurePrims.ask(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("cutoff-dist"))), function() {
+    PrimChecks.context.assertKind(6, 'let', 2246, 2279);
     let rsquare = PrimChecks.math.pow(2276, 2277, SelfManager.self().distance(SelfManager.myself()), 2); ProcedurePrims.stack().currentContext().registerStringRunVar("RSQUARE", rsquare);
+    PrimChecks.context.assertKind(6, 'let', 2284, 2315);
     let dsquare = PrimChecks.math.mult(2305, 2306, PrimChecks.validator.checkArg('*', 2305, 2306, 1, world.observer.getGlobal("diameter")), PrimChecks.validator.checkArg('*', 2305, 2306, 1, world.observer.getGlobal("diameter"))); ProcedurePrims.stack().currentContext().registerStringRunVar("DSQUARE", dsquare);
+    PrimChecks.context.assertKind(6, 'let', 2320, 2362);
     let attractHterm = PrimChecks.math.div(2349, 2350, PrimChecks.math.pow(2345, 2346, PrimChecks.validator.checkArg('^', 2345, 2346, 1, dsquare), 3), PrimChecks.math.pow(2359, 2360, PrimChecks.validator.checkArg('^', 2359, 2360, 1, rsquare), 3)); ProcedurePrims.stack().currentContext().registerStringRunVar("ATTRACT-TERM", attractHterm);
+    PrimChecks.context.assertKind(6, 'let', 2367, 2409);
     let repelHterm = PrimChecks.math.mult(2395, 2396, PrimChecks.validator.checkArg('*', 2395, 2396, 1, attractHterm), PrimChecks.validator.checkArg('*', 2395, 2396, 1, attractHterm)); ProcedurePrims.stack().currentContext().registerStringRunVar("REPEL-TERM", repelHterm);
+    PrimChecks.context.assertKind(6, 'let', 2490, 2547);
     let vi = PrimChecks.math.plus(2535, 2536, PrimChecks.math.mult(2505, 2506, PrimChecks.math.mult(2499, 2500, 4, PrimChecks.validator.checkArg('*', 2499, 2500, 1, world.observer.getGlobal("eps"))), PrimChecks.math.minus(2519, 2520, PrimChecks.validator.checkArg('-', 2519, 2520, 1, repelHterm), PrimChecks.validator.checkArg('-', 2519, 2520, 1, attractHterm))), PrimChecks.validator.checkArg('+', 2535, 2536, 1, world.observer.getGlobal("pot-offset"))); ProcedurePrims.stack().currentContext().registerStringRunVar("VI", vi);
+    PrimChecks.context.assertKind(6, 'set', 2552, 2564);
     v = PrimChecks.math.plus(2560, 2561, PrimChecks.validator.checkArg('+', 2560, 2561, 1, v), PrimChecks.validator.checkArg('+', 2560, 2561, 1, vi)); ProcedurePrims.stack().currentContext().updateStringRunVar("V", v);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2200, 2203, R); return R; }
   return PrimChecks.procedure.report(2571, 2577, v);
@@ -147,7 +156,7 @@ ProcedurePrims.defineCommand("setup-atoms", 3067, 3915, (function() {
     let ypos = PrimChecks.math.div(3273, 3274, PrimChecks.math.mult(3262, 3263, PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 3258, 3259, 1, l)), PrimChecks.validator.checkArg('*', 3262, 3263, 1, rowHdist)), 2); ProcedurePrims.stack().currentContext().registerStringRunVar("YPOS", ypos);
     let xpos = PrimChecks.math.div(3341, 3342, PrimChecks.math.mult(3330, 3331, PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 3326, 3327, 1, l)), PrimChecks.validator.checkArg('*', 3330, 3331, 1, rowHdist)), 2); ProcedurePrims.stack().currentContext().registerStringRunVar("XPOS", xpos);
     let rHnum = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("R-NUM", rHnum);
-    var R = ProcedurePrims.ask(world.turtles(), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 3417, 3420), function() {
       if (Prims.gt(xpos, PrimChecks.math.div(3488, 3489, PrimChecks.math.mult(3477, 3478, PrimChecks.validator.checkArg('*', 3477, 3478, 1, l), PrimChecks.validator.checkArg('*', 3477, 3478, 1, rowHdist)), 2))) {
         rHnum = PrimChecks.math.plus(3551, 3552, PrimChecks.validator.checkArg('+', 3551, 3552, 1, rHnum), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("R-NUM", rHnum);
         xpos = PrimChecks.math.plus(3593, 3594, PrimChecks.math.div(3588, 3589, PrimChecks.math.mult(3577, 3578, PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 3573, 3574, 1, l)), PrimChecks.validator.checkArg('*', 3577, 3578, 1, rowHdist)), 2), PrimChecks.math.div(3620, 3621, PrimChecks.math.mult(3609, 3610, PrimChecks.math.mod(3602, 3605, PrimChecks.validator.checkArg('MOD', 3602, 3605, 1, rHnum), 2), PrimChecks.validator.checkArg('*', 3609, 3610, 1, rowHdist)), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("XPOS", xpos);
@@ -158,7 +167,7 @@ ProcedurePrims.defineCommand("setup-atoms", 3067, 3915, (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3417, 3420, R); return R; }
   }
   if (Prims.equality(world.observer.getGlobal("initial-config"), "random")) {
-    var R = ProcedurePrims.ask(world.turtles(), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 3800, 3803), function() {
       PrimChecks.turtle.setXY(3820, 3825, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3800, 3803, R); return R; }
     var R = ProcedurePrims.callCommand("remove-overlap"); if (R === DeathInterrupt) { return R; }
@@ -166,7 +175,7 @@ ProcedurePrims.defineCommand("setup-atoms", 3067, 3915, (function() {
 }))
 ProcedurePrims.defineCommand("remove-overlap", 3923, 4059, (function() {
   let rHmin = PrimChecks.math.mult(3954, 3955, 0.7, PrimChecks.validator.checkArg('*', 3954, 3955, 1, world.observer.getGlobal("diameter"))); ProcedurePrims.stack().currentContext().registerStringRunVar("R-MIN", rHmin);
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 3967, 3970), function() {
     while (PrimChecks.procedure.callReporter(3992, 4003, "overlapping", rHmin)) {
       PrimChecks.turtle.setXY(4019, 4024, RandomPrims.randomFloatInRange(world.topology.minPxcor, world.topology.maxPxcor), RandomPrims.randomFloatInRange(world.topology.minPycor, world.topology.maxPycor));
     }

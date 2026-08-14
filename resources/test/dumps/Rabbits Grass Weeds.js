@@ -97,7 +97,7 @@ ProcedurePrims.defineCommand("go", 296, 437, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("grow-grass-and-weeds", 445, 661, (function() {
-  var R = ProcedurePrims.ask(world.patches(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 468, 471), function() {
     if (Prims.equality(PrimChecks.patch.getVariable(489, 495, "pcolor"), 0)) {
       if (Prims.lt(PrimChecks.math.randomFloat(1000), world.observer.getGlobal("weeds-grow-rate"))) {
         PrimChecks.patch.setVariable(565, 571, "pcolor", 115);

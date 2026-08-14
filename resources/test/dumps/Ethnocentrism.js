@@ -144,10 +144,13 @@ ProcedurePrims.defineCommand("go", 3820, 4282, (function() {
 ProcedurePrims.defineCommand("immigrate", 4343, 4591, (function() {
   let emptyHpatches = PrimChecks.agentset.with(4381, 4385, world.patches(), function() { return PrimChecks.math.not(PrimChecks.agentset.any(SelfManager.self().turtlesHere())); }); ProcedurePrims.stack().currentContext().registerStringRunVar("EMPTY-PATCHES", emptyHpatches);
   let howHmany = PrimChecks.list.min(4489, 4492, ListPrims.list(world.observer.getGlobal("immigrants-per-day"), PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 4518, 4523, 112, emptyHpatches)))); ProcedurePrims.stack().currentContext().registerStringRunVar("HOW-MANY", howHmany);
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4541, 4544, 1904, PrimChecks.list.nOf(4545, 4549, PrimChecks.validator.checkArg('N-OF', 4545, 4549, 1, howHmany), PrimChecks.validator.checkArg('N-OF', 4545, 4549, 120, emptyHpatches))), function() { var R = ProcedurePrims.callCommand("create-turtle"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4541, 4544, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 4541, 4544, 1904, PrimChecks.list.nOf(4545, 4549, PrimChecks.validator.checkArg('N-OF', 4545, 4549, 1, howHmany), PrimChecks.validator.checkArg('N-OF', 4545, 4549, 120, emptyHpatches))), 4541, 4544), function() {
+    PrimChecks.context.assertKind(4, 'create-turtle', 4575, 4588);
+    var R = ProcedurePrims.callCommand("create-turtle"); if (R === DeathInterrupt) { return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4541, 4544, R); return R; }
 }))
 ProcedurePrims.defineCommand("interact", 4599, 6139, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors4()), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors4()), 4676, 4679), function() {
     world.observer.setGlobal("meet", PrimChecks.math.plus(4931, 4932, PrimChecks.validator.checkArg('+', 4931, 4932, 1, world.observer.getGlobal("meet")), 1));
     world.observer.setGlobal("meet-agg", PrimChecks.math.plus(4961, 4962, PrimChecks.validator.checkArg('+', 4961, 4962, 1, world.observer.getGlobal("meet-agg")), 1));
     if (Prims.equality(PrimChecks.turtleOrLink.getVariable(5046, 5051, "color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable(5055, 5060, "color"); }))) {
@@ -157,6 +160,7 @@ ProcedurePrims.defineCommand("interact", 4599, 6139, (function() {
         world.observer.setGlobal("coopown", PrimChecks.math.plus(5349, 5350, PrimChecks.validator.checkArg('+', 5349, 5350, 1, world.observer.getGlobal("coopown")), 1));
         world.observer.setGlobal("coopown-agg", PrimChecks.math.plus(5389, 5390, PrimChecks.validator.checkArg('+', 5389, 5390, 1, world.observer.getGlobal("coopown-agg")), 1));
         var R = ProcedurePrims.ask(SelfManager.myself(), function() {
+          PrimChecks.context.assertKind(2, 'set', 5414, 5442);
           PrimChecks.turtle.setVariable(5418, 5421, "ptr", PrimChecks.math.minus(5426, 5427, PrimChecks.validator.checkArg('-', 5426, 5427, 1, PrimChecks.turtle.getVariable(5422, 5425, "ptr")), PrimChecks.validator.checkArg('-', 5426, 5427, 1, world.observer.getGlobal("cost-of-giving"))));
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5401, 5404, R); return R; }
         PrimChecks.turtle.setVariable(5457, 5460, "ptr", PrimChecks.math.plus(5465, 5466, PrimChecks.validator.checkArg('+', 5465, 5466, 1, PrimChecks.turtle.getVariable(5461, 5464, "ptr")), PrimChecks.validator.checkArg('+', 5465, 5466, 1, world.observer.getGlobal("gain-of-receiving"))));
@@ -169,6 +173,7 @@ ProcedurePrims.defineCommand("interact", 4599, 6139, (function() {
         world.observer.setGlobal("coopother", PrimChecks.math.plus(5889, 5890, PrimChecks.validator.checkArg('+', 5889, 5890, 1, world.observer.getGlobal("coopother")), 1));
         world.observer.setGlobal("coopother-agg", PrimChecks.math.plus(5933, 5934, PrimChecks.validator.checkArg('+', 5933, 5934, 1, world.observer.getGlobal("coopother-agg")), 1));
         var R = ProcedurePrims.ask(SelfManager.myself(), function() {
+          PrimChecks.context.assertKind(2, 'set', 5958, 5986);
           PrimChecks.turtle.setVariable(5962, 5965, "ptr", PrimChecks.math.minus(5970, 5971, PrimChecks.validator.checkArg('-', 5970, 5971, 1, PrimChecks.turtle.getVariable(5966, 5969, "ptr")), PrimChecks.validator.checkArg('-', 5970, 5971, 1, world.observer.getGlobal("cost-of-giving"))));
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5945, 5948, R); return R; }
         PrimChecks.turtle.setVariable(6001, 6004, "ptr", PrimChecks.math.plus(6009, 6010, PrimChecks.validator.checkArg('+', 6009, 6010, 1, PrimChecks.turtle.getVariable(6005, 6008, "ptr")), PrimChecks.validator.checkArg('+', 6009, 6010, 1, world.observer.getGlobal("gain-of-receiving"))));
@@ -207,7 +212,7 @@ ProcedurePrims.defineCommand("mutate", 6747, 7273, (function() {
   var R = ProcedurePrims.callCommand("update-shape"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("death", 7281, 7434, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 7371, 7374), function() {
     if (Prims.lt(PrimChecks.math.randomFloat(1), world.observer.getGlobal("death-rate"))) {
       return SelfManager.self().die();
     }

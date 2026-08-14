@@ -74,7 +74,7 @@ ProcedurePrims.defineCommand("setup", 775, 1674, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(906, 909, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setVariable(1204, 1207, "val", 1);
-    let neighborHnodes = PrimChecks.agentset.turtleSet(1233, 1243, PrimChecks.agentset.of(SelfManager.self().getNeighbors4(), function() { return SelfManager.self().turtlesHere(); })); ProcedurePrims.stack().currentContext().registerStringRunVar("NEIGHBOR-NODES", neighborHnodes);
+    let neighborHnodes = PrimChecks.agentset.turtleSet(1233, 1243, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, SelfManager.self().getNeighbors4(), 'of', 1244, 1272), function() { return SelfManager.self().turtlesHere(); })); ProcedurePrims.stack().currentContext().registerStringRunVar("NEIGHBOR-NODES", neighborHnodes);
     var R = ProcedurePrims.ask(LinkPrims.createLinksTo(neighborHnodes, "ACTIVE-LINKS"), function() {
       PrimChecks.link.setVariable(1331, 1343, "current-flow", 0);
       if (Prims.gt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("link-chance"))) {
@@ -98,9 +98,14 @@ ProcedurePrims.defineCommand("go", 1755, 2470, (function() {
       let valHtoHkeep = PrimChecks.math.mult(1906, 1907, PrimChecks.validator.checkArg('*', 1906, 1907, 1, PrimChecks.turtle.getVariable(1902, 1905, "val")), PrimChecks.math.minus(1911, 1912, 1, PrimChecks.math.div(1928, 1929, PrimChecks.validator.checkArg('/', 1928, 1929, 1, world.observer.getGlobal("diffusion-rate")), 100))); ProcedurePrims.stack().currentContext().registerStringRunVar("VAL-TO-KEEP", valHtoHkeep);
       PrimChecks.turtle.setVariable(2012, 2019, "new-val", PrimChecks.math.plus(2028, 2029, PrimChecks.validator.checkArg('+', 2028, 2029, 1, PrimChecks.turtle.getVariable(2020, 2027, "new-val")), PrimChecks.validator.checkArg('+', 2028, 2029, 1, valHtoHkeep)));
       let valHincrement = PrimChecks.math.div(2176, 2177, PrimChecks.math.minus(2161, 2162, PrimChecks.validator.checkArg('-', 2161, 2162, 1, PrimChecks.turtle.getVariable(2157, 2160, "val")), PrimChecks.validator.checkArg('-', 2161, 2162, 1, valHtoHkeep)), PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 2178, 2183, 112, recipients))); ProcedurePrims.stack().currentContext().registerStringRunVar("VAL-INCREMENT", valHincrement);
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2202, 2205, 1904, recipients), function() {
+      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2202, 2205, 1904, recipients), 2202, 2205), function() {
+        PrimChecks.context.assertKind(2, 'set', 2227, 2262);
         PrimChecks.turtle.setVariable(2231, 2238, "new-val", PrimChecks.math.plus(2247, 2248, PrimChecks.validator.checkArg('+', 2247, 2248, 1, PrimChecks.turtle.getVariable(2239, 2246, "new-val")), PrimChecks.validator.checkArg('+', 2247, 2248, 1, valHincrement)));
-        var R = ProcedurePrims.ask(LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()), function() { PrimChecks.link.setVariable(2308, 2320, "current-flow", valHincrement); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2271, 2274, R); return R; }
+        PrimChecks.context.assertKind(2, 'ask', 2271, 2336);
+        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()), 2271, 2274), function() {
+          PrimChecks.context.assertKind(8, 'set', 2304, 2334);
+          PrimChecks.link.setVariable(2308, 2320, "current-flow", valHincrement);
+        }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2271, 2274, R); return R; }
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2202, 2205, R); return R; }
     }
     else {
@@ -117,11 +122,15 @@ ProcedurePrims.defineCommand("go", 1755, 2470, (function() {
 ProcedurePrims.defineCommand("rewire-a-link", 2478, 2687, (function() {
   if (PrimChecks.agentset.any(world.linkManager.linksOfBreed("ACTIVE-LINKS"))) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2521, 2524, 1904, PrimChecks.list.oneOf(2525, 2531, world.linkManager.linksOfBreed("ACTIVE-LINKS"))), function() {
+      PrimChecks.context.assertKind(10, 'set', 2553, 2577);
       PrimChecks.turtleOrLink.setVariable(2557, 2562, "breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
+      PrimChecks.context.assertKind(8, 'hide-link', 2584, 2593);
       SelfManager.self().setVariable('hidden?', true)
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2521, 2524, R); return R; }
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2604, 2607, 1904, PrimChecks.list.oneOf(2608, 2614, world.linkManager.linksOfBreed("INACTIVE-LINKS"))), function() {
+      PrimChecks.context.assertKind(10, 'set', 2638, 2660);
       PrimChecks.turtleOrLink.setVariable(2642, 2647, "breed", world.linkManager.linksOfBreed("ACTIVE-LINKS"));
+      PrimChecks.context.assertKind(8, 'show-link', 2667, 2676);
       SelfManager.self().setVariable('hidden?', false)
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2604, 2607, R); return R; }
   }
@@ -135,7 +144,7 @@ ProcedurePrims.defineCommand("update-globals", 2768, 2994, (function() {
   }
 }))
 ProcedurePrims.defineCommand("update-visuals", 3002, 3104, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 3019, 3022), function() {
     var R = ProcedurePrims.callCommand("update-node-appearance"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3019, 3022, R); return R; }
   var R = ProcedurePrims.ask(world.linkManager.linksOfBreed("ACTIVE-LINKS"), function() {

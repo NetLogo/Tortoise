@@ -63,6 +63,7 @@ ProcedurePrims.defineCommand("setup", 262, 842, (function() {
   world.clearAll();
   world.ticker.reset();
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 404, 407, 1904, PrimChecks.list.nOf(408, 412, PrimChecks.validator.checkArg('N-OF', 408, 412, 1, world.observer.getGlobal("bug-count")), world.patches())), function() {
+    PrimChecks.context.assertKind(4, 'sprout', 437, 748);
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "TURTLES"), function() {
       PrimChecks.turtleOrLink.setVariable(458, 463, "color", 65);
       PrimChecks.turtle.setVariable(479, 483, "size", 1.75);
@@ -82,7 +83,7 @@ ProcedurePrims.defineCommand("go", 850, 1041, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("recolor-patches", 1049, 1314, (function() {
-  var R = ProcedurePrims.ask(world.patches(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 1067, 1070), function() {
     PrimChecks.patch.setVariable(1152, 1156, "temp", PrimChecks.math.mult(1162, 1163, PrimChecks.validator.checkArg('*', 1162, 1163, 1, PrimChecks.patch.getVariable(1157, 1161, "temp")), PrimChecks.math.minus(1167, 1168, 1, PrimChecks.validator.checkArg('-', 1167, 1168, 1, world.observer.getGlobal("evaporation-rate")))));
     PrimChecks.patch.setVariable(1276, 1282, "pcolor", ColorModel.scaleColor(15, PrimChecks.patch.getVariable(1299, 1303, "temp"), 0, 500));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1067, 1070, R); return R; }

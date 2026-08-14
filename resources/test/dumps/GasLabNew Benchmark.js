@@ -237,7 +237,10 @@ ProcedurePrims.defineCommand("check-for-collision", 6653, 9524, (function() {
     if ((!Prims.equality(candidate, Nobody) && (Prims.gt(PrimChecks.turtle.getVariable(9355, 9360, "speed"), 0) || Prims.gt(PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 9376, 9378, 1904, candidate), function() { return PrimChecks.turtle.getVariable(9369, 9374, "speed"); }), 0)))) {
       var R = ProcedurePrims.callCommand("collide-with", candidate); if (R === DeathInterrupt) { return R; }
       PrimChecks.turtle.setVariable(9439, 9453, "last-collision", candidate);
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9470, 9473, 1904, candidate), function() { PrimChecks.turtle.setVariable(9490, 9504, "last-collision", SelfManager.myself()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9470, 9473, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 9470, 9473, 1904, candidate), 9470, 9473), function() {
+        PrimChecks.context.assertKind(2, 'set', 9486, 9511);
+        PrimChecks.turtle.setVariable(9490, 9504, "last-collision", SelfManager.myself());
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9470, 9473, R); return R; }
     }
   }
 }))
@@ -258,19 +261,25 @@ ProcedurePrims.defineCommand("collide-with", 10847, 13178, (function(otherHparti
   if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
     PrimChecks.turtle.setVariable(12723, 12730, "heading", PrimChecks.math.minus(12738, 12739, PrimChecks.validator.checkArg('-', 12738, 12739, 1, theta), PrimChecks.math.atan(12741, 12745, PrimChecks.validator.checkArg('ATAN', 12741, 12745, 1, v1l), PrimChecks.validator.checkArg('ATAN', 12741, 12745, 1, v1t))));
   }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12801, 12804, 1904, otherHparticle), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 12801, 12804, 1904, otherHparticle), 12801, 12804), function() {
+    PrimChecks.context.assertKind(2, 'set', 12822, 12864);
     PrimChecks.turtle.setVariable(12826, 12831, "speed", PrimChecks.math.sqrt(12832, 12836, PrimChecks.math.plus(12850, 12851, PrimChecks.math.mult(12843, 12844, PrimChecks.validator.checkArg('*', 12843, 12844, 1, v2t), PrimChecks.validator.checkArg('*', 12843, 12844, 1, v2t)), PrimChecks.math.mult(12857, 12858, PrimChecks.validator.checkArg('*', 12857, 12858, 1, v2l), PrimChecks.validator.checkArg('*', 12857, 12858, 1, v2l)))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12801, 12804, R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12869, 12872, 1904, otherHparticle), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 12869, 12872, 1904, otherHparticle), 12869, 12872), function() {
+    PrimChecks.context.assertKind(2, 'set', 12890, 12927);
     PrimChecks.turtle.setVariable(12894, 12900, "energy", PrimChecks.math.mult(12920, 12921, PrimChecks.math.mult(12912, 12913, PrimChecks.math.mult(12905, 12906, 0.5, PrimChecks.validator.checkArg('*', 12905, 12906, 1, PrimChecks.turtle.getVariable(12907, 12911, "mass"))), PrimChecks.validator.checkArg('*', 12912, 12913, 1, PrimChecks.turtle.getVariable(12914, 12919, "speed"))), PrimChecks.validator.checkArg('*', 12920, 12921, 1, PrimChecks.turtle.getVariable(12922, 12927, "speed"))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12869, 12872, R); return R; }
   if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 12962, 12965, 1904, otherHparticle), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 12962, 12965, 1904, otherHparticle), 12962, 12965), function() {
+      PrimChecks.context.assertKind(2, 'set', 12983, 13019);
       PrimChecks.turtle.setVariable(12987, 12994, "heading", PrimChecks.math.minus(13002, 13003, PrimChecks.validator.checkArg('-', 13002, 13003, 1, theta), PrimChecks.math.atan(13005, 13009, PrimChecks.validator.checkArg('ATAN', 13005, 13009, 1, v2l), PrimChecks.validator.checkArg('ATAN', 13005, 13009, 1, v2t))));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12962, 12965, R); return R; }
   }
   var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 13143, 13146, 1904, otherHparticle), function() { var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13143, 13146, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 13143, 13146, 1904, otherHparticle), 13143, 13146), function() {
+    PrimChecks.context.assertKind(2, 'recolor', 13168, 13175);
+    var R = ProcedurePrims.callCommand("recolor"); if (R === DeathInterrupt) { return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13143, 13146, R); return R; }
 }))
 ProcedurePrims.defineCommand("recolor", 13186, 13360, (function() {
   if (Prims.lt(PrimChecks.turtle.getVariable(13226, 13231, "speed"), PrimChecks.math.mult(13239, 13240, 0.5, 10))) {
@@ -290,9 +299,12 @@ ProcedurePrims.defineCommand("fade-patches", 13368, 13661, (function() {
     return (!Prims.equality(PrimChecks.patch.getVariable(13416, 13422, "pcolor"), 45) && !Prims.equality(PrimChecks.patch.getVariable(13439, 13445, "pcolor"), 0));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("TRACE-PATCHES", traceHpatches);
   if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 13466, 13470, 112, traceHpatches))) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 13491, 13494, 1904, traceHpatches), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 13491, 13494, 1904, traceHpatches), 13491, 13494), function() {
+      PrimChecks.context.assertKind(6, 'set', 13517, 13544);
       PrimChecks.patch.setVariable(13521, 13527, "pcolor", PrimChecks.math.minus(13537, 13538, PrimChecks.validator.checkArg('-', 13537, 13538, 1, PrimChecks.patch.getVariable(13530, 13536, "pcolor")), 0.4));
+      PrimChecks.context.assertKind(6, 'if', 13553, 13625);
       if ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 13557, 13560, 2, world.observer.getGlobal("trace?"))) || Prims.equality(PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 13573, 13578, 1, PrimChecks.patch.getVariable(13579, 13585, "pcolor"))), 0))) {
+        PrimChecks.context.assertKind(6, 'set', 13607, 13623);
         PrimChecks.patch.setVariable(13611, 13617, "pcolor", 0);
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13491, 13494, R); return R; }

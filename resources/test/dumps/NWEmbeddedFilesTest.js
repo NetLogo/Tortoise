@@ -66,6 +66,7 @@ ProcedurePrims.defineCommand("load-selected", 1016, 1054, (function() {
 }))
 ProcedurePrims.defineCommand("load-all", 1062, 1134, (function() {
   var R = PrimChecks.task.forEach(1073, 1080, PrimChecks.list.sort(Extensions["RESOURCE"].prims["LIST"]()), PrimChecks.task.checked(1100, 1101, function(_NAME_) {
+    PrimChecks.context.assertKind(1, 'run', 1100, 1133);
     PrimChecks.procedure.runArgCountCheck('run', 1100, 1133, 1, arguments.length);
     var R = ProcedurePrims.callCommand("load-graph", _NAME_); if (R === DeathInterrupt) { return R; }
   }, "[ name -> load-graph name ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1073, 1080, R); return R; }

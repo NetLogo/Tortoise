@@ -145,11 +145,11 @@ ProcedurePrims.defineCommand("handle-mouse-down", 4131, 4953, (function() {
     if (!Prims.equality(world.observer.getGlobal("first-parent"), Nobody)) {
       var R = ProcedurePrims.callCommand("repopulate-from-two", world.observer.getGlobal("first-parent"), newHparent); if (R === DeathInterrupt) { return R; }
       world.observer.setGlobal("first-parent", Nobody);
-      var R = ProcedurePrims.ask(world.patches(), function() { PrimChecks.patch.setVariable(4479, 4485, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4461, 4464, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 4461, 4464), function() { PrimChecks.patch.setVariable(4479, 4485, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4461, 4464, R); return R; }
     }
     else {
       world.observer.setGlobal("first-parent", newHparent);
-      var R = ProcedurePrims.ask(world.patches(), function() {
+      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 4546, 4549), function() {
         if (PrimChecks.list.member(newHparent, PrimChecks.agentset.withMin(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return SelfManager.self().distance(SelfManager.myself()); }))) {
           PrimChecks.patch.setVariable(4917, 4923, "pcolor", PrimChecks.math.minus(4929, 4930, 5, 3));
         }

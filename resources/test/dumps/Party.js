@@ -128,7 +128,10 @@ ProcedurePrims.defineCommand("find-new-groups", 1557, 1777, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 1706, 1710, 112, malcontents)))) {
     return PrimChecks.procedure.stop(1725, 1729);
   }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1734, 1737, 1904, malcontents), function() { SelfManager.self()._optimalFdOne(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1734, 1737, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 1734, 1737, 1904, malcontents), 1734, 1737), function() {
+    PrimChecks.context.assertKind(2, 'fdone', 1752, 1756);
+    SelfManager.self()._optimalFdOne();
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1734, 1737, R); return R; }
   var R = ProcedurePrims.callCommand("find-new-groups"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineReporter("group-site?", 1792, 2517, (function() {
@@ -155,21 +158,25 @@ ProcedurePrims.defineCommand("spread-out-vertically", 2525, 2967, (function() {
   }
 }))
 ProcedurePrims.defineCommand("count-boring-groups", 2975, 3169, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2997, 3000, 1904, world.observer.getGlobal("group-sites")), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2997, 3000, 1904, world.observer.getGlobal("group-sites")), 2997, 3000), function() {
+    PrimChecks.context.assertKind(6, 'ifelse', 3019, 3099);
     if (PrimChecks.procedure.callReporter(3026, 3033, "boring?")) {
+      PrimChecks.context.assertKind(6, 'set', 3042, 3063);
       PrimChecks.patch.setVariable(3046, 3058, "plabel-color", 5);
     }
     else {
+      PrimChecks.context.assertKind(6, 'set', 3075, 3097);
       PrimChecks.patch.setVariable(3079, 3091, "plabel-color", 9.9);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2997, 3000, R); return R; }
-  world.observer.setGlobal("boring-groups", PrimChecks.agentset.countWith(null, null, world.observer.getGlobal("group-sites"), function() { return Prims.equality(PrimChecks.patch.getVariable(3148, 3160, "plabel-color"), 5); }));
+  world.observer.setGlobal("boring-groups", PrimChecks.agentset.countWith(null, null, PrimChecks.context.assertAgentSetKind(6, world.observer.getGlobal("group-sites"), 'countwith', 3124, 3168), function() { return Prims.equality(PrimChecks.patch.getVariable(3148, 3160, "plabel-color"), 5); }));
 }))
 ProcedurePrims.defineReporter("boring?", 3184, 3518, (function() {
   return PrimChecks.procedure.report(3456, 3462, Prims.equality(PrimChecks.list.length(PrimChecks.list.removeDuplicates(PrimChecks.validator.checkArg('REMOVE-DUPLICATES', 3470, 3487, 8, PrimChecks.agentset.of(SelfManager.self().turtlesHere(), function() { return PrimChecks.turtleOrLink.getVariable(3490, 3495, "color"); })))), 1));
 }))
 ProcedurePrims.defineCommand("update-labels", 3526, 3592, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3542, 3545, 1904, world.observer.getGlobal("group-sites")), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 3542, 3545, 1904, world.observer.getGlobal("group-sites")), 3542, 3545), function() {
+    PrimChecks.context.assertKind(6, 'set', 3560, 3589);
     PrimChecks.patch.setVariable(3564, 3570, "plabel", PrimChecks.agentset.count(SelfManager.self().turtlesHere()));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3542, 3545, R); return R; }
 }))

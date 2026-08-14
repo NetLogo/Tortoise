@@ -110,7 +110,7 @@ ProcedurePrims.defineCommand("find-new-spot", 1279, 1478, (function() {
   SelfManager.self().moveTo(SelfManager.self().getPatchHere());
 }))
 ProcedurePrims.defineCommand("update-turtles", 1486, 2127, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 1503, 1506), function() {
     PrimChecks.turtle.setVariable(1631, 1645, "similar-nearby", PrimChecks.agentset.countWith(null, null, PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), function() {
       return Prims.equality(PrimChecks.turtleOrLink.getVariable(1683, 1688, "color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable(1693, 1698, "color"); }));
     }));

@@ -82,7 +82,7 @@ ProcedurePrims.defineCommand("setup", 429, 629, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("setup-patches", 637, 715, (function() {
-  var R = ProcedurePrims.ask(world.patches(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 653, 656), function() {
     var R = ProcedurePrims.callCommand("setup-nest"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("setup-food"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }

@@ -59,7 +59,7 @@ ProcedurePrims.defineCommand("setup", 894, 1221, (function() {
   world.ticker.reset();
 }))
 ProcedurePrims.defineCommand("create-histogram-width", 1229, 1703, (function() {
-  var R = ProcedurePrims.ask(world.patches(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 1254, 1257), function() {
     if (((Prims.gte(PrimChecks.patch.getVariable(1502, 1507, "pxcor"), PrimChecks.math.div(1528, 1529, PrimChecks.math.unaryminus(PrimChecks.validator.checkArg('-', 1512, 1513, 1, world.observer.getGlobal("sample-space"))), 2)) && Prims.lt(PrimChecks.patch.getVariable(1538, 1543, "pxcor"), PrimChecks.math.div(1559, 1560, PrimChecks.validator.checkArg('/', 1559, 1560, 1, world.observer.getGlobal("sample-space")), 2))) && Prims.lt(PrimChecks.patch.getVariable(1581, 1586, "pycor"), world.observer.getGlobal("max-y-histogram")))) {
       PrimChecks.patch.setVariable(1658, 1664, "pcolor", 45);
     }
@@ -112,24 +112,33 @@ ProcedurePrims.defineCommand("send-messenger-to-its-column", 3442, 4252, (functi
   let it = PrimChecks.agentset.oneOfWith(null, null, world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS"), function() {
     return Prims.equality(PrimChecks.turtle.getVariable(3696, 3705, "my-column"), PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 3716, 3718, 1904, world.observer.getGlobal("the-messenger")), function() { return PrimChecks.turtleOrLink.getVariable(3709, 3714, "label"); }));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("IT", it);
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3738, 3741, 1904, world.observer.getGlobal("the-messenger")), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 3738, 3741, 1904, world.observer.getGlobal("the-messenger")), 3738, 3741), function() {
+    PrimChecks.context.assertKind(2, 'face', 3764, 3771);
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 3764, 3768, 768, it));
+    PrimChecks.context.assertKind(2, 'while', 3845, 3959);
     while (Prims.gt(SelfManager.self().distance(it), 3)) {
+      PrimChecks.context.assertKind(2, 'fdone', 3883, 3887);
       SelfManager.self()._optimalFdOne();
+      PrimChecks.context.assertKind(2, 'display', 3946, 3953);
       Prims.display();
     }
+    PrimChecks.context.assertKind(2, 'die', 3964, 3967);
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3738, 3741, R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3974, 3977, 1904, it), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 3974, 3977, 1904, it), 3974, 3977), function() {
+    PrimChecks.context.assertKind(2, 'create-frame', 3985, 3997);
     var R = ProcedurePrims.callCommand("create-frame"); if (R === DeathInterrupt) { return R; }
+    PrimChecks.context.assertKind(2, 'fdone', 4002, 4006);
     SelfManager.self()._optimalFdOne();
+    PrimChecks.context.assertKind(2, 'if', 4194, 4246);
     if (Prims.equality(PrimChecks.turtle.getVariable(4197, 4201, "ycor"), world.observer.getGlobal("max-y-histogram"))) {
+      PrimChecks.context.assertKind(2, 'set', 4222, 4244);
       world.observer.setGlobal("time-to-stop?", true);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3974, 3977, R); return R; }
 }))
 ProcedurePrims.defineCommand("create-frame", 4320, 4456, (function() {
-  var R = ProcedurePrims.ask(SelfManager.self().getPatchHere(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(SelfManager.self().getPatchHere(), 4355, 4358), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "FRAMES"), function() {
       PrimChecks.turtleOrLink.setVariable(4410, 4415, "shape", "frame");
       PrimChecks.turtleOrLink.setVariable(4434, 4439, "color", 0);
@@ -139,14 +148,20 @@ ProcedurePrims.defineCommand("create-frame", 4320, 4456, (function() {
 ProcedurePrims.defineCommand("paint", 4686, 4949, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS"), function() {
     if (Prims.lte(PrimChecks.turtle.getVariable(4729, 4738, "my-column"), PrimChecks.math.div(4768, 4769, PrimChecks.math.mult(4753, 4754, PrimChecks.validator.checkArg('*', 4753, 4754, 1, world.observer.getGlobal("red-green")), PrimChecks.validator.checkArg('*', 4753, 4754, 1, world.observer.getGlobal("sample-space"))), 100))) {
-      var R = ProcedurePrims.ask(PrimChecks.agentset.with(4803, 4807, PrimChecks.validator.checkArg('WITH', 4803, 4807, 112, PrimChecks.turtle.getVariable(4785, 4802, "my-column-patches")), function() {
+      var R = ProcedurePrims.ask(PrimChecks.agentset.with(4803, 4807, PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('WITH', 4803, 4807, 112, PrimChecks.turtle.getVariable(4785, 4802, "my-column-patches")), 'with', 4785, 4837), function() {
         return Prims.lt(PrimChecks.patch.getVariable(4810, 4815, "pycor"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(4819, 4824, "pycor"); }));
-      }), function() { PrimChecks.patch.setVariable(4844, 4850, "pcolor", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4781, 4784, R); return R; }
+      }), function() {
+        PrimChecks.context.assertKind(6, 'set', 4840, 4854);
+        PrimChecks.patch.setVariable(4844, 4850, "pcolor", 15);
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4781, 4784, R); return R; }
     }
     else {
-      var R = ProcedurePrims.ask(PrimChecks.agentset.with(4887, 4891, PrimChecks.validator.checkArg('WITH', 4887, 4891, 112, PrimChecks.turtle.getVariable(4869, 4886, "my-column-patches")), function() {
+      var R = ProcedurePrims.ask(PrimChecks.agentset.with(4887, 4891, PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('WITH', 4887, 4891, 112, PrimChecks.turtle.getVariable(4869, 4886, "my-column-patches")), 'with', 4869, 4921), function() {
         return Prims.lt(PrimChecks.patch.getVariable(4894, 4899, "pycor"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(4903, 4908, "pycor"); }));
-      }), function() { PrimChecks.patch.setVariable(4928, 4934, "pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4865, 4868, R); return R; }
+      }), function() {
+        PrimChecks.context.assertKind(6, 'set', 4924, 4940);
+        PrimChecks.patch.setVariable(4928, 4934, "pcolor", 55);
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4865, 4868, R); return R; }
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4694, 4697, R); return R; }
 }))
@@ -158,12 +173,12 @@ ProcedurePrims.defineReporter("%-full", 5213, 5296, (function() {
 }))
 ProcedurePrims.defineReporter("biggest-gap", 5383, 5630, (function() {
   let maxHcolumn = PrimChecks.list.max(5412, 5415, PrimChecks.validator.checkArg('MAX', 5412, 5415, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS"), function() {
-    return PrimChecks.agentset.countWith(null, null, PrimChecks.turtle.getVariable(5423, 5440, "my-column-patches"), function() {
+    return PrimChecks.agentset.countWith(null, null, PrimChecks.context.assertAgentSetKind(6, PrimChecks.turtle.getVariable(5423, 5440, "my-column-patches"), 'countwith', 5417, 5473), function() {
       return Prims.lt(PrimChecks.patch.getVariable(5447, 5452, "pycor"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(5456, 5461, "pycor"); }));
     });
   }))); ProcedurePrims.stack().currentContext().registerStringRunVar("MAX-COLUMN", maxHcolumn);
   let minHcolumn = PrimChecks.list.min(5513, 5516, PrimChecks.validator.checkArg('MIN', 5513, 5516, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS"), function() {
-    return PrimChecks.agentset.countWith(null, null, PrimChecks.turtle.getVariable(5524, 5541, "my-column-patches"), function() {
+    return PrimChecks.agentset.countWith(null, null, PrimChecks.context.assertAgentSetKind(6, PrimChecks.turtle.getVariable(5524, 5541, "my-column-patches"), 'countwith', 5518, 5574), function() {
       return Prims.lt(PrimChecks.patch.getVariable(5548, 5553, "pycor"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(5557, 5562, "pycor"); }));
     });
   }))); ProcedurePrims.stack().currentContext().registerStringRunVar("MIN-COLUMN", minHcolumn);

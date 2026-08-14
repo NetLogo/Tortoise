@@ -85,7 +85,7 @@ ProcedurePrims.defineCommand("setup-turtles", 377, 555, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(427, 430, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-patches", 563, 710, (function() {
-  var R = ProcedurePrims.ask(world.patches(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 579, 582), function() {
     PrimChecks.patch.setVariable(601, 609, "chemical", 0);
     PrimChecks.patch.setVariable(620, 624, "food", 0);
     PrimChecks.patch.setVariable(635, 653, "food-source-number", -1);

@@ -66,6 +66,7 @@ ProcedurePrims.defineCommand("color-regions", 651, 945, (function() {
 }))
 ProcedurePrims.defineCommand("setup-turtles", 953, 1400, (function() {
   var R = PrimChecks.task.forEach(1146, 1153, ListPrims.rangeBinary(1, PrimChecks.math.plus(1189, 1190, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 1164, 1170, 12, world.observer.getGlobal("region-boundaries"))), 1)), PrimChecks.task.checked(1195, 1196, function(regionHnumber) {
+    PrimChecks.context.assertKind(1, 'run', 1195, 1399);
     PrimChecks.procedure.runArgCountCheck('run', 1195, 1399, 1, arguments.length);
     let regionHpatches = PrimChecks.agentset.with(1245, 1249, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(1252, 1258, "region"), regionHnumber); }); ProcedurePrims.stack().currentContext().registerStringRunVar("REGION-PATCHES", regionHpatches);
     var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("number-of-turtles-per-region"), ""), function() {
@@ -87,6 +88,7 @@ ProcedurePrims.defineCommand("move", 1449, 1980, (function() {
 }))
 ProcedurePrims.defineCommand("setup-regions", 1988, 2598, (function(numHregions) {
   var R = PrimChecks.task.forEach(2099, 2106, PrimChecks.validator.checkArg('FOREACH', 2099, 2106, 8, PrimChecks.procedure.callReporter(2107, 2123, "region-divisions", numHregions)), PrimChecks.task.checked(2136, 2156, function(_0) {
+    PrimChecks.context.assertKind(1, 'run', 2136, 2156);
     PrimChecks.procedure.runArgCountCheck('run', 2136, 2156, 1, arguments.length);
     var R = ProcedurePrims.callCommand("draw-region-division", _0); if (R === DeathInterrupt) { return R; }
   }, "draw-region-division", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2099, 2106, R); return R; }

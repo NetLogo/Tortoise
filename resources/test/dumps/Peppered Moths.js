@@ -94,7 +94,7 @@ ProcedurePrims.defineCommand("setup", 1163, 1241, (function() {
 ProcedurePrims.defineCommand("setup-world", 1249, 1389, (function() {
   world.observer.setGlobal("darkness", 0);
   world.observer.setGlobal("darkening?", true);
-  var R = ProcedurePrims.ask(world.patches(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 1352, 1355), function() {
     PrimChecks.patch.setVariable(1370, 1376, "pcolor", PrimChecks.procedure.callReporter(1377, 1386, "env-color"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1352, 1355, R); return R; }
 }))
@@ -178,7 +178,7 @@ ProcedurePrims.defineCommand("update-monitors", 3163, 3427, (function() {
 ProcedurePrims.defineCommand("pollute-world", 3530, 3742, (function() {
   if (Prims.lte(world.observer.getGlobal("darkness"), PrimChecks.math.minus(3569, 3570, 8, PrimChecks.validator.checkArg('-', 3569, 3570, 1, PrimChecks.procedure.callReporter(3571, 3580, "delta-env"))))) {
     world.observer.setGlobal("darkness", PrimChecks.math.plus(3654, 3655, PrimChecks.validator.checkArg('+', 3654, 3655, 1, world.observer.getGlobal("darkness")), PrimChecks.validator.checkArg('+', 3654, 3655, 1, PrimChecks.procedure.callReporter(3656, 3665, "delta-env"))));
-    var R = ProcedurePrims.ask(world.patches(), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 3671, 3674), function() {
       PrimChecks.patch.setVariable(3689, 3695, "pcolor", PrimChecks.procedure.callReporter(3696, 3705, "env-color"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3671, 3674, R); return R; }
   }
@@ -189,7 +189,7 @@ ProcedurePrims.defineCommand("pollute-world", 3530, 3742, (function() {
 ProcedurePrims.defineCommand("clean-up-world", 3848, 4054, (function() {
   if (Prims.gte(world.observer.getGlobal("darkness"), PrimChecks.math.plus(3888, 3889, 0, PrimChecks.validator.checkArg('+', 3888, 3889, 1, PrimChecks.procedure.callReporter(3890, 3899, "delta-env"))))) {
     world.observer.setGlobal("darkness", PrimChecks.math.minus(3967, 3968, PrimChecks.validator.checkArg('-', 3967, 3968, 1, world.observer.getGlobal("darkness")), PrimChecks.validator.checkArg('-', 3967, 3968, 1, PrimChecks.procedure.callReporter(3969, 3978, "delta-env"))));
-    var R = ProcedurePrims.ask(world.patches(), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 3984, 3987), function() {
       PrimChecks.patch.setVariable(4002, 4008, "pcolor", PrimChecks.procedure.callReporter(4009, 4018, "env-color"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3984, 3987, R); return R; }
   }

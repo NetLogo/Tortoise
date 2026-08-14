@@ -111,7 +111,10 @@ ProcedurePrims.defineCommand("attach-turtle", 522, 1335, (function() {
   if (Prims.equality(candidate, Nobody)) {
     return PrimChecks.procedure.stop(975, 979);
   }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1017, 1020, 1904, candidate), function() { PrimChecks.turtle.setVariable(1037, 1045, "follower", SelfManager.myself()); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1017, 1020, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 1017, 1020, 1904, candidate), 1017, 1020), function() {
+    PrimChecks.context.assertKind(2, 'set', 1033, 1052);
+    PrimChecks.turtle.setVariable(1037, 1045, "follower", SelfManager.myself());
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1017, 1020, R); return R; }
   PrimChecks.turtle.setVariable(1061, 1067, "leader", candidate);
   if (Prims.equality(PrimChecks.turtle.getVariable(1109, 1117, "follower"), Nobody)) {
     PrimChecks.turtleOrLink.setVariable(1135, 1140, "color", 65);
@@ -120,12 +123,16 @@ ProcedurePrims.defineCommand("attach-turtle", 522, 1335, (function() {
     PrimChecks.turtleOrLink.setVariable(1156, 1161, "color", 95);
     PrimChecks.turtleOrLink.setVariable(1174, 1179, "shape", "line");
   }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1222, 1225, 1904, candidate), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 1222, 1225, 1904, candidate), 1222, 1225), function() {
+    PrimChecks.context.assertKind(2, 'ifelse', 1240, 1332);
     if (Prims.equality(PrimChecks.turtle.getVariable(1247, 1253, "leader"), Nobody)) {
+      PrimChecks.context.assertKind(2, 'set', 1269, 1285);
       PrimChecks.turtleOrLink.setVariable(1273, 1278, "color", 45);
     }
     else {
+      PrimChecks.context.assertKind(2, 'set', 1294, 1307);
       PrimChecks.turtleOrLink.setVariable(1298, 1303, "color", 95);
+      PrimChecks.context.assertKind(2, 'set', 1314, 1330);
       PrimChecks.turtleOrLink.setVariable(1318, 1323, "shape", "line");
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1222, 1225, R); return R; }

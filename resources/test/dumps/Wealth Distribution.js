@@ -179,7 +179,7 @@ ProcedurePrims.defineCommand("set-initial-turtle-vars", 2124, 2443, (function() 
 }))
 ProcedurePrims.defineCommand("recolor-turtles", 2658, 2912, (function() {
   let maxHwealth = PrimChecks.list.max(2691, 2694, PrimChecks.validator.checkArg('MAX', 2691, 2694, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(2696, 2702, "wealth"); }))); ProcedurePrims.stack().currentContext().registerStringRunVar("MAX-WEALTH", maxHwealth);
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 2717, 2720), function() {
     if (Prims.lte(PrimChecks.turtle.getVariable(2743, 2749, "wealth"), PrimChecks.math.div(2764, 2765, PrimChecks.validator.checkArg('/', 2764, 2765, 1, maxHwealth), 3))) {
       PrimChecks.turtleOrLink.setVariable(2783, 2788, "color", 15);
     }
@@ -244,10 +244,10 @@ ProcedurePrims.defineCommand("grow-grain", 4118, 4550, (function() {
   }
 }))
 ProcedurePrims.defineCommand("harvest", 4694, 5025, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 4767, 4770), function() {
     PrimChecks.turtle.setVariable(4789, 4795, "wealth", PrimChecks.math.floor(PrimChecks.math.plus(4810, 4811, PrimChecks.validator.checkArg('+', 4810, 4811, 1, PrimChecks.turtle.getVariable(4803, 4809, "wealth")), PrimChecks.math.div(4824, 4825, PrimChecks.validator.checkArg('/', 4824, 4825, 1, PrimChecks.patch.getVariable(4813, 4823, "grain-here")), PrimChecks.agentset.count(SelfManager.self().turtlesHere())))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4767, 4770, R); return R; }
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 4968, 4971), function() {
     PrimChecks.patch.setVariable(4990, 5000, "grain-here", 0);
     var R = ProcedurePrims.callCommand("recolor-patch"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4968, 4971, R); return R; }

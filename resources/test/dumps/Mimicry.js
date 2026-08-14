@@ -131,11 +131,12 @@ ProcedurePrims.defineCommand("butterflies-move", 2380, 2461, (function() {
 ProcedurePrims.defineCommand("butterflies-get-eaten", 2735, 3020, (function() {
   let birdHhere = PrimChecks.list.oneOf(2797, 2803, SelfManager.self().breedHere("BIRDS")); ProcedurePrims.stack().currentContext().registerStringRunVar("BIRD-HERE", birdHhere);
   if (!Prims.equality(birdHhere, Nobody)) {
-    if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2851, 2854, 2, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2892, 2894, 1904, birdHhere), function() {
+    if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 2851, 2854, 2, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(2, PrimChecks.validator.checkArg('OF', 2892, 2894, 1904, birdHhere), 'of', 2855, 2904), function() {
       return PrimChecks.procedure.callReporter(2856, 2872, "color-in-memory?", PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable(2874, 2879, "color"); }));
     })))) {
       if (Prims.equality(PrimChecks.turtleOrLink.getVariable(2920, 2925, "breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
-        var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2947, 2950, 1904, birdHhere), function() {
+        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2947, 2950, 1904, birdHhere), 2947, 2950), function() {
+          PrimChecks.context.assertKind(2, 'remember-color', 2963, 2995);
           var R = ProcedurePrims.callCommand("remember-color", PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable(2979, 2984, "color"); })); if (R === DeathInterrupt) { return R; }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2947, 2950, R); return R; }
       }

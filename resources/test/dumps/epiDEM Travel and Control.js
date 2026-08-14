@@ -113,7 +113,10 @@ ProcedurePrims.defineCommand("setup-globals", 1986, 2204, (function() {
   world.observer.setGlobal("border", PrimChecks.agentset.with(2128, 2132, world.patches(), function() {
     return (Prims.equality(PrimChecks.patch.getVariable(2135, 2140, "pxcor"), 0) && Prims.gte(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 2150, 2153, 1, PrimChecks.patch.getVariable(2155, 2160, "pycor"))), 0));
   }));
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2171, 2174, 1904, world.observer.getGlobal("border")), function() { PrimChecks.patch.setVariable(2188, 2194, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2171, 2174, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2171, 2174, 1904, world.observer.getGlobal("border")), 2171, 2174), function() {
+    PrimChecks.context.assertKind(6, 'set', 2184, 2201);
+    PrimChecks.patch.setVariable(2188, 2194, "pcolor", 45);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2171, 2174, R); return R; }
 }))
 ProcedurePrims.defineCommand("setup-people", 2328, 3227, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), ""), function() {
@@ -222,7 +225,7 @@ ProcedurePrims.defineCommand("assign-color", 4926, 5169, (function() {
   }
 }))
 ProcedurePrims.defineCommand("make-network", 5178, 5256, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 5193, 5196), function() {
     var R = ProcedurePrims.ask(LinkPrims.createLinksWith(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5213, 5230, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5193, 5196, R); return R; }
 }))
@@ -256,7 +259,7 @@ ProcedurePrims.defineCommand("go", 5293, 6256, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (PrimChecks.turtle.getVariable(5876, 5886, "ambulance?")) {
       var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
-      var R = ProcedurePrims.ask(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), function() {
+      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), 5910, 5913), function() {
         if ((Prims.equality(PrimChecks.turtle.getVariable(5955, 5965, "ambulance?"), false) && Prims.equality(PrimChecks.turtle.getVariable(5980, 5989, "infected?"), true))) {
           var R = ProcedurePrims.callCommand("hospitalize"); if (R === DeathInterrupt) { return R; }
         }
@@ -360,13 +363,22 @@ ProcedurePrims.defineCommand("maybe-recover", 7752, 8466, (function() {
 ProcedurePrims.defineCommand("isolate", 8559, 8701, (function() {
   PrimChecks.turtle.setVariable(8593, 8602, "isolated?", true);
   SelfManager.self().moveTo(SelfManager.self().getPatchHere());
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8658, 8661, 1904, SelfManager.self()._optimalPatchHereInternal()), function() { PrimChecks.patch.setVariable(8683, 8689, "pcolor", PrimChecks.math.minus(8695, 8696, 5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8658, 8661, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 8658, 8661, 1904, SelfManager.self()._optimalPatchHereInternal()), 8658, 8661), function() {
+    PrimChecks.context.assertKind(6, 'set', 8679, 8698);
+    PrimChecks.patch.setVariable(8683, 8689, "pcolor", PrimChecks.math.minus(8695, 8696, 5, 3));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8658, 8661, R); return R; }
 }))
 ProcedurePrims.defineCommand("unisolate", 8764, 9177, (function() {
   PrimChecks.turtle.setVariable(8801, 8810, "isolated?", false);
   PrimChecks.turtle.setVariable(8823, 8836, "hospitalized?", false);
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8846, 8849, 1904, SelfManager.self()._optimalPatchHereInternal()), function() { PrimChecks.patch.setVariable(8871, 8877, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8846, 8849, R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8889, 8892, 1904, world.observer.getGlobal("border")), function() { PrimChecks.patch.setVariable(8906, 8912, "pcolor", 45); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8889, 8892, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 8846, 8849, 1904, SelfManager.self()._optimalPatchHereInternal()), 8846, 8849), function() {
+    PrimChecks.context.assertKind(6, 'set', 8867, 8883);
+    PrimChecks.patch.setVariable(8871, 8877, "pcolor", 0);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8846, 8849, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 8889, 8892, 1904, world.observer.getGlobal("border")), 8889, 8892), function() {
+    PrimChecks.context.assertKind(6, 'set', 8902, 8919);
+    PrimChecks.patch.setVariable(8906, 8912, "pcolor", 45);
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8889, 8892, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8982, 8985, 1904, world.getPatchAt(PrimChecks.math.div(9006, 9007, PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0)), function() { PrimChecks.patch.setVariable(9020, 9026, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8982, 8985, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9080, 9083, 1904, world.getPatchAt(PrimChecks.math.div(9102, 9103, world.topology.maxPxcor, 2), 0)), function() { PrimChecks.patch.setVariable(9116, 9122, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9080, 9083, R); return R; }
 }))
@@ -387,16 +399,23 @@ ProcedurePrims.defineCommand("infect", 9698, 10414, (function() {
     return ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 9808, 9811, 2, PrimChecks.turtle.getVariable(9812, 9821, "infected?"))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 9826, 9829, 2, PrimChecks.turtle.getVariable(9830, 9836, "cured?")))) && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 9841, 9844, 2, PrimChecks.turtle.getVariable(9845, 9856, "inoculated?"))));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("NEARBY-UNINFECTED", nearbyHuninfected);
   if (!Prims.equality(nearbyHuninfected, Nobody)) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9907, 9910, 1904, nearbyHuninfected), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 9907, 9910, 1904, nearbyHuninfected), 9907, 9910), function() {
+      PrimChecks.context.assertKind(2, 'ifelse', 9949, 10396);
       if (LinkPrims.isLinkNeighbor("LINKS", _CALLER_)) {
+        PrimChecks.context.assertKind(2, 'if', 10004, 10198);
         if (Prims.lt(RandomPrims.randomLong(100), PrimChecks.math.mult(10037, 10038, PrimChecks.validator.checkArg('*', 10037, 10038, 1, world.observer.getGlobal("infection-chance")), 2))) {
+          PrimChecks.context.assertKind(2, 'set', 10116, 10134);
           PrimChecks.turtle.setVariable(10120, 10129, "infected?", true);
+          PrimChecks.context.assertKind(2, 'set', 10150, 10183);
           PrimChecks.turtle.setVariable(10154, 10165, "nb-infected", PrimChecks.math.plus(10179, 10180, PrimChecks.validator.checkArg('+', 10179, 10180, 1, PrimChecks.turtle.getVariable(10167, 10178, "nb-infected")), 1));
         }
       }
       else {
+        PrimChecks.context.assertKind(2, 'if', 10238, 10383);
         if (Prims.lt(RandomPrims.randomLong(100), world.observer.getGlobal("infection-chance"))) {
+          PrimChecks.context.assertKind(2, 'set', 10301, 10319);
           PrimChecks.turtle.setVariable(10305, 10314, "infected?", true);
+          PrimChecks.context.assertKind(2, 'set', 10335, 10368);
           PrimChecks.turtle.setVariable(10339, 10350, "nb-infected", PrimChecks.math.plus(10364, 10365, PrimChecks.validator.checkArg('+', 10364, 10365, 1, PrimChecks.turtle.getVariable(10352, 10363, "nb-infected")), 1));
         }
       }

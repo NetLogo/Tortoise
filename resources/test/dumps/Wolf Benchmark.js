@@ -157,7 +157,10 @@ ProcedurePrims.defineCommand("reproduce-wolves", 2225, 2519, (function() {
 ProcedurePrims.defineCommand("catch-sheep", 2527, 2888, (function() {
   PrimChecks.turtle.setVariable(2564, 2568, "prey", PrimChecks.list.oneOf(2569, 2575, SelfManager.self().breedHere("SHEEP")));
   if (!Prims.equality(PrimChecks.turtle.getVariable(2645, 2649, "prey"), Nobody)) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2748, 2751, 1904, PrimChecks.turtle.getVariable(2752, 2756, "prey")), function() { PrimChecks.turtle.setVariable(2763, 2769, "energy", -1); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2748, 2751, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2748, 2751, 1904, PrimChecks.turtle.getVariable(2752, 2756, "prey")), 2748, 2751), function() {
+      PrimChecks.context.assertKind(2, 'set', 2759, 2772);
+      PrimChecks.turtle.setVariable(2763, 2769, "energy", -1);
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2748, 2751, R); return R; }
     PrimChecks.turtle.setVariable(2825, 2831, "energy", PrimChecks.math.plus(2839, 2840, PrimChecks.validator.checkArg('+', 2839, 2840, 1, PrimChecks.turtle.getVariable(2832, 2838, "energy")), PrimChecks.validator.checkArg('+', 2839, 2840, 1, world.observer.getGlobal("wolf-metabolism"))));
   }
 }))

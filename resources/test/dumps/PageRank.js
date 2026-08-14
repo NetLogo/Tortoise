@@ -145,8 +145,9 @@ ProcedurePrims.defineCommand("create-network-preferential", 1990, 2091, (functio
 ProcedurePrims.defineCommand("link-preferentially", 2210, 3891, (function(nodeset, k) {
   let nodeHlist = PrimChecks.list.sort(PrimChecks.validator.checkArg('SORT', 2293, 2297, 120, nodeset)); ProcedurePrims.stack().currentContext().registerStringRunVar("NODE-LIST", nodeHlist);
   let neighborHchoiceHlist = PrimChecks.list.sublist(2378, 2385, PrimChecks.validator.checkArg('SUBLIST', 2378, 2385, 8, nodeHlist), 0, PrimChecks.validator.checkArg('SUBLIST', 2378, 2385, 1, k)); ProcedurePrims.stack().currentContext().registerStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2428, 2431, 1904, PrimChecks.list.item(2432, 2436, PrimChecks.validator.checkArg('ITEM', 2432, 2436, 1, k), PrimChecks.validator.checkArg('ITEM', 2432, 2436, 12, nodeHlist))), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2428, 2431, 1904, PrimChecks.list.item(2432, 2436, PrimChecks.validator.checkArg('ITEM', 2432, 2436, 1, k), PrimChecks.validator.checkArg('ITEM', 2432, 2436, 12, nodeHlist))), 2428, 2431), function() {
     var R = PrimChecks.task.forEach(2544, 2551, PrimChecks.validator.checkArg('FOREACH', 2544, 2551, 8, neighborHchoiceHlist), PrimChecks.task.checked(2573, 2574, function(neighbor) {
+      PrimChecks.context.assertKind(2, 'run', 2573, 2692);
       PrimChecks.procedure.runArgCountCheck('run', 2573, 2692, 1, arguments.length);
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
         var R = ProcedurePrims.ask(LinkPrims.createLinkTo(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2623, 2637, R); return R; }
@@ -155,24 +156,38 @@ ProcedurePrims.defineCommand("link-preferentially", 2210, 3891, (function(nodese
         var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2659, 2675, R); return R; }
       }
     }, "[ neighbor -> ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2544, 2551, R); return R; }
-    neighborHchoiceHlist = ListPrims.sentence(PrimChecks.task.nValues(2797, 2805, PrimChecks.validator.checkArg('N-VALUES', 2797, 2805, 1, k), PrimChecks.task.checked(2808, 2809, function() { return SelfManager.self(); }, "[ self ]", true, false)), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
+    neighborHchoiceHlist = ListPrims.sentence(PrimChecks.task.nValues(2797, 2805, PrimChecks.validator.checkArg('N-VALUES', 2797, 2805, 1, k), PrimChecks.task.checked(2808, 2809, function() {
+      PrimChecks.context.assertKind(14, 'runresult', 2809, 2813);
+      return SelfManager.self();
+    }, "[ self ]", true, false)), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2428, 2431, R); return R; }
   var R = PrimChecks.task.forEach(2894, 2901, PrimChecks.list.sublist(2902, 2909, PrimChecks.validator.checkArg('SUBLIST', 2902, 2909, 8, nodeHlist), PrimChecks.math.plus(2923, 2924, PrimChecks.validator.checkArg('+', 2923, 2924, 1, k), 1), PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 2929, 2935, 12, nodeHlist))), PrimChecks.task.checked(2947, 2948, function(node) {
     PrimChecks.procedure.runArgCountCheck('run', 2947, 3890, 1, arguments.length);
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2961, 2964, 1904, node), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2961, 2964, 1904, node), 2961, 2964), function() {
       let tempHneighborHlist = neighborHchoiceHlist; ProcedurePrims.stack().currentContext().registerStringRunVar("TEMP-NEIGHBOR-LIST", tempHneighborHlist);
+      PrimChecks.context.assertKind(2, 'repeat', 3056, 3799);
       for (let _index_3056_3062 = 0, _repeatcount_3056_3062 = StrictMath.floor(k); _index_3056_3062 < _repeatcount_3056_3062; _index_3056_3062++) {
+        PrimChecks.context.assertKind(2, 'let', 3348, 3386);
         let neighbor = PrimChecks.list.oneOf(3361, 3367, PrimChecks.validator.checkArg('ONE-OF', 3361, 3367, 120, tempHneighborHlist)); ProcedurePrims.stack().currentContext().registerStringRunVar("NEIGHBOR", neighbor);
+        PrimChecks.context.assertKind(2, 'set', 3395, 3452);
         tempHneighborHlist = PrimChecks.list.remove(3418, 3424, neighbor, PrimChecks.validator.checkArg('REMOVE', 3418, 3424, 12, tempHneighborHlist)); ProcedurePrims.stack().currentContext().updateStringRunVar("TEMP-NEIGHBOR-LIST", tempHneighborHlist);
+        PrimChecks.context.assertKind(2, 'set', 3626, 3685);
         neighborHchoiceHlist = PrimChecks.list.fput(neighbor, PrimChecks.validator.checkArg('FPUT', 3651, 3655, 8, neighborHchoiceHlist)); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
+        PrimChecks.context.assertKind(2, 'ifelse', 3694, 3791);
         if (Prims.equality(RandomPrims.randomLong(2), 0)) {
+          PrimChecks.context.assertKind(2, 'create-link-to', 3726, 3749);
           var R = ProcedurePrims.ask(LinkPrims.createLinkTo(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3726, 3740, R); return R; }
         }
         else {
+          PrimChecks.context.assertKind(2, 'create-link-from', 3764, 3789);
           var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3764, 3780, R); return R; }
         }
       }
-      neighborHchoiceHlist = ListPrims.sentence(PrimChecks.task.nValues(3841, 3849, PrimChecks.validator.checkArg('N-VALUES', 3841, 3849, 1, k), PrimChecks.task.checked(3852, 3853, function() { return SelfManager.self(); }, "[ self ]", true, false)), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
+      PrimChecks.context.assertKind(2, 'set', 3806, 3880);
+      neighborHchoiceHlist = ListPrims.sentence(PrimChecks.task.nValues(3841, 3849, PrimChecks.validator.checkArg('N-VALUES', 3841, 3849, 1, k), PrimChecks.task.checked(3852, 3853, function() {
+        PrimChecks.context.assertKind(14, 'runresult', 3853, 3857);
+        return SelfManager.self();
+      }, "[ self ]", true, false)), neighborHchoiceHlist); ProcedurePrims.stack().currentContext().updateStringRunVar("NEIGHBOR-CHOICE-LIST", neighborHchoiceHlist);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2961, 2964, R); return R; }
   }, "[ node -> ask node [ let temp-neighbor-list neighbor-choice-list repeat k [ let neighbor one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2894, 2901, R); return R; }
 }))
@@ -192,7 +207,8 @@ ProcedurePrims.defineCommand("go", 4006, 6777, (function() {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAGES"), function() {
       if (PrimChecks.agentset.any(LinkPrims.outLinkNeighbors("LINKS"))) {
         let rankHincrement = PrimChecks.math.div(4472, 4473, PrimChecks.validator.checkArg('/', 4472, 4473, 1, PrimChecks.turtle.getVariable(4467, 4471, "rank")), PrimChecks.agentset.count(LinkPrims.outLinkNeighbors("LINKS"))); ProcedurePrims.stack().currentContext().registerStringRunVar("RANK-INCREMENT", rankHincrement);
-        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
+        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("LINKS"), 4507, 4510), function() {
+          PrimChecks.context.assertKind(2, 'set', 4542, 4580);
           PrimChecks.turtle.setVariable(4546, 4554, "new-rank", PrimChecks.math.plus(4564, 4565, PrimChecks.validator.checkArg('+', 4564, 4565, 1, PrimChecks.turtle.getVariable(4555, 4563, "new-rank")), PrimChecks.validator.checkArg('+', 4564, 4565, 1, rankHincrement)));
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4507, 4510, R); return R; }
       }
@@ -220,7 +236,10 @@ ProcedurePrims.defineCommand("go", 4006, 6777, (function() {
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5258, 5272, R); return R; }
     }
     if (Prims.gt(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS")), world.observer.getGlobal("number-of-surfers"))) {
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5498, 5501, 1904, PrimChecks.list.nOf(5502, 5506, PrimChecks.math.minus(5522, 5523, PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS")), PrimChecks.validator.checkArg('-', 5522, 5523, 1, world.observer.getGlobal("number-of-surfers"))), world.turtleManager.turtlesOfBreed("SURFERS"))), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5498, 5501, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5498, 5501, 1904, PrimChecks.list.nOf(5502, 5506, PrimChecks.math.minus(5522, 5523, PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS")), PrimChecks.validator.checkArg('-', 5522, 5523, 1, world.observer.getGlobal("number-of-surfers"))), world.turtleManager.turtlesOfBreed("SURFERS"))), function() {
+        PrimChecks.context.assertKind(10, 'die', 5561, 5564);
+        return SelfManager.self().die();
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5498, 5501, R); return R; }
     }
     var R = ProcedurePrims.ask(world.links(), function() {
       PrimChecks.turtleOrLink.setVariable(5636, 5641, "color", 5);
@@ -228,11 +247,12 @@ ProcedurePrims.defineCommand("go", 4006, 6777, (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5620, 5623, R); return R; }
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SURFERS"), function() {
       let oldHpage = PrimChecks.turtle.getVariable(5703, 5715, "current-page"); ProcedurePrims.stack().currentContext().registerStringRunVar("OLD-PAGE", oldHpage);
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5773, 5776, 1904, PrimChecks.turtle.getVariable(5777, 5789, "current-page")), function() {
+      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 5773, 5776, 1904, PrimChecks.turtle.getVariable(5777, 5789, "current-page")), 5773, 5776), function() {
+        PrimChecks.context.assertKind(2, 'set', 5792, 5813);
         PrimChecks.turtle.setVariable(5796, 5802, "visits", PrimChecks.math.plus(5810, 5811, PrimChecks.validator.checkArg('+', 5810, 5811, 1, PrimChecks.turtle.getVariable(5803, 5809, "visits")), 1));
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5773, 5776, R); return R; }
-      if ((Prims.lte(PrimChecks.math.randomFloat(1), world.observer.getGlobal("damping-factor")) && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 6021, 6025, 112, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 6041, 6043, 1904, PrimChecks.turtle.getVariable(6044, 6056, "current-page")), function() { return LinkPrims.myOutLinks("LINKS"); }))))) {
-        PrimChecks.turtle.setVariable(6069, 6081, "current-page", PrimChecks.list.oneOf(6082, 6088, PrimChecks.validator.checkArg('ONE-OF', 6082, 6088, 120, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 6110, 6112, 1904, PrimChecks.turtle.getVariable(6113, 6125, "current-page")), function() { return LinkPrims.outLinkNeighbors("LINKS"); }))));
+      if ((Prims.lte(PrimChecks.math.randomFloat(1), world.observer.getGlobal("damping-factor")) && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 6021, 6025, 112, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(2, PrimChecks.validator.checkArg('OF', 6041, 6043, 1904, PrimChecks.turtle.getVariable(6044, 6056, "current-page")), 'of', 6026, 6056), function() { return LinkPrims.myOutLinks("LINKS"); }))))) {
+        PrimChecks.turtle.setVariable(6069, 6081, "current-page", PrimChecks.list.oneOf(6082, 6088, PrimChecks.validator.checkArg('ONE-OF', 6082, 6088, 120, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(2, PrimChecks.validator.checkArg('OF', 6110, 6112, 1904, PrimChecks.turtle.getVariable(6113, 6125, "current-page")), 'of', 6089, 6125), function() { return LinkPrims.outLinkNeighbors("LINKS"); }))));
       }
       else {
         PrimChecks.turtle.setVariable(6140, 6152, "current-page", PrimChecks.list.oneOf(6153, 6159, world.turtleManager.turtlesOfBreed("PAGES")));
@@ -241,11 +261,16 @@ ProcedurePrims.defineCommand("go", 4006, 6777, (function() {
         SelfManager.self().hideTurtle(false);
         var R = ProcedurePrims.callCommand("move-surfer"); if (R === DeathInterrupt) { return R; }
         let surferHcolor = PrimChecks.turtleOrLink.getVariable(6304, 6309, "color"); ProcedurePrims.stack().currentContext().registerStringRunVar("SURFER-COLOR", surferHcolor);
-        var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6318, 6321, 1904, oldHpage), function() {
+        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 6318, 6321, 1904, oldHpage), 6318, 6321), function() {
+          PrimChecks.context.assertKind(2, 'let', 6343, 6397);
           let traveledHlink = LinkPrims.outLinkTo("LINKS", PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtle.getVariable(6374, 6386, "current-page"); })); ProcedurePrims.stack().currentContext().registerStringRunVar("TRAVELED-LINK", traveledHlink);
+          PrimChecks.context.assertKind(2, 'if', 6408, 6524);
           if (!Prims.equality(traveledHlink, Nobody)) {
-            var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6449, 6452, 1904, traveledHlink), function() {
+            PrimChecks.context.assertKind(2, 'ask', 6449, 6512);
+            var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 6449, 6452, 1904, traveledHlink), 6449, 6452), function() {
+              PrimChecks.context.assertKind(10, 'set', 6469, 6491);
               PrimChecks.turtleOrLink.setVariable(6473, 6478, "color", surferHcolor);
+              PrimChecks.context.assertKind(8, 'set', 6492, 6510);
               PrimChecks.link.setVariable(6496, 6505, "thickness", 0.08);
             }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6449, 6452, R); return R; }
           }

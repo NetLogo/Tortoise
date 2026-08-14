@@ -104,7 +104,7 @@ ProcedurePrims.defineCommand("setup", 701, 1311, (function() {
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1010, 1013, R); return R; }
   world.observer.setGlobal("top-row", PrimChecks.agentset.with(1176, 1180, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(1182, 1187, "pycor"), world.topology.maxPycor); }));
-  world.observer.setGlobal("generators", PrimChecks.agentset.with(1226, 1230, PrimChecks.validator.checkArg('WITH', 1226, 1230, 112, world.observer.getGlobal("top-row")), function() {
+  world.observer.setGlobal("generators", PrimChecks.agentset.with(1226, 1230, PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('WITH', 1226, 1230, 112, world.observer.getGlobal("top-row")), 'with', 1218, 1256), function() {
     return (Prims.equality(PrimChecks.patch.getVariable(1232, 1237, "pxcor"), -1) || Prims.equality(PrimChecks.patch.getVariable(1246, 1251, "pxcor"), 0));
   }));
   world.ticker.reset();
@@ -127,7 +127,8 @@ ProcedurePrims.defineCommand("go", 1319, 1772, (function() {
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("roll-dice", 1835, 2601, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1903, 1906, 1904, world.observer.getGlobal("generators")), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 1903, 1906, 1904, world.observer.getGlobal("generators")), 1903, 1906), function() {
+    PrimChecks.context.assertKind(4, 'sprout-paired-dice', 1924, 2066);
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "PAIRED-DICE"), function() {
       PrimChecks.turtleOrLink.setVariable(1957, 1962, "color", 9.9);
       PrimChecks.turtle.setVariable(1979, 1988, "die-value", PrimChecks.math.plus(1991, 1992, 1, RandomPrims.randomLong(6)));
@@ -166,10 +167,10 @@ ProcedurePrims.defineCommand("move-paired-dice", 2609, 3010, (function() {
 ProcedurePrims.defineCommand("move-single-dice", 3018, 3404, (function() {
   let howHmany = PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SINGLE-DICE")); ProcedurePrims.stack().currentContext().registerStringRunVar("HOW-MANY", howHmany);
   if (Prims.gt(howHmany, 0)) {
-    var R = ProcedurePrims.ask(PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable(3290, 3295, "pycor"); }), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3262, 3265, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable(3290, 3295, "pycor"); }), 3262, 3265), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3262, 3265, R); return R; }
   }
   if (Prims.gt(howHmany, 1)) {
-    var R = ProcedurePrims.ask(PrimChecks.agentset.maxOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable(3373, 3378, "pycor"); }), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3345, 3348, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.agentset.maxOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable(3373, 3378, "pycor"); }), 3345, 3348), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3345, 3348, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("move-single-die", 3412, 3642, (function() {
@@ -204,6 +205,7 @@ ProcedurePrims.defineCommand("single-die-check-visible", 4047, 4433, (function()
     return Prims.equality(outcome, mode);
   }, "[ outcome -> outcome = mode ]", true, false), PrimChecks.validator.checkArg('FILTER', 4209, 4215, 8, world.observer.getGlobal("single-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-TALLEST-COLUMN", heightHofHtallestHcolumn);
   let heightHofHmyHcolumn = PrimChecks.list.length(PrimChecks.list.filter(4294, 4300, PrimChecks.task.checked(4301, 4302, function(outcome) {
+    PrimChecks.context.assertKind(2, 'runresult', 4314, 4333);
     PrimChecks.procedure.runArgCountCheck('runresult', 4314, 4333, 1, arguments.length);
     return Prims.equality(outcome, PrimChecks.turtle.getVariable(4324, 4333, "die-value"));
   }, "[ outcome -> outcome = die-value ]", true, false), PrimChecks.validator.checkArg('FILTER', 4294, 4300, 8, world.observer.getGlobal("single-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-MY-COLUMN", heightHofHmyHcolumn);
@@ -221,6 +223,7 @@ ProcedurePrims.defineCommand("paired-die-check-visible", 4494, 4873, (function()
     return Prims.equality(outcome, mode);
   }, "[ outcome -> outcome = mode ]", true, false), PrimChecks.validator.checkArg('FILTER', 4652, 4658, 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-TALLEST-COLUMN", heightHofHtallestHcolumn);
   let heightHofHmyHcolumn = PrimChecks.list.length(PrimChecks.list.filter(4736, 4742, PrimChecks.task.checked(4743, 4744, function(outcome) {
+    PrimChecks.context.assertKind(2, 'runresult', 4756, 4774);
     PrimChecks.procedure.runArgCountCheck('runresult', 4756, 4774, 1, arguments.length);
     return Prims.equality(outcome, PrimChecks.turtle.getVariable(4766, 4774, "pair-sum"));
   }, "[ outcome -> outcome = pair-sum ]", true, false), PrimChecks.validator.checkArg('FILTER', 4736, 4742, 8, world.observer.getGlobal("pair-outcomes")))); ProcedurePrims.stack().currentContext().registerStringRunVar("HEIGHT-OF-MY-COLUMN", heightHofHmyHcolumn);
@@ -229,13 +232,16 @@ ProcedurePrims.defineCommand("paired-die-check-visible", 4494, 4873, (function()
   }
 }))
 ProcedurePrims.defineCommand("bump-down", 4881, 5038, (function(candidates) {
-  while (PrimChecks.agentset.anyWith(null, null, candidates, function() {
+  while (PrimChecks.agentset.anyWith(null, null, PrimChecks.context.assertAgentSetKind(6, candidates, 'anywith', 4913, 4957), function() {
     return Prims.equality(PrimChecks.patch.getVariable(4935, 4940, "pycor"), PrimChecks.math.minus(4953, 4954, world.topology.maxPycor, 2));
   })) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4965, 4968, 1904, candidates), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 4965, 4968, 1904, candidates), 4965, 4968), function() {
+      PrimChecks.context.assertKind(2, 'if', 4988, 5016);
       if (Prims.equality(PrimChecks.patch.getVariable(4991, 4996, "pycor"), world.topology.minPycor)) {
+        PrimChecks.context.assertKind(2, 'die', 5011, 5014);
         return SelfManager.self().die();
       }
+      PrimChecks.context.assertKind(2, 'fdone', 5023, 5027);
       SelfManager.self()._optimalFdOne();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4965, 4968, R); return R; }
   }

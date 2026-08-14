@@ -93,7 +93,10 @@ ProcedurePrims.defineCommand("setup-turtles", 984, 1244, (function() {
     PrimChecks.turtle.setVariable(1158, 1162, "size", 1.5);
     var R = ProcedurePrims.callCommand("get-healthy"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1000, 1014, R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1207, 1210, 1904, PrimChecks.list.nOf(1211, 1215, 10, world.turtles())), function() { var R = ProcedurePrims.callCommand("get-sick"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1207, 1210, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1207, 1210, 1904, PrimChecks.list.nOf(1211, 1215, 10, world.turtles())), function() {
+    PrimChecks.context.assertKind(2, 'get-sick', 1233, 1241);
+    var R = ProcedurePrims.callCommand("get-sick"); if (R === DeathInterrupt) { return R; }
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1207, 1210, R); return R; }
 }))
 ProcedurePrims.defineCommand("get-sick", 1252, 1325, (function() {
   PrimChecks.turtle.setVariable(1287, 1292, "sick?", true);
@@ -140,7 +143,7 @@ ProcedurePrims.defineCommand("update-global-variables", 1962, 2157, (function() 
   }
 }))
 ProcedurePrims.defineCommand("update-display", 2165, 2341, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 2182, 2185), function() {
     if (!Prims.equality(PrimChecks.turtleOrLink.getVariable(2203, 2208, "shape"), world.observer.getGlobal("turtle-shape"))) {
       PrimChecks.turtleOrLink.setVariable(2231, 2236, "shape", world.observer.getGlobal("turtle-shape"));
     }

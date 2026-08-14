@@ -243,7 +243,7 @@ ProcedurePrims.defineCommand("do-end-of-days-events", 3167, 4382, (function() {
         world.observer.setGlobal("end-of-days-counter", 0);
         world.observer.setGlobal("transition-time?", false);
         world.observer.setGlobal("day", 0);
-        var R = ProcedurePrims.ask(world.turtles(), function() {
+        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 4249, 4252), function() {
           var R = ProcedurePrims.callCommand("turn-seedlings-into-full-plants"); if (R === DeathInterrupt) { return R; }
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4249, 4252, R); return R; }
         var R = ProcedurePrims.callCommand("kill-marked-turtles"); if (R === DeathInterrupt) { return R; }
@@ -255,7 +255,7 @@ ProcedurePrims.defineCommand("do-end-of-days-events", 3167, 4382, (function() {
   }
 }))
 ProcedurePrims.defineCommand("do-reproduction", 4405, 6554, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 4423, 4426), function() {
     let potentialHmates = []; ProcedurePrims.stack().currentContext().registerStringRunVar("POTENTIAL-MATES", potentialHmates);
     let nearbyHturtles = world.turtles(); ProcedurePrims.stack().currentContext().registerStringRunVar("NEARBY-TURTLES", nearbyHturtles);
     if (Prims.lt(world.observer.getGlobal("pollen-radius"), PrimChecks.math.minus(4601, 4602, world.topology.maxPxcor, world.topology.minPxcor))) {
@@ -270,6 +270,7 @@ ProcedurePrims.defineCommand("do-reproduction", 4405, 6554, (function() {
       potentialHmates = PrimChecks.list.fput(SelfManager.self(), PrimChecks.validator.checkArg('FPUT', 4928, 4932, 8, potentialHmates)); ProcedurePrims.stack().currentContext().updateStringRunVar("POTENTIAL-MATES", potentialHmates);
     }
     let compatibilities = PrimChecks.task.map(5033, 5036, PrimChecks.task.checked(5037, 5038, function(potentialHmate) {
+      PrimChecks.context.assertKind(14, 'runresult', 5057, 5090);
       PrimChecks.procedure.runArgCountCheck('runresult', 5057, 5090, 1, arguments.length);
       return PrimChecks.procedure.callReporter(5057, 5070, "compatibility", SelfManager.self(), potentialHmate);
     }, "[ potential-mate -> compatibility self potential-mate ]", true, false), PrimChecks.validator.checkArg('MAP', 5033, 5036, 8, potentialHmates)); ProcedurePrims.stack().currentContext().registerStringRunVar("COMPATIBILITIES", compatibilities);
@@ -315,7 +316,7 @@ ProcedurePrims.defineCommand("do-reproduction", 4405, 6554, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4423, 4426, R); return R; }
 }))
 ProcedurePrims.defineCommand("mark-turtles-to-kill", 6617, 9342, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 6640, 6643), function() {
     let t = PrimChecks.math.div(6674, 6675, PrimChecks.validator.checkArg('/', 6674, 6675, 1, PrimChecks.turtle.getVariable(6664, 6673, "tolerance")), 100); ProcedurePrims.stack().currentContext().registerStringRunVar("T", t);
     let m = PrimChecks.math.div(6696, 6697, PrimChecks.validator.checkArg('/', 6696, 6697, 1, PrimChecks.patch.getVariable(6690, 6695, "metal")), 100); ProcedurePrims.stack().currentContext().registerStringRunVar("M", m);
     PrimChecks.turtle.setVariable(8717, 8724, "fitness", PrimChecks.math.plus(8748, 8749, PrimChecks.math.mult(8733, 8734, PrimChecks.math.minus(8728, 8729, 1, PrimChecks.validator.checkArg('-', 8728, 8729, 1, m)), PrimChecks.math.minus(8738, 8739, 1, PrimChecks.math.mult(8743, 8744, 0.4, PrimChecks.validator.checkArg('*', 8743, 8744, 1, t)))), PrimChecks.math.mult(8752, 8753, PrimChecks.validator.checkArg('*', 8752, 8753, 1, m), PrimChecks.math.minus(8757, 8758, 1, PrimChecks.math.mult(8762, 8763, 0.4, PrimChecks.math.minus(8767, 8768, 1, PrimChecks.validator.checkArg('-', 8767, 8768, 1, t)))))));
@@ -326,10 +327,13 @@ ProcedurePrims.defineCommand("mark-turtles-to-kill", 6617, 9342, (function() {
       PrimChecks.turtle.setVariable(9007, 9016, "will-die?", true);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6640, 6643, R); return R; }
-  var R = ProcedurePrims.ask(world.patches(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 9129, 9132), function() {
     let overpopulation = PrimChecks.math.minus(9188, 9189, PrimChecks.agentset.count(SelfManager.self().turtlesHere()), PrimChecks.validator.checkArg('-', 9188, 9189, 1, world.observer.getGlobal("plants-per-patch"))); ProcedurePrims.stack().currentContext().registerStringRunVar("OVERPOPULATION", overpopulation);
     if (Prims.gt(overpopulation, 0)) {
-      var R = ProcedurePrims.ask(PrimChecks.agentset.minNOf(9247, 9255, SelfManager.self().turtlesHere(), PrimChecks.validator.checkArg('MIN-N-OF', 9247, 9255, 1, overpopulation), function() { return PrimChecks.turtle.getVariable(9285, 9292, "fitness"); }), function() { PrimChecks.turtle.setVariable(9309, 9318, "will-die?", true); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9242, 9245, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.agentset.minNOf(9247, 9255, PrimChecks.context.assertAgentSetKind(2, SelfManager.self().turtlesHere(), 'min-n-of', 9246, 9294), PrimChecks.validator.checkArg('MIN-N-OF', 9247, 9255, 1, overpopulation), function() { return PrimChecks.turtle.getVariable(9285, 9292, "fitness"); }), 9242, 9245), function() {
+        PrimChecks.context.assertKind(2, 'set', 9305, 9323);
+        PrimChecks.turtle.setVariable(9309, 9318, "will-die?", true);
+      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9242, 9245, R); return R; }
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9129, 9132, R); return R; }
 }))
@@ -350,7 +354,7 @@ ProcedurePrims.defineCommand("turn-seedlings-into-full-plants", 9742, 9862, (fun
   var R = ProcedurePrims.callCommand("redraw-plants-as-full-sized-plants"); if (R === DeathInterrupt) { return R; }
 }))
 ProcedurePrims.defineCommand("check-labels", 10159, 10314, (function() {
-  var R = ProcedurePrims.ask(world.patches(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 10174, 10177), function() {
     if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal in soil")) {
       PrimChecks.patch.setVariable(10239, 10245, "plabel", PrimChecks.patch.getVariable(10246, 10251, "metal"));
     }
@@ -358,7 +362,7 @@ ProcedurePrims.defineCommand("check-labels", 10159, 10314, (function() {
       PrimChecks.patch.setVariable(10262, 10268, "plabel", "");
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(10174, 10177, R); return R; }
-  var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("check-turtle-label"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(10279, 10282, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 10279, 10282), function() { var R = ProcedurePrims.callCommand("check-turtle-label"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(10279, 10282, R); return R; }
 }))
 ProcedurePrims.defineCommand("check-turtle-label", 10322, 10538, (function() {
   if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal tolerance")) {
@@ -381,7 +385,7 @@ ProcedurePrims.defineCommand("visualize-seedling-growth", 10642, 10742, (functio
   }
 }))
 ProcedurePrims.defineCommand("visualize-bloom", 10750, 11140, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 10768, 10771), function() {
     if ((Prims.gte(world.observer.getGlobal("day"), PrimChecks.turtle.getVariable(11016, 11027, "flower-time")) && Prims.lte(world.observer.getGlobal("day"), PrimChecks.math.plus(11055, 11056, PrimChecks.validator.checkArg('+', 11055, 11056, 1, PrimChecks.turtle.getVariable(11043, 11054, "flower-time")), PrimChecks.validator.checkArg('+', 11055, 11056, 1, world.observer.getGlobal("flower-duration")))))) {
       PrimChecks.turtleOrLink.setVariable(11091, 11096, "shape", "flower");
     }

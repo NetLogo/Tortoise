@@ -171,7 +171,10 @@ ProcedurePrims.defineCommand("reproduce-wolves", 3354, 3656, (function() {
 ProcedurePrims.defineCommand("eat-sheep", 3664, 3978, (function() {
   let prey = PrimChecks.list.oneOf(3703, 3709, SelfManager.self().breedHere("SHEEP")); ProcedurePrims.stack().currentContext().registerStringRunVar("PREY", prey);
   if (!Prims.equality(prey, Nobody)) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3839, 3842, 1904, prey), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3839, 3842, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 3839, 3842, 1904, prey), 3839, 3842), function() {
+      PrimChecks.context.assertKind(10, 'die', 3850, 3853);
+      return SelfManager.self().die();
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3839, 3842, R); return R; }
     PrimChecks.turtle.setVariable(3909, 3915, "energy", PrimChecks.math.plus(3923, 3924, PrimChecks.validator.checkArg('+', 3923, 3924, 1, PrimChecks.turtle.getVariable(3916, 3922, "energy")), PrimChecks.validator.checkArg('+', 3923, 3924, 1, world.observer.getGlobal("wolf-gain-from-food"))));
   }
 }))
@@ -200,7 +203,7 @@ ProcedurePrims.defineReporter("grass", 4386, 4500, (function() {
   }
 }))
 ProcedurePrims.defineCommand("display-labels", 4509, 4706, (function() {
-  var R = ProcedurePrims.ask(world.turtles(), function() { PrimChecks.turtleOrLink.setVariable(4544, 4549, "label", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4526, 4529, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 4526, 4529), function() { PrimChecks.turtleOrLink.setVariable(4544, 4549, "label", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4526, 4529, R); return R; }
   if (world.observer.getGlobal("show-energy?")) {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("WOLVES"), function() {
       PrimChecks.turtleOrLink.setVariable(4596, 4601, "label", PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 4602, 4607, 1, PrimChecks.turtle.getVariable(4608, 4614, "energy"))));

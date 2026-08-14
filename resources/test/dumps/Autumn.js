@@ -167,10 +167,15 @@ ProcedurePrims.defineCommand("go", 2203, 3345, (function() {
   var R = ProcedurePrims.callCommand("move-water"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("SUNS"), function() { var R = ProcedurePrims.callCommand("show-intensity"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2495, 2498, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2566, 2569, 1904, PrimChecks.procedure.callReporter(2570, 2585, "attached-leaves")), function() {
+    PrimChecks.context.assertKind(2, 'adjust-water', 2592, 2604);
     var R = ProcedurePrims.callCommand("adjust-water"); if (R === DeathInterrupt) { return R; }
+    PrimChecks.context.assertKind(2, 'adjust-chlorophyll', 2609, 2627);
     var R = ProcedurePrims.callCommand("adjust-chlorophyll"); if (R === DeathInterrupt) { return R; }
+    PrimChecks.context.assertKind(2, 'adjust-sugar', 2632, 2644);
     var R = ProcedurePrims.callCommand("adjust-sugar"); if (R === DeathInterrupt) { return R; }
+    PrimChecks.context.assertKind(2, 'change-color', 2649, 2661);
     var R = ProcedurePrims.callCommand("change-color"); if (R === DeathInterrupt) { return R; }
+    PrimChecks.context.assertKind(2, 'change-shape', 2666, 2678);
     var R = ProcedurePrims.callCommand("change-shape"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2566, 2569, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("LEAVES"), function() { var R = ProcedurePrims.callCommand("fall-if-necessary"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2730, 2733, R); return R; }
@@ -263,13 +268,14 @@ ProcedurePrims.defineCommand("adjust-water", 6771, 7742, (function() {
   if (Prims.lt(world.observer.getGlobal("temperature"), 10)) {
     return PrimChecks.procedure.stop(6967, 6971);
   }
-  let nearbyHraindrops = PrimChecks.agentset.with(7127, 7131, SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("RAINDROPS"), 2), function() {
+  let nearbyHraindrops = PrimChecks.agentset.with(7127, 7131, PrimChecks.context.assertAgentSetKind(2, SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("RAINDROPS"), 2), 'with', 7105, 7183), function() {
     return (Prims.equality(PrimChecks.turtle.getVariable(7134, 7142, "location"), "in leaves") && Prims.gte(PrimChecks.turtle.getVariable(7161, 7176, "amount-of-water"), 0));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("NEARBY-RAINDROPS", nearbyHraindrops);
   if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 7190, 7194, 112, nearbyHraindrops))) {
-    let myHraindrop = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 7234, 7244, 112, nearbyHraindrops), function() { return SelfManager.self().distance(SelfManager.myself()); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-RAINDROP", myHraindrop);
+    let myHraindrop = PrimChecks.agentset.minOneOf(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('MIN-ONE-OF', 7234, 7244, 112, nearbyHraindrops), 'min-one-of', 7234, 7281), function() { return SelfManager.self().distance(SelfManager.myself()); }); ProcedurePrims.stack().currentContext().registerStringRunVar("MY-RAINDROP", myHraindrop);
     PrimChecks.turtle.setVariable(7290, 7301, "water-level", PrimChecks.math.plus(7314, 7315, PrimChecks.validator.checkArg('+', 7314, 7315, 1, PrimChecks.turtle.getVariable(7302, 7313, "water-level")), PrimChecks.math.mult(7352, 7353, PrimChecks.validator.checkArg('*', 7352, 7353, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 7337, 7339, 1904, myHraindrop), function() { return PrimChecks.turtle.getVariable(7319, 7334, "amount-of-water"); })), 0.2)));
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7364, 7367, 1904, myHraindrop), function() {
+    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 7364, 7367, 1904, myHraindrop), 7364, 7367), function() {
+      PrimChecks.context.assertKind(2, 'set', 7388, 7432);
       PrimChecks.turtle.setVariable(7392, 7407, "amount-of-water", PrimChecks.math.mult(7425, 7426, PrimChecks.validator.checkArg('*', 7425, 7426, 1, PrimChecks.turtle.getVariable(7409, 7424, "amount-of-water")), 0.8));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7364, 7367, R); return R; }
   }

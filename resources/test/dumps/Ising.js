@@ -85,7 +85,10 @@ ProcedurePrims.defineCommand("setup", 264, 462, (function() {
 }))
 ProcedurePrims.defineCommand("go", 470, 759, (function() {
   for (let _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 528, 531, 1904, PrimChecks.list.oneOf(532, 538, world.patches())), function() { var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(528, 531, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 528, 531, 1904, PrimChecks.list.oneOf(532, 538, world.patches())), function() {
+      PrimChecks.context.assertKind(6, 'update', 549, 555);
+      var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; }
+    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(528, 531, R); return R; }
   }
   world.ticker.tickAdvance(1000);
   plotManager.updatePlots();
