@@ -24,6 +24,8 @@ class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlag
       else
         originalPd
     )
+    implicit val procedureCompilerContext: CompilerContext =
+      compilerContext.copy(agentContext = AgentContext.fromAgentClassString(pd.procedure.agentClassString))
     val name       = pd.procedure.name.toLowerCase
     val safeName   = JSIdentProvider(name)
     handlers.resetEveryID(safeName)

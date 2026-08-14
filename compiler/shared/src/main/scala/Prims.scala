@@ -78,6 +78,22 @@ trait PrimUtils {
       }
   }
 
+  protected def checkedAgents(app: Application, blockIndex: Int, agentsJs: String)
+    (implicit compilerContext: CompilerContext): String =
+    AgentContext.guardBlockAgents(app, blockIndex, agentsJs, compilerContext.agentContext)
+
+  // `ask turtles` and `ask patches` are observer-only.  Desktop raises that at runtime even when the context makes it
+  // inevitable, so this is a check rather than a compile error.  -Jeremy B August 2026
+  protected def askableAgents(app: Application, agentsJs: String)
+    (implicit compilerContext: CompilerContext): String = {
+    val location = app.instruction.token.sourceLocation
+    val couldBeWholeSet = app.args.headOption.forall(AgentContext.canBeWholeAgentSet)
+    if (!couldBeWholeSet || AgentContext.isSatisfiedBy(AgentContext.Observer, compilerContext.agentContext))
+      agentsJs
+    else
+      s"PrimChecks.context.assertAskAllowed($agentsJs, ${location.start}, ${location.end})"
+  }
+
   def maybeStoreProcedureArgsForRun(actual: Int, context: ProcedureContext, code: String): String = {
     if (Arguments.allTypesAllowed(Syntax.CommandType, actual) || context.parameters.length == 0) {
       code
@@ -116,7 +132,7 @@ trait PrimUtils {
       arg match {
         case r: ReporterApp   => handlers.reporter(r, useCompileArgs)
         case b: ReporterBlock => handlers.reporter(b, useCompileArgs)
-        case c: CommandBlock  => s"() => { ${handlers.commands(c)} }"
+        case c: CommandBlock  => s"() => { ${handlers.blockCommands(app, c)} }"
         case _                => handlers.reporter(arg, useCompileArgs)
       }
 
@@ -194,23 +210,23 @@ trait ReporterPrims extends PrimUtils {
       case _: prim._or  => makeInfixBoolOp("||")
 
       // Agentset filtering
-      case _: prim.etc._all      => s"PrimChecks.agentset.all(${sourceInfo.start}, ${sourceInfo.end}, ${args.makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._maxnof   => s"PrimChecks.agentset.maxNOf(${sourceInfo.start}, ${sourceInfo.end}, ${args.makeCheckedOp(1)}, ${args.makeCheckedOp(0)}, ${handlers.fun(r.args(2), true)})"
-      case _: prim.etc._maxoneof => s"PrimChecks.agentset.maxOneOf(${args.makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._minnof   => s"PrimChecks.agentset.minNOf(${sourceInfo.start}, ${sourceInfo.end}, ${args.makeCheckedOp(1)}, ${args.makeCheckedOp(0)}, ${handlers.fun(r.args(2), true)})"
-      case _: prim.etc._minoneof => s"PrimChecks.agentset.minOneOf(${args.makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim._of           => s"PrimChecks.agentset.of(${args.makeCheckedOp(1)}, ${handlers.fun(r.args(0), isReporter = true)})"
-      case _: prim.etc._sorton   => s"PrimChecks.agentset.sortOn(${sourceInfo.start}, ${sourceInfo.end}, ${args.makeCheckedOp(1)}, ${handlers.fun(r.args(0), true)})"
-      case _: prim._with         => s"PrimChecks.agentset.with(${sourceInfo.start}, ${sourceInfo.end}, ${args.makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._withmax  => s"PrimChecks.agentset.withMax(${args.makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._withmin  => s"PrimChecks.agentset.withMin(${args.makeCheckedOp(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._all      => s"PrimChecks.agentset.all(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: prim.etc._maxnof   => s"PrimChecks.agentset.maxNOf(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 2, args.makeCheckedOp(1))}, ${args.makeCheckedOp(0)}, ${handlers.blockFun(r, r.args(2), true)})"
+      case _: prim.etc._maxoneof => s"PrimChecks.agentset.maxOneOf(${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: prim.etc._minnof   => s"PrimChecks.agentset.minNOf(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 2, args.makeCheckedOp(1))}, ${args.makeCheckedOp(0)}, ${handlers.blockFun(r, r.args(2), true)})"
+      case _: prim.etc._minoneof => s"PrimChecks.agentset.minOneOf(${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: prim._of           => s"PrimChecks.agentset.of(${checkedAgents(r, 0, args.makeCheckedOp(1))}, ${handlers.blockFun(r, r.args(0), isReporter = true)})"
+      case _: prim.etc._sorton   => s"PrimChecks.agentset.sortOn(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 0, args.makeCheckedOp(1))}, ${handlers.blockFun(r, r.args(0), true)})"
+      case _: prim._with         => s"PrimChecks.agentset.with(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: prim.etc._withmax  => s"PrimChecks.agentset.withMax(${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: prim.etc._withmin  => s"PrimChecks.agentset.withMin(${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
 
-      case _: Optimizer._countotherwith => s"PrimChecks.agentset.countOtherWith(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: Optimizer._countwith      => s"PrimChecks.agentset.countWith(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: Optimizer._otherwith      => s"PrimChecks.agentset.otherWith(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: Optimizer._anyotherwith   => s"PrimChecks.agentset.anyOtherWith(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: Optimizer._oneofwith      => s"PrimChecks.agentset.oneOfWith(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)}, ${handlers.fun(r.args(1), true)})"
-      case _: Optimizer._anywith        => s"PrimChecks.agentset.anyWith(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)}, ${handlers.fun(r.args(1), true)})"
+      case _: Optimizer._countotherwith => s"PrimChecks.agentset.countOtherWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: Optimizer._countwith      => s"PrimChecks.agentset.countWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: Optimizer._otherwith      => s"PrimChecks.agentset.otherWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: Optimizer._anyotherwith   => s"PrimChecks.agentset.anyOtherWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: Optimizer._oneofwith      => s"PrimChecks.agentset.oneOfWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: Optimizer._anywith        => s"PrimChecks.agentset.anyWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
       case o: Optimizer._optimizecount  => s"PrimChecks.agentset.optimizeCount(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)}, ${o.checkValue}, ${o.operator})"
 
       // agentset creators do their own, weird runtime checking with unique error messages, so we don't check their args.
@@ -482,7 +498,7 @@ trait CommandPrims extends PrimUtils {
             failCompilation("IFELSE expected a command block here but got a TRUE/FALSE.", cmd.start, cmd.end, cmd.filename)
           }
           val pred      = handlers.reporter(bool)
-          val thenBlock = handlers.commands(cmd)
+          val thenBlock = handlers.blockCommands(s, cmd)
           s"""|if ($pred) {
               |${indented(thenBlock)}
               |}""".stripMargin
@@ -490,7 +506,7 @@ trait CommandPrims extends PrimUtils {
         val elseBlock = if (s.args.length % 2 == 0)
           ""
         else {
-          val elseBlock = handlers.commands(s.args(s.args.length - 1))
+          val elseBlock = handlers.blockCommands(s, s.args(s.args.length - 1))
           s"""|else {
               |${indented(elseBlock)}
               |}""".stripMargin
@@ -516,7 +532,7 @@ trait CommandPrims extends PrimUtils {
       val other                = args.get(0)
       // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
       val nonEmptyCommandBlock = s.args(1).asInstanceOf[CommandBlock].statements.stmts.nonEmpty
-      val body                 = handlers.fun(s.args(1))
+      val body                 = handlers.blockFun(s, s.args(1))
       addAskContext(s"LinkPrims.$name($other, ${jsString(fixBN(breedName))})", body, nonEmptyCommandBlock)
     }
 
@@ -529,7 +545,7 @@ trait CommandPrims extends PrimUtils {
           case x: prim._createorderedturtles => x.breedName
           case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
         }
-      val body = handlers.fun(s.args(1))
+      val body = handlers.blockFun(s, s.args(1))
       addAskContext(s"world.turtleManager.$name($n, ${jsString(breed)})", body, true)
     }
 
@@ -547,7 +563,7 @@ trait CommandPrims extends PrimUtils {
 
     def generateSprout(breedName: String): String = {
       val n    = args.get(0)
-      val body = handlers.fun(s.args(1))
+      val body = handlers.blockFun(s, s.args(1))
       val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
       val sprouted = s"SelfManager.self().sprout($n, ${jsString(trueBreedName)})"
       addAskContext(sprouted, body, true)
@@ -561,7 +577,7 @@ trait CommandPrims extends PrimUtils {
 
     def generateHatch(breedName: String): String = {
       val n = args.get(0)
-      val body = handlers.fun(s.args(1))
+      val body = handlers.blockFun(s, s.args(1))
       addAskContext(s"SelfManager.self().hatch($n, ${jsString(breedName)})", body, true)
     }
 
@@ -601,7 +617,7 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._while            => generateWhile
       case _: prim.etc._if               => generateIf
       case _: prim.etc._ifelse           => generateIfElse
-      case _: prim._ask                  => addAskContext(args.makeCheckedOp(0), handlers.fun(s.args(1)), true)
+      case _: prim._ask                  => addAskContext(askableAgents(s, args.makeCheckedOp(0)), handlers.blockFun(s, s.args(1)), true)
       case p: prim._carefully            => generateCarefully(p)
       case _: prim._createturtles        => generateCreateTurtles(ordered = false)
       case _: prim._createorderedturtles => generateCreateTurtles(ordered = true)
@@ -642,7 +658,7 @@ trait CommandPrims extends PrimUtils {
 
 
       case _: prim.etc._withlocalrandomness =>
-        s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
+        s"workspace.rng.withClone(function() { ${handlers.blockCommands(s, s.args(0))} })"
 
       case r: prim._run =>
         val argString = args.maybeConciseVarArgs(useCompileArgs, "RUN", r.syntax)

@@ -5,6 +5,7 @@ package org.nlogo.tortoise.compiler
 import JsOps.{ jsArrayString, jsFunction }
 
 import org.nlogo.core.{
+  Application,
   AstNode,
   CommandBlock,
   Dump,
@@ -29,8 +30,22 @@ trait Handlers extends EveryIDProvider {
     jsFunction(body = body)
   }
 
+  def blockCommands(app: Application, node: AstNode, useCompileArgs: Boolean = true)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
+    commands(node, useCompileArgs)(using compilerFlags, compilerContext.inBlockOf(app), procContext)
+
+  def blockReporter(app: Application, node: AstNode, useCompileArgs: Boolean = true)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
+    reporter(node, useCompileArgs)(using compilerFlags, compilerContext.inBlockOf(app), procContext)
+
+  def blockFun(app: Application, node: AstNode, isReporter: Boolean = false)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
+    fun(node, isReporter)(using compilerFlags, compilerContext.inBlockOf(app), procContext)
+
   def task(lambda: Lambda, node: AstNode)
           (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
+    val bodyContext = AgentContext.contextOfAnonymousProcedure(lambda)
+    implicit val lambdaContext: CompilerContext = compilerContext.copy(agentContext = bodyContext)
     val compileTimeArgs  = lambda.argumentNames.map(JSIdentProvider.apply)
     val useCompileArgs   = !lambda.synthetic || !lambda.arguments.isVariadic
     val (primName, body) = lambda match {
@@ -39,7 +54,7 @@ trait Handlers extends EveryIDProvider {
       case _ =>
         CompilerErrors.failCompilation(s"Unknown lambda type (not reporter or command): ${node.toString}", node.start, node.end, node.filename)
     }
-    val fullBody = if (compileTimeArgs.length == 0) {
+    val checkedArgs = if (compileTimeArgs.length == 0) {
       body
     } else {
       val sourceStart = node.sourceLocation.start
@@ -47,6 +62,7 @@ trait Handlers extends EveryIDProvider {
       s"""PrimChecks.procedure.runArgCountCheck('$primName', $sourceStart, $sourceEnd, ${compileTimeArgs.length}, arguments.length);
           |$body""".stripMargin
     }
+    val fullBody = AgentContext.guardAnonymousProcedure(bodyContext, primName, node, checkedArgs)
     jsFunction(args = compileTimeArgs, body = fullBody)
   }
 
@@ -64,7 +80,10 @@ trait Handlers extends EveryIDProvider {
 
         case statements: Statements =>
           val generatedJS =
-            statements.stmts.map(prims.generateCommand(_, useCompileArgs)(using compilerFlags, context, procContext))
+            statements.stmts.map( (stmt) => {
+              val js = prims.generateCommand(stmt, useCompileArgs)(using compilerFlags, context, procContext)
+              AgentContext.guardStatement(stmt, js, context.agentContext)
+            })
               .filter(_.nonEmpty)
               .mkString("\n")
           generatedJS

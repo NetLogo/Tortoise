@@ -139,8 +139,7 @@ private[tortoise] trait CommandTests extends TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
-  ) ++ incErrorDetectCommands ++ preferExtensionsCommands ++ headlessCommands ++ awaitingFixCommands ++
-    agentContextCommands
+  ) ++ incErrorDetectCommands ++ preferExtensionsCommands ++ headlessCommands ++ awaitingFixCommands
 }
 
 // Split by test-file source so CI can run the two sets as separate jobs.  Both names end in `TestCommands` so
@@ -159,14 +158,11 @@ private[tortoise] object Freebies {
   def headlessCommands         = asFreebieMap(        headlessCommandNames,  headlessCommandStr)
   def preferExtensionsCommands = asFreebieMap(preferExtensionsCommandNames, preferExtensionsStr)
   def awaitingFixCommands      = asFreebieMap(     awaitingFixCommandNames,      awaitingFixStr)
-  def agentContextCommands     = asFreebieMap(    agentContextCommandNames,     agentContextStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
   private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
   private val incErrorDetectCommandNames = Seq(
-    "Ask::AskAllTurtles",
-    "Ask::AskAllPatches",
     "Breeds::SetBreedToNonBreed",
     "ComparingAgents::ComparingLinks",
     "DeadTurtles::DeadTurtles1",
@@ -174,17 +170,11 @@ private[tortoise] object Freebies {
     "DeadTurtles::DeadTurtles6",
     "Face::FaceAgentset",
     "Interaction::Interaction5",
-    "Interaction::PatchTriesTurtleReporter",
     "Links::LinksNotAllowed",
     "Links::LinkNotAllowed_2D",
     "Links::LinkCreationTypeChecking_2D",
     "MoveTo::MoveTo_2D",
     "Random::OneOfWithAgentSets",
-    "Sort::SortByBadReporter",
-    "TypeChecking::AgentClassChecking1",
-    "TypeChecking::AgentClassChecking3a",
-    "TypeChecking::AgentClassChecking3b",
-    "TypeChecking::RunRetainsAgentContext"
   )
 
   private val headlessCommandStr = "This test relies of behavior that only makes sense in Headless"
@@ -199,17 +189,6 @@ private[tortoise] object Freebies {
     , "ImportPatchesAndDrawing::ImportPcolorsTopologyTest_2D"
     , "ImportWorld::RoundTripWithUTF8Chars"
     )
-
-  // Remove names from this list in the same commit that makes them pass -- `withFixture` fails a test whose freebie
-  // turned out to be unnecessary.  -Jeremy B August 2026
-  private val agentContextStr = "Agent context checking is not implemented (see CONTEXT_RUNTIME_TYPE_CHECKING_PLAN.md)"
-  private val agentContextCommandNames = Seq(
-    "Tortoise::LambdaContextForeach",
-    "Tortoise::LambdaContextMap",
-    "Tortoise::LambdaContextRunResult",
-    "Tortoise::LambdaContextProcedureCall",
-    "Tortoise::ContextMessageMultipleKinds"
-  )
 
   private val awaitingFixStr = "Known issue waiting on a proper fix or implementation"
   private val awaitingFixCommandNames =

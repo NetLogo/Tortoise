@@ -47,7 +47,7 @@ module.exports =
         at._myself  = at._self
         at._self    = agent
         # The observer is the number 0 rather than an agent, so it carries no bit of its own.  -Jeremy B August 2026
-        at._selfBit = if agent?.agentBit? then agent.agentBit else AgentKinds.Observer
+        at._selfBit = if agent is 0 then AgentKinds.Observer else agent.agentBit
 
         try f()
         finally

@@ -95,8 +95,8 @@ case class Arguments(handlers: Handlers, a: Application, sourceInfo: SourceInfor
   def get(i: Int): String =
     a.args(i) match {
       case r: ReporterApp   => handlers.reporter(r)
-      case b: ReporterBlock => handlers.reporter(b)
-      case c: CommandBlock  => handlers.commands(c)
+      case b: ReporterBlock => handlers.blockReporter(a, b)
+      case c: CommandBlock  => handlers.blockCommands(a, c)
       case _ =>
         CompilerErrors.failCompilation("Unexpected expression in argument list.", a.start, a.end, a.filename)
     }
@@ -104,7 +104,7 @@ case class Arguments(handlers: Handlers, a: Application, sourceInfo: SourceInfor
   def all: Seq[String] =
     a.args.collect {
       case r: ReporterApp  => handlers.reporter(r)
-      case c: CommandBlock => s"() => { ${handlers.commands(c)} }"
+      case c: CommandBlock => s"() => { ${handlers.blockCommands(a, c)} }"
     }
 
   def commas: String =

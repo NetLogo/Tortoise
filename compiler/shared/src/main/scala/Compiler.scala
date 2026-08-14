@@ -219,10 +219,12 @@ class Compiler {
         defs.head
     )
 
-    implicit val context     = new CompilerContext(code)
+    implicit val context =
+      new CompilerContext(code).copy(agentContext = AgentContext.fromAgentClassString(pd.procedure.agentClassString))
     implicit val procContext = ProcedureContext(false, Seq())
     if (isReporter) {
-      handlers.reporter(pd.statements.stmts(0).args(0))
+      // The last statement is the `report`; anything before it is the agent-context hint.
+      handlers.reporter(pd.statements.stmts.last.args(0))
     } else {
       handlers.commands(pd.statements)
     }
@@ -249,7 +251,6 @@ class Compiler {
     val footer  = SourceWrapping.getFooter(commands)
     val wrapped = s"$header$logo$footer"
 
-    implicit val context     = new CompilerContext(wrapped)
     implicit val procContext = ProcedureContext(!raw, Seq())
 
     val (defs, _) =
@@ -266,6 +267,9 @@ class Compiler {
       else
         defs.head
     )
+
+    implicit val context =
+      new CompilerContext(wrapped).copy(agentContext = AgentContext.fromAgentClassString(pd.procedure.agentClassString))
 
     if (commands)
       handlers.commands(pd.statements)

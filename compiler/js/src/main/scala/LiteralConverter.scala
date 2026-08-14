@@ -11,7 +11,7 @@ import scala.scalajs.js
 
 import
   org.nlogo.{ core, parse },
-    core.{ LiteralParser, LogoList, Nobody => NlogoNobody },
+    core.{ AgentKind, LiteralParser, LogoList, Nobody => NlogoNobody, SourceWrapping },
     parse.CompilerUtilities
 
 import
@@ -57,13 +57,23 @@ object LiteralConverter {
   }
 
   @JSExport
-  def compileRunString(compilationRequest: NativeJson, runString: String, isRunResult: Boolean, procVars: js.Array[String]): String = {
+  def compileRunString(compilationRequest: NativeJson, runString: String, isRunResult: Boolean,
+                       procVars: js.Array[String], agentKind: String): String = {
     // The strings to run can end in comments like `; blah blah`, so the `\n` before the `end`s are necessary.
     val netLogoArgs = procVars.toList.mkString(" ")
+    // Desktop compiles a `run` string in the context of whoever is running it, so a turtle-only prim in a patch's `run`
+    // string is a compile error there.  The hint prim is what tells the front end which context that is.
+    // -Jeremy B August 2026
+    val hint = SourceWrapping.agentKindHint(agentKind match {
+      case "turtle" => AgentKind.Turtle
+      case "patch"  => AgentKind.Patch
+      case "link"   => AgentKind.Link
+      case _        => AgentKind.Observer
+    })
     val code = if (isRunResult)
-      s"to-report __run [$netLogoArgs] report ($runString\n) end"
+      s"to-report __run [$netLogoArgs] $hint report ($runString\n) end"
     else
-      s"to __run [$netLogoArgs] $runString\nend"
+      s"to __run [$netLogoArgs] $hint $runString\nend"
 
     val jsV = for {
       tortoiseReq   <- JsonReader.read[JsObject](toTortoise(compilationRequest)).leftMap(_.map(s => FailureString(s)))

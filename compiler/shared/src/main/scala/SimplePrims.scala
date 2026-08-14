@@ -295,6 +295,9 @@ object SimplePrims {
         case s: prim._stop             => s"return PrimChecks.procedure.stop(${s.token.sourceLocation.start}, ${s.token.sourceLocation.end})"
         case _: prim.etc._die          => "return SelfManager.self().die()"
         case _: prim.etc._observercode => ""
+        case _: prim.etc._turtlecode   => ""
+        case _: prim.etc._patchcode    => ""
+        case _: prim.etc._linkcode     => ""
         case _: prim.etc._hideturtle   => "SelfManager.self().hideTurtle(true)"
         case _: prim.etc._showturtle   => "SelfManager.self().hideTurtle(false)"
 

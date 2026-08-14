@@ -78,7 +78,7 @@ object Optimizer {
 
   class _crtfast(val breedName: String) extends Command {
     override def syntax: Syntax =
-      Syntax.commandSyntax(agentClassString = "-T--")
+      Syntax.commandSyntax(agentClassString = "O---")
   }
 
   object CrtFastTransformer extends AstTransformer {
@@ -93,7 +93,7 @@ object Optimizer {
 
   class _crofast(val breedName: String) extends Command {
     override def syntax: Syntax =
-      Syntax.commandSyntax(agentClassString = "-T--")
+      Syntax.commandSyntax(agentClassString = "O---")
   }
 
   object CroFastTransformer extends AstTransformer {
@@ -178,7 +178,7 @@ object Optimizer {
 
   class _countotherwith extends Reporter {
     override def syntax: Syntax =
-      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.NumberType)
+      Syntax.reporterSyntax(blockAgentClassString = Some("?"), right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.NumberType)
   }
 
   object CountOtherWithTransformer extends AstTransformer {
@@ -193,7 +193,7 @@ object Optimizer {
 
   class _countwith extends Reporter {
     override def syntax: Syntax =
-      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.NumberType)
+      Syntax.reporterSyntax(blockAgentClassString = Some("?"), right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.NumberType)
   }
 
   object CountWithTransformer extends AstTransformer {
@@ -208,7 +208,7 @@ object Optimizer {
 
   class _oneofwith extends Reporter {
     override def syntax: Syntax =
-      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentType | Syntax.NobodyType)
+      Syntax.reporterSyntax(blockAgentClassString = Some("?"), right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentType | Syntax.NobodyType)
   }
 
   object OneOfWithTransformer extends AstTransformer {
@@ -223,7 +223,7 @@ object Optimizer {
 
   class _otherwith extends Reporter {
     override def syntax: Syntax =
-      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentsetType | Syntax.NobodyType)
+      Syntax.reporterSyntax(blockAgentClassString = Some("?"), right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentsetType | Syntax.NobodyType)
   }
 
   object OtherWithTransformer extends AstTransformer {
@@ -248,7 +248,7 @@ object Optimizer {
 
   class _anyotherwith extends Reporter {
     override def syntax: Syntax =
-      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.BooleanType)
+      Syntax.reporterSyntax(blockAgentClassString = Some("?"), right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.BooleanType)
   }
 
   object AnyOtherWithTransformer extends AstTransformer {
@@ -263,7 +263,7 @@ object Optimizer {
 
   class _anywith extends Reporter {
     override def syntax: Syntax =
-      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.BooleanType)
+      Syntax.reporterSyntax(blockAgentClassString = Some("?"), right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.BooleanType)
   }
 
   // _any(_with) => _anywith

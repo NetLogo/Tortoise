@@ -4,6 +4,7 @@ class WorldConfig
   # (() => Unit) => WorldConfig
   constructor: (@resizeWorld = (->)) ->
 
+AgentKinds     = require('./core/agentkinds')
 BreedManager   = require('./core/breedmanager')
 Dump           = require('./dump')
 EvalPrims      = require('./prim/evalprims')
@@ -99,7 +100,7 @@ module.exports =
     printPrims      = new PrintPrims(printConfig, dump)
     userDialogPrims = new UserDialogPrims(dialogConfig)
 
-    evalPrims      = new EvalPrims(code, widgets)
+    evalPrims      = new EvalPrims(code, widgets, ( -> AgentKinds.kindName(selfManager.selfBit()) ))
     procedurePrims = new ProcedurePrims(evalPrims, plotManager, rng)
     prims          = new Prims(dump, Hasher, rng, world, printPrims)
     randomPrims    = new RandomPrims(rng)

@@ -7,3 +7,28 @@
 Smoke
   2 + 2 => 4
   netlogo-web? => true
+
+# Agent-context cases that desktop's own language tests do not pin down.  Desktop's behavior here was
+# recorded by docking against HeadlessWorkspace (see CONTEXT_RUNTIME_TYPE_CHECKING_PLAN.md, phase 0);
+# these should move to the NetLogo repo once they pass here.
+
+LambdaContextForeach
+  O> foreach [1] [ x -> fd x ] => ERROR this code can't be run by the observer, only by a turtle
+
+LambdaContextMap
+  O> __ignore map [ x -> heading ] [1] => ERROR this code can't be run by the observer, only by a turtle
+
+LambdaContextRunResult
+  O> __ignore runresult [ -> heading ] => ERROR this code can't be run by the observer, only by a turtle
+
+LambdaContextProcedureCall
+  to t-only fd 1 end
+  O> run [ -> t-only ] => ERROR this code can't be run by the observer, only by a turtle
+
+# NEIGHBORS is turtle/patch, and desktop drops the "only by _" clause when more than one kind is allowed.
+ContextMessageMultipleKinds
+  O> run [ -> __ignore neighbors ] => ERROR this code can't be run by the observer
+
+# The observer must be named "the observer", not by the type of `SelfManager.self()` (the number 0).
+ContextMessageObserverName
+  O> run [ -> __ignore link-length ] => ERROR this code can't be run by the observer, only by a link

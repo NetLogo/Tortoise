@@ -16,19 +16,31 @@ object LiteralConverterTest extends TestSuite {
 
     "works with simple code"-{
       val compilationRequest = modelToCompilationRequest(validModel)
-      val result = LiteralConverter.compileRunString(compilationRequest, "crt 100 [ fd 100 ]", false, js.Array())
-      val expected = """(function() { var R = ProcedurePrims.ask(world.turtleManager.createTurtles(100, ""), function() { SelfManager.self().fd(100); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(12, 15, R); return R; } })"""
+      val result = LiteralConverter.compileRunString(compilationRequest, "crt 100 [ fd 100 ]", false, js.Array(), "observer")
+      val expected = """(function() { var R = ProcedurePrims.ask(world.turtleManager.createTurtles(100, ""), function() { SelfManager.self().fd(100); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(27, 30, R); return R; } })"""
       assert(expected == result)
     }
 
     "translates expected compiler error gracefully"-{
       val compilationRequest = modelToCompilationRequest(validModel)
       try {
-        LiteralConverter.compileRunString(compilationRequest, "set s 100", false, js.Array())
+        LiteralConverter.compileRunString(compilationRequest, "set s 100", false, js.Array(), "observer")
       } catch {
         case ex: LiteralConverter.WrappedException =>
           val result = ex.message
           val expected = "Nothing named S has been defined."
+          assert(expected == result)
+      }
+    }
+
+    "compiles the run string in the caller's agent context"-{
+      val compilationRequest = modelToCompilationRequest(validModel)
+      try {
+        LiteralConverter.compileRunString(compilationRequest, "hatch 1", false, js.Array(), "patch")
+      } catch {
+        case ex: LiteralConverter.WrappedException =>
+          val result = ex.message
+          val expected = "You can't use HATCH in a patch context, because HATCH is turtle-only."
           assert(expected == result)
       }
     }

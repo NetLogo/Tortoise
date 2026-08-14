@@ -1,11 +1,14 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 AbstractAgentSet     = require('./abstractagentset')
+AgentKinds           = require('./agentkinds')
 DeadSkippingIterator = require('./structure/deadskippingiterator')
 JSType               = require('util/jstype')
 
 module.exports =
   class LinkSet extends AbstractAgentSet
+
+    agentBit: AgentKinds.Link # Int
 
     # [T <: Turtle] @ ((() => Array[T])|Array[T], World, String) => LinkSet
     constructor: (agents, world, specialName) ->

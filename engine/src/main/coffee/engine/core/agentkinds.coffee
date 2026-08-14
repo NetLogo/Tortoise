@@ -13,8 +13,15 @@ All = Observer | Turtle | Patch | Link
 
 allBits = [Observer, Turtle, Patch, Link]
 
+# The names the compiler knows these by, for wrapping code that has to be compiled for a specific kind.
+names = new Map([[Observer, "observer"], [Turtle, "turtle"], [Patch, "patch"], [Link, "link"]])
+
+# (Int) => String
+kindName = (bit) ->
+  names.get(bit)
+
 # (Int) => Array[Int]
 splitMask = (mask) ->
   allBits.filter( (bit) -> (mask & bit) isnt 0 )
 
-module.exports = { Observer, Turtle, Patch, Link, All, splitMask }
+module.exports = { Observer, Turtle, Patch, Link, All, kindName, splitMask }

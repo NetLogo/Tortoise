@@ -22,6 +22,24 @@ class ContextChecks
       @_raise(mask, selfBit, primName, sourceStart, sourceEnd)
     return
 
+  # (Int, AgentSet|Agent|Any, String, Int, Int) => AgentSet|Agent|Any
+  assertAgentSetKind: (mask, agents, primName, sourceStart, sourceEnd) ->
+    # Anything that isn't an agent or agentset is somebody else's error to report.
+    if agents?.agentBit? and (mask & agents.agentBit) is 0
+      @_raise(mask, agents.agentBit, primName, sourceStart, sourceEnd)
+    agents
+
+  # `ask turtles` and `ask patches` are observer-only, no matter what the block does.
+  # (AgentSet|Agent|Any, Int, Int) => AgentSet|Agent|Any
+  assertAskAllowed: (agents, sourceStart, sourceEnd) ->
+    if @selfManager.selfBit() isnt AgentKinds.Observer and agents?.getSpecialName?
+      switch agents.getSpecialName()
+        when "turtles"
+          @validator.error('ask', sourceStart, sourceEnd, 'Only the observer can ASK the set of all turtles.')
+        when "patches"
+          @validator.error('ask', sourceStart, sourceEnd, 'Only the observer can ASK the set of all patches.')
+    agents
+
   # (Int, Int, String, Int, Int) => Unit
   _raise: (mask, selfBit, primName, sourceStart, sourceEnd) ->
     actual  = @kindName(selfBit)
