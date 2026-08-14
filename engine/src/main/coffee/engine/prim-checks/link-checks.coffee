@@ -2,6 +2,8 @@
 
 { fold } = require('brazierjs/maybe')
 
+AgentKinds = require('engine/core/agentkinds')
+
 { TowardsInterrupt } = require('util/interrupts')
 
 # (() => Agent, Validator) => (String, Map[Any, String]) => (Any) => Unit
@@ -22,8 +24,8 @@ class LinkChecks
 
   _setterChecks: null # Map[String, (Any) => Unit]
 
-  # (Validator, () => Number|Agent, SelfPrims)
-  constructor: (@validator, @getSelf, @selfPrims) ->
+  # (Validator, () => Number|Agent, SelfPrims, ContextChecks)
+  constructor: (@validator, @getSelf, @selfPrims, @context) ->
 
     @_setterChecks = new Map()
 
@@ -55,10 +57,16 @@ class LinkChecks
 
   # (Int, Int) => Int
   linkHeading: (sourceStart, sourceEnd) ->
+    @context.assertKind(AgentKinds.Link, 'link-heading', sourceStart, sourceEnd)
     heading = @selfPrims.linkHeading()
     if heading is TowardsInterrupt
       @validator.error('link-heading', sourceStart, sourceEnd, 'there is no heading of a link whose endpoints are in the same position')
     heading
+
+  # (Int, Int) => Number
+  linkLength: (sourceStart, sourceEnd) ->
+    @context.assertKind(AgentKinds.Link, 'link-length', sourceStart, sourceEnd)
+    @selfPrims.linkLength()
 
   # (Int, Int, String, Any) => Unit
   setVariable: (sourceStart, sourceEnd, name, value) ->

@@ -127,6 +127,24 @@ bundle = {
 , 'The point [ _ , _ ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.': (x, y) ->
   "The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions."
 
+, 'this code can_t be run by _': (kind) ->
+    "this code can't be run by #{kind}"
+
+, 'this code can_t be run by _, only by _': (kind, allowed) ->
+    "this code can't be run by #{kind}, only by #{allowed}"
+
+, 'the observer': () ->
+    "the observer"
+
+, 'a turtle': () ->
+    "a turtle"
+
+, 'a patch': () ->
+    "a patch"
+
+, 'a link': () ->
+    "a link"
+
 , 'Cannot move turtle beyond the world_s edge.': () ->
   "Cannot move turtle beyond the world's edge."
 

@@ -6,6 +6,7 @@ Ride    = {}
 Follow  = {}
 Watch   = {}
 
+AgentKinds      = require('./agentkinds')
 agentToInt      = require('./agenttoint')
 { checks }      = require('./typechecker')
 VariableManager = require('./structure/variablemanager')
@@ -60,6 +61,8 @@ module.exports.Perspective = {
 }
 
 module.exports.Observer = class Observer
+
+    agentBit: AgentKinds.Observer # Int
 
     id: 0 # Number
 

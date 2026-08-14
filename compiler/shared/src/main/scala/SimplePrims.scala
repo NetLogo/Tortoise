@@ -100,6 +100,7 @@ object SimplePrims {
 
         // Link
         case _: prim.etc._linkheading => "PrimChecks.link.linkHeading"
+        case _: prim.etc._linklength  => "PrimChecks.link.linkLength"
 
         // Task
         case _: prim.etc._map     => "PrimChecks.task.map"
@@ -176,7 +177,6 @@ object SimplePrims {
       PartialFunction.condOpt(r) {
 
         // SelfPrims
-        case _: prim.etc._linklength  => "SelfPrims.linkLength"
         case _: prim._other           => "SelfPrims.other"
 
         // Optimizations

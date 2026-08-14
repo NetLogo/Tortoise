@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 AbstractAgentSet  = require('./abstractagentset')
+AgentKinds        = require('./agentkinds')
 ColorModel        = require('engine/core/colormodel')
 TurtleLinkManager = require('./turtlelinkmanager')
 TurtleSet         = require('./turtleset')
@@ -33,6 +34,8 @@ module.exports =
     # type IDSet              = Object[ID, Boolean]
     # type RegLineDrawFunc    = (Number, Number, Number, Number, Boolean, Boolean, RGB, Number, String, String) => Unit
     # type RegTurtleStampFunc = (Number, Number, Number, Number, RGB, String, String) => Unit
+
+    agentBit: AgentKinds.Turtle # Int
 
     _breed:            undefined # Breed
     _breedShape:       undefined # String

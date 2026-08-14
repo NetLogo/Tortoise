@@ -7,6 +7,7 @@
 
 AgentSetChecks   = require('./agentset-checks')
 ColorChecks      = require('./color-checks')
+ContextChecks    = require('./context-checks')
 ControlChecks    = require('./control-checks')
 LinkChecks       = require('./link-checks')
 ListChecks       = require('./list-checks')
@@ -29,13 +30,14 @@ class Checker
     @validator  = new Validator(i18nBundle, dumper)
     @agentset   = new AgentSetChecks(@validator, dumper, miscPrims, getSelf)
     @color      = new ColorChecks(@validator)
+    @context    = new ContextChecks(@validator, i18nBundle, world.selfManager)
     @list       = new ListChecks(@validator, dumper, listPrims, stringPrims)
     @math       = new MathChecks(@validator, randomPrims)
     @procedure  = new ProcedureChecks(@validator, procedurePrims)
     @turtle     = new TurtleChecks( @validator, getSelf, world.turtleManager
                                  , world.breedManager)
     @patch      = new PatchChecks(@validator, getSelf)
-    @link       = new LinkChecks(@validator, getSelf, selfPrims)
+    @link       = new LinkChecks(@validator, getSelf, selfPrims, @context)
     @task       = new TaskChecks(@validator)
     @control    = new ControlChecks(@validator)
     @inspection = new InspectionChecks(@validator, inspectionPrims)

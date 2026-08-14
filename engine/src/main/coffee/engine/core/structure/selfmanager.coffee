@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+AgentKinds = require('engine/core/agentkinds')
+
 { exceptionFactory: exceptions } = require('util/exception')
 
 module.exports =
@@ -7,17 +9,23 @@ module.exports =
 
     # type SelfType = Number|Agent // The type that `self` or `myself` could be at any time
 
-    _self:   undefined # SelfType
-    _myself: undefined # SelfType
+    _self:    undefined # SelfType
+    _myself:  undefined # SelfType
+    _selfBit: undefined # Int
 
     # () => SelfManager
     constructor: ->
-      @_self   = 0
-      @_myself = 0
+      @_self    = 0
+      @_myself  = 0
+      @_selfBit = AgentKinds.Observer
 
     # () => SelfType
     self: =>
       @_self
+
+    # () => Int
+    selfBit: =>
+      @_selfBit
 
     # () => SelfType
     myself: ->
@@ -34,11 +42,15 @@ module.exports =
       (agent) ->
         oldMyself = at._myself
         oldAgent  = at._self
+        oldBit    = at._selfBit
 
-        at._myself = at._self
-        at._self   = agent
+        at._myself  = at._self
+        at._self    = agent
+        # The observer is the number 0 rather than an agent, so it carries no bit of its own.  -Jeremy B August 2026
+        at._selfBit = if agent?.agentBit? then agent.agentBit else AgentKinds.Observer
 
         try f()
         finally
-          at._self   = oldAgent
-          at._myself = oldMyself
+          at._self    = oldAgent
+          at._myself  = oldMyself
+          at._selfBit = oldBit

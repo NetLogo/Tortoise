@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 AbstractAgentSet = require('./abstractagentset')
+AgentKinds       = require('./agentkinds')
 ColorModel       = require('./colormodel')
 linkCompare      = require('./structure/linkcompare')
 VariableManager  = require('./structure/variablemanager')
@@ -24,6 +25,8 @@ module.exports =
   class Link
 
     # type RegLinkStampFunc = (Number, Number, Number, Number, Number, Number, Number, RGB, String, Number, String) => Unit
+
+    agentBit: AgentKinds.Link # Int
 
     _breed:            undefined # Breed
     _name:             undefined # String

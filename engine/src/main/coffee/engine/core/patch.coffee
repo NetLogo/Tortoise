@@ -1,5 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+AgentKinds      = require('./agentkinds')
 TurtleSet       = require('./turtleset')
 { checks }      = require('./typechecker')
 VariableManager = require('./structure/variablemanager')
@@ -14,6 +15,8 @@ Comparator      = require('util/comparator')
 
 module.exports =
   class Patch
+
+    agentBit: AgentKinds.Patch # Int
 
     _turtles:    undefined # Array[Turtle]
     _varManager: undefined # VariableManager
