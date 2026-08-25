@@ -101,7 +101,7 @@ module.exports =
     userDialogPrims = new UserDialogPrims(dialogConfig)
 
     evalPrims      = new EvalPrims(code, widgets, ( -> AgentKinds.kindName(selfManager.selfBit()) ))
-    procedurePrims = new ProcedurePrims(evalPrims, plotManager, rng)
+    procedurePrims = new ProcedurePrims(evalPrims, plotManager, rng, selfManager)
     prims          = new Prims(dump, Hasher, rng, world, printPrims)
     randomPrims    = new RandomPrims(rng)
     selfPrims      = new SelfPrims(selfManager.self)

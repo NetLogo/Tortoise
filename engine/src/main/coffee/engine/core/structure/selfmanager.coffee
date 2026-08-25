@@ -34,6 +34,25 @@ module.exports =
       else
         throw exceptions.runtime("There is no agent for MYSELF to refer to.", "myself")
 
+    # Desktop runs plot code as a fresh job over `world.observers` (`Evaluator.ProcedureRunner.run`), so it is the
+    # observer that runs it no matter who called `update-plots`.  `myself` goes away with it, as it would in any new
+    # job.  -Jeremy B August 2026
+    # [T] @ (() => T) => T
+    askObserver: (f) =>
+      oldMyself = @_myself
+      oldAgent  = @_self
+      oldBit    = @_selfBit
+
+      @_myself  = 0
+      @_self    = 0
+      @_selfBit = AgentKinds.Observer
+
+      try f()
+      finally
+        @_self    = oldAgent
+        @_myself  = oldMyself
+        @_selfBit = oldBit
+
     # Switch from letting CoffeeScript bind "this" to handling it manually to avoid creating extra anonymous functions
     # They add GC pressure, causing runtime slowdown - JMB 07/2017
     # [T] @ (() => T) => (Agent) => T

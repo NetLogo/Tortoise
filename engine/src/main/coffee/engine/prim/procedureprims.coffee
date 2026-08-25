@@ -9,7 +9,7 @@ class ProcedurePrims
   _reporters: null # Map[String, Command]
   _stack:     null # ProcedureStack
 
-  constructor: (@evalPrims, @plotManager, @rng) ->
+  constructor: (@evalPrims, @plotManager, @rng, @selfManager) ->
     @_commands  = new Map()
     @_reporters = new Map()
     @_stack     = new ProcedureStack()
@@ -74,7 +74,9 @@ class ProcedurePrims
   runInPlotContext: (plotName, penName, f) ->
     @_stack.startPlot(plotName)
     try
-      @rng.withPlot( () => @plotManager.withTemporaryContext(plotName, penName)(f) )
+      # Plot code is compiled as the observer and desktop runs it as the observer, even when `update-plots` is
+      # called from an `ask` block, so `self` has to be the observer here too.  -Jeremy B August 2026
+      @selfManager.askObserver( () => @rng.withPlot( () => @plotManager.withTemporaryContext(plotName, penName)(f) ) )
     finally
       @_stack.endCall()
 

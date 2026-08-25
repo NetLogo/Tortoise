@@ -22,6 +22,43 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
     ()
   }
 
+  // Desktop runs plot code as a fresh job over `world.observers`, so the observer runs it no matter who called
+  // `update-plots` -- which, unlike `tick`, is not observer-only and so can be called from inside an `ask`.  Plot code
+  // is also compiled as the observer, so if `self` leaked in from the caller the agent-context checks in any lambda
+  // the plot code contains would test against the wrong kind.  -Jeremy B August 2026
+  testPlotting("plot code runs as the observer") { (engine) =>
+    implicit val e = engine
+    setPlot(Plots.ClassPlot.name)
+    val seenSelf = evalJS("""
+      (function() {
+        var seen = "never ran";
+        ProcedurePrims.runInPlotContext('Class Plot', undefined, function() { seen = SelfManager.self(); });
+        return seen;
+      })()
+    """)
+    assertResult(Double.box(0))(seenSelf)
+    ()
+  }
+
+  testPlotting("plot code called from an ask still runs as the observer") { (engine) =>
+    implicit val e = engine
+    setup()
+    setPlot(Plots.ClassPlot.name)
+    val seenSelf = evalJS("""
+      (function() {
+        var seen = "never ran";
+        var oldSelf = null;
+        world.turtles().ask(function() {
+          oldSelf = SelfManager.self();
+          ProcedurePrims.runInPlotContext('Class Plot', undefined, function() { seen = SelfManager.self(); });
+        }, false);
+        return [ (oldSelf === null ? "no turtle ran" : typeof oldSelf), seen ].toString();
+      })()
+    """)
+    assertResult("object,0")(seenSelf)
+    ()
+  }
+
   testPlotting("Nully calls don't explode") { (engine) =>
     implicit val e = engine
     setPlot(Plots.ClassHistogram.name)

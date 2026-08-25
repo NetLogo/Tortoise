@@ -34,6 +34,9 @@ MiniCsvExtensionRows
   mini-csv:to-row temp => "-3,-4,-5"
   mini-csv:from-row mini-csv:to-row temp => [-3 -4 -5]
 
+# These tests below are mostly to check the agent context checking in combination with extension code.  They're not
+# Mini-CSV specific.  -Jeremy B August 2026
+
 ExtensionClearsAll
   extensions [mini-csv]
   globals [x]
@@ -55,6 +58,33 @@ ObserverContextCommand
   O> create-turtles 1
   O> mini-csv:__o-context-command
   T> mini-csv:__o-context-command => COMPILER ERROR You can't use MINI-CSV:__O-CONTEXT-COMMAND in a turtle context, because MINI-CSV:__O-CONTEXT-COMMAND is observer-only.
+
+ExtensionContextDynamicAsk
+  extensions [mini-csv]
+  globals [x ps]
+  O> create-turtles 1
+  O> set ps patches
+  O> ask ps [ set x mini-csv:__t-context-reporter ] => ERROR this code can't be run by a patch, only by a turtle
+
+ExtensionContextDynamicOf
+  extensions [mini-csv]
+  globals [x ps]
+  O> create-turtles 1
+  O> set ps patches
+  O> set x [ mini-csv:__t-context-reporter ] of ps => ERROR this code can't be run by a patch, only by a turtle
+
+ExtensionContextLambda
+  extensions [mini-csv]
+  globals [x]
+  O> create-turtles 1
+  O> __ignore runresult [ -> mini-csv:__t-context-reporter ] => ERROR this code can't be run by the observer, only by a turtle
+  O> ask turtles [ run [ -> mini-csv:__o-context-command ] ] => ERROR this code can't be run by a turtle, only by the observer
+
+ExtensionContextRunString
+  extensions [mini-csv]
+  globals [x]
+  O> create-turtles 1
+  O> ask turtles [ run "mini-csv:__o-context-command" ] => ERROR You can't use MINI-CSV:__O-CONTEXT-COMMAND in a turtle context, because MINI-CSV:__O-CONTEXT-COMMAND is observer-only.
 
 ExtensionGlobalStateExportImport
   extensions [mini-csv export-the import-a]
