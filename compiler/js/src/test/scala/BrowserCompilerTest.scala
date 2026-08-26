@@ -223,24 +223,24 @@ object BrowserCompilerTest extends TestSuite {
       val compiler = new BrowserCompiler
       val reporters = Map(
         "3"                  -> "3",
-        "3 + 1"              -> "PrimChecks.math.plus(51, 52, 3, 1)",
+        "3 + 1"              -> "PrimChecks.math.plus(2, 3, 3, 1)",
         "apples"             -> """world.observer.getGlobal(\"apples\")""",
         "oranges"            -> """world.observer.getGlobal(\"oranges\")""",
-        "3 + apples"         -> """PrimChecks.math.plus(51, 52, 3, PrimChecks.validator.checkArg('+', 51, 52, 1, world.observer.getGlobal(\"apples\")))""",
-        "3 + (bananas 8 10)" -> """PrimChecks.math.plus(51, 52, 3, PrimChecks.validator.checkArg('+', 51, 52, 1, PrimChecks.procedure.callReporter(54, 61, \"bananas\", 8, 10)))""",
+        "3 + apples"         -> """PrimChecks.math.plus(2, 3, 3, PrimChecks.validator.checkArg('+', 2, 3, 1, world.observer.getGlobal(\"apples\")))""",
+        "3 + (bananas 8 10)" -> """PrimChecks.math.plus(2, 3, 3, PrimChecks.validator.checkArg('+', 2, 3, 1, PrimChecks.procedure.callReporter(5, 12, \"bananas\", 8, 10)))""",
 
         "(3 / apples + (bananas 9001 3) > 0) or oranges" ->
-          """(Prims.gt(PrimChecks.math.plus(61, 62, PrimChecks.math.div(52, 53, 3, PrimChecks.validator.checkArg('/', 52, 53, 1, world.observer.getGlobal(\"apples\"))), PrimChecks.validator.checkArg('+', 61, 62, 1, PrimChecks.procedure.callReporter(64, 71, \"bananas\", 9001, 3))), 0) || PrimChecks.validator.checkArg('OR', 85, 87, 2, world.observer.getGlobal(\"oranges\")))""",
+          """(Prims.gt(PrimChecks.math.plus(12, 13, PrimChecks.math.div(3, 4, 3, PrimChecks.validator.checkArg('/', 3, 4, 1, world.observer.getGlobal(\"apples\"))), PrimChecks.validator.checkArg('+', 12, 13, 1, PrimChecks.procedure.callReporter(15, 22, \"bananas\", 9001, 3))), 0) || PrimChecks.validator.checkArg('OR', 36, 38, 2, world.observer.getGlobal(\"oranges\")))""",
 
         "sum [xcor] of turtles" ->
-          """PrimChecks.list.sum(49, 52, PrimChecks.validator.checkArg('SUM', 49, 52, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(54, 58, \"xcor\"); })))""",
+          """PrimChecks.list.sum(0, 3, PrimChecks.validator.checkArg('SUM', 0, 3, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtle.getVariable(5, 9, \"xcor\"); })))""",
 
         "any? turtles" -> "PrimChecks.agentset.any(world.turtles())",
-        "any? apples"  -> """PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 49, 53, 112, world.observer.getGlobal(\"apples\")))""",
+        "any? apples"  -> """PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 0, 4, 112, world.observer.getGlobal(\"apples\")))""",
         "[color] of turtles" ->
-          """PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtleOrLink.getVariable(50, 55, \"color\"); })""",
+          """PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.turtleOrLink.getVariable(1, 6, \"color\"); })""",
         "[color] of apples"  ->
-          """PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 57, 59, 1904, world.observer.getGlobal(\"apples\")), function() { return PrimChecks.turtleOrLink.getVariable(50, 55, \"color\"); })"""
+          """PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 8, 10, 1904, world.observer.getGlobal(\"apples\")), function() { return PrimChecks.turtleOrLink.getVariable(1, 6, \"color\"); })"""
       )
       compiler.fromModel(compReq)
 
@@ -265,10 +265,10 @@ object BrowserCompilerTest extends TestSuite {
           """PrintPrims.show(SelfManager.self)(\"hello!\");""",
 
         "ask turtles [ fd apples ]" ->
-          """var R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self().fd(world.observer.getGlobal(\"apples\")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(33, 36, R); return R; }""",
+          """var R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self().fd(world.observer.getGlobal(\"apples\")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(0, 3, R); return R; }""",
 
         "clear-all reset-ticks create-turtles (bananas 2 3)" ->
-          """world.clearAll();\nworld.ticker.reset();\nworld.turtleManager.createTurtles(PrimChecks.procedure.callReporter(71, 78, \"bananas\", 2, 3), \"\");"""
+          """world.clearAll();\nworld.ticker.reset();\nworld.turtleManager.createTurtles(PrimChecks.procedure.callReporter(38, 45, \"bananas\", 2, 3), \"\");"""
       )
 
       "with wrapped commands"-{

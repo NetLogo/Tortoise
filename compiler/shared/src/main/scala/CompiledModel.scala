@@ -34,8 +34,8 @@ case class CompiledModel(
     _.compileRawCommands(logo, procedures, program)
   }
 
-  def compileRunProcedure(logo: String, isReporter: Boolean): CompileResult[String] = validate {
-    _.compileRunProcedure(logo, procedures, program, isReporter)
+  def compileRunProcedure(logo: String, isReporter: Boolean, sourceOffset: Int = 0): CompileResult[String] = validate {
+    _.compileRunProcedure(logo, procedures, program, isReporter, sourceOffset)
   }
 
   def compileProceduresIncremental(logo: String, overriding: Seq[String]): CompileResult[String] = validate {

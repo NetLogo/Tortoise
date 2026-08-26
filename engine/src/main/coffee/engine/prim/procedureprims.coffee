@@ -84,12 +84,12 @@ class ProcedurePrims
   readFromString: (str) ->
     @evalPrims.readFromString(str)
 
-  # (String, Boolean) => Any
-  runString: (str, isRunResult) ->
+  # (String, Boolean, Int, Int) => Any
+  runString: (str, isRunResult, sourceStart, sourceEnd) ->
     if isRunResult
-      @_stack.startStringReporterTask()
+      @_stack.startStringReporterTask(sourceStart, sourceEnd)
     else
-      @_stack.startStringCommandTask()
+      @_stack.startStringCommandTask(sourceStart, sourceEnd)
 
     try
       @evalPrims.runCode(str, isRunResult, @_stack.currentContext().stringRunVars())

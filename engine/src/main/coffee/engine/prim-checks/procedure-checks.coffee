@@ -54,7 +54,7 @@ class ProcedureChecks
       if args.length isnt 0
         prim = if isRunResult then "runresult" else "run"
         @validator.error(prim, sourceStart, sourceEnd, '_ doesn_t accept further inputs if the first is a string', prim)
-      @procedurePrims.runString(fOrString, isRunResult)
+      @procedurePrims.runString(fOrString, isRunResult, sourceStart, sourceEnd)
 
     else
       @procedurePrims.runFunction(fOrString, args...)

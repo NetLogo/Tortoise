@@ -201,7 +201,8 @@ class Compiler {
     }
   }
 
-  def compileRunProcedure(code: String, oldProcedures: ProceduresMap, program: Program, isReporter: Boolean)
+  def compileRunProcedure(code: String, oldProcedures: ProceduresMap, program: Program, isReporter: Boolean,
+                          sourceOffset: Int = 0)
     (implicit compilerFlags: CompilerFlags): String = {
 
     val (defs, _) =
@@ -212,12 +213,12 @@ class Compiler {
         , extensionManager = extensionManager
       )
 
-    val pd = MultiAssignTransformer(
+    val pd = SourceRebaser(MultiAssignTransformer(
       if (compilerFlags.optimizationsEnabled)
         Optimizer(defs.head)
       else
         defs.head
-    )
+    ), sourceOffset)
 
     implicit val context =
       new CompilerContext(code).copy(agentContext = AgentContext.fromAgentClassString(pd.procedure.agentClassString))
@@ -261,15 +262,15 @@ class Compiler {
         , extensionManager = extensionManager
       )
 
-    val pd = MultiAssignTransformer(
+    val pd = SourceRebaser(MultiAssignTransformer(
       if (compilerFlags.optimizationsEnabled)
         Optimizer(defs.head)
       else
         defs.head
-    )
+    ), header.length)
 
     implicit val context =
-      new CompilerContext(wrapped).copy(agentContext = AgentContext.fromAgentClassString(pd.procedure.agentClassString))
+      new CompilerContext(logo).copy(agentContext = AgentContext.fromAgentClassString(pd.procedure.agentClassString))
 
     if (commands)
       handlers.commands(pd.statements)

@@ -67,6 +67,10 @@ class ProcedureContext
   isInsideTask: () ->
     @_taskDepth isnt 0
 
+  # Only string `run`/`runresult` tasks have one; see `StringTaskContext`.
+  # () => { start: Int, end: Int } | null
+  runStringLocation: () -> null
+
 class CommandContext extends ProcedureContext
   constructor: (name, @location) ->
     super(name)
@@ -99,12 +103,17 @@ class PlotContext extends ProcedureContext
   updateStringRunVar:   () -> return
 
 class StringTaskContext extends ProcedureContext
-  constructor: (outerContext) ->
+  constructor: (outerContext, @_location) ->
     super("")
     @_askDepth = outerContext._askDepth
     @_taskDepth = outerContext._taskDepth
     @_stringRunLetVars = new Map(outerContext._stringRunLetVars)
     return
+
+  # The code in a `run` string is compiled inside a wrapper of our own making, so the positions in it mean nothing to
+  # anyone holding the model source.  Errors from it are reported at the `run` call instead.  -Jeremy B August 2026
+  # () => { start: Int, end: Int } | null
+  runStringLocation: () -> @_location
 
 class StringCommandTaskContext extends StringTaskContext
   isReportAllowed: () -> false
@@ -168,12 +177,14 @@ class ProcedureStack
     @_stack.push(new PlotContext(name))
     return
 
-  startStringCommandTask: () ->
-    @_stack.push(new StringCommandTaskContext(@currentContext()))
+  # (Int, Int) => Unit
+  startStringCommandTask: (sourceStart, sourceEnd) ->
+    @_stack.push(new StringCommandTaskContext(@currentContext(), { start: sourceStart, end: sourceEnd }))
     return
 
-  startStringReporterTask: () ->
-    @_stack.push(new StringReporterTaskContext(@currentContext()))
+  # (Int, Int) => Unit
+  startStringReporterTask: (sourceStart, sourceEnd) ->
+    @_stack.push(new StringReporterTaskContext(@currentContext(), { start: sourceStart, end: sourceEnd }))
     return
 
   # () => Unit

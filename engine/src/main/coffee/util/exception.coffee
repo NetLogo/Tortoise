@@ -72,13 +72,21 @@ class ExceptionFactory
     stackTraceMessage = @makeStackTraceMessage(stackFrames)
     new InternalException(message, stackFrames, stackTraceMessage)
 
+  # () => { start: Int, end: Int } | null
+  getRunStringLocation: () ->
+    fold( -> null )( (procs) -> procs.stack().currentContext().runStringLocation() )(@procedurePrims)
+
   # (String, String, Maybe[Int], Maybe[Int]) => RuntimeException
   # Most of the existing call to this function have not been changed to i18n + messageKey.
   # They should be gradually switched to validator.error(). - JC 02/11/23
   runtime: (message, primitive, sourceStart = None, sourceEnd = None, messageKey = None) ->
     stackFrames       = @getStackTrace()
     stackTraceMessage = @makeStackTraceMessage(stackFrames, primitive)
-    new RuntimeException(message, primitive, stackFrames, stackTraceMessage, sourceStart, sourceEnd, messageKey)
+    # Code from a `run` string is compiled inside a wrapper of our own making, and its positions are relative to that
+    # string, not to the model, so anything raised from it is reported at the `run` call instead.  -Jeremy B August 2026
+    location          = @getRunStringLocation()
+    [start, end]      = if location? then [maybe(location.start), maybe(location.end)] else [sourceStart, sourceEnd]
+    new RuntimeException(message, primitive, stackFrames, stackTraceMessage, start, end, messageKey)
 
 factory = new ExceptionFactory()
 
