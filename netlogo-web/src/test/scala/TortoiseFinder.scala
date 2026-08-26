@@ -171,7 +171,6 @@ private[tortoise] object Freebies {
     "Face::FaceAgentset",
     "Interaction::Interaction5",
     "Links::LinksNotAllowed",
-    "Links::LinkNotAllowed_2D",
     "Links::LinkCreationTypeChecking_2D",
     "MoveTo::MoveTo_2D",
     "Random::OneOfWithAgentSets",

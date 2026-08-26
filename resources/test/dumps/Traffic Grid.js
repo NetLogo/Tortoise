@@ -224,10 +224,8 @@ ProcedurePrims.defineCommand("update-current", 6582, 6682, (function() {
 ProcedurePrims.defineCommand("label-current", 6717, 6849, (function() {
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 6733, 6736, 1904, world.observer.getGlobal("current-light")), 6733, 6736), function() {
     PrimChecks.context.assertKind(6, 'ask', 6759, 6844);
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 6759, 6762, 1904, SelfManager.self()._optimalPatchNorthWest()), 6759, 6762), function() {
-      PrimChecks.context.assertKind(6, 'set', 6789, 6811);
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6759, 6762, 1904, SelfManager.self()._optimalPatchNorthWest()), function() {
       PrimChecks.patch.setVariable(6793, 6805, "plabel-color", 0);
-      PrimChecks.context.assertKind(6, 'set', 6818, 6838);
       PrimChecks.patch.setVariable(6822, 6828, "plabel", "current");
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6759, 6762, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6733, 6736, R); return R; }
@@ -235,10 +233,7 @@ ProcedurePrims.defineCommand("label-current", 6717, 6849, (function() {
 ProcedurePrims.defineCommand("unlabel-current", 6919, 7017, (function() {
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 6937, 6940, 1904, world.observer.getGlobal("current-light")), 6937, 6940), function() {
     PrimChecks.context.assertKind(6, 'ask', 6963, 7012);
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 6963, 6966, 1904, SelfManager.self()._optimalPatchNorthWest()), 6963, 6966), function() {
-      PrimChecks.context.assertKind(6, 'set', 6993, 7006);
-      PrimChecks.patch.setVariable(6997, 7003, "plabel", "");
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6963, 6966, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6963, 6966, 1904, SelfManager.self()._optimalPatchNorthWest()), function() { PrimChecks.patch.setVariable(6997, 7003, "plabel", ""); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6963, 6966, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6937, 6940, R); return R; }
 }))
 ProcedurePrims.defineCommand("set-signals", 7110, 7286, (function() {
@@ -254,35 +249,17 @@ ProcedurePrims.defineCommand("set-signals", 7110, 7286, (function() {
 ProcedurePrims.defineCommand("set-signal-colors", 7459, 7854, (function() {
   if (world.observer.getGlobal("power?")) {
     if (PrimChecks.patch.getVariable(7543, 7558, "green-light-up?")) {
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 7571, 7574, 1904, SelfManager.self()._optimalPatchWest()), 7571, 7574), function() {
-        PrimChecks.context.assertKind(6, 'set', 7591, 7605);
-        PrimChecks.patch.setVariable(7595, 7601, "pcolor", 15);
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7571, 7574, R); return R; }
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 7614, 7617, 1904, SelfManager.self()._optimalPatchNorth()), 7614, 7617), function() {
-        PrimChecks.context.assertKind(6, 'set', 7633, 7649);
-        PrimChecks.patch.setVariable(7637, 7643, "pcolor", 55);
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7614, 7617, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7571, 7574, 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable(7595, 7601, "pcolor", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7571, 7574, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7614, 7617, 1904, SelfManager.self()._optimalPatchNorth()), function() { PrimChecks.patch.setVariable(7637, 7643, "pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7614, 7617, R); return R; }
     }
     else {
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 7670, 7673, 1904, SelfManager.self()._optimalPatchWest()), 7670, 7673), function() {
-        PrimChecks.context.assertKind(6, 'set', 7690, 7706);
-        PrimChecks.patch.setVariable(7694, 7700, "pcolor", 55);
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7670, 7673, R); return R; }
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 7715, 7718, 1904, SelfManager.self()._optimalPatchNorth()), 7715, 7718), function() {
-        PrimChecks.context.assertKind(6, 'set', 7734, 7748);
-        PrimChecks.patch.setVariable(7738, 7744, "pcolor", 15);
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7715, 7718, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7670, 7673, 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable(7694, 7700, "pcolor", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7670, 7673, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7715, 7718, 1904, SelfManager.self()._optimalPatchNorth()), function() { PrimChecks.patch.setVariable(7738, 7744, "pcolor", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7715, 7718, R); return R; }
     }
   }
   else {
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 7769, 7772, 1904, SelfManager.self()._optimalPatchWest()), 7769, 7772), function() {
-      PrimChecks.context.assertKind(6, 'set', 7789, 7805);
-      PrimChecks.patch.setVariable(7793, 7799, "pcolor", 9.9);
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7769, 7772, R); return R; }
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 7812, 7815, 1904, SelfManager.self()._optimalPatchNorth()), 7812, 7815), function() {
-      PrimChecks.context.assertKind(6, 'set', 7831, 7847);
-      PrimChecks.patch.setVariable(7835, 7841, "pcolor", 9.9);
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7812, 7815, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7769, 7772, 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable(7793, 7799, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7769, 7772, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7812, 7815, 1904, SelfManager.self()._optimalPatchNorth()), function() { PrimChecks.patch.setVariable(7835, 7841, "pcolor", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7812, 7815, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("set-car-speed", 8006, 8153, (function() {

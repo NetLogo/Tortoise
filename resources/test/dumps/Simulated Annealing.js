@@ -120,20 +120,16 @@ ProcedurePrims.defineCommand("swap-values", 1808, 1942, (function(p1, p2) {
 }))
 ProcedurePrims.defineReporter("find-energy", 2070, 2565, (function() {
   let unhappiness = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("UNHAPPINESS", unhappiness);
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2125, 2128, 1904, SelfManager.self()._optimalPatchNorth()), 2125, 2128), function() {
-    PrimChecks.context.assertKind(6, 'set', 2144, 2215);
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2125, 2128, 1904, SelfManager.self()._optimalPatchNorth()), function() {
     unhappiness = PrimChecks.math.plus(2172, 2173, PrimChecks.validator.checkArg('+', 2172, 2173, 1, unhappiness), PrimChecks.math.pow(2212, 2213, PrimChecks.math.minus(2186, 2187, PrimChecks.validator.checkArg('-', 2186, 2187, 1, PrimChecks.patch.getVariable(2175, 2185, "brightness")), PrimChecks.validator.checkArg('-', 2186, 2187, 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(2189, 2199, "brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2125, 2128, R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2220, 2223, 1904, SelfManager.self()._optimalPatchSouth()), 2220, 2223), function() {
-    PrimChecks.context.assertKind(6, 'set', 2240, 2311);
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2220, 2223, 1904, SelfManager.self()._optimalPatchSouth()), function() {
     unhappiness = PrimChecks.math.plus(2268, 2269, PrimChecks.validator.checkArg('+', 2268, 2269, 1, unhappiness), PrimChecks.math.pow(2308, 2309, PrimChecks.math.minus(2282, 2283, PrimChecks.validator.checkArg('-', 2282, 2283, 1, PrimChecks.patch.getVariable(2271, 2281, "brightness")), PrimChecks.validator.checkArg('-', 2282, 2283, 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(2285, 2295, "brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2220, 2223, R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2316, 2319, 1904, SelfManager.self()._optimalPatchEast()), 2316, 2319), function() {
-    PrimChecks.context.assertKind(6, 'set', 2335, 2410);
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2316, 2319, 1904, SelfManager.self()._optimalPatchEast()), function() {
     unhappiness = PrimChecks.math.minus(2367, 2368, PrimChecks.math.plus(2363, 2364, PrimChecks.validator.checkArg('+', 2363, 2364, 1, unhappiness), 1), PrimChecks.math.pow(2407, 2408, PrimChecks.math.minus(2381, 2382, PrimChecks.validator.checkArg('-', 2381, 2382, 1, PrimChecks.patch.getVariable(2370, 2380, "brightness")), PrimChecks.validator.checkArg('-', 2381, 2382, 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(2384, 2394, "brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2316, 2319, R); return R; }
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2415, 2418, 1904, SelfManager.self()._optimalPatchWest()), 2415, 2418), function() {
-    PrimChecks.context.assertKind(6, 'set', 2435, 2510);
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2415, 2418, 1904, SelfManager.self()._optimalPatchWest()), function() {
     unhappiness = PrimChecks.math.minus(2467, 2468, PrimChecks.math.plus(2463, 2464, PrimChecks.validator.checkArg('+', 2463, 2464, 1, unhappiness), 1), PrimChecks.math.pow(2507, 2508, PrimChecks.math.minus(2481, 2482, PrimChecks.validator.checkArg('-', 2481, 2482, 1, PrimChecks.patch.getVariable(2470, 2480, "brightness")), PrimChecks.validator.checkArg('-', 2481, 2482, 1, PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.patch.getVariable(2484, 2494, "brightness"); }))), 2)); ProcedurePrims.stack().currentContext().updateStringRunVar("UNHAPPINESS", unhappiness);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2415, 2418, R); return R; }
   return PrimChecks.procedure.report(2546, 2552, unhappiness);

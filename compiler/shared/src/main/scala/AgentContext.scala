@@ -114,7 +114,8 @@ object AgentContext {
                _: prim._with          | _: prim._other          | _: prim._neighbors      |
                _: prim._neighbors4    | _: prim._turtle         | _: prim.etc._patch      |
                _: prim.etc._link      | _: prim._oneof          | _: prim.etc._myself     |
-               _: prim.etc._self      | _: Optimizer._otherwith | _: Optimizer._oneofwith => false
+               _: prim.etc._self      | _: Optimizer._otherwith | _: Optimizer._oneofwith |
+               _: Optimizer._patchatreporter                                              => false
           case _                                                                          => true
         }
       case _ => true

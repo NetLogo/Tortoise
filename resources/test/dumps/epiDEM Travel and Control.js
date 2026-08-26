@@ -363,18 +363,12 @@ ProcedurePrims.defineCommand("maybe-recover", 7752, 8466, (function() {
 ProcedurePrims.defineCommand("isolate", 8559, 8701, (function() {
   PrimChecks.turtle.setVariable(8593, 8602, "isolated?", true);
   SelfManager.self().moveTo(SelfManager.self().getPatchHere());
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 8658, 8661, 1904, SelfManager.self()._optimalPatchHereInternal()), 8658, 8661), function() {
-    PrimChecks.context.assertKind(6, 'set', 8679, 8698);
-    PrimChecks.patch.setVariable(8683, 8689, "pcolor", PrimChecks.math.minus(8695, 8696, 5, 3));
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8658, 8661, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8658, 8661, 1904, SelfManager.self()._optimalPatchHereInternal()), function() { PrimChecks.patch.setVariable(8683, 8689, "pcolor", PrimChecks.math.minus(8695, 8696, 5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8658, 8661, R); return R; }
 }))
 ProcedurePrims.defineCommand("unisolate", 8764, 9177, (function() {
   PrimChecks.turtle.setVariable(8801, 8810, "isolated?", false);
   PrimChecks.turtle.setVariable(8823, 8836, "hospitalized?", false);
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 8846, 8849, 1904, SelfManager.self()._optimalPatchHereInternal()), 8846, 8849), function() {
-    PrimChecks.context.assertKind(6, 'set', 8867, 8883);
-    PrimChecks.patch.setVariable(8871, 8877, "pcolor", 0);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8846, 8849, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8846, 8849, 1904, SelfManager.self()._optimalPatchHereInternal()), function() { PrimChecks.patch.setVariable(8871, 8877, "pcolor", 0); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8846, 8849, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 8889, 8892, 1904, world.observer.getGlobal("border")), 8889, 8892), function() {
     PrimChecks.context.assertKind(6, 'set', 8902, 8919);
     PrimChecks.patch.setVariable(8906, 8912, "pcolor", 45);
