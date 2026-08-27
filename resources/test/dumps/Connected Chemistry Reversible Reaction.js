@@ -414,11 +414,8 @@ ProcedurePrims.defineCommand("collide-with", 18892, 21146, (function(otherHparti
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 20961, 20964, 1904, otherHparticle), 20961, 20964), function() {
     PrimChecks.context.assertKind(2, 'set', 20986, 21024);
     PrimChecks.turtle.setVariable(20990, 20995, "speed", PrimChecks.math.sqrt(20996, 21000, PrimChecks.math.plus(21012, 21013, PrimChecks.math.pow(21007, 21008, PrimChecks.validator.checkArg('^', 21007, 21008, 1, v2t), 2), PrimChecks.math.pow(21019, 21020, PrimChecks.validator.checkArg('^', 21019, 21020, 1, v2l), 2))));
-    PrimChecks.context.assertKind(2, 'set', 21029, 21066);
     PrimChecks.turtle.setVariable(21033, 21039, "energy", PrimChecks.math.mult(21052, 21053, PrimChecks.math.mult(21045, 21046, 0.5, PrimChecks.validator.checkArg('*', 21045, 21046, 1, PrimChecks.turtle.getVariable(21047, 21051, "mass"))), PrimChecks.math.pow(21061, 21062, PrimChecks.validator.checkArg('^', 21061, 21062, 1, PrimChecks.turtle.getVariable(21055, 21060, "speed")), 2)));
-    PrimChecks.context.assertKind(2, 'if', 21071, 21141);
     if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-      PrimChecks.context.assertKind(2, 'set', 21103, 21139);
       PrimChecks.turtle.setVariable(21107, 21114, "heading", PrimChecks.math.minus(21122, 21123, PrimChecks.validator.checkArg('-', 21122, 21123, 1, theta), PrimChecks.math.atan(21125, 21129, PrimChecks.validator.checkArg('ATAN', 21125, 21129, 1, v2l), PrimChecks.validator.checkArg('ATAN', 21125, 21129, 1, v2t))));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(20961, 20964, R); return R; }
@@ -459,9 +456,7 @@ ProcedurePrims.defineCommand("draw-box-piston", 22057, 22919, (function() {
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 22335, 22338, 1904, world.observer.getGlobal("heatable-walls")), 22335, 22338), function() {
     PrimChecks.context.assertKind(6, 'set', 22357, 22378);
     PrimChecks.patch.setVariable(22361, 22367, "pcolor", world.observer.getGlobal("wall-color"));
-    PrimChecks.context.assertKind(6, 'set', 22379, 22399);
     PrimChecks.patch.setVariable(22383, 22393, "insulated?", false);
-    PrimChecks.context.assertKind(6, 'set', 22401, 22415);
     PrimChecks.patch.setVariable(22405, 22410, "wall?", true);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(22335, 22338, R); return R; }
   world.observer.setGlobal("piston-wall", PrimChecks.agentset.with(22444, 22448, world.patches(), function() {
@@ -470,7 +465,6 @@ ProcedurePrims.defineCommand("draw-box-piston", 22057, 22919, (function() {
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 22522, 22525, 1904, world.observer.getGlobal("piston-wall")), 22522, 22525), function() {
     PrimChecks.context.assertKind(6, 'set', 22541, 22564);
     PrimChecks.patch.setVariable(22545, 22551, "pcolor", world.observer.getGlobal("piston-color"));
-    PrimChecks.context.assertKind(6, 'set', 22565, 22579);
     PrimChecks.patch.setVariable(22569, 22574, "wall?", true);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(22522, 22525, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(22664, 22668, world.patches(), function() {

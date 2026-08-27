@@ -281,11 +281,8 @@ ProcedurePrims.defineCommand("make-initial-alleles-for-gene", 7152, 8023, (funct
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7838, 7841, 1904, PrimChecks.list.nOf(7842, 7846, PrimChecks.validator.checkArg('N-OF', 7842, 7846, 1, numHbigHalleles), PrimChecks.agentset.with(7872, 7876, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(7878, 7882, "gene"), geneHnumber); }))), function() {
     PrimChecks.context.assertKind(2, 'set', 7904, 7922);
     PrimChecks.turtle.setVariable(7908, 7913, "value", alleleH1);
-    PrimChecks.context.assertKind(2, 'set', 7927, 7954);
     PrimChecks.turtleOrLink.setVariable(7931, 7936, "color", [220, 220, 220, 255]);
-    PrimChecks.context.assertKind(2, 'set', 7959, 7990);
     PrimChecks.turtleOrLink.setVariable(7963, 7968, "label", StringPrims.word(PrimChecks.turtle.getVariable(7975, 7980, "value"), "     "));
-    PrimChecks.context.assertKind(2, 'set', 7995, 8016);
     PrimChecks.turtleOrLink.setVariable(7999, 8010, "label-color", PrimChecks.turtleOrLink.getVariable(8011, 8016, "color"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7838, 7841, R); return R; }
 }))
@@ -479,9 +476,7 @@ ProcedurePrims.defineCommand("align-alleles-for-this-somatic-cell", 13755, 14568
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 14166, 14169, 1904, PrimChecks.agentset.oneOfWith(null, null, PrimChecks.context.assertAgentSetKind(2, allHalleles, 'oneofwith', 14170, 14212), function() { return Prims.equality(PrimChecks.turtle.getVariable(14195, 14199, "gene"), thisHgene); })), function() {
         PrimChecks.context.assertKind(2, 'set', 14223, 14237);
         PrimChecks.turtle.setVariable(14227, 14234, "heading", 90);
-        PrimChecks.context.assertKind(2, 'forward', 14246, 14283);
         SelfManager.self().fd(world.observer.getGlobal("intra-chromosome-pair-spacing"));
-        PrimChecks.context.assertKind(2, 'set', 14292, 14308);
         PrimChecks.turtle.setVariable(14296, 14300, "side", "right");
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(14166, 14169, R); return R; }
     }
@@ -491,9 +486,7 @@ ProcedurePrims.defineCommand("align-alleles-for-this-somatic-cell", 13755, 14568
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 14403, 14406, 1904, PrimChecks.agentset.oneOfWith(null, null, PrimChecks.context.assertAgentSetKind(2, allHalleles, 'oneofwith', 14407, 14449), function() { return Prims.equality(PrimChecks.turtle.getVariable(14432, 14436, "gene"), thisHgene); })), function() {
         PrimChecks.context.assertKind(2, 'set', 14460, 14474);
         PrimChecks.turtle.setVariable(14464, 14471, "heading", 90);
-        PrimChecks.context.assertKind(2, 'back', 14483, 14525);
         SelfManager.self().fd(-(world.observer.getGlobal("intra-chromosome-pair-spacing")));
-        PrimChecks.context.assertKind(2, 'set', 14534, 14549);
         PrimChecks.turtle.setVariable(14538, 14542, "side", "left");
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(14403, 14406, R); return R; }
     }
@@ -643,7 +636,6 @@ ProcedurePrims.defineCommand("remove-this-fish", 18014, 18389, (function() {
       PrimChecks.context.assertKind(10, 'die', 18368, 18371);
       return SelfManager.self().die();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(18343, 18346, R); return R; }
-    PrimChecks.context.assertKind(2, 'die', 18377, 18380);
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(18217, 18220, R); return R; }
   return SelfManager.self().die();

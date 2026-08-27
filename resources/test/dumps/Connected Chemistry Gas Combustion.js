@@ -281,9 +281,7 @@ ProcedurePrims.defineCommand("speed-up-one-molecule", 9397, 9599, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9465, 9468, 1904, PrimChecks.list.oneOf(9469, 9475, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"))), function() {
     PrimChecks.context.assertKind(2, 'set', 9497, 9517);
     PrimChecks.turtle.setVariable(9501, 9506, "speed", PrimChecks.math.mult(9513, 9514, PrimChecks.validator.checkArg('*', 9513, 9514, 1, PrimChecks.turtle.getVariable(9507, 9512, "speed")), 10));
-    PrimChecks.context.assertKind(2, 'set', 9522, 9550);
     PrimChecks.turtle.setVariable(9526, 9532, "energy", PrimChecks.procedure.callReporter(9533, 9550, "energy-from-speed"));
-    PrimChecks.context.assertKind(2, 'pendown', 9555, 9562);
     SelfManager.self().penManager.lowerPen();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9465, 9468, R); return R; }
   var R = ProcedurePrims.callCommand("calculate-tick-advance-amount"); if (R === DeathInterrupt) { return R; }
@@ -311,13 +309,9 @@ ProcedurePrims.defineCommand("check-for-reaction", 9834, 10979, (function() {
         }
         PrimChecks.context.assertKind(2, 'set', 10475, 10500);
         PrimChecks.turtle.setVariable(10479, 10492, "molecule-type", "water");
-        PrimChecks.context.assertKind(2, 'set', 10511, 10522);
         PrimChecks.turtle.setVariable(10515, 10519, "mass", 10);
-        PrimChecks.context.assertKind(2, 'let', 10570, 10648);
         let totalHenergyHproducts = PrimChecks.math.plus(10624, 10625, PrimChecks.validator.checkArg('+', 10624, 10625, 1, totalHenergyHallHreactants), PrimChecks.validator.checkArg('+', 10624, 10625, 1, world.observer.getGlobal("bond-energy-released"))); ProcedurePrims.stack().currentContext().registerStringRunVar("TOTAL-ENERGY-PRODUCTS", totalHenergyHproducts);
-        PrimChecks.context.assertKind(2, 'set', 10659, 10695);
         PrimChecks.turtle.setVariable(10663, 10669, "energy", PrimChecks.math.div(10692, 10693, PrimChecks.validator.checkArg('/', 10692, 10693, 1, totalHenergyHproducts), 2));
-        PrimChecks.context.assertKind(2, 'set', 10837, 10864);
         PrimChecks.turtle.setVariable(10841, 10846, "speed", PrimChecks.procedure.callReporter(10847, 10864, "speed-from-energy"));
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(10289, 10292, R); return R; }
       return SelfManager.self().die();
@@ -364,11 +358,8 @@ ProcedurePrims.defineCommand("collide-with", 13542, 15714, (function(otherHgasHm
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 15524, 15527, 1904, otherHgasHmolecules), 15524, 15527), function() {
     PrimChecks.context.assertKind(2, 'set', 15554, 15592);
     PrimChecks.turtle.setVariable(15558, 15563, "speed", PrimChecks.math.sqrt(15564, 15568, PrimChecks.math.plus(15580, 15581, PrimChecks.math.pow(15575, 15576, PrimChecks.validator.checkArg('^', 15575, 15576, 1, v2t), 2), PrimChecks.math.pow(15587, 15588, PrimChecks.validator.checkArg('^', 15587, 15588, 1, v2l), 2))));
-    PrimChecks.context.assertKind(2, 'set', 15597, 15634);
     PrimChecks.turtle.setVariable(15601, 15607, "energy", PrimChecks.math.mult(15620, 15621, PrimChecks.math.mult(15613, 15614, 0.5, PrimChecks.validator.checkArg('*', 15613, 15614, 1, PrimChecks.turtle.getVariable(15615, 15619, "mass"))), PrimChecks.math.pow(15629, 15630, PrimChecks.validator.checkArg('^', 15629, 15630, 1, PrimChecks.turtle.getVariable(15623, 15628, "speed")), 2)));
-    PrimChecks.context.assertKind(2, 'if', 15639, 15709);
     if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-      PrimChecks.context.assertKind(2, 'set', 15671, 15707);
       PrimChecks.turtle.setVariable(15675, 15682, "heading", PrimChecks.math.minus(15690, 15691, PrimChecks.validator.checkArg('-', 15690, 15691, 1, theta), PrimChecks.math.atan(15693, 15697, PrimChecks.validator.checkArg('ATAN', 15693, 15697, 1, v2l), PrimChecks.validator.checkArg('ATAN', 15693, 15697, 1, v2t))));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(15524, 15527, R); return R; }

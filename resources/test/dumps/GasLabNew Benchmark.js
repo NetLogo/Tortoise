@@ -302,9 +302,7 @@ ProcedurePrims.defineCommand("fade-patches", 13368, 13661, (function() {
     var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 13491, 13494, 1904, traceHpatches), 13491, 13494), function() {
       PrimChecks.context.assertKind(6, 'set', 13517, 13544);
       PrimChecks.patch.setVariable(13521, 13527, "pcolor", PrimChecks.math.minus(13537, 13538, PrimChecks.validator.checkArg('-', 13537, 13538, 1, PrimChecks.patch.getVariable(13530, 13536, "pcolor")), 0.4));
-      PrimChecks.context.assertKind(6, 'if', 13553, 13625);
       if ((PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 13557, 13560, 2, world.observer.getGlobal("trace?"))) || Prims.equality(PrimChecks.math.round(PrimChecks.validator.checkArg('ROUND', 13573, 13578, 1, PrimChecks.patch.getVariable(13579, 13585, "pcolor"))), 0))) {
-        PrimChecks.context.assertKind(6, 'set', 13607, 13623);
         PrimChecks.patch.setVariable(13611, 13617, "pcolor", 0);
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13491, 13494, R); return R; }

@@ -74,12 +74,9 @@ ProcedurePrims.defineCommand("become-alive", 1555, 1811, (function() {
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 1663, 1666, 1904, PrimChecks.turtle.getVariable(1667, 1680, "hex-neighbors")), 1663, 1666), function() {
     PrimChecks.context.assertKind(2, 'set', 1687, 1734);
     PrimChecks.turtle.setVariable(1691, 1710, "live-neighbor-count", PrimChecks.math.plus(1731, 1732, PrimChecks.validator.checkArg('+', 1731, 1732, 1, PrimChecks.turtle.getVariable(1711, 1730, "live-neighbor-count")), 1));
-    PrimChecks.context.assertKind(2, 'if', 1739, 1783);
     if (Prims.equality(PrimChecks.turtle.getVariable(1742, 1761, "live-neighbor-count"), 6)) {
-      PrimChecks.context.assertKind(2, 'set', 1768, 1781);
       PrimChecks.turtleOrLink.setVariable(1772, 1777, "color", 15);
     }
-    PrimChecks.context.assertKind(2, 'update-eligibility', 1788, 1806);
     var R = ProcedurePrims.callCommand("update-eligibility"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1663, 1666, R); return R; }
 }))

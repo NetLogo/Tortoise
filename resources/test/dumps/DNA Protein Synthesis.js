@@ -158,9 +158,7 @@ ProcedurePrims.defineCommand("place-dna", 7541, 7796, (function(strandHtype) {
       PrimChecks.context.assertKind(2, 'set', 7701, 7727);
       PrimChecks.turtle.setVariable(7705, 7709, "ycor", world.observer.getGlobal("original-dna-ycor"));
     }
-    PrimChecks.context.assertKind(2, 'if', 7733, 7791);
     if (Prims.equality(strandHtype, "duplicate")) {
-      PrimChecks.context.assertKind(2, 'set', 7763, 7790);
       PrimChecks.turtle.setVariable(7767, 7771, "ycor", world.observer.getGlobal("duplicate-dna-ycor"));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7630, 7633, R); return R; }
@@ -588,7 +586,6 @@ ProcedurePrims.defineCommand("release-next-protein", 18381, 19220, (function(str
           if (Prims.equality(PrimChecks.turtleOrLink.getVariable(18825, 18830, "breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"))) {
             PrimChecks.context.assertKind(2, 'set', 18859, 18876);
             PrimChecks.turtleOrLink.setVariable(18863, 18870, "hidden?", false);
-            PrimChecks.context.assertKind(2, 'ask', 18877, 18918);
             var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 18877, 18880), function() {
               PrimChecks.context.assertKind(10, 'set', 18900, 18917);
               PrimChecks.turtleOrLink.setVariable(18904, 18911, "hidden?", false);
@@ -597,7 +594,6 @@ ProcedurePrims.defineCommand("release-next-protein", 18381, 19220, (function(str
           else {
             PrimChecks.context.assertKind(2, 'set', 18935, 18951);
             PrimChecks.turtleOrLink.setVariable(18939, 18946, "hidden?", true);
-            PrimChecks.context.assertKind(2, 'ask', 18952, 18992);
             var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 18952, 18955), function() {
               PrimChecks.context.assertKind(10, 'set', 18975, 18991);
               PrimChecks.turtleOrLink.setVariable(18979, 18986, "hidden?", true);
@@ -742,9 +738,7 @@ ProcedurePrims.defineCommand("show-protein-production", 22434, 23188, (function(
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 22676, 22679, 1904, originalHproteins), 22676, 22679), function() {
     PrimChecks.context.assertKind(2, 'output-print', 22704, 22763);
     OutputPrims.print(StringPrims.word("Orig.Gene #", PrimChecks.turtle.getVariable(22737, 22748, "gene-number"), " > Protein:"));
-    PrimChecks.context.assertKind(2, 'output-print', 22768, 22786);
     OutputPrims.print(PrimChecks.turtle.getVariable(22781, 22786, "value"));
-    PrimChecks.context.assertKind(2, 'output-print', 22791, 22806);
     OutputPrims.print("");
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(22676, 22679, R); return R; }
   OutputPrims.print("==================");
@@ -755,9 +749,7 @@ ProcedurePrims.defineCommand("show-protein-production", 22434, 23188, (function(
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 23052, 23055, 1904, duplicateHproteins), 23052, 23055), function() {
     PrimChecks.context.assertKind(2, 'output-print', 23081, 23140);
     OutputPrims.print(StringPrims.word("Copy.Gene #", PrimChecks.turtle.getVariable(23114, 23125, "gene-number"), " > Protein:"));
-    PrimChecks.context.assertKind(2, 'output-print', 23145, 23163);
     OutputPrims.print(PrimChecks.turtle.getVariable(23158, 23163, "value"));
-    PrimChecks.context.assertKind(2, 'output-print', 23168, 23183);
     OutputPrims.print("");
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(23052, 23055, R); return R; }
 }))
@@ -798,7 +790,6 @@ ProcedurePrims.defineCommand("replicate-dna", 24792, 25464, (function() {
       PrimChecks.context.assertKind(10, 'die', 25052, 25055);
       return SelfManager.self().die();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(25029, 25032, R); return R; }
-    PrimChecks.context.assertKind(2, 'die', 25057, 25060);
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(24978, 24981, R); return R; }
   var R = ProcedurePrims.callCommand("make-duplicate-dna-string"); if (R === DeathInterrupt) { return R; }

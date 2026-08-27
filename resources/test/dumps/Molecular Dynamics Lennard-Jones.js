@@ -150,13 +150,9 @@ ProcedurePrims.defineCommand("update-force-and-velocity", 3577, 3976, (function(
     let r = PrimChecks.turtle.distance(3703, 3711, SelfManager.myself()); ProcedurePrims.stack().currentContext().registerStringRunVar("R", r);
     PrimChecks.context.assertKind(2, 'let', 3723, 3745);
     let force = PrimChecks.procedure.callReporter(3733, 3743, "calc-force", r); ProcedurePrims.stack().currentContext().registerStringRunVar("FORCE", force);
-    PrimChecks.context.assertKind(2, 'face', 3750, 3761);
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 3750, 3754, 768, SelfManager.myself()));
-    PrimChecks.context.assertKind(2, 'rt', 3766, 3772);
     SelfManager.self().right(180);
-    PrimChecks.context.assertKind(2, 'set', 3777, 3809);
     newHfx = PrimChecks.math.plus(3795, 3796, PrimChecks.validator.checkArg('+', 3795, 3796, 1, newHfx), PrimChecks.math.mult(3804, 3805, PrimChecks.validator.checkArg('*', 3804, 3805, 1, force), SelfManager.self().dx())); ProcedurePrims.stack().currentContext().updateStringRunVar("NEW-FX", newHfx);
-    PrimChecks.context.assertKind(2, 'set', 3814, 3846);
     newHfy = PrimChecks.math.plus(3832, 3833, PrimChecks.validator.checkArg('+', 3832, 3833, 1, newHfy), PrimChecks.math.mult(3841, 3842, PrimChecks.validator.checkArg('*', 3841, 3842, 1, force), SelfManager.self().dy())); ProcedurePrims.stack().currentContext().updateStringRunVar("NEW-FY", newHfy);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3653, 3656, R); return R; }
   PrimChecks.turtle.setVariable(3855, 3857, "vx", PrimChecks.procedure.callReporter(3858, 3882, "velocity-verlet-velocity", PrimChecks.turtle.getVariable(3883, 3885, "vx"), PrimChecks.turtle.getVariable(3886, 3888, "fx"), newHfx));

@@ -115,24 +115,17 @@ ProcedurePrims.defineCommand("send-messenger-to-its-column", 3442, 4252, (functi
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 3738, 3741, 1904, world.observer.getGlobal("the-messenger")), 3738, 3741), function() {
     PrimChecks.context.assertKind(2, 'face', 3764, 3771);
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 3764, 3768, 768, it));
-    PrimChecks.context.assertKind(2, 'while', 3845, 3959);
     while (Prims.gt(PrimChecks.turtle.distance(3853, 3861, PrimChecks.validator.checkArg('DISTANCE', 3853, 3861, 1792, it)), 3)) {
-      PrimChecks.context.assertKind(2, 'fdone', 3883, 3887);
       SelfManager.self()._optimalFdOne();
-      PrimChecks.context.assertKind(2, 'display', 3946, 3953);
       Prims.display();
     }
-    PrimChecks.context.assertKind(2, 'die', 3964, 3967);
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3738, 3741, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 3974, 3977, 1904, it), 3974, 3977), function() {
     PrimChecks.context.assertKind(2, 'create-frame', 3985, 3997);
     var R = ProcedurePrims.callCommand("create-frame"); if (R === DeathInterrupt) { return R; }
-    PrimChecks.context.assertKind(2, 'fdone', 4002, 4006);
     SelfManager.self()._optimalFdOne();
-    PrimChecks.context.assertKind(2, 'if', 4194, 4246);
     if (Prims.equality(PrimChecks.turtle.getVariable(4197, 4201, "ycor"), world.observer.getGlobal("max-y-histogram"))) {
-      PrimChecks.context.assertKind(2, 'set', 4222, 4244);
       world.observer.setGlobal("time-to-stop?", true);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3974, 3977, R); return R; }

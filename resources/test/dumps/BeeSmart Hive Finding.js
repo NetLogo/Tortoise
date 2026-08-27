@@ -147,7 +147,6 @@ ProcedurePrims.defineCommand("setup-bees", 3572, 4206, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4106, 4109, 1904, PrimChecks.list.nOf(4110, 4114, PrimChecks.validator.checkArg('N-OF', 4110, 4114, 1, world.observer.getGlobal("initial-percentage")), world.turtleManager.turtlesOfBreed("SCOUTS"))), function() {
     PrimChecks.context.assertKind(2, 'set', 4149, 4172);
     PrimChecks.turtle.setVariable(4153, 4167, "initial-scout?", true);
-    PrimChecks.context.assertKind(2, 'set', 4177, 4201);
     PrimChecks.turtle.setVariable(4181, 4190, "bee-timer", RandomPrims.randomLong(100));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4106, 4109, R); return R; }
 }))
@@ -213,7 +212,6 @@ ProcedurePrims.defineCommand("discover", 7292, 8833, (function() {
           var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 7996, 7999, 1904, PrimChecks.turtle.getVariable(8000, 8006, "target")), 7996, 7999), function() {
             PrimChecks.context.assertKind(2, 'set', 8065, 8085);
             PrimChecks.turtle.setVariable(8069, 8080, "discovered?", true);
-            PrimChecks.context.assertKind(2, 'set', 8098, 8127);
             PrimChecks.turtleOrLink.setVariable(8102, 8107, "color", PrimChecks.list.item(8108, 8112, PrimChecks.validator.checkArg('ITEM', 8108, 8112, 1, PrimChecks.turtle.getVariable(8113, 8116, "who")), PrimChecks.validator.checkArg('ITEM', 8108, 8112, 12, world.observer.getGlobal("color-list"))));
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7996, 7999, R); return R; }
           PrimChecks.turtle.setVariable(8196, 8204, "interest", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 8217, 8219, 1904, PrimChecks.turtle.getVariable(8220, 8226, "target")), function() { return PrimChecks.turtle.getVariable(8207, 8214, "quality"); }));

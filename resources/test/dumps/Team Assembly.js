@@ -190,11 +190,8 @@ ProcedurePrims.defineCommand("pick-team-members", 2056, 3026, (function() {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2815, 2818, 1904, newHteamHmember), function() {
       PrimChecks.context.assertKind(2, 'set', 2894, 2911);
       PrimChecks.turtle.setVariable(2898, 2906, "in-team?", true);
-      PrimChecks.context.assertKind(2, 'set', 2918, 2932);
       PrimChecks.turtle.setVariable(2922, 2930, "downtime", 0);
-      PrimChecks.context.assertKind(2, 'set', 2939, 2951);
       PrimChecks.turtle.setVariable(2943, 2947, "size", 1.8);
-      PrimChecks.context.assertKind(2, 'set', 2958, 3015);
       PrimChecks.turtleOrLink.setVariable(2962, 2967, "color", (Prims.ifElseValueBooleanCheck(PrimChecks.turtle.getVariable(2981, 2991, "incumbent?")) ? PrimChecks.math.plus(3000, 3001, 45, 2) : PrimChecks.math.plus(3011, 3012, 105, 1)));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2815, 2818, R); return R; }
   }

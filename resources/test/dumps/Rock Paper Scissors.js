@@ -87,19 +87,13 @@ ProcedurePrims.defineCommand("go", 158, 1941, (function() {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1714, 1717, 1904, PrimChecks.list.oneOf(1718, 1724, world.patches())), function() {
       PrimChecks.context.assertKind(6, 'let', 1741, 1769);
       let target = PrimChecks.list.oneOf(1752, 1758, SelfManager.self().getNeighbors4()); ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET", target);
-      PrimChecks.context.assertKind(6, 'if', 1776, 1818);
       if (Prims.equality(_EVENT_, swapHevent)) {
-        PrimChecks.context.assertKind(6, 'swap', 1805, 1816);
         var R = ProcedurePrims.callCommand("swap", target); if (R === DeathInterrupt) { return R; }
       }
-      PrimChecks.context.assertKind(6, 'if', 1825, 1872);
       if (Prims.equality(_EVENT_, reproduceHevent)) {
-        PrimChecks.context.assertKind(6, 'reproduce', 1854, 1870);
         var R = ProcedurePrims.callCommand("reproduce", target); if (R === DeathInterrupt) { return R; }
       }
-      PrimChecks.context.assertKind(6, 'if', 1879, 1923);
       if (Prims.equality(_EVENT_, selectHevent)) {
-        PrimChecks.context.assertKind(6, 'select', 1908, 1921);
         var R = ProcedurePrims.callCommand("select", target); if (R === DeathInterrupt) { return R; }
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1714, 1717, R); return R; }

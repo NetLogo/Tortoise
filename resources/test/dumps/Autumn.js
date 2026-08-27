@@ -169,13 +169,9 @@ ProcedurePrims.defineCommand("go", 2203, 3345, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2566, 2569, 1904, PrimChecks.procedure.callReporter(2570, 2585, "attached-leaves")), function() {
     PrimChecks.context.assertKind(2, 'adjust-water', 2592, 2604);
     var R = ProcedurePrims.callCommand("adjust-water"); if (R === DeathInterrupt) { return R; }
-    PrimChecks.context.assertKind(2, 'adjust-chlorophyll', 2609, 2627);
     var R = ProcedurePrims.callCommand("adjust-chlorophyll"); if (R === DeathInterrupt) { return R; }
-    PrimChecks.context.assertKind(2, 'adjust-sugar', 2632, 2644);
     var R = ProcedurePrims.callCommand("adjust-sugar"); if (R === DeathInterrupt) { return R; }
-    PrimChecks.context.assertKind(2, 'change-color', 2649, 2661);
     var R = ProcedurePrims.callCommand("change-color"); if (R === DeathInterrupt) { return R; }
-    PrimChecks.context.assertKind(2, 'change-shape', 2666, 2678);
     var R = ProcedurePrims.callCommand("change-shape"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2566, 2569, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("LEAVES"), function() { var R = ProcedurePrims.callCommand("fall-if-necessary"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2730, 2733, R); return R; }

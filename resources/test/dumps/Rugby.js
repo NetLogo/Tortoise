@@ -157,7 +157,6 @@ ProcedurePrims.defineCommand("plot-scores", 4045, 4912, (function() {
     if (Prims.equality(PrimChecks.patch.getVariable(4313, 4318, "score"), world.observer.getGlobal("current-max"))) {
       PrimChecks.context.assertKind(6, 'set', 4341, 4360);
       world.observer.setGlobal("best-dist", PrimChecks.patch.getVariable(4355, 4360, "pycor"));
-      PrimChecks.context.assertKind(6, 'ask', 4369, 4406);
       var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 4369, 4372, 1904, SelfManager.self().patchAt(2, 0)), 4369, 4372), function() {
         PrimChecks.patch.setVariable(4392, 4398, "plabel", PrimChecks.patch.getVariable(4399, 4404, "pycor"));
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4369, 4372, R); return R; }
@@ -195,7 +194,6 @@ ProcedurePrims.defineCommand("find-analytic-solution", 4920, 5248, (function() {
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 5121, 5124, 1904, winningHpatch), 5121, 5124), function() {
     PrimChecks.context.assertKind(6, 'set', 5143, 5161);
     PrimChecks.patch.setVariable(5147, 5153, "pcolor", 125);
-    PrimChecks.context.assertKind(6, 'ask', 5166, 5203);
     var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 5166, 5169, 1904, SelfManager.self().patchAt(2, 0)), 5166, 5169), function() {
       PrimChecks.patch.setVariable(5189, 5195, "plabel", PrimChecks.patch.getVariable(5196, 5201, "pycor"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5166, 5169, R); return R; }

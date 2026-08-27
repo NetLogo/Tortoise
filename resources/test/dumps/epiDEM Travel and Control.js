@@ -400,7 +400,6 @@ ProcedurePrims.defineCommand("infect", 9698, 10414, (function() {
         if (Prims.lt(RandomPrims.randomLong(100), PrimChecks.math.mult(10037, 10038, PrimChecks.validator.checkArg('*', 10037, 10038, 1, world.observer.getGlobal("infection-chance")), 2))) {
           PrimChecks.context.assertKind(2, 'set', 10116, 10134);
           PrimChecks.turtle.setVariable(10120, 10129, "infected?", true);
-          PrimChecks.context.assertKind(2, 'set', 10150, 10183);
           PrimChecks.turtle.setVariable(10154, 10165, "nb-infected", PrimChecks.math.plus(10179, 10180, PrimChecks.validator.checkArg('+', 10179, 10180, 1, PrimChecks.turtle.getVariable(10167, 10178, "nb-infected")), 1));
         }
       }
@@ -409,7 +408,6 @@ ProcedurePrims.defineCommand("infect", 9698, 10414, (function() {
         if (Prims.lt(RandomPrims.randomLong(100), world.observer.getGlobal("infection-chance"))) {
           PrimChecks.context.assertKind(2, 'set', 10301, 10319);
           PrimChecks.turtle.setVariable(10305, 10314, "infected?", true);
-          PrimChecks.context.assertKind(2, 'set', 10335, 10368);
           PrimChecks.turtle.setVariable(10339, 10350, "nb-infected", PrimChecks.math.plus(10364, 10365, PrimChecks.validator.checkArg('+', 10364, 10365, 1, PrimChecks.turtle.getVariable(10352, 10363, "nb-infected")), 1));
         }
       }

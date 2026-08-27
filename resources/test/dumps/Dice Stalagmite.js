@@ -241,7 +241,6 @@ ProcedurePrims.defineCommand("bump-down", 4881, 5038, (function(candidates) {
         PrimChecks.context.assertKind(2, 'die', 5011, 5014);
         return SelfManager.self().die();
       }
-      PrimChecks.context.assertKind(2, 'fdone', 5023, 5027);
       SelfManager.self()._optimalFdOne();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4965, 4968, R); return R; }
   }

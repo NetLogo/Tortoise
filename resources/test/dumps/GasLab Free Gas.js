@@ -243,11 +243,8 @@ ProcedurePrims.defineCommand("collide-with", 4738, 7022, (function(otherHparticl
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 6685, 6688, 1904, otherHparticle), 6685, 6688), function() {
     PrimChecks.context.assertKind(2, 'set', 6710, 6748);
     PrimChecks.turtle.setVariable(6714, 6719, "speed", PrimChecks.math.sqrt(6720, 6724, PrimChecks.math.plus(6736, 6737, PrimChecks.math.pow(6731, 6732, PrimChecks.validator.checkArg('^', 6731, 6732, 1, v2t), 2), PrimChecks.math.pow(6743, 6744, PrimChecks.validator.checkArg('^', 6743, 6744, 1, v2l), 2))));
-    PrimChecks.context.assertKind(2, 'set', 6753, 6790);
     PrimChecks.turtle.setVariable(6757, 6763, "energy", PrimChecks.math.mult(6776, 6777, PrimChecks.math.mult(6769, 6770, 0.5, PrimChecks.validator.checkArg('*', 6769, 6770, 1, PrimChecks.turtle.getVariable(6771, 6775, "mass"))), PrimChecks.math.pow(6785, 6786, PrimChecks.validator.checkArg('^', 6785, 6786, 1, PrimChecks.turtle.getVariable(6779, 6784, "speed")), 2)));
-    PrimChecks.context.assertKind(2, 'if', 6795, 6865);
     if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-      PrimChecks.context.assertKind(2, 'set', 6827, 6863);
       PrimChecks.turtle.setVariable(6831, 6838, "heading", PrimChecks.math.minus(6846, 6847, PrimChecks.validator.checkArg('-', 6846, 6847, 1, theta), PrimChecks.math.atan(6849, 6853, PrimChecks.validator.checkArg('ATAN', 6849, 6853, 1, v2l), PrimChecks.validator.checkArg('ATAN', 6849, 6853, 1, v2t))));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6685, 6688, R); return R; }

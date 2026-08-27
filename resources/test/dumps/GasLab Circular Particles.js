@@ -174,9 +174,7 @@ ProcedurePrims.defineCommand("make-particles", 1398, 2051, (function() {
     var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 1947, 1950, 1904, theHparticle), 1947, 1950), function() {
       PrimChecks.context.assertKind(2, 'position-randomly', 1972, 1989);
       var R = ProcedurePrims.callCommand("position-randomly"); if (R === DeathInterrupt) { return R; }
-      PrimChecks.context.assertKind(2, 'while', 1996, 2040);
       while (PrimChecks.procedure.callReporter(2004, 2016, "overlapping?")) {
-        PrimChecks.context.assertKind(2, 'position-randomly', 2021, 2038);
         var R = ProcedurePrims.callCommand("position-randomly"); if (R === DeathInterrupt) { return R; }
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1947, 1950, R); return R; }
@@ -375,11 +373,8 @@ ProcedurePrims.defineCommand("collide-with", 14639, 16773, (function(otherHparti
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 16471, 16474, 1904, otherHparticle), 16471, 16474), function() {
     PrimChecks.context.assertKind(2, 'set', 16496, 16534);
     PrimChecks.turtle.setVariable(16500, 16505, "speed", PrimChecks.math.sqrt(16506, 16510, PrimChecks.math.plus(16522, 16523, PrimChecks.math.pow(16517, 16518, PrimChecks.validator.checkArg('^', 16517, 16518, 1, v2t), 2), PrimChecks.math.pow(16529, 16530, PrimChecks.validator.checkArg('^', 16529, 16530, 1, v2l), 2))));
-    PrimChecks.context.assertKind(2, 'set', 16539, 16564);
     PrimChecks.turtle.setVariable(16543, 16549, "energy", PrimChecks.procedure.callReporter(16550, 16564, "kinetic-energy"));
-    PrimChecks.context.assertKind(2, 'if', 16570, 16640);
     if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-      PrimChecks.context.assertKind(2, 'set', 16602, 16638);
       PrimChecks.turtle.setVariable(16606, 16613, "heading", PrimChecks.math.minus(16621, 16622, PrimChecks.validator.checkArg('-', 16621, 16622, 1, theta), PrimChecks.math.atan(16624, 16628, PrimChecks.validator.checkArg('ATAN', 16624, 16628, 1, v2l), PrimChecks.validator.checkArg('ATAN', 16624, 16628, 1, v2t))));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(16471, 16474, R); return R; }

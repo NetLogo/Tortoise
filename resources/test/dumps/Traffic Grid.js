@@ -138,17 +138,11 @@ ProcedurePrims.defineCommand("setup-intersections", 4443, 4720, (function() {
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 4465, 4468, 1904, world.observer.getGlobal("intersections")), 4465, 4468), function() {
     PrimChecks.context.assertKind(6, 'set', 4491, 4513);
     PrimChecks.patch.setVariable(4495, 4508, "intersection?", true);
-    PrimChecks.context.assertKind(6, 'set', 4518, 4542);
     PrimChecks.patch.setVariable(4522, 4537, "green-light-up?", true);
-    PrimChecks.context.assertKind(6, 'set', 4547, 4561);
     PrimChecks.patch.setVariable(4551, 4559, "my-phase", 0);
-    PrimChecks.context.assertKind(6, 'set', 4566, 4580);
     PrimChecks.patch.setVariable(4570, 4575, "auto?", true);
-    PrimChecks.context.assertKind(6, 'set', 4585, 4635);
     PrimChecks.patch.setVariable(4589, 4595, "my-row", PrimChecks.math.floor(PrimChecks.math.div(4622, 4623, PrimChecks.math.plus(4609, 4610, PrimChecks.validator.checkArg('+', 4609, 4610, 1, PrimChecks.patch.getVariable(4603, 4608, "pycor")), world.topology.maxPycor), PrimChecks.validator.checkArg('/', 4622, 4623, 1, world.observer.getGlobal("grid-y-inc")))));
-    PrimChecks.context.assertKind(6, 'set', 4640, 4693);
     PrimChecks.patch.setVariable(4644, 4653, "my-column", PrimChecks.math.floor(PrimChecks.math.div(4680, 4681, PrimChecks.math.plus(4667, 4668, PrimChecks.validator.checkArg('+', 4667, 4668, 1, PrimChecks.patch.getVariable(4661, 4666, "pxcor")), world.topology.maxPxcor), PrimChecks.validator.checkArg('/', 4680, 4681, 1, world.observer.getGlobal("grid-x-inc")))));
-    PrimChecks.context.assertKind(6, 'set-signal-colors', 4698, 4715);
     var R = ProcedurePrims.callCommand("set-signal-colors"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4465, 4468, R); return R; }
 }))
@@ -217,7 +211,6 @@ ProcedurePrims.defineCommand("update-current", 6582, 6682, (function() {
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 6599, 6602, 1904, world.observer.getGlobal("current-light")), 6599, 6602), function() {
     PrimChecks.context.assertKind(6, 'set', 6623, 6649);
     PrimChecks.patch.setVariable(6627, 6635, "my-phase", world.observer.getGlobal("current-phase"));
-    PrimChecks.context.assertKind(6, 'set', 6654, 6677);
     PrimChecks.patch.setVariable(6658, 6663, "auto?", world.observer.getGlobal("current-auto?"));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6599, 6602, R); return R; }
 }))
@@ -242,7 +235,6 @@ ProcedurePrims.defineCommand("set-signals", 7110, 7286, (function() {
   }), function() {
     PrimChecks.context.assertKind(6, 'set', 7218, 7259);
     PrimChecks.patch.setVariable(7222, 7237, "green-light-up?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 7239, 7242, 2, PrimChecks.patch.getVariable(7243, 7258, "green-light-up?"))));
-    PrimChecks.context.assertKind(6, 'set-signal-colors', 7264, 7281);
     var R = ProcedurePrims.callCommand("set-signal-colors"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7124, 7127, R); return R; }
 }))
@@ -329,7 +321,6 @@ ProcedurePrims.defineCommand("change-current", 9634, 9745, (function() {
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 9651, 9654, 1904, world.observer.getGlobal("current-light")), 9651, 9654), function() {
     PrimChecks.context.assertKind(6, 'set', 9677, 9718);
     PrimChecks.patch.setVariable(9681, 9696, "green-light-up?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 9698, 9701, 2, PrimChecks.patch.getVariable(9702, 9717, "green-light-up?"))));
-    PrimChecks.context.assertKind(6, 'set-signal-colors', 9723, 9740);
     var R = ProcedurePrims.callCommand("set-signal-colors"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9651, 9654, R); return R; }
 }))

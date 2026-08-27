@@ -132,7 +132,6 @@ ProcedurePrims.defineCommand("attach-turtle", 522, 1335, (function() {
     else {
       PrimChecks.context.assertKind(2, 'set', 1294, 1307);
       PrimChecks.turtleOrLink.setVariable(1298, 1303, "color", 95);
-      PrimChecks.context.assertKind(2, 'set', 1314, 1330);
       PrimChecks.turtleOrLink.setVariable(1318, 1323, "shape", "line");
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1222, 1225, R); return R; }

@@ -79,14 +79,13 @@ trait Handlers extends EveryIDProvider {
           commands(block.statements, useCompileArgs)(using compilerFlags, context, procContext)
 
         case statements: Statements =>
-          val generatedJS =
-            statements.stmts.map( (stmt) => {
-              val js = prims.generateCommand(stmt, useCompileArgs)(using compilerFlags, context, procContext)
-              AgentContext.guardStatement(stmt, js, context.agentContext)
-            })
-              .filter(_.nonEmpty)
-              .mkString("\n")
-          generatedJS
+          val (_, generated) =
+            statements.stmts.foldLeft((context, Seq[String]())) { case ((stmtContext, acc), stmt) =>
+              val js      = prims.generateCommand(stmt, useCompileArgs)(using compilerFlags, stmtContext, procContext)
+              val guarded = AgentContext.guardStatement(stmt, js, stmtContext.agentContext)
+              (stmtContext.provenBy(stmt.command), acc :+ guarded)
+            }
+          generated.filter(_.nonEmpty).mkString("\n")
 
       case _ =>
         CompilerErrors.failCompilation(s"Unknown command node: ${node.toString}", node.start, node.end, node.filename)

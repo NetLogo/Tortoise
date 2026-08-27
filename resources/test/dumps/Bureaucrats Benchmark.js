@@ -90,9 +90,7 @@ ProcedurePrims.defineCommand("go", 254, 739, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 305, 308, 1904, activeHpatches), function() {
     PrimChecks.context.assertKind(6, 'set', 330, 341);
     PrimChecks.patch.setVariable(334, 335, "n", PrimChecks.math.plus(338, 339, PrimChecks.validator.checkArg('+', 338, 339, 1, PrimChecks.patch.getVariable(336, 337, "n")), 1));
-    PrimChecks.context.assertKind(6, 'set', 346, 365);
     world.observer.setGlobal("total", PrimChecks.math.plus(362, 363, PrimChecks.validator.checkArg('+', 362, 363, 1, world.observer.getGlobal("total")), 1));
-    PrimChecks.context.assertKind(6, 'colorize', 370, 378);
     var R = ProcedurePrims.callCommand("colorize"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(305, 308, R); return R; }
   while (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 392, 396, 112, activeHpatches))) {
@@ -100,11 +98,8 @@ ProcedurePrims.defineCommand("go", 254, 739, (function() {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 474, 477, 1904, overloadedHpatches), function() {
       PrimChecks.context.assertKind(6, 'set', 505, 516);
       PrimChecks.patch.setVariable(509, 510, "n", PrimChecks.math.minus(513, 514, PrimChecks.validator.checkArg('-', 513, 514, 1, PrimChecks.patch.getVariable(511, 512, "n")), 4));
-      PrimChecks.context.assertKind(6, 'set', 523, 542);
       world.observer.setGlobal("total", PrimChecks.math.minus(539, 540, PrimChecks.validator.checkArg('-', 539, 540, 1, world.observer.getGlobal("total")), 4));
-      PrimChecks.context.assertKind(6, 'colorize', 549, 557);
       var R = ProcedurePrims.callCommand("colorize"); if (R === DeathInterrupt) { return R; }
-      PrimChecks.context.assertKind(6, 'ask', 564, 653);
       var R = ProcedurePrims.ask(SelfManager.self().getNeighbors4(), function() {
         PrimChecks.patch.setVariable(593, 594, "n", PrimChecks.math.plus(597, 598, PrimChecks.validator.checkArg('+', 597, 598, 1, PrimChecks.patch.getVariable(595, 596, "n")), 1));
         world.observer.setGlobal("total", PrimChecks.math.plus(625, 626, PrimChecks.validator.checkArg('+', 625, 626, 1, world.observer.getGlobal("total")), 1));

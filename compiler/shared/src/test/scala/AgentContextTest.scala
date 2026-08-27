@@ -125,6 +125,40 @@ class AgentContextTest extends AnyFunSuite {
     )
   }
 
+  // A statement's check proves its requirement for everything that follows it in the same list, so a run of
+  // statements needing the same kind is guarded once, at the position desktop's interpreter would fail at.
+  test("a proven kind covers the rest of the statement list") {
+    assertResult(1)(guardCount("to foo [a] ask a [ fd 1 rt 5 set heading 90 ] end"))
+  }
+
+  test("the proof reaches into blocks that inherit the enclosing context") {
+    assertResult(1)(guardCount("to foo [a] ask a [ fd 1 if true [ rt 5 ] ] end"))
+  }
+
+  test("a statement needing more than the proof covers still gets its own check") {
+    // `set color` is turtle-or-link, which doesn't prove the turtle `fd` needs.
+    val js = guardsIn("to foo [a] ask a [ set color red fd 1 ] end")
+    assertResult(Seq("10", "2"))(js.map(_._1))
+  }
+
+  test("a block that rebinds self starts over from its own context") {
+    // The outer `fd` proves turtle, but the inner ask is a fresh context.
+    assertResult(2)(guardCount("to foo [a] ask a [ fd 1 ask link-neighbors [ fd 1 ] ] end"))
+  }
+
+  private val GuardCall = """PrimChecks\.context\.assertKind\((\d+), '([^']+)'""".r
+
+  private def guardsIn(code: String): Seq[(String, String)] =
+    GuardCall.findAllMatchIn(jsFor(code)).map( (m) => (m.group(1), m.group(2)) ).toSeq
+
+  private def guardCount(code: String): Int =
+    guardsIn(code).length
+
+  private def jsFor(code: String): String = {
+    val model = CModel(code, List(View.square(16)))
+    compiler.toJS(compiler.compileProcedures(model)(using CompilerFlags.Default))(using CompilerFlags.Default)
+  }
+
   private def defsFor(code: String) = {
     val model = CModel(code, List(View.square(16)))
     val (defs, _, _) = compiler.compileMoreProcedures(model, Program.empty(), FrontEndInterface.NoProcedures)

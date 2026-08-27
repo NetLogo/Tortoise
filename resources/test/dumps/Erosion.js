@@ -129,7 +129,6 @@ ProcedurePrims.defineCommand("go", 1384, 1929, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1787, 1790, 1904, world.observer.getGlobal("drains")), function() {
     PrimChecks.context.assertKind(6, 'set', 1804, 1815);
     PrimChecks.patch.setVariable(1808, 1813, "water", 0);
-    PrimChecks.context.assertKind(6, 'set', 1820, 1843);
     PrimChecks.patch.setVariable(1824, 1833, "elevation", -10000000);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1787, 1790, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1879, 1882, 1904, world.observer.getGlobal("land")), function() {

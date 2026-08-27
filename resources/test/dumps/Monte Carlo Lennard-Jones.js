@@ -117,15 +117,10 @@ ProcedurePrims.defineReporter("calc-v", 2180, 2580, (function() {
   var R = ProcedurePrims.ask(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("cutoff-dist"))), function() {
     PrimChecks.context.assertKind(6, 'let', 2246, 2279);
     let rsquare = PrimChecks.math.pow(2276, 2277, PrimChecks.turtle.distance(2259, 2267, SelfManager.myself()), 2); ProcedurePrims.stack().currentContext().registerStringRunVar("RSQUARE", rsquare);
-    PrimChecks.context.assertKind(6, 'let', 2284, 2315);
     let dsquare = PrimChecks.math.mult(2305, 2306, PrimChecks.validator.checkArg('*', 2305, 2306, 1, world.observer.getGlobal("diameter")), PrimChecks.validator.checkArg('*', 2305, 2306, 1, world.observer.getGlobal("diameter"))); ProcedurePrims.stack().currentContext().registerStringRunVar("DSQUARE", dsquare);
-    PrimChecks.context.assertKind(6, 'let', 2320, 2362);
     let attractHterm = PrimChecks.math.div(2349, 2350, PrimChecks.math.pow(2345, 2346, PrimChecks.validator.checkArg('^', 2345, 2346, 1, dsquare), 3), PrimChecks.math.pow(2359, 2360, PrimChecks.validator.checkArg('^', 2359, 2360, 1, rsquare), 3)); ProcedurePrims.stack().currentContext().registerStringRunVar("ATTRACT-TERM", attractHterm);
-    PrimChecks.context.assertKind(6, 'let', 2367, 2409);
     let repelHterm = PrimChecks.math.mult(2395, 2396, PrimChecks.validator.checkArg('*', 2395, 2396, 1, attractHterm), PrimChecks.validator.checkArg('*', 2395, 2396, 1, attractHterm)); ProcedurePrims.stack().currentContext().registerStringRunVar("REPEL-TERM", repelHterm);
-    PrimChecks.context.assertKind(6, 'let', 2490, 2547);
     let vi = PrimChecks.math.plus(2535, 2536, PrimChecks.math.mult(2505, 2506, PrimChecks.math.mult(2499, 2500, 4, PrimChecks.validator.checkArg('*', 2499, 2500, 1, world.observer.getGlobal("eps"))), PrimChecks.math.minus(2519, 2520, PrimChecks.validator.checkArg('-', 2519, 2520, 1, repelHterm), PrimChecks.validator.checkArg('-', 2519, 2520, 1, attractHterm))), PrimChecks.validator.checkArg('+', 2535, 2536, 1, world.observer.getGlobal("pot-offset"))); ProcedurePrims.stack().currentContext().registerStringRunVar("VI", vi);
-    PrimChecks.context.assertKind(6, 'set', 2552, 2564);
     v = PrimChecks.math.plus(2560, 2561, PrimChecks.validator.checkArg('+', 2560, 2561, 1, v), PrimChecks.validator.checkArg('+', 2560, 2561, 1, vi)); ProcedurePrims.stack().currentContext().updateStringRunVar("V", v);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2200, 2203, R); return R; }
   return PrimChecks.procedure.report(2571, 2577, v);
