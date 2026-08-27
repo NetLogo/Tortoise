@@ -230,7 +230,7 @@ ProcedurePrims.defineCommand("recalculate-wall-color", 7668, 8225, (function() {
 }))
 ProcedurePrims.defineCommand("check-for-forward-reaction", 8544, 9638, (function() {
   let hitHhydrogen = PrimChecks.agentset.with(8600, 8604, world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
-    return (Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(PrimChecks.turtle.getVariable(8631, 8644, "molecule-type"), "hydrogen"));
+    return (Prims.lte(PrimChecks.turtle.distance(8606, 8614, SelfManager.myself()), 1) && Prims.equality(PrimChecks.turtle.getVariable(8631, 8644, "molecule-type"), "hydrogen"));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("HIT-HYDROGEN", hitHhydrogen);
   if ((Prims.gte(PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 8665, 8670, 112, hitHhydrogen)), 3) && Prims.equality(RandomPrims.randomLong(2), 0))) {
     if (Prims.lt(PrimChecks.turtle.getVariable(8746, 8751, "speed"), 0)) {
@@ -258,7 +258,7 @@ ProcedurePrims.defineCommand("check-for-forward-reaction", 8544, 9638, (function
 }))
 ProcedurePrims.defineCommand("check-for-reverse-reaction", 9647, 10925, (function() {
   let hitHnh3 = PrimChecks.agentset.with(9698, 9702, world.turtleManager.turtlesOfBreed("PARTICLES"), function() {
-    return ((Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(PrimChecks.turtle.getVariable(9729, 9742, "molecule-type"), "nh3")) && !Prims.equality(SelfManager.self(), SelfManager.myself()));
+    return ((Prims.lte(PrimChecks.turtle.distance(9704, 9712, SelfManager.myself()), 1) && Prims.equality(PrimChecks.turtle.getVariable(9729, 9742, "molecule-type"), "nh3")) && !Prims.equality(SelfManager.self(), SelfManager.myself()));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("HIT-NH3", hitHnh3);
   if ((Prims.gte(PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 9777, 9782, 112, hitHnh3)), 1) && Prims.equality(RandomPrims.randomLong(2), 0))) {
     let reactants = PrimChecks.list.nOf(9863, 9867, 1, PrimChecks.validator.checkArg('N-OF', 9863, 9867, 120, hitHnh3)); ProcedurePrims.stack().currentContext().registerStringRunVar("REACTANTS", reactants);

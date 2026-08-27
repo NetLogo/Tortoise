@@ -201,7 +201,7 @@ ProcedurePrims.defineCommand("pick-team-members", 2056, 3026, (function() {
 }))
 ProcedurePrims.defineCommand("tie-collaborators", 3104, 3343, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(3136, 3140, world.turtles(), function() { return PrimChecks.turtle.getVariable(3142, 3150, "in-team?"); }), function() {
-    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(PrimChecks.agentset.otherWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(3198, 3206, "in-team?"); }), "LINKS"), function() {
+    var R = ProcedurePrims.ask(LinkPrims.createLinksWith(PrimChecks.validator.checkArg('CREATE-LINKS-WITH', 3160, 3177, 16, PrimChecks.agentset.otherWith(null, null, world.turtles(), function() { return PrimChecks.turtle.getVariable(3198, 3206, "in-team?"); })), "LINKS"), function() {
       PrimChecks.link.setVariable(3224, 3242, "new-collaboration?", true);
       PrimChecks.link.setVariable(3319, 3328, "thickness", 0.3);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3160, 3177, R); return R; }

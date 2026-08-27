@@ -7,7 +7,7 @@ Patch                 = require('../core/patch')
 PatchSet              = require('../core/patchset')
 Turtle                = require('../core/turtle')
 TurtleSet             = require('../core/turtleset')
-{ checks, getTypeOf } = require('../core/typechecker')
+{ aTypeName, checks, getTypeOf } = require('../core/typechecker')
 StrictMath            = require('shim/strictmath')
 Timer                 = require('util/timer')
 notImplemented        = require('util/notimplemented')
@@ -17,6 +17,10 @@ notImplemented        = require('util/notimplemented')
 { flatMap, flattenDeep, isEmpty, map } = require('brazierjs/array')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('util/comparator')
+
+# Desktop's comparison prims order two agents only when they are the same kind of agent (they compare `agentBit`), so
+# a turtle and a patch is an error rather than a silent, meaningless answer.  -Jeremy B August 2026
+isSameAgentType = (a, b) -> checks.isAgent(a) and checks.isAgent(b) and getTypeOf(a) is getTypeOf(b)
 
 getNeighbors  = (patch) -> patch.getNeighbors()
 getNeighbors4 = (patch) -> patch.getNeighbors4()
@@ -30,9 +34,15 @@ module.exports =
 
     _everyMap: undefined # Object[String, Timer]
 
-    # (Dump, Hasher, RNG, World) => Prims
-    constructor: (@_dumper, @_hasher, @_rng, @_world, @_printPrims) ->
+    # (Dump, Hasher, RNG, World, PrintPrims, I18nBundle) => Prims
+    constructor: (@_dumper, @_hasher, @_rng, @_world, @_printPrims, @_i18nBundle) ->
       @_everyMap = {}
+
+    # (String, Any, Any) => Nothing
+    _comparisonError: (operator, a, b) ->
+      key     = 'The _ operator can only be used on two numbers, two strings, or two agents of the same type, but not on _ and _.'
+      message = @_i18nBundle.get(key, operator, aTypeName(a), aTypeName(b))
+      throw exceptions.runtime(message, operator, undefined, undefined, key)
 
     # () => Nothing
     boom: ->
@@ -174,20 +184,20 @@ module.exports =
     gt: (a, b) ->
       if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
         a > b
-      else if typeof(a) is typeof(b) and a.compare? and b.compare?
+      else if isSameAgentType(a, b)
         a.compare(b) is GT
       else
-        throw exceptions.internal("Invalid operands to `gt`")
+        @_comparisonError('>', a, b)
 
     # (Any, Any) => Boolean
     gte: (a, b) ->
       if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
         a >= b
-      else if typeof(a) is typeof(b) and a.compare? and b.compare?
+      else if isSameAgentType(a, b)
         result = a.compare(b)
         result is GT or result is EQ
       else
-        throw exceptions.internal("Invalid operands to `gt`")
+        @_comparisonError('>=', a, b)
 
     # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
     linkSet: (inputs) ->
@@ -197,10 +207,10 @@ module.exports =
     lt: (a, b) ->
       if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
         a < b
-      else if typeof(a) is typeof(b) and a.compare? and b.compare?
+      else if isSameAgentType(a, b)
         a.compare(b) is LT
       else
-        throw exceptions.internal("Invalid operands to `lt`")
+        @_comparisonError('<', a, b)
 
     # (Any, Any) => Boolean
     # Why don't we simply use lt + eq (and in gte's case, gt + eq?) Because it will cause many unnecessary type checks.
@@ -209,11 +219,11 @@ module.exports =
     lte: (a, b) ->
       if (checks.isNumber(a) and checks.isNumber(b)) or (checks.isString(a) and checks.isString(b))
         a <= b
-      else if typeof(a) is typeof(b) and a.compare? and b.compare?
+      else if isSameAgentType(a, b)
         result = a.compare(b)
         result is LT or result is EQ
       else
-        throw exceptions.internal("Invalid operands to `lt`")
+        @_comparisonError('<=', a, b)
 
     # Some complications here....
     #

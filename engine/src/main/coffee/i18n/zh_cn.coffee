@@ -115,8 +115,6 @@ bundle = {
 , 'STOP is not allowed inside TO-REPORT.': () ->
   "不能在 TO-REPORT 中使用 STOP。"
 
-, 'Reached end of reporter procedure without REPORT being called.': () ->
-  "在函数结束时，应当使用 `REPORT` 进行输出。"
 
 , '_ doesn_t accept further inputs if the first is a string': (primName) ->
   "如果第一个输入是字符串，#{primName} 无法接受更多输入。"

@@ -529,7 +529,7 @@ trait CommandPrims extends PrimUtils {
     }
 
     def generateCreateLink(name: String, breedName: String): String = {
-      val other                = args.get(0)
+      val other                = args.makeCheckedOp(0)
       // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
       val nonEmptyCommandBlock = s.args(1).asInstanceOf[CommandBlock].statements.stmts.nonEmpty
       val body                 = handlers.blockFun(s, s.args(1))

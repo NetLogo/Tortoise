@@ -95,6 +95,7 @@ object SimplePrims {
 
         // Turtle
         case _: prim._turtle        => "PrimChecks.turtle.getTurtle"
+        case _: prim.etc._distance  => "PrimChecks.turtle.distance"
         case _: prim.etc._towards   => "PrimChecks.turtle.towards"
         case _: prim.etc._towardsxy => "PrimChecks.turtle.towardsXY"
 
@@ -188,7 +189,6 @@ object SimplePrims {
         // SelfManager
         case _: prim.etc._bothends                   => "SelfManager.self().bothEnds"
         case _: prim.etc._canmove                    => "SelfManager.self().canMove"
-        case _: prim.etc._distance                   => "SelfManager.self().distance"
         case _: prim.etc._distancexy                 => "SelfManager.self().distanceXY"
         case _: prim.etc._dx                         => "SelfManager.self().dx"
         case _: prim.etc._dy                         => "SelfManager.self().dy"
@@ -315,6 +315,7 @@ object SimplePrims {
       PartialFunction.condOpt(c) {
 
         // Turtle
+        case _: prim.etc._moveto       => "PrimChecks.turtle.moveTo"
         case _: prim.etc._setxy        => "PrimChecks.turtle.setXY"
         // Random
         case _: prim.etc._randomseed   => "PrimChecks.math.randomSeed"
@@ -382,7 +383,6 @@ object SimplePrims {
         case _: prim._jump           => "SelfManager.self().jumpIfAble"
         case _: prim.etc._followme   => "SelfManager.self().followMe"
         case _: prim.etc._home       => "SelfManager.self().goHome"
-        case _: prim.etc._moveto     => "SelfManager.self().moveTo"
         case _: prim.etc._pendown    => "SelfManager.self().penManager.lowerPen"
         case _: prim.etc._penerase   => "SelfManager.self().penManager.useEraser"
         case _: prim.etc._penup      => "SelfManager.self().penManager.raisePen"

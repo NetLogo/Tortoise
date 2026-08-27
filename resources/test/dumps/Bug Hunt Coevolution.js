@@ -150,7 +150,7 @@ ProcedurePrims.defineCommand("attach-vision-cone", 2632, 2863, (function() {
   let parentHvision = PrimChecks.turtle.getVariable(2671, 2677, "vision"); ProcedurePrims.stack().currentContext().registerStringRunVar("PARENT-VISION", parentHvision);
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     PrimChecks.turtleOrLink.setVariable(2699, 2704, "breed", world.turtleManager.turtlesOfBreed("VISION-CONES"));
-    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS"), function() { SelfManager.self().tie(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2722, 2738, R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 2722, 2738, 256, SelfManager.myself()), "LINKS"), function() { SelfManager.self().tie(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2722, 2738, R); return R; }
     PrimChecks.turtleOrLink.setVariable(2760, 2765, "shape", "vision cone");
     PrimChecks.turtleOrLink.setVariable(2788, 2793, "color", 5);
     PrimChecks.turtle.setVariable(2808, 2812, "size", parentHvision);
@@ -216,9 +216,9 @@ ProcedurePrims.defineCommand("move-bugs", 3723, 4807, (function() {
         predator = PrimChecks.list.oneOf(4465, 4471, PrimChecks.validator.checkArg('ONE-OF', 4465, 4471, 120, candidateHpredators)); ProcedurePrims.stack().currentContext().updateStringRunVar("PREDATOR", predator);
       }
       if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "nearest") && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 4537, 4541, 112, candidateHpredators)))) {
-        predator = PrimChecks.agentset.minOneOf(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('MIN-ONE-OF', 4585, 4595, 112, candidateHpredators), 'min-one-of', 4585, 4633), function() { return SelfManager.self().distance(SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("PREDATOR", predator);
+        predator = PrimChecks.agentset.minOneOf(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('MIN-ONE-OF', 4585, 4595, 112, candidateHpredators), 'min-one-of', 4585, 4633), function() { return PrimChecks.turtle.distance(4617, 4625, SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("PREDATOR", predator);
       }
-      targetHheading = PrimChecks.math.plus(4666, 4667, 180, PrimChecks.turtle.towards(4668, 4675, PrimChecks.validator.checkArg('TOWARDS', 4668, 4675, 768, predator))); ProcedurePrims.stack().currentContext().updateStringRunVar("TARGET-HEADING", targetHheading);
+      targetHheading = PrimChecks.math.plus(4666, 4667, 180, PrimChecks.turtle.towards(4668, 4675, PrimChecks.validator.checkArg('TOWARDS', 4668, 4675, 1792, predator))); ProcedurePrims.stack().currentContext().updateStringRunVar("TARGET-HEADING", targetHheading);
       PrimChecks.turtle.setVariable(4697, 4704, "heading", targetHheading);
       PrimChecks.turtleOrLink.setVariable(4731, 4742, "label-color", 0);
       PrimChecks.turtleOrLink.setVariable(4760, 4765, "label", "!");
@@ -237,11 +237,11 @@ ProcedurePrims.defineCommand("move-birds", 4815, 6236, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BIRDS"), function() {
     candidateHbugs = SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("BUGS"), world.observer.getGlobal("initial-bird-vision"), 120); ProcedurePrims.stack().currentContext().updateStringRunVar("CANDIDATE-BUGS", candidateHbugs);
     if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 5377, 5381, 112, candidateHbugs))) {
-      closestHbug = PrimChecks.agentset.minOneOf(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('MIN-ONE-OF', 5421, 5431, 112, candidateHbugs), 'min-one-of', 5421, 5465), function() { return SelfManager.self().distance(SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("CLOSEST-BUG", closestHbug);
+      closestHbug = PrimChecks.agentset.minOneOf(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('MIN-ONE-OF', 5421, 5431, 112, candidateHbugs), 'min-one-of', 5421, 5465), function() { return PrimChecks.turtle.distance(5449, 5457, SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("CLOSEST-BUG", closestHbug);
       if ((Prims.equality(PrimChecks.turtle.getVariable(5476, 5482, "target"), Nobody) && Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "lock on one"))) {
         preyHagent = closestHbug; ProcedurePrims.stack().currentContext().updateStringRunVar("PREY-AGENT", preyHagent);
         PrimChecks.turtle.setVariable(5583, 5589, "target", preyHagent);
-        PrimChecks.turtle.setVariable(5613, 5620, "heading", PrimChecks.turtle.towards(5621, 5628, PrimChecks.validator.checkArg('TOWARDS', 5621, 5628, 768, preyHagent)));
+        PrimChecks.turtle.setVariable(5613, 5620, "heading", PrimChecks.turtle.towards(5621, 5628, PrimChecks.validator.checkArg('TOWARDS', 5621, 5628, 1792, preyHagent)));
         PrimChecks.turtleOrLink.setVariable(5652, 5663, "label-color", PrimChecks.math.minus(5668, 5669, 15, 2));
         PrimChecks.turtleOrLink.setVariable(5684, 5689, "label", "!");
         assignedHtarget_Q = true; ProcedurePrims.stack().currentContext().updateStringRunVar("ASSIGNED-TARGET?", assignedHtarget_Q);
@@ -249,7 +249,7 @@ ProcedurePrims.defineCommand("move-birds", 4815, 6236, (function() {
       if ((Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "closest") && !Prims.equality(PrimChecks.turtle.getVariable(5784, 5790, "target"), closestHbug))) {
         preyHagent = closestHbug; ProcedurePrims.stack().currentContext().updateStringRunVar("PREY-AGENT", preyHagent);
         PrimChecks.turtle.setVariable(5856, 5862, "target", preyHagent);
-        PrimChecks.turtle.setVariable(5894, 5901, "heading", PrimChecks.turtle.towards(5902, 5909, PrimChecks.validator.checkArg('TOWARDS', 5902, 5909, 768, preyHagent)));
+        PrimChecks.turtle.setVariable(5894, 5901, "heading", PrimChecks.turtle.towards(5902, 5909, PrimChecks.validator.checkArg('TOWARDS', 5902, 5909, 1792, preyHagent)));
         PrimChecks.turtleOrLink.setVariable(5933, 5944, "label-color", PrimChecks.math.minus(5949, 5950, 15, 2));
         PrimChecks.turtleOrLink.setVariable(5965, 5970, "label", "!");
         assignedHtarget_Q = true; ProcedurePrims.stack().currentContext().updateStringRunVar("ASSIGNED-TARGET?", assignedHtarget_Q);

@@ -293,7 +293,7 @@ ProcedurePrims.defineCommand("move", 6265, 7683, (function() {
       world.observer.setGlobal("angle", PrimChecks.math.randomFloat(180));
       let newHpatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), -1); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PATCH", newHpatch);
       if (!Prims.equality(newHpatch, Nobody)) {
-        SelfManager.self().moveTo(newHpatch);
+        PrimChecks.turtle.moveTo(6648, 6655, PrimChecks.validator.checkArg('MOVE-TO', 6648, 6655, 1792, newHpatch));
       }
     }
     else {
@@ -317,7 +317,7 @@ ProcedurePrims.defineCommand("move", 6265, 7683, (function() {
       world.observer.setGlobal("angle", PrimChecks.math.randomFloat(180));
       let newHpatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), 1); ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-PATCH", newHpatch);
       if (!Prims.equality(newHpatch, Nobody)) {
-        SelfManager.self().moveTo(newHpatch);
+        PrimChecks.turtle.moveTo(7305, 7312, PrimChecks.validator.checkArg('MOVE-TO', 7305, 7312, 1792, newHpatch));
       }
     }
     else {
@@ -362,7 +362,7 @@ ProcedurePrims.defineCommand("maybe-recover", 7752, 8466, (function() {
 }))
 ProcedurePrims.defineCommand("isolate", 8559, 8701, (function() {
   PrimChecks.turtle.setVariable(8593, 8602, "isolated?", true);
-  SelfManager.self().moveTo(SelfManager.self().getPatchHere());
+  PrimChecks.turtle.moveTo(8610, 8617, SelfManager.self().getPatchHere());
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8658, 8661, 1904, SelfManager.self()._optimalPatchHereInternal()), function() { PrimChecks.patch.setVariable(8683, 8689, "pcolor", PrimChecks.math.minus(8695, 8696, 5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(8658, 8661, R); return R; }
 }))
 ProcedurePrims.defineCommand("unisolate", 8764, 9177, (function() {
@@ -380,10 +380,10 @@ ProcedurePrims.defineCommand("hospitalize", 9265, 9473, (function() {
   PrimChecks.turtle.setVariable(9303, 9316, "hospitalized?", true);
   PrimChecks.patch.setVariable(9328, 9334, "pcolor", 0);
   if (Prims.equality(PrimChecks.turtle.getVariable(9350, 9359, "continent"), 1)) {
-    SelfManager.self().moveTo(world.getPatchAt(PrimChecks.math.div(9399, 9400, PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0));
+    PrimChecks.turtle.moveTo(9372, 9379, PrimChecks.validator.checkArg('MOVE-TO', 9372, 9379, 1792, world.getPatchAt(PrimChecks.math.div(9399, 9400, PrimChecks.math.unaryminus(world.topology.maxPxcor), 2), 0)));
   }
   else {
-    SelfManager.self().moveTo(world.getPatchAt(PrimChecks.math.div(9443, 9444, world.topology.maxPxcor, 2), 0));
+    PrimChecks.turtle.moveTo(9418, 9425, PrimChecks.validator.checkArg('MOVE-TO', 9418, 9425, 1792, world.getPatchAt(PrimChecks.math.div(9443, 9444, world.topology.maxPxcor, 2), 0)));
   }
   PrimChecks.patch.setVariable(9460, 9466, "pcolor", 9.9);
 }))

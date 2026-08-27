@@ -2,6 +2,8 @@
 
 { fold } = require('brazierjs/maybe')
 
+{ checks } = require('engine/core/typechecker')
+
 { TopologyInterrupt, TowardsInterrupt } = require('util/interrupts')
 
 # (() => Agent, Validator) => (String, Map[Any, String]) => (Any) => Unit
@@ -114,8 +116,39 @@ class TurtleChecks
 
     return
 
+  # Desktop's `_distance`, `_towards`, and `_moveto` take any agent at runtime and reject a link themselves, so the
+  # wording is the prim's rather than an argument-type error's.  -Jeremy B August 2026
+  # (String, Int, Int, Agent) => Unit
+  rejectLink: (prim, sourceStart, sourceEnd, agent) ->
+    if checks.isLink(agent)
+      @validator.error(prim, sourceStart, sourceEnd, 'Expected a turtle or a patch but got a link.')
+    return
+
+  # (String, Int, Int, Agent) => Unit
+  rejectDead: (prim, sourceStart, sourceEnd, agent) ->
+    if agent.isDead?()
+      @validator.error(prim, sourceStart, sourceEnd, 'That _ is dead.', agent.getBreedNameSingular())
+    return
+
+  # (Int, Int, Agent) => Number
+  distance: (sourceStart, sourceEnd, agent) ->
+    @rejectLink('distance', sourceStart, sourceEnd, agent)
+    @rejectDead('distance', sourceStart, sourceEnd, agent)
+    @getSelf().distance(agent)
+
+  # (Int, Int, Agent) => Unit
+  moveTo: (sourceStart, sourceEnd, agent) ->
+    # Desktop checks these in the opposite order from `distance` and `towards`; a dead link names its deadness.
+    @rejectDead('move-to', sourceStart, sourceEnd, agent)
+    if checks.isLink(agent)
+      @validator.error('move-to', sourceStart, sourceEnd, 'you can_t move-to a link')
+    @getSelf().moveTo(agent)
+    return
+
   # (Int, Int, Agent) => Number
   towards: (sourceStart, sourceEnd, agent) ->
+    @rejectLink('towards', sourceStart, sourceEnd, agent)
+    @rejectDead('towards', sourceStart, sourceEnd, agent)
     heading = @getSelf().towards(agent)
     if heading is TowardsInterrupt
       [x, y] = agent.getCoords()

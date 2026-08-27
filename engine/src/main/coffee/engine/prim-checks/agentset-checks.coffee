@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ checks, getTypeOf, types } = require('engine/core/typechecker')
-Comparator                   = require('util/comparator')
+{ addIndefiniteArticle, checks, getTypeOf, types } = require('engine/core/typechecker')
+Comparator                                         = require('util/comparator')
 
 class AgentSetChecks
 
@@ -186,8 +186,8 @@ class AgentSetChecks
       type1 = getTypeOf(o1)
       type2 = getTypeOf(o2)
       if type1 isnt type2 or badFirstType
-        name1 = @validator.addIndefiniteArticle(type1.niceName())
-        name2 = @validator.addIndefiniteArticle(type2.niceName())
+        name1 = addIndefiniteArticle(type1.niceName())
+        name2 = addIndefiniteArticle(type2.niceName())
         # The order swap of `name1` and `name2` is intentional to get identical errors to desktop. -Jeremy B February 2021
         @validator.error('sort-on', sourceStart, sourceEnd, 'SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _', name2, name1)
 

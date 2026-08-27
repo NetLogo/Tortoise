@@ -19,8 +19,10 @@ class ProcedureChecks
   callReporter: (sourceStart, sourceEnd, name, args...) ->
     result = @procedurePrims.callReporter(name, args...)
 
-    if result is undefined
-      @validator.error('report', sourceStart, sourceEnd, 'Reached end of reporter procedure without REPORT being called.')
+    # Desktop reports the same failure whether the body ran off the end or the agent died partway through, since
+    # either way nothing came back (`prim._callreport`).  -Jeremy B August 2026
+    if result is undefined or result is DeathInterrupt
+      @validator.error(name, sourceStart, sourceEnd, 'the _ procedure failed to report a result', name.toUpperCase())
 
     result
 

@@ -32,6 +32,20 @@ bundle = {
 , 'Color must be a number or a valid RGB/A color list with 3 - 4 numbers that have values between 0 and 255.': () ->
     'Color must be a number or a valid RGB/A color list with 3 - 4 numbers that have values between 0 and 255.'
 
+  # Agent Prims
+
+, 'That _ is dead.': (agentType) ->
+    "That #{agentType} is dead."
+
+, 'Expected a turtle or a patch but got a link.': () ->
+    "Expected a turtle or a patch but got a link."
+
+, 'you can_t move-to a link': () ->
+    "you can't move-to a link"
+
+, 'The _ operator can only be used on two numbers, two strings, or two agents of the same type, but not on _ and _.': (operator, first, second) ->
+    "The #{operator} operator can only be used on two numbers, two strings, or two agents of the same type, but not on #{first} and #{second}."
+
   # Other Prims
 
 , 'random-normal_s second input can_t be negative.': () ->
@@ -115,8 +129,8 @@ bundle = {
 , 'STOP is not allowed inside TO-REPORT.': () ->
   "STOP is not allowed inside TO-REPORT."
 
-, 'Reached end of reporter procedure without REPORT being called.': () ->
-  "Reached end of reporter procedure without REPORT being called."
+, 'the _ procedure failed to report a result': (name) ->
+  "the #{name} procedure failed to report a result"
 
 , '_ doesn_t accept further inputs if the first is a string': (primName) ->
   "#{primName} doesn't accept further inputs if the first is a string"

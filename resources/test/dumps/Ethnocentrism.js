@@ -190,7 +190,7 @@ ProcedurePrims.defineCommand("reproduce", 6202, 6675, (function() {
     let destination = PrimChecks.agentset.oneOfWith(null, null, SelfManager.self().getNeighbors4(), function() { return PrimChecks.math.not(PrimChecks.agentset.any(SelfManager.self().turtlesHere())); }); ProcedurePrims.stack().currentContext().registerStringRunVar("DESTINATION", destination);
     if (!Prims.equality(destination, Nobody)) {
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
-        SelfManager.self().moveTo(destination);
+        PrimChecks.turtle.moveTo(6622, 6629, PrimChecks.validator.checkArg('MOVE-TO', 6622, 6629, 1792, destination));
         var R = ProcedurePrims.callCommand("mutate"); if (R === DeathInterrupt) { return R; }
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6604, 6609, R); return R; }
     }

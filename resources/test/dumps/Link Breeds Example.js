@@ -58,7 +58,7 @@ ProcedurePrims.defineCommand("setup", 245, 813, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(265, 287, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 327, 330, 1904, PrimChecks.list.nOf(331, 335, 5, world.turtles())), function() {
     PrimChecks.context.assertKind(2, 'create-blue-link-with', 412, 533);
-    var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.list.oneOf(434, 440, SelfPrims.other(world.turtles())), "BLUE-LINKS"), function() {
+    var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.validator.checkArg('CREATE-BLUE-LINK-WITH', 412, 433, 256, PrimChecks.list.oneOf(434, 440, SelfPrims.other(world.turtles()))), "BLUE-LINKS"), function() {
       PrimChecks.turtleOrLink.setVariable(467, 472, "color", 105);
       PrimChecks.link.setVariable(488, 494, "weight", RandomPrims.randomLong(10));
       PrimChecks.turtleOrLink.setVariable(515, 520, "label", PrimChecks.link.getVariable(521, 527, "weight"));
@@ -67,7 +67,7 @@ ProcedurePrims.defineCommand("setup", 245, 813, (function() {
   BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getSpecialName(), "curved link")
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 640, 643, 1904, PrimChecks.list.nOf(644, 648, 5, world.turtles())), function() {
     PrimChecks.context.assertKind(2, 'create-red-link-to', 727, 794);
-    var R = ProcedurePrims.ask(LinkPrims.createLinkTo(PrimChecks.list.oneOf(746, 752, SelfPrims.other(world.turtles())), "RED-LINKS"), function() { PrimChecks.turtleOrLink.setVariable(779, 784, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(727, 745, R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinkTo(PrimChecks.validator.checkArg('CREATE-RED-LINK-TO', 727, 745, 256, PrimChecks.list.oneOf(746, 752, SelfPrims.other(world.turtles()))), "RED-LINKS"), function() { PrimChecks.turtleOrLink.setVariable(779, 784, "color", 15); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(727, 745, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(640, 643, R); return R; }
   world.ticker.reset();
 }))

@@ -217,10 +217,10 @@ ProcedurePrims.defineCommand("couple", 5450, 6095, (function() {
         PrimChecks.context.assertKind(2, 'set', 5849, 5867);
         PrimChecks.turtle.setVariable(5853, 5860, "partner", SelfManager.myself());
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5835, 5838, R); return R; }
-      SelfManager.self().moveTo(SelfManager.self().getPatchHere());
+      PrimChecks.turtle.moveTo(5878, 5885, SelfManager.self().getPatchHere());
       var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 5932, 5935, 1904, potentialHpartner), 5932, 5935), function() {
         PrimChecks.context.assertKind(2, 'move-to', 5955, 5973);
-        SelfManager.self().moveTo(SelfManager.self().getPatchHere());
+        PrimChecks.turtle.moveTo(5955, 5962, SelfManager.self().getPatchHere());
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5932, 5935, R); return R; }
       PrimChecks.patch.setVariable(6023, 6029, "pcolor", PrimChecks.math.minus(6035, 6036, 5, 3));
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 6047, 6050, 1904, SelfManager.self()._optimalPatchWest()), function() { PrimChecks.patch.setVariable(6073, 6079, "pcolor", PrimChecks.math.minus(6085, 6086, 5, 3)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(6047, 6050, R); return R; }

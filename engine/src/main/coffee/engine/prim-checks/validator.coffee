@@ -2,11 +2,11 @@
 
 { maybe } = require('brazier/maybe')
 
-StrictMath                       = require('shim/strictmath')
-formatFloat                      = require('util/formatfloat')
-{ checks, getTypeOf, types }     = require('engine/core/typechecker')
-{ getTypesFromSyntax }           = require('engine/prim-checks/syntax')
-{ exceptionFactory: exceptions } = require('util/exception')
+StrictMath                                         = require('shim/strictmath')
+formatFloat                                        = require('util/formatfloat')
+{ addIndefiniteArticle, checks, getTypeOf, types } = require('engine/core/typechecker')
+{ getTypesFromSyntax }                             = require('engine/prim-checks/syntax')
+{ exceptionFactory: exceptions }                   = require('util/exception')
 
 class Validator
 
@@ -55,18 +55,11 @@ class Validator
   raiseInfinityError: (prim, sourceStart, sourceEnd) ->
     @error(prim, sourceStart, sourceEnd, 'math operation produced a number too large for NetLogo')
 
-  # (String) => String
-  addIndefiniteArticle: (text) ->
-    if ['A', 'E', 'I', 'O', 'U'].includes(text.charAt(0).toUpperCase())
-      "an #{text}"
-    else
-      "a #{text}"
-
   # (Array[NLType]) => String
   listTypeNames: (typesToName) ->
     names    = typesToName.map( (type) -> type.niceName() )
     nameList = names.join(" or ")
-    @addIndefiniteArticle(nameList)
+    addIndefiniteArticle(nameList)
 
   # (Any) => String
   valueToString: (value) ->

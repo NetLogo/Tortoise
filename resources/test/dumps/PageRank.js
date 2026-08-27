@@ -89,7 +89,7 @@ ProcedurePrims.defineCommand("create-network-example-1", 910, 1449, (function() 
   world.turtleManager.createTurtles(11, "PAGES");
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 955, 958, 1904, PrimChecks.turtle.getTurtleOfBreed(959, 963, "PAGES", 0)), function() {
     PrimChecks.turtleOrLink.setVariable(972, 977, "color", 105);
-    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.turtle.getTurtleOfBreed(1000, 1004, "PAGES", 3), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(983, 999, R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 983, 999, 256, PrimChecks.turtle.getTurtleOfBreed(1000, 1004, "PAGES", 3)), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(983, 999, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(955, 958, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1011, 1014, 1904, PrimChecks.turtle.getTurtleOfBreed(1015, 1019, "PAGES", 1)), function() {
     PrimChecks.turtleOrLink.setVariable(1028, 1033, "color", 15);
@@ -97,11 +97,11 @@ ProcedurePrims.defineCommand("create-network-example-1", 910, 1449, (function() 
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1011, 1014, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1123, 1126, 1904, PrimChecks.turtle.getTurtleOfBreed(1127, 1131, "PAGES", 2)), function() {
     PrimChecks.turtleOrLink.setVariable(1140, 1145, "color", 25);
-    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.turtle.getTurtleOfBreed(1170, 1174, "PAGES", 1), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1153, 1169, R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 1153, 1169, 256, PrimChecks.turtle.getTurtleOfBreed(1170, 1174, "PAGES", 1)), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1153, 1169, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1123, 1126, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1181, 1184, 1904, PrimChecks.turtle.getTurtleOfBreed(1185, 1189, "PAGES", 3)), function() {
     PrimChecks.turtleOrLink.setVariable(1198, 1203, "color", 55);
-    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.turtle.getTurtleOfBreed(1227, 1231, "PAGES", 4), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1210, 1226, R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 1210, 1226, 256, PrimChecks.turtle.getTurtleOfBreed(1227, 1231, "PAGES", 4)), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1210, 1226, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1181, 1184, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1238, 1241, 1904, PrimChecks.turtle.getTurtleOfBreed(1242, 1246, "PAGES", 4)), function() {
     PrimChecks.turtleOrLink.setVariable(1255, 1260, "color", 45);
@@ -109,7 +109,7 @@ ProcedurePrims.defineCommand("create-network-example-1", 910, 1449, (function() 
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1238, 1241, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1346, 1349, 1904, PrimChecks.turtle.getTurtleOfBreed(1350, 1354, "PAGES", 5)), function() {
     PrimChecks.turtleOrLink.setVariable(1363, 1368, "color", 55);
-    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.turtle.getTurtleOfBreed(1392, 1396, "PAGES", 4), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1375, 1391, R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 1375, 1391, 256, PrimChecks.turtle.getTurtleOfBreed(1392, 1396, "PAGES", 4)), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1375, 1391, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1346, 1349, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(1413, 1417, world.turtleManager.turtlesOfBreed("PAGES"), function() { return Prims.gt(PrimChecks.turtle.getVariable(1419, 1422, "who"), 5); }), function() { PrimChecks.turtleOrLink.setVariable(1434, 1439, "color", 115); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1403, 1406, R); return R; }
 }))
@@ -150,10 +150,10 @@ ProcedurePrims.defineCommand("link-preferentially", 2210, 3891, (function(nodese
       PrimChecks.context.assertKind(2, 'run', 2573, 2692);
       PrimChecks.procedure.runArgCountCheck('run', 2573, 2692, 1, arguments.length);
       if (Prims.equality(RandomPrims.randomLong(2), 0)) {
-        var R = ProcedurePrims.ask(LinkPrims.createLinkTo(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2623, 2637, R); return R; }
+        var R = ProcedurePrims.ask(LinkPrims.createLinkTo(PrimChecks.validator.checkArg('CREATE-LINK-TO', 2623, 2637, 256, neighbor), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2623, 2637, R); return R; }
       }
       else {
-        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2659, 2675, R); return R; }
+        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 2659, 2675, 256, neighbor), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2659, 2675, R); return R; }
       }
     }, "[ neighbor -> ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ]", false, false)); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2544, 2551, R); return R; }
     neighborHchoiceHlist = ListPrims.sentence(PrimChecks.task.nValues(2797, 2805, PrimChecks.validator.checkArg('N-VALUES', 2797, 2805, 1, k), PrimChecks.task.checked(2808, 2809, function() {
@@ -176,11 +176,11 @@ ProcedurePrims.defineCommand("link-preferentially", 2210, 3891, (function(nodese
         PrimChecks.context.assertKind(2, 'ifelse', 3694, 3791);
         if (Prims.equality(RandomPrims.randomLong(2), 0)) {
           PrimChecks.context.assertKind(2, 'create-link-to', 3726, 3749);
-          var R = ProcedurePrims.ask(LinkPrims.createLinkTo(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3726, 3740, R); return R; }
+          var R = ProcedurePrims.ask(LinkPrims.createLinkTo(PrimChecks.validator.checkArg('CREATE-LINK-TO', 3726, 3740, 256, neighbor), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3726, 3740, R); return R; }
         }
         else {
           PrimChecks.context.assertKind(2, 'create-link-from', 3764, 3789);
-          var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(neighbor, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3764, 3780, R); return R; }
+          var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 3764, 3780, 256, neighbor), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3764, 3780, R); return R; }
         }
       }
       PrimChecks.context.assertKind(2, 'set', 3806, 3880);
@@ -293,7 +293,7 @@ ProcedurePrims.defineCommand("go", 4006, 6777, (function() {
 }))
 ProcedurePrims.defineCommand("move-surfer", 6785, 6860, (function() {
   SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 6819, 6823, 768, PrimChecks.turtle.getVariable(6824, 6836, "current-page")));
-  SelfManager.self().moveTo(PrimChecks.turtle.getVariable(6847, 6859, "current-page"));
+  PrimChecks.turtle.moveTo(6839, 6846, PrimChecks.validator.checkArg('MOVE-TO', 6839, 6846, 1792, PrimChecks.turtle.getVariable(6847, 6859, "current-page")));
 }))
 ProcedurePrims.defineCommand("update-globals", 6868, 6955, (function() {
   world.observer.setGlobal("total-rank", PrimChecks.list.sum(6900, 6903, PrimChecks.validator.checkArg('SUM', 6900, 6903, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("PAGES"), function() { return PrimChecks.turtle.getVariable(6905, 6909, "rank"); }))));

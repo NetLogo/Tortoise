@@ -149,7 +149,7 @@ ProcedurePrims.defineCommand("random-position", 3673, 4050, (function() {
     return (Prims.lt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 3799, 3802, 1, PrimChecks.patch.getVariable(3803, 3808, "pxcor"))), PrimChecks.math.minus(3822, 3823, world.topology.maxPxcor, PrimChecks.validator.checkArg('-', 3822, 3823, 1, world.observer.getGlobal("margin-outside-box")))) && Prims.lt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 3848, 3851, 1, PrimChecks.patch.getVariable(3852, 3857, "pycor"))), PrimChecks.math.minus(3871, 3872, world.topology.maxPycor, PrimChecks.validator.checkArg('-', 3871, 3872, 1, world.observer.getGlobal("margin-outside-box")))));
   }); ProcedurePrims.stack().currentContext().updateStringRunVar("OPEN-PATCHES", openHpatches);
   openHpatch = PrimChecks.list.oneOf(3911, 3917, PrimChecks.validator.checkArg('ONE-OF', 3911, 3917, 120, openHpatches)); ProcedurePrims.stack().currentContext().updateStringRunVar("OPEN-PATCH", openHpatch);
-  SelfManager.self().moveTo(openHpatch);
+  PrimChecks.turtle.moveTo(3933, 3940, PrimChecks.validator.checkArg('MOVE-TO', 3933, 3940, 1792, openHpatch));
   PrimChecks.turtle.setVariable(3958, 3965, "heading", PrimChecks.math.randomFloat(360));
   PrimChecks.turtle.setVariable(3989, 3995, "energy", world.observer.getGlobal("initial-gas-temperature"));
   PrimChecks.turtle.setVariable(4026, 4031, "speed", PrimChecks.procedure.callReporter(4032, 4049, "speed-from-energy"));
@@ -236,7 +236,7 @@ ProcedurePrims.defineCommand("shatter-box", 7188, 7638, (function() {
     return (Prims.equality(PrimChecks.patch.getVariable(7240, 7245, "pxcor"), 0) && Prims.equality(PrimChecks.patch.getVariable(7254, 7259, "pycor"), 0));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("CENTER-PATCH", centerHpatch);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("BROKEN-WALLS"), function() {
-    PrimChecks.turtle.setVariable(7295, 7302, "heading", PrimChecks.turtle.towards(7303, 7310, PrimChecks.validator.checkArg('TOWARDS', 7303, 7310, 768, centerHpatch)));
+    PrimChecks.turtle.setVariable(7295, 7302, "heading", PrimChecks.turtle.towards(7303, 7310, PrimChecks.validator.checkArg('TOWARDS', 7303, 7310, 1792, centerHpatch)));
     PrimChecks.turtle.setVariable(7332, 7339, "heading", PrimChecks.math.plus(7349, 7350, PrimChecks.validator.checkArg('+', 7349, 7350, 1, PrimChecks.turtle.getVariable(7341, 7348, "heading")), 180));
     if ((((Prims.equality(PrimChecks.patch.getVariable(7363, 7368, "pxcor"), world.topology.maxPxcor) || Prims.equality(PrimChecks.patch.getVariable(7384, 7389, "pycor"), world.topology.maxPycor)) || Prims.equality(PrimChecks.patch.getVariable(7405, 7410, "pycor"), world.topology.minPycor)) || Prims.equality(PrimChecks.patch.getVariable(7426, 7431, "pxcor"), world.topology.minPxcor))) {
       return SelfManager.self().die();

@@ -174,7 +174,7 @@ ProcedurePrims.defineCommand("remove-wall", 2210, 2332, (function() {
 ProcedurePrims.defineCommand("remove-all-walls", 2340, 2373, (function() { world.clearPatches(); }))
 ProcedurePrims.defineCommand("move-off-wall", 2381, 2477, (function() {
   while (!Prims.equality(PrimChecks.patch.getVariable(2425, 2431, "pcolor"), 0)) {
-    SelfManager.self().moveTo(PrimChecks.list.oneOf(2456, 2462, SelfManager.self().getNeighbors()));
+    PrimChecks.turtle.moveTo(2448, 2455, PrimChecks.validator.checkArg('MOVE-TO', 2448, 2455, 1792, PrimChecks.list.oneOf(2456, 2462, SelfManager.self().getNeighbors())));
   }
 }))
 world.observer.setGlobal("colors", 5);

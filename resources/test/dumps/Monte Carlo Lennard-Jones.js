@@ -116,7 +116,7 @@ ProcedurePrims.defineReporter("calc-v", 2180, 2580, (function() {
   let v = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("V", v);
   var R = ProcedurePrims.ask(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("cutoff-dist"))), function() {
     PrimChecks.context.assertKind(6, 'let', 2246, 2279);
-    let rsquare = PrimChecks.math.pow(2276, 2277, SelfManager.self().distance(SelfManager.myself()), 2); ProcedurePrims.stack().currentContext().registerStringRunVar("RSQUARE", rsquare);
+    let rsquare = PrimChecks.math.pow(2276, 2277, PrimChecks.turtle.distance(2259, 2267, SelfManager.myself()), 2); ProcedurePrims.stack().currentContext().registerStringRunVar("RSQUARE", rsquare);
     PrimChecks.context.assertKind(6, 'let', 2284, 2315);
     let dsquare = PrimChecks.math.mult(2305, 2306, PrimChecks.validator.checkArg('*', 2305, 2306, 1, world.observer.getGlobal("diameter")), PrimChecks.validator.checkArg('*', 2305, 2306, 1, world.observer.getGlobal("diameter"))); ProcedurePrims.stack().currentContext().registerStringRunVar("DSQUARE", dsquare);
     PrimChecks.context.assertKind(6, 'let', 2320, 2362);

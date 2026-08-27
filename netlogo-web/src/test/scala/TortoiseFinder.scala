@@ -163,16 +163,9 @@ private[tortoise] object Freebies {
 
   private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
   private val incErrorDetectCommandNames = Seq(
-    "Breeds::SetBreedToNonBreed",
-    "ComparingAgents::ComparingLinks",
-    "DeadTurtles::DeadTurtles1",
-    "DeadTurtles::DeadTurtles5",
-    "DeadTurtles::DeadTurtles6",
     "Face::FaceAgentset",
-    "Interaction::Interaction5",
     "Links::LinksNotAllowed",
     "Links::LinkCreationTypeChecking_2D",
-    "MoveTo::MoveTo_2D",
     "Random::OneOfWithAgentSets",
   )
 

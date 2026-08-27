@@ -15,6 +15,18 @@
 
 # -Jeremy B December 2020
 
+# Desktop names a value's type this way in error messages (`api.TypeNames.aName`), NOBODY included.
+# (Any) => String
+aTypeName = (x) ->
+  if isNobody(x) then "NOBODY" else addIndefiniteArticle(getTypeOf(x).niceName())
+
+# (String) => String
+addIndefiniteArticle = (text) ->
+  if ['A', 'E', 'I', 'O', 'U'].includes(text.charAt(0).toUpperCase())
+    "an #{text}"
+  else
+    "a #{text}"
+
 getTypeOf = (x) ->
   switch
     when isNumber(x)  then types.Number
@@ -52,7 +64,7 @@ class NLType
   isOfType: unimplemented
   niceName: unimplemented
 
-module.exports = { types, checks, getTypeOf, NLType, validate }
+module.exports = { types, checks, getTypeOf, aTypeName, addIndefiniteArticle, NLType, validate }
 
 AbstractAgentSet = require('./abstractagentset')
 Link             = require('./link')

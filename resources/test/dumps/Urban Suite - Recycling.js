@@ -142,7 +142,7 @@ ProcedurePrims.defineCommand("move", 920, 1403, (function() {
     }
   }
   SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 1335, 1339, 768, targetHpatch));
-  SelfManager.self().moveTo(targetHpatch);
+  PrimChecks.turtle.moveTo(1355, 1362, PrimChecks.validator.checkArg('MOVE-TO', 1355, 1362, 1792, targetHpatch));
   PrimChecks.turtle.setVariable(1383, 1389, "energy", PrimChecks.math.minus(1398, 1399, PrimChecks.validator.checkArg('-', 1398, 1399, 1, PrimChecks.turtle.getVariable(1391, 1397, "energy")), 1));
 }))
 ProcedurePrims.defineCommand("recycler-process-patch", 1411, 1793, (function() {

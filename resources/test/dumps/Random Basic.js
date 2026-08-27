@@ -116,7 +116,7 @@ ProcedurePrims.defineCommand("send-messenger-to-its-column", 3442, 4252, (functi
     PrimChecks.context.assertKind(2, 'face', 3764, 3771);
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 3764, 3768, 768, it));
     PrimChecks.context.assertKind(2, 'while', 3845, 3959);
-    while (Prims.gt(SelfManager.self().distance(it), 3)) {
+    while (Prims.gt(PrimChecks.turtle.distance(3853, 3861, PrimChecks.validator.checkArg('DISTANCE', 3853, 3861, 1792, it)), 3)) {
       PrimChecks.context.assertKind(2, 'fdone', 3883, 3887);
       SelfManager.self()._optimalFdOne();
       PrimChecks.context.assertKind(2, 'display', 3946, 3953);

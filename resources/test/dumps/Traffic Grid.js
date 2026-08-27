@@ -180,7 +180,7 @@ ProcedurePrims.defineCommand("setup-cars", 4830, 5295, (function() {
   }
 }))
 ProcedurePrims.defineCommand("put-on-empty-road", 5378, 5472, (function() {
-  SelfManager.self().moveTo(PrimChecks.agentset.oneOfWith(null, null, world.observer.getGlobal("roads"), function() { return PrimChecks.math.not(PrimChecks.agentset.anyTurtlesOn(SelfManager.self())); }));
+  PrimChecks.turtle.moveTo(5419, 5426, PrimChecks.validator.checkArg('MOVE-TO', 5419, 5426, 1792, PrimChecks.agentset.oneOfWith(null, null, world.observer.getGlobal("roads"), function() { return PrimChecks.math.not(PrimChecks.agentset.anyTurtlesOn(SelfManager.self())); })));
 }))
 ProcedurePrims.defineCommand("go", 5579, 6043, (function() {
   var R = ProcedurePrims.callCommand("update-current"); if (R === DeathInterrupt) { return R; }

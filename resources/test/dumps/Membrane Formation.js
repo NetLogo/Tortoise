@@ -75,9 +75,9 @@ ProcedurePrims.defineCommand("setup", 278, 1282, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(481, 494, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-lipids"), "OILS"), function() {
     let partner = PrimChecks.agentset.oneOfWith(null, null, world.turtleManager.turtlesOfBreed("WATERS"), function() { return PrimChecks.math.not(PrimChecks.agentset.any(LinkPrims.myLinks("LINKS"))); }); ProcedurePrims.stack().currentContext().registerStringRunVar("PARTNER", partner);
-    SelfManager.self().moveTo(partner);
+    PrimChecks.turtle.moveTo(1140, 1147, PrimChecks.validator.checkArg('MOVE-TO', 1140, 1147, 1792, partner));
     SelfManager.self().fd(world.observer.getGlobal("lipid-length"));
-    var R = ProcedurePrims.ask(LinkPrims.createLinkWith(partner, "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1181, 1197, R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.validator.checkArg('CREATE-LINK-WITH', 1181, 1197, 256, partner), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1181, 1197, R); return R; }
     PrimChecks.turtleOrLink.setVariable(1214, 1219, "color", 25);
     var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 1231, 1234, 1904, partner), 1231, 1234), function() {
       PrimChecks.context.assertKind(10, 'set', 1245, 1261);
@@ -117,7 +117,7 @@ ProcedurePrims.defineCommand("interact-with-partner", 2005, 2250, (function() {
   let partner = PrimChecks.list.oneOf(2105, 2111, LinkPrims.linkNeighbors("LINKS")); ProcedurePrims.stack().currentContext().registerStringRunVar("PARTNER", partner);
   if (!Prims.equality(partner, Nobody)) {
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 2156, 2160, 768, partner));
-    SelfManager.self().fd(PrimChecks.math.minus(2196, 2197, SelfManager.self().distance(partner), PrimChecks.validator.checkArg('-', 2196, 2197, 1, world.observer.getGlobal("lipid-length"))));
+    SelfManager.self().fd(PrimChecks.math.minus(2196, 2197, PrimChecks.turtle.distance(2178, 2186, PrimChecks.validator.checkArg('DISTANCE', 2178, 2186, 1792, partner)), PrimChecks.validator.checkArg('-', 2196, 2197, 1, world.observer.getGlobal("lipid-length"))));
   }
   SelfManager.self().right(-(RandomPrims.randomLong(360)));
   SelfManager.self().fd(world.observer.getGlobal("random-force"));

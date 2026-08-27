@@ -267,7 +267,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
       PrimChecks.turtle.setVariable(11117, 11121, "size", 3);
       PrimChecks.turtleOrLink.setVariable(11134, 11141, "hidden?", false);
       var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, StringPrims.word("start:", PrimChecks.turtle.getVariable(11188, 11199, "gene-number")), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
-      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHgene, "BACKBONES"), function() {
+      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-BACKBONE-FROM', 11224, 11244, 256, thisHgene), "BACKBONES"), function() {
         PrimChecks.turtleOrLink.setVariable(11260, 11267, "hidden?", true);
         PrimChecks.link.setVariable(11277, 11285, "tie-mode", "fixed");
         SelfManager.self().tie();
@@ -276,7 +276,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
         PrimChecks.turtleOrLink.setVariable(11366, 11371, "breed", world.turtleManager.turtlesOfBreed("TERMINATORS"));
         SelfManager.self().fd(PrimChecks.math.mult(11415, 11416, PrimChecks.list.length(PrimChecks.validator.checkArg('LENGTH', 11397, 11403, 12, thisHcode)), 0.45));
         var R = ProcedurePrims.callCommand("attach-tag", 142, 1.7, StringPrims.word("end:", PrimChecks.turtle.getVariable(11463, 11474, "gene-number")), geneHcolorHlabel); if (R === DeathInterrupt) { return R; }
-        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHgene, "BACKBONES"), function() {
+        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-BACKBONE-FROM', 11501, 11521, 256, thisHgene), "BACKBONES"), function() {
           PrimChecks.turtleOrLink.setVariable(11537, 11544, "hidden?", true);
           PrimChecks.link.setVariable(11554, 11562, "tie-mode", "fixed");
           SelfManager.self().tie();
@@ -292,7 +292,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
       PrimChecks.turtle.setVariable(11803, 11811, "cap-type", "start");
       PrimChecks.turtleOrLink.setVariable(11830, 11835, "shape", "mrna-start");
       PrimChecks.turtleOrLink.setVariable(11859, 11866, "hidden?", false);
-      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHgene, "BACKBONES"), function() {
+      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-BACKBONE-FROM', 11937, 11957, 256, thisHgene), "BACKBONES"), function() {
         PrimChecks.turtleOrLink.setVariable(11973, 11980, "hidden?", true);
         PrimChecks.link.setVariable(11990, 11998, "tie-mode", "fixed");
         SelfManager.self().tie();
@@ -301,7 +301,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
         PrimChecks.turtle.setVariable(12088, 12096, "cap-type", "stop");
         PrimChecks.turtleOrLink.setVariable(12116, 12121, "shape", "mrna-stop");
         let nucleotideHcounter = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("NUCLEOTIDE-COUNTER", nucleotideHcounter);
-        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHmrna, "BACKBONES"), function() {
+        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-BACKBONE-FROM', 12233, 12253, 256, thisHmrna), "BACKBONES"), function() {
           PrimChecks.turtleOrLink.setVariable(12270, 12277, "hidden?", true);
           PrimChecks.link.setVariable(12287, 12295, "tie-mode", "fixed");
           SelfManager.self().tie();
@@ -314,7 +314,7 @@ ProcedurePrims.defineCommand("build-mrna-for-each-gene", 10564, 12900, (function
             PrimChecks.turtleOrLink.setVariable(12565, 12570, "shape", StringPrims.word("mrna-", PrimChecks.turtle.getVariable(12585, 12590, "value")));
             PrimChecks.turtle.setVariable(12608, 12615, "heading", 180);
             var R = ProcedurePrims.callCommand("attach-tag", 175, 0.9, PrimChecks.turtle.getVariable(12651, 12656, "value"), world.observer.getGlobal("nucleo-tag-color")); if (R === DeathInterrupt) { return R; }
-            var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHmrna, "BACKBONES"), function() {
+            var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-BACKBONE-FROM', 12686, 12706, 256, thisHmrna), "BACKBONES"), function() {
               PrimChecks.turtleOrLink.setVariable(12723, 12730, "hidden?", true);
               PrimChecks.link.setVariable(12740, 12748, "tie-mode", "fixed");
               SelfManager.self().tie();
@@ -356,7 +356,7 @@ ProcedurePrims.defineCommand("build-trna-for-this-triplet", 13553, 14956, (funct
       PrimChecks.turtle.setVariable(13902, 13909, "heading", 0);
       PrimChecks.turtle.setVariable(13922, 13926, "size", 2);
       SelfManager.self()._optimalFdOne();
-      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHtrna, "BACKBONES"), function() {
+      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-BACKBONE-FROM', 13946, 13966, 256, thisHtrna), "BACKBONES"), function() {
         PrimChecks.turtleOrLink.setVariable(13983, 13990, "hidden?", true);
         PrimChecks.link.setVariable(14000, 14008, "tie-mode", "free");
         SelfManager.self().tie();
@@ -369,7 +369,7 @@ ProcedurePrims.defineCommand("build-trna-for-this-triplet", 13553, 14956, (funct
       PrimChecks.turtle.setVariable(14183, 14190, "heading", -155);
       SelfManager.self().fd(1.1);
       PrimChecks.turtle.setVariable(14219, 14226, "heading", 0);
-      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHtrna, "BACKBONES"), function() {
+      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-BACKBONE-FROM', 14235, 14255, 256, thisHtrna), "BACKBONES"), function() {
         PrimChecks.turtleOrLink.setVariable(14272, 14279, "hidden?", true);
         PrimChecks.link.setVariable(14289, 14297, "tie-mode", "fixed");
         SelfManager.self().tie();
@@ -380,7 +380,7 @@ ProcedurePrims.defineCommand("build-trna-for-this-triplet", 13553, 14956, (funct
         PrimChecks.turtle.setVariable(14429, 14436, "heading", 90);
         SelfManager.self()._optimalFdLessThan1(0.45);
         PrimChecks.turtle.setVariable(14467, 14474, "heading", 0);
-        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHtrna, "BACKBONES"), function() {
+        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-BACKBONE-FROM', 14485, 14505, 256, thisHtrna), "BACKBONES"), function() {
           PrimChecks.turtleOrLink.setVariable(14522, 14529, "hidden?", true);
           PrimChecks.link.setVariable(14539, 14547, "tie-mode", "fixed");
           SelfManager.self().tie();
@@ -392,7 +392,7 @@ ProcedurePrims.defineCommand("build-trna-for-this-triplet", 13553, 14956, (funct
         PrimChecks.turtle.setVariable(14687, 14694, "heading", 90);
         SelfManager.self()._optimalFdLessThan1(0.9);
         PrimChecks.turtle.setVariable(14725, 14732, "heading", 0);
-        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHtrna, "BACKBONES"), function() {
+        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-BACKBONE-FROM', 14743, 14763, 256, thisHtrna), "BACKBONES"), function() {
           PrimChecks.turtleOrLink.setVariable(14780, 14787, "hidden?", true);
           PrimChecks.link.setVariable(14797, 14805, "tie-mode", "fixed");
           SelfManager.self().tie();
@@ -413,7 +413,7 @@ ProcedurePrims.defineCommand("attach-tag", 15047, 15338, (function(direction, di
     PrimChecks.turtleOrLink.setVariable(15192, 15197, "label", labelHvalue);
     PrimChecks.turtle.setVariable(15218, 15222, "size", 0.1);
     PrimChecks.turtleOrLink.setVariable(15235, 15246, "label-color", colorHvalue);
-    var R = ProcedurePrims.ask(LinkPrims.createLinkWith(SelfManager.myself(), "TAGLINES"), function() {
+    var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.validator.checkArg('CREATE-TAGLINE-WITH', 15263, 15282, 256, SelfManager.myself()), "TAGLINES"), function() {
       PrimChecks.link.setVariable(15295, 15303, "tie-mode", "fixed");
       PrimChecks.turtleOrLink.setVariable(15316, 15323, "hidden?", true);
       SelfManager.self().tie();

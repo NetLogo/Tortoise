@@ -339,7 +339,7 @@ ProcedurePrims.defineCommand("mark-turtles-to-kill", 6617, 9342, (function() {
 }))
 ProcedurePrims.defineCommand("migrate-this-plant", 9350, 9667, (function() {
   if (Prims.lt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("chance-seed-dispersal"))) {
-    SelfManager.self().moveTo(PrimChecks.list.oneOf(9558, 9564, SelfManager.self().getNeighbors()));
+    PrimChecks.turtle.moveTo(9550, 9557, PrimChecks.validator.checkArg('MOVE-TO', 9550, 9557, 1792, PrimChecks.list.oneOf(9558, 9564, SelfManager.self().getNeighbors())));
     SelfManager.self().right(RandomPrims.randomLong(360));
     SelfManager.self().fd(PrimChecks.math.randomFloat(0.45));
   }

@@ -135,7 +135,7 @@ ProcedurePrims.defineCommand("make-flagella", 2320, 2638, (function() {
     PrimChecks.turtleOrLink.setVariable(2501, 2506, "shape", flagellaHshape);
     SelfManager.self().fd(-(0.4));
     PrimChecks.turtle.setVariable(2541, 2545, "size", world.observer.getGlobal("flagella-size"));
-    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(SelfManager.myself(), "CONNECTORS"), function() {
+    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-CONNECTOR-FROM', 2564, 2585, 256, SelfManager.myself()), "CONNECTORS"), function() {
       PrimChecks.turtleOrLink.setVariable(2605, 2612, "hidden?", true);
       SelfManager.self().tie();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2564, 2585, R); return R; }

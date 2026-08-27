@@ -109,8 +109,8 @@ ProcedurePrims.defineCommand("make-node", 678, 920, (function(oldHnode) {
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(1, ""), function() {
     PrimChecks.turtleOrLink.setVariable(730, 735, "color", 15);
     if (!Prims.equality(oldHnode, Nobody)) {
-      var R = ProcedurePrims.ask(LinkPrims.createLinkWith(oldHnode, "LINKS"), function() { PrimChecks.turtleOrLink.setVariable(806, 811, "color", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(774, 790, R); return R; }
-      SelfManager.self().moveTo(oldHnode);
+      var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.validator.checkArg('CREATE-LINK-WITH', 774, 790, 256, oldHnode), "LINKS"), function() { PrimChecks.turtleOrLink.setVariable(806, 811, "color", 55); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(774, 790, R); return R; }
+      PrimChecks.turtle.moveTo(878, 885, PrimChecks.validator.checkArg('MOVE-TO', 878, 885, 1792, oldHnode));
       SelfManager.self().fd(8);
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(701, 715, R); return R; }

@@ -112,14 +112,14 @@ ProcedurePrims.defineReporter("find-target", 1944, 2090, (function() {
 ProcedurePrims.defineCommand("bug-move", 2098, 2698, (function(target) {
   let tries = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("TRIES", tries);
   if (PrimChecks.math.not(PrimChecks.agentset.anyTurtlesOn(PrimChecks.validator.checkArg('TURTLES-ON', 2289, 2299, 1904, target)))) {
-    SelfManager.self().moveTo(target);
+    PrimChecks.turtle.moveTo(2313, 2320, PrimChecks.validator.checkArg('MOVE-TO', 2313, 2320, 1792, target));
     return PrimChecks.procedure.stop(2332, 2336);
   }
   while (Prims.lte(tries, 9)) {
     tries = PrimChecks.math.plus(2572, 2573, PrimChecks.validator.checkArg('+', 2572, 2573, 1, tries), 1); ProcedurePrims.stack().currentContext().updateStringRunVar("TRIES", tries);
     target = PrimChecks.list.oneOf(2593, 2599, SelfManager.self().getNeighbors());
     if (PrimChecks.math.not(PrimChecks.agentset.anyTurtlesOn(PrimChecks.validator.checkArg('TURTLES-ON', 2628, 2638, 1904, target)))) {
-      SelfManager.self().moveTo(target);
+      PrimChecks.turtle.moveTo(2656, 2663, PrimChecks.validator.checkArg('MOVE-TO', 2656, 2663, 1792, target));
       return PrimChecks.procedure.stop(2679, 2683);
     }
   }

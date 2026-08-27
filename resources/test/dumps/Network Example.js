@@ -66,7 +66,7 @@ ProcedurePrims.defineCommand("go", 371, 596, (function() {
   }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 407, 410, 1904, PrimChecks.list.oneOf(411, 417, world.turtles())), function() {
     PrimChecks.context.assertKind(2, 'create-link-with', 432, 469);
-    var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.list.oneOf(449, 455, SelfPrims.other(world.turtles())), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(432, 448, R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.validator.checkArg('CREATE-LINK-WITH', 432, 448, 256, PrimChecks.list.oneOf(449, 455, SelfPrims.other(world.turtles()))), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(432, 448, R); return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(407, 410, R); return R; }
   while (Prims.gt(PrimChecks.agentset.count(world.links()), world.observer.getGlobal("number-of-links"))) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 562, 565, 1904, PrimChecks.list.oneOf(566, 572, world.links())), function() {

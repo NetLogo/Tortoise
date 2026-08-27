@@ -92,6 +92,7 @@ module.exports =
     , extensionPorters
     , worldArgs...
     )
+    i18nBundle    = new I18nBundle()
     layoutManager = new LayoutManager(world, rng.nextDouble)
 
     inspectionPrims = new InspectionPrims(inspectionConfig)
@@ -102,7 +103,7 @@ module.exports =
 
     evalPrims      = new EvalPrims(code, widgets, ( -> AgentKinds.kindName(selfManager.selfBit()) ))
     procedurePrims = new ProcedurePrims(evalPrims, plotManager, rng, selfManager)
-    prims          = new Prims(dump, Hasher, rng, world, printPrims)
+    prims          = new Prims(dump, Hasher, rng, world, printPrims, i18nBundle)
     randomPrims    = new RandomPrims(rng)
     selfPrims      = new SelfPrims(selfManager.self)
     linkPrims      = new LinkPrims(world)
@@ -111,7 +112,6 @@ module.exports =
 
     exceptions.setProcecurePrims(procedurePrims)
 
-    i18nBundle = new I18nBundle()
     primChecks = new PrimChecks( i18nBundle, dump, prims, listPrims, randomPrims
                                , stringPrims, procedurePrims, selfPrims, inspectionPrims, world)
 

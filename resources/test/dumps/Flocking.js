@@ -72,7 +72,7 @@ ProcedurePrims.defineCommand("flock", 671, 883, (function() {
   var R = ProcedurePrims.callCommand("find-flockmates"); if (R === DeathInterrupt) { return R; }
   if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 721, 725, 112, PrimChecks.turtle.getVariable(726, 736, "flockmates")))) {
     var R = ProcedurePrims.callCommand("find-nearest-neighbor"); if (R === DeathInterrupt) { return R; }
-    if (Prims.lt(SelfManager.self().distance(PrimChecks.turtle.getVariable(787, 803, "nearest-neighbor")), world.observer.getGlobal("minimum-separation"))) {
+    if (Prims.lt(PrimChecks.turtle.distance(778, 786, PrimChecks.validator.checkArg('DISTANCE', 778, 786, 1792, PrimChecks.turtle.getVariable(787, 803, "nearest-neighbor"))), world.observer.getGlobal("minimum-separation"))) {
       var R = ProcedurePrims.callCommand("separate"); if (R === DeathInterrupt) { return R; }
     }
     else {
@@ -85,7 +85,7 @@ ProcedurePrims.defineCommand("find-flockmates", 891, 976, (function() {
   PrimChecks.turtle.setVariable(934, 944, "flockmates", SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("vision"))));
 }))
 ProcedurePrims.defineCommand("find-nearest-neighbor", 984, 1089, (function() {
-  PrimChecks.turtle.setVariable(1032, 1048, "nearest-neighbor", PrimChecks.agentset.minOneOf(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('MIN-ONE-OF', 1049, 1059, 112, PrimChecks.turtle.getVariable(1060, 1070, "flockmates")), 'min-one-of', 1049, 1088), function() { return SelfManager.self().distance(SelfManager.myself()); }));
+  PrimChecks.turtle.setVariable(1032, 1048, "nearest-neighbor", PrimChecks.agentset.minOneOf(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('MIN-ONE-OF', 1049, 1059, 112, PrimChecks.turtle.getVariable(1060, 1070, "flockmates")), 'min-one-of', 1049, 1088), function() { return PrimChecks.turtle.distance(1072, 1080, SelfManager.myself()); }));
 }))
 ProcedurePrims.defineCommand("separate", 1111, 1203, (function() {
   var R = ProcedurePrims.callCommand("turn-away", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1164, 1166, 1904, PrimChecks.turtle.getVariable(1167, 1183, "nearest-neighbor")), function() { return PrimChecks.turtle.getVariable(1155, 1162, "heading"); }), world.observer.getGlobal("max-separate-turn")); if (R === DeathInterrupt) { return R; }
@@ -108,10 +108,10 @@ ProcedurePrims.defineCommand("cohere", 1739, 1833, (function() {
 }))
 ProcedurePrims.defineReporter("average-heading-towards-flockmates", 1848, 2297, (function() {
   let xHcomponent = PrimChecks.list.mean(2071, 2075, PrimChecks.validator.checkArg('MEAN', 2071, 2075, 8, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('OF', 2105, 2107, 1904, PrimChecks.turtle.getVariable(2108, 2118, "flockmates")), 'of', 2076, 2118), function() {
-    return PrimChecks.math.sin(PrimChecks.math.plus(2097, 2098, PrimChecks.turtle.towards(2082, 2089, PrimChecks.validator.checkArg('TOWARDS', 2082, 2089, 768, SelfManager.myself())), 180));
+    return PrimChecks.math.sin(PrimChecks.math.plus(2097, 2098, PrimChecks.turtle.towards(2082, 2089, SelfManager.myself()), 180));
   }))); ProcedurePrims.stack().currentContext().registerStringRunVar("X-COMPONENT", xHcomponent);
   let yHcomponent = PrimChecks.list.mean(2137, 2141, PrimChecks.validator.checkArg('MEAN', 2137, 2141, 8, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('OF', 2171, 2173, 1904, PrimChecks.turtle.getVariable(2174, 2184, "flockmates")), 'of', 2142, 2184), function() {
-    return PrimChecks.math.cos(PrimChecks.math.plus(2163, 2164, PrimChecks.turtle.towards(2148, 2155, PrimChecks.validator.checkArg('TOWARDS', 2148, 2155, 768, SelfManager.myself())), 180));
+    return PrimChecks.math.cos(PrimChecks.math.plus(2163, 2164, PrimChecks.turtle.towards(2148, 2155, SelfManager.myself()), 180));
   }))); ProcedurePrims.stack().currentContext().registerStringRunVar("Y-COMPONENT", yHcomponent);
   if ((Prims.equality(xHcomponent, 0) && Prims.equality(yHcomponent, 0))) {
     return PrimChecks.procedure.report(2236, 2242, PrimChecks.turtle.getVariable(2243, 2250, "heading"));

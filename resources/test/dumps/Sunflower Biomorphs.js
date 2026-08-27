@@ -87,7 +87,7 @@ ProcedurePrims.defineCommand("go", 1818, 2638, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1823, 1826, R); return R; }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PETALS"), function() {
     SelfManager.self().fd(PrimChecks.turtle.getVariable(2181, 2190, "step-size"));
-    PrimChecks.turtle.setVariable(2199, 2203, "size", PrimChecks.math.mult(2218, 2219, PrimChecks.validator.checkArg('*', 2218, 2219, 1, PrimChecks.turtle.getVariable(2204, 2217, "size-modifier")), PrimChecks.math.sqrt(2220, 2224, SelfManager.self().distance(PrimChecks.turtle.getVariable(2234, 2240, "parent")))));
+    PrimChecks.turtle.setVariable(2199, 2203, "size", PrimChecks.math.mult(2218, 2219, PrimChecks.validator.checkArg('*', 2218, 2219, 1, PrimChecks.turtle.getVariable(2204, 2217, "size-modifier")), PrimChecks.math.sqrt(2220, 2224, PrimChecks.turtle.distance(2225, 2233, PrimChecks.validator.checkArg('DISTANCE', 2225, 2233, 1792, PrimChecks.turtle.getVariable(2234, 2240, "parent"))))));
     if (Prims.gt(PrimChecks.math.abs(PrimChecks.math.minus(2347, 2348, PrimChecks.validator.checkArg('-', 2347, 2348, 1, PrimChecks.turtle.getVariable(2342, 2346, "xcor")), PrimChecks.validator.checkArg('-', 2347, 2348, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 2356, 2358, 1904, PrimChecks.turtle.getVariable(2359, 2365, "parent")), function() { return PrimChecks.turtle.getVariable(2350, 2354, "xcor"); })))), PrimChecks.math.div(2379, 2380, world.topology.maxPxcor, PrimChecks.math.mult(2390, 2391, PrimChecks.validator.checkArg('*', 2390, 2391, 1, world.observer.getGlobal("columns")), 1.5)))) {
       return SelfManager.self().die();
     }
@@ -150,7 +150,7 @@ ProcedurePrims.defineCommand("handle-mouse-down", 4131, 4953, (function() {
     else {
       world.observer.setGlobal("first-parent", newHparent);
       var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 4546, 4549), function() {
-        if (PrimChecks.list.member(newHparent, PrimChecks.agentset.withMin(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return SelfManager.self().distance(SelfManager.myself()); }))) {
+        if (PrimChecks.list.member(newHparent, PrimChecks.agentset.withMin(world.turtleManager.turtlesOfBreed("SPAWNERS"), function() { return PrimChecks.turtle.distance(4884, 4892, SelfManager.myself()); }))) {
           PrimChecks.patch.setVariable(4917, 4923, "pcolor", PrimChecks.math.minus(4929, 4930, 5, 3));
         }
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4546, 4549, R); return R; }

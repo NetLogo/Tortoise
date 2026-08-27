@@ -63,7 +63,7 @@ ProcedurePrims.defineCommand("setup", 125, 219, (function() {
   world.clearAll();
   world.ticker.reset();
   var R = ProcedurePrims.ask(world.turtleManager.createOrderedTurtles(1000, ""), function() {
-    SelfManager.self().moveTo(PrimChecks.list.oneOf(173, 179, world.patches()));
+    PrimChecks.turtle.moveTo(165, 172, PrimChecks.validator.checkArg('MOVE-TO', 165, 172, 1792, PrimChecks.list.oneOf(173, 179, world.patches())));
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 192, 196, 768, PrimChecks.list.oneOf(197, 203, SelfManager.self().getNeighbors4())));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(150, 153, R); return R; }
 }))

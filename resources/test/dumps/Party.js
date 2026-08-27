@@ -80,7 +80,7 @@ ProcedurePrims.defineCommand("setup", 209, 646, (function() {
     var R = ProcedurePrims.callCommand("choose-sex"); if (R === DeathInterrupt) { return R; }
     PrimChecks.turtle.setVariable(403, 407, "size", 3);
     PrimChecks.turtle.setVariable(456, 469, "my-group-site", PrimChecks.list.oneOf(470, 476, PrimChecks.validator.checkArg('ONE-OF', 470, 476, 120, world.observer.getGlobal("group-sites"))));
-    SelfManager.self().moveTo(PrimChecks.turtle.getVariable(501, 514, "my-group-site"));
+    PrimChecks.turtle.moveTo(493, 500, PrimChecks.validator.checkArg('MOVE-TO', 493, 500, 1792, PrimChecks.turtle.getVariable(501, 514, "my-group-site")));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(311, 325, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("update-happiness"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(521, 524, R); return R; }
   var R = ProcedurePrims.callCommand("count-boring-groups"); if (R === DeathInterrupt) { return R; }
@@ -94,7 +94,9 @@ ProcedurePrims.defineCommand("go", 654, 1039, (function() {
   if (PrimChecks.agentset.all(662, 666, world.turtles(), function() { return PrimChecks.turtle.getVariable(676, 682, "happy?"); })) {
     return PrimChecks.procedure.stop(690, 694);
   }
-  var R = ProcedurePrims.ask(world.turtles(), function() { SelfManager.self().moveTo(PrimChecks.turtle.getVariable(766, 779, "my-group-site")); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(744, 747, R); return R; }
+  var R = ProcedurePrims.ask(world.turtles(), function() {
+    PrimChecks.turtle.moveTo(758, 765, PrimChecks.validator.checkArg('MOVE-TO', 758, 765, 1792, PrimChecks.turtle.getVariable(766, 779, "my-group-site")));
+  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(744, 747, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("update-happiness"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(829, 832, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() { var R = ProcedurePrims.callCommand("leave-if-unhappy"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(864, 867, R); return R; }
   var R = ProcedurePrims.callCommand("find-new-groups"); if (R === DeathInterrupt) { return R; }

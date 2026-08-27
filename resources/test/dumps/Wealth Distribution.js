@@ -163,7 +163,7 @@ ProcedurePrims.defineCommand("recolor-patch", 1700, 1826, (function() {
 ProcedurePrims.defineCommand("setup-turtles", 1888, 2116, (function() {
   BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
   var R = ProcedurePrims.ask(world.turtleManager.createTurtles(world.observer.getGlobal("num-people"), ""), function() {
-    SelfManager.self().moveTo(PrimChecks.list.oneOf(1981, 1987, world.patches()));
+    PrimChecks.turtle.moveTo(1973, 1980, PrimChecks.validator.checkArg('MOVE-TO', 1973, 1980, 1792, PrimChecks.list.oneOf(1981, 1987, world.patches())));
     PrimChecks.turtle.setVariable(2039, 2043, "size", 1.5);
     var R = ProcedurePrims.callCommand("set-initial-turtle-vars"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1941, 1955, R); return R; }

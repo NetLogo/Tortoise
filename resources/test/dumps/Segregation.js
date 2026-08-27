@@ -107,7 +107,7 @@ ProcedurePrims.defineCommand("find-new-spot", 1279, 1478, (function() {
   if (SelfPrims._optimalAnyOther(SelfManager.self().turtlesHere())) {
     var R = ProcedurePrims.callCommand("find-new-spot"); if (R === DeathInterrupt) { return R; }
   }
-  SelfManager.self().moveTo(SelfManager.self().getPatchHere());
+  PrimChecks.turtle.moveTo(1432, 1439, SelfManager.self().getPatchHere());
 }))
 ProcedurePrims.defineCommand("update-turtles", 1486, 2127, (function() {
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.turtles(), 1503, 1506), function() {

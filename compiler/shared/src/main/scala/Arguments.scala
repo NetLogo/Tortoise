@@ -7,6 +7,7 @@ import org.nlogo.core.{
   CommandBlock,
   Expression,
   Instruction,
+  prim,
   ReporterApp,
   ReporterBlock,
   Syntax
@@ -53,10 +54,22 @@ object Arguments {
     val sourceStart   = a.instruction.token.sourceLocation.start
     val sourceEnd     = a.instruction.token.sourceLocation.end
     val checkedArgs   = argsWithTypes.map( { case ((allowed: Int, exp: Expression), op: String) =>
-      makeCheckedOp(a.instruction.token.text, sourceStart, sourceEnd, allowed, exp.reportedType(), op)
+      val runtime = runtimeAllowed(a.instruction, allowed)
+      makeCheckedOp(a.instruction.token.text, sourceStart, sourceEnd, runtime, exp.reportedType(), op)
     })
     checkedArgs
   }
+
+  // A few prims are narrower at compile time than they are at runtime.  Desktop's `_distance`, `_towards`, and
+  // `_moveto` declare turtle-or-patch in their syntax -- so a literal link is a compile error -- but their nvm
+  // implementations call `argEvalAgent`, which only asks whether it got an agent at all and leaves the kind to the
+  // prim itself.  Matching that keeps both messages in step: `distance nobody` names "an agent", and a link that
+  // arrives dynamically gets the prim's own wording rather than an argument-type error.  -Jeremy B August 2026
+  private def runtimeAllowed(instruction: Instruction, allowed: Int): Int =
+    instruction match {
+      case _: prim.etc._distance | _: prim.etc._towards | _: prim.etc._moveto => Syntax.AgentType
+      case _                                                                  => allowed
+    }
 
   def removeRepeatable(t: Int): Int = {
     t - (t & Syntax.RepeatableType)
@@ -80,7 +93,7 @@ object Arguments {
     }
     val sourceStart = instruction.token.sourceLocation.start
     val sourceEnd   = instruction.token.sourceLocation.end
-    Arguments.makeCheckedOp(instruction.token.text, sourceStart, sourceEnd, allowed, actual, op)
+    Arguments.makeCheckedOp(instruction.token.text, sourceStart, sourceEnd, runtimeAllowed(instruction, allowed), actual, op)
   }
 
   def conciseVarArgs(primName: String, sourceStart: String, sourceEnd: String, syntax: Syntax): String = {

@@ -263,7 +263,7 @@ ProcedurePrims.defineCommand("distribute-fish-in-tank", 6980, 7143, (function() 
   let waterHpatches = PrimChecks.agentset.with(7033, 7037, world.patches(), function() { return Prims.equality(PrimChecks.patch.getVariable(7039, 7052, "type-of-patch"), "water"); }); ProcedurePrims.stack().currentContext().registerStringRunVar("WATER-PATCHES", waterHpatches);
   let waterHpatch = Nobody; ProcedurePrims.stack().currentContext().registerStringRunVar("WATER-PATCH", waterHpatch);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("FISH"), function() {
-    SelfManager.self().moveTo(PrimChecks.list.oneOf(7117, 7123, PrimChecks.validator.checkArg('ONE-OF', 7117, 7123, 120, waterHpatches)));
+    PrimChecks.turtle.moveTo(7109, 7116, PrimChecks.validator.checkArg('MOVE-TO', 7109, 7116, 1792, PrimChecks.list.oneOf(7117, 7123, PrimChecks.validator.checkArg('ONE-OF', 7117, 7123, 120, waterHpatches))));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7093, 7096, R); return R; }
 }))
 ProcedurePrims.defineCommand("make-initial-alleles-for-gene", 7152, 8023, (function(geneHnumber, alleleH1, alleleH2, numHbigHalleles) {
@@ -308,7 +308,7 @@ ProcedurePrims.defineCommand("distribute-gene-pool-to-somatic-cells", 8033, 9515
       PrimChecks.turtle.setVariable(8801, 8805, "xcor", PrimChecks.math.plus(8843, 8844, PrimChecks.math.mult(8838, 8839, PrimChecks.validator.checkArg('*', 8838, 8839, 1, world.observer.getGlobal("inter-chromosome-pair-spacing")), 4), 0.1));
       PrimChecks.turtle.setVariable(8860, 8864, "ycor", -0.4);
       PrimChecks.turtle.setVariable(8881, 8885, "side", "left");
-      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHsomaticHcell, "LINKS"), function() {
+      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 8900, 8916, 256, thisHsomaticHcell), "LINKS"), function() {
         PrimChecks.turtleOrLink.setVariable(8951, 8958, "hidden?", true);
         PrimChecks.link.setVariable(8977, 8985, "tie-mode", "fixed");
         SelfManager.self().tie();
@@ -328,7 +328,7 @@ ProcedurePrims.defineCommand("distribute-gene-pool-to-somatic-cells", 8033, 9515
       PrimChecks.turtle.setVariable(9265, 9269, "xcor", PrimChecks.math.plus(9339, 9340, PrimChecks.math.plus(9307, 9308, PrimChecks.math.mult(9302, 9303, PrimChecks.validator.checkArg('*', 9302, 9303, 1, world.observer.getGlobal("inter-chromosome-pair-spacing")), 4), PrimChecks.validator.checkArg('+', 9307, 9308, 1, world.observer.getGlobal("intra-chromosome-pair-spacing"))), 0.1));
       PrimChecks.turtle.setVariable(9355, 9359, "ycor", -0.4);
       PrimChecks.turtle.setVariable(9375, 9379, "side", "right");
-      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHsomaticHcell, "LINKS"), function() {
+      var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 9394, 9410, 256, thisHsomaticHcell), "LINKS"), function() {
         PrimChecks.turtleOrLink.setVariable(9443, 9450, "hidden?", true);
         PrimChecks.link.setVariable(9468, 9476, "tie-mode", "fixed");
         SelfManager.self().tie();
@@ -354,7 +354,7 @@ ProcedurePrims.defineCommand("position-and-link-alleles", 9524, 10352, (function
     PrimChecks.turtle.setVariable(10106, 10110, "size", 1.2);
     PrimChecks.turtle.setVariable(10123, 10127, "xcor", PrimChecks.math.plus(10157, 10158, PrimChecks.validator.checkArg('+', 10157, 10158, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 10136, 10138, 1904, thisHsomaticHcell), function() { return PrimChecks.turtle.getVariable(10130, 10134, "xcor"); })), PrimChecks.math.plus(10177, 10178, PrimChecks.validator.checkArg('+', 10177, 10178, 1, pairHshiftHright), PrimChecks.validator.checkArg('+', 10177, 10178, 1, sideHshift))));
     PrimChecks.turtle.setVariable(10200, 10204, "ycor", PrimChecks.math.minus(10234, 10235, PrimChecks.validator.checkArg('-', 10234, 10235, 1, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 10213, 10215, 1904, thisHsomaticHcell), function() { return PrimChecks.turtle.getVariable(10207, 10211, "ycor"); })), 0.4));
-    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHsomaticHcell, "LINKS"), function() {
+    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 10245, 10261, 256, thisHsomaticHcell), "LINKS"), function() {
       PrimChecks.turtleOrLink.setVariable(10292, 10299, "hidden?", true);
       PrimChecks.link.setVariable(10315, 10323, "tie-mode", "fixed");
       SelfManager.self().tie();
@@ -405,7 +405,7 @@ ProcedurePrims.defineCommand("move-gametes-together", 11378, 12055, (function() 
   }
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAMETE-CELLS"), function() {
     myHzygote = PrimChecks.agentset.oneOfWith(null, null, world.turtleManager.turtlesOfBreed("FISH-ZYGOTES"), function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("MY-ZYGOTE", myHzygote);
-    distanceHtoHzygote = SelfManager.self().distance(myHzygote); ProcedurePrims.stack().currentContext().updateStringRunVar("DISTANCE-TO-ZYGOTE", distanceHtoHzygote);
+    distanceHtoHzygote = PrimChecks.turtle.distance(11841, 11849, PrimChecks.validator.checkArg('DISTANCE', 11841, 11849, 1792, myHzygote)); ProcedurePrims.stack().currentContext().updateStringRunVar("DISTANCE-TO-ZYGOTE", distanceHtoHzygote);
     if (Prims.gt(distanceHtoHzygote, 0)) {
       SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 11899, 11903, 768, myHzygote));
       if (Prims.gt(distanceHtoHzygote, world.observer.getGlobal("gamete-forward-step"))) {
@@ -432,7 +432,7 @@ ProcedurePrims.defineCommand("convert-zygote-into-somatic-cell", 12064, 13746, (
       return (LinkPrims.isOutLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(PrimChecks.turtle.getVariable(12683, 12686, "sex"), "female"));
     }); ProcedurePrims.stack().currentContext().updateStringRunVar("FEMALE-GAMETE", femaleHgamete);
     if ((PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 12705, 12709, 112, maleHgamete)) && PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 12726, 12730, 112, femaleHgamete)))) {
-      if ((Prims.lte(SelfManager.self().distance(PrimChecks.list.oneOf(12764, 12770, PrimChecks.validator.checkArg('ONE-OF', 12764, 12770, 120, maleHgamete))), 0.01) && Prims.lte(SelfManager.self().distance(PrimChecks.list.oneOf(12803, 12809, PrimChecks.validator.checkArg('ONE-OF', 12803, 12809, 120, femaleHgamete))), 0.01))) {
+      if ((Prims.lte(PrimChecks.turtle.distance(12755, 12763, PrimChecks.validator.checkArg('DISTANCE', 12755, 12763, 1792, PrimChecks.list.oneOf(12764, 12770, PrimChecks.validator.checkArg('ONE-OF', 12764, 12770, 120, maleHgamete)))), 0.01) && Prims.lte(PrimChecks.turtle.distance(12794, 12802, PrimChecks.validator.checkArg('DISTANCE', 12794, 12802, 1792, PrimChecks.list.oneOf(12803, 12809, PrimChecks.validator.checkArg('ONE-OF', 12803, 12809, 120, femaleHgamete)))), 0.01))) {
         var R = ProcedurePrims.callCommand("setup-new-somatic-cell-attributes"); if (R === DeathInterrupt) { return R; }
         thisHsomaticHcell = SelfManager.self(); ProcedurePrims.stack().currentContext().updateStringRunVar("THIS-SOMATIC-CELL", thisHsomaticHcell);
         var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 12972, 12975, 1904, maleHgamete), 12972, 12975), function() {
@@ -447,7 +447,7 @@ ProcedurePrims.defineCommand("convert-zygote-into-somatic-cell", 12064, 13746, (
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13089, 13092, R); return R; }
         var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 13210, 13213, 1904, maleHsexHcellHalleles), 13210, 13213), function() {
           PrimChecks.context.assertKind(2, 'create-link-from', 13247, 13369);
-          var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHsomaticHcell, "LINKS"), function() {
+          var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 13247, 13263, 256, thisHsomaticHcell), "LINKS"), function() {
             PrimChecks.turtleOrLink.setVariable(13299, 13306, "hidden?", true);
             PrimChecks.link.setVariable(13327, 13335, "tie-mode", "fixed");
             SelfManager.self().tie();
@@ -455,7 +455,7 @@ ProcedurePrims.defineCommand("convert-zygote-into-somatic-cell", 12064, 13746, (
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(13210, 13213, R); return R; }
         var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 13386, 13389, 1904, femaleHsexHcellHalleles), 13386, 13389), function() {
           PrimChecks.context.assertKind(2, 'create-link-from', 13425, 13547);
-          var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHsomaticHcell, "LINKS"), function() {
+          var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 13425, 13441, 256, thisHsomaticHcell), "LINKS"), function() {
             PrimChecks.turtleOrLink.setVariable(13477, 13484, "hidden?", true);
             PrimChecks.link.setVariable(13505, 13513, "tie-mode", "fixed");
             SelfManager.self().tie();
@@ -557,7 +557,7 @@ ProcedurePrims.defineCommand("link-alleles-to-gametes-and-gametes-to-zygote", 16
   var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
     PrimChecks.turtleOrLink.setVariable(16235, 16240, "breed", world.turtleManager.turtlesOfBreed("GAMETE-CELLS"));
     PrimChecks.turtle.setVariable(16262, 16269, "heading", 0);
-    var R = ProcedurePrims.ask(LinkPrims.createLinkTo(child, "LINKS"), function() { PrimChecks.turtleOrLink.setVariable(16302, 16309, "hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(16276, 16290, R); return R; }
+    var R = ProcedurePrims.ask(LinkPrims.createLinkTo(PrimChecks.validator.checkArg('CREATE-LINK-TO', 16276, 16290, 256, child), "LINKS"), function() { PrimChecks.turtleOrLink.setVariable(16302, 16309, "hidden?", false); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(16276, 16290, R); return R; }
     if (Prims.equality(PrimChecks.turtle.getVariable(16363, 16366, "sex"), "male")) {
       PrimChecks.turtleOrLink.setVariable(16387, 16392, "shape", "cell-gamete-male");
     }
@@ -574,7 +574,7 @@ ProcedurePrims.defineCommand("link-alleles-to-gametes-and-gametes-to-zygote", 16
       PrimChecks.context.assertKind(2, 'hatch', 16616, 16748);
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
         PrimChecks.turtle.setVariable(16629, 16643, "owned-by-fish?", false);
-        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHnewHgameteHcell, "LINKS"), function() {
+        var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 16657, 16673, 256, thisHnewHgameteHcell), "LINKS"), function() {
           PrimChecks.turtleOrLink.setVariable(16701, 16708, "hidden?", true);
           PrimChecks.link.setVariable(16719, 16727, "tie-mode", "fixed");
           SelfManager.self().tie();
@@ -605,15 +605,15 @@ ProcedurePrims.defineCommand("detect-and-move-fish-at-inside-tank-boundary", 171
     return (Prims.equality(PrimChecks.patch.getVariable(17230, 17243, "type-of-patch"), "water") && PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 17258, 17261, 2, PrimChecks.patch.getVariable(17262, 17275, "divider-here?"))));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("WATER-PATCHES", waterHpatches);
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("FISH"), function() {
-    nearestHwaterHpatch = PrimChecks.agentset.minOneOf(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('MIN-ONE-OF', 17320, 17330, 112, waterHpatches), 'min-one-of', 17320, 17362), function() { return SelfManager.self().distance(SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("NEAREST-WATER-PATCH", nearestHwaterHpatch);
+    nearestHwaterHpatch = PrimChecks.agentset.minOneOf(PrimChecks.context.assertAgentSetKind(6, PrimChecks.validator.checkArg('MIN-ONE-OF', 17320, 17330, 112, waterHpatches), 'min-one-of', 17320, 17362), function() { return PrimChecks.turtle.distance(17346, 17354, SelfManager.myself()); }); ProcedurePrims.stack().currentContext().updateStringRunVar("NEAREST-WATER-PATCH", nearestHwaterHpatch);
     if ((Prims.equality(PrimChecks.patch.getVariable(17370, 17383, "type-of-patch"), "tank-wall") || Prims.equality(PrimChecks.patch.getVariable(17401, 17414, "type-of-patch"), "water-edge"))) {
-      PrimChecks.turtle.setVariable(17444, 17451, "heading", PrimChecks.turtle.towards(17452, 17459, PrimChecks.validator.checkArg('TOWARDS', 17452, 17459, 768, nearestHwaterHpatch)));
+      PrimChecks.turtle.setVariable(17444, 17451, "heading", PrimChecks.turtle.towards(17452, 17459, PrimChecks.validator.checkArg('TOWARDS', 17452, 17459, 1792, nearestHwaterHpatch)));
       SelfManager.self().fd(PrimChecks.math.mult(17507, 17508, PrimChecks.validator.checkArg('*', 17507, 17508, 1, world.observer.getGlobal("fish-forward-step")), 2));
       PrimChecks.turtle.setVariable(17521, 17528, "heading", 0);
       PrimChecks.turtle.setVariable(17541, 17548, "bearing", PrimChecks.math.randomFloat(360));
     }
     if (PrimChecks.patch.getVariable(17580, 17593, "divider-here?")) {
-      SelfManager.self().moveTo(nearestHwaterHpatch);
+      PrimChecks.turtle.moveTo(17595, 17602, PrimChecks.validator.checkArg('MOVE-TO', 17595, 17602, 1792, nearestHwaterHpatch));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(17280, 17283, R); return R; }
 }))
@@ -815,7 +815,7 @@ ProcedurePrims.defineCommand("grow-fish-parts-from-somatic-cell", 23542, 25159, 
       PrimChecks.turtleOrLink.setVariable(23801, 23806, "color", world.observer.getGlobal("female-color"));
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(23607, 23612, R); return R; }
-  var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHfishHbody, "LINKS"), function() {
+  var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 23827, 23843, 256, thisHfishHbody), "LINKS"), function() {
     PrimChecks.turtleOrLink.setVariable(23975, 23982, "hidden?", true);
     PrimChecks.link.setVariable(23996, 24004, "tie-mode", "fixed");
     SelfManager.self().tie();
@@ -828,7 +828,7 @@ ProcedurePrims.defineCommand("grow-fish-parts-from-somatic-cell", 23542, 25159, 
     PrimChecks.turtleOrLink.setVariable(24160, 24165, "color", PrimChecks.procedure.callReporter(24166, 24186, "tail-color-phenotype"));
     PrimChecks.turtle.setVariable(24195, 24202, "heading", -90);
     SelfManager.self()._optimalFdLessThan1(0.4);
-    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHfishHbody, "LINKS"), function() {
+    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 24217, 24233, 256, thisHfishHbody), "LINKS"), function() {
       PrimChecks.turtleOrLink.setVariable(24367, 24374, "hidden?", true);
       PrimChecks.link.setVariable(24390, 24398, "tie-mode", "fixed");
       SelfManager.self().tie();
@@ -839,7 +839,7 @@ ProcedurePrims.defineCommand("grow-fish-parts-from-somatic-cell", 23542, 25159, 
     PrimChecks.turtle.setVariable(24506, 24510, "size", 1);
     PrimChecks.turtleOrLink.setVariable(24521, 24526, "shape", "fish-fins");
     PrimChecks.turtleOrLink.setVariable(24547, 24552, "color", PrimChecks.procedure.callReporter(24553, 24579, "dorsal-fin-color-phenotype"));
-    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHfishHbody, "LINKS"), function() {
+    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 24584, 24600, 256, thisHfishHbody), "LINKS"), function() {
       PrimChecks.turtleOrLink.setVariable(24735, 24742, "hidden?", true);
       PrimChecks.link.setVariable(24758, 24766, "tie-mode", "fixed");
       SelfManager.self().tie();
@@ -850,7 +850,7 @@ ProcedurePrims.defineCommand("grow-fish-parts-from-somatic-cell", 23542, 25159, 
     PrimChecks.turtle.setVariable(24876, 24880, "size", 1);
     PrimChecks.turtleOrLink.setVariable(24891, 24896, "shape", PrimChecks.procedure.callReporter(24897, 24917, "rear-spots-phenotype"));
     PrimChecks.turtleOrLink.setVariable(24926, 24931, "color", [0, 0, 0, 255]);
-    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(thisHfishHbody, "LINKS"), function() {
+    var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 24949, 24965, 256, thisHfishHbody), "LINKS"), function() {
       PrimChecks.turtleOrLink.setVariable(25099, 25106, "hidden?", true);
       PrimChecks.link.setVariable(25122, 25130, "tie-mode", "fixed");
       SelfManager.self().tie();

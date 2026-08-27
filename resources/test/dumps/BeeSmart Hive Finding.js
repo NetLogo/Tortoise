@@ -246,7 +246,7 @@ ProcedurePrims.defineCommand("inspect-hive", 8958, 10360, (function() {
       PrimChecks.turtle.setVariable(9269, 9274, "trips", PrimChecks.math.plus(9281, 9282, PrimChecks.validator.checkArg('+', 9281, 9282, 1, PrimChecks.turtle.getVariable(9275, 9280, "trips")), 1));
     }
     else {
-      if (Prims.gt(SelfManager.self().distance(PrimChecks.turtle.getVariable(9347, 9353, "target")), 2)) {
+      if (Prims.gt(PrimChecks.turtle.distance(9338, 9346, PrimChecks.validator.checkArg('DISTANCE', 9338, 9346, 1792, PrimChecks.turtle.getVariable(9347, 9353, "target"))), 2)) {
         SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 9368, 9372, 768, PrimChecks.turtle.getVariable(9373, 9379, "target")));
         SelfManager.self()._optimalFdOne();
       }
@@ -274,7 +274,7 @@ ProcedurePrims.defineCommand("inspect-hive", 8958, 10360, (function() {
 ProcedurePrims.defineCommand("go-home", 10485, 11507, (function() {
   world.observer.setGlobal("go-home-task", PrimChecks.task.checked(10512, 10513, function() {
     PrimChecks.context.assertKind(2, 'run', 10512, 11506);
-    if (Prims.lt(SelfManager.self().distance(PrimChecks.turtle.getVariable(10537, 10544, "my-home")), 1)) {
+    if (Prims.lt(PrimChecks.turtle.distance(10528, 10536, PrimChecks.validator.checkArg('DISTANCE', 10528, 10536, 1792, PrimChecks.turtle.getVariable(10537, 10544, "my-home"))), 1)) {
       if (PrimChecks.turtle.getVariable(10582, 10595, "no-discovery?")) {
         PrimChecks.turtle.setVariable(10687, 10696, "next-task", world.observer.getGlobal("watch-dance-task"));
         PrimChecks.turtle.setVariable(10726, 10737, "task-string", "watching-dance");
@@ -361,7 +361,7 @@ ProcedurePrims.defineCommand("re-visit", 14829, 15429, (function() {
     }
     else {
       SelfManager.self().penManager.raisePen();
-      if (Prims.lt(SelfManager.self().distance(PrimChecks.turtle.getVariable(15010, 15016, "target")), 1)) {
+      if (Prims.lt(PrimChecks.turtle.distance(15001, 15009, PrimChecks.validator.checkArg('DISTANCE', 15001, 15009, 1792, PrimChecks.turtle.getVariable(15010, 15016, "target"))), 1)) {
         if (Prims.equality(PrimChecks.turtle.getVariable(15081, 15089, "interest"), 0)) {
           PrimChecks.turtle.setVariable(15110, 15118, "interest", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 15131, 15133, 1904, PrimChecks.turtle.getVariable(15134, 15140, "target")), function() { return PrimChecks.turtle.getVariable(15121, 15128, "quality"); }));
           PrimChecks.turtleOrLink.setVariable(15155, 15160, "color", PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 15171, 15173, 1904, PrimChecks.turtle.getVariable(15174, 15180, "target")), function() { return PrimChecks.turtleOrLink.getVariable(15163, 15168, "color"); }));
@@ -393,7 +393,7 @@ ProcedurePrims.defineCommand("pipe", 15554, 16001, (function() {
 ProcedurePrims.defineCommand("take-off", 16126, 16258, (function() {
   world.observer.setGlobal("take-off-task", PrimChecks.task.checked(16155, 16156, function() {
     PrimChecks.context.assertKind(2, 'run', 16155, 16257);
-    if (Prims.gt(SelfManager.self().distance(PrimChecks.turtle.getVariable(16180, 16186, "target")), 1)) {
+    if (Prims.gt(PrimChecks.turtle.distance(16171, 16179, PrimChecks.validator.checkArg('DISTANCE', 16171, 16179, 1792, PrimChecks.turtle.getVariable(16180, 16186, "target"))), 1)) {
       SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 16199, 16203, 768, PrimChecks.turtle.getVariable(16204, 16210, "target")));
       SelfManager.self()._optimalFdOne();
     }
