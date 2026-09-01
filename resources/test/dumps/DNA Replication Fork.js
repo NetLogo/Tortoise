@@ -407,11 +407,11 @@ ProcedurePrims.defineCommand("unzip-nucleotides", 18808, 19992, (function() {
   }), function() {
     let fractionalHseparation = PrimChecks.math.div(19009, 19010, PrimChecks.validator.checkArg('/', 19009, 19010, 1, PrimChecks.turtle.getVariable(18994, 19008, "unzipped-stage")), 2); ProcedurePrims.stack().currentContext().registerStringRunVar("FRACTIONAL-SEPARATION", fractionalHseparation);
     if (Prims.equality(PrimChecks.turtle.getVariable(19111, 19125, "unzipped-stage"), 3)) {
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.myLinks("OLD-STAIRS"), 19131, 19134), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(19131, 19134, R); return R; }
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.myOutLinks("BACKBONES"), 19155, 19158), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(19155, 19158, R); return R; }
+      var R = ProcedurePrims.ask(LinkPrims.myLinks("OLD-STAIRS"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(19131, 19134, R); return R; }
+      var R = ProcedurePrims.ask(LinkPrims.myOutLinks("BACKBONES"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(19155, 19158, R); return R; }
     }
     if (Prims.equality(PrimChecks.turtle.getVariable(19272, 19286, "unzipped-stage"), 1)) {
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.myOutLinks("BACKBONES"), 19292, 19295), function() { SelfManager.self().untie(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(19292, 19295, R); return R; }
+      var R = ProcedurePrims.ask(LinkPrims.myOutLinks("BACKBONES"), function() { SelfManager.self().untie(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(19292, 19295, R); return R; }
     }
     if ((Prims.gt(PrimChecks.turtle.getVariable(19399, 19413, "unzipped-stage"), 0) && Prims.lt(PrimChecks.turtle.getVariable(19422, 19436, "unzipped-stage"), 4))) {
       PrimChecks.turtle.setVariable(19453, 19467, "unzipped-stage", PrimChecks.math.plus(19483, 19484, PrimChecks.validator.checkArg('+', 19483, 19484, 1, PrimChecks.turtle.getVariable(19468, 19482, "unzipped-stage")), 1));
@@ -486,7 +486,7 @@ ProcedurePrims.defineCommand("refill-or-remove-nucleosides", 21713, 21935, (func
   if (Prims.gt(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("NUCLEOSIDES")), world.observer.getGlobal("free-nucleosides"))) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 21847, 21850, 1904, PrimChecks.list.oneOf(21851, 21857, world.turtleManager.turtlesOfBreed("NUCLEOSIDES"))), function() {
       PrimChecks.context.assertKind(2, 'ask', 21871, 21898);
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 21871, 21874), function() {
+      var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
         PrimChecks.context.assertKind(10, 'die', 21894, 21897);
         return SelfManager.self().die();
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(21871, 21874, R); return R; }
@@ -532,8 +532,8 @@ ProcedurePrims.defineCommand("lock-polymerase-to-one-nucleotide", 22304, 25777, 
       if ((PrimChecks.validator.checkArg('OR', 24870, 24872, 2, PrimChecks.procedure.callReporter(24734, 24773, "would-these-nucleotides-pair-correctly?", targetHnucleotideHreadyHtoHgearHtoHpolymerase, potentialHnucleosideHreadyHtoHgearHtoHpolymerase)) || PrimChecks.validator.checkArg('OR', 24870, 24872, 2, world.observer.getGlobal("substitutions?")))) {
         var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 24916, 24919, 1904, potentialHnucleosideHreadyHtoHgearHtoHpolymerase), 24916, 24919), function() {
           PrimChecks.context.assertKind(2, 'ask', 24982, 25011);
-          var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.myInLinks("CURSOR-DRAGS"), 24982, 24985), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(24982, 24985, R); return R; }
-          var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 25022, 25025), function() {
+          var R = ProcedurePrims.ask(LinkPrims.myInLinks("CURSOR-DRAGS"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(24982, 24985, R); return R; }
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
             PrimChecks.context.assertKind(10, 'die', 25045, 25048);
             return SelfManager.self().die();
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(25022, 25025, R); return R; }
@@ -588,7 +588,7 @@ ProcedurePrims.defineCommand("lock-topoisomerase-to-wound-primase", 26290, 27218
         PrimChecks.turtle.setVariable(26801, 26808, "locked?", true);
         if (PrimChecks.math.not(MousePrims.isDown())) {
           var R = ProcedurePrims.callCommand("unwind-dna"); if (R === DeathInterrupt) { return R; }
-          var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.myInLinks("CURSOR-DRAGS"), 26874, 26877), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(26874, 26877, R); return R; }
+          var R = ProcedurePrims.ask(LinkPrims.myInLinks("CURSOR-DRAGS"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(26874, 26877, R); return R; }
           targetHxcor = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 26939, 26941, 1904, targetHprimaseHreadyHtoHgearHtoHtopoisomerase), function() { return PrimChecks.turtle.getVariable(26933, 26937, "xcor"); }); ProcedurePrims.stack().currentContext().updateStringRunVar("TARGET-XCOR", targetHxcor);
           targetHycor = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 27023, 27025, 1904, targetHprimaseHreadyHtoHgearHtoHtopoisomerase), function() { return PrimChecks.turtle.getVariable(27017, 27021, "ycor"); }); ProcedurePrims.stack().currentContext().updateStringRunVar("TARGET-YCOR", targetHycor);
           PrimChecks.turtle.setXY(27082, 27087, PrimChecks.validator.checkArg('SETXY', 27082, 27087, 1, targetHxcor), PrimChecks.validator.checkArg('SETXY', 27082, 27087, 1, targetHycor));
@@ -677,7 +677,7 @@ ProcedurePrims.defineCommand("detect-mouse-selection-event", 28998, 30666, (func
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(30294, 30315, R); return R; }
     }
     if (PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 30464, 30467, 2, currentHmouseHdown_Q))) {
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.myOutLinks("CURSOR-DRAGS"), 30491, 30494), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(30491, 30494, R); return R; }
+      var R = ProcedurePrims.ask(LinkPrims.myOutLinks("CURSOR-DRAGS"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(30491, 30494, R); return R; }
     }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(29196, 29199, R); return R; }
   if ((PrimChecks.validator.checkArg('AND', 30582, 30585, 2, currentHmouseHdown_Q) && MousePrims.isDown())) {

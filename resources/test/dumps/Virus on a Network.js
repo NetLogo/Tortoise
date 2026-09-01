@@ -138,7 +138,7 @@ ProcedurePrims.defineCommand("become-resistant", 1670, 1807, (function() {
   PrimChecks.turtle.setVariable(1714, 1723, "infected?", false);
   PrimChecks.turtle.setVariable(1736, 1746, "resistant?", true);
   PrimChecks.turtleOrLink.setVariable(1758, 1763, "color", 5);
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.myLinks("LINKS"), 1771, 1774), function() { PrimChecks.turtleOrLink.setVariable(1790, 1795, "color", PrimChecks.math.minus(1801, 1802, 5, 2)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1771, 1774, R); return R; }
+  var R = ProcedurePrims.ask(LinkPrims.myLinks("LINKS"), function() { PrimChecks.turtleOrLink.setVariable(1790, 1795, "color", PrimChecks.math.minus(1801, 1802, 5, 2)); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1771, 1774, R); return R; }
 }))
 ProcedurePrims.defineCommand("spread-virus", 1815, 1994, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(1842, 1846, world.turtles(), function() { return PrimChecks.turtle.getVariable(1848, 1857, "infected?"); }), function() {

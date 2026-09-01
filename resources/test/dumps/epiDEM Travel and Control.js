@@ -259,7 +259,7 @@ ProcedurePrims.defineCommand("go", 5293, 6256, (function() {
   var R = ProcedurePrims.ask(world.turtles(), function() {
     if (PrimChecks.turtle.getVariable(5876, 5886, "ambulance?")) {
       var R = ProcedurePrims.callCommand("move"); if (R === DeathInterrupt) { return R; }
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), 5910, 5913), function() {
+      var R = ProcedurePrims.ask(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors()), function() {
         if ((Prims.equality(PrimChecks.turtle.getVariable(5955, 5965, "ambulance?"), false) && Prims.equality(PrimChecks.turtle.getVariable(5980, 5989, "infected?"), true))) {
           var R = ProcedurePrims.callCommand("hospitalize"); if (R === DeathInterrupt) { return R; }
         }

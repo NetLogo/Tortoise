@@ -3,8 +3,8 @@
 package org.nlogo.tortoise.compiler
 
 import
-  org.nlogo.core.{ Application, AstNode, Expression, Instruction, ReporterApp, ReporterBlock, SourceLocatable,
-                   Statement, Syntax }
+  org.nlogo.core.{ Application, AstNode, Expression, Instruction, Reporter, ReporterApp, ReporterBlock,
+                   SourceLocatable, Statement, Syntax }
 
 import
   org.nlogo.core.prim,
@@ -101,24 +101,50 @@ object AgentContext {
       s"PrimChecks.context.assertKind($required, '$primName', ${location.start}, ${location.end});\n$bodyJs"
     }
 
-  // `ask` rejects only the world's own turtles and patches agentsets, and by identity (`agents eq world.turtles`),
-  // not by syntax.  A `let` variable holding `turtles` is rejected too.  So the check is needed whenever the
-  // expression might be holding one of those sets, but an expression that *builds* an agentset, or that reports a
-  // single agent, provably can't be one.  Anything we can't classify still gets the check.  -Jeremy B August 2026
+  // `ask` rejects only the world's own turtles and patches agentsets, and by identity (`agentset == world.turtles()`
+  // in desktop's `_ask`), not by syntax.  A `let` variable holding `turtles` is rejected too.  So the check is needed
+  // whenever the expression might be holding one of those two objects, which rules out two whole classes of
+  // expression: one that can't report a turtleset or a patchset at all, and one that reports an agentset of its own.
+  // Anything we can't classify still gets the check.  -Jeremy B August 2026
   def canBeWholeAgentSet(exp: Expression): Boolean =
+    if ((agentSetTypeOf(exp) & (Syntax.TurtlesetType | Syntax.PatchsetType)) == 0)
+      false
+    else
+      exp match {
+        case r: ReporterApp => !reportsAnotherAgentSet(r.reporter)
+        case _              => true
+      }
+
+  // `one-of` is declared as reporting anything, because for a list it does -- including, in principle, a list holding
+  // `turtles`.  Given an agentset it reports a single agent, and that is the common case worth keeping cheap.
+  // -Jeremy B September 2026
+  private def agentSetTypeOf(exp: Expression): Int =
     exp match {
-      case r: ReporterApp =>
-        r.reporter match {
-          case _: prim._breed         | _: prim.etc._linkbreed  | _: prim.etc._links      |
-               _: prim.etc._turtleset | _: prim.etc._patchset   | _: prim.etc._linkset    |
-               _: prim._with          | _: prim._other          | _: prim._neighbors      |
-               _: prim._neighbors4    | _: prim._turtle         | _: prim.etc._patch      |
-               _: prim.etc._link      | _: prim._oneof          | _: prim.etc._myself     |
-               _: prim.etc._self      | _: Optimizer._otherwith | _: Optimizer._oneofwith |
-               _: Optimizer._patchatreporter                                              => false
-          case _                                                                          => true
-        }
-      case _ => true
+      case r: ReporterApp if r.reporter.isInstanceOf[prim._oneof] =>
+        if (r.args.headOption.exists( (a) => (a.reportedType() & Syntax.ListType) != 0 ))
+          r.reportedType()
+        else
+          Syntax.AgentType
+      case _ =>
+        exp.reportedType()
+    }
+
+  // Prims reporting an agentset that is theirs rather than the world's: a set built on the spot, or a stored one (a
+  // breed, `no-turtles`) that is never the identical object `ask` rejects.  Only prims that can report a turtleset or
+  // a patchset need to be here; the rest are handled by type.  -Jeremy B September 2026
+  private def reportsAnotherAgentSet(reporter: Reporter): Boolean =
+    reporter match {
+      case _: prim._breed                 | _: prim._breedon              | _: prim._inradius   |
+           _: prim._neighbors             | _: prim._neighbors4           | _: prim._other      |
+           _: prim._turtleson             | _: prim._whoarenot            | _: prim._with       |
+           _: prim.etc._atpoints          | _: prim.etc._bothends         | _: prim.etc._breedat |
+           _: prim.etc._breedhere         | _: prim.etc._incone           | _: prim.etc._maxnof |
+           _: prim.etc._inlinkneighbors   | _: prim.etc._linkneighbors    | _: prim.etc._minnof |
+           _: prim.etc._nof               | _: prim.etc._nopatches        | _: prim.etc._noturtles |
+           _: prim.etc._outlinkneighbors  | _: prim.etc._patchset         | _: prim.etc._turtlesat |
+           _: prim.etc._turtleset         | _: prim.etc._turtleshere      | _: prim.etc._uptonof |
+           _: prim.etc._withmax           | _: prim.etc._withmin          | _: Optimizer._otherwith => true
+      case _                                                                                       => false
     }
 
   // Can code needing `required` run in `context` without a runtime check?

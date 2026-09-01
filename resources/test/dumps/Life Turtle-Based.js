@@ -118,26 +118,26 @@ ProcedurePrims.defineCommand("draw-cells", 2078, 2355, (function() {
 }))
 ProcedurePrims.defineCommand("draw", 2398, 2599, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(SelfManager.self().breedHere("CELLS")))) {
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(SelfManager.self().turtlesHere(), 2454, 2457), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2454, 2457, R); return R; }
+    var R = ProcedurePrims.ask(SelfManager.self().turtlesHere(), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2454, 2457, R); return R; }
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "CELLS"), function() { PrimChecks.turtleOrLink.setVariable(2539, 2544, "color", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2518, 2530, R); return R; }
     var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; }
     var R = ProcedurePrims.ask(SelfManager.self().getNeighbors(), function() { var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2572, 2575, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("erase", 2645, 2734, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(SelfManager.self().turtlesHere(), 2673, 2676), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2673, 2676, R); return R; }
+  var R = ProcedurePrims.ask(SelfManager.self().turtlesHere(), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2673, 2676, R); return R; }
   var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.ask(SelfManager.self().getNeighbors(), function() { var R = ProcedurePrims.callCommand("update"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2709, 2712, R); return R; }
 }))
 ProcedurePrims.defineCommand("update", 2902, 3271, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(SelfManager.self().breedHere("BABIES"), 2931, 2934), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2931, 2934, R); return R; }
+  var R = ProcedurePrims.ask(SelfManager.self().breedHere("BABIES"), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2931, 2934, R); return R; }
   let n = PrimChecks.agentset.count(PrimChecks.agentset.breedOn("CELLS", SelfManager.self().getNeighbors())); ProcedurePrims.stack().currentContext().registerStringRunVar("N", n);
   if (PrimChecks.agentset.any(SelfManager.self().breedHere("CELLS"))) {
     if ((Prims.equality(n, 2) || Prims.equality(n, 3))) {
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(SelfManager.self().breedHere("CELLS"), 3053, 3056), function() { PrimChecks.turtleOrLink.setVariable(3074, 3079, "color", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3053, 3056, R); return R; }
+      var R = ProcedurePrims.ask(SelfManager.self().breedHere("CELLS"), function() { PrimChecks.turtleOrLink.setVariable(3074, 3079, "color", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3053, 3056, R); return R; }
     }
     else {
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(SelfManager.self().breedHere("CELLS"), 3098, 3101), function() { PrimChecks.turtleOrLink.setVariable(3119, 3124, "color", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3098, 3101, R); return R; }
+      var R = ProcedurePrims.ask(SelfManager.self().breedHere("CELLS"), function() { PrimChecks.turtleOrLink.setVariable(3119, 3124, "color", 5); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3098, 3101, R); return R; }
     }
   }
   else {

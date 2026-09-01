@@ -146,6 +146,38 @@ class AgentContextTest extends AnyFunSuite {
     assertResult(2)(guardCount("to foo [a] ask a [ fd 1 ask link-neighbors [ fd 1 ] ] end"))
   }
 
+  // Only `world.turtles()` and `world.patches()` themselves are rejected, and by identity, so the check is worth
+  // emitting only for an expression that could be holding one of them.
+
+  test("asking something that could be the whole set is checked") {
+    assertResult(1)(askGuardCount("to foo [a] ask a [ fd 1 ] end"))
+    assertResult(1)(askGuardCount("to foo [a] ask turtles [ fd 1 ] fd 1 end"))
+    assertResult(1)(askGuardCount("to foo [a] ask ifelse-value true [ turtles ] [ a ] [ fd 1 ] end"))
+    // `one-of` reports a single agent for an agentset, but for a list it reports whatever the list holds.
+    assertResult(1)(askGuardCount("to foo [a] ask one-of (list turtles patches) [ fd 1 ] end"))
+  }
+
+  test("asking a set the prim built itself is not checked") {
+    assertResult(0)(askGuardCount("to foo ask turtles-here [ fd 1 ] end"))
+    assertResult(0)(askGuardCount("to foo ask link-neighbors [ fd 1 ] end"))
+    assertResult(0)(askGuardCount("to foo ask turtles with [who > 1] [ fd 1 ] end"))
+    assertResult(0)(askGuardCount("to foo ask n-of 3 turtles [ fd 1 ] end"))
+    assertResult(0)(askGuardCount("to foo ask other turtles [ fd 1 ] end"))
+    assertResult(0)(askGuardCount("to foo ask neighbors [ set pcolor red ] end"))
+  }
+
+  test("asking something that isn't a turtleset or a patchset is not checked") {
+    assertResult(0)(askGuardCount("to foo ask my-links [ set color red ] end"))
+    assertResult(0)(askGuardCount("to foo ask patch-here [ set pcolor red ] end"))
+    assertResult(0)(askGuardCount("to foo ask one-of turtles [ fd 1 ] end"))
+    assertResult(0)(askGuardCount("to foo ask myself [ fd 1 ] end"))
+  }
+
+  private val AskGuardCall = """PrimChecks\.context\.assertAskAllowed\(""".r
+
+  private def askGuardCount(code: String): Int =
+    AskGuardCall.findAllMatchIn(jsFor(code)).length
+
   private val GuardCall = """PrimChecks\.context\.assertKind\((\d+), '([^']+)'""".r
 
   private def guardsIn(code: String): Seq[(String, String)] =

@@ -260,7 +260,7 @@ ProcedurePrims.defineCommand("explore", 5232, 5378, (function() {
   }
   PrimChecks.turtle.setVariable(5290, 5299, "explored?", true);
   world.observer.setGlobal("component-size", PrimChecks.math.plus(5341, 5342, PrimChecks.validator.checkArg('+', 5341, 5342, 1, world.observer.getGlobal("component-size")), 1));
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("LINKS"), 5347, 5350), function() {
+  var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("LINKS"), function() {
     PrimChecks.context.assertKind(2, 'explore', 5368, 5375);
     var R = ProcedurePrims.callCommand("explore"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5347, 5350, R); return R; }

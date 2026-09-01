@@ -420,7 +420,7 @@ ProcedurePrims.defineCommand("attach-tag", 15047, 15338, (function(direction, di
 }))
 ProcedurePrims.defineCommand("visualize-all-genes", 15571, 15714, (function() {
   var R = ProcedurePrims.ask(PrimChecks.agentset.turtleSet(15599, 15609, world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")), function() {
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 15633, 15636), function() {
+    var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
       PrimChecks.context.assertKind(10, 'set', 15656, 15683);
       PrimChecks.turtleOrLink.setVariable(15660, 15667, "hidden?", PrimChecks.math.not(PrimChecks.validator.checkArg('NOT', 15668, 15671, 2, world.observer.getGlobal("show-genes?"))));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(15633, 15636, R); return R; }
@@ -429,7 +429,7 @@ ProcedurePrims.defineCommand("visualize-all-genes", 15571, 15714, (function() {
 }))
 ProcedurePrims.defineCommand("hide-genes", 15723, 15880, (function(strandHtype) {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(15792, 15796, PrimChecks.agentset.turtleSet(15757, 15767, world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")), function() { return Prims.equality(PrimChecks.turtle.getVariable(15798, 15804, "strand"), strandHtype); }), function() {
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 15821, 15824), function() {
+    var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
       PrimChecks.context.assertKind(10, 'set', 15844, 15860);
       PrimChecks.turtleOrLink.setVariable(15848, 15855, "hidden?", true);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(15821, 15824, R); return R; }
@@ -438,7 +438,7 @@ ProcedurePrims.defineCommand("hide-genes", 15723, 15880, (function(strandHtype) 
 }))
 ProcedurePrims.defineCommand("hide-mrna", 15889, 16045, (function(strandHtype) {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(15957, 15961, PrimChecks.agentset.turtleSet(15922, 15932, world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES")), function() { return Prims.equality(PrimChecks.turtle.getVariable(15963, 15969, "strand"), strandHtype); }), function() {
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 15986, 15989), function() {
+    var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
       PrimChecks.context.assertKind(10, 'set', 16009, 16025);
       PrimChecks.turtleOrLink.setVariable(16013, 16020, "hidden?", true);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(15986, 15989, R); return R; }
@@ -447,7 +447,7 @@ ProcedurePrims.defineCommand("hide-mrna", 15889, 16045, (function(strandHtype) {
 }))
 ProcedurePrims.defineCommand("hide-trna", 16054, 16222, (function(strandHtype) {
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(16134, 16138, PrimChecks.agentset.turtleSet(16087, 16097, world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")), function() { return Prims.equality(PrimChecks.turtle.getVariable(16140, 16146, "strand"), strandHtype); }), function() {
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 16163, 16166), function() {
+    var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
       PrimChecks.context.assertKind(10, 'set', 16186, 16202);
       PrimChecks.turtleOrLink.setVariable(16190, 16197, "hidden?", true);
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(16163, 16166, R); return R; }
@@ -468,11 +468,11 @@ ProcedurePrims.defineCommand("show-next-mrna", 16231, 17664, (function(strandHty
       return (Prims.equality(PrimChecks.turtle.getVariable(16593, 16599, "strand"), strandHtype) && Prims.equality(PrimChecks.turtle.getVariable(16618, 16626, "cap-type"), "start"));
     }), function() {
       if (!Prims.equality(PrimChecks.turtle.getVariable(16653, 16664, "gene-number"), world.observer.getGlobal("original-display-mrna-counter"))) {
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("BACKBONES"), 16707, 16710), function() {
+        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
           PrimChecks.context.assertKind(10, 'set', 16735, 16751);
           PrimChecks.turtleOrLink.setVariable(16739, 16746, "hidden?", true);
           PrimChecks.context.assertKind(2, 'ask', 16752, 16792);
-          var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 16752, 16755), function() {
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
             PrimChecks.context.assertKind(10, 'set', 16775, 16791);
             PrimChecks.turtleOrLink.setVariable(16779, 16786, "hidden?", true);
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(16752, 16755, R); return R; }
@@ -480,11 +480,11 @@ ProcedurePrims.defineCommand("show-next-mrna", 16231, 17664, (function(strandHty
         PrimChecks.turtleOrLink.setVariable(16799, 16806, "hidden?", true);
       }
       else {
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("BACKBONES"), 16822, 16825), function() {
+        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
           PrimChecks.context.assertKind(10, 'set', 16850, 16867);
           PrimChecks.turtleOrLink.setVariable(16854, 16861, "hidden?", false);
           PrimChecks.context.assertKind(2, 'ask', 16868, 16909);
-          var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 16868, 16871), function() {
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
             PrimChecks.context.assertKind(10, 'set', 16891, 16908);
             PrimChecks.turtleOrLink.setVariable(16895, 16902, "hidden?", false);
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(16868, 16871, R); return R; }
@@ -505,11 +505,11 @@ ProcedurePrims.defineCommand("show-next-mrna", 16231, 17664, (function(strandHty
       return (Prims.equality(PrimChecks.turtle.getVariable(17241, 17247, "strand"), strandHtype) && Prims.equality(PrimChecks.turtle.getVariable(17266, 17274, "cap-type"), "start"));
     }), function() {
       if (!Prims.equality(PrimChecks.turtle.getVariable(17301, 17312, "gene-number"), world.observer.getGlobal("duplicate-display-mrna-counter"))) {
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("BACKBONES"), 17356, 17359), function() {
+        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
           PrimChecks.context.assertKind(10, 'set', 17384, 17400);
           PrimChecks.turtleOrLink.setVariable(17388, 17395, "hidden?", true);
           PrimChecks.context.assertKind(2, 'ask', 17401, 17441);
-          var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 17401, 17404), function() {
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
             PrimChecks.context.assertKind(10, 'set', 17424, 17440);
             PrimChecks.turtleOrLink.setVariable(17428, 17435, "hidden?", true);
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(17401, 17404, R); return R; }
@@ -517,11 +517,11 @@ ProcedurePrims.defineCommand("show-next-mrna", 16231, 17664, (function(strandHty
         PrimChecks.turtleOrLink.setVariable(17448, 17455, "hidden?", true);
       }
       else {
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("BACKBONES"), 17471, 17474), function() {
+        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
           PrimChecks.context.assertKind(10, 'set', 17499, 17516);
           PrimChecks.turtleOrLink.setVariable(17503, 17510, "hidden?", false);
           PrimChecks.context.assertKind(2, 'ask', 17517, 17558);
-          var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 17517, 17520), function() {
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
             PrimChecks.context.assertKind(10, 'set', 17540, 17557);
             PrimChecks.turtleOrLink.setVariable(17544, 17551, "hidden?", false);
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(17517, 17520, R); return R; }
@@ -541,11 +541,11 @@ ProcedurePrims.defineCommand("show-next-trna", 17673, 18214, (function(strandHty
   }), function() {
     var R = ProcedurePrims.ask(PrimChecks.agentset.with(17895, 17899, world.turtleManager.turtlesOfBreed("TRNAS"), function() { return Prims.equality(PrimChecks.turtle.getVariable(17901, 17907, "strand"), strandHtype); }), function() {
       if (Prims.equality(PrimChecks.turtle.getVariable(17938, 17949, "gene-number"), thisHgeneHnumber)) {
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("BACKBONES"), 17978, 17981), function() {
+        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
           PrimChecks.context.assertKind(10, 'set', 18006, 18023);
           PrimChecks.turtleOrLink.setVariable(18010, 18017, "hidden?", false);
           PrimChecks.context.assertKind(2, 'ask', 18024, 18065);
-          var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 18024, 18027), function() {
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
             PrimChecks.context.assertKind(10, 'set', 18047, 18064);
             PrimChecks.turtleOrLink.setVariable(18051, 18058, "hidden?", false);
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(18024, 18027, R); return R; }
@@ -553,11 +553,11 @@ ProcedurePrims.defineCommand("show-next-trna", 17673, 18214, (function(strandHty
         PrimChecks.turtleOrLink.setVariable(18072, 18079, "hidden?", false);
       }
       else {
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("BACKBONES"), 18096, 18099), function() {
+        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
           PrimChecks.context.assertKind(10, 'set', 18124, 18140);
           PrimChecks.turtleOrLink.setVariable(18128, 18135, "hidden?", true);
           PrimChecks.context.assertKind(2, 'ask', 18141, 18181);
-          var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 18141, 18144), function() {
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
             PrimChecks.context.assertKind(10, 'set', 18164, 18180);
             PrimChecks.turtleOrLink.setVariable(18168, 18175, "hidden?", true);
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(18141, 18144, R); return R; }
@@ -578,7 +578,7 @@ ProcedurePrims.defineCommand("release-next-protein", 18381, 19220, (function(str
   }), function() {
     var R = ProcedurePrims.ask(PrimChecks.agentset.with(18637, 18641, world.turtleManager.turtlesOfBreed("TRNAS"), function() { return Prims.equality(PrimChecks.turtle.getVariable(18643, 18649, "strand"), strandHtype); }), function() {
       if (Prims.equality(PrimChecks.turtle.getVariable(18680, 18691, "gene-number"), thisHgeneHnumber)) {
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("BACKBONES"), 18720, 18723), function() {
+        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
           makeHprotein_Q = true; ProcedurePrims.stack().currentContext().updateStringRunVar("MAKE-PROTEIN?", makeHprotein_Q);
           PrimChecks.context.assertKind(10, 'set', 18790, 18806);
           PrimChecks.turtleOrLink.setVariable(18794, 18801, "hidden?", true);
@@ -586,7 +586,7 @@ ProcedurePrims.defineCommand("release-next-protein", 18381, 19220, (function(str
           if (Prims.equality(PrimChecks.turtleOrLink.getVariable(18825, 18830, "breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"))) {
             PrimChecks.context.assertKind(2, 'set', 18859, 18876);
             PrimChecks.turtleOrLink.setVariable(18863, 18870, "hidden?", false);
-            var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 18877, 18880), function() {
+            var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
               PrimChecks.context.assertKind(10, 'set', 18900, 18917);
               PrimChecks.turtleOrLink.setVariable(18904, 18911, "hidden?", false);
             }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(18877, 18880, R); return R; }
@@ -594,7 +594,7 @@ ProcedurePrims.defineCommand("release-next-protein", 18381, 19220, (function(str
           else {
             PrimChecks.context.assertKind(2, 'set', 18935, 18951);
             PrimChecks.turtleOrLink.setVariable(18939, 18946, "hidden?", true);
-            var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 18952, 18955), function() {
+            var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
               PrimChecks.context.assertKind(10, 'set', 18975, 18991);
               PrimChecks.turtleOrLink.setVariable(18979, 18986, "hidden?", true);
             }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(18952, 18955, R); return R; }
@@ -602,11 +602,11 @@ ProcedurePrims.defineCommand("release-next-protein", 18381, 19220, (function(str
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(18720, 18723, R); return R; }
       }
       else {
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("BACKBONES"), 19029, 19032), function() {
+        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("BACKBONES"), function() {
           PrimChecks.context.assertKind(10, 'set', 19057, 19073);
           PrimChecks.turtleOrLink.setVariable(19061, 19068, "hidden?", true);
           PrimChecks.context.assertKind(2, 'ask', 19074, 19114);
-          var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 19074, 19077), function() {
+          var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
             PrimChecks.context.assertKind(10, 'set', 19097, 19113);
             PrimChecks.turtleOrLink.setVariable(19101, 19108, "hidden?", true);
           }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(19074, 19077, R); return R; }
@@ -786,7 +786,7 @@ ProcedurePrims.defineCommand("replicate-dna", 24792, 25464, (function() {
   let turtlesHtoHremove = PrimChecks.agentset.turtleSet(24831, 24841, world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("GENES"), world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES")); ProcedurePrims.stack().currentContext().registerStringRunVar("TURTLES-TO-REMOVE", turtlesHtoHremove);
   var R = ProcedurePrims.ask(PrimChecks.agentset.with(25000, 25004, PrimChecks.context.assertAgentSetKind(2, PrimChecks.validator.checkArg('WITH', 25000, 25004, 112, turtlesHtoHremove), 'with', 24982, 25028), function() { return Prims.equality(PrimChecks.turtle.getVariable(25006, 25012, "strand"), "duplicate"); }), function() {
     PrimChecks.context.assertKind(2, 'ask', 25029, 25056);
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.linkNeighbors("TAGLINES"), 25029, 25032), function() {
+    var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
       PrimChecks.context.assertKind(10, 'die', 25052, 25055);
       return SelfManager.self().die();
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(25029, 25032, R); return R; }

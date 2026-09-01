@@ -158,7 +158,7 @@ ProcedurePrims.defineCommand("place-wall", 1698, 2202, (function() {
       return (Prims.equality(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 1925, 1928, 1, PrimChecks.patch.getVariable(1929, 1934, "pycor"))), world.topology.maxPycor) || Prims.equality(PrimChecks.patch.getVariable(1972, 1977, "pycor"), PrimChecks.math.round(MousePrims.getY())));
     }), function() {
       PrimChecks.patch.setVariable(2010, 2016, "pcolor", 9.9);
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(SelfManager.self().turtlesHere(), 2145, 2148), function() { var R = ProcedurePrims.callCommand("move-off-wall"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2145, 2148, R); return R; }
+      var R = ProcedurePrims.ask(SelfManager.self().turtlesHere(), function() { var R = ProcedurePrims.callCommand("move-off-wall"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2145, 2148, R); return R; }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1907, 1910, R); return R; }
     Prims.display();
   }

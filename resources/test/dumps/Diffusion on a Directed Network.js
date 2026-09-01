@@ -101,7 +101,7 @@ ProcedurePrims.defineCommand("go", 1755, 2470, (function() {
       var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2202, 2205, 1904, recipients), 2202, 2205), function() {
         PrimChecks.context.assertKind(2, 'set', 2227, 2262);
         PrimChecks.turtle.setVariable(2231, 2238, "new-val", PrimChecks.math.plus(2247, 2248, PrimChecks.validator.checkArg('+', 2247, 2248, 1, PrimChecks.turtle.getVariable(2239, 2246, "new-val")), PrimChecks.validator.checkArg('+', 2247, 2248, 1, valHincrement)));
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()), 2271, 2274), function() {
+        var R = ProcedurePrims.ask(LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()), function() {
           PrimChecks.context.assertKind(8, 'set', 2304, 2334);
           PrimChecks.link.setVariable(2308, 2320, "current-flow", valHincrement);
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2271, 2274, R); return R; }

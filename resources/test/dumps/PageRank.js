@@ -201,7 +201,7 @@ ProcedurePrims.defineCommand("go", 4006, 6777, (function() {
     var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("PAGES"), function() {
       if (PrimChecks.agentset.any(LinkPrims.outLinkNeighbors("LINKS"))) {
         let rankHincrement = PrimChecks.math.div(4472, 4473, PrimChecks.validator.checkArg('/', 4472, 4473, 1, PrimChecks.turtle.getVariable(4467, 4471, "rank")), PrimChecks.agentset.count(LinkPrims.outLinkNeighbors("LINKS"))); ProcedurePrims.stack().currentContext().registerStringRunVar("RANK-INCREMENT", rankHincrement);
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("LINKS"), 4507, 4510), function() {
+        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
           PrimChecks.context.assertKind(2, 'set', 4542, 4580);
           PrimChecks.turtle.setVariable(4546, 4554, "new-rank", PrimChecks.math.plus(4564, 4565, PrimChecks.validator.checkArg('+', 4564, 4565, 1, PrimChecks.turtle.getVariable(4555, 4563, "new-rank")), PrimChecks.validator.checkArg('+', 4564, 4565, 1, rankHincrement)));
         }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4507, 4510, R); return R; }

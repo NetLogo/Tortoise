@@ -191,7 +191,7 @@ ProcedurePrims.defineCommand("reproduce-birds", 3425, 3715, (function() {
     worstHbird = PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("BIRDS"), function() { return PrimChecks.turtle.getVariable(3598, 3603, "eaten"); }); ProcedurePrims.stack().currentContext().updateStringRunVar("WORST-BIRD", worstHbird);
     var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 3609, 3612, 1904, worstHbird), 3609, 3612), function() {
       PrimChecks.context.assertKind(2, 'ask', 3633, 3675);
-      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("LINKS"), 3633, 3636), function() {
+      var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
         PrimChecks.context.assertKind(10, 'set', 3657, 3670);
         PrimChecks.turtleOrLink.setVariable(3661, 3666, "color", 15);
         return SelfManager.self().die();
@@ -292,7 +292,7 @@ ProcedurePrims.defineCommand("check-player-caught", 6528, 7830, (function() {
     localHbugs = PrimChecks.agentset.breedOn("BUGS", PrimChecks.validator.checkArg('BUGS-ON', 6875, 6882, 816, world.getPatchAt(PrimChecks.validator.checkArg('PATCH', 6883, 6888, 1, snapHmouseHxcor), PrimChecks.validator.checkArg('PATCH', 6883, 6888, 1, snapHmouseHycor)))); ProcedurePrims.stack().currentContext().updateStringRunVar("LOCAL-BUGS", localHbugs);
     if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 6929, 6933, 112, localHbugs))) {
       world.observer.setGlobal("total-caught", PrimChecks.math.plus(6985, 6986, PrimChecks.validator.checkArg('+', 6985, 6986, 1, world.observer.getGlobal("total-caught")), 1));
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7052, 7055, 1904, PrimChecks.list.oneOf(7056, 7062, PrimChecks.validator.checkArg('ONE-OF', 7056, 7062, 120, localHbugs))), function() {
+      var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 7052, 7055, 1904, PrimChecks.list.oneOf(7056, 7062, PrimChecks.validator.checkArg('ONE-OF', 7056, 7062, 120, localHbugs))), 7052, 7055), function() {
         PrimChecks.context.assertKind(2, 'set', 7085, 7110);
         speedHofHcaught = PrimChecks.turtle.getVariable(7105, 7110, "speed"); ProcedurePrims.stack().currentContext().updateStringRunVar("SPEED-OF-CAUGHT", speedHofHcaught);
         if (Prims.equality(speedHofHcaught, 1)) {
@@ -313,7 +313,7 @@ ProcedurePrims.defineCommand("check-player-caught", 6528, 7830, (function() {
         if (Prims.equality(speedHofHcaught, 6)) {
           world.observer.setGlobal("total-speed-1-caught", PrimChecks.math.plus(7638, 7639, PrimChecks.validator.checkArg('+', 7638, 7639, 1, world.observer.getGlobal("total-speed-1-caught")), 1));
         }
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("LINKS"), 7653, 7656), function() {
+        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
           PrimChecks.context.assertKind(10, 'set', 7677, 7690);
           PrimChecks.turtleOrLink.setVariable(7681, 7686, "color", 15);
           return SelfManager.self().die();
@@ -351,7 +351,7 @@ ProcedurePrims.defineCommand("check-bird-catch", 7839, 8853, (function() {
         if (Prims.equality(speedHofHcaught, 6)) {
           world.observer.setGlobal("total-speed-1-caught", PrimChecks.math.plus(8635, 8636, PrimChecks.validator.checkArg('+', 8635, 8636, 1, world.observer.getGlobal("total-speed-1-caught")), 1));
         }
-        var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("LINKS"), 8651, 8654), function() {
+        var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
           PrimChecks.context.assertKind(10, 'set', 8675, 8688);
           PrimChecks.turtleOrLink.setVariable(8679, 8684, "color", 15);
           return SelfManager.self().die();

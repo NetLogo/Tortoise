@@ -153,7 +153,7 @@ ProcedurePrims.defineCommand("go", 2884, 3021, (function() {
 ProcedurePrims.defineCommand("death", 3029, 3231, (function() {
   world.observer.setGlobal("bacteria-caught", PrimChecks.math.plus(3168, 3169, PrimChecks.validator.checkArg('+', 3168, 3169, 1, world.observer.getGlobal("bacteria-caught")), 1));
   var R = ProcedurePrims.callCommand("make-a-removal-spot"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(LinkPrims.outLinkNeighbors("LINKS"), 3196, 3199), function() {
+  var R = ProcedurePrims.ask(LinkPrims.outLinkNeighbors("LINKS"), function() {
     PrimChecks.context.assertKind(10, 'die', 3220, 3223);
     return SelfManager.self().die();
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3196, 3199, R); return R; }
@@ -218,7 +218,7 @@ ProcedurePrims.defineCommand("check-caught", 4568, 5024, (function() {
   if (PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 4704, 4708, 112, prey)))) {
     return PrimChecks.procedure.stop(4716, 4720);
   }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4750, 4753, 1904, PrimChecks.list.oneOf(4754, 4760, PrimChecks.validator.checkArg('ONE-OF', 4754, 4760, 120, prey))), function() {
+  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 4750, 4753, 1904, PrimChecks.list.oneOf(4754, 4760, PrimChecks.validator.checkArg('ONE-OF', 4754, 4760, 120, prey))), 4750, 4753), function() {
     PrimChecks.context.assertKind(2, 'death', 4768, 4773);
     var R = ProcedurePrims.callCommand("death"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4750, 4753, R); return R; }

@@ -103,9 +103,9 @@ ProcedurePrims.defineCommand("setup", 2506, 2634, (function() {
 ProcedurePrims.defineCommand("setup-hives", 2642, 3564, (function() {
   world.observer.setGlobal("color-list", [97.9, 94.5, 57.5, 63.8, 17.6, 14.9, 27.5, 25.1, 117.9, 114.4]);
   world.observer.setGlobal("quality-list", [100, 75, 50, 1, 54, 48, 40, 32, 24, 16]);
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 2782, 2785, 1904, PrimChecks.list.nOf(2786, 2790, PrimChecks.validator.checkArg('N-OF', 2786, 2790, 1, world.observer.getGlobal("hive-number")), PrimChecks.agentset.with(2811, 2815, world.patches(), function() {
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2782, 2785, 1904, PrimChecks.list.nOf(2786, 2790, PrimChecks.validator.checkArg('N-OF', 2786, 2790, 1, world.observer.getGlobal("hive-number")), PrimChecks.agentset.with(2811, 2815, world.patches(), function() {
     return ((Prims.gt(SelfManager.self().distanceXY(0, 0), 16) && Prims.lt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 2846, 2849, 1, PrimChecks.patch.getVariable(2850, 2855, "pxcor"))), PrimChecks.math.minus(2869, 2870, world.topology.maxPxcor, 2))) && Prims.lt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 2882, 2885, 1, PrimChecks.patch.getVariable(2886, 2891, "pycor"))), PrimChecks.math.minus(2905, 2906, world.topology.maxPycor, 2)));
-  }))), 2782, 2785), function() {
+  }))), function() {
     PrimChecks.context.assertKind(4, 'sprout-sites', 3031, 3141);
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "SITES"), function() {
       PrimChecks.turtleOrLink.setVariable(3058, 3063, "shape", "box");
@@ -116,7 +116,7 @@ ProcedurePrims.defineCommand("setup-hives", 2642, 3564, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2782, 2785, R); return R; }
   let i = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("I", i);
   for (let _index_3202_3208 = 0, _repeatcount_3202_3208 = StrictMath.floor(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SITES"))); _index_3202_3208 < _repeatcount_3202_3208; _index_3202_3208++) {
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 3227, 3230, 1904, PrimChecks.turtle.getTurtleOfBreed(3231, 3235, "SITES", i)), 3227, 3230), function() {
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 3227, 3230, 1904, PrimChecks.turtle.getTurtleOfBreed(3231, 3235, "SITES", i)), function() {
       PrimChecks.turtle.setVariable(3250, 3257, "quality", PrimChecks.list.item(3258, 3262, PrimChecks.validator.checkArg('ITEM', 3258, 3262, 1, i), PrimChecks.validator.checkArg('ITEM', 3258, 3262, 12, world.observer.getGlobal("quality-list"))));
       PrimChecks.turtleOrLink.setVariable(3288, 3293, "label", PrimChecks.turtle.getVariable(3294, 3301, "quality"));
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3227, 3230, R); return R; }

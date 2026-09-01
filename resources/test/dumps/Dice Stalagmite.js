@@ -167,10 +167,10 @@ ProcedurePrims.defineCommand("move-paired-dice", 2609, 3010, (function() {
 ProcedurePrims.defineCommand("move-single-dice", 3018, 3404, (function() {
   let howHmany = PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SINGLE-DICE")); ProcedurePrims.stack().currentContext().registerStringRunVar("HOW-MANY", howHmany);
   if (Prims.gt(howHmany, 0)) {
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable(3290, 3295, "pycor"); }), 3262, 3265), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3262, 3265, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.agentset.minOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable(3290, 3295, "pycor"); }), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3262, 3265, R); return R; }
   }
   if (Prims.gt(howHmany, 1)) {
-    var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.agentset.maxOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable(3373, 3378, "pycor"); }), 3345, 3348), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3345, 3348, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.agentset.maxOneOf(world.turtleManager.turtlesOfBreed("SINGLE-DICE"), function() { return PrimChecks.patch.getVariable(3373, 3378, "pycor"); }), function() { var R = ProcedurePrims.callCommand("move-single-die"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3345, 3348, R); return R; }
   }
 }))
 ProcedurePrims.defineCommand("move-single-die", 3412, 3642, (function() {

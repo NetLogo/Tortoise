@@ -131,7 +131,7 @@ ProcedurePrims.defineCommand("send-messenger-to-its-column", 3442, 4252, (functi
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3974, 3977, R); return R; }
 }))
 ProcedurePrims.defineCommand("create-frame", 4320, 4456, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(SelfManager.self().getPatchHere(), 4355, 4358), function() {
+  var R = ProcedurePrims.ask(SelfManager.self().getPatchHere(), function() {
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "FRAMES"), function() {
       PrimChecks.turtleOrLink.setVariable(4410, 4415, "shape", "frame");
       PrimChecks.turtleOrLink.setVariable(4434, 4439, "color", 0);

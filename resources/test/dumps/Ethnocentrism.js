@@ -144,13 +144,13 @@ ProcedurePrims.defineCommand("go", 3820, 4282, (function() {
 ProcedurePrims.defineCommand("immigrate", 4343, 4591, (function() {
   let emptyHpatches = PrimChecks.agentset.with(4381, 4385, world.patches(), function() { return PrimChecks.math.not(PrimChecks.agentset.any(SelfManager.self().turtlesHere())); }); ProcedurePrims.stack().currentContext().registerStringRunVar("EMPTY-PATCHES", emptyHpatches);
   let howHmany = PrimChecks.list.min(4489, 4492, ListPrims.list(world.observer.getGlobal("immigrants-per-day"), PrimChecks.agentset.count(PrimChecks.validator.checkArg('COUNT', 4518, 4523, 112, emptyHpatches)))); ProcedurePrims.stack().currentContext().registerStringRunVar("HOW-MANY", howHmany);
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.validator.checkArg('ASK', 4541, 4544, 1904, PrimChecks.list.nOf(4545, 4549, PrimChecks.validator.checkArg('N-OF', 4545, 4549, 1, howHmany), PrimChecks.validator.checkArg('N-OF', 4545, 4549, 120, emptyHpatches))), 4541, 4544), function() {
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4541, 4544, 1904, PrimChecks.list.nOf(4545, 4549, PrimChecks.validator.checkArg('N-OF', 4545, 4549, 1, howHmany), PrimChecks.validator.checkArg('N-OF', 4545, 4549, 120, emptyHpatches))), function() {
     PrimChecks.context.assertKind(4, 'create-turtle', 4575, 4588);
     var R = ProcedurePrims.callCommand("create-turtle"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4541, 4544, R); return R; }
 }))
 ProcedurePrims.defineCommand("interact", 4599, 6139, (function() {
-  var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors4()), 4676, 4679), function() {
+  var R = ProcedurePrims.ask(PrimChecks.agentset.turtlesOn(SelfManager.self().getNeighbors4()), function() {
     world.observer.setGlobal("meet", PrimChecks.math.plus(4931, 4932, PrimChecks.validator.checkArg('+', 4931, 4932, 1, world.observer.getGlobal("meet")), 1));
     world.observer.setGlobal("meet-agg", PrimChecks.math.plus(4961, 4962, PrimChecks.validator.checkArg('+', 4961, 4962, 1, world.observer.getGlobal("meet-agg")), 1));
     if (Prims.equality(PrimChecks.turtleOrLink.getVariable(5046, 5051, "color"), PrimChecks.agentset.of(SelfManager.myself(), function() { return PrimChecks.turtleOrLink.getVariable(5055, 5060, "color"); }))) {
