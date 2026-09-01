@@ -77,6 +77,8 @@ bundle = {
 , 'STOP is not allowed inside TO-REPORT.': () ->
     "STOP no esta permitido entre TO-REPORT."
 
+, 'the _ procedure failed to report a result': (name) ->
+    "el procedimiento #{name} no reportó ningún resultado"
 
 , 'The point [ _ , _ ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.': (x, y) ->
     "El punto [ #{x} , #{y} ] es fuera de los limites de ese mundo y  wrapping no esta permitido en uno o mas de los direcions."

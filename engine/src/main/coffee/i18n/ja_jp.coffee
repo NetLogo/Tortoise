@@ -77,6 +77,8 @@ bundle = {
 , 'STOP is not allowed inside TO-REPORT.': () ->
     "STOP は TO-REPORT の内側に置くことはできません。"
 
+, 'the _ procedure failed to report a result': (name) ->
+    "#{name} プロシージャは結果を返しませんでした。"
 
 , 'The point [ _ , _ ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.': (x, y) ->
     "点 [ #{x} , #{y} ] はワールドの境界の外側に位置し、またワールドの位相はx軸方向もしくはy軸方向で循環を許可していません。"
