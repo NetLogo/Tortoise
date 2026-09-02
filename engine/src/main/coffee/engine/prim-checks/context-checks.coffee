@@ -4,10 +4,10 @@ AgentKinds = require('engine/core/agentkinds')
 
 # Desktop names the agent kinds separately from the messages that mention them, so we do too.  -Jeremy B August 2026
 kindNameKeys = new Map([
-  [AgentKinds.Observer, 'the observer']
-, [AgentKinds.Turtle,   'a turtle'    ]
-, [AgentKinds.Patch,    'a patch'     ]
-, [AgentKinds.Link,     'a link'      ]
+  [AgentKinds.Observer, 'agent kind: the observer']
+, [AgentKinds.Turtle,   'agent kind: a turtle'    ]
+, [AgentKinds.Patch,    'agent kind: a patch'     ]
+, [AgentKinds.Link,     'agent kind: a link'      ]
 ])
 
 class ContextChecks

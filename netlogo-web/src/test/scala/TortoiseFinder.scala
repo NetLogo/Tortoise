@@ -166,7 +166,7 @@ private[tortoise] object Freebies {
     "Face::FaceAgentset",
     "Links::LinksNotAllowed",
     "Links::LinkCreationTypeChecking_2D",
-    "Random::OneOfWithAgentSets",
+    "Random::OneOfWithAgentSets"
   )
 
   private val headlessCommandStr = "This test relies of behavior that only makes sense in Headless"

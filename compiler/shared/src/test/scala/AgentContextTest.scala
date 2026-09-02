@@ -109,6 +109,13 @@ class AgentContextTest extends AnyFunSuite {
   }
 
   // The context and requirement at the first prim with the given name, walking the way the compiler will.
+  //
+  // `walk` is a model of the descent `Handlers` and `Prims` make, not the compiler itself, so it can only test the
+  // rules the two share -- `contextOfBlock`, `requirementOf`, `contextOfAnonymousProcedure`.  It deliberately leaves
+  // out what happens after a context is known: the `provenBy` narrowing along a statement list, and the decision to
+  // emit a guard at all.  Those are covered by the `guardsIn` tests below, which read the compiler's own output, and
+  // that is where to add a case when the two could disagree.  Keep this in step with `Handlers.commands` and
+  // `Arguments.get` if the descent changes.  -Jeremy B September 2026
 
   private def contextAt(code: String, primName: String): Int =
     findFirst(code, primName)._1

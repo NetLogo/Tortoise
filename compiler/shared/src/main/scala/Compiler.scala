@@ -138,7 +138,7 @@ class Compiler {
         , subprogram       = false
       )
 
-    implicit val context   = new CompilerContext(logo)
+    implicit val context   = CompilerContext()
     val compiledProcedures = new ProcedureCompiler(handlers).compileProcedures(defs)
 
     ProcedureCompiler.formatProcedureBodies(compiledProcedures)
@@ -173,7 +173,7 @@ class Compiler {
         compileMoreProcedures(model, prog, procs)
       }
 
-    implicit val context   = new CompilerContext(model.code)
+    implicit val context   = CompilerContext()
     val compiledProcedures = new ProcedureCompiler(handlers).compileProcedures(procedureDefs)
 
     val compiledWidgets =
@@ -221,7 +221,7 @@ class Compiler {
     ), sourceOffset)
 
     implicit val context =
-      new CompilerContext(code).copy(agentContext = AgentContext.fromAgentClassString(pd.procedure.agentClassString))
+      CompilerContext(agentContext = AgentContext.fromAgentClassString(pd.procedure.agentClassString))
     implicit val procContext = ProcedureContext(false, Seq())
     if (isReporter) {
       // The last statement is the `report`; anything before it is the agent-context hint.
@@ -270,7 +270,7 @@ class Compiler {
     ), header.length)
 
     implicit val context =
-      new CompilerContext(logo).copy(agentContext = AgentContext.fromAgentClassString(pd.procedure.agentClassString))
+      CompilerContext(agentContext = AgentContext.fromAgentClassString(pd.procedure.agentClassString))
 
     if (commands)
       handlers.commands(pd.statements)
