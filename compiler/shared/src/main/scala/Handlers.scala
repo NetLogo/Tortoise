@@ -24,12 +24,6 @@ trait Handlers extends EveryIDProvider {
 
   def prims: Prims
 
-  def fun(node: AstNode, isReporter: Boolean = false)
-         (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
-    val body = if (isReporter) s"return ${reporter(node)};" else commands(node)
-    jsFunction(body = body)
-  }
-
   def blockCommands(app: Application, node: AstNode, useCompileArgs: Boolean = true)
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
     commands(node, useCompileArgs)(using compilerFlags, compilerContext.inBlockOf(app), procContext)
@@ -39,8 +33,11 @@ trait Handlers extends EveryIDProvider {
     reporter(node, useCompileArgs)(using compilerFlags, compilerContext.inBlockOf(app), procContext)
 
   def blockFun(app: Application, node: AstNode, isReporter: Boolean = false)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
-    fun(node, isReporter)(using compilerFlags, compilerContext.inBlockOf(app), procContext)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
+    implicit val blockContext: CompilerContext = compilerContext.inBlockOf(app)
+    val body = if (isReporter) s"return ${reporter(node)};" else commands(node)
+    jsFunction(body = body)
+  }
 
   def task(lambda: Lambda, node: AstNode)
           (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
