@@ -74,7 +74,7 @@ ProcedurePrims.defineCommand("setup", 775, 1674, (function() {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(906, 909, R); return R; }
   var R = ProcedurePrims.ask(world.turtles(), function() {
     PrimChecks.turtle.setVariable(1204, 1207, "val", 1);
-    let neighborHnodes = PrimChecks.agentset.turtleSet(1233, 1243, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, SelfManager.self().getNeighbors4(), 'of', 1244, 1272), function() { return SelfManager.self().turtlesHere(); })); ProcedurePrims.stack().currentContext().registerStringRunVar("NEIGHBOR-NODES", neighborHnodes);
+    let neighborHnodes = PrimChecks.agentset.turtleSet(1233, 1243, PrimChecks.agentset.of(SelfManager.self().getNeighbors4(), function() { return SelfManager.self().turtlesHere(); })); ProcedurePrims.stack().currentContext().registerStringRunVar("NEIGHBOR-NODES", neighborHnodes);
     var R = ProcedurePrims.ask(LinkPrims.createLinksTo(PrimChecks.validator.checkArg('CREATE-ACTIVE-LINKS-TO', 1277, 1299, 16, neighborHnodes), "ACTIVE-LINKS"), function() {
       PrimChecks.link.setVariable(1331, 1343, "current-flow", 0);
       if (Prims.gt(PrimChecks.math.randomFloat(100), world.observer.getGlobal("link-chance"))) {

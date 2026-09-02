@@ -78,9 +78,9 @@ trait PrimUtils {
       }
   }
 
-  protected def checkedAgents(app: Application, blockIndex: Int, agentsJs: String)
+  protected def checkedAgents(app: Application, blockIndex: Int, agentsIndex: Int, agentsJs: String)
     (implicit compilerContext: CompilerContext): String =
-    AgentContext.guardBlockAgents(app, blockIndex, agentsJs, compilerContext.agentContext)
+    AgentContext.guardBlockAgents(app, blockIndex, agentsIndex, agentsJs, compilerContext.agentContext)
 
   // `ask turtles` and `ask patches` are observer-only.  Desktop raises that at runtime even when the context makes it
   // inevitable, so this is a check rather than a compile error.  -Jeremy B August 2026
@@ -210,23 +210,23 @@ trait ReporterPrims extends PrimUtils {
       case _: prim._or  => makeInfixBoolOp("||")
 
       // Agentset filtering
-      case _: prim.etc._all      => s"PrimChecks.agentset.all(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
-      case _: prim.etc._maxnof   => s"PrimChecks.agentset.maxNOf(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 2, args.makeCheckedOp(1))}, ${args.makeCheckedOp(0)}, ${handlers.blockFun(r, r.args(2), true)})"
-      case _: prim.etc._maxoneof => s"PrimChecks.agentset.maxOneOf(${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
-      case _: prim.etc._minnof   => s"PrimChecks.agentset.minNOf(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 2, args.makeCheckedOp(1))}, ${args.makeCheckedOp(0)}, ${handlers.blockFun(r, r.args(2), true)})"
-      case _: prim.etc._minoneof => s"PrimChecks.agentset.minOneOf(${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
-      case _: prim._of           => s"PrimChecks.agentset.of(${checkedAgents(r, 0, args.makeCheckedOp(1))}, ${handlers.blockFun(r, r.args(0), isReporter = true)})"
-      case _: prim.etc._sorton   => s"PrimChecks.agentset.sortOn(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 0, args.makeCheckedOp(1))}, ${handlers.blockFun(r, r.args(0), true)})"
-      case _: prim._with         => s"PrimChecks.agentset.with(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
-      case _: prim.etc._withmax  => s"PrimChecks.agentset.withMax(${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
-      case _: prim.etc._withmin  => s"PrimChecks.agentset.withMin(${checkedAgents(r, 1, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: prim.etc._all      => s"PrimChecks.agentset.all(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, 0, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: prim.etc._maxnof   => s"PrimChecks.agentset.maxNOf(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 2, 1, args.makeCheckedOp(1))}, ${args.makeCheckedOp(0)}, ${handlers.blockFun(r, r.args(2), true)})"
+      case _: prim.etc._maxoneof => s"PrimChecks.agentset.maxOneOf(${checkedAgents(r, 1, 0, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: prim.etc._minnof   => s"PrimChecks.agentset.minNOf(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 2, 1, args.makeCheckedOp(1))}, ${args.makeCheckedOp(0)}, ${handlers.blockFun(r, r.args(2), true)})"
+      case _: prim.etc._minoneof => s"PrimChecks.agentset.minOneOf(${checkedAgents(r, 1, 0, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: prim._of           => s"PrimChecks.agentset.of(${checkedAgents(r, 0, 1, args.makeCheckedOp(1))}, ${handlers.blockFun(r, r.args(0), isReporter = true)})"
+      case _: prim.etc._sorton   => s"PrimChecks.agentset.sortOn(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 0, 1, args.makeCheckedOp(1))}, ${handlers.blockFun(r, r.args(0), true)})"
+      case _: prim._with         => s"PrimChecks.agentset.with(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, 0, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: prim.etc._withmax  => s"PrimChecks.agentset.withMax(${checkedAgents(r, 1, 0, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: prim.etc._withmin  => s"PrimChecks.agentset.withMin(${checkedAgents(r, 1, 0, args.makeCheckedOp(0))}, ${handlers.blockFun(r, r.args(1), true)})"
 
-      case _: Optimizer._countotherwith => s"PrimChecks.agentset.countOtherWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
-      case _: Optimizer._countwith      => s"PrimChecks.agentset.countWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
-      case _: Optimizer._otherwith      => s"PrimChecks.agentset.otherWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
-      case _: Optimizer._anyotherwith   => s"PrimChecks.agentset.anyOtherWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
-      case _: Optimizer._oneofwith      => s"PrimChecks.agentset.oneOfWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
-      case _: Optimizer._anywith        => s"PrimChecks.agentset.anyWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: Optimizer._countotherwith => s"PrimChecks.agentset.countOtherWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, 0, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: Optimizer._countwith      => s"PrimChecks.agentset.countWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, 0, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: Optimizer._otherwith      => s"PrimChecks.agentset.otherWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, 0, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: Optimizer._anyotherwith   => s"PrimChecks.agentset.anyOtherWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, 0, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: Optimizer._oneofwith      => s"PrimChecks.agentset.oneOfWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, 0, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
+      case _: Optimizer._anywith        => s"PrimChecks.agentset.anyWith(${sourceInfo.start}, ${sourceInfo.end}, ${checkedAgents(r, 1, 0, args.get(0))}, ${handlers.blockFun(r, r.args(1), true)})"
       case o: Optimizer._optimizecount  => s"PrimChecks.agentset.optimizeCount(${sourceInfo.start}, ${sourceInfo.end}, ${args.get(0)}, ${o.checkValue}, ${o.operator})"
 
       // agentset creators do their own, weird runtime checking with unique error messages, so we don't check their args.

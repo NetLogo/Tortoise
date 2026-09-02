@@ -110,7 +110,7 @@ ProcedurePrims.defineCommand("attempt-move", 1055, 2038, (function() {
   }
 }))
 ProcedurePrims.defineReporter("calc-v-total", 2053, 2165, (function() {
-  return PrimChecks.procedure.report(2068, 2074, PrimChecks.math.div(2101, 2102, PrimChecks.list.sum(2075, 2078, PrimChecks.validator.checkArg('SUM', 2075, 2078, 8, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, world.turtles(), 'of', 2079, 2100), function() { return PrimChecks.procedure.callReporter(2081, 2087, "calc-v"); }))), 2));
+  return PrimChecks.procedure.report(2068, 2074, PrimChecks.math.div(2101, 2102, PrimChecks.list.sum(2075, 2078, PrimChecks.validator.checkArg('SUM', 2075, 2078, 8, PrimChecks.agentset.of(world.turtles(), function() { return PrimChecks.procedure.callReporter(2081, 2087, "calc-v"); }))), 2));
 }))
 ProcedurePrims.defineReporter("calc-v", 2180, 2580, (function() {
   let v = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("V", v);

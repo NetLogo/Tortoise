@@ -53,22 +53,16 @@ object AgentContext {
 
   // The context a block argument of the current prim runs in.  Prims with no block class of their own (`if`, `while`,
   // `foreach`) run their blocks in the enclosing context; `hatch` and friends name a fixed one; "?" means it comes
-  // from the prim's first argument, which is how `ask`, `with`, and `all?` work.  Anonymous procedures are not
-  // handled here, their bodies are unconstrained by the enclosing context, so they compile against `All`
+  // from the prim's first argument, and nothing else, which is how `ask`, `with`, and `all?` work.  `of` keeps its
+  // block there instead, so it lands on `AnyAgent` here and `guardBlockAgents` asks its agents itself.  Anonymous
+  // procedures are not handled here, their bodies are unconstrained by the enclosing context, so they compile
+  // against `All`
   // -Jeremy B August 2026
   def contextOfBlock(app: Application, enclosing: Int): Int =
     app.instruction.syntax.blockAgentClassString match {
       case None      => enclosing
-      case Some("?") => contextOfFirstArg(app)
+      case Some("?") => kindOfAgentsAt(app, 0)
       case Some(acs) => fromAgentClassString(acs)
-    }
-
-  // Desktop looks at the first argument and nothing else, so `[ dx ] of turtles`, whose first argument is the
-  // reporter block, not the agentset, gets `AnyAgent` and a runtime check.  -Jeremy B August 2026
-  private def contextOfFirstArg(app: Application): Int =
-    app.args.headOption match {
-      case Some(r: ReporterApp) => kindOfReportedAgent(r)
-      case _                    => AnyAgent
     }
 
   def kindOfReportedAgent(app: ReporterApp): Int = {
@@ -81,7 +75,7 @@ object AgentContext {
       Link
     else if (ret == Syntax.AgentType || ret == Syntax.AgentsetType)
       // Prims like `with` and `at-points` report the same kind they were given.
-      contextOfFirstArg(app)
+      kindOfAgentsAt(app, 0)
     else
       AnyAgent
   }
@@ -163,19 +157,28 @@ object AgentContext {
 
   // The check desktop's `_of`, `_with`, and friends make on the agents they're about to run a block for: one test,
   // before iterating, against the strictest thing the block contains.  Returns the agents expression, wrapped when a
-  // check is needed.
-  def guardBlockAgents(app: Application, blockIndex: Int, agentsJs: String, context: Int): String =
+  // check is needed.  `agentsIndex` is the argument the agents come from, which is not the same for every prim: `of`
+  // takes its block first, `with` and `max-n-of` take it last.
+  def guardBlockAgents(app: Application, blockIndex: Int, agentsIndex: Int, agentsJs: String, context: Int): String =
     app.args.lift(blockIndex) match {
       case Some(block: ReporterBlock) if isFusedVariableOf(app, block) =>
         agentsJs
       case Some(block: ReporterBlock) =>
         val required = requirementOf(block.app.reporter)
-        if (isSatisfiedBy(required, contextOfBlock(app, context)))
+        // `of` names the agents in its second argument, where `contextOfBlock` -- following desktop, which only ever
+        // looks at the first -- can't see them, so ask the agents themselves as well.  -Jeremy B September 2026
+        if (isSatisfiedBy(required, contextOfBlock(app, context)) || isSatisfiedBy(required, kindOfAgentsAt(app, agentsIndex)))
           agentsJs
         else
           s"PrimChecks.context.assertAgentSetKind($required, $agentsJs, ${primArgs(app, app.instruction)})"
       case _ =>
         agentsJs
+    }
+
+  private def kindOfAgentsAt(app: Application, agentsIndex: Int): Int =
+    app.args.lift(agentsIndex) match {
+      case Some(r: ReporterApp) => kindOfReportedAgent(r)
+      case _                    => AnyAgent
     }
 
   // Desktop's middle end fuses `[ <an agent variable> ] of <agentset>` into a single prim (`_turtlevariableof` and

@@ -66,7 +66,7 @@ ProcedurePrims.defineCommand("setup", 69, 275, (function() {
     PrimChecks.patch.setVariable(140, 150, "brightness", 1);
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(89, 92, R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("update-visual"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(159, 162, R); return R; }
-  world.observer.setGlobal("global-energy", PrimChecks.list.sum(210, 213, PrimChecks.validator.checkArg('SUM', 210, 213, 8, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, world.patches(), 'of', 214, 238), function() { return PrimChecks.procedure.callReporter(215, 226, "find-energy"); }))));
+  world.observer.setGlobal("global-energy", PrimChecks.list.sum(210, 213, PrimChecks.validator.checkArg('SUM', 210, 213, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter(215, 226, "find-energy"); }))));
   world.observer.setGlobal("temperature", 1);
   world.ticker.reset();
 }))
@@ -78,7 +78,7 @@ ProcedurePrims.defineCommand("go", 284, 527, (function() {
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(309, 312, R); return R; }
   }
   world.observer.setGlobal("temperature", PrimChecks.math.mult(441, 442, PrimChecks.validator.checkArg('*', 441, 442, 1, world.observer.getGlobal("temperature")), PrimChecks.math.minus(446, 447, 1, PrimChecks.math.div(461, 462, PrimChecks.validator.checkArg('/', 461, 462, 1, world.observer.getGlobal("cooling-rate")), 100))));
-  world.observer.setGlobal("global-energy", PrimChecks.list.sum(489, 492, PrimChecks.validator.checkArg('SUM', 489, 492, 8, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, world.patches(), 'of', 493, 517), function() { return PrimChecks.procedure.callReporter(494, 505, "find-energy"); }))));
+  world.observer.setGlobal("global-energy", PrimChecks.list.sum(489, 492, PrimChecks.validator.checkArg('SUM', 489, 492, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter(494, 505, "find-energy"); }))));
   world.ticker.tick();
 }))
 ProcedurePrims.defineCommand("update-visual", 535, 605, (function() {

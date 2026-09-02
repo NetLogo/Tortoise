@@ -223,7 +223,7 @@ ProcedurePrims.defineCommand("run-co2", 5873, 6132, (function() {
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("CO2S"), function() {
     SelfManager.self().right(PrimChecks.math.minus(5911, 5912, RandomPrims.randomLong(51), 25));
     let dist = PrimChecks.math.plus(5948, 5949, 0.05, PrimChecks.math.randomFloat(0.1)); ProcedurePrims.stack().currentContext().registerStringRunVar("DIST", dist);
-    if (PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(6, SelfManager.self().patchAhead(dist), 'of', 6010, 6057), function() {
+    if (PrimChecks.agentset.of(SelfManager.self().patchAhead(dist), function() {
       return PrimChecks.math.not(ColorModel.areRelatedByShade(105, PrimChecks.patch.getVariable(6030, 6036, "pcolor")));
     })) {
       PrimChecks.turtle.setVariable(6070, 6077, "heading", PrimChecks.math.minus(6082, 6083, 180, PrimChecks.validator.checkArg('-', 6082, 6083, 1, PrimChecks.turtle.getVariable(6084, 6091, "heading"))));

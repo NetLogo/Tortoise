@@ -146,6 +146,34 @@ class AgentContextTest extends AnyFunSuite {
     assertResult(2)(guardCount("to foo [a] ask a [ fd 1 ask link-neighbors [ fd 1 ] ] end"))
   }
 
+  // The block's agents are checked once, before iterating, but only when the agents could be the wrong kind.
+
+  test("a block run for agents of a known kind is not checked") {
+    assertResult(0)(setGuardCount("to foo __ignore [dx] of turtles end"))
+    assertResult(0)(setGuardCount("to foo __ignore [dx] of turtles with [who > 1] end"))
+    assertResult(0)(setGuardCount("to foo __ignore sort-on [dx] turtles end"))
+    assertResult(0)(setGuardCount("to foo __ignore max-n-of 3 turtles [dx] end"))
+    // `neighbors` is turtle-or-patch, which patches satisfy.
+    assertResult(0)(setGuardCount("to foo __ignore [count neighbors] of patches end"))
+  }
+
+  test("a block run for agents of an unknown kind is checked") {
+    assertResult(1)(setGuardCount("to foo [a] __ignore [dx] of a end"))
+    assertResult(1)(setGuardCount("to foo [a] __ignore sort-on [dx] a end"))
+    assertResult(1)(setGuardCount("to foo [a] __ignore max-n-of 3 a [dx] end"))
+  }
+
+  test("a block run for agents of the wrong known kind is still checked, and fails at runtime as desktop does") {
+    // Desktop makes this a runtime error rather than a compile error, so the check has to be emitted even though
+    // nothing about it can succeed.
+    assertResult(1)(setGuardCount("to foo __ignore [dx] of patches end"))
+  }
+
+  private val SetGuardCall = """PrimChecks\.context\.assertAgentSetKind\(""".r
+
+  private def setGuardCount(code: String): Int =
+    SetGuardCall.findAllMatchIn(jsFor(code)).length
+
   // Only `world.turtles()` and `world.patches()` themselves are rejected, and by identity, so the check is worth
   // emitting only for an expression that could be holding one of them.
 

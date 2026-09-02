@@ -330,7 +330,7 @@ ProcedurePrims.defineCommand("mark-turtles-to-kill", 6617, 9342, (function() {
   var R = ProcedurePrims.ask(PrimChecks.context.assertAskAllowed(world.patches(), 9129, 9132), function() {
     let overpopulation = PrimChecks.math.minus(9188, 9189, PrimChecks.agentset.count(SelfManager.self().turtlesHere()), PrimChecks.validator.checkArg('-', 9188, 9189, 1, world.observer.getGlobal("plants-per-patch"))); ProcedurePrims.stack().currentContext().registerStringRunVar("OVERPOPULATION", overpopulation);
     if (Prims.gt(overpopulation, 0)) {
-      var R = ProcedurePrims.ask(PrimChecks.agentset.minNOf(9247, 9255, PrimChecks.context.assertAgentSetKind(2, SelfManager.self().turtlesHere(), 'min-n-of', 9246, 9294), PrimChecks.validator.checkArg('MIN-N-OF', 9247, 9255, 1, overpopulation), function() { return PrimChecks.turtle.getVariable(9285, 9292, "fitness"); }), function() {
+      var R = ProcedurePrims.ask(PrimChecks.agentset.minNOf(9247, 9255, SelfManager.self().turtlesHere(), PrimChecks.validator.checkArg('MIN-N-OF', 9247, 9255, 1, overpopulation), function() { return PrimChecks.turtle.getVariable(9285, 9292, "fitness"); }), function() {
         PrimChecks.context.assertKind(2, 'set', 9305, 9323);
         PrimChecks.turtle.setVariable(9309, 9318, "will-die?", true);
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9242, 9245, R); return R; }

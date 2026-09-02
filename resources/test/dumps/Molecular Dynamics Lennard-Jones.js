@@ -126,7 +126,7 @@ ProcedurePrims.defineCommand("go", 2755, 3112, (function() {
   plotManager.updatePlots();
 }))
 ProcedurePrims.defineReporter("current-temp", 3128, 3199, (function() {
-  return PrimChecks.procedure.report(3143, 3149, PrimChecks.math.mult(3165, 3166, PrimChecks.math.div(3153, 3154, 1, PrimChecks.math.mult(3158, 3159, 3, PrimChecks.validator.checkArg('*', 3158, 3159, 1, world.observer.getGlobal("kb")))), PrimChecks.list.mean(3167, 3171, PrimChecks.validator.checkArg('MEAN', 3167, 3171, 8, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(2, world.turtleManager.turtlesOfBreed("ATOMS"), 'of', 3172, 3198), function() {
+  return PrimChecks.procedure.report(3143, 3149, PrimChecks.math.mult(3165, 3166, PrimChecks.math.div(3153, 3154, 1, PrimChecks.math.mult(3158, 3159, 3, PrimChecks.validator.checkArg('*', 3158, 3159, 1, world.observer.getGlobal("kb")))), PrimChecks.list.mean(3167, 3171, PrimChecks.validator.checkArg('MEAN', 3167, 3171, 8, PrimChecks.agentset.of(world.turtleManager.turtlesOfBreed("ATOMS"), function() {
     return PrimChecks.math.plus(3180, 3181, PrimChecks.math.pow(3176, 3177, PrimChecks.validator.checkArg('^', 3176, 3177, 1, PrimChecks.turtle.getVariable(3173, 3175, "vx")), 2), PrimChecks.math.pow(3185, 3186, PrimChecks.validator.checkArg('^', 3185, 3186, 1, PrimChecks.turtle.getVariable(3182, 3184, "vy")), 2));
   })))));
 }))
