@@ -146,9 +146,7 @@ ProcedurePrims.defineCommand("update-force-and-velocity", 3577, 3976, (function(
   let newHfx = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-FX", newHfx);
   let newHfy = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("NEW-FY", newHfy);
   var R = ProcedurePrims.ask(SelfPrims.other(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("ATOMS"), world.observer.getGlobal("cutoff-dist"))), function() {
-    PrimChecks.context.assertKind(6, 'let', 3697, 3718);
     let r = PrimChecks.turtle.distance(3703, 3711, SelfManager.myself()); ProcedurePrims.stack().currentContext().registerStringRunVar("R", r);
-    PrimChecks.context.assertKind(2, 'let', 3723, 3745);
     let force = PrimChecks.procedure.callReporter(3733, 3743, "calc-force", r); ProcedurePrims.stack().currentContext().registerStringRunVar("FORCE", force);
     SelfManager.self().face(PrimChecks.validator.checkArg('FACE', 3750, 3754, 768, SelfManager.myself()));
     SelfManager.self().right(180);

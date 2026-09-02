@@ -77,10 +77,7 @@ ProcedurePrims.defineCommand("setup", 220, 399, (function() {
   world.clearAll();
   var R = ProcedurePrims.callCommand("setup-nodes"); if (R === DeathInterrupt) { return R; }
   var R = ProcedurePrims.callCommand("setup-spatially-clustered-network"); if (R === DeathInterrupt) { return R; }
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 290, 293, 1904, PrimChecks.list.nOf(294, 298, PrimChecks.validator.checkArg('N-OF', 294, 298, 1, world.observer.getGlobal("initial-outbreak-size")), world.turtles())), function() {
-    PrimChecks.context.assertKind(2, 'become-infected', 335, 350);
-    var R = ProcedurePrims.callCommand("become-infected"); if (R === DeathInterrupt) { return R; }
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(290, 293, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 290, 293, 1904, PrimChecks.list.nOf(294, 298, PrimChecks.validator.checkArg('N-OF', 294, 298, 1, world.observer.getGlobal("initial-outbreak-size")), world.turtles())), function() { var R = ProcedurePrims.callCommand("become-infected"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(290, 293, R); return R; }
   var R = ProcedurePrims.ask(world.links(), function() { PrimChecks.turtleOrLink.setVariable(371, 376, "color", 9.9); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(355, 358, R); return R; }
   world.ticker.reset();
 }))

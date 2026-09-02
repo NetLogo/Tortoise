@@ -106,7 +106,6 @@ ProcedurePrims.defineCommand("setup-hives", 2642, 3564, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2782, 2785, 1904, PrimChecks.list.nOf(2786, 2790, PrimChecks.validator.checkArg('N-OF', 2786, 2790, 1, world.observer.getGlobal("hive-number")), PrimChecks.agentset.with(2811, 2815, world.patches(), function() {
     return ((Prims.gt(SelfManager.self().distanceXY(0, 0), 16) && Prims.lt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 2846, 2849, 1, PrimChecks.patch.getVariable(2850, 2855, "pxcor"))), PrimChecks.math.minus(2869, 2870, world.topology.maxPxcor, 2))) && Prims.lt(PrimChecks.math.abs(PrimChecks.validator.checkArg('ABS', 2882, 2885, 1, PrimChecks.patch.getVariable(2886, 2891, "pycor"))), PrimChecks.math.minus(2905, 2906, world.topology.maxPycor, 2)));
   }))), function() {
-    PrimChecks.context.assertKind(4, 'sprout-sites', 3031, 3141);
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "SITES"), function() {
       PrimChecks.turtleOrLink.setVariable(3058, 3063, "shape", "box");
       PrimChecks.turtle.setVariable(3080, 3084, "size", 2);
@@ -145,7 +144,6 @@ ProcedurePrims.defineCommand("setup-bees", 3572, 4206, (function() {
     PrimChecks.turtle.setVariable(3922, 3933, "task-string", "watching-dance");
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(3585, 3598, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4106, 4109, 1904, PrimChecks.list.nOf(4110, 4114, PrimChecks.validator.checkArg('N-OF', 4110, 4114, 1, world.observer.getGlobal("initial-percentage")), world.turtleManager.turtlesOfBreed("SCOUTS"))), function() {
-    PrimChecks.context.assertKind(2, 'set', 4149, 4172);
     PrimChecks.turtle.setVariable(4153, 4167, "initial-scout?", true);
     PrimChecks.turtle.setVariable(4181, 4190, "bee-timer", RandomPrims.randomLong(100));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4106, 4109, R); return R; }

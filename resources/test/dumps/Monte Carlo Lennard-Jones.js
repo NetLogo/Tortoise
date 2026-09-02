@@ -115,7 +115,6 @@ ProcedurePrims.defineReporter("calc-v-total", 2053, 2165, (function() {
 ProcedurePrims.defineReporter("calc-v", 2180, 2580, (function() {
   let v = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("V", v);
   var R = ProcedurePrims.ask(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("cutoff-dist"))), function() {
-    PrimChecks.context.assertKind(6, 'let', 2246, 2279);
     let rsquare = PrimChecks.math.pow(2276, 2277, PrimChecks.turtle.distance(2259, 2267, SelfManager.myself()), 2); ProcedurePrims.stack().currentContext().registerStringRunVar("RSQUARE", rsquare);
     let dsquare = PrimChecks.math.mult(2305, 2306, PrimChecks.validator.checkArg('*', 2305, 2306, 1, world.observer.getGlobal("diameter")), PrimChecks.validator.checkArg('*', 2305, 2306, 1, world.observer.getGlobal("diameter"))); ProcedurePrims.stack().currentContext().registerStringRunVar("DSQUARE", dsquare);
     let attractHterm = PrimChecks.math.div(2349, 2350, PrimChecks.math.pow(2345, 2346, PrimChecks.validator.checkArg('^', 2345, 2346, 1, dsquare), 3), PrimChecks.math.pow(2359, 2360, PrimChecks.validator.checkArg('^', 2359, 2360, 1, rsquare), 3)); ProcedurePrims.stack().currentContext().registerStringRunVar("ATTRACT-TERM", attractHterm);

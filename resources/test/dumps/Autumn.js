@@ -264,7 +264,7 @@ ProcedurePrims.defineCommand("adjust-water", 6771, 7742, (function() {
   if (Prims.lt(world.observer.getGlobal("temperature"), 10)) {
     return PrimChecks.procedure.stop(6967, 6971);
   }
-  let nearbyHraindrops = PrimChecks.agentset.with(7127, 7131, PrimChecks.context.assertAgentSetKind(2, SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("RAINDROPS"), 2), 'with', 7105, 7183), function() {
+  let nearbyHraindrops = PrimChecks.agentset.with(7127, 7131, SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("RAINDROPS"), 2), function() {
     return (Prims.equality(PrimChecks.turtle.getVariable(7134, 7142, "location"), "in leaves") && Prims.gte(PrimChecks.turtle.getVariable(7161, 7176, "amount-of-water"), 0));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("NEARBY-RAINDROPS", nearbyHraindrops);
   if (PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 7190, 7194, 112, nearbyHraindrops))) {

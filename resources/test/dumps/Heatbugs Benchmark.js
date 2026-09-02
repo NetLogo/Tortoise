@@ -63,7 +63,6 @@ ProcedurePrims.defineCommand("setup", 262, 842, (function() {
   world.clearAll();
   world.ticker.reset();
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 404, 407, 1904, PrimChecks.list.nOf(408, 412, PrimChecks.validator.checkArg('N-OF', 408, 412, 1, world.observer.getGlobal("bug-count")), world.patches())), function() {
-    PrimChecks.context.assertKind(4, 'sprout', 437, 748);
     var R = ProcedurePrims.ask(SelfManager.self().sprout(1, "TURTLES"), function() {
       PrimChecks.turtleOrLink.setVariable(458, 463, "color", 65);
       PrimChecks.turtle.setVariable(479, 483, "size", 1.75);

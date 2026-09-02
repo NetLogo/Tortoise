@@ -279,7 +279,6 @@ ProcedurePrims.defineCommand("make-initial-alleles-for-gene", 7152, 8023, (funct
     PrimChecks.turtleOrLink.setVariable(7535, 7540, "label", StringPrims.word(PrimChecks.turtle.getVariable(7547, 7552, "value"), "     "));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(7295, 7309, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 7838, 7841, 1904, PrimChecks.list.nOf(7842, 7846, PrimChecks.validator.checkArg('N-OF', 7842, 7846, 1, numHbigHalleles), PrimChecks.agentset.with(7872, 7876, world.turtleManager.turtlesOfBreed("ALLELES"), function() { return Prims.equality(PrimChecks.turtle.getVariable(7878, 7882, "gene"), geneHnumber); }))), function() {
-    PrimChecks.context.assertKind(2, 'set', 7904, 7922);
     PrimChecks.turtle.setVariable(7908, 7913, "value", alleleH1);
     PrimChecks.turtleOrLink.setVariable(7931, 7936, "color", [220, 220, 220, 255]);
     PrimChecks.turtleOrLink.setVariable(7963, 7968, "label", StringPrims.word(PrimChecks.turtle.getVariable(7975, 7980, "value"), "     "));
@@ -564,7 +563,6 @@ ProcedurePrims.defineCommand("link-alleles-to-gametes-and-gametes-to-zygote", 16
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 16538, 16541, 1904, PrimChecks.list.nOf(16542, 16546, 1, PrimChecks.agentset.with(16557, 16561, world.turtleManager.turtlesOfBreed("ALLELES"), function() {
       return (LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()) && Prims.equality(PrimChecks.turtle.getVariable(16593, 16597, "gene"), thisHgene));
     }))), function() {
-      PrimChecks.context.assertKind(2, 'hatch', 16616, 16748);
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
         PrimChecks.turtle.setVariable(16629, 16643, "owned-by-fish?", false);
         var R = ProcedurePrims.ask(LinkPrims.createLinkFrom(PrimChecks.validator.checkArg('CREATE-LINK-FROM', 16657, 16673, 256, thisHnewHgameteHcell), "LINKS"), function() {

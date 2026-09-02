@@ -230,10 +230,7 @@ ProcedurePrims.defineCommand("go", 4006, 6777, (function() {
       }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5258, 5272, R); return R; }
     }
     if (Prims.gt(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS")), world.observer.getGlobal("number-of-surfers"))) {
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5498, 5501, 1904, PrimChecks.list.nOf(5502, 5506, PrimChecks.math.minus(5522, 5523, PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS")), PrimChecks.validator.checkArg('-', 5522, 5523, 1, world.observer.getGlobal("number-of-surfers"))), world.turtleManager.turtlesOfBreed("SURFERS"))), function() {
-        PrimChecks.context.assertKind(10, 'die', 5561, 5564);
-        return SelfManager.self().die();
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5498, 5501, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5498, 5501, 1904, PrimChecks.list.nOf(5502, 5506, PrimChecks.math.minus(5522, 5523, PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("SURFERS")), PrimChecks.validator.checkArg('-', 5522, 5523, 1, world.observer.getGlobal("number-of-surfers"))), world.turtleManager.turtlesOfBreed("SURFERS"))), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5498, 5501, R); return R; }
     }
     var R = ProcedurePrims.ask(world.links(), function() {
       PrimChecks.turtleOrLink.setVariable(5636, 5641, "color", 5);

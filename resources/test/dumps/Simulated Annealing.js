@@ -61,10 +61,7 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 ProcedurePrims.defineCommand("setup", 69, 275, (function() {
   world.clearAll();
-  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 89, 92, 1904, PrimChecks.list.nOf(93, 97, PrimChecks.math.div(115, 116, PrimChecks.agentset.count(world.patches()), 2), world.patches())), function() {
-    PrimChecks.context.assertKind(6, 'set', 136, 152);
-    PrimChecks.patch.setVariable(140, 150, "brightness", 1);
-  }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(89, 92, R); return R; }
+  var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 89, 92, 1904, PrimChecks.list.nOf(93, 97, PrimChecks.math.div(115, 116, PrimChecks.agentset.count(world.patches()), 2), world.patches())), function() { PrimChecks.patch.setVariable(140, 150, "brightness", 1); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(89, 92, R); return R; }
   var R = ProcedurePrims.ask(world.patches(), function() { var R = ProcedurePrims.callCommand("update-visual"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(159, 162, R); return R; }
   world.observer.setGlobal("global-energy", PrimChecks.list.sum(210, 213, PrimChecks.validator.checkArg('SUM', 210, 213, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter(215, 226, "find-energy"); }))));
   world.observer.setGlobal("temperature", 1);

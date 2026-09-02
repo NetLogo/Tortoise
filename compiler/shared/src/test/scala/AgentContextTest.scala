@@ -164,6 +164,30 @@ class AgentContextTest extends AnyFunSuite {
     assertResult(0)(setGuardCount("to foo __ignore [count neighbors] of patches end"))
   }
 
+  // These report the kind of the agentset they were handed, but say only "an agentset" (or less) in their return
+  // type, so the kind has to come from the argument.
+  test("a block run for agents of a filtered or sampled set is not checked") {
+    assertResult(0)(setGuardCount("to foo ask turtles [ __ignore count turtles in-radius 1 with [color = yellow] ] end"))
+    assertResult(0)(setGuardCount("to foo ask turtles [ __ignore [dx] of turtles in-radius 1 ] end"))
+    assertResult(0)(setGuardCount("to foo ask turtles [ __ignore [dx] of turtles in-cone 1 90 ] end"))
+    assertResult(0)(setGuardCount("to foo __ignore [dx] of n-of 3 turtles end"))
+    assertResult(0)(setGuardCount("to foo __ignore [dx] of up-to-n-of 3 turtles end"))
+    assertResult(0)(setGuardCount("to foo __ignore [dx] of max-n-of 3 turtles [who] end"))
+    assertResult(0)(setGuardCount("to foo __ignore [dx] of min-n-of 3 turtles [who] end"))
+    // The kind still has to survive a nesting of them.
+    assertResult(0)(setGuardCount("to foo ask turtles [ __ignore [dx] of n-of 2 (turtles in-radius 1) ] end"))
+  }
+
+  test("a filtered or sampled set of an unknown kind is still checked") {
+    assertResult(1)(setGuardCount("to foo [a] __ignore [dx] of n-of 3 a end"))
+    assertResult(1)(setGuardCount("to foo ask turtles [ __ignore [dx] of a-set-of 1 ] end to-report a-set-of [n] report nobody end"))
+  }
+
+  test("the block of an `n-of` family prim gets its context from the agentset, not the count") {
+    assertResult(Turtle)(contextAt("to foo __ignore max-n-of 3 turtles [dx] end", "dx"))
+    assertResult(Patch)(contextAt("to foo __ignore min-n-of 3 patches [pxcor] end", "pxcor"))
+  }
+
   test("a block run for agents of an unknown kind is checked") {
     assertResult(1)(setGuardCount("to foo [a] __ignore [dx] of a end"))
     assertResult(1)(setGuardCount("to foo [a] __ignore sort-on [dx] a end"))

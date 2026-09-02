@@ -53,7 +53,7 @@ object AgentContext {
 
   // The context a block argument of the current prim runs in.  Prims with no block class of their own (`if`, `while`,
   // `foreach`) run their blocks in the enclosing context; `hatch` and friends name a fixed one; "?" means it comes
-  // from the prim's first argument, and nothing else, which is how `ask`, `with`, and `all?` work.  `of` keeps its
+  // from the prim's agentset argument, and nothing else, which is how `ask`, `with`, and `all?` work.  `of` keeps its
   // block there instead, so it lands on `AnyAgent` here and `guardBlockAgents` asks its agents itself.  Anonymous
   // procedures are not handled here, their bodies are unconstrained by the enclosing context, so they compile
   // against `All`
@@ -61,8 +61,28 @@ object AgentContext {
   def contextOfBlock(app: Application, enclosing: Int): Int =
     app.instruction.syntax.blockAgentClassString match {
       case None      => enclosing
-      case Some("?") => kindOfAgentsAt(app, 0)
+      case Some("?") => kindOfAgentsAt(app, agentSetArgOf(app.instruction))
       case Some(acs) => fromAgentClassString(acs)
+    }
+
+  // The argument a prim's agentset comes from, for the prims that take one and report or run a block for the same
+  // kind they were given.  Desktop assumes the first argument, both here and in `getReportedAgentType`, which is
+  // wrong for the `n-of` family, where the count comes first.  Desktop only loses precision by it -- it checks every
+  // instruction at runtime regardless -- but we decide whether to emit a check at all, so it costs us elidable
+  // checks.  -Jeremy B September 2026
+  private def agentSetArgOf(instruction: Instruction): Int =
+    instruction match {
+      case _: prim.etc._nof | _: prim.etc._uptonof | _: prim.etc._maxnof | _: prim.etc._minnof => 1
+      case _                                                                                   => 0
+    }
+
+  // Prims that filter or sample the agentset they were handed, so they report that agentset's kind, but whose return
+  // type says only that some agentset is coming back.  Desktop's `getReportedAgentType` covers this case only when
+  // the type is exactly `AgentType`/`AgentsetType`, so these fall through to "-TPL" there.
+  private def reportsItsAgentSetKind(reporter: Reporter): Boolean =
+    reporter match {
+      case _: prim._inradius | _: prim.etc._incone | _: prim.etc._nof | _: prim.etc._uptonof => true
+      case _                                                                                 => false
     }
 
   def kindOfReportedAgent(app: ReporterApp): Int = {
@@ -73,9 +93,9 @@ object AgentContext {
       Patch
     else if (ret == Syntax.LinkType || ret == Syntax.LinksetType)
       Link
-    else if (ret == Syntax.AgentType || ret == Syntax.AgentsetType)
+    else if (ret == Syntax.AgentType || ret == Syntax.AgentsetType || reportsItsAgentSetKind(app.reporter))
       // Prims like `with` and `at-points` report the same kind they were given.
-      kindOfAgentsAt(app, 0)
+      kindOfAgentsAt(app, agentSetArgOf(app.reporter))
     else
       AnyAgent
   }

@@ -120,7 +120,7 @@ ProcedurePrims.defineCommand("increment-clock", 1163, 1268, (function() {
   }
 }))
 ProcedurePrims.defineCommand("look", 1276, 1403, (function() {
-  if (Prims.gte(PrimChecks.agentset.countWith(null, null, PrimChecks.context.assertAgentSetKind(10, SelfManager.self().inRadius(world.turtles(), 1), 'countwith', 1305, 1352), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(1337, 1342, "color"), 45); }), world.observer.getGlobal("flashes-to-reset"))) {
+  if (Prims.gte(PrimChecks.agentset.countWith(null, null, SelfManager.self().inRadius(world.turtles(), 1), function() { return Prims.equality(PrimChecks.turtleOrLink.getVariable(1337, 1342, "color"), 45); }), world.observer.getGlobal("flashes-to-reset"))) {
     PrimChecks.turtle.setVariable(1383, 1388, "clock", PrimChecks.turtle.getVariable(1389, 1400, "reset-level"));
   }
 }))
