@@ -70,8 +70,9 @@ object LiteralConverter {
       case "link"   => AgentKind.Link
       case _        => AgentKind.Observer
     })
-    // The header has to be measured, not assumed, since it varies with the args and the agent kind.  Positions in the
-    // generated JS are rebased by it so they point into `runString` instead of into this wrapper.  -Jeremy B August 2026
+    // The header length has to be measured to include args and agent kind.  Positions in the generated JS are rebased
+    // by it so they point into `runString` instead of into this wrapper.
+    // -Jeremy B August 2026
     val header = if (isRunResult)
       s"to-report __run [$netLogoArgs] $hint report ("
     else

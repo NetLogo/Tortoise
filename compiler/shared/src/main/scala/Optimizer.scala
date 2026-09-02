@@ -106,8 +106,6 @@ object Optimizer {
     }
   }
 
-  // Matching `prim._patchat`: `patch-at` is turtle/patch only and reports a patch.  Dropping either here costs the
-  // agent-context check and the known-patch inference the real prim gets.  -Jeremy B August 2026
   abstract class _patchatreporter extends Reporter {
     override def syntax: Syntax =
       Syntax.reporterSyntax(

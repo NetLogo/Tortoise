@@ -61,7 +61,7 @@ object Arguments {
   }
 
   // A few prims are narrower at compile time than they are at runtime.  Desktop's `_distance`, `_towards`, and
-  // `_moveto` declare turtle-or-patch in their syntax -- so a literal link is a compile error -- but their nvm
+  // `_moveto` declare turtle-or-patch in their syntax.  A literal link is a compile error.  Their nvm
   // implementations call `argEvalAgent`, which only asks whether it got an agent at all and leaves the kind to the
   // prim itself.  Matching that keeps both messages in step: `distance nobody` names "an agent", and a link that
   // arrives dynamically gets the prim's own wording rather than an argument-type error.  -Jeremy B August 2026

@@ -88,7 +88,6 @@ setBreed = (breed) ->
     if checks.isString(breed)
       @world.breedManager.get(breed)
     else if checks.isAgentSet(breed)
-      # A set with a special name isn't necessarily a breed -- `patches` names itself but has no breed at all.
       specialName = breed.getSpecialName()
       namedBreed  = if specialName? then @world.breedManager.get(specialName) else undefined
       if namedBreed? and not namedBreed.isLinky()

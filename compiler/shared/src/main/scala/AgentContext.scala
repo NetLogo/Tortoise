@@ -109,9 +109,9 @@ object AgentContext {
         case _              => true
       }
 
-  // `one-of` is declared as reporting anything, because for a list it does -- including, in principle, a list holding
-  // `turtles`.  Given an agentset it reports a single agent, and that is the common case worth keeping cheap.
-  // -Jeremy B September 2026
+  // `one-of` can report anything, as it can take an arbitrary list as an argument.  When it's given an agentset it
+  // reports a single agent, and that is a very common case.  So we do a little extra work to keep it unchecked. -Jeremy
+  // B September 2026
   private def agentSetTypeOf(exp: Expression): Int =
     exp match {
       case r: ReporterApp if r.reporter.isInstanceOf[prim._oneof] =>
