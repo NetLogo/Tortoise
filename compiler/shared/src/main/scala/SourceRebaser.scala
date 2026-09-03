@@ -15,10 +15,9 @@ import
     Statements
   }
 
-// Code compiled inside a synthetic wrapper (a `run` string, the command center, a widget) has to have the wrapper's
-// header subtracted back out, or every position is off by the header's length and points into a string the user never
-// saw.  We update at emission time, so every consumer of the positions gets them right.
-// -Jeremy B August 2026
+// Code compiled inside a synthetic wrapper (a `run` string, the command center, a widget) needs the wrapper's header
+// subtracted back out.  Otherwise every position is off by the header's length and points into a string the user never
+// saw.  We do it at emission time, so every consumer of the positions gets them right.  -Jeremy B August 2026
 object SourceRebaser {
 
   def apply(pd: ProcedureDefinition, offset: Int): ProcedureDefinition =
@@ -55,7 +54,7 @@ object SourceRebaser {
     expression match {
       case r: ReporterApp   => rebase(r, offset)
       case b: ReporterBlock => b.copy(app = rebase(b.app, offset), location = shift(b.sourceLocation, offset))
-      // `CommandBlock.copy()` ignores the location it is given, so the block has to be rebuilt here.
+      // `CommandBlock.copy()` ignores the location you give it, so we have to rebuild the block.
       case c: CommandBlock  => new CommandBlock(rebase(c.statements, offset), shift(c.sourceLocation, offset), c.synthetic)
       case e                => e
     }

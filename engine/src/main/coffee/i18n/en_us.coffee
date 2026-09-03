@@ -153,9 +153,9 @@ bundle = {
 , 'this code can_t be run by _, only by _': (kind, allowed) ->
     "this code can't be run by #{kind}, only by #{allowed}"
 
-  # Fragments, not messages: these name the agent kind that goes into the two messages above, so they carry whatever
-  # article that language's phrasing needs.  Keyed apart from ordinary messages, since "a turtle" on its own is a
-  # likely thing for some future message to say.
+  # These are fragments, not messages.  They name the agent kind that goes into the two messages above, so they carry
+  # whatever article that language's phrasing needs.  We key them apart from the ordinary messages because "a turtle" on
+  # its own is a likely thing for some future message to want to say.
 
 , 'agent kind: the observer': () ->
     "the observer"

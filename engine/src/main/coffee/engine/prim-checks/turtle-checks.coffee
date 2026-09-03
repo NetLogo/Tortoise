@@ -117,7 +117,7 @@ class TurtleChecks
     return
 
   # Desktop's `_distance`, `_towards`, and `_moveto` take any agent at runtime and reject a link themselves, so the
-  # wording is the prim's rather than an argument-type error's.  -Jeremy B August 2026
+  # wording is the prim's own and not an argument-type error's.  -Jeremy B August 2026
   # (String, Int, Int, Agent) => Unit
   rejectLink: (prim, sourceStart, sourceEnd, agent) ->
     if checks.isLink(agent)
@@ -138,7 +138,8 @@ class TurtleChecks
 
   # (Int, Int, Agent) => Unit
   moveTo: (sourceStart, sourceEnd, agent) ->
-    # Desktop checks these in the opposite order from `distance` and `towards`; a dead link names its deadness.
+    # Desktop checks these in the opposite order from `distance` and `towards`, so a dead link names its deadness
+    # instead.
     @rejectDead('move-to', sourceStart, sourceEnd, agent)
     if checks.isLink(agent)
       @validator.error('move-to', sourceStart, sourceEnd, 'you can_t move-to a link')

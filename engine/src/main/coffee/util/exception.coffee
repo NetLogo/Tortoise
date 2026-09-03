@@ -82,8 +82,8 @@ class ExceptionFactory
   runtime: (message, primitive, sourceStart = None, sourceEnd = None, messageKey = None) ->
     stackFrames       = @getStackTrace()
     stackTraceMessage = @makeStackTraceMessage(stackFrames, primitive)
-    # Code from a `run` string is compiled inside a wrapper of our own making, and its positions are relative to that
-    # string, not to the model, so anything raised from it is reported at the `run` call instead.  -Jeremy B August 2026
+    # Code from a `run` string compiles inside a wrapper of our own making, and its positions are relative to that
+    # string, not to the model.  So we report anything raised from it at the `run` call instead.  -Jeremy B August 2026
     location          = @getRunStringLocation()
     [start, end]      = if location? then [maybe(location.start), maybe(location.end)] else [sourceStart, sourceEnd]
     new RuntimeException(message, primitive, stackFrames, stackTraceMessage, start, end, messageKey)

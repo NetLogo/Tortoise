@@ -104,18 +104,20 @@ class AgentContextTest extends AnyFunSuite {
   }
 
   test("a requirement is narrowed by the context the front end found it in, as desktop's is") {
-    // NEIGHBORS is turtle/patch, but inside `ask turtles` desktop records -- and checks -- just the turtle.
+    // NEIGHBORS is turtle/patch, but inside `ask turtles` desktop records just the turtle, and checks just the turtle.
     assertResult(Turtle)(requirementAt("to foo ask turtles [ __ignore neighbors ] end", "neighbors"))
   }
 
-  // The context and requirement at the first prim with the given name, walking the way the compiler will.
+  // These give you the context and requirement at the first prim with the given name, walking the way the compiler
+  // will.
   //
-  // `walk` is a model of the descent `Handlers` and `Prims` make, not the compiler itself, so it can only test the
-  // rules the two share -- `contextOfBlock`, `requirementOf`, `contextOfAnonymousProcedure`.  It deliberately leaves
-  // out what happens after a context is known: the `provenBy` narrowing along a statement list, and the decision to
-  // emit a guard at all.  Those are covered by the `guardsIn` tests below, which read the compiler's own output, and
-  // that is where to add a case when the two could disagree.  Keep this in step with `Handlers.commands` and
-  // `Arguments.get` if the descent changes.  -Jeremy B September 2026
+  // `walk` models the descent `Handlers` and `Prims` make, it isn't the compiler itself, so it can only test the rules
+  // the two share: `contextOfBlock`, `requirementOf`, `contextOfAnonymousProcedure`.  It deliberately leaves out what
+  // happens once a context is known, meaning the `provenBy` narrowing along a statement list and the decision to emit a
+  // guard at all.  The `guardsIn` tests below cover those, since they read the compiler's own output, and that's where
+  // to add a case when the two could disagree.
+  //
+  // Keep this in step with `Handlers.commands` and `Arguments.get` if the descent changes.  -Jeremy B September 2026
 
   private def contextAt(code: String, primName: String): Int =
     findFirst(code, primName)._1
@@ -132,8 +134,8 @@ class AgentContextTest extends AnyFunSuite {
     )
   }
 
-  // A statement's check proves its requirement for everything that follows it in the same list, so a run of
-  // statements needing the same kind is guarded once, at the position desktop's interpreter would fail at.
+  // A statement's check proves its requirement for everything that follows it in the same list.  So a run of statements
+  // needing the same kind is guarded once, at the position desktop's interpreter would fail at.
   test("a proven kind covers the rest of the statement list") {
     assertResult(1)(guardCount("to foo [a] ask a [ fd 1 rt 5 set heading 90 ] end"))
   }
@@ -153,7 +155,7 @@ class AgentContextTest extends AnyFunSuite {
     assertResult(2)(guardCount("to foo [a] ask a [ fd 1 ask link-neighbors [ fd 1 ] ] end"))
   }
 
-  // The block's agents are checked once, before iterating, but only when the agents could be the wrong kind.
+  // The block's agents get checked once, before iterating, and only when they could be the wrong kind.
 
   test("a block run for agents of a known kind is not checked") {
     assertResult(0)(setGuardCount("to foo __ignore [dx] of turtles end"))
@@ -164,8 +166,8 @@ class AgentContextTest extends AnyFunSuite {
     assertResult(0)(setGuardCount("to foo __ignore [count neighbors] of patches end"))
   }
 
-  // These report the kind of the agentset they were handed, but say only "an agentset" (or less) in their return
-  // type, so the kind has to come from the argument.
+  // These report the kind of the agentset they were handed, but their return type says only "an agentset", or less, so
+  // the kind has to come from the argument.
   test("a block run for agents of a filtered or sampled set is not checked") {
     assertResult(0)(setGuardCount("to foo ask turtles [ __ignore count turtles in-radius 1 with [color = yellow] ] end"))
     assertResult(0)(setGuardCount("to foo ask turtles [ __ignore [dx] of turtles in-radius 1 ] end"))
@@ -195,8 +197,8 @@ class AgentContextTest extends AnyFunSuite {
   }
 
   test("a block run for agents of the wrong known kind is still checked, and fails at runtime as desktop does") {
-    // Desktop makes this a runtime error rather than a compile error, so the check has to be emitted even though
-    // nothing about it can succeed.
+    // Desktop makes this a runtime error rather than a compile error, so we emit the check even though nothing about it
+    // can succeed.
     assertResult(1)(setGuardCount("to foo __ignore [dx] of patches end"))
   }
 
@@ -205,8 +207,8 @@ class AgentContextTest extends AnyFunSuite {
   private def setGuardCount(code: String): Int =
     SetGuardCall.findAllMatchIn(jsFor(code)).length
 
-  // Only `world.turtles()` and `world.patches()` themselves are rejected, and by identity, so the check is worth
-  // emitting only for an expression that could be holding one of them.
+  // Only `world.turtles()` and `world.patches()` themselves are rejected, and by identity, so the check is only worth
+  // emitting for an expression that could be holding one of them.
 
   test("asking something that could be the whole set is checked") {
     assertResult(1)(askGuardCount("to foo [a] ask a [ fd 1 ] end"))
@@ -256,7 +258,7 @@ class AgentContextTest extends AnyFunSuite {
     defs
   }
 
-  // (name, context, requirement) for every instruction, in source order.
+  // This gives back (name, context, requirement) for every instruction, in source order.
   private def walk(node: AstNode, context: Int): Seq[(String, Int, Int)] =
     node match {
 

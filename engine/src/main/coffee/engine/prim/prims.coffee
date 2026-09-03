@@ -18,8 +18,8 @@ notImplemented        = require('util/notimplemented')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('util/comparator')
 
-# Desktop's comparison prims order two agents only when they are the same kind of agent (they compare `agentBit`), so
-# a turtle and a patch is an error rather than a silent, meaningless answer.  -Jeremy B August 2026
+# Desktop's comparison prims only order two agents of the same kind (they compare `agentBit`), so a turtle against a
+# patch is an error rather than a silent, meaningless answer.  -Jeremy B August 2026
 isSameAgentType = (a, b) -> checks.isAgent(a) and checks.isAgent(b) and getTypeOf(a) is getTypeOf(b)
 
 getNeighbors  = (patch) -> patch.getNeighbors()

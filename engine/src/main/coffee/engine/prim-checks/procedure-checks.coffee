@@ -19,8 +19,8 @@ class ProcedureChecks
   callReporter: (sourceStart, sourceEnd, name, args...) ->
     result = @procedurePrims.callReporter(name, args...)
 
-    # Desktop reports the same failure whether the body ran off the end or the agent died partway through, since
-    # either way nothing came back (`prim._callreport`).  -Jeremy B August 2026
+    # Desktop reports the same failure whether the body ran off the end or the agent died partway through, since either
+    # way nothing came back (`prim._callreport`).  -Jeremy B August 2026
     if result is undefined or result is DeathInterrupt
       @validator.error(name, sourceStart, sourceEnd, 'the _ procedure failed to report a result', name.toUpperCase())
 

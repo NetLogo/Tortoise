@@ -34,9 +34,9 @@ module.exports =
       else
         throw exceptions.runtime("There is no agent for MYSELF to refer to.", "myself")
 
-    # Desktop runs plot code as a fresh job over `world.observers` (`Evaluator.ProcedureRunner.run`), so it is the
-    # observer that runs it no matter who called `update-plots`.  `myself` goes away with it, as it would in any new
-    # job.  -Jeremy B August 2026
+    # Desktop runs plot code as a fresh job over `world.observers` (`Evaluator.ProcedureRunner.run`), so the observer
+    # runs it no matter who called `update-plots`.  `myself` goes away with it, the way it would in any new job.
+    # -Jeremy B August 2026
     # [T] @ (() => T) => T
     askObserver: (f) =>
       oldMyself = @_myself
@@ -65,7 +65,7 @@ module.exports =
 
         at._myself  = at._self
         at._self    = agent
-        # The observer is the number 0 rather than an agent, so it carries no bit of its own.  -Jeremy B August 2026
+        # The observer is the number 0 rather than an agent, so it has no bit of its own to read.  -Jeremy B August 2026
         at._selfBit = if agent is 0 then AgentKinds.Observer else agent.agentBit
 
         try f()
