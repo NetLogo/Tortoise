@@ -212,7 +212,7 @@ ProcedurePrims.defineCommand("check-caught", 4568, 5024, (function() {
   if ((PrimChecks.math.not(MousePrims.isDown()) || PrimChecks.math.not(MousePrims.isInside()))) {
     return PrimChecks.procedure.stop(4625, 4629);
   }
-  let prey = PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(2, PrimChecks.validator.checkArg('OF', 4675, 4677, 1904, PrimChecks.list.oneOf(4678, 4684, world.turtleManager.turtlesOfBreed("PREDATORS"))), 'of', 4643, 4694), function() {
+  let prey = PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 4675, 4677, 1904, PrimChecks.list.oneOf(4678, 4684, world.turtleManager.turtlesOfBreed("PREDATORS"))), function() {
     return SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("BACTERIA"), PrimChecks.math.div(4669, 4670, PrimChecks.validator.checkArg('/', 4669, 4670, 1, PrimChecks.turtle.getVariable(4664, 4668, "size")), 2));
   }); ProcedurePrims.stack().currentContext().registerStringRunVar("PREY", prey);
   if (PrimChecks.math.not(PrimChecks.agentset.any(PrimChecks.validator.checkArg('ANY?', 4704, 4708, 112, prey)))) {
@@ -223,7 +223,6 @@ ProcedurePrims.defineCommand("check-caught", 4568, 5024, (function() {
     var R = ProcedurePrims.callCommand("death"); if (R === DeathInterrupt) { return R; }
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(4750, 4753, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 4960, 4963, 1904, PrimChecks.list.oneOf(4964, 4970, world.turtleManager.turtlesOfBreed("BACTERIA"))), function() {
-    PrimChecks.context.assertKind(2, 'hatch', 4982, 5021);
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       SelfManager.self().right(RandomPrims.randomLong(360));
       var R = ProcedurePrims.callCommand("make-flagella"); if (R === DeathInterrupt) { return R; }

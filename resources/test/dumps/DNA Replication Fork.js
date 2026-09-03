@@ -485,7 +485,6 @@ ProcedurePrims.defineCommand("refill-or-remove-nucleosides", 21713, 21935, (func
   }
   if (Prims.gt(PrimChecks.agentset.count(world.turtleManager.turtlesOfBreed("NUCLEOSIDES")), world.observer.getGlobal("free-nucleosides"))) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 21847, 21850, 1904, PrimChecks.list.oneOf(21851, 21857, world.turtleManager.turtlesOfBreed("NUCLEOSIDES"))), function() {
-      PrimChecks.context.assertKind(2, 'ask', 21871, 21898);
       var R = ProcedurePrims.ask(LinkPrims.linkNeighbors("TAGLINES"), function() {
         PrimChecks.context.assertKind(10, 'die', 21894, 21897);
         return SelfManager.self().die();

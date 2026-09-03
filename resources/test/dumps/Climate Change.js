@@ -212,10 +212,7 @@ ProcedurePrims.defineCommand("add-co2", 5486, 5737, (function() {
 ProcedurePrims.defineCommand("remove-co2", 5745, 5865, (function() {
   for (let _index_5794_5800 = 0, _repeatcount_5794_5800 = StrictMath.floor(25); _index_5794_5800 < _repeatcount_5794_5800; _index_5794_5800++) {
     if (PrimChecks.agentset.any(world.turtleManager.turtlesOfBreed("CO2S"))) {
-      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5831, 5834, 1904, PrimChecks.list.oneOf(5835, 5841, world.turtleManager.turtlesOfBreed("CO2S"))), function() {
-        PrimChecks.context.assertKind(10, 'die', 5849, 5852);
-        return SelfManager.self().die();
-      }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5831, 5834, R); return R; }
+      var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 5831, 5834, 1904, PrimChecks.list.oneOf(5835, 5841, world.turtleManager.turtlesOfBreed("CO2S"))), function() { return SelfManager.self().die(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(5831, 5834, R); return R; }
     }
   }
 }))

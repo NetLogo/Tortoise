@@ -69,10 +69,7 @@ ProcedurePrims.defineCommand("setup", 69, 275, (function() {
 }))
 ProcedurePrims.defineCommand("go", 284, 527, (function() {
   for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 309, 312, 1904, PrimChecks.list.oneOf(313, 319, world.patches())), function() {
-      PrimChecks.context.assertKind(6, 'try-swap', 336, 344);
-      var R = ProcedurePrims.callCommand("try-swap"); if (R === DeathInterrupt) { return R; }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(309, 312, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 309, 312, 1904, PrimChecks.list.oneOf(313, 319, world.patches())), function() { var R = ProcedurePrims.callCommand("try-swap"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(309, 312, R); return R; }
   }
   world.observer.setGlobal("temperature", PrimChecks.math.mult(441, 442, PrimChecks.validator.checkArg('*', 441, 442, 1, world.observer.getGlobal("temperature")), PrimChecks.math.minus(446, 447, 1, PrimChecks.math.div(461, 462, PrimChecks.validator.checkArg('/', 461, 462, 1, world.observer.getGlobal("cooling-rate")), 100))));
   world.observer.setGlobal("global-energy", PrimChecks.list.sum(489, 492, PrimChecks.validator.checkArg('SUM', 489, 492, 8, PrimChecks.agentset.of(world.patches(), function() { return PrimChecks.procedure.callReporter(494, 505, "find-energy"); }))));

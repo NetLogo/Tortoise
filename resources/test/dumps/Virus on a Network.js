@@ -94,9 +94,7 @@ ProcedurePrims.defineCommand("setup-spatially-clustered-network", 709, 1192, (fu
   while (Prims.lt(PrimChecks.agentset.count(world.links()), numHlinks)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 846, 849, 1904, PrimChecks.list.oneOf(850, 856, world.turtles())), function() {
       let choice = PrimChecks.agentset.minOneOf(PrimChecks.validator.checkArg('MIN-ONE-OF', 889, 899, 112, PrimChecks.agentset.otherWith(null, null, world.turtles(), function() { return PrimChecks.math.not(LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself())); })), function() { return PrimChecks.turtle.distance(969, 977, SelfManager.myself()); }); ProcedurePrims.stack().currentContext().registerStringRunVar("CHOICE", choice);
-      PrimChecks.context.assertKind(2, 'if', 993, 1040);
       if (!Prims.equality(choice, Nobody)) {
-        PrimChecks.context.assertKind(2, 'create-link-with', 1015, 1038);
         var R = ProcedurePrims.ask(LinkPrims.createLinkWith(PrimChecks.validator.checkArg('CREATE-LINK-WITH', 1015, 1031, 256, choice), "LINKS"), function() {}, false); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(1015, 1031, R); return R; }
       }
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(846, 849, R); return R; }

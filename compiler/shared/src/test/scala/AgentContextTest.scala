@@ -53,11 +53,12 @@ class AgentContextTest extends AnyFunSuite {
 
   test("asking a single agent is a known context, though desktop treats it as unknown") {
     assertResult(Turtle)(contextAt("to foo ask turtle 0 [ fd 1 ] end", "fd"))
+    assertResult(Patch)(contextAt("to foo ask one-of patches [ set pcolor red ] end", "set"))
   }
 
   test("asking something whose kind isn't known leaves the context unknown") {
     assertResult(AnyAgent)(contextAt("to foo [a] ask a [ fd 1 ] end", "fd"))
-    assertResult(AnyAgent)(contextAt("to foo ask one-of patches [ set pcolor red ] end", "set"))
+    assertResult(AnyAgent)(contextAt("to foo [a] ask one-of a [ fd 1 ] end", "fd"))
     assertResult(AnyAgent)(contextAt("to foo ask myself [ fd 1 ] end", "fd"))
   }
 

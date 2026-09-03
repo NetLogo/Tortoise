@@ -116,7 +116,7 @@ ProcedurePrims.defineCommand("make-node", 678, 920, (function(oldHnode) {
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(701, 715, R); return R; }
 }))
 ProcedurePrims.defineReporter("find-partner", 1407, 1464, (function() {
-  return PrimChecks.procedure.report(1422, 1428, PrimChecks.agentset.of(PrimChecks.context.assertAgentSetKind(8, PrimChecks.validator.checkArg('OF', 1448, 1450, 1904, PrimChecks.list.oneOf(1451, 1457, world.links())), 'of', 1429, 1463), function() { return PrimChecks.list.oneOf(1430, 1436, SelfManager.self().bothEnds()); }));
+  return PrimChecks.procedure.report(1422, 1428, PrimChecks.agentset.of(PrimChecks.validator.checkArg('OF', 1448, 1450, 1904, PrimChecks.list.oneOf(1451, 1457, world.links())), function() { return PrimChecks.list.oneOf(1430, 1436, SelfManager.self().bothEnds()); }));
 }))
 ProcedurePrims.defineCommand("resize-nodes", 1598, 1896, (function() {
   if (PrimChecks.agentset.all(1620, 1624, world.turtles(), function() { return Prims.lte(PrimChecks.turtle.getVariable(1634, 1638, "size"), 1); })) {

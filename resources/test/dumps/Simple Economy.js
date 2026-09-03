@@ -97,7 +97,6 @@ ProcedurePrims.defineCommand("go", 278, 531, (function() {
 ProcedurePrims.defineCommand("transact", 539, 662, (function() {
   PrimChecks.turtle.setVariable(591, 597, "wealth", PrimChecks.math.minus(605, 606, PrimChecks.validator.checkArg('-', 605, 606, 1, PrimChecks.turtle.getVariable(598, 604, "wealth")), 1));
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 611, 614, 1904, PrimChecks.list.oneOf(615, 621, SelfPrims.other(world.turtles()))), function() {
-    PrimChecks.context.assertKind(2, 'set', 638, 659);
     PrimChecks.turtle.setVariable(642, 648, "wealth", PrimChecks.math.plus(656, 657, PrimChecks.validator.checkArg('+', 656, 657, 1, PrimChecks.turtle.getVariable(649, 655, "wealth")), 1));
   }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(611, 614, R); return R; }
 }))

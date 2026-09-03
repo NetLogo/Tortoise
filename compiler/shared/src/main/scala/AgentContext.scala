@@ -88,7 +88,7 @@ object AgentContext {
     }
 
   def kindOfReportedAgent(app: ReporterApp): Int = {
-    val ret = app.reporter.syntax.ret & ~Syntax.NobodyType
+    val ret = agentSetTypeOf(app) & ~Syntax.NobodyType
     if (ret == Syntax.TurtleType || ret == Syntax.TurtlesetType)
       Turtle
     else if (ret == Syntax.PatchType || ret == Syntax.PatchsetType)
@@ -137,6 +137,10 @@ object AgentContext {
   // `one-of` can report anything, since it can take an arbitrary list.  But when it's handed an agentset it reports a
   // single agent, and that's a very common case, so we do a little extra work here to keep it unchecked.
   // -Jeremy B September 2026
+  //
+  // `kindOfReportedAgent` goes through here too, so `ask one-of turtles [ ... ]` gets a turtle context instead of
+  // "some agent" and everything in the block goes unchecked.  Desktop can't do that, its `getReportedAgentType` only
+  // ever looks at the return type.  -Jeremy B September 2026
   private def agentSetTypeOf(exp: Expression): Int =
     exp match {
       case r: ReporterApp if r.reporter.isInstanceOf[prim._oneof] =>
