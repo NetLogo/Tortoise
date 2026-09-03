@@ -83,7 +83,7 @@ trait PrimUtils {
     AgentContext.guardBlockAgents(app, blockIndex, agentsIndex, agentsJs, compilerContext.agentContext)
 
   // `ask turtles` and `ask patches` are observer-only.  Desktop raises that at runtime even when the context makes it
-  // inevitable, so this is a check rather than a compile error.  -Jeremy B August 2026
+  // inevitable, so we do a check here rather than a compile error.  -Jeremy B August 2026
   protected def askableAgents(app: Application, agentsJs: String)
     (implicit compilerContext: CompilerContext): String = {
     val location = app.instruction.token.sourceLocation
@@ -376,7 +376,7 @@ trait CommandPrims extends PrimUtils {
       jsString(name)
     }
 
-    /// custom generators for particular Commands
+    // / custom generators for particular Commands
     def generateCall(call: prim._call): String = {
       val callCommand = s"ProcedurePrims.callCommand(${ReporterPrims.callArgs(call.name, args.all)})"
       if (!procContext.isProcedure && compilerContext.blockLevel < 2) {

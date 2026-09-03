@@ -67,7 +67,7 @@ class ProcedureContext
   isInsideTask: () ->
     @_taskDepth isnt 0
 
-  # Only string `run`/`runresult` tasks have one; see `StringTaskContext`.
+  # Only string `run`/`runresult` tasks have one of these, see `StringTaskContext`.
   # () => { start: Int, end: Int } | null
   runStringLocation: () -> null
 
@@ -110,8 +110,8 @@ class StringTaskContext extends ProcedureContext
     @_stringRunLetVars = new Map(outerContext._stringRunLetVars)
     return
 
-  # The code in a `run` string is compiled inside a wrapper of our own making, so the positions in it mean nothing to
-  # anyone holding the model source.  Errors from it are reported at the `run` call instead.  -Jeremy B August 2026
+  # The code in a `run` string compiles inside a wrapper of our own making, so its positions mean nothing to anyone
+  # holding the model source.  We report errors from it at the `run` call instead.  -Jeremy B August 2026
   # () => { start: Int, end: Int } | null
   runStringLocation: () -> @_location
 

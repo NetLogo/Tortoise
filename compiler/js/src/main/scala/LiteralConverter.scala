@@ -62,7 +62,7 @@ object LiteralConverter {
     // The strings to run can end in comments like `; blah blah`, so the `\n` before the `end`s are necessary.
     val netLogoArgs = procVars.toList.mkString(" ")
     // Desktop compiles a `run` string in the context of whoever is running it, so a turtle-only prim in a patch's `run`
-    // string is a compile error there.  The hint prim is what tells the front end which context that is.
+    // string is a compile error there.  The hint prim is how we tell the front end which context that is.
     // -Jeremy B August 2026
     val hint = SourceWrapping.agentKindHint(agentKind match {
       case "turtle" => AgentKind.Turtle
@@ -70,9 +70,8 @@ object LiteralConverter {
       case "link"   => AgentKind.Link
       case _        => AgentKind.Observer
     })
-    // The header length has to be measured to include args and agent kind.  Positions in the generated JS are rebased
-    // by it so they point into `runString` instead of into this wrapper.
-    // -Jeremy B August 2026
+    // Measure the header including the args and the agent kind.  Positions in the generated JS get rebased by it, so
+    // they point into `runString` instead of into this wrapper.  -Jeremy B August 2026
     val header = if (isRunResult)
       s"to-report __run [$netLogoArgs] $hint report ("
     else

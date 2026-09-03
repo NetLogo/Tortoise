@@ -22,15 +22,15 @@ object LiteralConverterTest extends TestSuite {
     }
 
     // The code compiles inside a `to __run [...] __turtlecode ` wrapper, but the positions baked into the JS have to be
-    // relative to the run string, since that is all the outside world has to point at.  -Jeremy B August 2026
+    // relative to the run string, since that's all the outside world has to point at.  -Jeremy B August 2026
     "emits source positions relative to the run string"-{
       val compilationRequest = modelToCompilationRequest(validModel)
       val result = LiteralConverter.compileRunString(compilationRequest, "fd 1 fd 2 / 0", false, js.Array(), "turtle")
       assert(result.contains("PrimChecks.math.div(10, 11,"))
     }
 
-    // The wrapper's length varies with the procedure variables and the agent kind, so the rebasing has to be measured
-    // from the wrapper actually emitted rather than assumed.
+    // The wrapper's length varies with the procedure variables and the agent kind, so measure the rebasing from the
+    // wrapper we actually emitted, don't assume it.
     "keeps source positions relative to the run string as the wrapper changes"-{
       val compilationRequest = modelToCompilationRequest(validModel)
       val result = LiteralConverter.compileRunString(compilationRequest, "fd 1 fd 2 / 0", false, js.Array("a", "bcd"), "turtle")

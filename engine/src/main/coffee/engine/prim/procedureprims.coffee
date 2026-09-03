@@ -74,8 +74,8 @@ class ProcedurePrims
   runInPlotContext: (plotName, penName, f) ->
     @_stack.startPlot(plotName)
     try
-      # Plot code is compiled as the observer and desktop runs it as the observer, even when `update-plots` is
-      # called from an `ask` block, so `self` has to be the observer here too.  -Jeremy B August 2026
+      # Plot code compiles as the observer and desktop runs it as the observer, even when `update-plots` is called from
+      # inside an `ask`.  So `self` has to be the observer here too.  -Jeremy B August 2026
       @selfManager.askObserver( () => @rng.withPlot( () => @plotManager.withTemporaryContext(plotName, penName)(f) ) )
     finally
       @_stack.endCall()

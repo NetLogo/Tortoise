@@ -2,7 +2,7 @@
 
 AgentKinds = require('engine/core/agentkinds')
 
-# Desktop names the agent kinds separately from the messages that mention them, so we do too.  -Jeremy B August 2026
+# Desktop names the agent kinds apart from the messages that mention them, so we do too.  -Jeremy B August 2026
 kindNameKeys = new Map([
   [AgentKinds.Observer, 'agent kind: the observer']
 , [AgentKinds.Turtle,   'agent kind: a turtle'    ]
@@ -29,7 +29,6 @@ class ContextChecks
       @_raise(mask, agents.agentBit, primName, sourceStart, sourceEnd)
     agents
 
-  # `ask turtles` and `ask patches` are observer-only, no matter what the block does.
   # (AgentSet|Agent|Any, Int, Int) => AgentSet|Agent|Any
   assertAskAllowed: (agents, sourceStart, sourceEnd) ->
     if @selfManager.selfBit() isnt AgentKinds.Observer and agents?.getSpecialName?
@@ -44,7 +43,7 @@ class ContextChecks
   _raise: (mask, selfBit, primName, sourceStart, sourceEnd) ->
     actual  = @kindName(selfBit)
     allowed = AgentKinds.splitMask(mask)
-    # Desktop only names what the code *can* be run by when there's exactly one candidate, so `neighbors` in an
+    # Desktop only names what the code *can* be run by when there's exactly one candidate.  So `neighbors` in an
     # observer context says just "this code can't be run by the observer".  -Jeremy B August 2026
     if allowed.length is 1
       @validator.error( primName, sourceStart, sourceEnd, 'this code can_t be run by _, only by _'

@@ -1,8 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 # One bit per agent kind, ordered the way NetLogo's "OTPL" `agentClassString` is.  Agents carry their own bit and
-# `SelfManager` tracks the current one, so asking whether the running agent is allowed to execute a given prim is a
-# single bitwise test.  -Jeremy B August 2026
+# `SelfManager` tracks the current one, so asking whether the running agent is allowed to execute a given prim comes
+# down to a single bitwise test.  -Jeremy B August 2026
 
 Observer = 1
 Turtle   = 2
@@ -13,7 +13,8 @@ All = Observer | Turtle | Patch | Link
 
 allBits = [Observer, Turtle, Patch, Link]
 
-# The names the compiler knows these by, for wrapping code that has to be compiled for a specific kind.
+# These are the names the compiler knows the kinds by, and it uses them to wrap code that has to be compiled for a
+# specific one.
 names = new Map([[Observer, "observer"], [Turtle, "turtle"], [Patch, "patch"], [Link, "link"]])
 
 # (Int) => String

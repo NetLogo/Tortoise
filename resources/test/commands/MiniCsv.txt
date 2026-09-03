@@ -34,8 +34,8 @@ MiniCsvExtensionRows
   mini-csv:to-row temp => "-3,-4,-5"
   mini-csv:from-row mini-csv:to-row temp => [-3 -4 -5]
 
-# These tests below are mostly to check the agent context checking in combination with extension code.  They're not
-# Mini-CSV specific.  -Jeremy B August 2026
+# The tests below are here to check agent context checking against extension code.  They're not really Mini-CSV
+# specific.  -Jeremy B August 2026
 
 ExtensionClearsAll
   extensions [mini-csv]

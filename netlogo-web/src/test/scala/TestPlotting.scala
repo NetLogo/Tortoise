@@ -23,9 +23,9 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
   }
 
   // Desktop runs plot code as a fresh job over `world.observers`, so the observer runs it no matter who called
-  // `update-plots` -- which, unlike `tick`, is not observer-only and so can be called from inside an `ask`.  Plot code
-  // is also compiled as the observer, so if `self` leaked in from the caller the agent-context checks in any lambda
-  // the plot code contains would test against the wrong kind.  -Jeremy B August 2026
+  // `update-plots`.  And `update-plots`, unlike `tick`, isn't observer-only, so it can be called from inside an `ask`.
+  // Plot code is compiled as the observer too, so if `self` leaked in from the caller the context checks in any lambda
+  // the plot code holds would test against the wrong kind.  -Jeremy B August 2026
   testPlotting("plot code runs as the observer") { (engine) =>
     implicit val e = engine
     setPlot(Plots.ClassPlot.name)
