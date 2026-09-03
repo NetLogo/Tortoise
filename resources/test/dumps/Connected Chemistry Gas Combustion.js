@@ -279,7 +279,6 @@ ProcedurePrims.defineCommand("speed-up-one-molecule", 9397, 9599, (function() {
   world.clearDrawing();
   var R = ProcedurePrims.ask(world.turtleManager.turtlesOfBreed("GAS-MOLECULES"), function() { SelfManager.self().penManager.raisePen(); }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(9437, 9440, R); return R; }
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9465, 9468, 1904, PrimChecks.list.oneOf(9469, 9475, world.turtleManager.turtlesOfBreed("GAS-MOLECULES"))), function() {
-    PrimChecks.context.assertKind(2, 'set', 9497, 9517);
     PrimChecks.turtle.setVariable(9501, 9506, "speed", PrimChecks.math.mult(9513, 9514, PrimChecks.validator.checkArg('*', 9513, 9514, 1, PrimChecks.turtle.getVariable(9507, 9512, "speed")), 10));
     PrimChecks.turtle.setVariable(9526, 9532, "energy", PrimChecks.procedure.callReporter(9533, 9550, "energy-from-speed"));
     SelfManager.self().penManager.lowerPen();

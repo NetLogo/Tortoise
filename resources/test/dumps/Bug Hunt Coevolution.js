@@ -331,7 +331,6 @@ ProcedurePrims.defineCommand("check-bird-catch", 7839, 8853, (function() {
       world.observer.setGlobal("total-caught", PrimChecks.math.plus(7956, 7957, PrimChecks.validator.checkArg('+', 7956, 7957, 1, world.observer.getGlobal("total-caught")), 1));
       PrimChecks.turtle.setVariable(7971, 7976, "eaten", PrimChecks.math.plus(7984, 7985, PrimChecks.validator.checkArg('+', 7984, 7985, 1, PrimChecks.turtle.getVariable(7978, 7983, "eaten")), 1));
       var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8051, 8054, 1904, PrimChecks.list.oneOf(8055, 8061, SelfManager.self().breedHere("BUGS"))), function() {
-        PrimChecks.context.assertKind(2, 'set', 8082, 8107);
         speedHofHcaught = PrimChecks.turtle.getVariable(8102, 8107, "speed"); ProcedurePrims.stack().currentContext().updateStringRunVar("SPEED-OF-CAUGHT", speedHofHcaught);
         if (Prims.equality(speedHofHcaught, 1)) {
           world.observer.setGlobal("total-speed-6-caught", PrimChecks.math.plus(8190, 8191, PrimChecks.validator.checkArg('+', 8190, 8191, 1, world.observer.getGlobal("total-speed-6-caught")), 1));
@@ -365,7 +364,6 @@ ProcedurePrims.defineCommand("check-bird-catch", 7839, 8853, (function() {
 }))
 ProcedurePrims.defineCommand("reproduce-one-bug", 8950, 9096, (function() {
   var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 8970, 8973, 1904, PrimChecks.list.oneOf(8974, 8980, world.turtleManager.turtlesOfBreed("BUGS"))), function() {
-    PrimChecks.context.assertKind(2, 'hatch', 8992, 9091);
     var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {
       var R = ProcedurePrims.callCommand("mutate-offspring-bug"); if (R === DeathInterrupt) { return R; }
       PrimChecks.turtle.setVariable(9035, 9042, "heading", PrimChecks.math.randomFloat(360));
@@ -377,7 +375,6 @@ ProcedurePrims.defineCommand("reproduce-one-bird", 9104, 9373, (function() {
   let birdHenergyHsplit = 0; ProcedurePrims.stack().currentContext().registerStringRunVar("BIRD-ENERGY-SPLIT", birdHenergyHsplit);
   if (PrimChecks.agentset.optimizeCount(null, null, world.turtleManager.turtlesOfBreed("BIRDS"), 0, (a, b) => a > b)) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 9171, 9174, 1904, PrimChecks.list.oneOf(9175, 9181, world.turtleManager.turtlesOfBreed("BIRDS"))), function() {
-      PrimChecks.context.assertKind(2, 'set', 9194, 9227);
       birdHenergyHsplit = PrimChecks.math.div(9223, 9224, PrimChecks.validator.checkArg('/', 9223, 9224, 1, PrimChecks.turtle.getVariable(9217, 9222, "eaten")), 2); ProcedurePrims.stack().currentContext().updateStringRunVar("BIRD-ENERGY-SPLIT", birdHenergyHsplit);
       PrimChecks.turtle.setVariable(9236, 9241, "eaten", birdHenergyHsplit);
       var R = ProcedurePrims.ask(SelfManager.self().hatch(1, ""), function() {

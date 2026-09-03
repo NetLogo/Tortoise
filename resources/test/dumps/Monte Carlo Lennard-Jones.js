@@ -81,10 +81,7 @@ ProcedurePrims.defineCommand("setup", 255, 740, (function() {
 }))
 ProcedurePrims.defineCommand("go", 748, 1047, (function() {
   for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++) {
-    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 850, 853, 1904, PrimChecks.list.oneOf(854, 860, world.turtles())), function() {
-      PrimChecks.context.assertKind(2, 'attempt-move', 877, 889);
-      var R = ProcedurePrims.callCommand("attempt-move"); if (R === DeathInterrupt) { return R; }
-    }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(850, 853, R); return R; }
+    var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 850, 853, 1904, PrimChecks.list.oneOf(854, 860, world.turtles())), function() { var R = ProcedurePrims.callCommand("attempt-move"); if (R === DeathInterrupt) { return R; } }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(850, 853, R); return R; }
   }
   if (Prims.equality(PrimChecks.math.mod(990, 993, world.ticker.tickCount(), PrimChecks.validator.checkArg('MOD', 990, 993, 1, world.observer.getGlobal("num-atoms"))), 1)) {
     var R = ProcedurePrims.callCommand("tune-acceptance-rate"); if (R === DeathInterrupt) { return R; }

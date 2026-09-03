@@ -85,7 +85,6 @@ ProcedurePrims.defineCommand("go", 158, 1941, (function() {
   var R = PrimChecks.task.forEach(1684, 1691, PrimChecks.validator.checkArg('FOREACH', 1684, 1691, 8, events), PrimChecks.task.checked(1699, 1700, function(_EVENT_) {
     PrimChecks.procedure.runArgCountCheck('run', 1699, 1933, 1, arguments.length);
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 1714, 1717, 1904, PrimChecks.list.oneOf(1718, 1724, world.patches())), function() {
-      PrimChecks.context.assertKind(6, 'let', 1741, 1769);
       let target = PrimChecks.list.oneOf(1752, 1758, SelfManager.self().getNeighbors4()); ProcedurePrims.stack().currentContext().registerStringRunVar("TARGET", target);
       if (Prims.equality(_EVENT_, swapHevent)) {
         var R = ProcedurePrims.callCommand("swap", target); if (R === DeathInterrupt) { return R; }

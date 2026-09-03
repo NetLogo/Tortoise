@@ -121,15 +121,11 @@ ProcedurePrims.defineCommand("go", 1755, 2470, (function() {
 ProcedurePrims.defineCommand("rewire-a-link", 2478, 2687, (function() {
   if (PrimChecks.agentset.any(world.linkManager.linksOfBreed("ACTIVE-LINKS"))) {
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2521, 2524, 1904, PrimChecks.list.oneOf(2525, 2531, world.linkManager.linksOfBreed("ACTIVE-LINKS"))), function() {
-      PrimChecks.context.assertKind(10, 'set', 2553, 2577);
       PrimChecks.turtleOrLink.setVariable(2557, 2562, "breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
-      PrimChecks.context.assertKind(8, 'hide-link', 2584, 2593);
       SelfManager.self().setVariable('hidden?', true)
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2521, 2524, R); return R; }
     var R = ProcedurePrims.ask(PrimChecks.validator.checkArg('ASK', 2604, 2607, 1904, PrimChecks.list.oneOf(2608, 2614, world.linkManager.linksOfBreed("INACTIVE-LINKS"))), function() {
-      PrimChecks.context.assertKind(10, 'set', 2638, 2660);
       PrimChecks.turtleOrLink.setVariable(2642, 2647, "breed", world.linkManager.linksOfBreed("ACTIVE-LINKS"));
-      PrimChecks.context.assertKind(8, 'show-link', 2667, 2676);
       SelfManager.self().setVariable('hidden?', false)
     }, true); if (R !== undefined) { PrimChecks.procedure.preReturnCheck(2604, 2607, R); return R; }
   }
