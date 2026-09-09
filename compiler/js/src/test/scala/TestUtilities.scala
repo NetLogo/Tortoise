@@ -279,7 +279,7 @@ Line -7500403 true 150 150 210 180
 """
 
   val xmlFormatContents = """<?xml version="1.0" encoding="utf-8" ?>
-<model version="NetLogo 7.1.0-internal1">
+<model version="NetLogo 7.1.0-alpha1">
   <code><![CDATA[
 to setup
   clear-all
