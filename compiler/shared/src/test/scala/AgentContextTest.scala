@@ -249,12 +249,12 @@ class AgentContextTest extends AnyFunSuite {
     guardsIn(code).length
 
   private def jsFor(code: String): String = {
-    val model = CModel(code, List(View.square(16)))
+    val model = CModel(None, code, List(View.square(16)))
     compiler.toJS(compiler.compileProcedures(model)(using CompilerFlags.Default))(using CompilerFlags.Default)
   }
 
   private def defsFor(code: String) = {
-    val model = CModel(code, List(View.square(16)))
+    val model = CModel(None, code, List(View.square(16)))
     val (defs, _, _) = compiler.compileMoreProcedures(model, Program.empty(), FrontEndInterface.NoProcedures)
     defs
   }
