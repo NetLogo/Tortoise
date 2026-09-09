@@ -206,12 +206,14 @@ class Compiler {
     (implicit compilerFlags: CompilerFlags): String = {
 
     val (defs, _) =
-      frontEnd.frontEnd(
-          code
-        , oldProcedures    = oldProcedures
-        , program          = program
-        , extensionManager = extensionManager
-      )
+      SourceRebaser.rebasing(sourceOffset) {
+        frontEnd.frontEnd(
+            code
+          , oldProcedures    = oldProcedures
+          , program          = program
+          , extensionManager = extensionManager
+        )
+      }
 
     val pd = SourceRebaser(MultiAssignTransformer(
       if (compilerFlags.optimizationsEnabled)
@@ -255,12 +257,14 @@ class Compiler {
     implicit val procContext = ProcedureContext(!raw, Seq())
 
     val (defs, _) =
-      frontEnd.frontEnd(
-          wrapped
-        , oldProcedures    = oldProcedures
-        , program          = program
-        , extensionManager = extensionManager
-      )
+      SourceRebaser.rebasing(header.length) {
+        frontEnd.frontEnd(
+            wrapped
+          , oldProcedures    = oldProcedures
+          , program          = program
+          , extensionManager = extensionManager
+        )
+      }
 
     val pd = SourceRebaser(MultiAssignTransformer(
       if (compilerFlags.optimizationsEnabled)

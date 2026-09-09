@@ -76,7 +76,7 @@ object CompiledWidget {
       fields(
         "compilation" -> JsObject(fields(
           "success"  -> JsBool(false),
-          "messages" -> JsArray(errors.list.toList.map(e => JsString(e.getMessage)))))))
+          "messages" -> JsArray(errors.list.toList.map(WidgetCompilation.compileError2Json.apply))))))
 
   private def decorateSuccess(javascriptObject: JsObject)(success: WidgetCompilation): JsObject =
     JsObject(
@@ -136,6 +136,13 @@ object WidgetCompilation {
   implicit object compileError2Json extends JsonWriter[Throwable] {
     def apply(ex: Throwable): TortoiseJson =
       ex match {
+        case widgetException: WidgetCompilerException =>
+          JsObject(fields(
+            "message" -> JsString(widgetException.getMessage),
+            "start"   -> JsInt(widgetException.start),
+            "end"     -> JsInt(widgetException.end),
+            "widget"  -> JsString(widgetException.widgetName),
+            "field"   -> JsString(widgetException.widgetField)))
         case compilerException: CompilerException =>
           JsObject(fields(
             "message" -> JsString(compilerException.getMessage),

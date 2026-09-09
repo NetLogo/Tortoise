@@ -11,7 +11,7 @@ import
   JsOps.{ jsArrayString, sanitizeNil, thunkifyFunction, thunkifyProcedure }
 
 import
-  org.nlogo.core.{ Button, Monitor, Pen, Plot, Slider, Widget }
+  org.nlogo.core.{ Button, CompilerException, Monitor, Pen, Plot, Slider, Widget }
 
 import
   org.nlogo.tortoise.compiler.utils.CompilerErrors
@@ -70,21 +70,24 @@ class WidgetCompiler(
   }
 
   private def compileButton(b: Button): ValidationNel[Exception, SourceCompilation] = {
-    def askWithKind(kind: String)(command: String): String = {
+    // Returns the wrapped source along with the length of what we put in front of the user's code, so an error in it
+    // can be reported against the button's own source.  -Jeremy B September 2026
+    def askWithKind(kind: String)(command: String): (String, Int) = {
       def fail(kind: String): Nothing =
         throw new IllegalArgumentException(s"This type of agent cannot be asked: $kind")
 
-      def askBlock(agents: String, checkAllDead: Boolean)(logoAsk: String): String = {
-        val ask = s"ask $agents [ $logoAsk ]"
-        if (!checkAllDead) {
-          ask
-        } else {
-          s"ifelse count $agents = 0 [ stop ] [ $ask ]"
-        }
+      def askBlock(agents: String, checkAllDead: Boolean)(logoAsk: String): (String, Int) = {
+        val (prefix, suffix) =
+          if (!checkAllDead) {
+            (s"ask $agents [ ", " ]")
+          } else {
+            (s"ifelse count $agents = 0 [ stop ] [ ask $agents [ ", " ] ]")
+          }
+        (s"$prefix$logoAsk$suffix", prefix.length)
       }
 
-      val kindToAgentSetString = Map[String, String => String](
-        "OBSERVER" -> identity[String],
+      val kindToAgentSetString = Map[String, String => (String, Int)](
+        "OBSERVER" -> ( (command: String) => (command, 0) ),
         "TURTLE"   -> askBlock("turtles", true),
         "PATCH"    -> askBlock("patches", false),
         "LINK"     -> askBlock("links",   true)
@@ -96,9 +99,16 @@ class WidgetCompiler(
     def sanitizeSource(s: String) =
       s.replace("\\n", "\n").replace("\\\\", "\\").replace("\\\"", "\"")
 
-    val asked     = askWithKind(b.buttonKind.toString.toUpperCase)(b.source.getOrElse(""))
-    val sanitized = sanitizeSource(asked)
-    compileCommand(sanitized)
+    // Sanitize before wrapping, not after.  Unescaping shortens the source, so doing it second would leave the offsets
+    // pointing into a string that no longer exists.  The wrapper has no escapes of its own, so this is otherwise the
+    // same text as before.  -Jeremy B September 2026
+    val sanitized       = sanitizeSource(b.source.getOrElse(""))
+    val (asked, offset) = askWithKind(b.buttonKind.toString.toUpperCase)(sanitized)
+    compileCommand(asked)
+      .leftMap(_.map {
+        case ce: CompilerException => SourceRebaser.rebase(ce, offset)
+        case e                     => e
+      })
       .contextualizeError("button", b.display.orElse(b.source).getOrElse(""), "source")
       .map(SourceCompilation.apply)
   }
@@ -181,7 +191,13 @@ object WidgetCompiler {
   implicit class ValidationContextualizer(validation: CompiledStringV) {
     def contextualizeError(widgetType: String, widgetName: String, widgetField: String): CompiledStringV = {
       val context = s"$widgetType '$widgetName' - $widgetType.$widgetField"
-      validation.leftMap(_.map(e => new Exception(s"$context: ${e.getMessage}")))
+      validation.leftMap(_.map {
+        case ce: CompilerException =>
+          new WidgetCompilerException( s"$context: ${ce.getMessage}", ce.start, ce.end, ce.filename
+                                     , widgetType, widgetName, widgetField)
+        case e =>
+          new Exception(s"$context: ${e.getMessage}")
+      })
     }
   }
 }

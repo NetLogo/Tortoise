@@ -7,7 +7,7 @@ import
 
 import
   json.{ TortoiseJson, WidgetSamples, WidgetToJson },
-    TortoiseJson.{ fields, JsArray, JsBool, JsObject, JsString },
+    TortoiseJson.{ fields, JsArray, JsBool, JsInt, JsObject, JsString },
     WidgetSamples.{ buttonNoName   => turtleButtonWidget,
                     buttonWithName => buttonWidget,
                     monitor        => monitorWidget,
@@ -216,9 +216,71 @@ class WidgetCompilerTest extends AnyFunSuite {
     val compilationFailure = Map(
       "compilation" -> JsObject(fields(
         "success"     -> JsBool(false),
-        "messages"    -> JsArray(Seq(JsString("Expected reporter"))))))
+        "messages"    -> JsArray(Seq(JsObject(fields("message" -> JsString("Expected reporter"))))))))
 
     assertContains(widgetJsObject, monitorWidget.toJsonObj.asInstanceOf[JsObject])
     assertHasValues(widgetJsObject, compilationFailure)
+  }
+
+  test("a failing widget reports the source location and field of the error") {
+    val failure: ValidationNel[Exception, WidgetCompilation] =
+      NonEmptyList[Exception](
+        new WidgetCompilerException( "monitor 'foo' - monitor.reporter: Expected reporter", 4, 9, ""
+                                   , "monitor", "foo", "reporter")).failure[WidgetCompilation]
+    val widgetJsObject = formatWidget(compiledWidget(failure))
+    val compilationFailure = Map(
+      "compilation" -> JsObject(fields(
+        "success"  -> JsBool(false),
+        "messages" -> JsArray(Seq(JsObject(fields(
+          "message" -> JsString("monitor 'foo' - monitor.reporter: Expected reporter"),
+          "start"   -> JsInt(4),
+          "end"     -> JsInt(9),
+          "widget"  -> JsString("foo"),
+          "field"   -> JsString("reporter"))))))))
+
+    assertHasValues(widgetJsObject, compilationFailure)
+  }
+
+  test("contextualizeError keeps the source location of a CompilerException") {
+    import WidgetCompiler.ValidationContextualizer
+
+    val failure: CompiledStringV =
+      NonEmptyList[Exception](new CompilerException("Expected reporter", 4, 9, "")).failure[String]
+    val contextualized = failure.contextualizeError("monitor", "foo", "reporter")
+
+    contextualized.fold(
+      es => es.list.toList.head match {
+        case we: WidgetCompilerException =>
+          assert(we.start       == 4)
+          assert(we.end         == 9)
+          assert(we.widgetType  == "monitor")
+          assert(we.widgetName  == "foo")
+          assert(we.widgetField == "reporter")
+          assert(we.getMessage  == "monitor 'foo' - monitor.reporter: Expected reporter")
+        case other => fail(s"expected a WidgetCompilerException, got: $other")
+      },
+      _ => fail("compilation should have failed"))
+    ()
+  }
+
+  // A turtle button's code is wrapped in an `ask` before compiling, so an error's offsets have to come back out of that
+  // wrapper to mean anything against the button's own source.  -Jeremy B September 2026
+  test("a failing turtle button reports offsets against its own source") {
+    val askWrapper = "ifelse count turtles = 0 [ stop ] [ ask turtles [ "
+    val failInWrapper = (_: String) =>
+      NonEmptyList[Exception](
+        new CompilerException("Nothing named FOOBAR here", askWrapper.length, askWrapper.length + 6, "")
+      ).failure[String]
+
+    val compiled =
+      new WidgetCompiler(failInWrapper, compileReporter).compileWidgets(Seq(turtleButtonWidget)).head
+
+    compiled.widgetCompilation.fold(
+      es => es.list.toList.head match {
+        case we: WidgetCompilerException => assert(we.start == 0 && we.end == 6)
+        case other                       => fail(s"expected a WidgetCompilerException, got: $other")
+      },
+      _ => fail("compilation should have failed"))
+    ()
   }
 }

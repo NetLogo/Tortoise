@@ -5,6 +5,7 @@ package org.nlogo.tortoise.compiler
 import
   org.nlogo.core.{
     CommandBlock,
+    CompilerException,
     Expression,
     Instruction,
     ProcedureDefinition,
@@ -25,6 +26,18 @@ object SourceRebaser {
       pd
     else
       pd.copy(statements = rebase(pd.statements, offset))
+
+  def rebasing[T](offset: Int)(parse: => T): T =
+    try parse
+    catch {
+      case ex: CompilerException => throw rebase(ex, offset)
+    }
+
+  def rebase(ex: CompilerException, offset: Int): CompilerException =
+    if (offset <= 0)
+      ex
+    else
+      new CompilerException(ex.getMessage, shift(ex.start, offset), shift(ex.end, offset), ex.filename)
 
   private def shift(position: Int, offset: Int): Int =
     math.max(0, position - offset)
