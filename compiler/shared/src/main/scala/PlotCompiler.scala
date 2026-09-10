@@ -25,10 +25,8 @@ object PlotCompiler {
 
   def formatPlots(widgets: Seq[CompiledWidget]): Seq[TortoiseSymbol] = {
 
-    val (plotObjects, plotErrors) =
-      formatObjectsAndErrors(
-        widgets.collect { case cp: CompiledPlot => cp }.map(_.renderJS),
-        jsArrayString(_), es => alertFailure(es.mkString(", ")))
+    val plotObjects =
+      formatObjects(widgets.collect { case cp: CompiledPlot => cp }.map(_.renderJS), jsArrayString(_))
 
     Seq(
       JsRequire("PenBundle", "engine/plot/pen"),
@@ -39,22 +37,14 @@ object PlotCompiler {
 
       JsStatement(
         "modelConfig.plots",
-        s"modelConfig.plots = $plotObjects;$plotErrors",
+        s"modelConfig.plots = $plotObjects;",
         Seq("PenBundle", "Plot", "PlotOps", "modelConfig", "modelPlotOps")))
   }
 
-  private def alertFailure(s: String) =
-    s"""modelConfig.dialog.notify("Error: $s");"""
-
-  private def formatObjectsAndErrors(
+  private def formatObjects(
     renditions:         Seq[PlotComponentRendition],
-    aggregateSuccesses: Seq[String] => String,
-    aggregateFailures:  Seq[String] => String): (String, String) = {
-      val successes = renditions.collect { case sp: SuccessfulComponent => sp.plotObject }
-      val errors    = renditions.collect { case ea: ErrorAlert          => ea.messages }.flatten
-      (aggregateSuccesses(successes),
-        if (errors.isEmpty) "" else aggregateFailures(errors))
-    }
+    aggregateSuccesses: Seq[String] => String): String =
+    aggregateSuccesses(renditions.collect { case sp: SuccessfulComponent => sp.plotObject })
 
   implicit class RichCompiledPlot(compiledPlot: CompiledPlot) {
     import compiledPlot.{ cleanDisplay, plotWidgetCompilation }
@@ -73,8 +63,7 @@ object PlotCompiler {
       val arity2Noop   = thunkifyFunction(noop)
       val emptyPlotOps = s"new PlotOps($noop, $noop, $noop, $arity2Noop, $arity2Noop, $arity2Noop, $arity2Noop)"
 
-      val (plotPens, penErrors) = formatObjectsAndErrors(compiledPens.map(renderPen),
-        jsArrayString(_, "\n"), es => alertFailure(es.mkString(", ")))
+      val plotPens = formatObjects(compiledPens.map(renderPen), jsArrayString(_, "\n"))
 
       val args: Seq[String] =
         Seq("name", "pens", "plotOps"
@@ -87,7 +76,7 @@ object PlotCompiler {
       val plotConstructor =
         s"""|var name    = '$cleanDisplay';
             |var plotOps = ${getOrElse("modelPlotOps[name]")(emptyPlotOps)};
-            |var pens    = $plotPens;$penErrors
+            |var pens    = $plotPens;
             |var setup   = $compiledSetup;
             |var update  = $compiledUpdate;
             |return new Plot(${args.mkString(", ")});""".stripMargin

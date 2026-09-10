@@ -4,7 +4,7 @@ package org.nlogo.tortoise.nlw
 
 import
   org.nlogo.tortoise.compiler.{ CompiledPen, CompiledPlot, PlotCompiler, WidgetCompilation, json },
-    WidgetCompilation.PlotWidgetCompilation,
+    WidgetCompilation.{ PlotWidgetCompilation, UpdateableCompilation },
     json.WidgetSamples.{ plot => plotWidget }
 
 import
@@ -14,27 +14,21 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.funsuite.AnyFunSuite
 
 import
-  scalaz.{ NonEmptyList, Scalaz, ValidationNel },
+  scalaz.{ Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
 class PlotCompilerTest extends AnyFunSuite with OneInstancePerTest {
-  class FakeDialog {
-    var alertsReceived = Seq[String]()
-
-    def notify(s: String): Unit =
-      alertsReceived = alertsReceived :+ s
-  }
-
-  lazy val dialog = new FakeDialog()
 
   lazy val jsRuntime = {
     val e = (new GraalJS())
     e.setupTortoise()
-    e.put("fakeDialog", dialog)
-    e.eval("modelConfig = { dialog: fakeDialog };")
+    e.eval("modelConfig = {};")
     e.eval("modelPlotOps = {};")
     e.eval("function PlotOps() {};")
-    e.eval("function Plot() {};")
+    // Capture the pens each plot is built with, so a test can tell which ones survived compilation.
+    e.eval("var lastPlot = null; function Plot(name, pens) { lastPlot = { name: name, pens: pens }; };")
+    e.eval("""PenBundle = { Pen: function(display) { this.display = display; }, State: function() {}
+             |           , DisplayMode: { Line: 0, Bar: 1, Point: 2 } };""".stripMargin)
     e
   }
 
@@ -47,36 +41,55 @@ class PlotCompilerTest extends AnyFunSuite with OneInstancePerTest {
   def compilePlotWidgetV(compilationV: ValidationNel[Exception, PlotWidgetCompilation]): String =
     plotJs(compiledPlot(compilationV))
 
-  test("returns valid javascript when plots have errors") {
-    val generatedJs =
-      compilePlotWidgetV(new Exception("plot plot-abc has problems").failureNel)
-    jsRuntime.eval(generatedJs)
-    assert(dialog.alertsReceived.head == "Error: plot plot-abc has problems")
+  def workingPen(display: String): CompiledPen =
+    new CompiledPen(
+      plotWidget.pens.head.copy(display = display)
+    , UpdateableCompilation("function() {}", "function() {}").successNel[Exception]
+    )
+
+  def failingPen(display: String, message: String): CompiledPen =
+    new CompiledPen(
+      plotWidget.pens.head.copy(display = display)
+    , new Exception(message).failureNel[UpdateableCompilation]
+    )
+
+  def plotCount(): Double =
+    jsRuntime.eval("modelConfig.plots.length").asInstanceOf[Double]
+
+  def penNames(): Seq[String] =
+    jsRuntime.eval("lastPlot.pens.map( (p) => p.display ).join(',')").asInstanceOf[String] match {
+      case ""    => Seq()
+      case names => names.split(",").toSeq
+    }
+
+  test("a plot that fails to compile is left out") {
+    jsRuntime.eval(compilePlotWidgetV(new Exception("plot plot-abc has problems").failureNel))
+    assert(plotCount() == 0)
   }
 
-  test("returns valid javascript when pens have errors") {
-    val errantPen = new CompiledPen(plotWidget.pens.head, new Exception("pen has problems").failureNel)
+  test("a pen that fails to compile is left out") {
     val widgetCompilation =
-      PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPen)).successNel[Exception]
-    val generatedJs = compilePlotWidgetV(widgetCompilation)
-    jsRuntime.eval(generatedJs)
-    assert(dialog.alertsReceived.head == "Error: pen-abc, pen has problems")
+      PlotWidgetCompilation("function() {}", "function() {}", Seq(failingPen("pen-abc", "pen has problems")))
+        .successNel[Exception]
+    jsRuntime.eval(compilePlotWidgetV(widgetCompilation))
+    // The plot itself compiled, so it is still here -- just without the pen.
+    assert(plotCount() == 1)
+    assert(penNames().isEmpty)
   }
 
-  test("returns multiple errors when there are multiple pen errors") {
-    val errantPens = new CompiledPen(plotWidget.pens.head, NonEmptyList(new Exception("pen a has problems"), new Exception("pen b has problems")).failure)
+  test("one bad pen does not take the plot's good pens with it") {
+    val pens = Seq(workingPen("good-pen"), failingPen("bad-pen", "pen has problems"), workingPen("other-good-pen"))
     val widgetCompilation =
-      PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPens)).successNel[Exception]
-    val generatedJs = compilePlotWidgetV(widgetCompilation)
-    jsRuntime.eval(generatedJs)
-    assert(dialog.alertsReceived.head == "Error: pen-abc, pen a has problems, pen b has problems")
+      PlotWidgetCompilation("function() {}", "function() {}", pens).successNel[Exception]
+    jsRuntime.eval(compilePlotWidgetV(widgetCompilation))
+    assert(plotCount() == 1)
+    assert(penNames() == Seq("good-pen", "other-good-pen"))
   }
 
   test("returns valid javascript when plots are correct") {
     val widgetCompilation =
       PlotWidgetCompilation("function() {}", "function() {}", Seq()).successNel[Exception]
-    val generatedJs = compilePlotWidgetV(widgetCompilation)
-    jsRuntime.eval(generatedJs)
-    assert(dialog.alertsReceived.isEmpty)
+    jsRuntime.eval(compilePlotWidgetV(widgetCompilation))
+    assert(plotCount() == 1)
   }
 }
