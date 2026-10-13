@@ -57,6 +57,6 @@ module.exports =
       @runCode = (runString, isRunResult, procVars) ->
         runFromString(code, widgets, runString, isRunResult, procVars, getAgentKind())
 
-      @compileFromString = (runString, isRunResult, procVars) ->
+      @compileFromString = (runString, isRunResult, procVars, agentKind = getAgentKind()) ->
         varNames  = Array.from(procVars.keys()).sort() # must be sorted
-        compileFromString(code, widgets, runString, isRunResult, varNames, getAgentKind())
+        compileFromString(code, widgets, runString, isRunResult, varNames, agentKind)

@@ -62,10 +62,10 @@ class ProcedurePrims
     finally
       @_stack.endCall()
 
-  # (String) => String
-  checkSyntax: (str) ->
+  # (String, String | undefined) => String
+  checkSyntax: (str, agentKind) ->
     try
-      @evalPrims.compileFromString(str, false, @_stack.currentContext().stringRunVars())
+      @evalPrims.compileFromString(str, false, @_stack.currentContext().stringRunVars(), agentKind)
       ""
     catch e
       e.message
