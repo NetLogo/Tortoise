@@ -46,7 +46,7 @@ class TortoiseModelLoaderTest extends AnyFunSuite {
     val source = """<model version="NetLogo 7"><code><![CDATA[to setup end <xml-tags-don't-matter-here></xml>]]></code><!-- comment is ignored <xml /> --><info><![CDATA[# Hello! <h1> <h2> </p>]]></info></model>"""
     val parser = new SimpleXMLParser(source)
     val results = parser.parse()
-    val expected = Seq(XMLElement("model", Map("version" -> "NetLogo 7"), "", Seq(XMLElement("code", Map(), "to setup end <xml-tags-don't-matter-here></xml>", Seq()), XMLElement("info", Map(), "# Hello! <h1> <h2> </p>", Seq()))))
+    val expected = Seq(XMLElement("model", Map("version" -> "NetLogo 7"), "", Seq(XMLElement("code", Map(), "to setup end <xml-tags-don't-matter-here></xml>", Seq(), true), XMLElement("info", Map(), "# Hello! <h1> <h2> </p>", Seq(), true))))
     assertResult(expected)(results)
   }
 
@@ -245,6 +245,39 @@ to setup end <xml-tags-don't-matter-here></xml>
 """
 
     assertResult(expected)(writtenSource)
+  }
+
+  val experimentModelSource = """<?xml version="1.0" encoding="utf-8"?>
+<model version="NetLogo 7.1.0-alpha1">
+  <code><![CDATA[to setup end to go end]]></code>
+  <widgets>
+    <view x="0" wrappingAllowedX="true" y="0" frameRate="30.0" minPycor="-16" height="400" showTickCounter="true" patchSize="12.0" fontSize="10" wrappingAllowedY="true" width="400" tickCounterLabel="ticks" maxPycor="16" updateMode="1" maxPxcor="16" minPxcor="-16"></view>
+  </widgets>
+  <info><![CDATA[]]></info>
+  <turtleShapes></turtleShapes>
+  <linkShapes></linkShapes>
+  <experiments>
+    <experiment name="exp" repetitions="1" runMetricsEveryStep="true">
+      <setup><![CDATA[
+setup
+print "ready"
+]]></setup>
+      <go>go</go>
+    </experiment>
+  </experiments>
+  <citation year1="1997" year2="2000"></citation>
+</model>
+"""
+
+  test("TortoiseModelLoader round-trips CDATA in BehaviorSpace experiments and the citation element") {
+    val model         = TortoiseModelLoader.read(experimentModelSource).get
+    val writtenSource = TortoiseModelLoader.write(model)
+    assert(writtenSource.contains("<setup><![CDATA[\nsetup\nprint \"ready\"\n]]></setup>"), writtenSource)
+    assert(writtenSource.contains("<go>go</go>"), writtenSource)
+    assert(writtenSource.contains("""<citation year1="1997" year2="2000"></citation>"""), writtenSource)
+
+    val rewrittenSource = TortoiseModelLoader.write(TortoiseModelLoader.read(writtenSource).get)
+    assertResult(writtenSource)(rewrittenSource)
   }
 
 }

@@ -100,21 +100,21 @@ class SimpleXMLParser(text: String) {
     reader.substring(start, end)
   }
 
-  def parseElementContent(): (String, Seq[XMLElement]) = {
+  def parseElementContent(): (String, Seq[XMLElement], Boolean) = {
     reader.skipWhiteSpace()
 
     reader.matches(SimpleXMLParser.CDATA_START, "<") match {
       case Some(SimpleXMLParser.CDATA_START) =>
-        (parseCdata(), Seq())
+        (parseCdata(), Seq(), true)
 
       case Some("<") =>
         val elements = parseElements()
         reader.skipWhiteSpace()
-        ("", elements)
+        ("", elements, false)
 
       case _ =>
         val text = parseText()
-        (text, Seq())
+        (text, Seq(), false)
     }
   }
 
@@ -134,16 +134,16 @@ class SimpleXMLParser(text: String) {
 
       reader.munch(elementTerminator)
 
-      val (text, children) =
+      val (text, children, isCdata) =
         if (elementTerminator == "/>") {
-          ("", Seq())
+          ("", Seq(), false)
         } else {
           val content = parseElementContent()
           parseElementClose(name)
           content
         }
 
-      Some(new XMLElement(name, attributes, text, children))
+      Some(new XMLElement(name, attributes, text, children, isCdata))
     }
   }
 
