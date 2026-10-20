@@ -77,7 +77,7 @@ class TestPlotting extends AnyFunSuite with PlottingHelpers {
     ()
   }
 
-  testPlotting("auto-plot-on / auto-plot-off") { (engine) =>
+  testPlotting("autoplot-on / autoplot-off") { (engine) =>
 
     import Plots._
 
@@ -734,8 +734,8 @@ trait PlottingHelpers {
   protected def clearPlot()                      (implicit e: GraalJS) = evalNLCommand("clear-plot")
   protected def clearAllPlots()                  (implicit e: GraalJS) = evalNLCommand("clear-all-plots")
   protected def createTempPen(name: String)      (implicit e: GraalJS) = evalNLCommand(s"""create-temporary-plot-pen \"$name\"""")
-  protected def disableAutoplotting()            (implicit e: GraalJS) = evalNLCommand("auto-plot-off")
-  protected def enableAutoplotting()             (implicit e: GraalJS) = evalNLCommand("auto-plot-on")
+  protected def disableAutoplotting()            (implicit e: GraalJS) = evalNLCommand("autoplot-off")
+  protected def enableAutoplotting()             (implicit e: GraalJS) = evalNLCommand("autoplot-on")
   protected def histogram(ys: Double*)           (implicit e: GraalJS) = evalNLCommand(s"histogram ${ys.mkString("[", " ", "]")}")
   protected def lowerPen()                       (implicit e: GraalJS) = evalNLCommand("plot-pen-down")
   protected def plot(y: Double)                  (implicit e: GraalJS) = evalNLCommand(s"plot $y")

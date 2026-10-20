@@ -11,7 +11,7 @@ class ProcedureChecks
   # (String, Int, Int, Number, Number) => Unit
   runArgCountCheck: (primName, sourceStart, sourceEnd, needed, given) ->
     if (given < needed)
-      @validator.error(primName, sourceStart, sourceEnd, 'anonymous procedure expected _ input_, but only got _', needed, given)
+      @validator.error(primName, sourceStart, sourceEnd, 'arrow procedure expected _ input_, but only got _', needed, given)
 
     return
 

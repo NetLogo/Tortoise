@@ -135,9 +135,9 @@ formatAny = (extensionFormatter, isOuterValue = true) -> (any) ->
     else if x instanceof TurtleReference
       formatTurtleRef(x)
     else if x instanceof ExportedCommandLambda
-      "(anonymous command: #{x.source.replace(/"/g, '""')})"
+      "(arrow command: #{x.source.replace(/"/g, '""')})"
     else if x instanceof ExportedReporterLambda
-      "(anonymous reporter: #{x.source.replace(/"/g, '""')})"
+      "(arrow reporter: #{x.source.replace(/"/g, '""')})"
     else if x instanceof ExportedLinkSet
       exportInnerLink =
         ({ breed: { plural }, id1, id2 }) ->

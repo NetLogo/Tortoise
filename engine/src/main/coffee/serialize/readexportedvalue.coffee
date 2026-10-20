@@ -43,7 +43,7 @@ parseList = ->
       recurse = (nextIndex, item) ->
         parseInner(strFrom(nextIndex), acc.concat([item]), accIndex + nextIndex)
 
-      if not (contents.startsWith('(anonymous command:') or contents.startsWith('(anonymous reporter:'))
+      if not /^\((anonymous|arrow) (command|reporter):/.test(contents)
         switch contents[0]
           when ']' # End of list
             [acc, accIndex + 1]
@@ -240,11 +240,13 @@ module.exports.parseAny = (singularToPlural, pluralToSingular, extensionReader) 
           if not Number.isNaN(parsedNum)
             parsedNum
           else # If not a number
-            commandLambdaMatch = x.match(/\(anonymous command: (\[.*\])\)$/)
+            # Desktop switched from "anonymous" to "arrow" in 7.1, but older export files are still out there.
+            # -Jeremy B October 2026
+            commandLambdaMatch = x.match(/\((?:anonymous|arrow) command: (\[.*\])\)$/)
             if commandLambdaMatch?
               new ExportedCommandLambda(commandLambdaMatch[1])
             else
-              reporterLambdaMatch = x.match(/\(anonymous reporter: (\[.*\])\)$/)
+              reporterLambdaMatch = x.match(/\((?:anonymous|arrow) reporter: (\[.*\])\)$/)
               if reporterLambdaMatch?
                 new ExportedReporterLambda(reporterLambdaMatch[1])
               else # If not a lambda

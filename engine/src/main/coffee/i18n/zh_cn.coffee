@@ -106,7 +106,7 @@ bundle = {
 , 'SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _': (type1, type2) ->
   "SORT-ON 可以用于数字、字符串或同类型的主体，但不能用于 #{type1} 或 #{type2}。"
 
-, 'anonymous procedure expected _ input_, but only got _': (needed, given) ->
+, 'arrow procedure expected _ input_, but only got _': (needed, given) ->
   "匿名函数需要 #{needed} 个输入，得到的却只有 #{given} 个。"
 
 , 'REPORT can only be used inside TO-REPORT.': () ->

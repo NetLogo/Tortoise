@@ -42,7 +42,7 @@ Compose
   (runresult (fp:compose [x -> first x] [x -> reverse x]) "abcde") => "e"
   (runresult (fp:compose first reverse) "abcde") => "e"
   (runresult (fp:compose [x -> abs x] abs [[x y] -> x + y]) 3 2) => 5
-  (runresult (fp:compose [[x y] -> x * y * 2] [x -> x + 2]) 3) => ERROR anonymous procedure expected 2 inputs, but only got 1
+  (runresult (fp:compose [[x y] -> x * y * 2] [x -> x + 2]) 3) => ERROR arrow procedure expected 2 inputs, but only got 1
 
 Pipe
   extensions [fp]
@@ -53,7 +53,7 @@ Pipe
   (runresult (fp:pipe [x -> reverse x] [x -> first x]) "abcde") => "e"
   (runresult (fp:pipe reverse first) "abcde") => "e"
   (runresult (fp:pipe [[x y] -> x * y * 2] [x -> x + 2]) 3 2) => 14
-  (runresult (fp:pipe [x -> abs x] abs [[x y] -> x + y]) 3 2) => ERROR anonymous procedure expected 2 inputs, but only got 1
+  (runresult (fp:pipe [x -> abs x] abs [[x y] -> x + y]) 3 2) => ERROR arrow procedure expected 2 inputs, but only got 1
 
 Curry
   extensions [fp]
@@ -114,7 +114,7 @@ Apply
   fp:apply [[a b] -> a + b] [10 5] => 15
   map [l -> fp:apply [[a b] -> a + b] l] [[10 5] [6 8] [9 22]] => [15 14 31]
   map [l -> fp:apply word l] [[1 2 3] [4 5] [6 7 8 9]] => ["123" "45" "6789"]
-  fp:apply [[a b] -> a + b] [10] => ERROR anonymous procedure expected 2 inputs, but only got 1
+  fp:apply [[a b] -> a + b] [10] => ERROR arrow procedure expected 2 inputs, but only got 1
 
 Outer
   extensions [fp]

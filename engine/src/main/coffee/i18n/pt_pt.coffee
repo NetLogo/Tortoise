@@ -68,8 +68,8 @@ bundle = {
 , 'List inputs to _ must only contain _, _ agentset, or list elements.  The list _ contained a different type agentset: _.': (prim, agentType, list, value) ->
     "Entradas de lista para #{prim} devem somente conter #{agentType}, #{agentType} agentset, ou elementos de lista.  A lista #{list} continha um tipo diferente de agentset: #{value}."
 
-, 'anonymous procedure expected _ inputs, but only got _': (needed, given) ->
-    "o procedimento anônimo esperava 1 entrada, mas obteve apenas 0"
+, 'arrow procedure expected _ input_, but only got _': (needed, given) ->
+    "o procedimento anônimo esperava #{needed} entrada#{if needed isnt 1 then "s" else ""}, mas obteve apenas #{given}"
 
 , 'REPORT can only be used inside TO-REPORT.': () ->
     "REPORT só pode ser usado dentro de TO-REPORT."

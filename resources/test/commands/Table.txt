@@ -149,7 +149,7 @@ TableException_isValidKey
   extensions [ table ]
   globals [glob1]
   O> set glob1 table:from-list [[1 1]]
-  O> table:put glob1 [n -> n] 1 => ERROR Extension exception: (anonymous reporter: [ n -> n ]) is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
+  O> table:put glob1 [n -> n] 1 => ERROR Extension exception: (arrow reporter: [ n -> n ]) is not a valid table key (a table key may only be a number, a string, true or false, or a list whose items are valid keys)
 
 TablesAllowableTypes
   extensions [ table ]

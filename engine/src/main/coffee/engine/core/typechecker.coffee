@@ -120,12 +120,12 @@ unimplemented = () ->
 class CommandLambdaType extends NLType
   isOfType: isCommandLambda
   niceName: ->
-    "anonymous command"
+    "arrow command"
 
 class ReporterLambdaType extends NLType
   isOfType: isReporterLambda
   niceName: ->
-    "anonymous reporter"
+    "arrow reporter"
 
 class BooleanType extends NLType
   isOfType: isBoolean

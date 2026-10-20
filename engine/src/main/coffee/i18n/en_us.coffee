@@ -120,8 +120,8 @@ bundle = {
 , 'SORT-ON works on numbers, strings, or agents of the same type, but not on _ and _': (type1, type2) ->
   "SORT-ON works on numbers, strings, or agents of the same type, but not on #{type1} and #{type2}"
 
-, 'anonymous procedure expected _ input_, but only got _': (needed, given) ->
-  "anonymous procedure expected #{needed} input#{if needed isnt 1 then "s" else ""}, but only got #{given}"
+, 'arrow procedure expected _ input_, but only got _': (needed, given) ->
+  "arrow procedure expected #{needed} input#{if needed isnt 1 then "s" else ""}, but only got #{given}"
 
 , 'REPORT can only be used inside TO-REPORT.': () ->
   "REPORT can only be used inside TO-REPORT."
