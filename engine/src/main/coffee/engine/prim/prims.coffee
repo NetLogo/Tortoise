@@ -96,6 +96,15 @@ module.exports =
         notImplemented('display', undefined)
       return
 
+    _hasThicknessed: false
+
+    # () => Unit
+    setLineThickness: () ->
+      if not @_hasThicknessed
+        @_hasThicknessed = true
+        notImplemented('__set-line-thickness', undefined)
+      return
+
     # () => Unit
     beep: () ->
       AudioCtx = (typeof AudioContext isnt 'undefined' and AudioContext) or
